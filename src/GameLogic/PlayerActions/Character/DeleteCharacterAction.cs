@@ -1,0 +1,81 @@
+﻿// <copyright file="DeleteCharacterAction.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
+{
+    using System;
+    using System.Linq;
+    using MUnique.OpenMU.DataModel.Entities;
+    using Views;
+
+    /// <summary>
+    /// Action to delete a character in the character selction screen.
+    /// </summary>
+    public class DeleteCharacterAction
+    {
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(DeleteCharacterAction));
+
+        private readonly IGameContext gameContext;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeleteCharacterAction"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        public DeleteCharacterAction(IGameContext context)
+        {
+            this.gameContext = context;
+        }
+
+        /// <summary>
+        /// Tries to delete the character.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="characterName">Name of the character.</param>
+        /// <param name="securityCode">The security code.</param>
+        public void DeleteCharacter(Player player, string characterName, string securityCode)
+        {
+            var result = this.DeleteCharacterRequest(player, characterName, securityCode);
+            player.PlayerView.ShowCharacterDeleteResponse(result);
+        }
+
+        private CharacterDeleteResult DeleteCharacterRequest(Player player, string characterName, string securityCode)
+        {
+            if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
+            {
+                Log.Error($"Account {player.Account.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
+                return CharacterDeleteResult.Unsuccessful;
+            }
+
+            var character = player.Account.Characters.FirstOrDefault(c => c.Name == characterName);
+
+            if (character == null)
+            {
+                Log.Error("Character not found. Hacker maybe tried to delete other players character!" +
+                    Environment.NewLine + "\tAccName: " + player.Account.LoginName +
+                    Environment.NewLine + "\tTried to delete Character: " + characterName);
+
+                return CharacterDeleteResult.Unsuccessful;
+            }
+
+            if (player.Account.SecurityCode != securityCode)
+            {
+                return CharacterDeleteResult.WrongSecurityCode;
+            }
+
+            using (this.gameContext.RepositoryManager.UseContext(player.PersistenceContext))
+            {
+                player.Account.Characters.Remove(character);
+
+                // TODO: remove the following stuff - it should be done automatically!
+                var repository = this.gameContext.RepositoryManager.GetRepository<Character>();
+                if (repository.Delete(character))
+                {
+                    return CharacterDeleteResult.Successful;
+                }
+            }
+
+            return CharacterDeleteResult.Unsuccessful;
+        }
+    }
+}

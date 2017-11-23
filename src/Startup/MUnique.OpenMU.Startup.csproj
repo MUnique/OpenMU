@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{6C3C3CA7-B9A8-4016-88FF-31D0510D4A88}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MUnique.OpenMU.Startup</RootNamespace>
+    <AssemblyName>MUnique.OpenMU.Startup</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>6</LangVersion>
+    <DocumentationFile>..\..\bin\Debug\OpenMU.Startup.XML</DocumentationFile>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DocumentationFile>..\..\bin\Release\OpenMU.Startup.XML</DocumentationFile>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\stylecop.json">
+      <Link>stylecop.json</Link>
+    </AdditionalFiles>
+    <None Include="app.config" />
+    <Content Include="MUnique.OpenMU.Startup.exe.log4net.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Readme.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdminPanel\MUnique.OpenMU.AdminPanel.csproj">
+      <Project>{69B012FB-B13F-4265-B7E8-6BEE3FE33B12}</Project>
+      <Name>MUnique.OpenMU.AdminPanel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ChatServer\MUnique.OpenMU.ChatServer.csproj">
+      <Project>{DFCE247F-6E84-4791-A8F3-84AF4C371A2E}</Project>
+      <Name>MUnique.OpenMU.ChatServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ConnectServer\MUnique.OpenMU.ConnectServer.csproj">
+      <Project>{06BB9B23-7466-4DAE-8F7C-C1094975462F}</Project>
+      <Name>MUnique.OpenMU.ConnectServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj">
+      <Project>{5282F509-D758-4A42-994C-F71A4C631FDA}</Project>
+      <Name>MUnique.OpenMU.DataModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FriendServer\MUnique.OpenMU.FriendServer.csproj">
+      <Project>{6D4644A5-FEE4-4415-B254-38B196701292}</Project>
+      <Name>MUnique.OpenMU.FriendServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GameLogic\MUnique.OpenMU.GameLogic.csproj">
+      <Project>{7DEC119D-79EF-4E43-9A72-DB07A6CAE73E}</Project>
+      <Name>MUnique.OpenMU.GameLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GameServer\MUnique.OpenMU.GameServer.csproj">
+      <Project>{8EC9EBEE-56DD-4139-AA02-D154CA8536E6}</Project>
+      <Name>MUnique.OpenMU.GameServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GuildServer\MUnique.OpenMU.GuildServer.csproj">
+      <Project>{D2BAED1F-EB47-4D42-9E8B-1FF7FC708CAD}</Project>
+      <Name>MUnique.OpenMU.GuildServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj">
+      <Project>{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}</Project>
+      <Name>MUnique.OpenMU.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LoginServer\MUnique.OpenMU.LoginServer.csproj">
+      <Project>{A956C55B-08A8-41B9-BF72-03427BC6BB22}</Project>
+      <Name>MUnique.OpenMU.LoginServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj">
+      <Project>{b54420e7-17e7-43b5-84d9-7320133289b3}</Project>
+      <Name>MUnique.OpenMU.Persistence.EntityFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj">
+      <Project>{6E809FA9-888C-474F-8A84-70EECBC7E42D}</Project>
+      <Name>MUnique.OpenMU.Persistence</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent />
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{F8C6B8AF-47F6-421B-B01D-31CBCF59FC33}</ProjectGuid>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PandocOutputDir>$(MSBuildThisFileDirectory)$(OutputPath)</PandocOutputDir>
+    <!-- Output format: defaults to html -->
+    <PandocOutputFormat>html</PandocOutputFormat>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>..\bin\doc\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Progress.md" />
+    <None Include="Readme.md" />
+    <Pandoc Include="Packets\C100 - Chat message %28by client%29.md" />
+    <Pandoc Include="Packets\C100 - Chat message %28by server%29.md" />
+    <Pandoc Include="Packets\C102 - Whispered chat message.md" />
+    <Pandoc Include="Packets\C1F300 - Character list response %28by server%29.md" />
+    <Pandoc Include="Packets\C1F306 - Character stat increase response.md" />
+    <Pandoc Include="Packets\C1F315 - Character focus confirmation.md" />
+    <Pandoc Include="Packets\C1F306 - Character stat increase request.md" />
+    <Pandoc Include="Packets\C1F315 - Character focus request.md" />
+    <Pandoc Include="Packets\C1F303 - Character select request.md" />
+    <Pandoc Include="Packets\C1F302 - Character delete response.md" />
+    <Pandoc Include="Packets\C1F302 - Character delete request.md" />
+    <Pandoc Include="Packets\C1F30101 - Character creation successful.md" />
+    <Pandoc Include="Packets\PacketTypes.md" />
+    <None Include="Packets\Readme.md" />
+    <Pandoc Include="Packets\C1F300 - Character list request %28by client%29.md" />
+    <Pandoc Include="Packets\Appearance.md" />
+    <Pandoc Include="Packets\C1F30100 - Character creation failed.md" />
+    <Pandoc Include="Packets\C1F301 - Character creation request.md" />
+    <None Include="Packets\Template.md" />
+  </ItemGroup>
+  <Target Name="Build" DependsOnTargets="EnsureNuGetPackageBuildImports;Pandoc" />
+  <Import Project="..\src\packages\PandocTasks.0.1.2\build\PandocTasks.targets" Condition="Exists('..\src\packages\PandocTasks.0.1.2\build\PandocTasks.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\src\packages\PandocTasks.0.1.2\build\PandocTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\src\packages\PandocTasks.0.1.2\build\PandocTasks.targets'))" />
+  </Target>
+</Project>

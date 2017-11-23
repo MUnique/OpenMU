@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+        <title>Live Map</title>
+        <link rel="stylesheet" href="@Path['~/content/css/bootstrap.css']">
+        
+        <script src="@Path['~/content/js/jquery-2.2.0.min.js']"></script>
+        <script src="@Path['~/content/js/bootstrap.min.js']"></script>
+        <script src="@Path['~/content/js/jquery.signalR-2.2.2.js']"></script>
+        <script src="@Path['~/signalr/hubs']"></script>
+        <script src="@Path['~/content/js/react/react.js']"></script>
+        <script src="@Path['~/content/js/react/react-dom.js']"></script>
+        <script src="@Path['~/content/js/fluxxor.js']"></script>
+
+        <script src="@Path['~/content/js/app.js']"></script>
+        
+        <script src="@Path['~/content/js/three.min.js']"></script>
+        <script src="@Path['~/content/js/tween.min.js']"></script>
+        <script src="@Path['~/content/js/Stats.js']"></script>
+        <script src="@Path['~/content/js/liveview.js']"></script>
+        <style type="text/css">
+        body {
+            background-color: #000000;
+            margin: auto;
+            overflow: hidden;
+            font-style:  normal;
+            font-weight: 400;
+        }
+    </style>
+    </head>
+    
+    <body>
+        <div style="position: absolute; top: 60px;">
+            <p>Name: <span id="objectData_name"></span></p>
+            <p>ID: <span id="objectData_id"></span></p>
+            <p>X: <span id="objectData_x"></span></p>
+            <p>Y: <span id="objectData_y"></span></p>
+        </div>
+    </body>
+
+<script type="text/javascript">
+
+    var self = this;
+    var MAP_SIZE = 256;
+    // set some camera attributes
+    var NEAR = 0.1, FAR = 10000;
+    
+    var container = document.createElement('div');
+    document.body.appendChild(container);
+    container.style.width = MAP_SIZE + 'px';
+    container.style.margin = '0 auto';
+    var renderer = new THREE.WebGLRenderer(
+        { 
+            antialias: false		
+        });
+    
+    var scene = new THREE.Scene();
+    var stats = new Stats();
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0px';
+
+    var serverId = getParameterByName('serverId');
+    var mapId = getParameterByName('mapId');
+    var world = new OpenMU.World(serverId, mapId); //read parameters to determine server an map
+    // world.position.x = MAP_SIZE / 2;
+    // world.position.y = MAP_SIZE / 2;
+    scene.add(world);
+    
+    
+    var camera = createCamera();
+
+    renderer.setSize(window.innerHeight, window.innerHeight);
+    container.appendChild(renderer.domElement);
+    document.body.appendChild(stats.domElement);
+    onWindowResize();
+    window.addEventListener( 'resize', onWindowResize, false );
+
+    var picker = new OpenMU.WorldObjectPicker(container, world, camera, function(obj) {
+        if (obj !== undefined && obj !== null) {
+            document.getElementById("objectData_name").textContent = obj.Name;
+            document.getElementById("objectData_id").textContent = obj.Id;
+            document.getElementById("objectData_x").textContent = obj.X;
+            document.getElementById("objectData_y").textContent = obj.Y;
+        }
+    });
+
+    animate(); //start the rendering loop :)
+
+    
+    
+    function animate(time) {
+        requestAnimationFrame(animate);
+        stats.update();
+        TWEEN.update(time);
+        world.update();
+        renderer.render(scene, camera);
+    }
+    
+    function createCamera() {
+        var camera = new THREE.OrthographicCamera( MAP_SIZE / -2, MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / -2, NEAR, FAR );
+        camera.position.z = 1000;
+        return camera;
+    }
+    
+    function onWindowResize(){
+        renderer.setSize( window.innerHeight, window.innerHeight );
+        world.setCurrentSize(window.innerHeight);
+        container.style.width = window.innerHeight + 'px';
+    }
+   
+   function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    url = url.toLowerCase(); // This is just to avoid case sensitiveness  
+    name = name.replace(/[\[\]]/g, "\\$&").toLowerCase();// This is just to avoid case sensitiveness for query parameter name
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+</script>
+    
+</html>
