@@ -50,13 +50,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>..\..\bin\Debug\OpenMU.Network.xml</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.Network.xml</DocumentationFile>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\OpenMU.Network.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Network.XML</DocumentationFile>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -106,7 +106,7 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
   <PropertyGroup>
     <PostBuildEvent>nuget pack $(ProjectPath) -Symbols -Prop Configuration=$(ConfigurationName) -Prop Platform=$(Platform) -IncludeReferencedProjects</PostBuildEvent>
   </PropertyGroup>

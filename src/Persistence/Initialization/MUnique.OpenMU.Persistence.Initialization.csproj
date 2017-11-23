@@ -20,7 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\bin\Debug\OpenMU.Persistence.Initialization.XML</DocumentationFile>
+    <DocumentationFile>..\..\..\bin\Debug\MUnique.OpenMU.Persistence.Initialization.XML</DocumentationFile>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
   </PropertyGroup>

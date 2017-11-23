@@ -55,13 +55,13 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>6</LangVersion>
-    <DocumentationFile>..\..\bin\Debug\OpenMU.Startup.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.Startup.XML</DocumentationFile>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\OpenMU.Startup.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Startup.XML</DocumentationFile>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
   </PropertyGroup>

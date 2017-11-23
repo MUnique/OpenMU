@@ -66,11 +66,11 @@
     </CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>..\..\bin\Debug\OpenMU.ConnectServer.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.ConnectServer.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\OpenMU.ConnectServer.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.ConnectServer.XML</DocumentationFile>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>None</DebugType>

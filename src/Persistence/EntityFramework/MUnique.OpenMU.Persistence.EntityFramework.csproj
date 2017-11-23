@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\bin\Debug\OpenMU.Persistence.EntityFramework.XML</DocumentationFile>
+    <DocumentationFile>..\..\..\bin\Debug\MUnique.OpenMU.Persistence.EntityFramework.XML</DocumentationFile>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
   </PropertyGroup>

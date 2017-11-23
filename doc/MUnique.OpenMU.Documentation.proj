@@ -37,7 +37,9 @@
     <Pandoc Include="Packets\C1F301 - Character creation request.md" />
     <None Include="Packets\Template.md" />
   </ItemGroup>
-  <Target Name="Build" DependsOnTargets="EnsureNuGetPackageBuildImports;Pandoc" />
+  <!--Target Name="Build" DependsOnTargets="EnsureNuGetPackageBuildImports;Pandoc" /-->
+  <Target Name="Build"/>
+  <Target Name="Rebuild" DependsOnTargets="Build"/>
   <Import Project="..\src\packages\PandocTasks.0.1.2\build\PandocTasks.targets" Condition="Exists('..\src\packages\PandocTasks.0.1.2\build\PandocTasks.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

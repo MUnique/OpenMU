@@ -36,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Release\MUnique.OpenMU.Persistence.Initialization.Tests.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />

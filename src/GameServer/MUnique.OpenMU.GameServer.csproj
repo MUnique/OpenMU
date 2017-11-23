@@ -23,11 +23,11 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
-    <DocumentationFile>..\..\bin\Debug\OpenMU.GameServer.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.GameServer.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\OpenMU.GameServer.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.GameServer.XML</DocumentationFile>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>None</DebugType>
@@ -172,7 +172,7 @@
       <Project>{E3C36FF6-7205-4F9C-9242-A6B3441FF7F7}</Project>
       <Name>MUnique.OpenMU.Network</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PathFinding\MUnique.OpenMU.Pathfinding.csproj">
+    <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj">
       <Project>{44CD0416-61D6-4848-8864-5DE7B971604A}</Project>
       <Name>MUnique.OpenMU.Pathfinding</Name>
     </ProjectReference>
@@ -181,5 +181,5 @@
       <Name>MUnique.OpenMU.Persistence</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
 </Project>

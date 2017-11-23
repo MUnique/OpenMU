@@ -47,12 +47,12 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
-    <DocumentationFile>..\..\bin\Debug\OpenMU.GameLogic.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.GameLogic.XML</DocumentationFile>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\OpenMU.GameLogic.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.GameLogic.XML</DocumentationFile>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>None</DebugType>
@@ -255,7 +255,7 @@
       <Project>{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}</Project>
       <Name>MUnique.OpenMU.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PathFinding\MUnique.OpenMU.Pathfinding.csproj">
+    <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj">
       <Project>{44CD0416-61D6-4848-8864-5DE7B971604A}</Project>
       <Name>MUnique.OpenMU.Pathfinding</Name>
     </ProjectReference>
@@ -270,5 +270,5 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
 </Project>
