@@ -12,7 +12,7 @@ If the player is authenticated, the player list is sent back to the client with 
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | 0x04   | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |

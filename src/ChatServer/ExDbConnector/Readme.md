@@ -33,7 +33,7 @@ When the ChatServer connects to the ExDB server, it sends a data packet to regis
 
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | Packet header - type |
 | 1 | byte | 0x3A   | Packet header - length of the packet |
 | 1 | byte | 0x00   | Packet Type "server registration" |
@@ -49,7 +49,7 @@ From now, the ChatServer will receive chat room creation and invitation requests
 When a client requests to create a new chat room, the following data packet is sent from the ExDB Server to the ChatServer.
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | Packet header - type |
 | 1 | byte | 0x17   | Packet header - length of the packet |
 | 1 | byte | 0xA0   | Packet Type 'chat room creation' |
@@ -62,7 +62,7 @@ Example: C1 17 A0 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59
 For each of both players, there is one data packet sent back to the ExDB Server:
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | Packet header - type |
 | 1 | byte | 0x2C   | Packet header - length of the packet |
 | 1 | byte | 0xA0   | Packet Type 'chat room creation' |
@@ -83,7 +83,7 @@ Example Second Player: C1 2C A0 01 00 00 50 51 52 53 54 55 56 57 58 59 41 42 43 
 When a client requests to invite another friend to an existing chat room, the following data packet is sent from the ExDB Server to the ChatServer.
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | Packet header - type |
 | 1 | byte | 0x16   | Packet header - length of the packet |
 | 1 | byte | 0xA1   | Packet Type 'chat room invitation' |

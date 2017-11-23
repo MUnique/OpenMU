@@ -11,7 +11,7 @@ The message is forwarded to other players (and the player itself), except the me
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | [Length] | Packet header - length of the packet |
 | 1 | byte | 0x00   | Packet header - packet type identifier |

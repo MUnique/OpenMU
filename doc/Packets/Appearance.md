@@ -11,7 +11,7 @@ It seems like the structure is historically grown.
 Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte are specified in a row, the highest bits come first.
 
 |  Byte index | Length | Data type | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|------------|
 | 0 | 1 | byte | Character class |
 | 1 | 1 | byte | Left hand item index. 0xFF if empty. |
 | 2 | 1 | byte | Right hand item index. 0xFF if empty. |

@@ -11,7 +11,7 @@ The created character appears in the character selection screen.
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | 0x2A   | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |

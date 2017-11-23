@@ -17,7 +17,7 @@ If the creation wasn't successful, the [character creation failed message](<C1F3
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | 0x0F   | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |

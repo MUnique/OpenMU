@@ -11,7 +11,7 @@
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | [Length] | Packet header - length of the packet |
 | 1 | byte | 0xXX   | Packet header - packet type identifier |

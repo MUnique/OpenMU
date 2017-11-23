@@ -11,7 +11,7 @@ It shows a message to the player, that the creation of the character failed.
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | 0x05   | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |

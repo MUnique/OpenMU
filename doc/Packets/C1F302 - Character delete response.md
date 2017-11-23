@@ -12,7 +12,7 @@ In the case of failure, a message is shown to the player with the reason.
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | 0x05   | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |

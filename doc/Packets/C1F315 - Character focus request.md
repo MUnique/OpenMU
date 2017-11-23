@@ -12,7 +12,7 @@ If this requirements are met, the server sends a [confirmation](<C1F315 - Charac
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | 0x0E   | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |

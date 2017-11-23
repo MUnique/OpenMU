@@ -15,7 +15,7 @@ The character list is shown. The client has then the following functions availab
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | [Length] | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |
@@ -28,7 +28,7 @@ The character list is shown. The client has then the following functions availab
 
 ### Character Information Block Structure ###
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 1 ~ 5 | Number of the character slot |
 | 10 | string | | Name of the character, terminated by 0x00, if shorter than 10 |
 | 1 | byte | 1 | unknown |

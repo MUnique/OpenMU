@@ -13,7 +13,7 @@ The message is displayed in the chat message area.
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | [Length] | Packet header - length of the packet |
 | 1 | byte | 0x02   | Packet header - packet type identifier |

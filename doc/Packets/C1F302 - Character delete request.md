@@ -13,7 +13,7 @@ In any case, the server sends a [character delete response](C1F302 - Character d
 ## Structure ##
 
 |  Length  | Data type | Value | Description |
-|----------|---------|-------------|
+|----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
 | 1 | byte | 0x15   | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |
