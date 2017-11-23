@@ -61,7 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Persistence.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.ClientLauncher", "ClientLauncher\MUnique.OpenMU.ClientLauncher.csproj", "{FED078A8-6D97-4335-961D-B39F481C3802}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Pathfinding", "PathFinding\MUnique.OpenMU.Pathfinding.csproj", "{44CD0416-61D6-4848-8864-5DE7B971604A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Pathfinding", "Pathfinding\MUnique.OpenMU.Pathfinding.csproj", "{44CD0416-61D6-4848-8864-5DE7B971604A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Pathfinding.Tests", "..\tests\MUnique.OpenMU.Pathfinding.Tests\MUnique.OpenMU.Pathfinding.Tests.csproj", "{66A6E404-2601-4354-A51A-C8F1EEBC8079}"
 EndProject
