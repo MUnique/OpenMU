@@ -299,9 +299,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="TransformBabel" AfterTargets="Build">
-    <Exec Command="&quot;$(MSBuildToolsPath)\msbuild.exe&quot; $(ProjectDirectory)TransformBabel.proj /p:OutputPath=$(OutputPath) /nr:false" />
+    <Exec Command="&quot;$(MSBuildToolsPath)\MSBuild.exe&quot; $(ProjectDirectory)TransformBabel.proj /p:OutputPath=$(OutputPath) /nr:false" />
   </Target>
   <Target Name="CopyScripts" AfterTargets="TransformBabel">
-    <Exec Command="&quot;$(MSBuildToolsPath)\msbuild.exe&quot; $(ProjectDirectory)CopyScripts.proj /p:OutputPath=$(OutputPath) /nr:false" />
+    <Exec Command="&quot;$(MSBuildToolsPath)\MSBuild.exe&quot; $(ProjectDirectory)CopyScripts.proj /p:OutputPath=$(OutputPath) /nr:false" />
   </Target>
 </Project>
