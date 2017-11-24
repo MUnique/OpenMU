@@ -298,10 +298,10 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="TransformBabel" AfterTargets="Build" Condition=" '$(TravisCI)' == '' ">
+  <Target Name="TransformBabel" AfterTargets="Build" Condition=" '$(TRAVIS)' == '' ">
     <Exec Command="&quot;$(MSBuildToolsPath)\MSBuild.exe&quot; $(ProjectDirectory)TransformBabel.proj /p:OutputPath=$(OutputPath) /nr:false" />
   </Target>
-  <Target Name="CopyScripts" AfterTargets="TransformBabel" Condition=" '$(TravisCI)' == '' ">
+  <Target Name="CopyScripts" AfterTargets="TransformBabel" Condition=" '$(TRAVIS)' == '' ">
     <Exec Command="&quot;$(MSBuildToolsPath)\MSBuild.exe&quot; $(ProjectDirectory)CopyScripts.proj /p:OutputPath=$(OutputPath) /nr:false" />
   </Target>
 </Project>

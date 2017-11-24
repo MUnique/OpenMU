@@ -1,4 +1,2 @@
 language: csharp
 solution: src/MUnique.OpenMU.sln
-script:
-  - msbuild /p:Configuration=Release;TravisCI=true src/MUnique.OpenMU.sln
