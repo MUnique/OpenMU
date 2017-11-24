@@ -1,2 +1,4 @@
 language: csharp
 solution: src/MUnique.OpenMU.sln
+script:
+  - xbuild /p:Configuration=Release;TravisCI=true src/MUnique.OpenMU.sln
