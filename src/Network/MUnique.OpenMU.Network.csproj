@@ -108,6 +108,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>nuget pack $(ProjectPath) -Symbols -Prop Configuration=$(ConfigurationName) -Prop Platform=$(Platform) -IncludeReferencedProjects -MsbuildPath $(MSBuildToolsPath)</PostBuildEvent>
+    <PostBuildEvent>nuget pack $(ProjectPath) -Symbols -Prop Configuration=$(ConfigurationName) -Prop Platform=$(Platform) -IncludeReferencedProjects -MSBuildPath $(MSBuildToolsPath)\MSBuild.exe</PostBuildEvent>
   </PropertyGroup>
 </Project>
