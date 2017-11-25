@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private static byte GetExcellentByte(Item item)
         {
             byte result = 0;
-            var excellentOptions = item.ItemOptions.Where(o => o.ItemOption.OptionType == ItemOptionTypes.HarmonyOption);
+            var excellentOptions = item.ItemOptions.Where(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent);
 
             foreach (var option in excellentOptions)
             {
