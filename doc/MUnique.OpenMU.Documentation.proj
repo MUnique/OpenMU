@@ -15,6 +15,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Pandoc Include="Packets\C1F330 - Save key configuration.md" />
+    <Pandoc Include="Packets\C1F352 - Master skill level increase request.md" />
+    <None Include="Packets\C1F352 - Master skill level increase response.md" />
     <None Include="Progress.md" />
     <None Include="Readme.md" />
     <Pandoc Include="Packets\C100 - Chat message %28by client%29.md" />
