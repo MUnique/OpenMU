@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
-    using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
@@ -85,6 +84,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             {
                 learnedSkill.Level++;
                 player.SelectedCharacter.MasterLevelUpPoints--;
+
+                // TODO: Send response, see protocol documentation
             }
         }
 
@@ -93,20 +94,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             var masterDefs = skill.MasterDefinitions
                 .Where(def => def.CharacterClass == player.SelectedCharacter.CharacterClass);
 
-            if (!masterDefs.Any())
-            {
-                return false;
-            }
-
-            var learnedSkills = player.SelectedCharacter.LearnedSkills.Where(learnedSkill => learnedSkill.Skill.MasterDefinitions != null && learnedSkill.Skill.MasterDefinitions.Any());
             foreach (var def in masterDefs)
             {
-                if (!this.CheckRank(def, learnedSkills, player.SelectedCharacter.CharacterClass))
+                if (!this.CheckRank(def, player.SelectedCharacter))
                 {
                     continue;
                 }
 
-                if (this.CheckRequiredSkill(def, learnedSkills))
+                if (this.CheckRequiredSkill(def, player.SelectedCharacter))
                 {
                     return true;
                 }
@@ -115,14 +110,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             return false;
         }
 
-        private bool CheckRank(MasterSkillDefinition definition, IEnumerable<SkillEntry> learnedSkills, CharacterClass charClass)
+        private bool CheckRank(MasterSkillDefinition definition, Character character)
         {
             var result = true;
             if (definition.Rank > 0)
             {
-                var lSkill = learnedSkills.FirstOrDefault(learnedSkill =>
+                var lSkill = character.LearnedSkills
+                    .Where(learnedSkill => learnedSkill.Skill.MasterDefinitions != null && learnedSkill.Skill.MasterDefinitions.Any())
+                    .FirstOrDefault(learnedSkill =>
                   {
-                      var mdefs = learnedSkill.Skill.MasterDefinitions.Where(mdef => mdef.CharacterClass == charClass);
+                      var mdefs = learnedSkill.Skill.MasterDefinitions.Where(mdef => mdef.CharacterClass == character.CharacterClass);
                       mdefs = mdefs.Where(mdef => mdef.Root.Id == definition.Root.Id);
                       return mdefs.Any(mdef => mdef.Rank == definition.Rank - 1);
                   });
@@ -132,12 +129,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             return result;
         }
 
-        private bool CheckRequiredSkill(MasterSkillDefinition defintion, IEnumerable<SkillEntry> learnedSkills)
+        private bool CheckRequiredSkill(MasterSkillDefinition defintion, Character character)
         {
             var result = true;
             if (defintion.RequiredMasterSkills != null && defintion.RequiredMasterSkills.Any())
             {
-                result = defintion.RequiredMasterSkills.Any(s => learnedSkills.Any(l => l.Skill == s && (l.Level >= MinimumSkillLevelOfRequiredSkill || l.Skill.MasterDefinitions == null || !l.Skill.MasterDefinitions.Any())));
+                result = defintion.RequiredMasterSkills.Any(s => character.LearnedSkills.Any(l => l.Skill == s && (l.Level >= MinimumSkillLevelOfRequiredSkill || l.Skill.MasterDefinitions == null || !l.Skill.MasterDefinitions.Any())));
             }
 
             return result;
