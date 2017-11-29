@@ -1,6 +1,6 @@
 ﻿# ChatServer ExDB Connector
 
-This is not directly a part of the OpenMU project. It's more like a side product to make the ChatServer available to users of the 'classical' private MU Servers.
+This isn't directly a part of the OpenMU project. It's more like a side product to make the ChatServer available to users of the 'classical' private MU Servers.
 They have - or maybe had :) - the problem that they are bound to use the original closed source ChatServer of Webzen, if they get it working at all.
 
 So to offer an open source alternative to the original ChatServer of Webzen, you can use this project to connect the OpenMU-ChatServer with your 'classic' ExDB server.
@@ -43,7 +43,7 @@ When the ChatServer connects to the ExDB server, it sends a data packet to regis
 
 Example: C1 3A 00 02 AC DA 43 68 61 74 53 65 72 76 65 72 00
 
-From now, the ChatServer will receive chat room creation and invitation requests from the ExDB Server, which were previosly requested by the players.
+From now, the ChatServer will receive chat room creation and invitation requests from the ExDB Server, which were previously requested by the players.
 
 ### Chat Room Creation Request
 When a client requests to create a new chat room, the following data packet is sent from the ExDB Server to the ChatServer.
