@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ChatServer.ExDbConnector
 {
+    using System;
     using System.Net.Sockets;
     using System.Text;
     using System.Threading.Tasks;
@@ -98,20 +99,27 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// <param name="packet">The packet.</param>
         private void ExDbPacketReceived(object sender, byte[] packet)
         {
-            if (packet[0] != 0xC1)
+            try
             {
-                Log.Warn($"Unknown packet received from ExDB-Server, type: {packet[0]}");
-                return;
-            }
+                if (packet[0] != 0xC1)
+                {
+                    Log.Warn($"Unknown packet received from ExDB-Server, type: {packet[0]}");
+                    return;
+                }
 
-            switch (packet[2])
+                switch (packet[2])
+                {
+                    case 0xA0:
+                        this.ReadChatRoomCreation(packet);
+                        break;
+                    case 0xA1:
+                        this.ReadChatRoomInvitation(packet);
+                        break;
+                }
+            }
+            catch (Exception exception)
             {
-                case 0xA0:
-                    this.ReadChatRoomCreation(packet);
-                    break;
-                case 0xA1:
-                    this.ReadChatRoomInvitation(packet);
-                    break;
+                Log.Error($"An error occured while processing an incoming packet from ExDB: {packet.AsString()}", exception);
             }
         }
 
