@@ -84,7 +84,9 @@ namespace MUnique.OpenMU.ChatServer
             var room = this.manager.GetChatRoom(roomId);
             if (room == null)
             {
-                return null;
+                var errorMessage = $"RegisterClient: Could not find chat room with id {roomId} for '{clientName}'.";
+                Log.Error(errorMessage);
+                throw new ArgumentException(errorMessage, nameof(roomId));
             }
 
             var index = room.GetNextClientIndex();
@@ -115,15 +117,12 @@ namespace MUnique.OpenMU.ChatServer
                 Log.Info($"Chat client listener ready on port {this.port}.");
                 this.clientCleanupTimer.Start();
                 this.roomCleanupTimer.Start();
+                this.ServerState = OpenMU.Interfaces.ServerState.Started;
             }
             catch (Exception ex)
             {
                 Log.Error("Error while starting", ex);
                 this.ServerState = oldState;
-            }
-            finally
-            {
-                this.ServerState = OpenMU.Interfaces.ServerState.Started;
             }
 
             Log.Info("Finished starting");
