@@ -234,7 +234,14 @@ namespace MUnique.OpenMU.Network
                         this.log.Debug($"Packet received (after decryption): {packet.AsString()}");
                     }
 
-                    packetReceivedHandler(this, packet);
+                    try
+                    {
+                        packetReceivedHandler(this, packet);
+                    }
+                    catch (Exception exception)
+                    {
+                        this.log.Error($"An error occured while processing an incoming packet: {packet.AsString()}", exception);
+                    }
                 }
 
                 packet = this.packetBuffer.DequeueNextPacket();
