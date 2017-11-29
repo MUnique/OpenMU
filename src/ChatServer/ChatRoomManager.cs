@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ChatServer
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
 
@@ -49,7 +50,7 @@ namespace MUnique.OpenMU.ChatServer
                 return roomId;
             }
 
-            return ushort.MaxValue;
+            throw new InvalidOperationException("There is no free room id, so the chat room couldn't be created.");
         }
 
         /// <summary>
