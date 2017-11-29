@@ -16,13 +16,13 @@ Requirements:
   * 44405 (connect server)
 * Knowledge or way to start a game client, connecting to the server (I wont provide that, but there is a ClientLauncher project) :)
 
-If you have that, you need to do:
+If you have that, you'll need to do:
 * Open the solution of OpenMU with Visual Studio
-* Edit OpenMU\Persistence\EntityFramework\ConnectionSettings.xml, so that the first connection string is correct
-* Build the solution
-* Run Unit test at MUnique.OpenMU.Persistence.Initialization.Test.TestInitializationWithEfCore (you might need to remove the IgnoreAttribtue before)
-  * It will create the database schemas, the required roles and gives permissions to this roles
+* Edit OpenMU\Persistence\EntityFramework\ConnectionSettings.xml, so that the connection strings are correct - however only the user/password of the first connection string needs to be correct. The server will try to create the other roles specified by the settings.
+* Build the solution 
 * Start MUnique.OpenMU.Startup
+  * If required, it will create the database schemas, the required roles and gives permissions to this roles
+  * If you update to a newer state of the master-branch, it could be possible that you have to delete the database again before starting. Currently, we are not providing patches for database updates.
 
 When the Admin Panel is initialized, go to http://localhost:1234/admin. Then you should see three gameservers,
 the chat server and the connect server. Start the connect server and at least one gameserver.
