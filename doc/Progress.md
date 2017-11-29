@@ -110,19 +110,19 @@ Complexity 0 means we wont implement it.
 |   - *Character stat increase request* | [0xF306][0xF306]            |      |          |                                               |
 |   - *Character focus request* | [0xF315][0xF315]            |      |          |                                               |
 |   - *Save key configuration* | [0xF330][0xF330]            |      |          |                                               |
-|   - *Master skill level increase request* | [0xF352][0xF352]            |      |          |                                               |
+|   - *Master skill level increase request* | [0xF352][0xF352]            |      |          |                                               
 | CashShopGroup               | 0xF5              | 0%       | 10         | Low priority                                  |
 | *Hit*                         | Protocol.Hit      | 100%     | 10         |                                               |
 | *Teleport*                    | Protocol.Teleport | 100%     | 2          |                                               |
 | *Walk*                        | Protocol.Walk     | 100%     | 10         |                                               |
 
-[0x00] : C100 - Chat message (by client).md
-[0x02] : C102 - Whispered chat message.md
-[0xF300] : C1F300 - Character list request (by client).md
-[0xF301] : C1F301 - Character creation request.md
-[0xF302] : C1F302 - Character delete request.md
-[0xF303] : C1F303 - Character select request.md
-[0xF306] : C1F306 - Character stat increase request.md
-[0xF315] : C1F315 - Character focus request.md
-[0xF330] : C1F330 - Save key configuration.md
-[0xF352] : C1F352 - Master skill level increase request.md
+[0x00]: C100%20-%20Chat%20message%20(by%20client).md
+[0x02]: C102%20-%20Whispered%20chat%20message.md
+[0xF300]: C1F300%20-%20Character%20list%20request%20(by%20client).md
+[0xF301]: C1F301%20-%20Character%20creation%20request.md
+[0xF302]: C1F302%20-%20Character%20delete%20request.md
+[0xF303]: C1F303%20-%20Character%20select%20request.md
+[0xF306]: C1F306%20-%20Character%20stat%20increase%20request.md
+[0xF315]: C1F315%20-%20Character%20focus%20request.md
+[0xF330]: C1F330%20-%20Save%20key%20configuration.md
+[0xF352]: C1F352%20-%20Master%20skill%20level%20increase%20request.md
