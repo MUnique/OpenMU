@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         private readonly List<IChatClient> connectedClients;
 
-        private readonly ReaderWriterLockSlim lockSlim = new ReaderWriterLockSlim();
+        private ReaderWriterLockSlim lockSlim = new ReaderWriterLockSlim();
 
         private int lastUsedClientIndex = -1;
 
@@ -40,6 +40,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <param name="roomId">The room identifier.</param>
         public ChatRoom(ushort roomId)
         {
+            Log.Debug($"Creating room {roomId}");
             this.connectedClients = new List<IChatClient>(2);
             this.registeredClients = new List<ChatServerAuthenticationInfo>(2);
             this.RoomId = roomId;
@@ -74,6 +75,11 @@ namespace MUnique.OpenMU.ChatServer
         /// <param name="authenticationInfo">Authentication information of the participant.</param>
         public void RegisterClient(ChatServerAuthenticationInfo authenticationInfo)
         {
+            if (this.isClosing)
+            {
+                throw new ObjectDisposedException("Chat room is already disposed.");
+            }
+
             if (authenticationInfo.RoomId != this.RoomId)
             {
                 throw new ArgumentException(
@@ -99,14 +105,26 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         public void Close()
         {
-            if (this.isClosing)
+           this.Dispose();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "lockSlim", Justification = "Null-conditional confuses the code analysis.")]
+        public void Dispose()
+        {
+            var localLockSlim = this.lockSlim;
+            if (this.isClosing || localLockSlim == null)
             {
                 return;
             }
 
             this.isClosing = true;
+            this.lockSlim = null;
+            Log.Debug($"Disposing room {this.RoomId}...");
             this.registeredClients.Clear();
-            this.lockSlim.EnterWriteLock();
+            localLockSlim.EnterWriteLock();
             try
             {
                 foreach (var client in this.connectedClients)
@@ -120,18 +138,11 @@ namespace MUnique.OpenMU.ChatServer
             }
             finally
             {
-                this.lockSlim.ExitWriteLock();
+                localLockSlim.ExitWriteLock();
             }
-        }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "lockSlim", Justification = "Null-conditional confuses the code analysis.")]
-        public void Dispose()
-        {
-            this.Close();
-            this.lockSlim?.Dispose();
+            localLockSlim.Dispose();
+            Log.Debug($"Room {this.RoomId} disposed.");
         }
 
         /// <summary>
@@ -144,6 +155,11 @@ namespace MUnique.OpenMU.ChatServer
             if (chatClient == null)
             {
                 throw new ArgumentNullException(nameof(chatClient));
+            }
+
+            if (this.isClosing)
+            {
+                throw new ObjectDisposedException("Chat room is already disposed.");
             }
 
             Log.Debug($"Client {chatClient.Index} is trying to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}'");
@@ -194,20 +210,35 @@ namespace MUnique.OpenMU.ChatServer
                 return;
             }
 
+            Log.Debug($"Chat client ({chatClient}) is leaving.");
             this.lockSlim.EnterWriteLock();
             try
             {
                 this.connectedClients.Remove(chatClient);
-                this.SendChatRoomClientUpdate(chatClient, ChatRoomClientUpdateType.Left);
-                if (this.connectedClients.Count == 0)
-                {
-                    this.RoomClosed?.Invoke(this, new ChatRoomClosedEventArgs(this));
-                    this.RoomClosed = null;
-                }
             }
             finally
             {
                 this.lockSlim.ExitWriteLock();
+            }
+
+            bool roomIsEmpty;
+            this.lockSlim.EnterReadLock();
+            try
+            {
+                roomIsEmpty = this.connectedClients.Count < 1;
+                if (roomIsEmpty)
+                {
+                    this.SendChatRoomClientUpdate(chatClient, ChatRoomClientUpdateType.Left);
+                }
+            }
+            finally
+            {
+                this.lockSlim.ExitReadLock();
+            }
+
+            if (roomIsEmpty)
+            {
+                this.Close();
             }
         }
 
@@ -218,6 +249,11 @@ namespace MUnique.OpenMU.ChatServer
         /// <param name="message">The message.</param>
         internal void SendMessage(byte senderId, string message)
         {
+            if (this.isClosing)
+            {
+                return;
+            }
+
             this.lockSlim.EnterReadLock();
             try
             {

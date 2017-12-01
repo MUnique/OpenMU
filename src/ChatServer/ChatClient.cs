@@ -131,6 +131,12 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public void LogOff()
         {
+            if (this.connection == null)
+            {
+                Log.Debug($"Client {this.Nickname} is already disconnected.");
+                return;
+            }
+
             Log.Debug($"Client {this.connection} is going to be disconnected.");
             if (this.room != null)
             {
@@ -138,14 +144,24 @@ namespace MUnique.OpenMU.ChatServer
                 this.room = null;
             }
 
+            this.connection = null;
             this.connection?.Disconnect();
             if (this.Disconnected != null)
             {
                 this.Disconnected(this, EventArgs.Empty);
                 this.Disconnected = null;
             }
+        }
 
-            this.connection = null;
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return $"Connection:{this.connection}, Client name:{this.Nickname}, Room-ID:{this.room?.RoomId}, Index: {this.Index}";
         }
 
         private void PacketReceived(byte[] packet)
@@ -213,7 +229,7 @@ namespace MUnique.OpenMU.ChatServer
             var tokenAsString = packet.ExtractString(TokenOffset, 10, Encoding.UTF8);
             if (!uint.TryParse(tokenAsString, out uint _))
             {
-                Log.Error($"Token is not a parseable integer.");
+                Log.Error($"Token '{tokenAsString}' is not a parseable integer.");
                 this.LogOff();
                 return;
             }

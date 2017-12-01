@@ -214,6 +214,7 @@ namespace MUnique.OpenMU.ChatServer
                     var client = this.connectedClients[i];
                     if (client.LastActivity < bottomDateTimeMargin)
                     {
+                        Log.Debug($"Disconnecting client {client}, because of activity timeout. LastActivity: {client.LastActivity}");
                         client.LogOff();
                     }
                 }
