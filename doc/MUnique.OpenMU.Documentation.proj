@@ -17,6 +17,8 @@
     <None Include="packages.config" />
     <Pandoc Include="Packets\C1F330 - Save key configuration.md" />
     <Pandoc Include="Packets\C1F352 - Master skill level increase request.md" />
+    <None Include="Packets\C111 - Hit response.md" />
+    <None Include="Packets\C111 - Hit request.md" />
     <None Include="Packets\C1F352 - Master skill level increase response.md" />
     <None Include="Progress.md" />
     <None Include="Readme.md" />
@@ -40,8 +42,8 @@
     <Pandoc Include="Packets\C1F301 - Character creation request.md" />
     <None Include="Packets\Template.md" />
   </ItemGroup>
-  <Target Name="Build"/>
-  <Target Name="Rebuild" DependsOnTargets="Build"/>
+  <Target Name="Build" />
+  <Target Name="Rebuild" DependsOnTargets="Build" />
   <!--Target Name="Build" DependsOnTargets="EnsureNuGetPackageBuildImports;Pandoc" /-->
   <!--Import Project="..\src\packages\PandocTasks.0.1.2\build\PandocTasks.targets" Condition="Exists('..\src\packages\PandocTasks.0.1.2\build\PandocTasks.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

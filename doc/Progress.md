@@ -112,9 +112,9 @@ Complexity 0 means we wont implement it.
 |   - *Save key configuration* | [0xF330][0xF330]            |      |          |                                               |
 |   - *Master skill level increase request* | [0xF352][0xF352]            |      |          |                                               
 | CashShopGroup               | 0xF5              | 0%       | 10         | Low priority                                  |
-| *Hit*                         | Protocol.Hit      | 100%     | 10         |                                               |
-| *Teleport*                    | Protocol.Teleport | 100%     | 2          |                                               |
-| *Walk*                        | Protocol.Walk     | 100%     | 10         |                                               |
+| *Hit*                         | 0x11      | 100%     | 10         |                                               |
+| *Teleport*                    | 0x15 | 100%     | 2          |                                               |
+| *Walk*                        | 0xD4     | 100%     | 10         |                                               |
 
 [0x00]: C100%20-%20Chat%20message%20(by%20client).md
 [0x02]: C102%20-%20Whispered%20chat%20message.md
