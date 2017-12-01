@@ -489,6 +489,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// This Packet is sent to the Client when a Player or Monster got Hit and damaged.
         /// It includes which Player/Monster got hit by who, and the Damage Type.
         /// TODO: It is obvious that the mu online protocol only supports 16 bits for each damage value. Maybe in the future we could send more than one packet, if the 16bits are not enough.
+        /// There are probably two different kinds of damage packets:
+        /// Length 0x0A: Contains damage information of a target
+        /// Length 0x08: Contains attacker and target id and animation -> sent to surrounding players
         /// </remarks>
         /// <inheritdoc/>
         public void ShowHit(IAttackable target, HitInfo hitInfo)
@@ -497,9 +500,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var shieldDamage = (ushort)(hitInfo.DamageSD & 0xFFFF);
             this.connection.Send(new byte[]
             {
-                0xC1, 0x0A, (byte)PacketType.Hit, target.Id.GetLowByte(), target.Id.GetHighByte(),
-                                    healthDamage.GetLowByte(), healthDamage.GetHighByte(), this.GetDamageColor(hitInfo.Attributes),
-                                    shieldDamage.GetLowByte(), shieldDamage.GetHighByte()
+                0xC1, 0x0A, (byte)PacketType.Hit, target.Id.GetHighByte(), target.Id.GetLowByte(),
+                                    healthDamage.GetHighByte(), healthDamage.GetLowByte(),
+                                    shieldDamage.GetLowByte(), shieldDamage.GetHighByte(),
+                                    this.GetDamageColor(hitInfo.Attributes)
             });
         }
 
