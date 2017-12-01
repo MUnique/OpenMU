@@ -17,6 +17,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly ISupportWalk walkSupporter;
         private Timer walkTimer;
+        private ReaderWriterLockSlim walkLock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Walker"/> class.
@@ -25,6 +26,7 @@ namespace MUnique.OpenMU.GameLogic
         public Walker(ISupportWalk walkSupporter)
         {
             this.walkSupporter = walkSupporter;
+            this.walkLock = new ReaderWriterLockSlim();
         }
 
         /// <summary>
@@ -40,11 +42,19 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void Stop()
         {
-            this.walkSupporter.NextDirections.Clear();
-            if (this.walkTimer != null)
+            this.walkLock.EnterWriteLock();
+            try
             {
-                this.walkTimer.Dispose(); // reuse timer?
-                this.walkTimer = null;
+                this.walkSupporter.NextDirections.Clear();
+                if (this.walkTimer != null)
+                {
+                    this.walkTimer.Dispose(); // reuse timer?
+                    this.walkTimer = null;
+                }
+            }
+            finally
+            {
+                this.walkLock.ExitWriteLock();
             }
         }
 
@@ -53,7 +63,12 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void Dispose()
         {
-            this.Stop();
+            if (this.walkLock != null)
+            {
+                this.Stop();
+                this.walkLock.Dispose();
+                this.walkLock = null;
+            }
         }
 
         /// <summary>
@@ -65,20 +80,39 @@ namespace MUnique.OpenMU.GameLogic
             try
             {
                 var attackable = this.walkSupporter as IAttackable;
-                if (!(attackable?.Alive ?? false) || this.walkSupporter.NextDirections.Count <= 0)
+                bool stop;
+                this.walkLock.EnterReadLock();
+                try
+                {
+                    stop = !(attackable?.Alive ?? false) || this.walkSupporter.NextDirections.Count <= 0;
+                }
+                finally
+                {
+                    this.walkLock.ExitReadLock();
+                }
+
+                if (stop)
                 {
                     this.Stop();
                     return;
                 }
 
                 // Update new coords
-                var nextStep = this.walkSupporter.NextDirections.Pop();
-                this.walkSupporter.X = nextStep.To.X;
-                this.walkSupporter.Y = nextStep.To.Y;
-
-                if (this.walkSupporter is IRotateable rotateable)
+                this.walkLock.EnterWriteLock();
+                try
                 {
-                    rotateable.Rotation = nextStep.Direction;
+                    var nextStep = this.walkSupporter.NextDirections.Pop();
+                    this.walkSupporter.X = nextStep.To.X;
+                    this.walkSupporter.Y = nextStep.To.Y;
+
+                    if (this.walkSupporter is IRotateable rotateable)
+                    {
+                        rotateable.Rotation = nextStep.Direction;
+                    }
+                }
+                finally
+                {
+                    this.walkLock.ExitWriteLock();
                 }
             }
             catch (Exception e)
