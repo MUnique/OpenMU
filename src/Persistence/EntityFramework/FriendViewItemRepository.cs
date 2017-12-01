@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             using (var context = new FriendContext())
             {
                 var result = context.Set<FriendViewItem>().FromSql(
-                    "SELECT V.\"Id\", V.\"CharacterId\", V.\"FriendId\", V.\"Accepted\", V.\"RequestOpen\", \"Character\".\"Name\" AS \"CharacterName\", Friend.\"Name\" AS \"FriendName\" FROM \"FriendViewItem\" V, \"Character\", \"Character\" Friend " +
+                    "SELECT V.\"Id\", V.\"CharacterId\", V.\"FriendId\", V.\"Accepted\", V.\"RequestOpen\", \"Character\".\"Name\" AS \"CharacterName\", Friend.\"Name\" AS \"FriendName\" FROM data.\"FriendViewItem\" V, data.\"Character\", data.\"Character\" Friend " +
                     "  WHERE V.\"CharacterId\" = \"Character\".\"Id\" " +
                     "  AND V.\"FriendId\" = Friend.\"Id\" " +
                     "  AND \"Character\".\"Name\" = :p0 " +
