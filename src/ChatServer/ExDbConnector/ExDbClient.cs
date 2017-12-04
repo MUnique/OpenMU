@@ -128,8 +128,8 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// </summary>
         /// <param name="packet">The packet.</param>
         /// <remarks>
-        /// Example: C1 10 A1 00 00 00 61 62 63 64 65 66 67 68 69 6F
-        /// Index 4 and 5 is the room id, the rest behind is the client name.
+        /// Example: C1 15 A1 00 00 00 61 62 63 64 65 66 67 68 69 6F 20 01 00 01 57
+        /// Index 4 and 5 is the room id, the next 10 bytes is the client name, after that the player id, game server id and a "type".
         /// The chat server answers this with the same packets as above(ticket 96862210):
         /// C1 2C A0 01 00 00 61 62 63 64 65 66 67 68 69 6F CC CC CC CC CC CC CC CC CC CC 53 54 55 56 CC CC 02 00 C6 05 CC CC CC CC 57 CC CC CC
         /// </remarks>
@@ -137,8 +137,12 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         {
             var roomId = NumberConversionExtensions.MakeWord(packet[5], packet[4]);
             var clientName = packet.ExtractString(6, 10, Encoding.UTF8);
-            Log.Debug($"Received request to invite {clientName} to chat room {roomId}");
-            this.RegisterAndSendAuth(clientName, string.Empty, roomId);
+            var clientPlayerId = packet.TryMakeWordBigEndian(16);
+            var clientServerId = packet.TryMakeWordBigEndian(18);
+            var type = packet.Length > 20 ? packet[20] : (byte)0x57;
+            Log.Debug($"Received request to invite {clientName} to chat room {roomId}, Client-ID: {clientPlayerId}, Server-ID: {clientServerId}");
+            var authentication = this.chatServer.RegisterClient(roomId, clientName);
+            this.SendAuthentication(authentication, null, clientPlayerId, clientServerId, type);
         }
 
         /// <summary>
@@ -147,42 +151,71 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// <param name="packet">The packet.</param>
         /// <remarks>
         /// For example, we get here the following packet in:
-        /// C1 17 A0 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59
+        /// C1 20 A0 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59 00 E0 2E 01 00 E1 2E 01 00
         /// This packet includes the header and both names of the creator and the invited chat partner (each 10 bytes long).
         /// The server should then send the following data back to the exDB-Server:
-        ///           s | rid ||-----client name-----------||---------other client name-| |------???------| |-ticket--| |--------???----------|
+        ///           s | rid ||-----client name-----------||---------other client name-||plid| |svid||---| |-ticket--| |--------???----------|
         /// C1 2C A0 01 00 00 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59 00 00 00 00 CC CC 00 00 11 04 CC CC CC CC 00 CC CC CC
         /// C1 2C A0 01 00 00 50 51 52 53 54 55 56 57 58 59 41 42 43 44 45 46 47 48 49 4A 00 00 00 00 CC CC 01 00 BB 05 CC CC CC CC 01 CC CC CC
         /// </remarks>
         private void ReadChatRoomCreation(byte[] packet)
         {
             string clientName = packet.ExtractString(3, 10, Encoding.UTF8);
-            string friendname = packet.ExtractString(13, 10, Encoding.UTF8);
+            string friendName = packet.ExtractString(13, 10, Encoding.UTF8);
+            var clientPlayerId = packet.TryMakeWordBigEndian(24);
+            var clientServerId = packet.TryMakeWordBigEndian(26);
+            var friendPlayerId = packet.TryMakeWordBigEndian(28);
+            var friendServerId = packet.TryMakeWordBigEndian(30);
             var roomId = this.chatServer.CreateChatRoom();
-            Log.Debug($"Received request to create chat room for {clientName} and {friendname}; Room-ID: {roomId}");
-            this.RegisterAndSendAuth(clientName, friendname, roomId);
-            this.RegisterAndSendAuth(friendname, clientName, roomId);
+            Log.Debug($"Received request to create chat room for {clientName} and {friendName}; Room-ID: {roomId}; Client-ID: {clientPlayerId}; Server-ID: {clientServerId}; Friend-ID: {friendPlayerId}; Friend-Server: {friendServerId}");
+            var requesterAuthentication = this.chatServer.RegisterClient(roomId, clientName);
+            var friendAuthentication = this.chatServer.RegisterClient(roomId, friendName);
+            this.SendAuthentication(requesterAuthentication, friendAuthentication, clientPlayerId, clientServerId, requesterAuthentication.Index);
+            this.SendAuthentication(friendAuthentication, requesterAuthentication, friendPlayerId, friendServerId, friendAuthentication.Index);
         }
 
-        private void RegisterAndSendAuth(string clientName, string friendName, ushort roomId)
+        /// <summary>
+        /// Sends the authentication information back to the ExDB-Server.
+        /// </summary>
+        /// <param name="authenticationInfo">The authentication information.</param>
+        /// <param name="friendAuthenticationInfo">The friend authentication information.</param>
+        /// <param name="clientId">The client identifier on the server where the client plays on.</param>
+        /// <param name="serverId">The server identifier where the client plays on.</param>
+        /// <param name="type">The type. Usually 0 for the player who requested the chat and 1 for the other player.</param>
+        private void SendAuthentication(ChatServerAuthenticationInfo authenticationInfo, ChatServerAuthenticationInfo friendAuthenticationInfo, ushort clientId, ushort serverId, byte type)
         {
-            var authenticationInformation = this.chatServer.RegisterClient(roomId, clientName);
-            Log.Debug($"Registered client {clientName} with index {authenticationInformation.Index} and token {authenticationInformation.AuthenticationToken}");
-            var token = uint.Parse(authenticationInformation.AuthenticationToken);
+            Log.Debug($"Registered client {authenticationInfo.ClientName} with index {authenticationInfo.Index} and token {authenticationInfo.AuthenticationToken}");
+            var token = uint.Parse(authenticationInfo.AuthenticationToken);
+            uint friendToken = 0;
+            if (friendAuthenticationInfo != null)
+            {
+                friendToken = uint.Parse(friendAuthenticationInfo.AuthenticationToken);
+            }
+
+            var roomId = authenticationInfo.RoomId;
             var packet = new byte[]
             {
                 0xC1, 0x2C, 0xA0, 0x01, (byte)roomId, (byte)(roomId >> 8),
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0xCC, 0xCC,
+                clientId.GetLowByte(), clientId.GetHighByte(), // user client id
+                serverId.GetLowByte(), serverId.GetHighByte(), // server id
+                0, 0, // 30+31, padding for the alignment of the following token
                 0, 0, 0, 0, // token
-                0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC
+                0, 0, 0, 0, // friend token
+                type,
+                0, 0, 0 // padding?
             };
 
             packet.SetIntegerBigEndian(token, 32);
+            packet.SetIntegerBigEndian(friendToken, 36);
 
-            Encoding.UTF8.GetBytes(clientName, 0, clientName.Length, packet, 6);
-            Encoding.UTF8.GetBytes(friendName, 0, friendName.Length, packet, 16);
+            Encoding.UTF8.GetBytes(authenticationInfo.ClientName, 0, authenticationInfo.ClientName.Length, packet, 6);
+            if (friendAuthenticationInfo != null)
+            {
+                Encoding.UTF8.GetBytes(friendAuthenticationInfo.ClientName, 0, friendAuthenticationInfo.ClientName.Length, packet, 16);
+            }
+
             this.connection.Send(packet);
         }
     }

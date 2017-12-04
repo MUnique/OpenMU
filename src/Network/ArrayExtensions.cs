@@ -137,6 +137,41 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
+        /// Converts bytes of an array to an unsigned short, small endian.
+        /// If the array is not long enough, it returns 0.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns>An unsigned short.</returns>
+        public static ushort TryMakeWordSmallEndian(this byte[] array, int startIndex)
+        {
+            return array.Length > startIndex + 1 ? array.MakeWordSmallEndian(startIndex) : default(ushort);
+        }
+
+        /// <summary>
+        /// Converts bytes of an array to an unsigned short, big endian.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns>An unsigned short.</returns>
+        public static ushort MakeWordBigEndian(this byte[] array, int startIndex)
+        {
+            return (ushort)((array[startIndex + 1] << 8) | array[startIndex]);
+        }
+
+        /// <summary>
+        /// Converts bytes of an array to an unsigned short, big endian.
+        /// If the array is not long enough, it returns 0.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns>An unsigned short.</returns>
+        public static ushort TryMakeWordBigEndian(this byte[] array, int startIndex)
+        {
+            return array.Length > startIndex + 1 ? array.MakeWordBigEndian(startIndex) : default(ushort);
+        }
+
+        /// <summary>
         /// Sets the bytes of an integer (small endian) to an byte array at the specified start index.
         /// </summary>
         /// <param name="array">The target array.</param>
