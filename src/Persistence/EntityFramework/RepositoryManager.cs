@@ -99,6 +99,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <summary>
+        /// Reinitializes the database by deleting it and running the initialization process again.
+        /// </summary>
+        public void ReInitializeDatabase()
+        {
+            using (var installationContext = new EntityDataContext())
+            {
+                installationContext.Database.EnsureDeleted();
+                installationContext.Database.Migrate();
+            }
+        }
+
+        /// <summary>
         /// Initializes the logging of sql statements.
         /// </summary>
         public void InitializeSqlLogging()

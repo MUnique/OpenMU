@@ -8,8 +8,8 @@ namespace MUnique.OpenMU.Startup
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
-
     using log4net;
     using log4net.Config;
     using MUnique.OpenMU.AdminPanel;
@@ -40,11 +40,17 @@ namespace MUnique.OpenMU.Startup
         /// Initializes a new instance of the <see cref="Program"/> class.
         /// Constructor for the main entry program.
         /// </summary>
-        public Program()
+        /// <param name="args">The command line args.</param>
+        public Program(string[] args)
         {
             this.repositoryManager = new RepositoryManager();
             this.repositoryManager.InitializeSqlLogging();
-            if (!this.repositoryManager.IsDatabaseUpToDate())
+            if (args.Contains("-reinit"))
+            {
+                Console.WriteLine("The database is getting reininitialized...");
+                this.repositoryManager.ReInitializeDatabase();
+            }
+            else if (!this.repositoryManager.IsDatabaseUpToDate())
             {
                 Console.WriteLine("The database needs to be updated before the server can be started. Apply update? (y/n)");
                 var key = Console.ReadLine()?.ToLowerInvariant();
@@ -108,7 +114,7 @@ namespace MUnique.OpenMU.Startup
             BasicConfigurator.Configure();
             XmlConfigurator.ConfigureAndWatch(new FileInfo(Log4NetConfigFilePath));
 
-            using (new Program())
+            using (new Program(args))
             {
                 bool exit = false;
                 while (!exit)
