@@ -117,6 +117,14 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="characterId">Id of the character.</param>
         /// <returns>The open friend requester names.</returns>
         IEnumerable<string> GetOpenFriendRequesterNames(Guid characterId);
+
+        /// <summary>
+        /// Creates a new friend view item.
+        /// </summary>
+        /// <param name="characterName">Name of the character.</param>
+        /// <param name="friendName">Name of the friend.</param>
+        /// <returns>The created friend view item.</returns>
+        T CreateNewFriendViewItem(string characterName, string friendName);
     }
 
     /// <summary>

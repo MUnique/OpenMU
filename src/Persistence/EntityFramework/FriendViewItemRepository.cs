@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <remarks>
     /// This class makes use of custom sql statements, because we want to load the character names from the character table and not duplicate it in the <see cref="FriendViewItem"/> table.
     /// </remarks>
-    internal class FriendViewItemRepository : IRepository<FriendViewItem>, IFriendViewItemRepository<FriendViewItem>
+    internal class FriendViewItemRepository : IFriendViewItemRepository<FriendViewItem>
     {
         /// <inheritdoc/>
         public void Delete(string characterName, string friendName)
@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             using (var context = new FriendContext())
             {
-                var result = context.Set<FriendViewItem>().FromSql(
+                return context.Set<FriendViewItem>().FromSql(
                     "SELECT V.\"Id\", V.\"CharacterId\", V.\"FriendId\", V.\"Accepted\", V.\"RequestOpen\", \"Character\".\"Name\" AS \"CharacterName\", Friend.\"Name\" AS \"FriendName\" FROM data.\"FriendViewItem\" V, data.\"Character\", data.\"Character\" Friend " +
                     "  WHERE V.\"CharacterId\" = \"Character\".\"Id\" " +
                     "  AND V.\"FriendId\" = Friend.\"Id\" " +
@@ -46,7 +46,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     characterName,
                     friendName)
                     .FirstOrDefault();
-                return result;
             }
         }
 
@@ -61,15 +60,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             using (var context = new FriendContext())
             {
-                return Enumerable.Empty<FriendViewItem>();
-
-                ////return context.Set<FriendViewItem>().FromSql(
-                ////@"SELECT V.*, Character.Name AS CharacterName, Friend.Name AS FriendName FROM FriendViewItem V, Character, Character Friend
-                ////  WHERE V.CharacterId = Character.Id
-                ////  AND V.FriendId = Friend.Id
-                ////  AND V.CharacterId = 'p0'
-                ////  AND Friend.Name = 'p1'",
-                ////characterId).ToArray();
+                return context.Set<FriendViewItem>().FromSql(
+                    "SELECT V.\"Id\", V.\"CharacterId\", V.\"FriendId\", V.\"Accepted\", V.\"RequestOpen\", \"Character\".\"Name\" AS \"CharacterName\", Friend.\"Name\" AS \"FriendName\" FROM data.\"FriendViewItem\" V, data.\"Character\", data.\"Character\" Friend " +
+                    "  WHERE V.\"CharacterId\" = \"Character\".\"Id\" " +
+                    "  AND V.\"FriendId\" = Friend.\"Id\" " +
+                    "  AND \"Character\".\"Id\" = :p0 " +
+                    "  AND Friend.\"Name\" = :p1",
+                    characterId).AsNoTracking().ToList();
             }
         }
 
@@ -85,8 +82,26 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     "  AND V.\"RequestOpen\" = :p1 " +
                     "  AND V.\"CharacterId\" = :p0 ",
                     characterId,
-                    true).AsNoTracking().Select(friend => friend.FriendName).ToArray();
+                    true).AsNoTracking().Select(friend => friend.FriendName).ToList();
             }
+        }
+
+        /// <inheritdoc/>
+        public FriendViewItem CreateNewFriendViewItem(string characterName, string friendName)
+        {
+            var item = new FriendViewItem
+            {
+                CharacterName = characterName,
+                FriendName = friendName
+            };
+
+            using (var context = new EntityDataContext())
+            {
+                item.CharacterId = context.Set<Character>().Where(character => character.Name == characterName).Select(character => character.Id).FirstOrDefault();
+                item.FriendId = context.Set<Character>().Where(character => character.Name == friendName).Select(character => character.Id).FirstOrDefault();
+            }
+
+            return item;
         }
 
         /// <inheritdoc/>

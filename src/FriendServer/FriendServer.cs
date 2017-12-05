@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.FriendServer
             {
                 using (var context = this.repositoryManager.UseTemporaryContext())
                 {
-                    friend = this.GetNewFriendViewItem(playerName, friendName);
+                    friend = friendRepository.CreateNewFriendViewItem(playerName, friendName);
                     friend.Accepted = false;
                     friend.RequestOpen = true;
                     saveSuccess = context.SaveChanges();
@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.FriendServer
 
                 if (accepted)
                 {
-                    var responder = friendRepository.GetByFriend(characterName, friendName) ?? this.GetNewFriendViewItem(characterName, friendName);
+                    var responder = friendRepository.GetByFriend(characterName, friendName) ?? friendRepository.CreateNewFriendViewItem(characterName, friendName);
                     responder.RequestOpen = false;
                     responder.Accepted = true;
                     this.AddSubscriptions(requester, responder);
@@ -249,14 +249,6 @@ namespace MUnique.OpenMU.FriendServer
                 responderFriend.OnNext(requesterFriend);
                 requesterFriend.OnNext(responderFriend);
             }
-        }
-
-        private FriendViewItem GetNewFriendViewItem(string characterName, string friendName)
-        {
-            var item = this.repositoryManager.CreateNew<FriendViewItem>();
-            item.CharacterName = characterName;
-            item.FriendName = friendName;
-            return item;
         }
     }
 }

@@ -330,6 +330,14 @@ namespace MUnique.OpenMU.Tests
                 return this.GetAll().Where(item => item.CharacterId == characterId && item.RequestOpen).Select(item => item.FriendName);
             }
 
+            public FriendViewItem CreateNewFriendViewItem(string characterName, string friendName)
+            {
+                var item = new FriendViewItem { CharacterName = characterName, FriendName = friendName };
+                this.SetCharacterIds(item);
+                this.Store(item);
+                return item;
+            }
+
             public void Store(FriendViewItem item)
             {
                 this.SetCharacterIds(item);
