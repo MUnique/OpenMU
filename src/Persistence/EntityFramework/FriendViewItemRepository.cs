@@ -64,8 +64,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     "SELECT V.\"Id\", V.\"CharacterId\", V.\"FriendId\", V.\"Accepted\", V.\"RequestOpen\", \"Character\".\"Name\" AS \"CharacterName\", Friend.\"Name\" AS \"FriendName\" FROM data.\"FriendViewItem\" V, data.\"Character\", data.\"Character\" Friend " +
                     "  WHERE V.\"CharacterId\" = \"Character\".\"Id\" " +
                     "  AND V.\"FriendId\" = Friend.\"Id\" " +
-                    "  AND \"Character\".\"Id\" = :p0 " +
-                    "  AND Friend.\"Name\" = :p1",
+                    "  AND \"Character\".\"Id\" = :p0 ",
                     characterId).AsNoTracking().ToList();
             }
         }
