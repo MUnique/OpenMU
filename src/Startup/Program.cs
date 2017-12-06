@@ -93,6 +93,7 @@ namespace MUnique.OpenMU.Startup
                     }
 
                     this.servers.Add(gameServer);
+                    this.gameServers.Add(gameServer.Id, gameServer);
                     Log.InfoFormat("Game Server {0} - [{1}] initialized", gameServer.Id, gameServer.Description);
                 }
             }
