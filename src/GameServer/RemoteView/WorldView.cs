@@ -149,7 +149,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// </remarks>
         public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, byte direction)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x09, 0x18, animatingObj.Id.GetLowByte(), animatingObj.Id.GetHighByte(), direction, animation, targetObj.Id.GetLowByte(), targetObj.Id.GetHighByte() });
+            if (targetObj == null)
+            {
+                this.connection.Send(new byte[] { 0xC1, 0x07, 0x18, animatingObj.Id.GetLowByte(), animatingObj.Id.GetHighByte(), direction, animation });
+            }
+            else
+            {
+                this.connection.Send(new byte[] { 0xC1, 0x09, 0x18, animatingObj.Id.GetLowByte(), animatingObj.Id.GetHighByte(), direction, animation, targetObj.Id.GetLowByte(), targetObj.Id.GetHighByte() });
+            }
         }
 
         /// <inheritdoc/>
