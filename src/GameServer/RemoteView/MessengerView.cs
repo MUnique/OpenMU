@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ShowFriendRequest(string requester)
         {
             var packet = new byte[] { 0xC1, 0x0D, 0xC2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            Encoding.UTF8.GetBytes(requester, 0, requester.Length, packet, 4);
+            Encoding.UTF8.GetBytes(requester, 0, requester.Length, packet, 3);
             this.connection.Send(packet);
         }
 
