@@ -43,6 +43,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             }
 
             player.MagicEffectList.ClearAllEffects();
+            player.PersistenceContext.SaveChanges();
             if (logoutType == LogoutType.CloseGame)
             {
                 player.Disconnect();
