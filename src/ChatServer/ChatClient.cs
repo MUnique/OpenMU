@@ -14,16 +14,26 @@ namespace MUnique.OpenMU.ChatServer
     /// <summary>
     /// ChatClient implementation, uses socket connections.
     /// </summary>
+    /// <remarks>
+    /// Messages are decrypted and encrypted again with the same XOR3 key - in theory we could optimize this (and 
+    /// the conversion to a string) away. However, we'll leave it for easier debugging.
+    /// </remarks>
     internal class ChatClient : IChatClient
     {
         private const int TokenOffset = 6;
+        private const int MessageOffset = 5;
         private static readonly ILog Log = LogManager.GetLogger(typeof(ChatClient));
         private static readonly IDecryptor TokenDecryptor = new Xor3Decryptor(TokenOffset);
 
         /// <summary>
-        /// Encryptor for chat messages. The chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons I don't know ;)
+        /// Decryptor for chat messages. The incoming chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;)
         /// </summary>
-        private static readonly IEncryptor MessageEncryptor = new Xor3Encryptor(5);
+        private static readonly IDecryptor MessageDecryptor = new Xor3Decryptor(MessageOffset);
+
+        /// <summary>
+        /// Encryptor for chat messages. The outgoing chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;)
+        /// </summary>
+        private static readonly IEncryptor MessageEncryptor = new Xor3Encryptor(MessageOffset);
 
         private readonly ChatRoomManager manager;
         private IConnection connection;
@@ -180,11 +190,12 @@ namespace MUnique.OpenMU.ChatServer
                 case 1:
                 case 2:
                 case 3:
-                    // I did never capture such packets, but they don't seem to be wrong (next is 4), so do nothing.
+                    // We did never capture such packets, but they don't seem to be wrong (next is 4), so do nothing.
                     break;
                 case 4:
                     if (this.room != null && this.CheckMessage(packet))
                     {
+                        MessageDecryptor.Decrypt(ref packet);
                         var message = packet.ExtractString(5, int.MaxValue, Encoding.UTF8);
                         if (Log.IsDebugEnabled)
                         {
