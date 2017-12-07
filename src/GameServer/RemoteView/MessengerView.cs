@@ -152,7 +152,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 0xC3, 0x24, 0xCA,
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // chat server ip (without port)
                 chatRoomId.GetLowByte(), chatRoomId.GetHighByte(),
-                authenticationTokenArray[0], authenticationTokenArray[1], authenticationTokenArray[2], authenticationTokenArray[3],
+                authenticationTokenArray[3], authenticationTokenArray[2], authenticationTokenArray[1], authenticationTokenArray[0],
                 0x01, // type
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // friendname
                 success ? (byte)1 : (byte)0
