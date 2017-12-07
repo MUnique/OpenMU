@@ -151,11 +151,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             if (targetObj == null)
             {
-                this.connection.Send(new byte[] { 0xC1, 0x07, 0x18, animatingObj.Id.GetLowByte(), animatingObj.Id.GetHighByte(), direction, animation });
+                this.connection.Send(new byte[] { 0xC1, 0x07, 0x18, animatingObj.Id.GetHighByte(), animatingObj.Id.GetLowByte(), direction, animation });
             }
             else
             {
-                this.connection.Send(new byte[] { 0xC1, 0x09, 0x18, animatingObj.Id.GetLowByte(), animatingObj.Id.GetHighByte(), direction, animation, targetObj.Id.GetLowByte(), targetObj.Id.GetHighByte() });
+                this.connection.Send(new byte[] { 0xC1, 0x09, 0x18, animatingObj.Id.GetHighByte(), animatingObj.Id.GetLowByte(), direction, animation, targetObj.Id.GetHighByte(), targetObj.Id.GetLowByte() });
             }
         }
 
@@ -330,23 +330,26 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowSkillAnimation(Player attackingPlayer, IAttackable target, Skill skill)
         {
+            var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
             this.connection.Send(new byte[]
             {
                 0xC3, 9, 0x19,
-                                     NumberConversionExtensions.ToUnsigned(skill.SkillID).GetHighByte(), NumberConversionExtensions.ToUnsigned(skill.SkillID).GetLowByte(),
-                                     attackingPlayer.Id.GetHighByte(), attackingPlayer.Id.GetLowByte(),
-                                     target.Id.GetHighByte(), target.Id.GetLowByte()
+                skillId.GetHighByte(), skillId.GetLowByte(),
+                attackingPlayer.Id.GetHighByte(), attackingPlayer.Id.GetLowByte(),
+                target.Id.GetHighByte(), target.Id.GetLowByte()
             });
         }
 
         /// <inheritdoc/>
         public void ShowAreaSkillAnimation(Player playerWhichPerformsSkill, Skill skill, byte x, byte y, byte rotation)
         {
-            // C3 0A 1E 00 09 23 47 3D 62 3A
+            var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
+            
+            // Example: C3 0A 1E 00 09 23 47 3D 62 3A
             this.connection.Send(new byte[]
             {
-                0xC3, 0x0A, 0x1E, NumberConversionExtensions.ToUnsigned(skill.SkillID).GetLowByte(), NumberConversionExtensions.ToUnsigned(skill.SkillID).GetHighByte(),
-                playerWhichPerformsSkill.Id.GetLowByte(), playerWhichPerformsSkill.Id.GetHighByte(), x, x, rotation
+                0xC3, 0x0A, 0x1E, skillId.GetHighByte(), skillId.GetLowByte(),
+                playerWhichPerformsSkill.Id.GetHighByte(), playerWhichPerformsSkill.Id.GetLowByte(), x, y, rotation
             });
         }
 
