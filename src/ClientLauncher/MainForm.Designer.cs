@@ -100,7 +100,7 @@
             this.ServerAddressTextBox.Name = "ServerAddressTextBox";
             this.ServerAddressTextBox.Size = new System.Drawing.Size(131, 20);
             this.ServerAddressTextBox.TabIndex = 5;
-            this.ServerAddressTextBox.Text = "localhost";
+            this.ServerAddressTextBox.Text = "127.127.127.127";
             // 
             // ServerPortControl
             // 
