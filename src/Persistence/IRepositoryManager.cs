@@ -69,7 +69,14 @@ namespace MUnique.OpenMU.Persistence
         /// </returns>
         IContext CreateNewAccountContext(GameConfiguration gameConfiguration);
 
-        //// TODO: CreateNewFriendServerContext(), CreateNewGuildContext();
+        /// <summary>
+        /// Creates a new context which is used by the friend server.
+        /// It manages basically only <see cref="MUnique.OpenMU.DataModel.Entities.FriendViewItem"/>s.
+        /// </summary>
+        /// <returns>A new context which is used by the friend server.</returns>
+        IContext CreateNewFriendServerContext();
+
+        //// TODO: CreateNewGuildContext();
 
         /// <summary>
         /// Puts this context on the context stack of the current thread to be used for the upcoming repository actions.

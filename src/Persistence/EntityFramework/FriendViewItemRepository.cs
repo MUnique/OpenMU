@@ -17,13 +17,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </remarks>
     internal class FriendViewItemRepository : IFriendViewItemRepository<FriendViewItem>
     {
+        private readonly IRepositoryManager repositoryManager;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendViewItemRepository"/> class.
+        /// </summary>
+        /// <param name="repositoryManager">The repository manager.</param>
+        public FriendViewItemRepository(IRepositoryManager repositoryManager)
+        {
+            this.repositoryManager = repositoryManager;
+        }
+
         /// <inheritdoc/>
         public void Delete(string characterName, string friendName)
         {
-            using (var context = new FriendContext())
-            {
-                context.Database.ExecuteSqlCommand("DELETE FROM \"FriendViewItem\" WHERE \"FriendName\" = :p0 AND \"CharacterName\" = :p1", friendName, characterName);
-            }
+            var context = this.GetCurrentEntityFrameworkContext();
+            var items = context.Context.Set<FriendViewItem>().Where(item => item.FriendName == friendName && item.CharacterName == characterName);
+            context.Context.RemoveRange(items);
         }
 
         /// <inheritdoc/>
@@ -35,18 +45,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public FriendViewItem GetByFriend(string characterName, string friendName)
         {
-            using (var context = new FriendContext())
-            {
-                return context.Set<FriendViewItem>().FromSql(
-                    "SELECT V.\"Id\", V.\"CharacterId\", V.\"FriendId\", V.\"Accepted\", V.\"RequestOpen\", \"Character\".\"Name\" AS \"CharacterName\", Friend.\"Name\" AS \"FriendName\" FROM data.\"FriendViewItem\" V, data.\"Character\", data.\"Character\" Friend " +
-                    "  WHERE V.\"CharacterId\" = \"Character\".\"Id\" " +
-                    "  AND V.\"FriendId\" = Friend.\"Id\" " +
-                    "  AND \"Character\".\"Name\" = :p0 " +
-                    "  AND Friend.\"Name\" = :p1",
-                    characterName,
-                    friendName)
-                    .FirstOrDefault();
-            }
+            var context = this.GetCurrentEntityFrameworkContext();
+            return context.Context.Set<FriendViewItem>().FirstOrDefault(item => item.FriendName == friendName && item.CharacterName == characterName);
         }
 
         /// <inheritdoc/>
@@ -58,48 +58,28 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public IEnumerable<FriendViewItem> GetFriends(Guid characterId)
         {
-            using (var context = new FriendContext())
-            {
-                return context.Set<FriendViewItem>().FromSql(
-                    "SELECT V.\"Id\", V.\"CharacterId\", V.\"FriendId\", V.\"Accepted\", V.\"RequestOpen\", \"Character\".\"Name\" AS \"CharacterName\", Friend.\"Name\" AS \"FriendName\" FROM data.\"FriendViewItem\" V, data.\"Character\", data.\"Character\" Friend " +
-                    "  WHERE V.\"CharacterId\" = \"Character\".\"Id\" " +
-                    "  AND V.\"FriendId\" = Friend.\"Id\" " +
-                    "  AND \"Character\".\"Id\" = :p0 ",
-                    characterId).AsNoTracking().ToList();
-            }
+            var context = this.GetCurrentEntityFrameworkContext();
+            return context.Context.Set<FriendViewItem>().Where(item => item.CharacterId == characterId).AsNoTracking().ToList();
         }
 
         /// <inheritdoc/>
         public IEnumerable<string> GetOpenFriendRequesterNames(Guid characterId)
         {
-            using (var context = new FriendContext())
-            {
-                return context.Set<FriendViewItem>().FromSql(
-                    "SELECT V.\"Id\", V.\"CharacterId\", V.\"FriendId\", V.\"Accepted\", V.\"RequestOpen\", \"Character\".\"Name\" AS \"CharacterName\", Friend.\"Name\" AS \"FriendName\" FROM \"FriendViewItem\" V, \"Character\", \"Character\" Friend " +
-                    "  WHERE V.\"CharacterId\" = \"Character\".\"Id\" " +
-                    "  AND V.\"FriendId\" = Friend.\"Id\" " +
-                    "  AND V.\"RequestOpen\" = :p1 " +
-                    "  AND V.\"CharacterId\" = :p0 ",
-                    characterId,
-                    true).AsNoTracking().Select(friend => friend.FriendName).ToList();
-            }
+            var context = this.GetCurrentEntityFrameworkContext();
+            return context.Context.Set<FriendViewItem>().Where(item => item.CharacterId == characterId).AsNoTracking().Select(friend => friend.FriendName).ToList();
         }
 
         /// <inheritdoc/>
         public FriendViewItem CreateNewFriendViewItem(string characterName, string friendName)
         {
-            var item = new FriendViewItem
-            {
-                CharacterName = characterName,
-                FriendName = friendName
-            };
-
+            var item = this.repositoryManager.CreateNew<FriendViewItem>();
             using (var context = new EntityDataContext())
             {
                 item.CharacterId = context.Set<Character>().Where(character => character.Name == characterName).Select(character => character.Id).FirstOrDefault();
                 item.FriendId = context.Set<Character>().Where(character => character.Name == friendName).Select(character => character.Id).FirstOrDefault();
             }
 
+            // The names are available after commit and are not allowed to be set before.
             return item;
         }
 
@@ -119,6 +99,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public bool Delete(object obj)
         {
             throw new NotImplementedException();
+        }
+
+        private EntityFrameworkContext GetCurrentEntityFrameworkContext()
+        {
+            var context = this.repositoryManager.GetCurrentContext() as EntityFrameworkContext;
+            if (context == null)
+            {
+                throw new InvalidOperationException("There is no context in current use.");
+            }
+
+            return context;
         }
     }
 }

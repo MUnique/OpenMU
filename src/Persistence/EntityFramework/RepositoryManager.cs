@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             this.RegisterRepository(new AccountRepository(this));
             this.RegisterRepository(new GuildRepository(this));
-            this.RegisterRepository(new FriendViewItemRepository());
+            this.RegisterRepository(new FriendViewItemRepository(this));
             this.RegisterRepository(new CachedRepository<GameConfiguration>(new GameConfigurationRepository(this)));
             this.RegisterRepository(new GenericRepository<GameServerConfiguration>(this));
             this.RegisterRepository(new GameServerDefinitionRepository(this));
@@ -140,6 +140,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public override IContext CreateNewConfigurationContext()
         {
             return new EntityFrameworkContext(new ConfigurationContext());
+        }
+
+        /// <inheritdoc />
+        public override IContext CreateNewFriendServerContext()
+        {
+            return new EntityFrameworkContext(new FriendContext());
         }
 
         /// <summary>

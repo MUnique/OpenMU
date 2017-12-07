@@ -84,6 +84,12 @@ namespace MUnique.OpenMU.Persistence
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
+        public virtual IContext CreateNewFriendServerContext()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <inheritdoc/>
         public IDisposable UseContext(IContext context)
         {

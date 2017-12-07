@@ -272,7 +272,6 @@
     <Compile Include="EntityFrameworkContext.cs" />
     <Compile Include="ExtendedTypes.Custom.cs" />
     <Compile Include="FriendContext.cs" />
-    <Compile Include="FriendSaveContext.cs" />
     <Compile Include="FriendViewItemRepository.cs" />
     <Compile Include="GameConfigurationRepository.cs" />
     <Compile Include="GenericRepository{T}.cs" />
@@ -295,6 +294,7 @@
       <DependentUpon>00000000000000_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\00000000000001_Seed.cs" />
+    <Compile Include="Migrations\00000000000002_AddFriendView.cs" />
     <Compile Include="Migrations\EntityDataContextModelSnapshot.cs" />
     <Compile Include="NpgsqlLog4NetLoggingProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -66,31 +66,32 @@ namespace MUnique.OpenMU.FriendServer
         /// <inheritdoc/>
         public bool FriendRequest(string playerName, string friendName)
         {
-            var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
-            var friend = friendRepository.GetByFriend(playerName, friendName);
-            var friendIsNew = friend == null;
-            var saveSuccess = true;
-            if (friendIsNew)
+            using (var context = this.repositoryManager.CreateNewFriendServerContext())
+            using (this.repositoryManager.UseContext(context))
             {
-                using (var context = this.repositoryManager.UseTemporaryContext())
+                var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
+                var friend = friendRepository.GetByFriend(playerName, friendName);
+                var friendIsNew = friend == null;
+                var saveSuccess = true;
+                if (friendIsNew)
                 {
                     friend = friendRepository.CreateNewFriendViewItem(playerName, friendName);
                     friend.Accepted = false;
                     friend.RequestOpen = true;
                     saveSuccess = context.SaveChanges();
                 }
-            }
 
-            if (saveSuccess)
-            {
-                if (this.OnlineFriends.TryGetValue(friendName, out var onlineFriend))
+                if (saveSuccess)
                 {
-                    // Friend is online, so we directly send him a request.
-                    onlineFriend.GameServer.FriendRequest(friend.CharacterName, friend.FriendName);
+                    if (this.OnlineFriends.TryGetValue(friendName, out var onlineFriend))
+                    {
+                        // Friend is online, so we directly send him a request.
+                        onlineFriend.GameServer.FriendRequest(friend.CharacterName, friend.FriendName);
+                    }
                 }
-            }
 
-            return friendIsNew && saveSuccess;
+                return friendIsNew && saveSuccess;
+            }
         }
 
         /// <inheritdoc/>
@@ -104,17 +105,23 @@ namespace MUnique.OpenMU.FriendServer
                 }
             }
 
-            var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
-            friendRepository.Delete(playerName, friendName);
+            using (var context = this.repositoryManager.CreateNewFriendServerContext())
+            using (this.repositoryManager.UseContext(context))
+            {
+                var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
+                friendRepository.Delete(playerName, friendName);
+                context.SaveChanges();
+            }
         }
 
         /// <inheritdoc/>
         public void FriendResponse(string characterName, string friendName, bool accepted)
         {
-            using (var context = this.repositoryManager.UseTemporaryContext())
+            using (var context = this.repositoryManager.CreateNewFriendServerContext())
+            using (this.repositoryManager.UseContext(context))
             {
                 var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
-                #pragma warning disable S2234 // They parameters are passed correctly
+                #pragma warning disable S2234 // The parameters are passed correctly
                 var requester = friendRepository.GetByFriend(friendName, characterName);
                 #pragma warning restore S2234
                 if (requester == null)
@@ -130,10 +137,13 @@ namespace MUnique.OpenMU.FriendServer
                     var responder = friendRepository.GetByFriend(characterName, friendName) ?? friendRepository.CreateNewFriendViewItem(characterName, friendName);
                     responder.RequestOpen = false;
                     responder.Accepted = true;
+                    context.SaveChanges();
                     this.AddSubscriptions(requester, responder);
                 }
-
-                context.SaveChanges();
+                else
+                {
+                    context.SaveChanges();
+                }
             }
         }
 
@@ -172,8 +182,12 @@ namespace MUnique.OpenMU.FriendServer
         /// <remarks>Note, that the ServerId is not filled by this implementation. The player will receive it separately when the subscription is created.</remarks>
         public IEnumerable<FriendViewItem> GetFriendList(Guid characterId)
         {
-            var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
-            return friendRepository.GetFriends(characterId);
+            using (var context = this.repositoryManager.CreateNewFriendServerContext())
+            using (this.repositoryManager.UseContext(context))
+            {
+                var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
+                return friendRepository.GetFriends(characterId);
+            }
         }
 
         /// <inheritdoc/>
@@ -192,21 +206,26 @@ namespace MUnique.OpenMU.FriendServer
                     ServerId = (byte)gameServer.Id
                 };
                 this.OnlineFriends.Add(characterName, observer);
-                var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
-                var friendlist = friendRepository.GetFriends(characterId);
-                foreach (var friend in friendlist)
+
+                using (var context = this.repositoryManager.CreateNewFriendServerContext())
+                using (this.repositoryManager.UseContext(context))
                 {
-                    if (!friend.Accepted || friend.RequestOpen)
+                    var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
+                    var friendlist = friendRepository.GetFriends(characterId);
+                    foreach (var friend in friendlist)
                     {
-                        continue;
-                    }
+                        if (!friend.Accepted || friend.RequestOpen)
+                        {
+                            continue;
+                        }
 
-                    if (this.OnlineFriends.TryGetValue(friend.FriendName, out var onlineFriend))
-                    {
-                        observer.AddSubscription(onlineFriend.Subscribe(observer));
-                        onlineFriend.AddSubscription(observer.Subscribe(onlineFriend));
+                        if (this.OnlineFriends.TryGetValue(friend.FriendName, out var onlineFriend))
+                        {
+                            observer.AddSubscription(onlineFriend.Subscribe(observer));
+                            onlineFriend.AddSubscription(observer.Subscribe(onlineFriend));
 
-                        observer.OnNext(onlineFriend);
+                            observer.OnNext(onlineFriend);
+                        }
                     }
                 }
             }
@@ -229,8 +248,12 @@ namespace MUnique.OpenMU.FriendServer
         /// <inheritdoc/>
         public IEnumerable<string> GetOpenFriendRequests(Guid characterId)
         {
-            var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
-            return friendRepository.GetOpenFriendRequesterNames(characterId);
+            using (var context = this.repositoryManager.CreateNewFriendServerContext())
+            using (this.repositoryManager.UseContext(context))
+            {
+                var friendRepository = this.repositoryManager.GetRepository<FriendViewItem, IFriendViewItemRepository<FriendViewItem>>();
+                return friendRepository.GetOpenFriendRequesterNames(characterId);
+            }
         }
 
         private void AddSubscriptions(FriendViewItem requester, FriendViewItem responder)

@@ -21,9 +21,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<FriendViewItem>().ToTable("FriendView");
             modelBuilder.Entity<FriendViewItem>(e =>
             {
                 e.HasAlternateKey(f => new { f.CharacterId, f.FriendId });
+                e.Property(f => f.CharacterName).ValueGeneratedOnAddOrUpdate();
+                e.Property(f => f.FriendName).ValueGeneratedOnAddOrUpdate();
             });
         }
     }
