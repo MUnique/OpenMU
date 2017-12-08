@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public IEnumerable<string> GetOpenFriendRequesterNames(Guid characterId)
         {
             var context = this.GetCurrentEntityFrameworkContext();
-            return context.Context.Set<FriendViewItem>().Where(item => item.CharacterId == characterId).AsNoTracking().Select(friend => friend.FriendName).ToList();
+            return context.Context.Set<FriendViewItem>().Where(item => item.CharacterId == characterId && item.RequestOpen == true).AsNoTracking().Select(friend => friend.FriendName).ToList();
         }
 
         /// <inheritdoc/>
