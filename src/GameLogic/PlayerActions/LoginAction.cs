@@ -59,15 +59,23 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 {
                     player.PlayerView.ShowLoginResult(LoginResult.TemporaryBlocked);
                 }
-                else if (player.PlayerState.TryAdvanceTo(PlayerState.Authenticated) && this.gameServerContext.LoginServer.TryLogin(username, this.gameServerContext.Id))
-                {
-                    player.Account = account;
-                    Log.DebugFormat("Login successful, username: [{0}]", username);
-                    player.PlayerView.ShowLoginResult(LoginResult.OK);
-                }
                 else
                 {
-                    player.PlayerView.ShowLoginResult(LoginResult.AccountAlreadyConnected);
+                    using (var context = player.PlayerState.TryBeginAdvanceTo(PlayerState.Authenticated))
+                    {
+                        if (this.gameServerContext.LoginServer.TryLogin(username, this.gameServerContext.Id))
+                        {
+                            context.Allowed = true;
+                            player.Account = account;
+                            Log.DebugFormat("Login successful, username: [{0}]", username);
+                            player.PlayerView.ShowLoginResult(LoginResult.OK);
+                        }
+                        else
+                        {
+                            context.Allowed = false;
+                            player.PlayerView.ShowLoginResult(LoginResult.AccountAlreadyConnected);
+                        }
+                    }
                 }
             }
             else
