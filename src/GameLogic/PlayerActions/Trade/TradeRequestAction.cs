@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 
             player.TradingPartner = partner;
             partner.TradingPartner = player;
-            this.RequestTrade(player, partner);
+            this.SendTradeRequest(partner, player);
             return true;
         }
 
