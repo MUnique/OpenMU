@@ -65,12 +65,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     // When Trading, send to Trading-Partner
                     if (fromItemStorage == player.TemporaryStorage)
                     {
-                        player.PlayerView.TradeView.TradeItemDisappear(fromSlot, item);
+                        tradingPartner.PlayerView.TradeView.TradeItemDisappear(fromSlot, item);
                     }
 
                     if (toItemStorage == player.TemporaryStorage)
                     {
-                        player.PlayerView.TradeView.TradeItemAppear(toSlot, item);
+                        tradingPartner.PlayerView.TradeView.TradeItemAppear(toSlot, item);
                     }
                 }
             }
