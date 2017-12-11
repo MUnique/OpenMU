@@ -344,7 +344,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ShowAreaSkillAnimation(Player playerWhichPerformsSkill, Skill skill, byte x, byte y, byte rotation)
         {
             var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
-            
+
             // Example: C3 0A 1E 00 09 23 47 3D 62 3A
             this.connection.Send(new byte[]
             {
