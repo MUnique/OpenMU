@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Persistence;
+
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
@@ -27,7 +30,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TestTradeRequest()
         {
-            var player = this.CreateTrader(PlayerState.EnteredWorld);  // The player which will send the trade request
+            var player = this.CreateTrader(PlayerState.EnteredWorld); // The player which will send the trade request
             var tradePartner = this.CreateTrader(PlayerState.EnteredWorld); // The player which will receive the trade request
 
             var packetHandler = new TradeRequestAction();
@@ -83,7 +86,9 @@ namespace MUnique.OpenMU.Tests
             trader1.TradingPartner = trader2;
             trader2.TradingPartner = trader1;
 
-            var tradeButtonHandler = new TradeButtonAction();
+            var gameContext = MockRepository.GenerateStub<IGameContext>();
+            gameContext.Stub(c => c.RepositoryManager).Return(new TestRepositoryManager());
+            var tradeButtonHandler = new TradeButtonAction(gameContext);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Unchecked);
             Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.TradeOpened);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
@@ -115,7 +120,10 @@ namespace MUnique.OpenMU.Tests
             itemMoveAction.MoveItem(trader1, 20, Storages.Inventory, 0, Storages.Trade);
             itemMoveAction.MoveItem(trader1, 21, Storages.Inventory, 2, Storages.Trade);
             Assert.That(trader1.TemporaryStorage.Items.First(), Is.SameAs(item1));
-            var tradeButtonHandler = new TradeButtonAction();
+
+            var gameContext = MockRepository.GenerateStub<IGameContext>();
+            gameContext.Stub(c => c.RepositoryManager).Return(new TestRepositoryManager());
+            var tradeButtonHandler = new TradeButtonAction(gameContext);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.That(trader1.Inventory.ItemStorage.Items, Is.Empty);
@@ -138,12 +146,20 @@ namespace MUnique.OpenMU.Tests
             trader.Stub(t => t.Inventory).Return(inventory);
             inventory.Stub(i => i.ItemStorage).Return(MockRepository.GenerateStub<ItemStorage>());
             inventory.ItemStorage.Stub(i => i.Items).Return(new List<Item>());
-            trader.BackupInventory = new BackupItemStorage(inventory.ItemStorage) { Items = new List<Item>() };
+            trader.BackupInventory = new BackupItemStorage(inventory.ItemStorage) {Items = new List<Item>()};
             trader.Stub(t => t.TemporaryStorage).Return(MockRepository.GenerateStub<IStorage>());
             trader.TemporaryStorage.Stub(t => t.Items).Return(new List<Item>());
             return trader;
         }
 
         //// TODO: Test fail scenarios
+
+        private class TestRepositoryManager : BaseRepositoryManager
+        {
+            public override IContext CreateNewAccountContext(GameConfiguration gameConfiguration)
+            {
+                return MockRepository.GenerateStub<IContext>();
+            }
+        }
     }
 }

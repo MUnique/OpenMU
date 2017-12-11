@@ -66,6 +66,16 @@ namespace MUnique.OpenMU.Persistence
             {
                 return this.context.SaveChanges();
             }
+
+            public void Detach(object item)
+            {
+                this.context.Detach(item);
+            }
+
+            public void Attach(object item)
+            {
+                this.context.Attach(item);
+            }
         }
     }
 }

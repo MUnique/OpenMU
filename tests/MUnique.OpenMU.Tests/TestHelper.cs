@@ -40,6 +40,7 @@ namespace MUnique.OpenMU.Tests
                 RecoveryInterval = int.MaxValue
             };
             var gameContext = new GameContext(gameConfig, MockRepository.GenerateMock<IRepositoryManager>());
+            gameContext.RepositoryManager.Stub(r => r.CreateNewAccountContext(gameConfig)).WhenCalled(invocation => invocation.ReturnValue = MockRepository.GenerateMock<IContext>()).Return(null);
             return GetPlayer(id, gameContext);
         }
 

@@ -36,6 +36,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             return true;
         }
 
+        /// <inheritdoc />
+        public void Detach(object item)
+        {
+            var entry = this.Context.Entry(item);
+            if (entry == null)
+            {
+                return;
+            }
+
+            entry.State = EntityState.Detached;
+        }
+
+        /// <inheritdoc />
+        public void Attach(object item)
+        {
+            this.Context.Attach(item);
+        }
+
         /// <inheritdoc/>
         public void Dispose()
         {

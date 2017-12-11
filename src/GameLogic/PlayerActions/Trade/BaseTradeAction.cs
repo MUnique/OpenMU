@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
                 }
 
-                this.ResetTrade(trader);
+                this.ResetTradeState(trader);
 
                 // TODO: Send Trade cancelled message
             }
@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         /// Resets the trade.
         /// </summary>
         /// <param name="trader">The trader.</param>
-        protected void ResetTrade(ITrader trader)
+        protected void ResetTradeState(ITrader trader)
         {
             if (trader is Player)
             {

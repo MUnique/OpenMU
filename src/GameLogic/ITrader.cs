@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using MUnique.OpenMU.Persistence;
+
     /// <summary>
     /// Interface of a trader.
     /// </summary>
@@ -58,5 +60,10 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the state of the player.
         /// </summary>
         StateMachine PlayerState { get; }
+
+        /// <summary>
+        /// Gets the persistence context of the trader. It needs to be updated when a trade finishes.
+        /// </summary>
+        IContext PersistenceContext { get; }
     }
 }

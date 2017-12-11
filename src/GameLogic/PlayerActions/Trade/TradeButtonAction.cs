@@ -4,18 +4,27 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Action to change the trade button state.
     /// </summary>
     public class TradeButtonAction : BaseTradeAction
     {
+        private readonly IGameContext gameContext;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="TradeButtonAction"/> class.
+        /// Initializes a new instance of the <see cref="TradeButtonAction" /> class.
         /// </summary>
-        public TradeButtonAction()
+        /// <param name="gameContext">The game context.</param>
+        public TradeButtonAction(IGameContext gameContext)
         {
+            this.gameContext = gameContext;
         }
 
         /// <summary>
@@ -26,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         public void TradeButtonChanged(ITrader trader, TradeButtonState tradeButtonState)
         {
             var success = (tradeButtonState == TradeButtonState.Checked && trader.PlayerState.TryAdvanceTo(PlayerState.TradeButtonPressed))
-                || (tradeButtonState == TradeButtonState.Unchecked && trader.PlayerState.TryAdvanceTo(PlayerState.TradeOpened));
+                          || (tradeButtonState == TradeButtonState.Unchecked && trader.PlayerState.TryAdvanceTo(PlayerState.TradeOpened));
             if (!success)
             {
                 return;
@@ -36,37 +45,74 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 && trader.TradingPartner != null
                 && trader.TradingPartner.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
             {
-                if (!TryAddItemsOfTradingPartner(trader) || !TryAddItemsOfTradingPartner(trader.TradingPartner))
+                bool tradeFinished = false;
+                using (var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
+                using (var partnerContext = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
+                using (var itemContext = this.gameContext.RepositoryManager.CreateNewAccountContext(this.gameContext.Configuration))
+                using (this.gameContext.RepositoryManager.UseContext(itemContext))
                 {
-                    this.SendMessage(trader, "Inventory is full.");
-                    var tradingPartner = trader.TradingPartner as ITrader;
-                    this.SendMessage(tradingPartner, "Inventory is full.");
+                    if (!context.Allowed || !partnerContext.Allowed)
+                    {
+                        context.Allowed = false;
+                        partnerContext.Allowed = false;
+                        return;
+                    }
+
+                    var traderItems = trader.TemporaryStorage.Items.ToList();
+                    var tradePartnerItems = trader.TradingPartner.TemporaryStorage.Items.ToList();
+                    this.AttachItemsToTradeContext(traderItems, itemContext);
+                    this.AttachItemsToTradeContext(tradePartnerItems, itemContext);
+
+                    if (!TryAddItemsOfTradingPartner(trader) || !TryAddItemsOfTradingPartner(trader.TradingPartner))
+                    {
+                        this.SendMessage(trader, "Inventory is full.");
+                        this.SendMessage(trader.TradingPartner, "Inventory is full.");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            this.DetachItemsFromTradeContext(traderItems, trader.PersistenceContext);
+                            this.DetachItemsFromTradeContext(tradePartnerItems, trader.TradingPartner.PersistenceContext);
+                            itemContext.SaveChanges();
+                            trader.Money += trader.TradingPartner.TradingMoney;
+                            trader.TradingPartner.Money += trader.TradingMoney;
+                            this.ResetTradeState(trader.TradingPartner);
+                            this.ResetTradeState(trader);
+                            tradeFinished = true;
+                        }
+                        catch (Exception exception)
+                        {
+                            // TODO: Log exception
+                            this.SendMessage(trader, "An unexpected error occured during closing the trade.");
+                            this.SendMessage(trader.TradingPartner, "An unexpected error occured during closing the trade.");
+                            context.Allowed = false;
+                            context.Allowed = false;
+                        }
+                    }
+                }
+
+                if (!tradeFinished)
+                {
                     this.CancelTrade(trader.TradingPartner);
                     this.CancelTrade(trader);
-                }
-                else
-                {
-                    this.FinishTrade(trader.TradingPartner);
-                    this.FinishTrade(trader);
                 }
             }
         }
 
-        /// <summary>
-        /// Finishes the trade.
-        /// </summary>
-        /// <param name="trader">The trader.</param>
-        internal void FinishTrade(ITrader trader)
+        private void AttachItemsToTradeContext(IEnumerable<Item> items, IContext itemContext)
         {
-            using (var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
+            foreach (var item in items)
             {
-                if (!context.Allowed)
-                {
-                    return;
-                }
+                itemContext.Attach(item);
+            }
+        }
 
-                trader.Money += trader.TradingPartner.TradingMoney;
-                this.ResetTrade(trader);
+        private void DetachItemsFromTradeContext(IEnumerable<Item> items, IContext itemContext)
+        {
+            foreach (var item in items)
+            {
+                itemContext.Detach(item);
             }
         }
 

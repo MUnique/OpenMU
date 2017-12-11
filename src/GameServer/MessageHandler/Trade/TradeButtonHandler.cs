@@ -13,7 +13,16 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     /// </summary>
     internal class TradeButtonHandler : IPacketHandler
     {
-        private readonly TradeButtonAction buttonAction = new TradeButtonAction();
+        private readonly TradeButtonAction buttonAction;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeButtonHandler"/> class.
+        /// </summary>
+        /// <param name="gameContext">The game context.</param>
+        public TradeButtonHandler(IGameContext gameContext)
+        {
+            this.buttonAction = new TradeButtonAction(gameContext);
+        }
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, byte[] packet)
