@@ -23,10 +23,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 {
                     ////Something bad happend here...
                     this.CancelTrade(tradeAccepter);
-                    if (tradePartner != null)
-                    {
-                        this.CancelTrade(tradePartner);
-                    }
+                    this.CancelTrade(tradePartner);
 
                     return;
                 }
