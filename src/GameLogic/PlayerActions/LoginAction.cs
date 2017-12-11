@@ -63,9 +63,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 {
                     using (var context = player.PlayerState.TryBeginAdvanceTo(PlayerState.Authenticated))
                     {
-                        if (this.gameServerContext.LoginServer.TryLogin(username, this.gameServerContext.Id))
+                        if (context.Allowed && this.gameServerContext.LoginServer.TryLogin(username, this.gameServerContext.Id))
                         {
-                            context.Allowed = true;
                             player.Account = account;
                             Log.DebugFormat("Login successful, username: [{0}]", username);
                             player.PlayerView.ShowLoginResult(LoginResult.OK);
