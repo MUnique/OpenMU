@@ -37,16 +37,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 
             player.TradingPartner = partner;
             partner.TradingPartner = player;
-            this.SendTradeRequest(partner, player);
+            partner.TradeView.ShowTradeRequest(player);
             return true;
-        }
-
-        private void SendTradeRequest(ITrader trader, ITrader requester)
-        {
-            if (trader is Player player)
-            {
-                player.PlayerView.TradeView.ShowTradeRequest(requester);
-            }
         }
     }
 }
