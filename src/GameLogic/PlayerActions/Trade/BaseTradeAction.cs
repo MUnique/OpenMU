@@ -45,11 +45,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         /// <param name="trader">The trader.</param>
         protected void ResetTradeState(ITrader trader)
         {
-            if (trader is Player)
-            {
-                ((Player)trader).PlayerView.InventoryView.UpdateInventoryList();
-            }
-
             trader.TradingPartner = null;
             trader.BackupInventory = null;
             trader.TemporaryStorage.Clear();
