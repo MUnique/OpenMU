@@ -160,6 +160,9 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public IContext PersistenceContext { get; }
 
+        /// <inheritdoc />
+        public ITradeView TradeView => this.PlayerView.TradeView;
+
         /// <inheritdoc/>
         public ushort Id { get; }
 

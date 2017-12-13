@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -65,5 +66,10 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the persistence context of the trader. It needs to be updated when a trade finishes.
         /// </summary>
         IContext PersistenceContext { get; }
+
+        /// <summary>
+        /// Gets the trade view.
+        /// </summary>
+        ITradeView TradeView { get; }
     }
 }
