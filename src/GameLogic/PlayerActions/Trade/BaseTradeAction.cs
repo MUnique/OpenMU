@@ -32,11 +32,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     trader.BackupInventory.Items.ForEach(item => trader.Inventory.AddItem(item.ItemSlot, item));
                     trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
                 }
-
-                this.ResetTradeState(trader);
-
-                // TODO: Send Trade cancelled message
             }
+
+            this.ResetTradeState(trader);
         }
 
         /// <summary>
