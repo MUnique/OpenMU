@@ -28,6 +28,37 @@ namespace MUnique.OpenMU.GameLogic.Views
     }
 
     /// <summary>
+    /// The result of a closed trade (both players pressed 'OK').
+    /// </summary>
+    public enum TradeResult
+    {
+        /// <summary>
+        /// The trade was cancelled.
+        /// </summary>
+        Cancelled,
+
+        /// <summary>
+        /// The trade was successful.
+        /// </summary>
+        Success,
+
+        /// <summary>
+        /// The trade failed because of a full inventory.
+        /// </summary>
+        FailedByFullInventory,
+
+        /// <summary>
+        /// The trade failed because the request timed out.
+        /// </summary>
+        TimedOut,
+
+        /// <summary>
+        /// The trade failed because one or more items were not allowed to trade
+        /// </summary>
+        FailedByItemsNotAllowedToTrade,
+    }
+
+    /// <summary>
     /// Interface for the trade view.
     /// </summary>
     public interface ITradeView
@@ -59,9 +90,16 @@ namespace MUnique.OpenMU.GameLogic.Views
         void ShowTradeRequest(ITrader requester);
 
         /// <summary>
-        /// The trade process has been opened. Information about the tradingpartner can be found at ITrader.TradingPartner.
+        /// The requested trade partner has answered the request. Information about the tradingpartner can be found at ITrader.TradingPartner.
         /// </summary>
-        void TradeOpened();
+        /// <param name="tradeAccepted">if set to <c>true</c> the trade has been accepted and will be opened.</param>
+        void ShowTradeRequestAnswer(bool tradeAccepted);
+
+        /// <summary>
+        /// The trade process has finished with the specified result.
+        /// </summary>
+        /// <param name="tradeResult">The trade result.</param>
+        void TradeFinished(TradeResult tradeResult);
 
         /// <summary>
         /// Changes the state of the other players trade button.
@@ -78,5 +116,11 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// </remarks>
         /// <param name="moneyAmount">The money amount.</param>
         void SetTradeMoney(uint moneyAmount);
+
+        /// <summary>
+        /// Notifies the client that the money amount which has been previously requested to be set,
+        /// has been successfully placed into the trade.
+        /// </summary>
+        void RequestedTradeMoneyHasBeenSet();
     }
 }

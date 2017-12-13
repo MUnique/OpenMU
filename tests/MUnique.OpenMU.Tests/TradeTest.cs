@@ -2,19 +2,18 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Persistence;
-
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Persistence;
     using NUnit.Framework;
     using Rhino.Mocks;
 
@@ -33,6 +32,7 @@ namespace MUnique.OpenMU.Tests
             var player = this.CreateTrader(PlayerState.EnteredWorld); // The player which will send the trade request
             var tradePartner = this.CreateTrader(PlayerState.EnteredWorld); // The player which will receive the trade request
 
+            tradePartner.TradeView.Expect(view => view.ShowTradeRequest(player)).Repeat.Once();
             var packetHandler = new TradeRequestAction();
             var success = packetHandler.RequestTrade(player, tradePartner);
             Assert.AreEqual(true, success);
@@ -40,6 +40,7 @@ namespace MUnique.OpenMU.Tests
             Assert.AreSame(player, tradePartner.TradingPartner);
             Assert.AreEqual(PlayerState.TradeRequested, player.PlayerState.CurrentState);
             Assert.AreEqual(PlayerState.TradeRequested, tradePartner.PlayerState.CurrentState);
+            tradePartner.TradeView.VerifyAllExpectations();
         }
 
         /// <summary>
@@ -52,10 +53,12 @@ namespace MUnique.OpenMU.Tests
             var responder = this.CreateTrader(PlayerState.TradeRequested);
             requester.TradingPartner = responder;
             responder.TradingPartner = requester;
+            requester.TradeView.Expect(view => view.ShowTradeRequestAnswer(true));
             var responseHandler = new TradeAcceptAction();
             responseHandler.HandleTradeAccept(responder, true);
             Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
             Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
+            requester.TradeView.VerifyAllExpectations();
         }
 
         /// <summary>
@@ -68,11 +71,14 @@ namespace MUnique.OpenMU.Tests
             var trader2 = this.CreateTrader(PlayerState.TradeOpened);
             trader1.TradingPartner = trader2;
             trader2.TradingPartner = trader1;
-
+            trader1.TradeView.Expect(view => view.TradeFinished(TradeResult.Cancelled));
+            trader2.TradeView.Expect(view => view.TradeFinished(TradeResult.Cancelled));
             var cancelTrader = new TradeCancelAction();
             cancelTrader.CancelTrade(trader1);
             Assert.AreEqual(PlayerState.EnteredWorld, trader1.PlayerState.CurrentState);
             Assert.AreEqual(PlayerState.EnteredWorld, trader2.PlayerState.CurrentState);
+            trader1.TradeView.VerifyAllExpectations();
+            trader2.TradeView.VerifyAllExpectations();
         }
 
         /// <summary>
@@ -85,6 +91,8 @@ namespace MUnique.OpenMU.Tests
             var trader2 = this.CreateTrader(PlayerState.TradeOpened);
             trader1.TradingPartner = trader2;
             trader2.TradingPartner = trader1;
+            trader1.TradeView.Expect(view => view.TradeFinished(TradeResult.Success));
+            trader2.TradeView.Expect(view => view.TradeFinished(TradeResult.Success));
 
             var gameContext = MockRepository.GenerateStub<IGameContext>();
             gameContext.Stub(c => c.RepositoryManager).Return(new TestRepositoryManager());
@@ -97,6 +105,8 @@ namespace MUnique.OpenMU.Tests
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.EnteredWorld);
             Assert.AreEqual(trader2.PlayerState.CurrentState, PlayerState.EnteredWorld);
+            trader1.TradeView.VerifyAllExpectations();
+            trader2.TradeView.VerifyAllExpectations();
         }
 
         /// <summary>
@@ -149,6 +159,7 @@ namespace MUnique.OpenMU.Tests
             trader.BackupInventory = new BackupItemStorage(inventory.ItemStorage) {Items = new List<Item>()};
             trader.Stub(t => t.TemporaryStorage).Return(MockRepository.GenerateStub<IStorage>());
             trader.TemporaryStorage.Stub(t => t.Items).Return(new List<Item>());
+            trader.Stub(t => t.TradeView).Return(MockRepository.GenerateMock<ITradeView>());
             return trader;
         }
 

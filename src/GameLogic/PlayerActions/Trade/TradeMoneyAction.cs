@@ -44,6 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             player.TryAddMoney((int)(-1 * moneyAmount));
             player.TradingMoney = (int)moneyAmount;
             player.PlayerView.InventoryView.UpdateMoney();
+            player.PlayerView.TradeView.RequestedTradeMoneyHasBeenSet();
 
             // Send the Money Packet to the Trading Partner
             var tradingPartner = player.TradingPartner as Player;

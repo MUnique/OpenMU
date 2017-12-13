@@ -24,21 +24,25 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     ////Something bad happend here...
                     this.CancelTrade(tradeAccepter);
                     this.CancelTrade(tradePartner);
-
-                    return;
+                    tradePartner.TradeView.ShowTradeRequestAnswer(false);
+                    tradeAccepter.TradeView.ShowTradeRequestAnswer(false);
                 }
-
-                this.OpenTrade(tradeAccepter);
-                this.OpenTrade(tradePartner);
+                else
+                {
+                    this.OpenTrade(tradeAccepter);
+                    this.OpenTrade(tradePartner);
+                }
             }
             else
             {
                 if (tradePartner != null)
                 {
                     this.CancelTrade(tradePartner);
+                    tradePartner.TradeView.ShowTradeRequestAnswer(false);
                 }
 
                 this.CancelTrade(tradeAccepter);
+                tradeAccepter.TradeView.ShowTradeRequestAnswer(false);
             }
         }
 
@@ -50,11 +54,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         {
             trader.BackupInventory = new BackupItemStorage(trader.Inventory.ItemStorage);
             trader.TradingMoney = 0;
-
-            if (trader is Player player)
-            {
-                player.PlayerView.TradeView.TradeOpened();
-            }
+            trader.TradeView.ShowTradeRequestAnswer(true);
         }
     }
 }

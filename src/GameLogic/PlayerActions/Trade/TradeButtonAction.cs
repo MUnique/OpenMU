@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using log4net;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence;
@@ -16,6 +17,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
     /// </summary>
     public class TradeButtonAction : BaseTradeAction
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(TradeButtonAction));
+
         private readonly IGameContext gameContext;
 
         /// <summary>
@@ -41,66 +44,91 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 return;
             }
 
+            var tradingPartner = trader.TradingPartner;
+
             if (trader.PlayerState.CurrentState == PlayerState.TradeButtonPressed
-                && trader.TradingPartner != null
-                && trader.TradingPartner.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
+                && tradingPartner != null
+                && tradingPartner.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
             {
-                bool tradeFinished = false;
-                using (var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
-                using (var partnerContext = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
-                using (var itemContext = this.gameContext.RepositoryManager.CreateNewAccountContext(this.gameContext.Configuration))
-                using (this.gameContext.RepositoryManager.UseContext(itemContext))
+                TradeResult result = this.InternalFinishTrade(trader, tradingPartner);
+                if (result != TradeResult.Success)
                 {
-                    if (!context.Allowed || !partnerContext.Allowed)
-                    {
-                        context.Allowed = false;
-                        partnerContext.Allowed = false;
-                        return;
-                    }
-
-                    var traderItems = trader.TemporaryStorage.Items.ToList();
-                    var tradePartnerItems = trader.TradingPartner.TemporaryStorage.Items.ToList();
-                    this.AttachItemsToTradeContext(traderItems, itemContext);
-                    this.AttachItemsToTradeContext(tradePartnerItems, itemContext);
-
-                    if (!TryAddItemsOfTradingPartner(trader) || !TryAddItemsOfTradingPartner(trader.TradingPartner))
-                    {
-                        this.SendMessage(trader, "Inventory is full.");
-                        this.SendMessage(trader.TradingPartner, "Inventory is full.");
-                    }
-                    else
-                    {
-                        try
-                        {
-                            this.DetachItemsFromTradeContext(traderItems, trader.PersistenceContext);
-                            this.DetachItemsFromTradeContext(tradePartnerItems, trader.TradingPartner.PersistenceContext);
-                            itemContext.SaveChanges();
-                            trader.Money += trader.TradingPartner.TradingMoney;
-                            trader.TradingPartner.Money += trader.TradingMoney;
-                            this.ResetTradeState(trader.TradingPartner);
-                            this.ResetTradeState(trader);
-                            tradeFinished = true;
-                        }
-                        catch (Exception exception)
-                        {
-                            // TODO: Log exception
-                            this.SendMessage(trader, "An unexpected error occured during closing the trade.");
-                            this.SendMessage(trader.TradingPartner, "An unexpected error occured during closing the trade.");
-                            context.Allowed = false;
-                            context.Allowed = false;
-                        }
-                    }
+                    this.CancelTrade(tradingPartner);
+                    this.CancelTrade(trader);
+                    Log.Warn($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{trader.TradingPartner.Name}");
                 }
 
-                if (!tradeFinished)
+                trader.TradeView.TradeFinished(result);
+                tradingPartner.TradeView.TradeFinished(result);
+            }
+            else
+            {
+                (trader.TradingPartner as Player)?.PlayerView.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
+            }
+        }
+
+        private static bool TryAddItemsOfTradingPartner(ITrader trader)
+        {
+            if (trader.TradingPartner.TemporaryStorage.Items.Any())
+            {
+                return trader.Inventory.TryTakeAll(trader.TradingPartner.TemporaryStorage);
+            }
+
+            return true;
+        }
+
+        private TradeResult InternalFinishTrade(ITrader trader, ITrader tradingPartner)
+        {
+            using (var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
+            using (var partnerContext = tradingPartner.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
+            using (var itemContext = this.gameContext.RepositoryManager.CreateNewAccountContext(this.gameContext.Configuration))
+            using (this.gameContext.RepositoryManager.UseContext(itemContext))
+            {
+                if (!context.Allowed || !partnerContext.Allowed)
                 {
-                    this.CancelTrade(trader.TradingPartner);
-                    this.CancelTrade(trader);
+                    context.Allowed = false;
+                    partnerContext.Allowed = false;
+                    Log.Error($"Unexpected player states. {trader.Name}:{trader.PlayerState}, {tradingPartner.Name}:{tradingPartner.PlayerState}");
+                    return TradeResult.Cancelled;
+                }
+
+                var traderItems = trader.TemporaryStorage.Items.ToList();
+                var tradePartnerItems = tradingPartner.TemporaryStorage.Items.ToList();
+                this.AttachItemsToPersistenceContext(traderItems, itemContext);
+                this.AttachItemsToPersistenceContext(tradePartnerItems, itemContext);
+
+                if (!TryAddItemsOfTradingPartner(trader) || !TryAddItemsOfTradingPartner(tradingPartner))
+                {
+                    this.SendMessage(trader, "Inventory is full.");
+                    this.SendMessage(tradingPartner, "Inventory is full.");
+                    return TradeResult.FailedByFullInventory;
+                }
+
+                try
+                {
+                    this.DetachItemsFromPersistenceContext(traderItems, trader.PersistenceContext);
+                    this.DetachItemsFromPersistenceContext(tradePartnerItems, trader.TradingPartner.PersistenceContext);
+                    itemContext.SaveChanges();
+                    trader.Money += trader.TradingPartner.TradingMoney;
+                    trader.TradingPartner.Money += trader.TradingMoney;
+                    (trader.TradingPartner as Player)?.PlayerView.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
+                    this.ResetTradeState(trader.TradingPartner);
+                    this.ResetTradeState(trader);
+                    return TradeResult.Success;
+                }
+                catch (Exception exception)
+                {
+                    this.SendMessage(trader, "An unexpected error occured during closing the trade.");
+                    this.SendMessage(tradingPartner, "An unexpected error occured during closing the trade.");
+                    context.Allowed = false;
+                    partnerContext.Allowed = false;
+                    Log.Error($"An unexpected error occured during closing the trade. trader: {trader.Name}, partner:{tradingPartner.Name}", exception);
+                    return TradeResult.Cancelled;
                 }
             }
         }
 
-        private void AttachItemsToTradeContext(IEnumerable<Item> items, IContext itemContext)
+        private void AttachItemsToPersistenceContext(IEnumerable<Item> items, IContext itemContext)
         {
             foreach (var item in items)
             {
@@ -108,17 +136,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             }
         }
 
-        private void DetachItemsFromTradeContext(IEnumerable<Item> items, IContext itemContext)
+        private void DetachItemsFromPersistenceContext(IEnumerable<Item> items, IContext itemContext)
         {
             foreach (var item in items)
             {
                 itemContext.Detach(item);
             }
-        }
-
-        private static bool TryAddItemsOfTradingPartner(ITrader trader)
-        {
-            return trader.Inventory.TryTakeAll(trader.TradingPartner.TemporaryStorage);
         }
     }
 }
