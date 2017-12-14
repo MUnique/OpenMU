@@ -73,7 +73,6 @@ namespace MUnique.OpenMU.Startup
             this.servers.Add(chatServer);
             var guildServer = new GuildServer(this.gameServers, this.repositoryManager);
             var friendServer = new FriendServer(this.gameServers, chatServer, this.repositoryManager);
-            chatServer.Start();
             var connectServer = ConnectServerFactory.CreateConnectServer();
             this.servers.Add(connectServer);
             Log.Info("Start initializing game servers");
@@ -104,6 +103,17 @@ namespace MUnique.OpenMU.Startup
 
             this.adminPanel = new AdminPanel(1234, this.servers, this.repositoryManager);
             Log.Info("Admin panel initialized");
+
+            if (args.Contains("-autostart"))
+            {
+                chatServer.Start();
+                foreach (var gameServer in this.gameServers.Values)
+                {
+                    gameServer.Start();
+                }
+
+                connectServer.Start();
+            }
         }
 
         /// <summary>
