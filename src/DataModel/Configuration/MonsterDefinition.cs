@@ -236,7 +236,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the items of the merchant store. Is only relevant for merchant NPCs.
         /// </summary>
-        public virtual ItemStorage MerchantStore { get; protected set; }
+        public virtual ItemStorage MerchantStore { get; set; }
 
         /// <summary>
         /// Gets or sets the item craftings. Is only relevant for crafting NPCs (chaos goblin etc.).

@@ -2011,7 +2011,7 @@ public ICollection<PacketHandlerConfiguration> RawPacketHandlers { get; set; } =
                 return base.MerchantStore;
             }
             
-            protected set
+            set
             {
                 base.MerchantStore = value;
                 this.MerchantStoreId = this.RawMerchantStore?.Id;
