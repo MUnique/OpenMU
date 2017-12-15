@@ -295,6 +295,7 @@
     </Compile>
     <Compile Include="Migrations\00000000000001_Seed.cs" />
     <Compile Include="Migrations\00000000000002_AddFriendView.cs" />
+    <Compile Include="Migrations\00000000000003_RemoveCharacterMoney.cs" />
     <Compile Include="Migrations\EntityDataContextModelSnapshot.cs" />
     <Compile Include="NpgsqlLog4NetLoggingProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

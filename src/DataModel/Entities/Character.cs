@@ -106,11 +106,6 @@ namespace MUnique.OpenMU.DataModel.Entities
         public int MasterLevelUpPoints { get; set; }
 
         /// <summary>
-        /// Gets or sets the amount of money.
-        /// </summary>
-        public int Money { get; set; }
-
-        /// <summary>
         /// Gets or sets the current game map.
         /// </summary>
         public virtual GameMapDefinition CurrentMap { get; set; }

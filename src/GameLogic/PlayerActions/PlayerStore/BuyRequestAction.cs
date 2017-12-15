@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                 return;
             }
 
-            if (player.SelectedCharacter.Money < requestedPlayer.ShopStorage.StorePrices[slot - InventoryConstants.FirstStoreItemSlotIndex])
+            if (player.Money < requestedPlayer.ShopStorage.StorePrices[slot - InventoryConstants.FirstStoreItemSlotIndex])
             {
                 player.PlayerView.ShowMessage("Not enough Zen.", MessageType.BlueNormal);
                 return;

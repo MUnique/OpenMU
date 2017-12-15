@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             }
 
             // Check if the Player got enough Zen/Money
-            if (player.SelectedCharacter.Money < moneyAmount)
+            if (player.Money < moneyAmount)
             {
                 return;
             }

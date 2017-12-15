@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="animation">The animation.</param>
         public void SendLetter(Player player, string receiver, string message, string title, byte rotation, byte animation)
         {
-            if (player.SelectedCharacter.Money < LetterSendCost)
+            if (player.Money < LetterSendCost)
             {
                 player.PlayerView.ShowMessage("Not enough Zen to send a letter.", MessageType.BlueNormal);
                 player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.TryAgain);

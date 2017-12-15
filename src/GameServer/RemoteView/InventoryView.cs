@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void UpdateMoney()
         {
             var message = new byte[] { 0xC3, 0x08, 0x22, 0xFE, 0, 0, 0, 0 };
-            message.SetIntegerSmallEndian((uint)this.player.SelectedCharacter.Money, 4);
+            message.SetIntegerSmallEndian((uint)this.player.Money, 4);
             this.connection.Send(message);
         }
 

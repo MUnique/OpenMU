@@ -140,13 +140,13 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public int Money
         {
-            get => this.SelectedCharacter.Money;
+            get => this.SelectedCharacter?.Inventory.Money ?? 0;
 
             set
             {
-                if (this.SelectedCharacter.Money != value)
+                if (this.SelectedCharacter != null && this.SelectedCharacter.Inventory.Money != value)
                 {
-                    this.SelectedCharacter.Money = value;
+                    this.SelectedCharacter.Inventory.Money = value;
                     this.PlayerView.InventoryView.UpdateMoney();
                 }
             }
@@ -424,12 +424,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns><c>True</c>, if the players inventory had enough money to remove; Otherwise, <c>false</c>.</returns>
         public bool TryRemoveMoney(int value)
         {
-            if (this.SelectedCharacter.Money < value)
+            if (this.Money < value)
             {
                 return false;
             }
 
-            this.SelectedCharacter.Money = checked(this.SelectedCharacter.Money - value);
+            this.Money = checked(this.Money - value);
             return true;
         }
 
