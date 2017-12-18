@@ -182,7 +182,8 @@
 
                     b.Property<int>("MasterLevelUpPoints");
 
-                    b.Property<int>("Money");
+                    b.Property<int>("Money")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Name")
                         .IsRequired()

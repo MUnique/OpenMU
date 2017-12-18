@@ -1391,7 +1391,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     LevelUpPoints = table.Column<int>(),
                     MasterExperience = table.Column<long>(),
                     MasterLevelUpPoints = table.Column<int>(),
-                    Money = table.Column<int>(),
+                    Money = table.Column<int>(defaultValue: 0),
                     Name = table.Column<string>(maxLength: 10),
                     PlayerKillCount = table.Column<int>(),
                     PositionX = table.Column<byte>(),
