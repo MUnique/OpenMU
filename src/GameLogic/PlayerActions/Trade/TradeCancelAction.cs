@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
-    using MUnique.OpenMU.GameLogic.Views;
     using log4net;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to cancel the trade.
