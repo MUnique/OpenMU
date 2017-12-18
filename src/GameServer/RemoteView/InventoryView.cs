@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const int slotNumberSize = sizeof(byte);
             var lengthPerItem = this.itemSerializer.NeededSpace + slotNumberSize;
             const int headerLength = 6;
-            var itemCount = this.player.Inventory.Items.Count();
+            var itemCount = this.player.SelectedCharacter.Inventory.Items.Count();
             ushort len = (ushort)((itemCount * lengthPerItem) + headerLength);
             byte[] packet = new byte[len];
             packet[0] = 0xC4;
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             packet[4] = 0x10;
             packet[5] = (byte)itemCount;
             int i = 0;
-            foreach (var item in this.player.Inventory.Items)
+            foreach (var item in this.player.SelectedCharacter.Inventory.Items)
             {
                 var offset = headerLength + (i * lengthPerItem);
                 packet[offset] = item.ItemSlot;
