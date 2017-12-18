@@ -156,7 +156,7 @@ namespace MUnique.OpenMU.Tests
             trader.Stub(t => t.Inventory).Return(inventory);
             inventory.Stub(i => i.ItemStorage).Return(MockRepository.GenerateStub<ItemStorage>());
             inventory.ItemStorage.Stub(i => i.Items).Return(new List<Item>());
-            trader.BackupInventory = new BackupItemStorage(inventory.ItemStorage) {Items = new List<Item>()};
+            trader.BackupInventory = new BackupItemStorage(inventory.ItemStorage) { Items = new List<Item>() };
             trader.Stub(t => t.TemporaryStorage).Return(MockRepository.GenerateStub<IStorage>());
             trader.TemporaryStorage.Stub(t => t.Items).Return(new List<Item>());
             trader.Stub(t => t.TradeView).Return(MockRepository.GenerateMock<ITradeView>());
