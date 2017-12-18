@@ -7,8 +7,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Action to consume an item.
@@ -34,9 +36,26 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 var type = Type.GetType(item.ConsumeHandlerClass);
                 if (type != null)
                 {
-                    if (Activator.CreateInstance(type) is IItemConsumeHandler consumeHandler)
+                    var constructors = type.GetConstructors();
+                    foreach (var ctor in constructors)
                     {
-                        this.consumeHandlers.Add(item, consumeHandler);
+                        var parameters = ctor.GetParameters();
+                        if (!parameters.Any())
+                        {
+                            if (ctor.Invoke(new object[] { }) is IItemConsumeHandler consumeHandler)
+                            {
+                                this.consumeHandlers.Add(item, consumeHandler);
+                                break;
+                            }
+                        }
+                        else if (parameters.Length == 1 && parameters[0].ParameterType == typeof(IRepositoryManager))
+                        {
+                            if (ctor.Invoke(new object[] { gameContext.RepositoryManager }) is IItemConsumeHandler consumeHandler)
+                            {
+                                this.consumeHandlers.Add(item, consumeHandler);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -144,3 +163,4 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         */
     }
 }
+
