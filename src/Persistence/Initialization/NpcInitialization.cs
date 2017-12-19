@@ -4,7 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization
 {
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
     /// The initialization of all NPCs, which are no monsters.
@@ -57,6 +60,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 230;
                 def.Designation = "Alex";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -65,6 +69,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 231;
                 def.Designation = "Thompson the Merchant";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -134,6 +139,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 242;
                 def.Designation = "Elf Lala";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -150,6 +156,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 244;
                 def.Designation = "Lumen The Barmaid";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -181,6 +188,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 248;
                 def.Designation = "Wandering Merchant";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -196,6 +204,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 250;
                 def.Designation = "Wandering Merchant";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -212,6 +221,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 253;
                 def.Designation = "Potion Girl";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -228,6 +238,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 255;
                 def.Designation = "Lumen The Barmaid";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -266,6 +277,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 376;
                 def.Designation = "Pamela the Supplier";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -274,6 +286,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 377;
                 def.Designation = "Angela the Supplier";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -543,6 +556,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 415;
                 def.Designation = "Silvia";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -551,6 +565,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 416;
                 def.Designation = "Rhea";
                 def.NpcWindow = NpcWindow.Merchant;
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -558,6 +573,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.repositoryManager.CreateNew<MonsterDefinition>();
                 def.Number = 417;
                 def.Designation = "Marce";
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
                 def.NpcWindow = NpcWindow.Merchant;
                 this.gameConfiguration.Monsters.Add(def);
             }
@@ -795,6 +811,103 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Designation = "Soccerball";
                 this.gameConfiguration.Monsters.Add(def);
             }
+        }
+
+        private ItemStorage CreateMerchantStoreWithPotions()
+        {
+            var allPotions = this.gameConfiguration.Items.Where(item => item.Group == 14).ToList();
+            var merchantStore = this.repositoryManager.CreateNew<ItemStorage>();
+
+            var apple = this.repositoryManager.CreateNew<Item>();
+            apple.Definition = allPotions.First(def => def.Number == 0);
+            apple.Storage = merchantStore;
+            merchantStore.Items.Add(apple);
+
+            var smallHealingPotion = this.repositoryManager.CreateNew<Item>();
+            smallHealingPotion.Definition = allPotions.First(def => def.Number == 1);
+            smallHealingPotion.Storage = merchantStore;
+            smallHealingPotion.ItemSlot = 1;
+            merchantStore.Items.Add(smallHealingPotion);
+
+            var mediumHealingPotion = this.repositoryManager.CreateNew<Item>();
+            mediumHealingPotion.Definition = allPotions.First(def => def.Number == 2);
+            mediumHealingPotion.Storage = merchantStore;
+            mediumHealingPotion.ItemSlot = 2;
+            merchantStore.Items.Add(mediumHealingPotion);
+
+            var largeHealingPotion = this.repositoryManager.CreateNew<Item>();
+            largeHealingPotion.Definition = allPotions.First(def => def.Number == 3);
+            largeHealingPotion.Storage = merchantStore;
+            largeHealingPotion.ItemSlot = 3;
+            merchantStore.Items.Add(largeHealingPotion);
+
+            var smallManaPotion = this.repositoryManager.CreateNew<Item>();
+            smallManaPotion.Definition = allPotions.First(def => def.Number == 4);
+            smallManaPotion.Storage = merchantStore;
+            smallManaPotion.ItemSlot = 4;
+            merchantStore.Items.Add(smallManaPotion);
+
+            var mediumManaPotion = this.repositoryManager.CreateNew<Item>();
+            mediumManaPotion.Definition = allPotions.First(def => def.Number == 5);
+            mediumManaPotion.Storage = merchantStore;
+            mediumManaPotion.ItemSlot = 5;
+            merchantStore.Items.Add(mediumManaPotion);
+
+            var largeManaPotion = this.repositoryManager.CreateNew<Item>();
+            largeManaPotion.Definition = allPotions.First(def => def.Number == 6);
+            largeManaPotion.Storage = merchantStore;
+            largeManaPotion.ItemSlot = 6;
+            merchantStore.Items.Add(largeManaPotion);
+
+            var ale = this.repositoryManager.CreateNew<Item>();
+            ale.Definition = allPotions.First(def => def.Number == 9);
+            ale.Storage = merchantStore;
+            ale.ItemSlot = 7;
+            merchantStore.Items.Add(ale);
+
+            var applePlus1 = this.repositoryManager.CreateNew<Item>();
+            applePlus1.Definition = allPotions.First(def => def.Number == 0);
+            applePlus1.Storage = merchantStore;
+            applePlus1.ItemSlot = 8;
+            merchantStore.Items.Add(applePlus1);
+
+            var smallHealingPotionPlus1 = this.repositoryManager.CreateNew<Item>();
+            smallHealingPotionPlus1.Definition = allPotions.First(def => def.Number == 1);
+            smallHealingPotionPlus1.Storage = merchantStore;
+            smallHealingPotionPlus1.ItemSlot = 9;
+            merchantStore.Items.Add(smallHealingPotionPlus1);
+
+            var mediumHealingPotionPlus1 = this.repositoryManager.CreateNew<Item>();
+            mediumHealingPotionPlus1.Definition = allPotions.First(def => def.Number == 2);
+            mediumHealingPotionPlus1.Storage = merchantStore;
+            mediumHealingPotionPlus1.ItemSlot = 10;
+            merchantStore.Items.Add(mediumHealingPotionPlus1);
+
+            var largeHealingPotionPlus1 = this.repositoryManager.CreateNew<Item>();
+            largeHealingPotionPlus1.Definition = allPotions.First(def => def.Number == 3);
+            largeHealingPotionPlus1.Storage = merchantStore;
+            largeHealingPotionPlus1.ItemSlot = 11;
+            merchantStore.Items.Add(largeHealingPotionPlus1);
+
+            var smallManaPotionPlus1 = this.repositoryManager.CreateNew<Item>();
+            smallManaPotionPlus1.Definition = allPotions.First(def => def.Number == 4);
+            smallManaPotionPlus1.Storage = merchantStore;
+            smallManaPotionPlus1.ItemSlot = 12;
+            merchantStore.Items.Add(smallManaPotionPlus1);
+
+            var mediumManaPotionPlus1 = this.repositoryManager.CreateNew<Item>();
+            mediumManaPotionPlus1.Definition = allPotions.First(def => def.Number == 5);
+            mediumManaPotionPlus1.Storage = merchantStore;
+            mediumManaPotionPlus1.ItemSlot = 13;
+            merchantStore.Items.Add(mediumManaPotionPlus1);
+
+            var largeManaPotionPlus1 = this.repositoryManager.CreateNew<Item>();
+            largeManaPotionPlus1.Definition = allPotions.First(def => def.Number == 6);
+            largeManaPotionPlus1.Storage = merchantStore;
+            largeManaPotionPlus1.ItemSlot = 14;
+            merchantStore.Items.Add(largeManaPotionPlus1);
+
+            return merchantStore;
         }
     }
 }

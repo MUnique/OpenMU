@@ -18,6 +18,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     public class Lorencia
     {
         /// <summary>
+        /// The default number of the lorencia map.
+        /// </summary>
+        public const byte Number = 0;
+
+        /// <summary>
         /// Initializes the data for the lorencia map.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
@@ -29,7 +34,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         {
             this.CreateMonsters(repositoryManager, gameConfiguration);
             var mapDefinition = repositoryManager.CreateNew<GameMapDefinition>();
-            mapDefinition.Number = 0;
+            mapDefinition.Number = Number;
             mapDefinition.Name = "Lorencia";
             mapDefinition.TerrainData = Terrains.ResourceManager.GetObject("Terrain1") as byte[];
             mapDefinition.ExpMultiplier = 1;
