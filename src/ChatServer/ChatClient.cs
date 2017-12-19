@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.ChatServer
     /// ChatClient implementation, uses socket connections.
     /// </summary>
     /// <remarks>
-    /// Messages are decrypted and encrypted again with the same XOR3 key - in theory we could optimize this (and 
+    /// Messages are decrypted and encrypted again with the same XOR3 key - in theory we could optimize this (and
     /// the conversion to a string) away. However, we'll leave it for easier debugging.
     /// </remarks>
     internal class ChatClient : IChatClient
