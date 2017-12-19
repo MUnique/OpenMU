@@ -142,13 +142,13 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="player">The player.</param>
         /// <returns>The size of the inventory.</returns>
-        public static int GetInventorySize(Player player)
+        public static byte GetInventorySize(Player player)
         {
             var size = EquippableSlotsCount +
                 (InventoryRows * RowSize) +
                 (RowsOfOneExtension * Math.Min(player.SelectedCharacter.InventoryExtensions, MaximumNumberOfExtensions));
 
-            return size;
+            return (byte)size;
         }
     }
 }

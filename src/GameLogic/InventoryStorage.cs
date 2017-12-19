@@ -28,7 +28,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="player">The player.</param>
         /// <param name="context">The game context.</param>
         public InventoryStorage(Player player, IGameContext context)
-            : base(FirstEquippableItemSlotIndex, LastEquippableItemSlotIndex, GetInventorySize(player), player.SelectedCharacter.Inventory)
+            : base(
+                FirstEquippableItemSlotIndex,
+                LastEquippableItemSlotIndex,
+                GetInventorySize(player),
+                new ItemStorageAdapter(player.SelectedCharacter.Inventory, FirstEquippableItemSlotIndex, GetInventorySize(player)))
         {
             this.player = player;
             this.EquippedItemsChanged += (sender, eventArgs) => this.UpdateItemsOnChange(eventArgs.Item);
@@ -56,6 +60,12 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             return success;
+        }
+
+        protected override void SetItemSlot(Item item, byte slot)
+        {
+            base.SetItemSlot(item, slot);
+            item.Storage = this.player.SelectedCharacter.Inventory;
         }
 
         private void UpdateItemsOnChange(Item item)

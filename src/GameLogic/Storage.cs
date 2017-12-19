@@ -45,13 +45,15 @@ namespace MUnique.OpenMU.GameLogic
             this.rows = (numberOfSlots - this.firstStorageSlot) / InventoryConstants.RowSize;
             this.usedSlots = new bool[this.rows, InventoryConstants.RowSize];
             this.itemStorage = itemStorage;
-            this.itemStorage?.Items.ForEach(item =>
-                                           {
-                                               if (!this.AddItemInternal(item.ItemSlot, item))
-                                               {
-                                                   throw new ArgumentException("item did not fit into the storage");
-                                               }
-                                           });
+            this.itemStorage?.Items
+                .Where(item => item.ItemSlot <= lastEquippableSlot + numberOfSlots)
+                .ForEach(item =>
+                {
+                    if (!this.AddItemInternal(item.ItemSlot, item))
+                    {
+                        throw new ArgumentException("item did not fit into the storage");
+                    }
+                });
         }
 
         /// <inheritdoc/>
@@ -118,7 +120,7 @@ namespace MUnique.OpenMU.GameLogic
             if (result)
             {
                 this.itemStorage.Items.Add(item);
-                item.ItemSlot = slot;
+                this.SetItemSlot(item, slot);
                 var onEquippedItemsChanged = this.EquippedItemsChanged;
                 if (onEquippedItemsChanged != null && this.IsWearingSlot(slot))
                 {
@@ -218,6 +220,16 @@ namespace MUnique.OpenMU.GameLogic
             this.itemStorage.Items.Clear();
             this.itemArray.Initialize();
             this.usedSlots.Initialize();
+        }
+
+        /// <summary>
+        /// Sets the item slot at the item. Can be overwritten if there is some kind of slot offset.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="slot">The slot.</param>
+        protected virtual void SetItemSlot(Item item, byte slot)
+        {
+            item.ItemSlot = slot;
         }
 
         private byte GetSlot(int column, int row)

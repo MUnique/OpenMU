@@ -104,6 +104,7 @@
     <Compile Include="ISupportWalk.cs" />
     <Compile Include="ItemEventArgs.cs" />
     <Compile Include="ItemExtensions.cs" />
+    <Compile Include="ItemStorageAdapter.cs" />
     <Compile Include="ITrader.cs" />
     <Compile Include="IWorldObserver.cs" />
     <Compile Include="LocateableExtensions.cs" />
