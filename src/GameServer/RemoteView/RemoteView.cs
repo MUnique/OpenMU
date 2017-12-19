@@ -564,7 +564,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // TODO:  Maybe cache the result, because a lot of players could request the same list.
             var itemlist = requestedPlayer.ShopStorage.Items.ToList();
             var itemcount = itemlist.Count;
-            var packet = new byte[itemcount];
+            var packet = new byte[6 + maxCharacterNameLength + maxStoreNameLength + (itemcount * (8 + this.itemSerializer.NeededSpace))];
             packet[0] = 0xC2;
             packet[3] = 1;
             packet[4] = requestedPlayer.Id.GetLowByte();
@@ -577,7 +577,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             int i = 0;
             foreach (var item in itemlist)
             {
-                var offset = 16 + 37 + (i * (8 + this.itemSerializer.NeededSpace)); // not sure about the last part...
+                var offset = 7 + maxCharacterNameLength + maxStoreNameLength + (i * (8 + this.itemSerializer.NeededSpace)); // not sure about the last part...
                 var slot = item.ItemSlot - InventoryConstants.FirstStoreItemSlotIndex;
                 packet[offset + 0] = (byte)slot;
                 this.itemSerializer.SerializeItem(packet, offset + 1, item);
