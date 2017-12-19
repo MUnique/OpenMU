@@ -231,7 +231,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                     dropCoord = this.CurrentMap.Terrain.GetRandomDropCoordinate(this.X, this.Y, 4);
                 }
 
-                var droppedItem = new DroppedItem(item, dropCoord.X, dropCoord.Y, this.CurrentMap);
+                var droppedItem = new DroppedItem(item, dropCoord.X, dropCoord.Y, this.CurrentMap, null);
                 this.CurrentMap.Add(droppedItem);
             }
         }

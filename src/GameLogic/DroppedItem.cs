@@ -6,39 +6,45 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Threading;
+    using log4net;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// An item which got dropped on the ground of a map.
     /// </summary>
     public sealed class DroppedItem : IDisposable, ILocateable
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(DroppedItem));
+
         /// <summary>
         /// Gets the pickup lock. Used to synchronize pick up requests from the players.
         /// </summary>
         private readonly object pickupLock;
 
         private readonly GameMap map;
-
+        private readonly Player dropper;
         private Timer removeTimer;
 
         private bool availableToPick = true;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DroppedItem"/> class.
+        /// Initializes a new instance of the <see cref="DroppedItem" /> class.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="map">The map.</param>
-        public DroppedItem(Item item, byte x, byte y, GameMap map)
+        /// <param name="dropper">The dropper.</param>
+        public DroppedItem(Item item, byte x, byte y, GameMap map, Player dropper)
         {
             this.Item = item;
             this.pickupLock = new object();
             this.X = x;
             this.Y = y;
             this.map = map;
-            this.removeTimer = new Timer((state) => this.Dispose(), null, map.ItemDropDuration * 1000, Timeout.Infinite);
+            this.dropper = dropper;
+            this.removeTimer = new Timer(this.DisposeAndDelete, null, map.ItemDropDuration * 1000, Timeout.Infinite);
         }
 
         /// <summary>
@@ -85,27 +91,59 @@ namespace MUnique.OpenMU.GameLogic
 
             lock (this.pickupLock)
             {
-                if (player.Inventory.AddItem((byte)slot, this.Item))
+                if (!this.availableToPick)
                 {
-                    this.availableToPick = false;
-
-                    this.Dispose();
-                    return true;
+                    return false;
                 }
+
+                if (!player.Inventory.AddItem((byte)slot, this.Item))
+                {
+                    return false;
+                }
+
+                this.availableToPick = false;
             }
 
-            return false;
+            Log.Info($"Item '{this.Item}' is getting picked by by player '{player}'.");
+            this.Dispose();
+            if (this.dropper != null)
+            {
+                this.dropper.PersistenceContext.SaveChanges(); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
+                this.dropper.PersistenceContext.Detach(this.Item);
+                player.PersistenceContext.Attach(this.Item);
+            }
+
+            return true;
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (this.removeTimer != null)
+            var timer = this.removeTimer;
+            if (timer != null)
             {
-                this.Item.Storage = null; // TODO: Delete from database, if item is persistent ?
-                this.removeTimer.Dispose();
                 this.removeTimer = null;
+                timer.Dispose();
                 this.map.Remove(this);
+            }
+        }
+
+        private void DisposeAndDelete(object state)
+        {
+            this.Dispose();
+            if (this.dropper != null)
+            {
+                Log.Info($"Item '{this.Item}' which was dropped by player {this.dropper} is getting deleted.");
+                this.dropper.PersistenceContext.Detach(this.Item);
+                var repositoryManager = this.dropper.GameContext.RepositoryManager;
+
+                // We could use here the persistence context of the dropper - but if it logged out and is not saving anymore, the deletion would not be saved.
+                // So we use a new temporary persistence context instead.
+                using (var context = repositoryManager.UseTemporaryContext())
+                {
+                    repositoryManager.GetRepository<Item>().Delete(this.Item);
+                    context.SaveChanges();
+                }
             }
         }
     }

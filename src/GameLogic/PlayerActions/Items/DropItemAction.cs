@@ -34,11 +34,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private void DropItem(Player player, Item item, byte x, byte y)
         {
-            var droppedItem = new DroppedItem(item, x, y, player.CurrentMap);
-
+            var droppedItem = new DroppedItem(item, x, y, player.CurrentMap, player);
             player.CurrentMap.Add(droppedItem);
             player.Inventory.RemoveItem(item);
             player.PlayerView.InventoryView.ItemDropResult(item.ItemSlot, true);
+            player.PersistenceContext.Detach(item);
         }
     }
 }
