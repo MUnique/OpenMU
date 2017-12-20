@@ -666,7 +666,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // for each item: [slot number] [item data....]
             const int slotNumberSize = 1;
             const int headerSize = 6;
-            var packet = new byte[headerSize + (storeItems.Count * (this.itemSerializer.NeededSpace + slotNumberSize))];
+            int sizePerItem = this.itemSerializer.NeededSpace + slotNumberSize;
+            var packet = new byte[headerSize + (storeItems.Count * sizePerItem)];
             packet[0] = 0xC2;
             packet[1] = ((ushort)packet.Length).GetHighByte();
             packet[2] = ((ushort)packet.Length).GetLowByte();
@@ -677,9 +678,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             int i = 0;
             foreach (var item in storeItems)
             {
-                var offset = 6 + (i * this.itemSerializer.NeededSpace);
+                var offset = headerSize + (i * sizePerItem);
                 packet[offset] = item.ItemSlot;
-                this.itemSerializer.SerializeItem(packet, offset + 1, item);
+                this.itemSerializer.SerializeItem(packet, offset + slotNumberSize, item);
                 i++;
             }
 
