@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const byte freshDropFlag = 0x80;
 
             int itemCount = droppedItems.Count();
-            byte[] data = new byte[5 + (this.itemSerializer.NeededSpace * itemCount)];
+            byte[] data = new byte[9 + (this.itemSerializer.NeededSpace * itemCount)];
             ushort length = (ushort)data.Length;
             data.SetValues<byte>(0xC2, length.GetHighByte(), length.GetLowByte(), 0x20, (byte)itemCount);
             int i = 0;
