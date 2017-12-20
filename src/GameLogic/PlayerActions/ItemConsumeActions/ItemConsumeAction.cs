@@ -97,7 +97,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             }
             else
             {
-                item.Durability--;
                 player.PlayerView.InventoryView.ItemDurabilityChanged(item);
             }
         }
