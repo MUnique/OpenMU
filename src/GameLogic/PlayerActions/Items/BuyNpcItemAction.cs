@@ -71,12 +71,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return;
             }
 
-            var newItem = new Item();
-            newItem.AssignValues(storeItem);
-            newItem.ItemSlot = (byte)toSlot;
-            player.PlayerView.InventoryView.NpcItemBought(newItem);
-            player.Inventory.AddItem(newItem.ItemSlot, newItem);
-            player.PlayerView.InventoryView.UpdateMoney();
+            using (this.gameContext.RepositoryManager.UseContext(player.PersistenceContext))
+            {
+                var newItem = this.gameContext.RepositoryManager.CreateNew<Item>();
+                newItem.AssignValues(storeItem);
+                newItem.ItemSlot = (byte)toSlot;
+                player.PlayerView.InventoryView.NpcItemBought(newItem);
+                player.Inventory.AddItem(newItem.ItemSlot, newItem);
+                player.PlayerView.InventoryView.UpdateMoney();
+            }
         }
     }
 }
