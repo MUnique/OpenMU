@@ -31,5 +31,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return Stats.CurrentHealth;
             }
         }
+
+        /// <inheritdoc/>
+        public override bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        {
+            if (base.ConsumeItem(player, itemSlot, targetSlot))
+            {
+                // maybe instead of calling UpdateCurrentHealth etc. provide a more general method where we pass this.CurrentAttribute. The view can then decide what to do with it.
+                player.PlayerView.UpdateCurrentHealth();
+                return true;
+            }
+
+            return false;
+        }
     }
 }

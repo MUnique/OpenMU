@@ -31,5 +31,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return Stats.CurrentMana;
             }
         }
+
+        /// <inheritdoc />
+        public override bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        {
+            if (base.ConsumeItem(player, itemSlot, targetSlot))
+            {
+                player.PlayerView.UpdateCurrentMana();
+                return true;
+            }
+
+            return false;
+        }
     }
 }
