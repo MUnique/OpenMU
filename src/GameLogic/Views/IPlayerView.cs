@@ -261,6 +261,11 @@ namespace MUnique.OpenMU.GameLogic.Views
         void DrinkAlcohol();
 
         /// <summary>
+        /// Shows that the requested item consumption failed.
+        /// </summary>
+        void RequestedItemConsumptionFailed();
+
+        /// <summary>
         /// Shows the character delete response result.
         /// </summary>
         /// <param name="result">The result.</param>

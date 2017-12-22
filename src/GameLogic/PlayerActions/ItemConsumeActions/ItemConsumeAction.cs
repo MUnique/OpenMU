@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Persistence;
@@ -17,8 +16,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     /// </summary>
     public class ItemConsumeAction
     {
-        private const byte AllItemsOfAGroup = 0xFF;
-
         private readonly IDictionary<ItemDefinition, IItemConsumeHandler> consumeHandlers;
 
         /// <summary>
@@ -69,24 +66,23 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <param name="inventoryTargetSlot">The inventory target slot.</param>
         public void HandleConsumeRequest(Player player, byte inventorySlot, byte inventoryTargetSlot)
         {
-            Item item;
-            item = player.Inventory.GetItem(inventorySlot);
+            Item item = player.Inventory.GetItem(inventorySlot);
             if (item == null)
             {
+                player.PlayerView.RequestedItemConsumptionFailed();
                 return;
             }
 
             IItemConsumeHandler consumeHandler;
-
             if (!this.consumeHandlers.TryGetValue(item.Definition, out consumeHandler))
             {
-                // unsuccessful packet?
+                player.PlayerView.RequestedItemConsumptionFailed();
                 return;
             }
 
             if (!consumeHandler.ConsumeItem(player, inventorySlot, inventoryTargetSlot))
             {
-                // unsuccessful packet?
+                player.PlayerView.RequestedItemConsumptionFailed();
                 return;
             }
 

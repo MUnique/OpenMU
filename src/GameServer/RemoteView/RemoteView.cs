@@ -25,6 +25,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     public enum UpdateType
     {
         /// <summary>
+        /// An item consumption failed, no value is updated.
+        /// </summary>
+        Failed = 0xFD,
+
+        /// <summary>
         /// The maximum value is updated.
         /// </summary>
         Maximum = 0xFE,
@@ -285,6 +290,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                                 hp.GetHighByte(), hp.GetLowByte(),
                                 0x00,
                                 sd.GetHighByte(), sd.GetLowByte()
+            });
+        }
+
+        /// <inheritdoc />
+        /// <remarks>The server sends the current health/shield to the client, with <see cref="UpdateType.Failed"/>.</remarks>
+        public void RequestedItemConsumptionFailed()
+        {
+            var hp = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f);
+            var sd = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f);
+            this.connection.Send(new byte[]
+            {
+                0xC1, 0x09, 0x26, (byte)UpdateType.Failed,
+                hp.GetHighByte(), hp.GetLowByte(),
+                0x00,
+                sd.GetHighByte(), sd.GetLowByte()
             });
         }
 
