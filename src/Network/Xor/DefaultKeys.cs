@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Network
 {
     /// <summary>
-    /// The default keys for encryption and decryption.
+    /// The default xor keys for encryption and decryption.
     /// </summary>
     public static class DefaultKeys
     {
@@ -16,22 +16,6 @@ namespace MUnique.OpenMU.Network
         /// The default 3 byte long XOR key.
         /// </value>
         public static byte[] Xor3Keys { get; } = { 0xFC, 0xCF, 0xAB };
-
-        /// <summary>
-        /// Gets the default encryption key.
-        /// </summary>
-        /// <value>
-        /// The default encryption key.
-        /// </value>
-        public static uint[] EncryptionKey { get; } = { 73326, 109989, 98843, 171058, 13169, 19036, 35482, 29587, 62004, 64409, 35374, 64599 };
-
-        /// <summary>
-        /// Gets the default decryption key.
-        /// </summary>
-        /// <value>
-        /// The default decryption key.
-        /// </value>
-        public static uint[] DecryptionKey { get; } = { 128079, 164742, 70235, 106898, 31544, 2047, 57011, 10183, 48413, 46165, 15171, 37433 };
 
         /// <summary>
         /// Gets the default 32 byte long XOR key.

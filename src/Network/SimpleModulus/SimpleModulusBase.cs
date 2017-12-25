@@ -1,13 +1,13 @@
-﻿// <copyright file="EncryptionBase.cs" company="MUnique">
+﻿// <copyright file="SimpleModulusBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network
+namespace MUnique.OpenMU.Network.SimpleModulus
 {
     /// <summary>
     /// The base class for the "simple modulus" encryption.
     /// </summary>
-    public abstract class EncryptionBase
+    public abstract class SimpleModulusBase
     {
         /// <summary>
         /// The decrypted block size.
@@ -19,6 +19,16 @@ namespace MUnique.OpenMU.Network
         /// It is bigger than the decrypted size, because it contains the length of the actual data of the block and a checksum.
         /// </summary>
         protected const int EncryptedBlockSize = 11;
+
+        /// <summary>
+        /// The xor key which is used as to 'encrypt' the size of each block.
+        /// </summary>
+        protected const byte BlockSizeXorKey = 0x3D;
+
+        /// <summary>
+        /// The xor key which is used as to 'encrypt' the checksum of each encrypted block.
+        /// </summary>
+        protected const byte BlockCheckSumXorKey = 0xF8;
 
         /// <summary>
         /// Gets the counter.
@@ -84,28 +94,6 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
-        /// Gets the size of a packet from its header.
-        /// C1 and C3 packets have a maximum length of 255, and the length defined in the second byte.
-        /// C2 and C4 packets have a maximum length of 65535, and the length defined in the second and third byte.
-        /// </summary>
-        /// <param name="packet">The packet.</param>
-        /// <returns>The size of a packet.</returns>
-        protected int GetSize(byte[] packet)
-        {
-            switch (packet[0])
-            {
-                case 0xC1:
-                case 0xC3:
-                    return packet[1];
-                case 0xC2:
-                case 0xC4:
-                    return packet[1] << 8 | packet[2];
-                default:
-                    return 0;
-            }
-        }
-
-        /// <summary>
         /// Gets the size of the content.
         /// </summary>
         /// <param name="packet">The packet.</param>
@@ -113,46 +101,7 @@ namespace MUnique.OpenMU.Network
         /// <returns>The size of the actual content.</returns>
         protected int GetContentSize(byte[] packet, bool decrypted)
         {
-            return this.GetSize(packet) - this.GetHeaderSize(packet[0]) + (decrypted ? 1 : 0);
-        }
-
-        /// <summary>
-        /// Gets the size of the header.
-        /// </summary>
-        /// <param name="header">The header.</param>
-        /// <returns>The size of the header.</returns>
-        protected int GetHeaderSize(byte header)
-        {
-            switch (header)
-            {
-                case 0xC1:
-                case 0xC3:
-                    return 2;
-                case 0xC2:
-                case 0xC4:
-                    return 3;
-                default:
-                    return 0;
-            }
-        }
-
-        /// <summary>
-        /// Sets the size of the packet in the packet.
-        /// </summary>
-        /// <param name="packet">The packet.</param>
-        /// <param name="size">The size.</param>
-        protected void SetPacketSize(byte[] packet, int size)
-        {
-            switch (packet[0])
-            {
-                case 0xC3:
-                    packet[1] = (byte)size;
-                    break;
-                case 0xC4:
-                    packet[1] = (byte)((size & 0xFF00) >> 8);
-                    packet[2] = (byte)(size & 0x00FF);
-                    break;
-            }
+            return packet.GetPacketSize() - packet.GetPacketHeaderSize() + (decrypted ? 1 : 0);
         }
 
         /// <summary>

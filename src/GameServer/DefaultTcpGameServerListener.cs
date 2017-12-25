@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Network.SimpleModulus;
+
 namespace MUnique.OpenMU.GameServer
 {
     using System;
@@ -142,7 +144,8 @@ namespace MUnique.OpenMU.GameServer
             {
                 newPlayerId = playerIdEventArgs.PlayerId;
                 this.Log(l => l.DebugFormat($"new player id {newPlayerId} for game client {remoteEndPoint}"));
-                var connection = new Connection(socket, new Encryptor(), new Decryptor { AcceptWrongBlockChecksum = true });
+                var decryptor = new ComposableDecryptor().AddDecryptor(new SimpleModulusDecryptor() {AcceptWrongBlockChecksum = true});
+                var connection = new Connection(socket, new Encryptor(), decryptor);
                 var remotePlayer = new RemotePlayer(newPlayerId, this.gameContext, this.mainPacketHandler, connection);
                 this.OnPlayerConnected(remotePlayer);
                 connection.Disconnected += (sender, e) => remotePlayer.Disconnect();

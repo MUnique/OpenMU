@@ -294,5 +294,78 @@ namespace MUnique.OpenMU.Network
             array[startIndex + 1] = value.GetHighByte();
             array[startIndex] = value.GetLowByte();
         }
+
+        /// <summary>
+        /// Gets the size of the packet header.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        /// <returns>The size of the header.</returns>
+        public static int GetPacketHeaderSize(this byte[] packet)
+        {
+            switch (packet[0])
+            {
+                case 0xC1:
+                case 0xC3:
+                    return 2;
+                case 0xC2:
+                case 0xC4:
+                    return 3;
+                default:
+                    return 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the type of the packet. This only works when the packet type is not encrypted.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        /// <returns>The type of the packet.</returns>
+        public static byte GetPacketType(this byte[] packet)
+        {
+            return packet[packet.GetPacketHeaderSize()];
+        }
+
+        /// <summary>
+        /// Gets the size of a packet from its header.
+        /// C1 and C3 packets have a maximum length of 255, and the length defined in the second byte.
+        /// C2 and C4 packets have a maximum length of 65535, and the length defined in the second and third byte.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        /// <returns>The size of a packet.</returns>
+        public static int GetPacketSize(this byte[] packet)
+        {
+            switch (packet[0])
+            {
+                case 0xC1:
+                case 0xC3:
+                    return packet[1];
+                case 0xC2:
+                case 0xC4:
+                    return packet[1] << 8 | packet[2];
+                default:
+                    return 0;
+            }
+        }
+
+        /// <summary>
+        /// Sets the size of the byte array as packet length in the corresponding indexes of the byte array.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        public static void SetPacketSize(this byte[] packet)
+        {
+            var size = packet.Length;
+            switch (packet[0])
+            {
+                case 0xC1:
+                case 0xC3:
+                    packet[1] = (byte)size;
+                    break;
+                case 0xC2:
+                case 0xC4:
+                    packet[1] = (byte)((size & 0xFF00) >> 8);
+                    packet[2] = (byte)(size & 0x00FF);
+                    break;
+            }
+        }
     }
 }

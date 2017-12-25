@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Network.SimpleModulus;
+
 namespace MUnique.OpenMU.ChatServer
 {
     using System;
@@ -111,7 +113,7 @@ namespace MUnique.OpenMU.ChatServer
             this.ServerState = OpenMU.Interfaces.ServerState.Starting;
             try
             {
-                this.chatClientListener = new Listener(this.port, () => new Decryptor(DefaultKeys.DecryptionKey, this.Xor32Key), () => null);
+                this.chatClientListener = new Listener(this.port, () => new Decryptor(SimpleModulusDecryptor.DefaultServerKey, this.Xor32Key), () => null);
                 this.chatClientListener.ClientAccepted += this.ChatClientAccepted;
                 this.chatClientListener.Start();
                 Log.Info($"Chat client listener ready on port {this.port}.");
