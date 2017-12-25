@@ -62,6 +62,7 @@ namespace MUnique.OpenMU.GameLogic
             return success;
         }
 
+        /// <inheritdoc/>
         protected override void SetItemSlot(Item item, byte slot)
         {
             base.SetItemSlot(item, slot);

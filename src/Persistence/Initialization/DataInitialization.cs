@@ -182,7 +182,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return potion;
         }
 
-
         private Item CreateJewelOfBless(byte itemSlot)
         {
             return this.CreateJewel(itemSlot, 13);

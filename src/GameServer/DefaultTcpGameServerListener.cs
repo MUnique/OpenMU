@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Network.SimpleModulus;
-
 namespace MUnique.OpenMU.GameServer
 {
     using System;
@@ -16,6 +14,7 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.SimpleModulus;
 
     /// <summary>
     /// A game server listener that listens on a TCP port which uses the default packet handlers (<see cref="GameServerContext.PacketHandlers"/>).
@@ -144,7 +143,7 @@ namespace MUnique.OpenMU.GameServer
             {
                 newPlayerId = playerIdEventArgs.PlayerId;
                 this.Log(l => l.DebugFormat($"new player id {newPlayerId} for game client {remoteEndPoint}"));
-                var decryptor = new ComposableDecryptor().AddDecryptor(new SimpleModulusDecryptor() {AcceptWrongBlockChecksum = true});
+                var decryptor = new ComposableDecryptor().AddDecryptor(new SimpleModulusDecryptor() { AcceptWrongBlockChecksum = true });
                 var connection = new Connection(socket, new Encryptor(), decryptor);
                 var remotePlayer = new RemotePlayer(newPlayerId, this.gameContext, this.mainPacketHandler, connection);
                 this.OnPlayerConnected(remotePlayer);

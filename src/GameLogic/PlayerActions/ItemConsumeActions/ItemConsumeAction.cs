@@ -158,4 +158,3 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         */
     }
 }
-

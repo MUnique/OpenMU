@@ -54,33 +54,46 @@ namespace MUnique.OpenMU.GameLogic
                 this.itemSlotCount = itemSlotCount;
             }
 
+            /// <inheritdoc />
+            public int Count => this.actualCollection.Count(i => this.IsSlotOfThisStorage(i.ItemSlot));
+
+            /// <inheritdoc />
+            public bool IsReadOnly => false;
+
+            /// <inheritdoc />
             public IEnumerator<Item> GetEnumerator()
             {
                 return this.actualCollection.Where(item => this.IsSlotOfThisStorage(item.ItemSlot)).GetEnumerator();
             }
 
+            /// <inheritdoc />
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return this.GetEnumerator();
             }
 
+            /// <inheritdoc />
             public void Add(Item item)
             {
                 this.actualCollection.Add(item);
             }
 
+            /// <inheritdoc />
             public void Clear()
             {
                 throw new System.NotImplementedException();
             }
 
+            /// <inheritdoc />
             public bool Contains(Item item) => item != null && this.IsSlotOfThisStorage(item.ItemSlot) && this.actualCollection.Contains(item);
 
+            /// <inheritdoc />
             public void CopyTo(Item[] array, int arrayIndex)
             {
                 throw new System.NotImplementedException();
             }
 
+            /// <inheritdoc />
             public bool Remove(Item item)
             {
                 if (this.Contains(item))
@@ -90,11 +103,6 @@ namespace MUnique.OpenMU.GameLogic
 
                 return false;
             }
-
-            /// <inheritdoc />
-            public int Count => this.actualCollection.Count(i => this.IsSlotOfThisStorage(i.ItemSlot));
-
-            public bool IsReadOnly => false;
 
             private bool IsSlotOfThisStorage(byte itemSlot)
             {
