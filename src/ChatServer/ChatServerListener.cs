@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Network.SimpleModulus;
-
 namespace MUnique.OpenMU.ChatServer
 {
     using System;
@@ -11,10 +9,11 @@ namespace MUnique.OpenMU.ChatServer
     using System.Linq;
     using System.Security.Cryptography;
     using System.Timers;
-
     using log4net;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.SimpleModulus;
+    using MUnique.OpenMU.Network.Xor;
 
     /// <summary>
     /// Chat Server Listener, accepts incoming connections.

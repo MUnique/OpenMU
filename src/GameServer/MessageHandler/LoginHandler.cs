@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Xor;
 
     /// <summary>
     /// Handler for login packets.

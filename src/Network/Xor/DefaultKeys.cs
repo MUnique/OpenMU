@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network
+namespace MUnique.OpenMU.Network.Xor
 {
     /// <summary>
     /// The default xor keys for encryption and decryption.

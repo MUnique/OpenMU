@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Network
 {
     using MUnique.OpenMU.Network.SimpleModulus;
-    using MUnique.OpenMU.Network.Xor32;
+    using MUnique.OpenMU.Network.Xor;
 
     /// <summary>
     /// The default decryptor used by the server to decrypt incoming data packets.
