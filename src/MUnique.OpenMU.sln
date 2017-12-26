@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.GameServer", "GameServer\MUnique.OpenMU.GameServer.csproj", "{8EC9EBEE-56DD-4139-AA02-D154CA8536E6}"
 EndProject
@@ -73,6 +73,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.ChatServer.Tests", "..\tests\MUnique.OpenMU.ChatServer.Tests\MUnique.OpenMU.ChatServer.Tests.csproj", "{DAA084C5-3A0C-4A69-A30B-B13A52901316}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.ChatServer.ExDbConnector", "ChatServer\ExDbConnector\MUnique.OpenMU.ChatServer.ExDbConnector.csproj", "{B717F976-1A50-4112-A61A-F0E17E1A70D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.SimpleModulusKeyGenerator", "SimpleModulusKeyGenerator\MUnique.OpenMU.SimpleModulusKeyGenerator.csproj", "{F4FB8089-880E-43C3-A1B3-0B1B73B24729}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -187,6 +189,10 @@ Global
 		{B717F976-1A50-4112-A61A-F0E17E1A70D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B717F976-1A50-4112-A61A-F0E17E1A70D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B717F976-1A50-4112-A61A-F0E17E1A70D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4FB8089-880E-43C3-A1B3-0B1B73B24729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4FB8089-880E-43C3-A1B3-0B1B73B24729}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4FB8089-880E-43C3-A1B3-0B1B73B24729}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4FB8089-880E-43C3-A1B3-0B1B73B24729}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
