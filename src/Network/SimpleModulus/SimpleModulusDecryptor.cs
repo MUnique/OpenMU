@@ -14,9 +14,14 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     public class SimpleModulusDecryptor : SimpleModulusBase, IDecryptor
     {
         /// <summary>
-        /// The default server side decryption key.
+        /// The default server side decryption key. The corrsponding encryption key is <see cref="SimpleModulusEncryptor.DefaultClientKey"/>.
         /// </summary>
         public static readonly SimpleModulusKeys DefaultServerKey = SimpleModulusKeys.CreateDecryptionKeys(new uint[] { 128079, 164742, 70235, 106898, 31544, 2047, 57011, 10183, 48413, 46165, 15171, 37433 });
+
+        /// <summary>
+        /// The default client side decryption key. The corrsponding encryption key is <see cref="SimpleModulusEncryptor.DefaultServerKey"/>.
+        /// </summary>
+        public static readonly SimpleModulusKeys DefaultClientKey = SimpleModulusKeys.CreateDecryptionKeys(new uint[] { 73326, 109989, 98843, 171058, 18035, 30340, 24701, 11141, 62004, 64409, 35374, 64599 });
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(SimpleModulusDecryptor));
         private readonly SimpleModulusKeys decryptionKeys;
