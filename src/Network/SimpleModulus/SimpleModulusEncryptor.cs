@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <summary>
         /// The default client side decryption key. The corrsponding encryption key is <see cref="SimpleModulusDecryptor.DefaultServerKey"/>.
         /// </summary>
-        public static readonly SimpleModulusKeys DefaultClientKey = SimpleModulusKeys.CreateDecryptionKeys(new uint[] { 128079, 164742, 70235, 106898, 23489, 11911, 19816, 13647, 48413, 46165, 15171, 37433 });
+        public static readonly SimpleModulusKeys DefaultClientKey = SimpleModulusKeys.CreateEncryptionKeys(new uint[] { 128079, 164742, 70235, 106898, 23489, 11911, 19816, 13647, 48413, 46165, 15171, 37433 });
 
         private readonly SimpleModulusKeys encryptionKeys;
 
