@@ -143,8 +143,7 @@ namespace MUnique.OpenMU.GameServer
             {
                 newPlayerId = playerIdEventArgs.PlayerId;
                 this.Log(l => l.DebugFormat($"new player id {newPlayerId} for game client {remoteEndPoint}"));
-                var decryptor = new ComposableDecryptor().AddDecryptor(new SimpleModulusDecryptor() { AcceptWrongBlockChecksum = true });
-                var connection = new Connection(socket, new Encryptor(), decryptor);
+                var connection = new Connection(socket, new Encryptor(), new Decryptor());
                 var remotePlayer = new RemotePlayer(newPlayerId, this.gameContext, this.mainPacketHandler, connection);
                 this.OnPlayerConnected(remotePlayer);
                 connection.Disconnected += (sender, e) => remotePlayer.Disconnect();
