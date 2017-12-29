@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Network
 
     /// <summary>
     /// The default decryptor used by the server to decrypt incoming data packets.
+    /// It decrypts with the "simple modulus" algorithm first, and then with the 32 byte XOR-key.
     /// </summary>
     public class Decryptor : ComposableDecryptor
     {

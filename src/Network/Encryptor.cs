@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Network
 
     /// <summary>
     /// The default encryptor used by the server to encrypt outgoing data packets.
+    /// It encrypts 0xC3 and 0xC4-packets with the "simple modulus" algorithm.
     /// </summary>
     public class Encryptor : ComposableEncryptor
     {
