@@ -326,6 +326,16 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
+        /// Gets the sub type of the packet. This only works when the packet type is not encrypted.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        /// <returns>The sub type of the packet.</returns>
+        public static byte GetPacketSubType(this byte[] packet)
+        {
+            return packet[packet.GetPacketHeaderSize() + 1];
+        }
+
+        /// <summary>
         /// Gets the size of a packet from its header.
         /// C1 and C3 packets have a maximum length of 255, and the length defined in the second byte.
         /// C2 and C4 packets have a maximum length of 65535, and the length defined in the second and third byte.

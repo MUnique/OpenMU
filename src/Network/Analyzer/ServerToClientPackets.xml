@@ -1,0 +1,481 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
+  <Description>This file contains all packet definitions for packets which are sent from game server to client.</Description>
+  <Packets>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F1</Code>
+      <SubCode>00</SubCode>
+      <Name>Server Info</Name>
+      <Description>When this packet is sent to the client after it has connected, it shows the login dialog.</Description>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Short</Type>
+          <Name>Player-ID</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>String</Type>
+          <Name>Version</Name>
+          <Length>5</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F1</Code>
+      <SubCode>01</SubCode>
+      <Name>Login Result</Name>
+      <Description>Result of the login process.</Description>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Success</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>26</Code>
+      <SubCode>FE</SubCode>
+      <Name>Current Health/Shield</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Short</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>26</Code>
+      <SubCode>FF</SubCode>
+      <Name>Maximum Health/Shield</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Short</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>27</Code>
+      <SubCode>FE</SubCode>
+      <Name>Current Mana/Ability</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>Mana</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Short</Type>
+          <Name>Ability</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>27</Code>
+      <SubCode>FF</SubCode>
+      <Name>Maximum Mana/Ability</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>Mana</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Short</Type>
+          <Name>Ability</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F3</Code>
+      <SubCode>00</SubCode>
+      <Name>Character list</Name>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Number of characters</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F3</Code>
+      <SubCode>01</SubCode>
+      <Name>Character creation result</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Success</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F3</Code>
+      <SubCode>11</SubCode>
+      <Name>Skill list / Skill added</Name>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Skill index (when added)</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Skill id (when added)</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Skill list count (when list)</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F3</Code>
+      <SubCode>15</SubCode>
+      <Name>Character focused</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Character name</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F3</Code>
+      <SubCode>06</SubCode>
+      <Name>Character stat increase response</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result (first 4 bit) and Stat Type (last 4 bit)</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F3</Code>
+      <SubCode>02</SubCode>
+      <Name>Character delete response</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F3</Code>
+      <SubCode>05</SubCode>
+      <Name>Character level update</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Level</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Level Up Points</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Maximum Health</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Maximum Mana</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Maximum Shield</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Maximum Ability</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Fruit Points</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C3</Type>
+      <Code>F3</Code>
+      <SubCode>03</SubCode>
+      <Name>Character information</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>X</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Y</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Map Id</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Long</Type>
+          <Name>Current Experience</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>Long</Type>
+          <Name>Experience for next level</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Level up points</Name>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Strength</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Agility</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Vitality</Name>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Energy</Name>
+        </Field>
+        <Field>
+          <Index>34</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Current Health</Name>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Maximum Health</Name>
+        </Field>
+        <Field>
+          <Index>38</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Current Mana</Name>
+        </Field>
+        <Field>
+          <Index>40</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Maximum Mana</Name>
+        </Field>
+        <Field>
+          <Index>42</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Current Shield</Name>
+        </Field>
+        <Field>
+          <Index>44</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Maximum Shield</Name>
+        </Field>
+        <Field>
+          <Index>46</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Current Ability</Name>
+        </Field>
+        <Field>
+          <Index>48</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Maximum Ability</Name>
+        </Field>
+        <Field>
+          <Index>50</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Unknown</Name>
+        </Field>
+        <Field>
+          <Index>52</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>Money</Name>
+        </Field>
+        <Field>
+          <Index>56</Index>
+          <Type>Byte</Type>
+          <Name>PK-Level</Name>
+        </Field>
+        <Field>
+          <Index>57</Index>
+          <Type>Byte</Type>
+          <Name>Ctl-Code</Name>
+        </Field>
+        <Field>
+          <Index>58</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Used fruit points</Name>
+        </Field>
+        <Field>
+          <Index>58</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Max fruit points</Name>
+        </Field>
+        <Field>
+          <Index>60</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Command</Name>
+        </Field>
+        <Field>
+          <Index>62</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Used negative fruit points</Name>
+        </Field>
+        <Field>
+          <Index>64</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Max negative fruit points</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C4</Type>
+      <Code>F3</Code>
+      <SubCode>10</SubCode>
+      <Name>Character inventory</Name>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Item count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>F3</Code>
+      <SubCode>14</SubCode>
+      <Name>Item upgraded</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Item slot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C1</Type>
+      <Code>0D</Code>
+      <Name>Server Message</Name>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C2</Type>
+      <Code>12</Code>
+      <Name>Player meet</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Player count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C2</Type>
+      <Code>13</Code>
+      <Name>Npc meet</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Npc count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <Type>C2</Type>
+      <Code>C0</Code>
+      <Name>MUssenger initialization / friend list</Name>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Letter count</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Maximum Letter count</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Friend count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    
+  </Packets>
+</PacketDefinitions>
