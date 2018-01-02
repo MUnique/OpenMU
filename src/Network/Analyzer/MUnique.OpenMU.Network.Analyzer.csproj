@@ -84,7 +84,9 @@
     <None Include="PacketDefinitions.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Readme.md" />
+    <None Include="Readme.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
