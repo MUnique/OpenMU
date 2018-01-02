@@ -126,7 +126,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
         private void ReadItemPrice(Player player, byte[] buffer)
         {
-            int slot = buffer[3]; ////0x4C;
+            int slot = buffer[4]; ////0x4C;
             uint price = buffer.MakeDwordBigEndian(5);
             Logger.DebugFormat("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter.Name, slot, price);
             this.setPriceAction.SetPrice(player, slot, price);
