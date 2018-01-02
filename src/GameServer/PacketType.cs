@@ -156,7 +156,6 @@ namespace MUnique.OpenMU.GameServer
         /// A GGAuth packet.
         /// </summary>
         GGAuth = 0x73, ////dont need yet--
-        ////Walk = Protocol.Walk, //+
 
         /// <summary>
         /// A LoggedIn packet.
@@ -167,8 +166,6 @@ namespace MUnique.OpenMU.GameServer
         /// A CharacterGroup packet.
         /// </summary>
         CharacterGroup = 0xF3, ////+
-        ////Hit = Protocol.Hit, //+
-        ////arpTeleport = Protocol.Teleport, //+
 
         /// <summary>
         /// A Animation packet.
