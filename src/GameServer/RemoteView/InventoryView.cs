@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ItemConsumed(byte inventorySlot, bool success)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0x28, (byte)(success ? 1 : 0), inventorySlot });
+            this.connection.Send(new byte[] { 0xC1, 0x05, 0x28, inventorySlot, (byte)(success ? 1 : 0) });
         }
 
         /// <inheritdoc/>
