@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.Network.PacketTwister
             this.twisters.Add(0x51, new PacketTwisterOfGuildJoinResponse());
             this.twisters.Add(0x52, new PacketTwisterOfGuildList());
             this.twisters.Add(0x53, new PacketTwisterOfGuildKick());
-            this.twisters.Add(0x54, new PacketTwisterOfGuildMasterResponse());
+            //// this.twisters.Add(0x54, new PacketTwisterOfGuildMasterResponse()); // implementation seems to be wrong
             this.twisters.Add(0x55, new PacketTwisterOfGuildMasterInfo());
             this.twisters.Add(0x57, new PacketTwister37());
             this.twisters.Add(0x61, new PacketTwisterOfGuildWarRequest());

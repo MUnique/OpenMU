@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Network.PacketTwister
     /// <summary>
     /// PacketTwister implementation for packets of 'GuildMasterResponse' type.
     /// </summary>
+    /// <remarks>This implementation seems to be wrong - Twist and Correct is the same code!</remarks>
     internal class PacketTwisterOfGuildMasterResponse : IPacketTwister
     {
         /// <inheritdoc/>
