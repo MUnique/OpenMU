@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return;
             }
 
-            if (item.Durability <= 1)
+            if (item.Durability == 0)
             {
                 player.Inventory.RemoveItem(item);
                 player.PlayerView.InventoryView.ItemConsumed(inventorySlot, true);
