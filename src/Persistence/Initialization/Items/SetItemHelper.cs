@@ -129,11 +129,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var allowedClasses = classes.Where(c => allowedClassNumbers.Contains((CharacterClassNumber)c.Number)).ToList();
             string setName = "Leather";
             byte setNumber = 5;
-            this.CreateArmor(setName + " Helm", setNumber, 7, 2, 6, 5, 30, 80, 0, classes.Where(c => allowedClassNumbersHelm.Contains((CharacterClassNumber)c.Number)));
-            this.CreateArmor(setName + " Armor", setNumber, 8, 3, 10, 10, 30, 80, 0, allowedClasses);
-            this.CreateArmor(setName + " Pants", setNumber, 9, 2, 8, 7, 30, 80, 0, allowedClasses);
-            this.CreateArmor(setName + " Gloves", setNumber, 10, 2, 4, 2, 30, 80, 0, allowedClasses);
-            this.CreateArmor(setName + " Boots", setNumber, 11, 2, 5, 2, 30, 80, 0, allowedClasses);
+            this.CreateArmor(setName + " Helm", setNumber, 7, 2, 6, 5, 30, 34, 0, classes.Where(c => allowedClassNumbersHelm.Contains((CharacterClassNumber)c.Number)));
+            this.CreateArmor(setName + " Armor", setNumber, 8, 3, 10, 10, 30, 44, 0, allowedClasses);
+            this.CreateArmor(setName + " Pants", setNumber, 9, 2, 8, 7, 30, 39, 0, allowedClasses);
+            this.CreateArmor(setName + " Gloves", setNumber, 10, 2, 4, 2, 30, 29, 0, allowedClasses);
+            this.CreateArmor(setName + " Boots", setNumber, 11, 2, 5, 2, 30, 32, 0, allowedClasses);
         }
     }
 }
