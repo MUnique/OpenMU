@@ -109,6 +109,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.PositionX = (byte)Rand.NextInt(character.CurrentMap.DeathSafezone.X1, character.CurrentMap.DeathSafezone.X2);
             character.PositionY = (byte)Rand.NextInt(character.CurrentMap.DeathSafezone.Y1, character.CurrentMap.DeathSafezone.Y2);
             character.Attributes.First(a => a.Definition == Stats.Level).Value = (index * 10) + 1;
+            character.LevelUpPoints = (int)(character.Attributes.First(a => a.Definition == Stats.Level).Value - 1) * character.CharacterClass.PointsPerLevelUp;
             character.Inventory = this.repositoryManager.CreateNew<ItemStorage>();
             character.Inventory.Money = 1000000;
             character.Inventory.Items.Add(this.CreateSmallAxe(0));
