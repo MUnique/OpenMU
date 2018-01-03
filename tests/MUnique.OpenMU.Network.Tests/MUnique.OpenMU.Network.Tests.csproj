@@ -91,6 +91,7 @@
     <Compile Include="AsyncConnectionTest.cs" />
     <Compile Include="EncryptionTest.cs" />
     <Compile Include="ListPacketQueueTest.cs" />
+    <Compile Include="PacketTwisterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
