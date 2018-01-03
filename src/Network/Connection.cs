@@ -186,11 +186,6 @@ namespace MUnique.OpenMU.Network
         {
             using (ThreadContext.Stacks["RemoteEndPoint"].Push(this.remoteEndPoint.ToString()))
             {
-                if (args.LastOperation == SocketAsyncOperation.Disconnect)
-                {
-                    this.Disconnect();
-                }
-
                 int length = args.BytesTransferred;
                 if (length == 0)
                 {
@@ -206,7 +201,14 @@ namespace MUnique.OpenMU.Network
 
                 this.packetBuffer.AddRange(args.Buffer.Take(length));
                 this.RaisePacketReceivedEvents();
-                this.BeginReceive();
+                if (args.LastOperation == SocketAsyncOperation.Disconnect)
+                {
+                    this.Disconnect();
+                }
+                else
+                {
+                    this.BeginReceive();
+                }
             }
         }
 
