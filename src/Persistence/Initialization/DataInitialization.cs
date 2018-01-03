@@ -147,6 +147,20 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.Inventory.Items.Add(this.CreateShieldPotion(44, 0));
             character.Inventory.Items.Add(this.CreateShieldPotion(45, 1));
             character.Inventory.Items.Add(this.CreateShieldPotion(46, 2));
+            character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather armor
+            character.Inventory.Items.Add(this.CreateSetItem(47, 5, 7)); // Leather helm
+            character.Inventory.Items.Add(this.CreateSetItem(49, 5, 9)); // Leather pants
+            character.Inventory.Items.Add(this.CreateSetItem(63, 5, 10)); // Leather gloves
+            character.Inventory.Items.Add(this.CreateSetItem(65, 5, 11)); // Leather boots
+        }
+
+        private Item CreateSetItem(byte itemSlot, byte setNumber, byte group)
+        {
+            var item = this.repositoryManager.CreateNew<Item>();
+            item.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == group && def.Number == setNumber);
+            item.Durability = item.Definition.Durability;
+            item.ItemSlot = itemSlot;
+            return item;
         }
 
         private Item CreateAlcohol(byte itemSlot)
