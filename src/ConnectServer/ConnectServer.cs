@@ -32,7 +32,6 @@ namespace MUnique.OpenMU.ConnectServer
 
             this.ClientListener = new ClientListener(this);
             this.CreatePlugins();
-            this.ServerState = OpenMU.Interfaces.ServerState.Stopped;
         }
 
         /// <inheritdoc/>

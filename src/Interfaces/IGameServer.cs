@@ -15,6 +15,11 @@ namespace MUnique.OpenMU.Interfaces
     public enum ServerState
     {
         /// <summary>
+        /// The server has finished stopping.
+        /// </summary>
+        Stopped,
+
+        /// <summary>
         /// The server is currenctly starting, but has not yet finished initialization.
         /// </summary>
         Starting,
@@ -28,11 +33,6 @@ namespace MUnique.OpenMU.Interfaces
         /// The server is not available anymore and is stopping it's services.
         /// </summary>
         Stopping,
-
-        /// <summary>
-        /// The server has finished stopping.
-        /// </summary>
-        Stopped
     }
 
     /// <summary>

@@ -8,10 +8,10 @@ var Constants = {
 };
 
 var ServerState = {
-    Starting: 0,
-    Started: 1,
-    Stopping: 2,
-    Stopped: 3
+    Stopped: 0,
+    Starting: 1,
+    Started: 2,
+    Stopping: 3
 };
 
 var FluxMixin = Fluxxor.FluxMixin(React),

@@ -47,7 +47,6 @@ namespace MUnique.OpenMU.GameServer
             IRepositoryManager repositoryManager,
             IFriendServer friendServer)
         {
-            this.ServerState = ServerState.Stopped;
             this.Id = gameServerDefinition.ServerID;
             this.Description = gameServerDefinition.Description;
 
