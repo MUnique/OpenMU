@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
 {
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -687,6 +686,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             {
                 var def = this.repositoryManager.CreateNew<MonsterDefinition>();
+                def.Number = 478;
+                def.Designation = "Delgado - Lucky Coins";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.repositoryManager.CreateNew<MonsterDefinition>();
                 def.Number = 479;
                 def.Designation = "Gatekeeper Titus";
                 this.gameConfiguration.Monsters.Add(def);
@@ -725,6 +731,27 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.repositoryManager.CreateNew<MonsterDefinition>();
                 def.Number = 542;
                 def.Designation = "Golden Compensation Box";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.repositoryManager.CreateNew<MonsterDefinition>();
+                def.Number = 543;
+                def.Designation = "Gens Duprian";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.repositoryManager.CreateNew<MonsterDefinition>();
+                def.Number = 544;
+                def.Designation = "Gens Vanert";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.repositoryManager.CreateNew<MonsterDefinition>();
+                def.Number = 566;
+                def.Designation = "Mercenary Guild Felicia";
                 this.gameConfiguration.Monsters.Add(def);
             }
 

@@ -398,8 +398,17 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private void CreateGameMapDefinitions()
         {
-            var lorencia = new Lorencia();
-            this.gameConfiguration.Maps.Add(lorencia.Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Lorencia().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Dungeon().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Devias().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Noria().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new LostTower().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Exile().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Arena().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Atlans().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Tarkan().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new DevilSquare1To4().Initialize(this.repositoryManager, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Icarus().Initialize(this.repositoryManager, this.gameConfiguration));
 
             string[] mapNames =
             {
@@ -414,7 +423,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 "Karutan1", "Karutan2"
             };
 
-            var skipCount = 1;
+            var skipCount = this.gameConfiguration.Maps.Count;
             mapNames.Skip(skipCount).Select((mapName, i) =>
                 {
                     var map = this.repositoryManager.CreateNew<GameMapDefinition>();
@@ -534,7 +543,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.DefenseBase));
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumPhysBaseDmg));
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumWizBaseDmg));
-            //// TODO: Excellent Options
 
             new CharacterClassInitialization(this.repositoryManager, this.gameConfiguration).CreateCharacterClasses();
             var setHelper = new SetItemHelper(this.repositoryManager, this.gameConfiguration);

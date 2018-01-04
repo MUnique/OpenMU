@@ -7,74 +7,28 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
-    /// Intializes the lorencia map.
+    /// The initialization for the Lorencia map.
     /// </summary>
-    public class Lorencia
+    internal class Lorencia : BaseMapInitializer
     {
         /// <summary>
         /// The default number of the lorencia map.
         /// </summary>
         public const byte Number = 0;
 
-        /// <summary>
-        /// Initializes the data for the lorencia map.
-        /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
-        /// <returns>
-        /// The created game map definition for lorencia.
-        /// </returns>
-        public GameMapDefinition Initialize(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
-        {
-            this.CreateMonsters(repositoryManager, gameConfiguration);
-            var mapDefinition = repositoryManager.CreateNew<GameMapDefinition>();
-            mapDefinition.Number = Number;
-            mapDefinition.Name = "Lorencia";
-            mapDefinition.TerrainData = Terrains.ResourceManager.GetObject("Terrain1") as byte[];
-            mapDefinition.ExpMultiplier = 1;
-            foreach (var spawn in this.CreateSpawns(repositoryManager, mapDefinition, gameConfiguration))
-            {
-                mapDefinition.MonsterSpawns.Add(spawn);
-            }
+        /// <inheritdoc/>
+        protected override byte MapNumber => Number;
 
-            return mapDefinition;
-        }
+        /// <inheritdoc/>
+        protected override string MapName => "Lorencia";
 
-        private MonsterSpawnArea CreateMonsterSpawn(IRepositoryManager repositoryManager, GameMapDefinition map, MonsterDefinition monsterDefinition, short quantity, byte direction, SpawnTrigger spawnTrigger, byte x1, byte x2, byte y1, byte y2)
-        {
-            var area = repositoryManager.CreateNew<MonsterSpawnArea>();
-            area.GameMap = map;
-            area.MonsterDefinition = monsterDefinition;
-            area.Quantity = quantity;
-            area.Direction = (Direction)direction;
-            area.SpawnTrigger = spawnTrigger;
-            area.X1 = x1;
-            area.X2 = x2;
-            area.Y1 = y1;
-            area.Y2 = y2;
-            return area;
-        }
-
-        /// <summary>
-        /// Gets all lorencia npc spawns.
-        /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        /// <param name="map">The lorencia map.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
-        /// <returns>
-        /// The spawn areas of lorencia.
-        /// </returns>
-        /// <remarks>
-        /// Extracted from MonsterSetBase.txt by Regex: (?m)^(\d+)\t*?(\d+)\t*?(\d+)\t*?(\d+)\t*?(\d+)\t*?(\d+).*?$
-        /// Replace by: yield return new MonsterSpawnArea { GameMap = maps.First\(m =&gt; m.Number == $2\), MonsterDefinition = npcDictionary\[$1\], Quantity = 1, Direction = $6, SpawnTrigger = SpawnTrigger.Automatic, X1 = $4, X2 = $4, Y1 = $5, Y2 = $5 };
-        /// </remarks>
-        private IEnumerable<MonsterSpawnArea> CreateSpawns(IRepositoryManager repositoryManager, GameMapDefinition map, GameConfiguration gameConfiguration)
+        /// <inheritdoc />
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IRepositoryManager repositoryManager, GameMapDefinition map, GameConfiguration gameConfiguration)
         {
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
@@ -102,6 +56,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             yield return this.CreateMonsterSpawn(repositoryManager, map, npcDictionary[257], 1, 3, SpawnTrigger.Automatic, 132, 132, 165, 165);
             yield return this.CreateMonsterSpawn(repositoryManager, map, npcDictionary[229], 1, 1, SpawnTrigger.Automatic, 136, 136, 88, 88);
             yield return this.CreateMonsterSpawn(repositoryManager, map, npcDictionary[375], 1, 3, SpawnTrigger.Automatic, 132, 132, 161, 161);
+            yield return this.CreateMonsterSpawn(repositoryManager, map, npcDictionary[543], 1, 2, SpawnTrigger.Automatic, 141, 141, 143, 143);
 
             // Monsters:
             yield return this.CreateMonsterSpawn(repositoryManager, map, npcDictionary[000], 45, 0, SpawnTrigger.Automatic, 135, 240, 020, 088);
@@ -115,16 +70,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             yield return this.CreateMonsterSpawn(repositoryManager, map, npcDictionary[007], 15, 0, SpawnTrigger.Automatic, 008, 060, 011, 080);
         }
 
-        /// <summary>
-        /// Gets all lorencia monsters.
-        /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
-        /// <remarks>
-        /// Extracted from Monsters.txt by Regex: (?m)^(\d+)\t1\t"(.*?)"\t*?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+).*?$
-        /// <![CDATA[Replace by: yield return new MonsterDefinition\r\n            {\r\n                Number = $1,\r\n                Designation = "$2",\r\n                Attributes = new Dictionary<AttributeDefinition, float>\r\n                {\r\n                    { Stats.Level, $3 },\r\n                    { Stats.MaximumHealth, $4 },\r\n                    { Stats.MinimumPhysBaseDmg, $6 },\r\n                    { Stats.MaximumPhysBaseDmg, $7 },\r\n                    { Stats.DefenseBase, $8 },\r\n                    { Stats.AttackRatePvm, $10 },\r\n                    { Stats.DefenseRatePvm, $11 },\r\n                    { Stats.WindResistance, $23 },\r\n                    { Stats.PoisonResistance, $24 },\r\n                    { Stats.IceResistance, $25 },\r\n                    { Stats.WaterResistance, $26 },\r\n                    { Stats.FireResistance, $27 },\r\n                },\r\n                MoveRange = $12,\r\n                AttackRange = $14,\r\n                ViewRange = $15,\r\n                MoveDelay = new TimeSpan\($16 * TimeSpan.TicksPerMillisecond\),\r\n                AttackDelay = new TimeSpan\($17 * TimeSpan.TicksPerMillisecond\),\r\n                RespawnDelay = new TimeSpan\($18 * TimeSpan.TicksPerSecond\),\r\n                Attribute = $19\r\n            };]]>
-        /// </remarks>
-        private void CreateMonsters(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
+        /// <inheritdoc />
+        protected override void CreateMonsters(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
         {
             var bullFighter = repositoryManager.CreateNew<MonsterDefinition>();
             gameConfiguration.Monsters.Add(bullFighter);
