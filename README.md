@@ -56,3 +56,27 @@ If you want to contribute code, please do the following steps:
 
 ## How to use ##
 Have a look at the [quick start guide](QuickStart.md).
+
+## Gameplay differences to the original server ##
+This project doesn't have the goal to copy the original MU Online server behavior to 100 %. This is not entirely
+possible, because the original server is written in another programming language and has a complete different architecture.
+With some points we make our live easier in this project, with other points we try to improve the gameplay.
+
+### Calculations ###
+The calculations of attribute values (like character damage decrement etc.) is done with 32 bit float numbers and without rounding off, like the original server does at some places.
+
+### Money drops ###
+The original server drops money (zen) on the ground when a player kills a monster.
+The serialization of it is a bit strange, because it's sent as 'item drop' and misuses item fields to represent the money value.
+We make our live here easier, because we don't drop money. Instead, we directly add it to the inventory of the
+player(s).
+Benefits:
+  * More performance, as we don't create a ton of new "Item" objects which are actually no items. Money drops really often on the original server.
+  * Cleaner code as we don't misuse "Item" objects and don't need to invent something like a "MoneyItem".
+  * This also slightly improves gameplay - picking up all the money on the ground is a bit annoying.
+
+### Countdown when changing character or sub-server ###
+The original server uses a five second countdown when a player wants to change his character or the sub-server.
+Maybe this was done for some performance reasons, as the original server would then save the character/account data.
+We think that's really annoying and see no real value in that, so we don't use a countdown.
+
