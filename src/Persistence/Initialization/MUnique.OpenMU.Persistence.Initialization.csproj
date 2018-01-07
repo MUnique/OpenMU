@@ -186,13 +186,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Buffs.txt" />
-    <Content Include="JewelMixes.txt" />
     <None Include="MasterSkillTree.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="ChaosMixes.xml" />
-    <Content Include="Guardian Options.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
