@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         /// Sets the price of an item.
         /// </summary>
         /// <param name="player">The player.</param>
-        /// <param name="slot">The slot.</param>
+        /// <param name="slot">The slot of the item in the store (0 to 31).</param>
         /// <param name="price">The price.</param>
         public void SetPrice(Player player, int slot, uint price)
         {
