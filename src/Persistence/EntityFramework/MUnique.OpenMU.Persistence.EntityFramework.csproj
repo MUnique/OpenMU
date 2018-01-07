@@ -285,6 +285,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExtendedJoinEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="JsonQueryBuilder.cs" />
     <Compile Include="List.cs" />
     <Compile Include="ListAdapter.cs" />
     <Compile Include="LoadingStatus.cs" />
