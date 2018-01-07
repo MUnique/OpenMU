@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="xor32Key">The xor32 key.</param>
         public Decryptor(SimpleModulusKeys decryptionKey, byte[] xor32Key)
         {
-            this.AddDecryptor(new SimpleModulusDecryptor(decryptionKey))
+            this.AddDecryptor(new SimpleModulusDecryptor(decryptionKey) { AcceptWrongBlockChecksum = true })
                 .AddDecryptor(new Xor32Decryptor(xor32Key));
         }
     }
