@@ -13,6 +13,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
     using NUnit.Framework;
+    using Account = MUnique.OpenMU.Persistence.EntityFramework.Account;
+    using GameConfiguration = MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration;
 
     /// <summary>
     /// Tests for the <see cref="JsonQueryBuilder"/>.
