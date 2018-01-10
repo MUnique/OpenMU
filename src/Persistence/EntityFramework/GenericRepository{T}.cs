@@ -125,7 +125,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             {
                 if (!navigation.IsCollection())
                 {
-                    this.LoadNavigationProperty(entityEntry, navigation);
+                    if (this.fullEntityType.FindPrimaryKey().Properties[0] == navigation.ForeignKey.Properties[0])
+                    {
+                        // The entity type is a many-to-many join entity and the property of the navigation is the "owner" of it.
+                        // Therefore, we don't need to load it. It would be nice to set the object reference somehow, though.
+                    }
+                    else
+                    {
+                        this.LoadNavigationProperty(entityEntry, navigation);
+                    }
                 }
             }
 
