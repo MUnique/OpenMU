@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Linq;
     using log4net;
     using Microsoft.EntityFrameworkCore;
+    using MUnique.OpenMU.Persistence.EntityFramework.Json;
     using Npgsql.Logging;
 
     /// <summary>
@@ -70,6 +71,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
                     this.RegisterRepository(type, repository);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Ensures the caches for current game configuration.
+        /// It's meant to fill the caches also in <see cref="ConfigurationIdReferenceResolver"/>.
+        /// </summary>
+        public void EnsureCachesForCurrentGameConfiguration()
+        {
+            foreach (var repository in this.Repositories.Values.OfType<IConfigurationTypeRepository>())
+            {
+                repository.EnsureCacheForCurrentConfiguration();
             }
         }
 

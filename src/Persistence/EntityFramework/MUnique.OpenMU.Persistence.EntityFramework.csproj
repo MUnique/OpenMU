@@ -133,6 +133,9 @@
       <HintPath>..\..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Npgsql, Version=3.2.4.1, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Npgsql.3.2.4.1\lib\net451\Npgsql.dll</HintPath>
       <Private>True</Private>
@@ -260,6 +263,7 @@
     <Compile Include="ConnectionSettings.cs" />
     <Compile Include="ExtendedModelMetaData.cs" />
     <Compile Include="GameServerDefinitionRepository.cs" />
+    <Compile Include="IConfigurationTypeRepository.cs" />
     <Compile Include="IDictionaryEntity.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="CachedEfRepository{T}.cs" />
@@ -284,7 +288,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExtendedJoinEntities.tt</DependentUpon>
     </Compile>
-    <Compile Include="JsonQueryBuilder.cs" />
+    <Compile Include="Json\AccountJsonObjectLoader.cs" />
+    <Compile Include="Json\AccountJsonQueryBuilder.cs" />
+    <Compile Include="Json\BinaryAsHexJsonConverter.cs" />
+    <Compile Include="Json\ConfigurationIdReferenceResolver.cs" />
+    <Compile Include="Json\IdReferenceResolver.cs" />
+    <Compile Include="Json\JsonObjectLoader.cs" />
+    <Compile Include="Json\JsonObjectDeserializer.cs" />
+    <Compile Include="Json\JsonQueryBuilder.cs" />
     <Compile Include="List.cs" />
     <Compile Include="ListAdapter.cs" />
     <Compile Include="LoadingStatus.cs" />

@@ -4,10 +4,19 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
+    using Microsoft.EntityFrameworkCore;
+
     /// <summary>
-    /// Context to access the game configuration.
+    /// Context to access the game configuration (read-only).
     /// </summary>
     public class ConfigurationContext : EntityDataContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationContext"/> class.
+        /// </summary>
+        public ConfigurationContext()
+        {
+            this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        }
     }
 }

@@ -10,11 +10,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.IO;
     using System.Linq;
 
+    using MUnique.OpenMU.Persistence.EntityFramework.Json;
+
     /// <summary>
     /// A repository which gets its data from the <see cref="EntityDataContext.CurrentGameConfiguration"/>, without additionally touching the database.
     /// </summary>
     /// <typeparam name="T">The data object type.</typeparam>
-    internal class ConfigurationTypeRepository<T> : IRepository<T>
+    internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTypeRepository
         where T : class
     {
         private readonly IRepositoryManager repositoryManager;
@@ -92,7 +94,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             return this.GetById(id);
         }
 
-        private void EnsureCacheForCurrentConfiguration()
+        /// <summary>
+        /// Ensures the cache for the current configuration.
+        /// </summary>
+        public void EnsureCacheForCurrentConfiguration()
         {
             var configuration = this.GetCurrentGameConfiguration();
             if (this.cache.ContainsKey(configuration))
@@ -111,6 +116,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     .Where(item => item is IIdentifiable)
                     .ToDictionary(item => ((IIdentifiable)item).Id, item => item);
                 this.cache.Add(configuration, dictionary);
+                foreach (var item in dictionary.Values)
+                {
+                    ConfigurationIdReferenceResolver.Instance.AddReference((IIdentifiable)item);
+                }
             }
         }
 
