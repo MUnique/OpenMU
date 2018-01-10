@@ -182,7 +182,7 @@ foreach (Type type in customTypes)
         }
         <#} else if (property.PropertyType.GenericTypeArguments.Length == 1 && property.PropertyType.GenericTypeArguments[0].IsPrimitive) {#>[Column("<#=property.Name#>")]
         public string Raw<#=property.Name#> { get; set; }
-        <#} else {#>public <#=propertyTypeName#> Raw<#=property.Name#> { get; set; } = new List<<#=genericParameterType#>>();<#}#>
+        <#} else {#>public <#=propertyTypeName#> Raw<#=property.Name#> { get; } = new List<<#=genericParameterType#>>();<#}#>
         
         /// <inheritdoc/>
         [NotMapped]

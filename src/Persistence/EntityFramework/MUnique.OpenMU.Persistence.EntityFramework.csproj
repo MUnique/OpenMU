@@ -259,7 +259,6 @@
     <Compile Include="ConnectionSetting.cs" />
     <Compile Include="ConnectionSettings.cs" />
     <Compile Include="ExtendedModelMetaData.cs" />
-    <Compile Include="GameMapDefinitionRepository.cs" />
     <Compile Include="GameServerDefinitionRepository.cs" />
     <Compile Include="IDictionaryEntity.cs" />
     <Compile Include="IIdentifiable.cs" />

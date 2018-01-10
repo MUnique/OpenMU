@@ -1915,6 +1915,26 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "GameServerConfigurationGameMapDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    GameServerConfigurationId = table.Column<Guid>(),
+                    GameMapDefinitionId = table.Column<Guid>()
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameServerConfigurationGameMapDefinition", x => new { x.GameServerConfigurationId, x.GameMapDefinitionId });
+                    table.ForeignKey(
+                        name: "FK_GameServerConfigurationGameMapDefinition_GameMapDefinition_GameMapDefinitionId",
+                        column: x => x.GameMapDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Account_LoginName",
                 schema: "data",
@@ -2114,6 +2134,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "GameMapDefinitionDropItemGroup",
                 column: "DropItemGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameServerConfigurationGameMapDefinition_GameMapDefinitionId",
+                schema: "config",
+                table: "GameServerConfigurationGameMapDefinition",
+                column: "GameMapDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameServerDefinition_GameConfigurationId",
@@ -2698,6 +2724,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_GameServerConfigurationGameMapDefinition_GameServerConfiguration_GameServerConfigurationId",
+                schema: "config",
+                table: "GameServerConfigurationGameMapDefinition",
+                column: "GameServerConfigurationId",
+                principalSchema: "config",
+                principalTable: "GameServerConfiguration",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_EnterGate_GameMapDefinition_GameMapDefinitionId",
                 schema: "config",
                 table: "EnterGate",
@@ -3029,6 +3065,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "GameServerConfiguration",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "GameServerConfigurationGameMapDefinition",
                 schema: "config");
         }
     }

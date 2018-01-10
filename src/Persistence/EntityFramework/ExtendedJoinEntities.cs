@@ -81,6 +81,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public ICollection<ItemItemSetGroup> JoinedItemSetGroups { get; } = new List<ItemItemSetGroup>();
     }
 
+    [Table("GameServerConfigurationGameMapDefinition", Schema = "config")]
+    internal partial class GameServerConfigurationGameMapDefinition 
+    {
+        public Guid GameServerConfigurationId { get; set; }
+        public GameServerConfiguration GameServerConfiguration { get; set; }
+
+        public Guid GameMapDefinitionId { get; set; }
+        public GameMapDefinition GameMapDefinition { get; set; }
+    }
+
+    internal partial class GameServerConfiguration
+    {
+        public ICollection<GameServerConfigurationGameMapDefinition> JoinedGameMapDefinitions { get; } = new List<GameServerConfigurationGameMapDefinition>();
+    }
+
     [Table("DropItemGroupItemDefinition", Schema = "config")]
     internal partial class DropItemGroupItemDefinition 
     {

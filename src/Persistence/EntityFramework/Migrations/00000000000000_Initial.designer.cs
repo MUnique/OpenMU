@@ -484,6 +484,19 @@
                     b.ToTable("GameServerConfiguration","config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfigurationGameMapDefinition", b =>
+            {
+                b.Property<Guid>("GameServerConfigurationId");
+
+                b.Property<Guid>("GameMapDefinitionId");
+
+                b.HasIndex("GameMapDefinitionId");
+
+                b.HasKey("GameServerConfigurationId", "GameMapDefinitionId");
+
+                b.ToTable("GameServerConfigurationGameMapDefinition", "config");
+            });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1738,6 +1751,19 @@
                         .HasForeignKey("GameMapDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfigurationGameMapDefinition", b =>
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "GameMapDefinition")
+                    .WithMany()
+                    .HasForeignKey("GameMapDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "GameServerConfiguration")
+                    .WithMany("JoinedGameMapDefinitions")
+                    .HasForeignKey("GameServerConfigurationId")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", b =>
                 {

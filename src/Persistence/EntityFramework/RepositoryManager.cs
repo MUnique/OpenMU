@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             this.RegisterRepository(new ConfigurationTypeRepository<ItemDefinition>(this, config => config.RawItems));
             this.RegisterRepository(new ConfigurationTypeRepository<JewelMix>(this, config => config.RawJewelMixes));
             this.RegisterRepository(new ConfigurationTypeRepository<MagicEffectDefinition>(this, config => config.RawMagicEffects));
-            this.RegisterRepository(new GameMapDefinitionRepository(this, config => config.RawMaps));
+            this.RegisterRepository(new ConfigurationTypeRepository<GameMapDefinition>(this, config => config.RawMaps));
             this.RegisterRepository(new ConfigurationTypeRepository<MasterSkillRoot>(this, config => config.RawMasterSkillRoots));
             this.RegisterRepository(new ConfigurationTypeRepository<MonsterDefinition>(this, config => config.RawMonsters));
             this.RegisterRepository(new ConfigurationTypeRepository<Skill>(this, config => config.RawSkills));
