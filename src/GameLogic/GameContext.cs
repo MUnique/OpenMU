@@ -143,7 +143,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
 
                 var player = this.PlayerList[i];
-                if (player.SelectedCharacter != null)
+                if (player.SelectedCharacter != null && player.PlayerState.CurrentState == PlayerState.EnteredWorld)
                 {
                     player.Regenerate();
                 }
