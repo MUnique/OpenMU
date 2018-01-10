@@ -24,9 +24,8 @@ If you have that, you'll need to do:
   * If required, it will create the database schemas, the required roles and gives permissions to this roles
   * If you update to a newer state of the master-branch, it could be possible that you have to delete the database again before starting. Currently, we are not providing patches for database updates.
   * You can reinstall the database by adding a '-reinit' parameter
-
-When the Admin Panel is initialized, go to http://localhost:1234/admin. Then you should see three gameservers,
+  * Optional: you can add the parameter '-autostart' to save the next step.
+* When the Admin Panel is initialized, go to http://localhost:1234/admin. Then you should see three gameservers,
 the chat server and the connect server. Start the connect server and at least one gameserver.
 If all goes well, you should be able to expand a gameserver and see the hosted game maps.
-
-Then you can connect to the server through the game client.
+* Then you can connect to the server through the game client.
