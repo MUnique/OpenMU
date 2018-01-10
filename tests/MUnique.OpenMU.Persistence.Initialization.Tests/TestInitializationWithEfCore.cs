@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             using (var context = manager.CreateNewConfigurationContext())
             using (manager.UseContext(context))
             {
-                var gameConfiguraton = manager.GetRepository<GameConfiguration>().GetAll().FirstOrDefault();
+                var gameConfiguraton = manager.GetRepository<DataModel.Configuration.GameConfiguration>().GetAll().FirstOrDefault();
                 Assert.That(gameConfiguraton, Is.Not.Null);
 
                 // Testing loading of an account
@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
                 using (manager.UseContext(accountContext))
                 {
                     var account1 =
-                        manager.GetRepository<Account, IAccountRepository<Account>>()
+                        manager.GetRepository<DataModel.Entities.Account, IAccountRepository<DataModel.Entities.Account>>()
                             .GetAccountByLoginName("test1", "test1");
                     Assert.That(account1, Is.Not.Null);
                     Assert.That(account1.LoginName, Is.EqualTo("test1"));
