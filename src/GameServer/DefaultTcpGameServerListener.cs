@@ -14,7 +14,6 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.SimpleModulus;
 
     /// <summary>
     /// A game server listener that listens on a TCP port which uses the default packet handlers (<see cref="GameServerContext.PacketHandlers"/>).
