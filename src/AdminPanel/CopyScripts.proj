@@ -2,14 +2,34 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="CopyScripts">
 
   <Target Name="CopyScripts">
-
+    <CallTarget Targets="CopyScriptsWindows" Condition="$(TRAVIS) == ''"/>
+    <CallTarget Targets="CopyScriptsLinux" Condition="$(TRAVIS) == 'true'"/>
+    <CallTarget Targets="BundleAndCleanUp" />
+  </Target>
+  
+  <Target Name="CopyScriptsWindows">
+    <!-- At Windows we use xcopy -->
+    <!-- /Y - Suppresses prompting to confirm you want to overwrite an existing destination file -->
+    <!-- /I - If destination does not exist and copying more than one file, assumes that destination must be a directory. -->
+    <!-- /S - Copies directories and subdirectories except empty ones. -->
     <Exec Command="xcopy &quot;$(MSBuildProjectDirectory)\Scripts&quot; &quot;$(OutputPath)content\js&quot; /Y /I /S" />
     <Exec Command="xcopy &quot;$(MSBuildProjectDirectory)\content\*.css&quot; &quot;$(OutputPath)content\css&quot; /Y /I" />
     <Exec Command="xcopy &quot;$(MSBuildProjectDirectory)\fonts&quot; &quot;$(OutputPath)content\fonts&quot; /Y /I /S" />
+  </Target>
+
+  <Target Name="CopyScriptsLinux">
+    <Exec Command="mkdir -p $(OutputPath)content/js" />
+    <Exec Command="cp -f -r $(MSBuildProjectDirectory)/Scripts $(OutputPath)content/js" />
+    <Exec Command="mkdir -p $(OutputPath)content/css" />
+    <Exec Command="for file in $(MSBuildProjectDirectory)/content/**/*.css; do cp -f -u $file $(OutputPath)content/css/${file##*/}; done"  />
+    <Exec Command="mkdir -p $(OutputPath)content/fonts" />
+    <Exec Command="cp -f -r $(MSBuildProjectDirectory)/content/fonts $(OutputPath)content/fonts" />
+  </Target>
+  
+  <Target Name="BundleAndCleanUp">
     <CallTarget Targets="BundleAppCSS" />
     <CallTarget Targets="BundleAppJS" />
     <CallTarget Targets="CleanUpBabelResult" />
-    
   </Target>
 
   <Target Name="BundleAppCSS">
