@@ -61,7 +61,7 @@ var ServerStore = Fluxxor.createStore({
   
   serverAction: function(serverId, actionName) {
     $.ajax({
-      url: '/admin/' + actionName + '/' + serverId,
+      url: '/admin/server/' + actionName + '/' + serverId,
       dataType: 'json',
       success: function(serverData) {
         this.updateServerData(serverData);
