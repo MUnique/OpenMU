@@ -223,16 +223,14 @@
     <None Include="TransformBabel.proj">
       <SubType>Designer</SubType>
     </None>
-    <None Include="views\home\index.sshtml">
+    <None Include="views\Home\index.sshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="views\home\livemap.sshtml">
+    <None Include="views\LiveMap\livemap.sshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="views\home\log.sshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="views\Log\log.sshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
