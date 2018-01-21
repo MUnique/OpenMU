@@ -275,6 +275,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="content\js\constants\AccountConstants.js" />
+    <Content Include="content\js\constants\CommonConstants.js" />
     <Content Include="content\js\liveview.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
