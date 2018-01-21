@@ -167,6 +167,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AccountModule.cs" />
     <Compile Include="AdminPanel.cs" />
     <Compile Include="ExtendedGameServerInfo.cs" />
     <Compile Include="FooBarHub.cs" />
