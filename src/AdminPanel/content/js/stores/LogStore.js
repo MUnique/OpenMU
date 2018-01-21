@@ -10,15 +10,20 @@ var LogStore = Fluxxor.createStore({
     this.loggerFilter = null;
     this.characterFilter = null;
     this.autoRefresh = true;
+    this.subscribers = 0;
     this.bindActions(
-      Constants.FILTER_SERVER, this.filterByServer,
-      Constants.FILTER_CHARACTER, this.filterByCharacter,
-      Constants.FILTER_LOGGER, this.filterByLogger
+      Constants.LOG_FILTER_SERVER, this.filterByServer,
+      Constants.LOG_FILTER_CHARACTER, this.filterByCharacter,
+      Constants.LOG_FILTER_LOGGER, this.filterByLogger,
+      Constants.LOG_SETAUTOREFRESH, this.setAutoRefresh,
+      Constants.LOG_SUBSCRIBE, this.subscribe,
+      Constants.LOG_UNSUBSCRIBE, this.unsubscribe
       );
     
-    var log4NetHub = $.connection.fooBarHub;
-      var entries = this.entries;
-      log4NetHub.client.onLoggedEvent = function(formattedEvent, loggedEvent) {
+    this.log4NetHub = $.connection.fooBarHub;
+
+    var entries = this.entries;
+    this.log4NetHub.client.onLoggedEvent = function(formattedEvent, loggedEvent) {
         if (console && console.log) {
             console.log("onLoggedEvent", formattedEvent, loggedEvent);
         }
@@ -32,10 +37,32 @@ var LogStore = Fluxxor.createStore({
         this.emitChange();
     }.bind(this);
     $.connection.hub.logging = true;
-    $.connection.hub.start(function() {
-        log4NetHub.server.listen('MyGroup');
-    });
+    
     this.loadLoggers();
+  },
+
+  start: function() {
+    $.connection.hub.start(function () {
+        this.log4NetHub.server.listen('MyGroup');
+    }.bind(this));  
+  },
+
+  stop: function() {
+      $.connection.hub.stop();  
+  },
+
+  subscribe: function() {
+      this.subscribers++;
+      if (this.subscribers === 1) {
+          this.start();
+      }
+  },
+
+  unsubscribe: function() {
+      this.subscribers--;
+      if (this.subscribers === 0) {
+          this.stop();
+      }
   },
   
   updateVisibleEntries: function() {
@@ -91,7 +118,7 @@ var LogStore = Fluxxor.createStore({
   
   loadLoggers: function() {
     $.ajax({
-      url: "/admin/loggers",
+      url: "/admin/log/loggers",
       dataType: 'json',
       success: function(data) {
           this.loggers = data.sort();

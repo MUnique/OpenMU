@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System.Linq;
@@ -54,6 +56,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 //// context.Context.ChangeTracker.DetectChanges();
                 //// context.Context.ChangeTracker.AcceptAllChanges();
                 return account;
+            }
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<Account> GetAccountsOrderedByLoginName(int skip, int count)
+        {
+            using (var context = this.GetContext())
+            {
+                var accounts = context.Context.Set<Account>()
+                    .OrderBy(a => a.LoginName)
+                    .Skip(skip)
+                    .Take(count);
+                return accounts.ToList();
             }
         }
 
