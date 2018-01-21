@@ -10,6 +10,14 @@
     };
   },
 
+  componentDidMount: function() {
+      this.getFlux().actions.logSubscribe();
+  },
+
+  componentWillUnmount: function() {
+      this.getFlux().actions.logUnsubscribe();
+  },
+
   render: function() {
     var entryList = this.state.entries.map(function (entry) {
       return (
@@ -19,7 +27,7 @@
     
     return (
         <div className="log">
-          <LogFilter loggers={this.state.loggers} autoRefresh={this.state.autoRefresh}/>
+          <LogFilter loggers={this.state.loggers} autoRefresh={this.state.autoRefresh} key="logFilter"/>
           <table className="log">
             <thead>
               <tr>
@@ -43,21 +51,21 @@ var LogFilter = React.createClass({
   
   filterByServer: function() {
     var server = $('#server')[0].value;
-    this.getFlux().actions.filterByServer(server);
+    this.getFlux().actions.filterLogByServer(server);
   },
   
   filterByCharacter: function() {
     var character = $('#character')[0].value;
-    this.getFlux().actions.filterByCharacter(character);
+    this.getFlux().actions.filterLogByCharacter(character);
   },
   
   filterByLogger: function() {
     var logger = $('#logger')[0].value;
-    this.getFlux().actions.filterByLogger(logger);
+    this.getFlux().actions.filterLogByLogger(logger);
   },
   
   activeChanged: function() {
-    this.getFlux().store("LogStore").setAutoRefresh($('#myonoffswitch')[0].checked);
+    this.getFlux().actions.setLogAutoRefresh($('#myonoffswitch')[0].checked);
   },
   
   render: function() {

@@ -1,10 +1,18 @@
 ﻿var ServerList = React.createClass({
-  mixins: [FluxMixin, StoreWatchMixin("ServerStore")],
+  mixins: [FluxChildMixin, StoreWatchMixin("ServerStore")],
   
   getStateFromFlux: function() {
     return {
       servers: this.getFlux().store("ServerStore").getAll()
     };
+  },
+
+  componentDidMount: function () {
+      this.getFlux().actions.serverListSubscribe();
+  },
+
+  componentWillUnmount: function () {
+      this.getFlux().actions.serverListUnsubscribe();
   },
 
   render: function() {
