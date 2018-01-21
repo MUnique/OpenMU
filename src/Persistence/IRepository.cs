@@ -81,6 +81,14 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="password">The password.</param>
         /// <returns>The account, if the password is correct. Otherwise, null.</returns>
         T GetAccountByLoginName(string loginName, string password);
+
+        /// <summary>
+        /// Gets the accounts ordered by login name.
+        /// </summary>
+        /// <param name="skip">The skip count.</param>
+        /// <param name="count">The count.</param>
+        /// <returns>The account objects, without depending data.</returns>
+        IEnumerable<T> GetAccountsOrderedByLoginName(int skip, int count);
     }
 
     /// <summary>
