@@ -170,7 +170,10 @@
     <Compile Include="AdminPanel.cs" />
     <Compile Include="ExtendedGameServerInfo.cs" />
     <Compile Include="FooBarHub.cs" />
+    <Compile Include="LiveMapModule.cs" />
+    <Compile Include="LogModule.cs" />
     <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="ServerModule.cs" />
     <Compile Include="WorldObserverHub.cs" />
     <Compile Include="WorldObserverToHubAdapter.cs" />
     <None Include="app.config" />

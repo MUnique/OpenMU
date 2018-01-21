@@ -91,7 +91,7 @@ var LogStore = Fluxxor.createStore({
   
   loadLoggers: function() {
     $.ajax({
-      url: "/admin/loggers",
+      url: "/admin/log/loggers",
       dataType: 'json',
       success: function(data) {
           this.loggers = data.sort();
