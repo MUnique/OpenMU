@@ -16,29 +16,18 @@
         <script src="@Path['~/content/js/app.js']"></script>
         <link rel="stylesheet" href="@Path['~/content/css/app.css']">
     </head>
-    <body class="log:inherit"> 
-        <header class="main-header">
-            <h1>Server Control Panel</h1>
-             <nav class="main-nav"></nav>
-        </header>
-         
-        <main class="main">
-            <section class="main-content">
-              <div id="content">
-                    
-              </div>
-            </section>
-            <aside class="main-aside">
-            </aside>
-        </main>
-        <footer class="main-footer">
-        
-        </footer>
+    <body> 
+        <div id="content"></div>
         
         <script src="@Path['~/content/js/bootstrap.min.js']"></script>
         <script>
-            var flux = new Fluxxor.Flux({ ServerStore: new ServerStore() }, ServerListActions);
-            ReactDOM.render(React.createElement(ServerList, { flux: flux }), document.getElementById('content'));
+            var flux = new Fluxxor.Flux({ 
+                CommonStateStore: new CommonStateStore(),
+                ServerStore: new ServerStore(),
+                LogStore: new LogStore(),
+                AccountStore: new AccountStore()
+            }, AdminActions);
+            ReactDOM.render(React.createElement(Layout, { flux: flux }), document.getElementById('content'));
         </script>
     </body>
 </html>
