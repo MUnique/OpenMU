@@ -33,9 +33,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var fromStorageInfo = this.GetStorageInfo(player, fromStorage);
             var fromItemStorage = fromStorageInfo.Storage;
             Item item = fromItemStorage.GetItem(fromSlot);
+
             if (item == null)
             {
                 // Item not found
+                player.PlayerView.InventoryView.ItemMoveFailed(null);
                 return;
             }
 
@@ -44,6 +46,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
             if (!this.CanMove(player, item, toSlot, fromSlot, toStorageInfo, fromStorageInfo))
             {
+                player.PlayerView.InventoryView.ItemMoveFailed(item);
                 return;
             }
 
@@ -52,7 +55,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             {
                 fromItemStorage.AddItem(item);
 
-                // TODO Send item move fail?
+                player.PlayerView.InventoryView.ItemMoveFailed(item);
                 return;
             }
 

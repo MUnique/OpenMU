@@ -20,6 +20,12 @@ namespace MUnique.OpenMU.GameLogic.Views
         void ItemMoved(Item item, byte toSlot, Storages storage);
 
         /// <summary>
+        /// Moving an item failed.
+        /// </summary>
+        /// <param name="item">The item which could not be moved. Null, if requested item could not be determined.</param>
+        void ItemMoveFailed(Item item);
+
+        /// <summary>
         /// Updates the money value.
         /// </summary>
         void UpdateMoney();

@@ -50,6 +50,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
+        public void ItemMoveFailed(Item item)
+        {
+            var itemMoveFailed = new byte[0x11];
+            itemMoveFailed[0] = 0xC3;
+            itemMoveFailed[1] = 0x11;
+            itemMoveFailed[2] = 0x24;
+            itemMoveFailed[3] = 0xFF;
+            itemMoveFailed[4] = 0;
+            if (item != null)
+            {
+                this.itemSerializer.SerializeItem(itemMoveFailed, 5, item);
+            }
+
+            this.connection.Send(itemMoveFailed);
+        }
+
+        /// <inheritdoc/>
         public void UpdateMoney()
         {
             var message = new byte[] { 0xC3, 0x08, 0x22, 0xFE, 0, 0, 0, 0 };
