@@ -134,7 +134,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             else
             {
                 // item id
-                preview[firstIndex] = (byte)((item.Index << (firstIndexHigh ? 4 : 0)) & (0x0F << (firstIndexHigh ? 4 : 0)));
+                preview[firstIndex] |= (byte)((item.Index << (firstIndexHigh ? 4 : 0)) & (0x0F << (firstIndexHigh ? 4 : 0)));
                 byte multi = (byte)(item.Index / 16);
                 if (multi > 0)
                 {
@@ -147,7 +147,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
                     if (byte2 > 0)
                     {
-                        preview[thirdIndex] = byte2;
+                        preview[thirdIndex] |= byte2;
                     }
                 }
 
