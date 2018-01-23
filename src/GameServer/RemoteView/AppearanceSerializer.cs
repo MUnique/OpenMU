@@ -303,7 +303,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             if (pet == null)
             {
-                preview[5] |= 0x0F;
+                preview[5] |= 0x03;
                 return;
             }
 
@@ -326,7 +326,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     preview[12] |= 0x02;
                     break;
                 default:
-                    preview[5] |= 0x0F;
+                    preview[5] |= 0x03;
                     break;
             }
 
