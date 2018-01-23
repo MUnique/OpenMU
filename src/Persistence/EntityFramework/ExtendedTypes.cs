@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.ItemOptionLink"/>.
@@ -3418,9 +3419,11 @@ public ICollection<ItemOfItemSet> RawItems { get; } = new List<ItemOfItemSet>();
         public Guid Id { get; set; }
 
 [Column("ItemSlots")]
+        [JsonProperty("ItemSlots")]
         public string RawItemSlots { get; set; }
                 
         /// <inheritdoc/>
+        [JsonIgnore]
         [NotMapped]
         public override ICollection<System.Int32> ItemSlots
         {
