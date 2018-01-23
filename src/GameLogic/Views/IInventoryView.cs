@@ -52,7 +52,8 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// Notifies the client that the durability of the item changed.
         /// </summary>
         /// <param name="item">The item.</param>
-        void ItemDurabilityChanged(Item item);
+        /// <param name="causedByConsumption">Flag which indicates if the durability change was caused by consuming the item.</param>
+        void ItemDurabilityChanged(Item item, bool causedByConsumption);
 
         /// <summary>
         /// Notifies the client that a new item appears in the inventory.

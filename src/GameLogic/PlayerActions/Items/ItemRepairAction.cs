@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             item.Durability = item.GetMaximumDurabilityOfOnePiece();
-            player.PlayerView.InventoryView.ItemDurabilityChanged(item);
+            player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 }
 
                 item.Durability = item.GetMaximumDurabilityOfOnePiece();
-                player.PlayerView.InventoryView.ItemDurabilityChanged(item);
+                player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
             }
         }
     }

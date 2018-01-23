@@ -122,9 +122,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
-        public void ItemDurabilityChanged(Item item)
+        public void ItemDurabilityChanged(Item item, bool afterConsumption)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x06, 0x2A, item.ItemSlot, item.Durability, 0x00 });
+            this.connection.Send(new byte[] { 0xC1, 0x06, 0x2A, item.ItemSlot, item.Durability, afterConsumption ? (byte)0x01 : (byte)0x00 });
         }
 
         /// <inheritdoc/>
