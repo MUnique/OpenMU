@@ -231,7 +231,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
 
             var navigationRelational = navigationType.Relational();
-            stringBuilder.Append("select json_build_object('$ref', \"").Append(referenceColumnToOtherEntity).AppendLine("\") ")
+            stringBuilder.Append("select \"").Append(referenceColumnToOtherEntity).AppendLine("\" as \"$ref\"")
                 .Append("from ").Append(navigationRelational.Schema).Append(".\"").Append(navigationRelational.TableName).AppendLine("\" ")
                 .Append("where ").Append("\"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(entityTypePrimaryKeyName).AppendLine("\"")
                 .Append(") as ").AppendLine(navigationAlias);
