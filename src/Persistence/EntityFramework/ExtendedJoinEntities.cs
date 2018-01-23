@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class Account
     {
-        public ICollection<AccountCharacterClass> JoinedCharacterClasss { get; } = new List<AccountCharacterClass>();
+        public ICollection<AccountCharacterClass> JoinedUnlockedCharacterClasses { get; } = new List<AccountCharacterClass>();
     }
 
     [Table("CharacterDropItemGroup", Schema = "data")]
@@ -93,7 +93,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class GameServerConfiguration
     {
-        public ICollection<GameServerConfigurationGameMapDefinition> JoinedGameMapDefinitions { get; } = new List<GameServerConfigurationGameMapDefinition>();
+        public ICollection<GameServerConfigurationGameMapDefinition> JoinedMaps { get; } = new List<GameServerConfigurationGameMapDefinition>();
     }
 
     [Table("DropItemGroupItemDefinition", Schema = "config")]
@@ -108,7 +108,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class DropItemGroup
     {
-        public ICollection<DropItemGroupItemDefinition> JoinedItemDefinitions { get; } = new List<DropItemGroupItemDefinition>();
+        public ICollection<DropItemGroupItemDefinition> JoinedPossibleItems { get; } = new List<DropItemGroupItemDefinition>();
     }
 
     [Table("MasterSkillDefinitionSkill", Schema = "config")]
@@ -123,7 +123,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class MasterSkillDefinition
     {
-        public ICollection<MasterSkillDefinitionSkill> JoinedSkills { get; } = new List<MasterSkillDefinitionSkill>();
+        public ICollection<MasterSkillDefinitionSkill> JoinedRequiredMasterSkills { get; } = new List<MasterSkillDefinitionSkill>();
     }
 
     [Table("MonsterDefinitionDropItemGroup", Schema = "config")]
@@ -168,7 +168,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class Skill
     {
-        public ICollection<SkillCharacterClass> JoinedCharacterClasss { get; } = new List<SkillCharacterClass>();
+        public ICollection<SkillCharacterClass> JoinedQualifiedCharacters { get; } = new List<SkillCharacterClass>();
     }
 
     [Table("SkillMasterSkillDefinition", Schema = "config")]
@@ -183,7 +183,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class Skill
     {
-        public ICollection<SkillMasterSkillDefinition> JoinedMasterSkillDefinitions { get; } = new List<SkillMasterSkillDefinition>();
+        public ICollection<SkillMasterSkillDefinition> JoinedMasterDefinitions { get; } = new List<SkillMasterSkillDefinition>();
     }
 
     [Table("ItemDefinitionCharacterClass", Schema = "config")]
@@ -198,7 +198,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class ItemDefinition
     {
-        public ICollection<ItemDefinitionCharacterClass> JoinedCharacterClasss { get; } = new List<ItemDefinitionCharacterClass>();
+        public ICollection<ItemDefinitionCharacterClass> JoinedQualifiedCharacters { get; } = new List<ItemDefinitionCharacterClass>();
     }
 
     [Table("ItemDefinitionItemSetGroup", Schema = "config")]
@@ -213,7 +213,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class ItemDefinition
     {
-        public ICollection<ItemDefinitionItemSetGroup> JoinedItemSetGroups { get; } = new List<ItemDefinitionItemSetGroup>();
+        public ICollection<ItemDefinitionItemSetGroup> JoinedPossibleItemSetGroups { get; } = new List<ItemDefinitionItemSetGroup>();
     }
 
     [Table("ItemSetGroupItemOption", Schema = "config")]
@@ -228,7 +228,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class ItemSetGroup
     {
-        public ICollection<ItemSetGroupItemOption> JoinedItemOptions { get; } = new List<ItemSetGroupItemOption>();
+        public ICollection<ItemSetGroupItemOption> JoinedOptions { get; } = new List<ItemSetGroupItemOption>();
     }
 
     [Table("ItemCraftingRequiredItemItemOptionType", Schema = "config")]
@@ -243,7 +243,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
     internal partial class ItemCraftingRequiredItem
     {
-        public ICollection<ItemCraftingRequiredItemItemOptionType> JoinedItemOptionTypes { get; } = new List<ItemCraftingRequiredItemItemOptionType>();
+        public ICollection<ItemCraftingRequiredItemItemOptionType> JoinedRequiredItemOptions { get; } = new List<ItemCraftingRequiredItemItemOptionType>();
     }
 
 }

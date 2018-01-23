@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         protected void InitJoinCollections()
         {
           
-            this.UnlockedCharacterClasses = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, AccountCharacterClass>(this.JoinedCharacterClasss, joinEntity => joinEntity.CharacterClass, entity => new AccountCharacterClass { Account = this, AccountId = this.Id, CharacterClass = (CharacterClass)entity, CharacterClassId = ((CharacterClass)entity).Id});
+            this.UnlockedCharacterClasses = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, AccountCharacterClass>(this.JoinedUnlockedCharacterClasses, joinEntity => joinEntity.CharacterClass, entity => new AccountCharacterClass { Account = this, AccountId = this.Id, CharacterClass = (CharacterClass)entity, CharacterClassId = ((CharacterClass)entity).Id});
         }
 
         /// <summary>
@@ -1360,7 +1360,7 @@ public ICollection<JewelMix> RawJewelMixes { get; } = new List<JewelMix>();
         protected void InitJoinCollections()
         {
           
-            this.Maps = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition, GameServerConfigurationGameMapDefinition>(this.JoinedGameMapDefinitions, joinEntity => joinEntity.GameMapDefinition, entity => new GameServerConfigurationGameMapDefinition { GameServerConfiguration = this, GameServerConfigurationId = this.Id, GameMapDefinition = (GameMapDefinition)entity, GameMapDefinitionId = ((GameMapDefinition)entity).Id});
+            this.Maps = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition, GameServerConfigurationGameMapDefinition>(this.JoinedMaps, joinEntity => joinEntity.GameMapDefinition, entity => new GameServerConfigurationGameMapDefinition { GameServerConfiguration = this, GameServerConfigurationId = this.Id, GameMapDefinition = (GameMapDefinition)entity, GameMapDefinitionId = ((GameMapDefinition)entity).Id});
         }
 
         /// <summary>
@@ -1449,7 +1449,7 @@ public ICollection<MainPacketHandlerConfiguration> RawSupportedPacketHandlers { 
         protected void InitJoinCollections()
         {
           
-            this.PossibleItems = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, DropItemGroupItemDefinition>(this.JoinedItemDefinitions, joinEntity => joinEntity.ItemDefinition, entity => new DropItemGroupItemDefinition { DropItemGroup = this, DropItemGroupId = this.Id, ItemDefinition = (ItemDefinition)entity, ItemDefinitionId = ((ItemDefinition)entity).Id});
+            this.PossibleItems = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, DropItemGroupItemDefinition>(this.JoinedPossibleItems, joinEntity => joinEntity.ItemDefinition, entity => new DropItemGroupItemDefinition { DropItemGroup = this, DropItemGroupId = this.Id, ItemDefinition = (ItemDefinition)entity, ItemDefinitionId = ((ItemDefinition)entity).Id});
         }
 
         /// <summary>
@@ -1666,7 +1666,7 @@ public ICollection<PacketHandlerConfiguration> RawPacketHandlers { get; } = new 
         protected void InitJoinCollections()
         {
           
-            this.RequiredMasterSkills = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Skill, MasterSkillDefinitionSkill>(this.JoinedSkills, joinEntity => joinEntity.Skill, entity => new MasterSkillDefinitionSkill { MasterSkillDefinition = this, MasterSkillDefinitionId = this.Id, Skill = (Skill)entity, SkillId = ((Skill)entity).Id});
+            this.RequiredMasterSkills = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Skill, MasterSkillDefinitionSkill>(this.JoinedRequiredMasterSkills, joinEntity => joinEntity.Skill, entity => new MasterSkillDefinitionSkill { MasterSkillDefinition = this, MasterSkillDefinitionId = this.Id, Skill = (Skill)entity, SkillId = ((Skill)entity).Id});
         }
 
         /// <summary>
@@ -2547,9 +2547,9 @@ public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<Monste
         protected void InitJoinCollections()
         {
           
-            this.QualifiedCharacters = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, SkillCharacterClass>(this.JoinedCharacterClasss, joinEntity => joinEntity.CharacterClass, entity => new SkillCharacterClass { Skill = this, SkillId = this.Id, CharacterClass = (CharacterClass)entity, CharacterClassId = ((CharacterClass)entity).Id});
+            this.QualifiedCharacters = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, SkillCharacterClass>(this.JoinedQualifiedCharacters, joinEntity => joinEntity.CharacterClass, entity => new SkillCharacterClass { Skill = this, SkillId = this.Id, CharacterClass = (CharacterClass)entity, CharacterClassId = ((CharacterClass)entity).Id});
           
-            this.MasterDefinitions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition, SkillMasterSkillDefinition>(this.JoinedMasterSkillDefinitions, joinEntity => joinEntity.MasterSkillDefinition, entity => new SkillMasterSkillDefinition { Skill = this, SkillId = this.Id, MasterSkillDefinition = (MasterSkillDefinition)entity, MasterSkillDefinitionId = ((MasterSkillDefinition)entity).Id});
+            this.MasterDefinitions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition, SkillMasterSkillDefinition>(this.JoinedMasterDefinitions, joinEntity => joinEntity.MasterSkillDefinition, entity => new SkillMasterSkillDefinition { Skill = this, SkillId = this.Id, MasterSkillDefinition = (MasterSkillDefinition)entity, MasterSkillDefinitionId = ((MasterSkillDefinition)entity).Id});
         }
 
         /// <summary>
@@ -2905,9 +2905,9 @@ public ICollection<ItemOptionOfLevel> RawLevelDependentOptions { get; } = new Li
         protected void InitJoinCollections()
         {
           
-            this.QualifiedCharacters = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, ItemDefinitionCharacterClass>(this.JoinedCharacterClasss, joinEntity => joinEntity.CharacterClass, entity => new ItemDefinitionCharacterClass { ItemDefinition = this, ItemDefinitionId = this.Id, CharacterClass = (CharacterClass)entity, CharacterClassId = ((CharacterClass)entity).Id});
+            this.QualifiedCharacters = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, ItemDefinitionCharacterClass>(this.JoinedQualifiedCharacters, joinEntity => joinEntity.CharacterClass, entity => new ItemDefinitionCharacterClass { ItemDefinition = this, ItemDefinitionId = this.Id, CharacterClass = (CharacterClass)entity, CharacterClassId = ((CharacterClass)entity).Id});
           
-            this.PossibleItemSetGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, ItemDefinitionItemSetGroup>(this.JoinedItemSetGroups, joinEntity => joinEntity.ItemSetGroup, entity => new ItemDefinitionItemSetGroup { ItemDefinition = this, ItemDefinitionId = this.Id, ItemSetGroup = (ItemSetGroup)entity, ItemSetGroupId = ((ItemSetGroup)entity).Id});
+            this.PossibleItemSetGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, ItemDefinitionItemSetGroup>(this.JoinedPossibleItemSetGroups, joinEntity => joinEntity.ItemSetGroup, entity => new ItemDefinitionItemSetGroup { ItemDefinition = this, ItemDefinitionId = this.Id, ItemSetGroup = (ItemSetGroup)entity, ItemSetGroupId = ((ItemSetGroup)entity).Id});
         }
 
         /// <summary>
@@ -3363,7 +3363,7 @@ public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new List
         protected void InitJoinCollections()
         {
           
-            this.Options = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption, ItemSetGroupItemOption>(this.JoinedItemOptions, joinEntity => joinEntity.ItemOption, entity => new ItemSetGroupItemOption { ItemSetGroup = this, ItemSetGroupId = this.Id, ItemOption = (ItemOption)entity, ItemOptionId = ((ItemOption)entity).Id});
+            this.Options = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption, ItemSetGroupItemOption>(this.JoinedOptions, joinEntity => joinEntity.ItemOption, entity => new ItemSetGroupItemOption { ItemSetGroup = this, ItemSetGroupId = this.Id, ItemOption = (ItemOption)entity, ItemOptionId = ((ItemOption)entity).Id});
         }
 
         /// <summary>
@@ -3513,7 +3513,7 @@ public ICollection<ItemOfItemSet> RawItems { get; } = new List<ItemOfItemSet>();
         protected void InitJoinCollections()
         {
           
-            this.RequiredItemOptions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, ItemCraftingRequiredItemItemOptionType>(this.JoinedItemOptionTypes, joinEntity => joinEntity.ItemOptionType, entity => new ItemCraftingRequiredItemItemOptionType { ItemCraftingRequiredItem = this, ItemCraftingRequiredItemId = this.Id, ItemOptionType = (ItemOptionType)entity, ItemOptionTypeId = ((ItemOptionType)entity).Id});
+            this.RequiredItemOptions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, ItemCraftingRequiredItemItemOptionType>(this.JoinedRequiredItemOptions, joinEntity => joinEntity.ItemOptionType, entity => new ItemCraftingRequiredItemItemOptionType { ItemCraftingRequiredItem = this, ItemCraftingRequiredItemId = this.Id, ItemOptionType = (ItemOptionType)entity, ItemOptionTypeId = ((ItemOptionType)entity).Id});
         }
 
         /// <summary>
@@ -4497,33 +4497,33 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
         /// <param name="modelBuilder">The model builder.</param>
         protected void AddJoinDefinitions(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Account>().HasMany(entity => entity.JoinedCharacterClasss).WithOne(join => join.Account);
+            modelBuilder.Entity<Account>().HasMany(entity => entity.JoinedUnlockedCharacterClasses).WithOne(join => join.Account);
             modelBuilder.Entity<AccountCharacterClass>().HasKey(join => new { join.AccountId, join.CharacterClassId });
             modelBuilder.Entity<Character>().HasMany(entity => entity.JoinedDropItemGroups).WithOne(join => join.Character);
             modelBuilder.Entity<CharacterDropItemGroup>().HasKey(join => new { join.CharacterId, join.DropItemGroupId });
             modelBuilder.Entity<Item>().HasMany(entity => entity.JoinedItemSetGroups).WithOne(join => join.Item);
             modelBuilder.Entity<ItemItemSetGroup>().HasKey(join => new { join.ItemId, join.ItemSetGroupId });
-            modelBuilder.Entity<GameServerConfiguration>().HasMany(entity => entity.JoinedGameMapDefinitions).WithOne(join => join.GameServerConfiguration);
+            modelBuilder.Entity<GameServerConfiguration>().HasMany(entity => entity.JoinedMaps).WithOne(join => join.GameServerConfiguration);
             modelBuilder.Entity<GameServerConfigurationGameMapDefinition>().HasKey(join => new { join.GameServerConfigurationId, join.GameMapDefinitionId });
-            modelBuilder.Entity<DropItemGroup>().HasMany(entity => entity.JoinedItemDefinitions).WithOne(join => join.DropItemGroup);
+            modelBuilder.Entity<DropItemGroup>().HasMany(entity => entity.JoinedPossibleItems).WithOne(join => join.DropItemGroup);
             modelBuilder.Entity<DropItemGroupItemDefinition>().HasKey(join => new { join.DropItemGroupId, join.ItemDefinitionId });
-            modelBuilder.Entity<MasterSkillDefinition>().HasMany(entity => entity.JoinedSkills).WithOne(join => join.MasterSkillDefinition);
+            modelBuilder.Entity<MasterSkillDefinition>().HasMany(entity => entity.JoinedRequiredMasterSkills).WithOne(join => join.MasterSkillDefinition);
             modelBuilder.Entity<MasterSkillDefinitionSkill>().HasKey(join => new { join.MasterSkillDefinitionId, join.SkillId });
             modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.JoinedDropItemGroups).WithOne(join => join.MonsterDefinition);
             modelBuilder.Entity<MonsterDefinitionDropItemGroup>().HasKey(join => new { join.MonsterDefinitionId, join.DropItemGroupId });
             modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.JoinedDropItemGroups).WithOne(join => join.GameMapDefinition);
             modelBuilder.Entity<GameMapDefinitionDropItemGroup>().HasKey(join => new { join.GameMapDefinitionId, join.DropItemGroupId });
-            modelBuilder.Entity<Skill>().HasMany(entity => entity.JoinedCharacterClasss).WithOne(join => join.Skill);
+            modelBuilder.Entity<Skill>().HasMany(entity => entity.JoinedQualifiedCharacters).WithOne(join => join.Skill);
             modelBuilder.Entity<SkillCharacterClass>().HasKey(join => new { join.SkillId, join.CharacterClassId });
-            modelBuilder.Entity<Skill>().HasMany(entity => entity.JoinedMasterSkillDefinitions).WithOne(join => join.Skill);
+            modelBuilder.Entity<Skill>().HasMany(entity => entity.JoinedMasterDefinitions).WithOne(join => join.Skill);
             modelBuilder.Entity<SkillMasterSkillDefinition>().HasKey(join => new { join.SkillId, join.MasterSkillDefinitionId });
-            modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedCharacterClasss).WithOne(join => join.ItemDefinition);
+            modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedQualifiedCharacters).WithOne(join => join.ItemDefinition);
             modelBuilder.Entity<ItemDefinitionCharacterClass>().HasKey(join => new { join.ItemDefinitionId, join.CharacterClassId });
-            modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedItemSetGroups).WithOne(join => join.ItemDefinition);
+            modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedPossibleItemSetGroups).WithOne(join => join.ItemDefinition);
             modelBuilder.Entity<ItemDefinitionItemSetGroup>().HasKey(join => new { join.ItemDefinitionId, join.ItemSetGroupId });
-            modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.JoinedItemOptions).WithOne(join => join.ItemSetGroup);
+            modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.JoinedOptions).WithOne(join => join.ItemSetGroup);
             modelBuilder.Entity<ItemSetGroupItemOption>().HasKey(join => new { join.ItemSetGroupId, join.ItemOptionId });
-            modelBuilder.Entity<ItemCraftingRequiredItem>().HasMany(entity => entity.JoinedItemOptionTypes).WithOne(join => join.ItemCraftingRequiredItem);
+            modelBuilder.Entity<ItemCraftingRequiredItem>().HasMany(entity => entity.JoinedRequiredItemOptions).WithOne(join => join.ItemCraftingRequiredItem);
             modelBuilder.Entity<ItemCraftingRequiredItemItemOptionType>().HasKey(join => new { join.ItemCraftingRequiredItemId, join.ItemOptionTypeId });
         }
     }

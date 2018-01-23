@@ -116,7 +116,7 @@ foreach (Type type in customTypes)
             var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
             var joinTypeName = propertyInfo.DeclaringType.Name + elementType.Name;
 #>  
-            this.<#=propertyInfo.Name#> = new ManyToManyCollectionAdapter<<#=elementType.FullName#>, <#=joinTypeName#>>(this.Joined<#=elementType.Name#>s, joinEntity => joinEntity.<#=elementType.Name#>, entity => new <#=joinTypeName#> { <#=type.Name #> = this, <#=type.Name #>Id = this.Id, <#=elementType.Name#> = (<#=elementType.Name + customTypeSuffix#>)entity, <#=elementType.Name#>Id = ((<#=elementType.Name + customTypeSuffix#>)entity).Id});
+            this.<#=propertyInfo.Name#> = new ManyToManyCollectionAdapter<<#=elementType.FullName#>, <#=joinTypeName#>>(this.Joined<#=propertyInfo.Name#>, joinEntity => joinEntity.<#=elementType.Name#>, entity => new <#=joinTypeName#> { <#=type.Name #> = this, <#=type.Name #>Id = this.Id, <#=elementType.Name#> = (<#=elementType.Name + customTypeSuffix#>)entity, <#=elementType.Name#>Id = ((<#=elementType.Name + customTypeSuffix#>)entity).Id});
         <#
         } // end foreach standalone property
         #>}
@@ -315,7 +315,7 @@ foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
     var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
     var joinTypeName = propertyInfo.DeclaringType.Name + elementType.Name;
 #>
-            modelBuilder.Entity<<#=propertyInfo.DeclaringType.Name + customTypeSuffix#>>().HasMany(entity => entity.Joined<#=elementType.Name#>s).WithOne(join => join.<#=propertyInfo.DeclaringType.Name#>);
+            modelBuilder.Entity<<#=propertyInfo.DeclaringType.Name + customTypeSuffix#>>().HasMany(entity => entity.Joined<#=propertyInfo.Name#>).WithOne(join => join.<#=propertyInfo.DeclaringType.Name#>);
             modelBuilder.Entity<<#=joinTypeName#>>().HasKey(join => new { join.<#=propertyInfo.DeclaringType.Name#>Id, join.<#=elementType.Name#>Id });
 <#
 }

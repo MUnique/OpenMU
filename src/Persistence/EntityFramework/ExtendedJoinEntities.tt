@@ -80,7 +80,7 @@ foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
 
     internal partial class <#=propertyInfo.DeclaringType.Name + customTypeSuffix#>
     {
-        public ICollection<<#=joinTypeName#>> Joined<#=elementType.Name#>s { get; } = new List<<#=joinTypeName#>>();
+        public ICollection<<#=joinTypeName#>> Joined<#=propertyInfo.Name#> { get; } = new List<<#=joinTypeName#>>();
     }
 
 <#

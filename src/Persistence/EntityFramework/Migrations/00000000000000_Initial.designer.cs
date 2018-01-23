@@ -1566,7 +1566,7 @@
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AccountCharacterClass", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Account", "Account")
-                        .WithMany("JoinedCharacterClasss")
+                        .WithMany("JoinedUnlockedCharacterClasses")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -1696,7 +1696,7 @@
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroupItemDefinition", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
-                        .WithMany("JoinedItemDefinitions")
+                        .WithMany("JoinedPossibleItems")
                         .HasForeignKey("DropItemGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -1760,7 +1760,7 @@
                     .OnDelete(DeleteBehavior.Cascade);
 
                 b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "GameServerConfiguration")
-                    .WithMany("JoinedGameMapDefinitions")
+                    .WithMany("JoinedMaps")
                     .HasForeignKey("GameServerConfigurationId")
                     .OnDelete(DeleteBehavior.Cascade);
             });
@@ -1857,7 +1857,7 @@
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemOptionType", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", "ItemCraftingRequiredItem")
-                        .WithMany("JoinedItemOptionTypes")
+                        .WithMany("JoinedRequiredItemOptions")
                         .HasForeignKey("ItemCraftingRequiredItemId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -1901,7 +1901,7 @@
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
-                        .WithMany("JoinedCharacterClasss")
+                        .WithMany("JoinedQualifiedCharacters")
                         .HasForeignKey("ItemDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -1909,7 +1909,7 @@
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemSetGroup", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
-                        .WithMany("JoinedItemSetGroups")
+                        .WithMany("JoinedPossibleItemSetGroups")
                         .HasForeignKey("ItemDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -2013,7 +2013,7 @@
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", "ItemSetGroup")
-                        .WithMany("JoinedItemOptions")
+                        .WithMany("JoinedOptions")
                         .HasForeignKey("ItemSetGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -2093,7 +2093,7 @@
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinitionSkill", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "MasterSkillDefinition")
-                        .WithMany("JoinedSkills")
+                        .WithMany("JoinedRequiredMasterSkills")
                         .HasForeignKey("MasterSkillDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -2220,7 +2220,7 @@
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
-                        .WithMany("JoinedCharacterClasss")
+                        .WithMany("JoinedQualifiedCharacters")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -2244,7 +2244,7 @@
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
-                        .WithMany("JoinedMasterSkillDefinitions")
+                        .WithMany("JoinedMasterDefinitions")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
