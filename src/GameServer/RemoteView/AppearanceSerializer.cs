@@ -101,11 +101,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             this.SetItemLevels(preview, itemArray);
 
+            this.SetAncientSetCompleteness(preview, itemArray);
+
             this.AddWing(preview, itemArray[InventoryConstants.WingsSlot]);
 
             this.AddPet(preview, itemArray[InventoryConstants.PetSlot]);
 
             return preview;
+        }
+
+        private void SetAncientSetCompleteness(byte[] preview, ItemAppearance[] itemArray)
+        {
+            var isAncientSetComplete = false;
+
+            // TODO
+            if (isAncientSetComplete)
+            {
+                preview[11] |= 0x01;
+            }
         }
 
         private void SetHand(byte[] preview, ItemAppearance item, int indexIndex, int groupIndex)
@@ -310,20 +323,28 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             switch ((PetIndex)pet.Index)
             {
                 case PetIndex.Angel:
-                    break;
                 case PetIndex.Imp:
-                    preview[5] |= 0x01;
-                    break;
                 case PetIndex.Unicorn:
-                    preview[5] |= 0x02;
+                    preview[5] |= (byte)pet.Index;
                     break;
                 case PetIndex.Dinorant:
                     preview[5] |= 0x03;
                     preview[10] |= 0x01;
                     break;
+                case PetIndex.DarkHorse:
+                    preview[5] = 0x03;
+                    preview[12] |= 0x01;
+                    break;
                 case PetIndex.Fenrir:
                     preview[5] |= 0x03;
-                    preview[12] |= 0x02;
+                    preview[10] &= 0xFE;
+                    preview[12] &= 0xFE;
+                    preview[12] |= 0x04;
+                    preview[16] = 0x00;
+
+                    // TODO: Red Fenrir: preview[16] |= 0x01;
+                    // TODO: Blue Fenrir: preview[16] |= 0x02;
+                    // TODO: Gold Fenrir: preview[17] |= 0x01;
                     break;
                 default:
                     preview[5] |= 0x03;
