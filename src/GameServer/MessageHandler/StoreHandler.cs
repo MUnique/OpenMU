@@ -126,10 +126,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
         private void ReadItemPrice(Player player, byte[] buffer)
         {
-            int itemSlotInStore = buffer[4] - InventoryConstants.FirstStoreItemSlotIndex;
-            uint price = buffer.MakeDwordBigEndian(5);
-            Logger.DebugFormat("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter.Name, itemSlotInStore, price);
-            this.setPriceAction.SetPrice(player, itemSlotInStore, price);
+            int itemSlot = buffer[4];
+            var price = (int)buffer.MakeDwordBigEndian(5);
+            Logger.DebugFormat("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter.Name, itemSlot, price);
+            this.setPriceAction.SetPrice(player, itemSlot, price);
         }
     }
 }

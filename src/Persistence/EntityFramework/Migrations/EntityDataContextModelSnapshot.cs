@@ -609,6 +609,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("SocketCount");
 
+                    b.Property<int?>("StorePrice");
+
                     b.Property<Guid?>("StorageId");
 
                     b.HasKey("Id");

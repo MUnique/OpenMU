@@ -36,14 +36,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             }
 
             var item = requestedPlayer.ShopStorage.GetItem(slot);
-            if (item == null)
+            if (item == null || !item.StorePrice.HasValue)
             {
                 log.DebugFormat("Item unavailable, Slot {0}", slot);
                 player.PlayerView.ShowMessage("Item unavailable.", MessageType.BlueNormal);
                 return;
             }
 
-            if (player.Money < requestedPlayer.ShopStorage.StorePrices[slot - InventoryConstants.FirstStoreItemSlotIndex])
+            var itemPrice = item.StorePrice.Value;
+
+            if (player.Money < itemPrice)
             {
                 player.PlayerView.ShowMessage("Not enough Zen.", MessageType.BlueNormal);
                 return;
@@ -66,21 +68,28 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                     return;
                 }
 
-                int price = (int)requestedPlayer.ShopStorage.StorePrices[slot - InventoryConstants.FirstStoreItemSlotIndex];
+                log.DebugFormat("BuyRequest, Item Price: {0}", itemPrice);
+                if (player.TryRemoveMoney(itemPrice))
+                {
+                    if (requestedPlayer.TryAddMoney(itemPrice))
+                    {
+                        requestedPlayer.ShopStorage.RemoveItem(item);
 
-                // Remove Item, Add Money
-                log.DebugFormat("BuyRequest, Item Price: {0}", price);
-                player.ShopStorage.RemoveItem(item);
-                requestedPlayer.TryAddMoney(price);
-                requestedPlayer.PlayerView.InventoryView.UpdateMoney();
-                requestedPlayer.PlayerView.InventoryView.ItemSoldByPlayerShop(slot, player);
-                item.ItemSlot = (byte)freeslot;
-                player.Inventory.AddItem(item.ItemSlot, item);
+                        requestedPlayer.PlayerView.InventoryView.UpdateMoney();
+                        requestedPlayer.PlayerView.InventoryView.ItemSoldByPlayerShop(slot, player);
+                        item.ItemSlot = (byte)freeslot;
+                        item.StorePrice = null;
+                        player.Inventory.AddItem(item.ItemSlot, item);
 
-                // Add Item, Remove Money
-                player.PlayerView.InventoryView.ItemBoughtFromPlayerShop(item);
-                player.TryRemoveMoney(price);
-                player.PlayerView.InventoryView.UpdateMoney();
+                        player.PlayerView.InventoryView.ItemBoughtFromPlayerShop(item);
+                        player.PlayerView.InventoryView.UpdateMoney();
+                    }
+                    else
+                    {
+                        player.PlayerView.ShowMessage("The inventory of the seller is full.", MessageType.BlueNormal);
+                        player.TryAddMoney(itemPrice);
+                    }
+                }
             }
         }
     }

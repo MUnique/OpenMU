@@ -60,6 +60,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         public int SocketCount { get; set; }
 
         /// <summary>
+        /// Gets or sets the price which was set by the player for his personal store.
+        /// </summary>
+        public int? StorePrice { get; set; }
+
+        /// <summary>
         /// Assigns the values of another item to this item.
         /// </summary>
         /// <param name="otherItem">The other item.</param>

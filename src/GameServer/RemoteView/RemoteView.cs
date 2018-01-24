@@ -601,7 +601,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 var slot = item.ItemSlot - InventoryConstants.FirstStoreItemSlotIndex;
                 packet[offset + 0] = (byte)slot;
                 this.itemSerializer.SerializeItem(packet, offset + 1, item);
-                packet.SetIntegerSmallEndian(requestedPlayer.ShopStorage.StorePrices[slot], offset + 4 + this.itemSerializer.NeededSpace);
+                packet.SetIntegerSmallEndian((uint)(item.StorePrice ?? 0), offset + 4 + this.itemSerializer.NeededSpace);
             }
 
             this.connection.Send(packet);

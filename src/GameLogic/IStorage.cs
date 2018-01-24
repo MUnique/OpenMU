@@ -145,11 +145,6 @@ namespace MUnique.OpenMU.GameLogic
         string StoreName { get; set; }
 
         /// <summary>
-        /// Gets the store prices.
-        /// </summary>
-        uint[] StorePrices { get; }
-
-        /// <summary>
         /// Gets the store lock.
         /// </summary>
         object StoreLock { get; }
