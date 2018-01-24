@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// </summary>
         /// <param name="servers">The servers.</param>
         public ServerModule(IList<IManageableServer> servers)
-            : base ("admin/server")
+            : base("admin/server")
         {
             this.servers = servers;
             this.Get["shutdown/{serverId:int}"] = this.ShutdownServer;

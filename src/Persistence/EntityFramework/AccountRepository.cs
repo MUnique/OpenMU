@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
+    using System.Collections.Generic;
     using System.Linq;
     using BCrypt.Net;
     using Microsoft.EntityFrameworkCore;
@@ -78,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             if (manager != null)
             {
                 var accountInfo = context.Context.Set<Account>()
-                    .Select(a => new {a.Id, a.LoginName, a.PasswordHash})
+                    .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
                     .FirstOrDefault(a => a.LoginName == loginName && BCrypt.Verify(password, a.PasswordHash, false));
                 if (accountInfo != null)
                 {
