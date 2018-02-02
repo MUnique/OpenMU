@@ -30,6 +30,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 if (item.Durability == 0)
                 {
                     player.Inventory.RemoveItem(item);
+                    using (player.GameContext.RepositoryManager.UseContext(player.PersistenceContext))
+                    {
+                        player.GameContext.RepositoryManager.GetRepository<MUnique.OpenMU.DataModel.Entities.Item>().Delete(item);
+                    }
                 }
 
                 return true;
