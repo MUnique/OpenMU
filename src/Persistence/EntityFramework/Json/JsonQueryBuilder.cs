@@ -149,8 +149,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 return;
             }
 
+            var isBackReference = navigation.ForeignKey.PrincipalToDependent?.IsCollection() ?? false;
+            if (isBackReference)
+            {
+                // It's a back reference of a collection - we just have to create a reference json object
+                Log.DebugFormat("Back Reference property {0}", navigation.Name);
+            }
+
             stringBuilder.Append(", (");
-            if (this.SelectReferences(parentAlias, targetType))
+            if (this.SelectReferences(parentAlias, targetType) || isBackReference)
             {
                 stringBuilder.Append("json_build_object('$ref', ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).Append("\")");
             }
