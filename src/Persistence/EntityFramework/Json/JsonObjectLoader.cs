@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
     using System;
     using System.Collections.Generic;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata;
     using Newtonsoft.Json.Serialization;
 
     /// <summary>
@@ -84,7 +85,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         public T LoadObject<T>(Guid id, DbContext context)
             where T : IIdentifiable
         {
-            var type = context.Model.FindEntityType(typeof(T));
+            IEntityType type;
+            using (var completeContext = new EntityDataContext())
+            {
+                type = completeContext.Model.FindEntityType(typeof(T));
+            }
+
             var queryString = this.queryBuilder.BuildJsonQueryForEntity(type);
             queryString += " where result.\"Id\" = @id;";
             using (var command = context.Database.GetDbConnection().CreateCommand())
