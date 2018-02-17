@@ -24,36 +24,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to load accoutns as json.
-        /// Currently, that's not fully working, so default is false.
-        /// </summary>
-        public bool LoadAsJson { get; set; }
-
         /// <inheritdoc/>
         public Account GetAccountByLoginName(string loginName, string password)
         {
             using (var context = this.GetContext())
             {
-                if (this.LoadAsJson)
-                {
-                    var accountByJson = this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
-                    context.Context.Entry(accountByJson).State = EntityState.Unchanged;
-                    context.Context.ChangeTracker.DetectChanges();
-                    context.Context.ChangeTracker.AcceptAllChanges();
-                    return accountByJson;
-                }
-
-                var account = context.Context.Set<Account>()
-                    .Include(a => a.RawVault) // TODO: Check if items are loaded as well when loading dependent data
-                    .FirstOrDefault(a => a.LoginName == loginName && BCrypt.Verify(password, a.PasswordHash, false));
+                var account = this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
                 if (account != null)
                 {
-                    this.LoadDependentData(account, context.Context);
+                    context.Context.Entry(account).State = EntityState.Unchanged;
+                    context.Context.ChangeTracker.DetectChanges();
+                    context.Context.ChangeTracker.AcceptAllChanges();
                 }
 
-                //// context.Context.ChangeTracker.DetectChanges();
-                //// context.Context.ChangeTracker.AcceptAllChanges();
                 return account;
             }
         }
