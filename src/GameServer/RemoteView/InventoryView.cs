@@ -186,5 +186,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.itemSerializer.SerializeItem(message, 4, item);
             this.connection.Send(message);
         }
+
+        /// <inheritdoc />
+        public void ItemPriceSetResponse(byte itemSlot, ItemPriceResult result)
+        {
+            var packet = new byte[5];
+            packet[0] = 0xC3;
+            packet[1] = (byte)packet.Length;
+            packet[2] = 0x3F;
+            packet[3] = (byte)result;
+            packet[4] = itemSlot;
+        }
     }
 }

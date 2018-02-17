@@ -5,6 +5,48 @@
 namespace MUnique.OpenMU.GameLogic.Views
 {
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
+
+    /// <summary>
+    /// Result of the <see cref="BuyRequestAction"/>.
+    /// </summary>
+    public enum ItemPriceResult
+    {
+        /// <summary>
+        /// Failed, e.g. because the shop feature is deactivated.
+        /// </summary>
+        Failed = 0,
+
+        /// <summary>
+        /// The price has been set successfully.
+        /// </summary>
+        Success = 1,
+
+        /// <summary>
+        /// Failed because the item slot was out of range.
+        /// </summary>
+        ItemSlotOutOfRange = 2,
+
+        /// <summary>
+        /// Failed because the item could not be found.
+        /// </summary>
+        ItemNotFound = 3,
+
+        /// <summary>
+        /// Failed because the price was negative.
+        /// </summary>
+        PriceNegative = 4,
+
+        /// <summary>
+        /// Failed because the item is blocked.
+        /// </summary>
+        ItemIsBlocked = 5,
+
+        /// <summary>
+        /// Failed because the character level is too low (below level 6).
+        /// </summary>
+        CharacterLevelTooLow = 6
+    }
 
     /// <summary>
     /// The inventory view.
@@ -97,5 +139,12 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// </summary>
         /// <param name="item">The item.</param>
         void ItemBoughtFromPlayerShop(Item item);
+
+        /// <summary>
+        /// Notifies the client about the result of the <see cref="BuyRequestAction"/>.
+        /// </summary>
+        /// <param name="itemSlot">The item slot.</param>
+        /// <param name="result">The result.</param>
+        void ItemPriceSetResponse(byte itemSlot, ItemPriceResult result);
     }
 }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
     using System.Linq;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to set the price of an item of the player store.
@@ -17,15 +18,26 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         /// <param name="player">The player.</param>
         /// <param name="slot">The slot of the item in the store (0 to 31).</param>
         /// <param name="price">The price.</param>
-        public void SetPrice(Player player, int slot, int price)
+        public void SetPrice(Player player, byte slot, int price)
         {
-            var item = player.SelectedCharacter?.Inventory?.Items?.FirstOrDefault(i => i.ItemSlot == slot);
-            if (item != null)
+            ItemPriceResult result;
+            if (player.Level < 6)
             {
-                item.StorePrice = price > 0 ? price : (int?)null;
+                result = ItemPriceResult.CharacterLevelTooLow;
+            }
+            else
+            {
+                result = ItemPriceResult.ItemNotFound;
+
+                var item = player.SelectedCharacter?.Inventory?.Items?.FirstOrDefault(i => i.ItemSlot == slot);
+                if (item != null)
+                {
+                    item.StorePrice = price > 0 ? price : (int?)null;
+                    result = price >= 0 ? ItemPriceResult.Success : ItemPriceResult.PriceNegative;
+                }
             }
 
-            // todo: response?
+            player.PlayerView.InventoryView.ItemPriceSetResponse(slot, result);
         }
     }
 }
