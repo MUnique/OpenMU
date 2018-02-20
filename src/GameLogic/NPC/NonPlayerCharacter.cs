@@ -122,19 +122,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var otherObj = obj as NonPlayerCharacter;
-            return this.Id == otherObj?.Id;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id;
-        }
-
-        /// <inheritdoc/>
         public override string ToString()
         {
             return $"{this.Definition.Designation} - Id: {this.Id} - Position: {this.X}/{this.Y}";

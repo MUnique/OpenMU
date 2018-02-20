@@ -641,18 +641,6 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            return this.Id == (obj as Player)?.Id;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id;
-        }
-
-        /// <inheritdoc/>
         public void LocateableAdded(object sender, BucketItemEventArgs<ILocateable> eventArgs)
         {
             this.observerToWorldViewAdapter.LocateableAdded(sender, eventArgs);
