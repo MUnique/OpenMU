@@ -616,6 +616,8 @@
 
                     b.Property<Guid?>("StorageId");
 
+                    b.Property<uint?>("StorePrice");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DefinitionId");

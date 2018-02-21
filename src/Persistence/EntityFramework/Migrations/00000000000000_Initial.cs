@@ -844,7 +844,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     ItemSlot = table.Column<byte>(),
                     Level = table.Column<byte>(),
                     SocketCount = table.Column<int>(),
-                    StorageId = table.Column<Guid>(nullable: true)
+                    StorageId = table.Column<Guid>(nullable: true),
+                    StorePrice = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
