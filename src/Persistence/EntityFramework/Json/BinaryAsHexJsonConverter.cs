@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <summary>
         /// The prefix of a byte array string, provided by postgres.
         /// </summary>
-        private const string ByteArrayPrefix = @"\\x";
+        private const string ByteArrayPrefix = @"\x";
 
         /// <summary>
         /// A character to value mapping table for faster hex string parsing. Each character (0-9a-fA-F)
