@@ -24,14 +24,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
         [Ignore("This is not a real test which should run automatically.")]
         public void SetupDatabaseAndTestLoadingData()
         {
-            using (var installationContext = new EntityDataContext())
-            {
-                installationContext.Database.EnsureDeleted();
-                installationContext.Database.Migrate();
-            }
-
             var manager = new RepositoryManager();
             manager.RegisterRepositories();
+            manager.ReInitializeDatabase();
 
             // Loading game configuration
             using (var context = manager.CreateNewConfigurationContext())

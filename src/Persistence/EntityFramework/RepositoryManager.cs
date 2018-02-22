@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using log4net;
     using Microsoft.EntityFrameworkCore;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
+    using MUnique.OpenMU.Persistence.Initialization;
     using Npgsql.Logging;
 
     /// <summary>
@@ -107,7 +108,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             using (var installationContext = new EntityDataContext())
             {
+                var isNewDatabase = !installationContext.Database.GetAppliedMigrations().Any();
                 installationContext.Database.Migrate();
+                if (isNewDatabase)
+                {
+                    var dataInitialization = new DataInitialization(this);
+                    dataInitialization.CreateInitialData();
+                }
             }
         }
 
@@ -119,7 +126,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             using (var installationContext = new EntityDataContext())
             {
                 installationContext.Database.EnsureDeleted();
-                installationContext.Database.Migrate();
+                this.ApplyAllPendingUpdates();
             }
         }
 
