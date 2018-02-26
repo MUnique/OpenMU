@@ -46,11 +46,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     return;
                 }
 
-                player.PlayerView.OpenNpcWindow(npcStats.NpcWindow);
                 if (npcStats.NpcWindow == NpcWindow.VaultStorage)
                 {
                     player.Vault = new Storage(0, 0, InventoryConstants.WarehouseSize, player.Account.Vault);
                     player.PlayerView.ShowVault();
+                }
+                else
+                {
+                    player.PlayerView.OpenNpcWindow(npcStats.NpcWindow);
                 }
             }
         }
