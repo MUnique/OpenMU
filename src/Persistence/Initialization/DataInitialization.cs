@@ -427,11 +427,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
             mapNames.Skip(skipCount).Select((mapName, i) =>
                 {
                     var map = this.repositoryManager.CreateNew<GameMapDefinition>();
-
-                    map.Name = mapNames[i + skipCount];
+                    map.Name = mapName;
                     map.Number = (short)(i + skipCount);
                     map.ExpMultiplier = 1;
-                    map.TerrainData = Terrains.ResourceManager.GetObject("Terrain" + (i + 1 + skipCount).ToString()) as byte[];
+                    var terrain =
+                        Terrains.ResourceManager.GetObject("Terrain" + (i + 1 + skipCount).ToString()) as byte[]
+                        ?? Terrains.ResourceManager.GetObject("Terrain" + (mapNames.IndexOf(mapName.Substring(0, mapName.Length - 1) + "1") + 1)) as byte[];
+                    map.TerrainData = terrain;
                     return map;
                 })
                 .Where(map => map.Number > 0 && map.Name != "?")
