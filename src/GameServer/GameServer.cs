@@ -196,6 +196,35 @@ namespace MUnique.OpenMU.GameServer
             return this.gameContext.PlayerList.Any(player => player.Account.LoginName == accountName);
         }
 
+        /// <inheritdoc />
+        public bool DisconnectPlayer(string playerName)
+        {
+            var player = this.gameContext.GetPlayerByCharacterName(playerName);
+            if (player != null)
+            {
+                player.PlayerView.ShowMessage("You got disconnected by a game master.", MessageType.BlueNormal);
+                player.Disconnect();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc />
+        public bool BanPlayer(string playerName)
+        {
+            var player = this.gameContext.GetPlayerByCharacterName(playerName);
+            if (player != null)
+            {
+                player.Account.State = AccountState.TemporarilyBanned;
+                player.PlayerView.ShowMessage("Your account has been temporarily banned by a game master.", MessageType.BlueNormal);
+                player.Disconnect();
+                return true;
+            }
+
+            return false;
+        }
+
         /// <inheritdoc/>
         public void SendGlobalMessage(string message, MessageType messageType)
         {

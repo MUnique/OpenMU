@@ -22,7 +22,6 @@
         <script src="@Path['~/content/js/liveview.js']"></script>
         <style type="text/css">
         body {
-            background-color: #000000;
             margin: auto;
             overflow: hidden;
             font-style:  normal;
@@ -32,11 +31,12 @@
     </head>
     
     <body>
-        <div style="position: absolute; top: 60px;">
-            <p>Name: <span id="objectData_name"></span></p>
-            <p>ID: <span id="objectData_id"></span></p>
-            <p>X: <span id="objectData_x"></span></p>
-            <p>Y: <span id="objectData_y"></span></p>
+        <div id="container" style="float: left;width: 25%"></div>
+        <div style="float: left; width: 250px;">
+            <div id="player_list"></div>
+            <div id="selected_info" style="padding-left: 8px;position: absolute;bottom: 0;">
+                <p>Name: <span id="objectData_name"></span>, ID: <span id="objectData_id"></span>, Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</p>
+            </div>
         </div>
     </body>
 
@@ -47,10 +47,7 @@
     // set some camera attributes
     var NEAR = 0.1, FAR = 10000;
     
-    var container = document.createElement('div');
-    document.body.appendChild(container);
-    container.style.width = MAP_SIZE + 'px';
-    container.style.margin = '0 auto';
+    var container = document.getElementById('container');
     var renderer = new THREE.WebGLRenderer(
         { 
             antialias: false		
@@ -63,9 +60,7 @@
 
     var serverId = getParameterByName('serverId');
     var mapId = getParameterByName('mapId');
-    var world = new OpenMU.World(serverId, mapId); //read parameters to determine server an map
-    // world.position.x = MAP_SIZE / 2;
-    // world.position.y = MAP_SIZE / 2;
+    var world = new OpenMU.World(serverId, mapId);
     scene.add(world);
     
     
@@ -86,6 +81,10 @@
         }
     });
 
+    let mapFlux = new Fluxxor.Flux({ MapPlayerStore: world.store }, MapActions);
+    ReactDOM.render(React.createElement(MapPlayerList, { flux: mapFlux }), document.getElementById('player_list'));
+        
+
     animate(); //start the rendering loop :)
 
     
@@ -105,21 +104,22 @@
     }
     
     function onWindowResize(){
-        renderer.setSize( window.innerHeight, window.innerHeight );
-        world.setCurrentSize(window.innerHeight);
-        container.style.width = window.innerHeight + 'px';
+        var newSize = window.innerHeight;
+        container.style.width = newSize + 'px';
+        renderer.setSize(newSize, newSize);
+        world.setCurrentSize(newSize);
     }
    
-   function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    url = url.toLowerCase(); // This is just to avoid case sensitiveness  
-    name = name.replace(/[\[\]]/g, "\\$&").toLowerCase();// This is just to avoid case sensitiveness for query parameter name
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        url = url.toLowerCase(); // This is just to avoid case sensitiveness  
+        name = name.replace(/[\[\]]/g, "\\$&").toLowerCase();// This is just to avoid case sensitiveness for query parameter name
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
 </script>
     
 </html>

@@ -246,6 +246,7 @@ OpenMU.World = class extends THREE.Object3D {
     constructor(serverId, mapId) {
         super();
         this.ready = false;
+        this.store = new MapPlayerStore();
         this.objects = {};
         this.attacks = new OpenMU.Attacks();
         this.attacks.position.z = 100;
@@ -269,6 +270,15 @@ OpenMU.World = class extends THREE.Object3D {
     
     update() {
         this.attacks.update();
+        let objects = this.objects;
+        for (let o in objects) {
+            if (objects.hasOwnProperty(o)) {
+                let object = objects[o];
+                if (object instanceof OpenMU.Player) {
+                    object.update();
+                }
+            }
+        }
     }
 
     setCurrentSize(newSize) {
@@ -285,6 +295,7 @@ OpenMU.World = class extends THREE.Object3D {
     addPlayer(data) {
         let player = new OpenMU.Player(data);
         this.addObjectMesh(player);
+        this.store.addPlayer(data);
         player.respawn(data);
     }
 
@@ -297,6 +308,9 @@ OpenMU.World = class extends THREE.Object3D {
         let mesh = this.objects[objectId];
         this.remove(mesh);
         delete this.objects[objectId];
+        if (mesh instanceof OpenMU.Player) {
+            this.store.removePlayer(mesh.data);
+        }
     }
 
     getObjectById(objectId) {
@@ -402,6 +416,14 @@ OpenMU.Player = class extends OpenMU.Attackable {
             OpenMU.Player.geometry,
             new THREE.MeshBasicMaterial({ color: 0xFF0000 + data.Id, alphaMap: attackableAlphaMapTexture, transparent: true })
         );
+    }
+
+    update() {
+        if (this.data.isHighlighted) {
+            this.scale.setScalar(1.5);
+        } else {
+            this.scale.setScalar(1.0);
+        }
     }
 };
 

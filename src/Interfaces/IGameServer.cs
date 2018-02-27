@@ -151,6 +151,20 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="mapId">The map identifier.</param>
         /// <param name="worldObserverId">The world observer identifier.</param>
         void UnregisterMapObserver(ushort mapId, ushort worldObserverId);
+
+        /// <summary>
+        /// Disconnects the player from the game.
+        /// </summary>
+        /// <param name="playerName">Name of the player.</param>
+        /// <returns>True, if the player has been disconnected; False, otherwise.</returns>
+        bool DisconnectPlayer(string playerName);
+
+        /// <summary>
+        /// Bans the player from the game.
+        /// </summary>
+        /// <param name="playerName">Name of the player.</param>
+        /// <returns>True, if the player has been banned; False, otherwise.</returns>
+        bool BanPlayer(string playerName);
     }
 
     /// <summary>

@@ -177,6 +177,7 @@
     <Compile Include="LiveMapModule.cs" />
     <Compile Include="LogModule.cs" />
     <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="PlayerModule.cs" />
     <Compile Include="ServerModule.cs" />
     <Compile Include="WorldObserverHub.cs" />
     <Compile Include="WorldObserverToHubAdapter.cs" />
@@ -271,12 +272,15 @@
     <Content Include="content\img\attackable_alphamap.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="content\js\actions\MapActions.js" />
     <Content Include="content\js\components\AccountList.jsx" />
     <Content Include="content\js\components\CreateAccountModal.jsx" />
     <Content Include="content\js\components\HeaderMenu.jsx" />
     <Content Include="content\js\components\AccountItem.jsx" />
     <Content Include="content\js\components\Layout.jsx" />
     <Content Include="content\js\components\LoadingIndicator.jsx" />
+    <Content Include="content\js\components\MapPlayerList.jsx" />
+    <Content Include="content\js\components\MapPlayerListItem.jsx" />
     <Content Include="content\js\constants\AccountConstants.js" />
     <Content Include="content\js\constants\CommonConstants.js" />
     <Content Include="content\js\liveview.js">
@@ -284,6 +288,7 @@
     </Content>
     <Content Include="content\js\stores\AccountStore.js" />
     <Content Include="content\js\stores\CommonStateStore.js" />
+    <Content Include="content\js\stores\MapPlayerStore.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

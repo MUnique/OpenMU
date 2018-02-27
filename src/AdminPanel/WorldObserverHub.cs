@@ -120,7 +120,10 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="newObjects">The new objects.</param>
         public void NewPlayersInScope(WorldObserverToHubAdapter sender, IEnumerable<Player> newObjects)
         {
-            this.Clients.Client(sender.ConnectionId).NewPlayersInScope(newObjects.Select(o => new { Id = o.Id, Name = o.Name, X = o.X, Y = o.Y, Rotation = o.Rotation }));
+            this.Clients.Client(sender.ConnectionId).NewPlayersInScope(newObjects.Select(o => new
+            {
+                Id = o.Id, Name = o.Name, X = o.X, Y = o.Y, Rotation = o.Rotation, ServerId = sender.ServerId
+            }));
         }
 
         /// <summary>
