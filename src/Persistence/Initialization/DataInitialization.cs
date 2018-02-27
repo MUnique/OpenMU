@@ -410,7 +410,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.Maps.Add(new DevilSquare1To4().Initialize(this.repositoryManager, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new Icarus().Initialize(this.repositoryManager, this.gameConfiguration));
 
-            string[] mapNames =
+            var mapNames = new List<string>
             {
                 "Lorencia", "Dungeon", "Devias", "Noria", "Lost_Tower", "Exile", "Arena", "Atlans", "Tarkan", "Devil_Square (1-4)", "Icarus", // 10
                 "Blood_Castle 1", "Blood_Castle 2", "Blood_Castle 3", "Blood_Castle 4", "Blood_Castle 5", "Blood_Castle 6", "Blood_Castle 7", "Chaos_Castle 1", "Chaos_Castle 2", "Chaos_Castle 3", // 20
