@@ -98,6 +98,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 var attributes = character.CharacterClass.StatAttributes.Select(a => this.gameContext.RepositoryManager.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
                 attributes.ForEach(character.Attributes.Add);
                 character.CurrentMap = charclass.HomeMap;
+                character.PositionX = (byte)Rand.NextInt(character.CurrentMap.DeathSafezone.X1, character.CurrentMap.DeathSafezone.X2);
+                character.PositionY = (byte)Rand.NextInt(character.CurrentMap.DeathSafezone.Y1, character.CurrentMap.DeathSafezone.Y2);
+                character.Inventory = this.gameContext.RepositoryManager.CreateNew<ItemStorage>();
                 account.Characters.Add(character);
                 Log.Debug("Creating Character Complete.");
                 return character;
