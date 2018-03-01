@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return CharacterDeleteResult.Unsuccessful;
             }
 
-            if (player.Account.SecurityCode != securityCode)
+            if (player.Account.SecurityCode != null && player.Account.SecurityCode != securityCode)
             {
                 return CharacterDeleteResult.WrongSecurityCode;
             }
