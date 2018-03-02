@@ -152,8 +152,9 @@ namespace MUnique.OpenMU.GameLogic
             try
             {
                 oldItems = oldObjects.OfType<IObservable>().Where(item =>
-                    this.observingObjects.Contains(item) &&
-                    (!(item is IHasBucketInformation) || !this.ObservingBuckets.Contains(((IHasBucketInformation)item).CurrentBucket))).ToList();
+                    this.observingObjects.Contains(item)
+                    && ((this.adaptee as IHasBucketInformation)?.CurrentBucket == null
+                        || (!(item is IHasBucketInformation) || !this.ObservingBuckets.Contains(((IHasBucketInformation)item).CurrentBucket)))).ToList();
                 oldItems.ForEach(item => this.observingObjects.Remove(item));
             }
             finally
@@ -163,16 +164,23 @@ namespace MUnique.OpenMU.GameLogic
 
             oldItems.ForEach(item => item.RemoveObserver(this.adaptee));
 
-            var nonItems = oldItems.OfType<IIdentifiable>().Where(item => !(item is DroppedItem));
-            if (nonItems.Any())
+            if (this.adaptee is IHasBucketInformation bucketInformation && bucketInformation.CurrentBucket == null)
             {
-                this.adaptee.WorldView.ObjectsOutOfScope(nonItems);
+                // adaptee (player) left the map or disconnected; it's not required to update the view
             }
-
-            var droppedItems = oldItems.OfType<DroppedItem>();
-            if (droppedItems.Any())
+            else
             {
-                this.adaptee.WorldView.DroppedItemsDisappeared(droppedItems.Select(item => item.Id));
+                var nonItems = oldItems.OfType<IIdentifiable>().Where(item => !(item is DroppedItem));
+                if (nonItems.Any())
+                {
+                    this.adaptee.WorldView.ObjectsOutOfScope(nonItems);
+                }
+
+                var droppedItems = oldItems.OfType<DroppedItem>();
+                if (droppedItems.Any())
+                {
+                    this.adaptee.WorldView.DroppedItemsDisappeared(droppedItems.Select(item => item.Id));
+                }
             }
         }
 
