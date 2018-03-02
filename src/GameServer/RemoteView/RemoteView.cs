@@ -190,10 +190,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
                 var preview = this.appearanceSerializer.GetAppearanceData(new CharacterAppearanceDataAdapter(character));
                 Buffer.BlockCopy(preview, 0, packet, offset + 15, preview.Length);
-                if (character.GuildMemberInfo != null)
-                {
-                    packet[offset + 15 + 18] = this.GetGuildMemberStatusCode(character.GuildMemberInfo.Status); ////not sure about the index yet...
-                }
+
+                var guildStatusIndex = offset + 15 + 18;
+                packet[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
 
                 i++;
             }
@@ -765,10 +764,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // TODO: Duration
         }
 
-        private byte GetGuildMemberStatusCode(GuildPosition position)
+        private byte GetGuildMemberStatusCode(GuildPosition? position)
         {
             switch (position)
             {
+                case null:
+                    return 0xFF;
                 case GuildPosition.NormalMember:
                     return 0;
                 case GuildPosition.GuildMaster:
