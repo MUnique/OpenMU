@@ -57,8 +57,11 @@ namespace MUnique.OpenMU.GameLogic
 
             if (!isIgnoringDefense)
             {
-                var defenseAttribute = GetDefenseAttribute(attacker);
+                var defenseAttribute = defender.GetDefenseAttribute(attacker);
                 dmg -= (int)defender.Attributes[defenseAttribute];
+            }
+            else
+            {
                 attributes |= DamageAttributes.IgnoreDefense;
             }
 
@@ -129,9 +132,9 @@ namespace MUnique.OpenMU.GameLogic
             return hitChance;
         }
 
-        private static AttributeDefinition GetDefenseAttribute(this IAttackable attacker)
+        private static AttributeDefinition GetDefenseAttribute(this IAttackable defender, IAttackable attacker)
         {
-            if (attacker is Player)
+            if (attacker is Player && defender is Player)
             {
                 return Stats.DefensePvp;
             }
