@@ -59,6 +59,9 @@ namespace MUnique.OpenMU.GameLogic
             {
                 var defenseAttribute = defender.GetDefenseAttribute(attacker);
                 dmg -= (int)defender.Attributes[defenseAttribute];
+            }
+            else
+            {
                 attributes |= DamageAttributes.IgnoreDefense;
             }
 
