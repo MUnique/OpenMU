@@ -63,7 +63,6 @@ namespace MUnique.OpenMU.GameLogic
                     bucket.ItemRemoved -= observingPlayer.LocateableRemoved;
                 }
 
-                // TODO: Check if this is really neccessary. It may be that the client automatically removes all objects when you change a map or go back to character select
                 if (observingPlayer.ObservingBuckets.Any(b => b.Count > 0))
                 {
                     observingPlayer.LocateablesOutOfScope(observingPlayer.ObservingBuckets.SelectMany(o => o));
