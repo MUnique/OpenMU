@@ -87,15 +87,20 @@ namespace MUnique.OpenMU.Tests
 
         private Item CreateItemWithSkill()
         {
+            var definition = MockRepository.GenerateStub<ItemDefinition>();
+            definition.Skill = new OpenMU.DataModel.Configuration.Skill
+            {
+                SkillID = ItemSkillId.ToSigned()
+            };
+
+            definition.Height = 1;
+            definition.Width = 1;
+            definition.Stub(d => d.BasePowerUpAttributes).Return(new List<ItemBasePowerUpDefinition>());
+
             var item = new Item
             {
                 HasSkill = true,
-                Definition = new ItemDefinition
-                {
-                    Skill = new OpenMU.DataModel.Configuration.Skill { SkillID = ItemSkillId.ToSigned() },
-                    Height = 1,
-                    Width = 1
-                }
+                Definition = definition,
             };
             return item;
         }
