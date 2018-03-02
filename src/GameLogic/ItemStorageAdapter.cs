@@ -91,7 +91,12 @@ namespace MUnique.OpenMU.GameLogic
             /// <inheritdoc />
             public void CopyTo(Item[] array, int arrayIndex)
             {
-                this.ToList().CopyTo(array, arrayIndex);
+                var i = arrayIndex;
+                foreach (var item in this)
+                {
+                    array[i] = item;
+                    i++;
+                }
             }
 
             /// <inheritdoc />
