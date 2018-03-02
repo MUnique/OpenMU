@@ -296,6 +296,11 @@ namespace MUnique.OpenMU.Tests
                 return this.CreateNewContext();
             }
 
+            public override IContext CreateNewFriendServerContext()
+            {
+                return this.CreateNewContext();
+            }
+
             public override T CreateNew<T>(params object[] args)
             {
                 var obj = base.CreateNew<T>(args);
