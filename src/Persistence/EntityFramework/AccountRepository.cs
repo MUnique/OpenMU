@@ -32,9 +32,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 var account = this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
                 if (account != null)
                 {
-                    context.Context.Entry(account).State = EntityState.Unchanged;
-                    context.Context.ChangeTracker.DetectChanges();
-                    context.Context.ChangeTracker.AcceptAllChanges();
+                    context.Context.Attach(account);
                 }
 
                 return account;
