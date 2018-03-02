@@ -110,6 +110,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// The character class.
         /// </value>
         public CharacterClass CharacterClass { get; set; }
+
+        /// <inheritdoc />
+        public new float Value
+        {
+            get => base.Value;
+            set => base.Value = value;
+        }
     }
 
     /// <summary>
