@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Network;
 
     /// <summary>
     /// Handler for letter send packets.
@@ -31,10 +32,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         public void HandlePacket(Player player, byte[] packet)
         {
+            var letterId = packet.MakeDwordBigEndian(4);
             if (packet.Length < 83)
             {
                 player.PlayerView.ShowMessage("Letter invalid.", MessageType.BlueNormal);
-                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.TryAgain);
+                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
                 return;
             }
 
@@ -43,7 +45,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             var message = Encoding.UTF8.GetString(packet, 0x52, packet.Skip(0x52).TakeWhile(b => b != 0).Count());
             var rotation = packet[0x4E];
             var animation = packet[0x4F];
-            this.sendAction.SendLetter(player, receiverName, message, title, rotation, animation);
+            this.sendAction.SendLetter(player, receiverName, message, title, rotation, animation, letterId);
         }
     }
 }

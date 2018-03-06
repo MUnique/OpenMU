@@ -201,10 +201,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
-        public void LetterSendResult(LetterSendSuccess success)
+        public void LetterSendResult(LetterSendSuccess success, uint letterId)
         {
-            byte length = 1; // TODO
-            this.connection.Send(new byte[] { 0xC1, 8, 0xC5, (byte)success, length, 0, 0, 0 });
+            var packet = new byte[] { 0xC1, 8, 0xC5, (byte)success, 0, 0, 0, 0 };
+            packet.SetIntegerBigEndian(letterId, 4);
+            this.connection.Send(packet);
         }
     }
 }

@@ -49,12 +49,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="title">The title.</param>
         /// <param name="rotation">The rotation.</param>
         /// <param name="animation">The animation.</param>
-        public void SendLetter(Player player, string receiver, string message, string title, byte rotation, byte animation)
+        /// <param name="letterId">The client side letter id.</param>
+        public void SendLetter(Player player, string receiver, string message, string title, byte rotation, byte animation, uint letterId)
         {
             if (player.Money < LetterSendCost)
             {
                 player.PlayerView.ShowMessage("Not enough Zen to send a letter.", MessageType.BlueNormal);
-                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.TryAgain);
+                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.NotEnoughMoney, letterId);
                 return;
             }
 
@@ -68,18 +69,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 
                     if (!context.SaveChanges())
                     {
-                        player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.ReceiverNotExists);
+                        player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.ReceiverNotExists, letterId);
                         return;
                     }
                 }
 
-                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.Success);
+                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.Success, letterId);
                 player.TryAddMoney(-LetterSendCost);
             }
             catch (Exception ex)
             {
                 Log.Error("Unexpected error when trying to send a letter", ex);
-                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.TryAgain);
+                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
                 player.PlayerView.ShowMessage("Oops, some error happened during sending the Letter.", MessageType.BlueNormal);
             }
 
