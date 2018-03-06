@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
