@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
         /// Main entry point of the program.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             if (args.Length == 1)
             {
