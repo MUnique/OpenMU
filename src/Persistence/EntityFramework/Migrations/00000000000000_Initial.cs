@@ -545,6 +545,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Direction = table.Column<int>(nullable: false),
                     MapId = table.Column<Guid>(nullable: true),
+                    IsSpawnGate = table.Column<bool>(nullable: false),
                     X1 = table.Column<byte>(nullable: false),
                     X2 = table.Column<byte>(nullable: false),
                     Y1 = table.Column<byte>(nullable: false),

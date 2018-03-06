@@ -374,6 +374,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("MapId");
 
+                    b.Property<bool>("IsSpawnGate");
+
                     b.Property<byte>("X1");
 
                     b.Property<byte>("X2");

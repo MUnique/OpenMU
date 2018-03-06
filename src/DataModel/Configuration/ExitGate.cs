@@ -20,12 +20,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public virtual GameMapDefinition Map { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is a spawn gate.
-        /// If the direction is specified, it's usually not a spawn gate, but a target of an <see cref="EnterGate"/>.
+        /// Gets or sets a value indicating whether this instance is a spawn gate.
+        /// If it's not a spawn gate, it's a target of an <see cref="EnterGate"/>.
         /// </summary>
         /// <value>
         ///   <c>true</c> if this instance is spawn gate; otherwise, <c>false</c>.
         /// </value>
-        public bool IsSpawnGate => this.Direction == Direction.Undefined;
+        public bool IsSpawnGate { get; set; }
     }
 }
