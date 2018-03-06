@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Persistence;
+    using log4net;
 
     /// <summary>
     /// Action to send a letter to another player.
@@ -21,6 +21,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// The price of sending a letter. TODO: Letter price should be configurable.
         /// </summary>
         private const int LetterSendCost = 1000;
+
+        private static readonly ILog Log = LogManager.GetLogger(typeof(LetterSendAction));
 
         private readonly IGameContext gameContext;
 
@@ -56,13 +58,27 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
                 return;
             }
 
-            if (player.Money >= LetterSendCost)
+            LetterHeader letter = null;
+            try
             {
-                player.TryAddMoney(-LetterSendCost); // Checked before if enough money is there
+                using (var context = this.gameContext.RepositoryManager.CreateNewAccountContext(this.gameContext.Configuration))
+                using (this.gameContext.RepositoryManager.UseContext(context))
+                {
+                    letter = this.CreateLetter(player, receiver, message, title, rotation, animation);
+
+                    if (!context.SaveChanges())
+                    {
+                        player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.ReceiverNotExists);
+                        return;
+                    }
+                }
+
                 player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.Success);
+                player.TryAddMoney(-LetterSendCost);
             }
-            else
+            catch (Exception ex)
             {
+                Log.Error("Unexpected error when trying to send a letter", ex);
                 player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.TryAgain);
                 player.PlayerView.ShowMessage("Oops, some error happened during sending the Letter.", MessageType.BlueNormal);
             }
@@ -71,30 +87,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             var receiverPlayer = this.gameContext.GetPlayerByCharacterName(receiver);
             if (receiverPlayer != null)
             {
-                using (this.gameContext.RepositoryManager.UseContext(receiverPlayer.PersistenceContext))
-                {
-                    var letter = this.CreateLetter(player, receiver, message, title, rotation, animation);
-                    var newLetterIndex = receiverPlayer.SelectedCharacter.Letters.Count;
-                    receiverPlayer.SelectedCharacter.Letters.Add(letter);
-                    receiverPlayer.PlayerView.MessengerView.AddToLetterList(letter, (ushort)newLetterIndex, true);
-                }
+                receiverPlayer.PersistenceContext.Attach(letter);
+                receiverPlayer.SelectedCharacter.Letters.Add(letter);
+                receiverPlayer.PlayerView.MessengerView.AddToLetterList(letter, (ushort)(receiverPlayer.SelectedCharacter.Letters.Count - 1), true);
             }
             else
             {
-                using (var context = this.gameContext.RepositoryManager.CreateNewAccountContext(this.gameContext.Configuration))
-                using (this.gameContext.RepositoryManager.UseContext(context))
-                {
-                    var letter = this.CreateLetter(player, receiver, message, title, rotation, animation);
-
-                    if (!context.SaveChanges())
-                    {
-                        player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.ReceiverNotExists);
-                    }
-                    else
-                    {
-                        this.friendServer.ForwardLetter(letter);
-                    }
-                }
+                this.friendServer.ForwardLetter(letter);
             }
         }
 
