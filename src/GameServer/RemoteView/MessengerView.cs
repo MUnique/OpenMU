@@ -54,36 +54,42 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             if (friendList.Count == 0)
             {
                 this.connection.Send(new byte[] { 0xC2, 0, 7, 0xC0, letterCount, (byte)maxLetters, 0 });
-                return;
             }
-
-            var friendListCount = (byte)friendList.Count;
-            const byte sizePerFriend = 11;
-            ////C2 00 06 C0 06 32
-            var packetLength = (ushort)(7 + (sizePerFriend * friendListCount));
-            var packet = new byte[packetLength];
-            packet[0] = 0xC2;
-            packet[1] = packetLength.GetHighByte();
-            packet[2] = packetLength.GetLowByte();
-            packet[3] = 0xC0;
-            packet[4] = letterCount;
-            packet[5] = (byte)maxLetters;
-            packet[6] = friendListCount;
-
-            int i = 0;
-            foreach (var friend in friendList)
+            else
             {
-                var offset = 7 + (i * sizePerFriend);
-                Encoding.ASCII.GetBytes(friend.FriendName, 0, friend.FriendName.Length, packet, offset);
-                packet[offset + sizePerFriend - 1] = 0xFF;
-                i++;
-            }
+                var friendListCount = (byte)friendList.Count;
+                const byte sizePerFriend = 11;
+                ////C2 00 06 C0 06 32
+                var packetLength = (ushort)(7 + (sizePerFriend * friendListCount));
+                var packet = new byte[packetLength];
+                packet[0] = 0xC2;
+                packet[1] = packetLength.GetHighByte();
+                packet[2] = packetLength.GetLowByte();
+                packet[3] = 0xC0;
+                packet[4] = letterCount;
+                packet[5] = (byte)maxLetters;
+                packet[6] = friendListCount;
 
-            this.connection.Send(packet);
+                int i = 0;
+                foreach (var friend in friendList)
+                {
+                    var offset = 7 + (i * sizePerFriend);
+                    Encoding.ASCII.GetBytes(friend.FriendName, 0, friend.FriendName.Length, packet, offset);
+                    packet[offset + sizePerFriend - 1] = 0xFF;
+                    i++;
+                }
+
+                this.connection.Send(packet);
+            }
 
             foreach (var requesterName in this.friendServer.GetOpenFriendRequests(this.player.SelectedCharacter.Id))
             {
                 this.ShowFriendRequest(requesterName);
+            }
+
+            for (ushort l = 0; l < letters.Count; l++)
+            {
+                this.AddToLetterList(letters[l], l, false);
             }
         }
 
