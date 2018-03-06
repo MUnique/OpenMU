@@ -81,7 +81,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             }
             else
             {
-                using (var context = this.gameContext.RepositoryManager.UseTemporaryContext())
+                using (var context = this.gameContext.RepositoryManager.CreateNewAccountContext(this.gameContext.Configuration))
+                using (this.gameContext.RepositoryManager.UseContext(context))
                 {
                     var letter = this.CreateLetter(player, receiver, message, title, rotation, animation);
 
