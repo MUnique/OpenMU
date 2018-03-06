@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// </summary>
     public class CloseNpcAction
     {
-        private static ILog log = LogManager.GetLogger(typeof(CloseNpcAction));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(CloseNpcAction));
 
         /// <summary>
         /// Closes the Monster dialog.
@@ -21,13 +21,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             if (player.OpenedNpc != null && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
             {
-                log.Debug($"Player {player.SelectedCharacter.Name} closes Monster {player.OpenedNpc}");
+                Log.Debug($"Player {player.SelectedCharacter?.Name} closes NPC {player.OpenedNpc}");
                 player.OpenedNpc = null;
                 player.Vault = null;
             }
             else
             {
-                log.Debug($"Dialog of Monster {player.OpenedNpc} could not be closed by player {player.SelectedCharacter?.Name} because the player has the wrong state {player.PlayerState}");
+                Log.Debug($"Dialog of NPC {player.OpenedNpc} could not be closed by player {player.SelectedCharacter?.Name} because the player has the wrong state {player.PlayerState}");
             }
         }
     }
