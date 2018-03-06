@@ -81,6 +81,21 @@ namespace MUnique.OpenMU.Persistence.Initialization
             }
         }
 
+        private long CalculateNeededExperience(long level)
+        {
+            if (level == 0)
+            {
+                return 0;
+            }
+
+            if (level < 256)
+            {
+                return 10 * (level + 8) * (level - 1) * (level - 1);
+            }
+
+            return (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256));
+        }
+
         private void CreateTestAccount(int index)
         {
             var loginName = "test" + index.ToString();
@@ -106,10 +121,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
             }
 
             character.CurrentMap = character.CharacterClass.HomeMap;
-            character.Attributes.First(a => a.Definition == Stats.Level).Value = (index * 10) + 1;
             var spawnGate = character.CurrentMap.ExitGates.Where(m => m.IsSpawnGate).SelectRandom();
             character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
             character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
+            var level = (index * 10) + 1;
+            character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
+            character.Experience = this.CalculateNeededExperience(level);
             character.LevelUpPoints = (int)(character.Attributes.First(a => a.Definition == Stats.Level).Value - 1) * character.CharacterClass.PointsPerLevelUp;
             character.Inventory = this.repositoryManager.CreateNew<ItemStorage>();
             character.Inventory.Money = 1000000;
