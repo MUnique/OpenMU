@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MUnique.OpenMU.AdminPanel</RootNamespace>
     <AssemblyName>MUnique.OpenMU.AdminPanel</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <NoWin32Manifest>False</NoWin32Manifest>
     <TargetFrameworkProfile />

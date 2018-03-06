@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MUnique.OpenMU.GameLogic</RootNamespace>
     <AssemblyName>MUnique.OpenMU.GameLogic</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <AppDesignerFolder>Properties</AppDesignerFolder>

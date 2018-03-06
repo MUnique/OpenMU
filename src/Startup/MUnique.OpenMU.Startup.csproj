@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>MUnique.OpenMU.Startup</RootNamespace>
     <AssemblyName>MUnique.OpenMU.Startup</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <NoWin32Manifest>False</NoWin32Manifest>

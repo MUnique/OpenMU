@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MUnique.OpenMU.GameServer</RootNamespace>
     <AssemblyName>MUnique.OpenMU.GameServer</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
