@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 entity.Property(character => character.CharacterSlot).IsRequired();
                 entity.Property(character => character.CreateDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 var accountKey = entity.Metadata.GetForeignKeys().First(key => key.PrincipalEntityType == modelBuilder.Entity<Account>().Metadata);
-                accountKey.DeleteBehavior = Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade;
+                accountKey.DeleteBehavior = DeleteBehavior.Cascade;
             });
 
             modelBuilder.Entity<GameServerDefinition>();
