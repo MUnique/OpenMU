@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata;
 
     /// <summary>
     /// Context for all types of the data model.
@@ -89,9 +88,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<ItemBasePowerUpDefinition>().Ignore(d => d.BaseValueElement);
             modelBuilder.Entity<LevelBonus>().Ignore(l => l.AdditionalValueElement);
             modelBuilder.Entity<ExitGate>().HasOne(gate => gate.RawMap);
-            modelBuilder.Entity<GameMapDefinition>().HasMany(map => map.RawGates);
-            modelBuilder.Entity<GameMapDefinition>().HasMany(map => map.RawSpawnGates).WithOne(g => g.RawMap);
-            modelBuilder.Entity<GameMapDefinition>().HasOne(map => map.RawDeathSafezone);
+            modelBuilder.Entity<GameMapDefinition>().HasMany(map => map.RawEnterGates);
+            modelBuilder.Entity<GameMapDefinition>().HasMany(map => map.RawExitGates).WithOne(g => g.RawMap);
+            modelBuilder.Entity<GameMapDefinition>().HasOne(map => map.RawSafezoneMap);
             modelBuilder.Entity<GameMapDefinition>().HasMany(map => map.RawMonsterSpawns);
 
             modelBuilder.Entity<MonsterSpawnArea>().HasOne(spawn => spawn.RawMonsterDefinition);

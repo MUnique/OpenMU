@@ -14,9 +14,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
     {
         /// <inheritdoc />
         /// <remarks>All config data is just referenced.</remarks>
-        protected override bool SelectReferences(string parentAlias, IEntityType targetType)
+        protected override bool SelectReferences(string parentAlias, INavigation navigation)
         {
-            return targetType.Relational().Schema == "config";
+            return navigation.GetTargetType().Relational().Schema == "config";
         }
     }
 }

@@ -201,6 +201,38 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GameMapDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    ExpMultiplier = table.Column<double>(nullable: false),
+                    GameConfigurationId = table.Column<Guid>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Number = table.Column<short>(nullable: false),
+                    SafezoneMapId = table.Column<Guid>(nullable: true),
+                    TerrainData = table.Column<byte[]>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameMapDefinition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinition_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinition_GameMapDefinition_SafezoneMapId",
+                        column: x => x.SafezoneMapId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemOptionType",
                 schema: "config",
                 columns: table => new
@@ -462,6 +494,129 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CharacterClass",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CanGetCreated = table.Column<bool>(nullable: false),
+                    CreationAllowedFlag = table.Column<byte>(nullable: false),
+                    GameConfigurationId = table.Column<Guid>(nullable: true),
+                    HomeMapId = table.Column<Guid>(nullable: true),
+                    IsMasterClass = table.Column<bool>(nullable: false),
+                    LevelRequirementByCreation = table.Column<short>(nullable: false),
+                    LevelWarpRequirementReductionPercent = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    NextGenerationClassId = table.Column<Guid>(nullable: true),
+                    Number = table.Column<byte>(nullable: false),
+                    PointsPerLevelUp = table.Column<short>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CharacterClass", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CharacterClass_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CharacterClass_GameMapDefinition_HomeMapId",
+                        column: x => x.HomeMapId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CharacterClass_CharacterClass_NextGenerationClassId",
+                        column: x => x.NextGenerationClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExitGate",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Direction = table.Column<int>(nullable: false),
+                    MapId = table.Column<Guid>(nullable: true),
+                    X1 = table.Column<byte>(nullable: false),
+                    X2 = table.Column<byte>(nullable: false),
+                    Y1 = table.Column<byte>(nullable: false),
+                    Y2 = table.Column<byte>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExitGate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExitGate_GameMapDefinition_MapId",
+                        column: x => x.MapId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GameMapDefinitionDropItemGroup",
+                schema: "config",
+                columns: table => new
+                {
+                    GameMapDefinitionId = table.Column<Guid>(nullable: false),
+                    DropItemGroupId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameMapDefinitionDropItemGroup", x => new { x.GameMapDefinitionId, x.DropItemGroupId });
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinitionDropItemGroup_DropItemGroup_DropItemGroupId",
+                        column: x => x.DropItemGroupId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinitionDropItemGroup_GameMapDefinition_GameMapDefinitionId",
+                        column: x => x.GameMapDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GameServerConfigurationGameMapDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    GameServerConfigurationId = table.Column<Guid>(nullable: false),
+                    GameMapDefinitionId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameServerConfigurationGameMapDefinition", x => new { x.GameServerConfigurationId, x.GameMapDefinitionId });
+                    table.ForeignKey(
+                        name: "FK_GameServerConfigurationGameMapDefinition_GameMapDefinition_GameMapDefinitionId",
+                        column: x => x.GameMapDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GameServerConfigurationGameMapDefinition_GameServerConfiguration_GameServerConfigurationId",
+                        column: x => x.GameServerConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameServerConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PacketHandlerConfiguration",
                 schema: "config",
                 columns: table => new
@@ -556,6 +711,290 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AttributeRelationship",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CharacterClassId = table.Column<Guid>(nullable: true),
+                    InputAttributeId = table.Column<Guid>(nullable: true),
+                    InputOperand = table.Column<float>(nullable: false),
+                    InputOperator = table.Column<int>(nullable: false),
+                    PowerUpDefinitionValueId = table.Column<Guid>(nullable: true),
+                    TargetAttributeId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AttributeRelationship", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AttributeRelationship_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AttributeRelationship_AttributeDefinition_InputAttributeId",
+                        column: x => x.InputAttributeId,
+                        principalSchema: "config",
+                        principalTable: "AttributeDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AttributeRelationship_PowerUpDefinitionValue_PowerUpDefinitionValueId",
+                        column: x => x.PowerUpDefinitionValueId,
+                        principalSchema: "config",
+                        principalTable: "PowerUpDefinitionValue",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AttributeRelationship_AttributeDefinition_TargetAttributeId",
+                        column: x => x.TargetAttributeId,
+                        principalSchema: "config",
+                        principalTable: "AttributeDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConstValueAttribute",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CharacterClassId = table.Column<Guid>(nullable: false),
+                    DefinitionId = table.Column<Guid>(nullable: true),
+                    Value = table.Column<float>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConstValueAttribute", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConstValueAttribute_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ConstValueAttribute_AttributeDefinition_DefinitionId",
+                        column: x => x.DefinitionId,
+                        principalSchema: "config",
+                        principalTable: "AttributeDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MasterSkillDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CharacterClassId = table.Column<Guid>(nullable: true),
+                    Rank = table.Column<byte>(nullable: false),
+                    RootId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MasterSkillDefinition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MasterSkillDefinition_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MasterSkillDefinition_MasterSkillRoot_RootId",
+                        column: x => x.RootId,
+                        principalSchema: "config",
+                        principalTable: "MasterSkillRoot",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StatAttributeDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    AttributeId = table.Column<Guid>(nullable: true),
+                    BaseValue = table.Column<float>(nullable: false),
+                    CharacterClassId = table.Column<Guid>(nullable: true),
+                    IncreasableByPlayer = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StatAttributeDefinition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StatAttributeDefinition_AttributeDefinition_AttributeId",
+                        column: x => x.AttributeId,
+                        principalSchema: "config",
+                        principalTable: "AttributeDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StatAttributeDefinition_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccountCharacterClass",
+                schema: "data",
+                columns: table => new
+                {
+                    AccountId = table.Column<Guid>(nullable: false),
+                    CharacterClassId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountCharacterClass", x => new { x.AccountId, x.CharacterClassId });
+                    table.ForeignKey(
+                        name: "FK_AccountCharacterClass_Account_AccountId",
+                        column: x => x.AccountId,
+                        principalSchema: "data",
+                        principalTable: "Account",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AccountCharacterClass_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppearanceData",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CharacterClassId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppearanceData", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppearanceData_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Character",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    AccountId = table.Column<Guid>(nullable: true),
+                    CharacterClassId = table.Column<Guid>(nullable: false),
+                    CharacterSlot = table.Column<byte>(nullable: false),
+                    CreateDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    CurrentMapId = table.Column<Guid>(nullable: true),
+                    Experience = table.Column<long>(nullable: false),
+                    GuildMemberInfoId = table.Column<Guid>(nullable: true),
+                    InventoryExtensions = table.Column<int>(nullable: false),
+                    InventoryId = table.Column<Guid>(nullable: true),
+                    KeyConfiguration = table.Column<byte[]>(nullable: true),
+                    LevelUpPoints = table.Column<int>(nullable: false),
+                    MasterExperience = table.Column<long>(nullable: false),
+                    MasterLevelUpPoints = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(maxLength: 10, nullable: false),
+                    PlayerKillCount = table.Column<int>(nullable: false),
+                    PositionX = table.Column<byte>(nullable: false),
+                    PositionY = table.Column<byte>(nullable: false),
+                    QuestInfo = table.Column<byte[]>(nullable: true),
+                    State = table.Column<int>(nullable: false),
+                    StateRemainingSeconds = table.Column<int>(nullable: false),
+                    UsedFruitPoints = table.Column<int>(nullable: false),
+                    UsedNegFruitPoints = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Character", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Character_Account_AccountId",
+                        column: x => x.AccountId,
+                        principalSchema: "data",
+                        principalTable: "Account",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Character_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Character_GameMapDefinition_CurrentMapId",
+                        column: x => x.CurrentMapId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Character_GuildMemberInfo_GuildMemberInfoId",
+                        column: x => x.GuildMemberInfoId,
+                        principalSchema: "data",
+                        principalTable: "GuildMemberInfo",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Character_ItemStorage_InventoryId",
+                        column: x => x.InventoryId,
+                        principalSchema: "data",
+                        principalTable: "ItemStorage",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EnterGate",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    GameMapDefinitionId = table.Column<Guid>(nullable: true),
+                    LevelRequirement = table.Column<short>(nullable: false),
+                    Number = table.Column<short>(nullable: false),
+                    TargetGateId = table.Column<Guid>(nullable: true),
+                    X1 = table.Column<byte>(nullable: false),
+                    X2 = table.Column<byte>(nullable: false),
+                    Y1 = table.Column<byte>(nullable: false),
+                    Y2 = table.Column<byte>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EnterGate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EnterGate_GameMapDefinition_GameMapDefinitionId",
+                        column: x => x.GameMapDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EnterGate_ExitGate_TargetGateId",
+                        column: x => x.TargetGateId,
+                        principalSchema: "config",
+                        principalTable: "ExitGate",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemSetGroupItemOption",
                 schema: "config",
                 columns: table => new
@@ -611,6 +1050,87 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.MagicEffectDefId,
                         principalSchema: "config",
                         principalTable: "MagicEffectDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CharacterDropItemGroup",
+                schema: "data",
+                columns: table => new
+                {
+                    CharacterId = table.Column<Guid>(nullable: false),
+                    DropItemGroupId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CharacterDropItemGroup", x => new { x.CharacterId, x.DropItemGroupId });
+                    table.ForeignKey(
+                        name: "FK_CharacterDropItemGroup_Character_CharacterId",
+                        column: x => x.CharacterId,
+                        principalSchema: "data",
+                        principalTable: "Character",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CharacterDropItemGroup_DropItemGroup_DropItemGroupId",
+                        column: x => x.DropItemGroupId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LetterHeader",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CharacterId = table.Column<Guid>(nullable: true),
+                    LetterDate = table.Column<DateTime>(nullable: false),
+                    ReadFlag = table.Column<bool>(nullable: false),
+                    Receiver = table.Column<string>(nullable: true),
+                    Sender = table.Column<string>(nullable: true),
+                    Subject = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LetterHeader", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LetterHeader_Character_CharacterId",
+                        column: x => x.CharacterId,
+                        principalSchema: "data",
+                        principalTable: "Character",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StatAttribute",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CharacterId = table.Column<Guid>(nullable: true),
+                    DefinitionId = table.Column<Guid>(nullable: true),
+                    Value = table.Column<float>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StatAttribute", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StatAttribute_Character_CharacterId",
+                        column: x => x.CharacterId,
+                        principalSchema: "data",
+                        principalTable: "Character",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StatAttribute_AttributeDefinition_DefinitionId",
+                        column: x => x.DefinitionId,
+                        principalSchema: "config",
+                        principalTable: "AttributeDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -685,6 +1205,33 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MasterSkillDefinitionSkill",
+                schema: "config",
+                columns: table => new
+                {
+                    MasterSkillDefinitionId = table.Column<Guid>(nullable: false),
+                    SkillId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MasterSkillDefinitionSkill", x => new { x.MasterSkillDefinitionId, x.SkillId });
+                    table.ForeignKey(
+                        name: "FK_MasterSkillDefinitionSkill_MasterSkillDefinition_MasterSkillDefinitionId",
+                        column: x => x.MasterSkillDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MasterSkillDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MasterSkillDefinitionSkill_Skill_SkillId",
+                        column: x => x.SkillId,
+                        principalSchema: "config",
+                        principalTable: "Skill",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MonsterDefinition",
                 schema: "config",
                 columns: table => new
@@ -733,6 +1280,60 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SkillCharacterClass",
+                schema: "config",
+                columns: table => new
+                {
+                    SkillId = table.Column<Guid>(nullable: false),
+                    CharacterClassId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SkillCharacterClass", x => new { x.SkillId, x.CharacterClassId });
+                    table.ForeignKey(
+                        name: "FK_SkillCharacterClass_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SkillCharacterClass_Skill_SkillId",
+                        column: x => x.SkillId,
+                        principalSchema: "config",
+                        principalTable: "Skill",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SkillMasterSkillDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    SkillId = table.Column<Guid>(nullable: false),
+                    MasterSkillDefinitionId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SkillMasterSkillDefinition", x => new { x.SkillId, x.MasterSkillDefinitionId });
+                    table.ForeignKey(
+                        name: "FK_SkillMasterSkillDefinition_MasterSkillDefinition_MasterSkillDefinitionId",
+                        column: x => x.MasterSkillDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MasterSkillDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SkillMasterSkillDefinition_Skill_SkillId",
+                        column: x => x.SkillId,
+                        principalSchema: "config",
+                        principalTable: "Skill",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SkillPowerUpDefinition",
                 schema: "config",
                 columns: table => new
@@ -758,6 +1359,66 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "PowerUpDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SkillEntry",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CharacterId = table.Column<Guid>(nullable: true),
+                    Level = table.Column<int>(nullable: false),
+                    SkillId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SkillEntry", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SkillEntry_Character_CharacterId",
+                        column: x => x.CharacterId,
+                        principalSchema: "data",
+                        principalTable: "Character",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SkillEntry_Skill_SkillId",
+                        column: x => x.SkillId,
+                        principalSchema: "config",
+                        principalTable: "Skill",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LetterBody",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Animation = table.Column<byte>(nullable: false),
+                    HeaderId = table.Column<Guid>(nullable: true),
+                    Message = table.Column<string>(nullable: true),
+                    Rotation = table.Column<byte>(nullable: false),
+                    SenderAppearanceId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LetterBody", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LetterBody_LetterHeader_HeaderId",
+                        column: x => x.HeaderId,
+                        principalSchema: "data",
+                        principalTable: "LetterHeader",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LetterBody_AppearanceData_SenderAppearanceId",
+                        column: x => x.SenderAppearanceId,
+                        principalSchema: "data",
+                        principalTable: "AppearanceData",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -929,6 +1590,33 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ItemDefinitionCharacterClass",
+                schema: "config",
+                columns: table => new
+                {
+                    ItemDefinitionId = table.Column<Guid>(nullable: false),
+                    CharacterClassId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemDefinitionCharacterClass", x => new { x.ItemDefinitionId, x.CharacterClassId });
+                    table.ForeignKey(
+                        name: "FK_ItemDefinitionCharacterClass_CharacterClass_CharacterClassId",
+                        column: x => x.CharacterClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemDefinitionCharacterClass_ItemDefinition_ItemDefinitionId",
+                        column: x => x.ItemDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "ItemDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemDefinitionItemSetGroup",
                 schema: "config",
                 columns: table => new
@@ -1059,6 +1747,36 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ItemAppearance",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    AppearanceDataId = table.Column<Guid>(nullable: true),
+                    DefinitionId = table.Column<Guid>(nullable: true),
+                    ItemSlot = table.Column<byte>(nullable: false),
+                    Level = table.Column<byte>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemAppearance", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemAppearance_AppearanceData_AppearanceDataId",
+                        column: x => x.AppearanceDataId,
+                        principalSchema: "data",
+                        principalTable: "AppearanceData",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemAppearance_ItemDefinition_DefinitionId",
+                        column: x => x.DefinitionId,
+                        principalSchema: "config",
+                        principalTable: "ItemDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemCrafting",
                 schema: "config",
                 columns: table => new
@@ -1143,6 +1861,41 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "MonsterDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MonsterSpawnArea",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Direction = table.Column<int>(nullable: false),
+                    GameMapId = table.Column<Guid>(nullable: true),
+                    MonsterDefinitionId = table.Column<Guid>(nullable: true),
+                    Quantity = table.Column<short>(nullable: false),
+                    SpawnTrigger = table.Column<int>(nullable: false),
+                    X1 = table.Column<byte>(nullable: false),
+                    X2 = table.Column<byte>(nullable: false),
+                    Y1 = table.Column<byte>(nullable: false),
+                    Y2 = table.Column<byte>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MonsterSpawnArea", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MonsterSpawnArea_GameMapDefinition_GameMapId",
+                        column: x => x.GameMapId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MonsterSpawnArea_MonsterDefinition_MonsterDefinitionId",
+                        column: x => x.MonsterDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MonsterDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1288,6 +2041,33 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ItemAppearanceItemOptionType",
+                schema: "data",
+                columns: table => new
+                {
+                    ItemAppearanceId = table.Column<Guid>(nullable: false),
+                    ItemOptionTypeId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemAppearanceItemOptionType", x => new { x.ItemAppearanceId, x.ItemOptionTypeId });
+                    table.ForeignKey(
+                        name: "FK_ItemAppearanceItemOptionType_ItemAppearance_ItemAppearanceId",
+                        column: x => x.ItemAppearanceId,
+                        principalSchema: "data",
+                        principalTable: "ItemAppearance",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemAppearanceItemOptionType_ItemOptionType_ItemOptionTypeId",
+                        column: x => x.ItemOptionTypeId,
+                        principalSchema: "config",
+                        principalTable: "ItemOptionType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemOfItemSet",
                 schema: "config",
                 columns: table => new
@@ -1349,681 +2129,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.PowerUpDefinitionId,
                         principalSchema: "config",
                         principalTable: "PowerUpDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AttributeRelationship",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: true),
-                    InputAttributeId = table.Column<Guid>(nullable: true),
-                    InputOperand = table.Column<float>(nullable: false),
-                    InputOperator = table.Column<int>(nullable: false),
-                    PowerUpDefinitionValueId = table.Column<Guid>(nullable: true),
-                    TargetAttributeId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AttributeRelationship", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AttributeRelationship_AttributeDefinition_InputAttributeId",
-                        column: x => x.InputAttributeId,
-                        principalSchema: "config",
-                        principalTable: "AttributeDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AttributeRelationship_PowerUpDefinitionValue_PowerUpDefinitionValueId",
-                        column: x => x.PowerUpDefinitionValueId,
-                        principalSchema: "config",
-                        principalTable: "PowerUpDefinitionValue",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AttributeRelationship_AttributeDefinition_TargetAttributeId",
-                        column: x => x.TargetAttributeId,
-                        principalSchema: "config",
-                        principalTable: "AttributeDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ConstValueAttribute",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: false),
-                    DefinitionId = table.Column<Guid>(nullable: true),
-                    Value = table.Column<float>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConstValueAttribute", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ConstValueAttribute_AttributeDefinition_DefinitionId",
-                        column: x => x.DefinitionId,
-                        principalSchema: "config",
-                        principalTable: "AttributeDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StatAttributeDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    AttributeId = table.Column<Guid>(nullable: true),
-                    BaseValue = table.Column<float>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: true),
-                    IncreasableByPlayer = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StatAttributeDefinition", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StatAttributeDefinition_AttributeDefinition_AttributeId",
-                        column: x => x.AttributeId,
-                        principalSchema: "config",
-                        principalTable: "AttributeDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StatAttribute",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterId = table.Column<Guid>(nullable: true),
-                    DefinitionId = table.Column<Guid>(nullable: true),
-                    Value = table.Column<float>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StatAttribute", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StatAttribute_AttributeDefinition_DefinitionId",
-                        column: x => x.DefinitionId,
-                        principalSchema: "config",
-                        principalTable: "AttributeDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ItemDefinitionCharacterClass",
-                schema: "config",
-                columns: table => new
-                {
-                    ItemDefinitionId = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemDefinitionCharacterClass", x => new { x.ItemDefinitionId, x.CharacterClassId });
-                    table.ForeignKey(
-                        name: "FK_ItemDefinitionCharacterClass_ItemDefinition_ItemDefinitionId",
-                        column: x => x.ItemDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "ItemDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MasterSkillDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: true),
-                    Rank = table.Column<byte>(nullable: false),
-                    RootId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MasterSkillDefinition", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MasterSkillDefinition_MasterSkillRoot_RootId",
-                        column: x => x.RootId,
-                        principalSchema: "config",
-                        principalTable: "MasterSkillRoot",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MasterSkillDefinitionSkill",
-                schema: "config",
-                columns: table => new
-                {
-                    MasterSkillDefinitionId = table.Column<Guid>(nullable: false),
-                    SkillId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MasterSkillDefinitionSkill", x => new { x.MasterSkillDefinitionId, x.SkillId });
-                    table.ForeignKey(
-                        name: "FK_MasterSkillDefinitionSkill_MasterSkillDefinition_MasterSkillDefinitionId",
-                        column: x => x.MasterSkillDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "MasterSkillDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MasterSkillDefinitionSkill_Skill_SkillId",
-                        column: x => x.SkillId,
-                        principalSchema: "config",
-                        principalTable: "Skill",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SkillMasterSkillDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    SkillId = table.Column<Guid>(nullable: false),
-                    MasterSkillDefinitionId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SkillMasterSkillDefinition", x => new { x.SkillId, x.MasterSkillDefinitionId });
-                    table.ForeignKey(
-                        name: "FK_SkillMasterSkillDefinition_MasterSkillDefinition_MasterSkillDefinitionId",
-                        column: x => x.MasterSkillDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "MasterSkillDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SkillMasterSkillDefinition_Skill_SkillId",
-                        column: x => x.SkillId,
-                        principalSchema: "config",
-                        principalTable: "Skill",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SkillCharacterClass",
-                schema: "config",
-                columns: table => new
-                {
-                    SkillId = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SkillCharacterClass", x => new { x.SkillId, x.CharacterClassId });
-                    table.ForeignKey(
-                        name: "FK_SkillCharacterClass_Skill_SkillId",
-                        column: x => x.SkillId,
-                        principalSchema: "config",
-                        principalTable: "Skill",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AccountCharacterClass",
-                schema: "data",
-                columns: table => new
-                {
-                    AccountId = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AccountCharacterClass", x => new { x.AccountId, x.CharacterClassId });
-                    table.ForeignKey(
-                        name: "FK_AccountCharacterClass_Account_AccountId",
-                        column: x => x.AccountId,
-                        principalSchema: "data",
-                        principalTable: "Account",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AppearanceData",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppearanceData", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ItemAppearance",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    AppearanceDataId = table.Column<Guid>(nullable: true),
-                    DefinitionId = table.Column<Guid>(nullable: true),
-                    ItemSlot = table.Column<byte>(nullable: false),
-                    Level = table.Column<byte>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemAppearance", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemAppearance_AppearanceData_AppearanceDataId",
-                        column: x => x.AppearanceDataId,
-                        principalSchema: "data",
-                        principalTable: "AppearanceData",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ItemAppearance_ItemDefinition_DefinitionId",
-                        column: x => x.DefinitionId,
-                        principalSchema: "config",
-                        principalTable: "ItemDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ItemAppearanceItemOptionType",
-                schema: "data",
-                columns: table => new
-                {
-                    ItemAppearanceId = table.Column<Guid>(nullable: false),
-                    ItemOptionTypeId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemAppearanceItemOptionType", x => new { x.ItemAppearanceId, x.ItemOptionTypeId });
-                    table.ForeignKey(
-                        name: "FK_ItemAppearanceItemOptionType_ItemAppearance_ItemAppearanceId",
-                        column: x => x.ItemAppearanceId,
-                        principalSchema: "data",
-                        principalTable: "ItemAppearance",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ItemAppearanceItemOptionType_ItemOptionType_ItemOptionTypeId",
-                        column: x => x.ItemOptionTypeId,
-                        principalSchema: "config",
-                        principalTable: "ItemOptionType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Character",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    AccountId = table.Column<Guid>(nullable: true),
-                    CharacterClassId = table.Column<Guid>(nullable: false),
-                    CharacterSlot = table.Column<byte>(nullable: false),
-                    CreateDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    CurrentMapId = table.Column<Guid>(nullable: true),
-                    Experience = table.Column<long>(nullable: false),
-                    GuildMemberInfoId = table.Column<Guid>(nullable: true),
-                    InventoryExtensions = table.Column<int>(nullable: false),
-                    InventoryId = table.Column<Guid>(nullable: true),
-                    KeyConfiguration = table.Column<byte[]>(nullable: true),
-                    LevelUpPoints = table.Column<int>(nullable: false),
-                    MasterExperience = table.Column<long>(nullable: false),
-                    MasterLevelUpPoints = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(maxLength: 10, nullable: false),
-                    PlayerKillCount = table.Column<int>(nullable: false),
-                    PositionX = table.Column<byte>(nullable: false),
-                    PositionY = table.Column<byte>(nullable: false),
-                    QuestInfo = table.Column<byte[]>(nullable: true),
-                    State = table.Column<int>(nullable: false),
-                    StateRemainingSeconds = table.Column<int>(nullable: false),
-                    UsedFruitPoints = table.Column<int>(nullable: false),
-                    UsedNegFruitPoints = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Character", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Character_Account_AccountId",
-                        column: x => x.AccountId,
-                        principalSchema: "data",
-                        principalTable: "Account",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Character_GuildMemberInfo_GuildMemberInfoId",
-                        column: x => x.GuildMemberInfoId,
-                        principalSchema: "data",
-                        principalTable: "GuildMemberInfo",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Character_ItemStorage_InventoryId",
-                        column: x => x.InventoryId,
-                        principalSchema: "data",
-                        principalTable: "ItemStorage",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CharacterDropItemGroup",
-                schema: "data",
-                columns: table => new
-                {
-                    CharacterId = table.Column<Guid>(nullable: false),
-                    DropItemGroupId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CharacterDropItemGroup", x => new { x.CharacterId, x.DropItemGroupId });
-                    table.ForeignKey(
-                        name: "FK_CharacterDropItemGroup_Character_CharacterId",
-                        column: x => x.CharacterId,
-                        principalSchema: "data",
-                        principalTable: "Character",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CharacterDropItemGroup_DropItemGroup_DropItemGroupId",
-                        column: x => x.DropItemGroupId,
-                        principalSchema: "config",
-                        principalTable: "DropItemGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LetterHeader",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterId = table.Column<Guid>(nullable: true),
-                    LetterDate = table.Column<DateTime>(nullable: false),
-                    ReadFlag = table.Column<bool>(nullable: false),
-                    Receiver = table.Column<string>(nullable: true),
-                    Sender = table.Column<string>(nullable: true),
-                    Subject = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LetterHeader", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LetterHeader_Character_CharacterId",
-                        column: x => x.CharacterId,
-                        principalSchema: "data",
-                        principalTable: "Character",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SkillEntry",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterId = table.Column<Guid>(nullable: true),
-                    Level = table.Column<int>(nullable: false),
-                    SkillId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SkillEntry", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SkillEntry_Character_CharacterId",
-                        column: x => x.CharacterId,
-                        principalSchema: "data",
-                        principalTable: "Character",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SkillEntry_Skill_SkillId",
-                        column: x => x.SkillId,
-                        principalSchema: "config",
-                        principalTable: "Skill",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LetterBody",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Animation = table.Column<byte>(nullable: false),
-                    HeaderId = table.Column<Guid>(nullable: true),
-                    Message = table.Column<string>(nullable: true),
-                    Rotation = table.Column<byte>(nullable: false),
-                    SenderAppearanceId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LetterBody", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LetterBody_LetterHeader_HeaderId",
-                        column: x => x.HeaderId,
-                        principalSchema: "data",
-                        principalTable: "LetterHeader",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_LetterBody_AppearanceData_SenderAppearanceId",
-                        column: x => x.SenderAppearanceId,
-                        principalSchema: "data",
-                        principalTable: "AppearanceData",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GameMapDefinitionDropItemGroup",
-                schema: "config",
-                columns: table => new
-                {
-                    GameMapDefinitionId = table.Column<Guid>(nullable: false),
-                    DropItemGroupId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameMapDefinitionDropItemGroup", x => new { x.GameMapDefinitionId, x.DropItemGroupId });
-                    table.ForeignKey(
-                        name: "FK_GameMapDefinitionDropItemGroup_DropItemGroup_DropItemGroupId",
-                        column: x => x.DropItemGroupId,
-                        principalSchema: "config",
-                        principalTable: "DropItemGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EnterGate",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    GameMapDefinitionId = table.Column<Guid>(nullable: true),
-                    LevelRequirement = table.Column<short>(nullable: false),
-                    Number = table.Column<short>(nullable: false),
-                    TargetGateId = table.Column<Guid>(nullable: true),
-                    X1 = table.Column<byte>(nullable: false),
-                    X2 = table.Column<byte>(nullable: false),
-                    Y1 = table.Column<byte>(nullable: false),
-                    Y2 = table.Column<byte>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EnterGate", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GameMapDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    DeathSafezoneId = table.Column<Guid>(nullable: true),
-                    ExpMultiplier = table.Column<double>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    Number = table.Column<short>(nullable: false),
-                    TerrainData = table.Column<byte[]>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameMapDefinition", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GameMapDefinition_GameConfiguration_GameConfigurationId",
-                        column: x => x.GameConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CharacterClass",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CanGetCreated = table.Column<bool>(nullable: false),
-                    CreationAllowedFlag = table.Column<byte>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    HomeMapId = table.Column<Guid>(nullable: true),
-                    IsMasterClass = table.Column<bool>(nullable: false),
-                    LevelRequirementByCreation = table.Column<short>(nullable: false),
-                    LevelWarpRequirementReductionPercent = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    NextGenerationClassId = table.Column<Guid>(nullable: true),
-                    Number = table.Column<byte>(nullable: false),
-                    PointsPerLevelUp = table.Column<short>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CharacterClass", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CharacterClass_GameConfiguration_GameConfigurationId",
-                        column: x => x.GameConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CharacterClass_GameMapDefinition_HomeMapId",
-                        column: x => x.HomeMapId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CharacterClass_CharacterClass_NextGenerationClassId",
-                        column: x => x.NextGenerationClassId,
-                        principalSchema: "config",
-                        principalTable: "CharacterClass",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExitGate",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Direction = table.Column<int>(nullable: false),
-                    MapId = table.Column<Guid>(nullable: true),
-                    X1 = table.Column<byte>(nullable: false),
-                    X2 = table.Column<byte>(nullable: false),
-                    Y1 = table.Column<byte>(nullable: false),
-                    Y2 = table.Column<byte>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExitGate", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExitGate_GameMapDefinition_MapId",
-                        column: x => x.MapId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GameServerConfigurationGameMapDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    GameServerConfigurationId = table.Column<Guid>(nullable: false),
-                    GameMapDefinitionId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameServerConfigurationGameMapDefinition", x => new { x.GameServerConfigurationId, x.GameMapDefinitionId });
-                    table.ForeignKey(
-                        name: "FK_GameServerConfigurationGameMapDefinition_GameMapDefinition_GameMapDefinitionId",
-                        column: x => x.GameMapDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GameServerConfigurationGameMapDefinition_GameServerConfiguration_GameServerConfigurationId",
-                        column: x => x.GameServerConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameServerConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MonsterSpawnArea",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Direction = table.Column<int>(nullable: false),
-                    GameMapId = table.Column<Guid>(nullable: true),
-                    MonsterDefinitionId = table.Column<Guid>(nullable: true),
-                    Quantity = table.Column<short>(nullable: false),
-                    SpawnTrigger = table.Column<int>(nullable: false),
-                    X1 = table.Column<byte>(nullable: false),
-                    X2 = table.Column<byte>(nullable: false),
-                    Y1 = table.Column<byte>(nullable: false),
-                    Y2 = table.Column<byte>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MonsterSpawnArea", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MonsterSpawnArea_GameMapDefinition_GameMapId",
-                        column: x => x.GameMapId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_MonsterSpawnArea_MonsterDefinition_MonsterDefinitionId",
-                        column: x => x.MonsterDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "MonsterDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -2143,16 +2248,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "MapId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameMapDefinition_DeathSafezoneId",
-                schema: "config",
-                table: "GameMapDefinition",
-                column: "DeathSafezoneId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GameMapDefinition_GameConfigurationId",
                 schema: "config",
                 table: "GameMapDefinition",
                 column: "GameConfigurationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameMapDefinition_SafezoneMapId",
+                schema: "config",
+                table: "GameMapDefinition",
+                column: "SafezoneMapId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameMapDefinitionDropItemGroup_DropItemGroupId",
@@ -2745,171 +2850,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 table: "StatAttribute",
                 column: "DefinitionId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AttributeRelationship_CharacterClass_CharacterClassId",
-                schema: "config",
-                table: "AttributeRelationship",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ConstValueAttribute_CharacterClass_CharacterClassId",
-                schema: "config",
-                table: "ConstValueAttribute",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_StatAttributeDefinition_CharacterClass_CharacterClassId",
-                schema: "config",
-                table: "StatAttributeDefinition",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_StatAttribute_Character_CharacterId",
-                schema: "data",
-                table: "StatAttribute",
-                column: "CharacterId",
-                principalSchema: "data",
-                principalTable: "Character",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ItemDefinitionCharacterClass_CharacterClass_CharacterClassId",
-                schema: "config",
-                table: "ItemDefinitionCharacterClass",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_MasterSkillDefinition_CharacterClass_CharacterClassId",
-                schema: "config",
-                table: "MasterSkillDefinition",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_SkillCharacterClass_CharacterClass_CharacterClassId",
-                schema: "config",
-                table: "SkillCharacterClass",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AccountCharacterClass_CharacterClass_CharacterClassId",
-                schema: "data",
-                table: "AccountCharacterClass",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AppearanceData_CharacterClass_CharacterClassId",
-                schema: "data",
-                table: "AppearanceData",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Character_CharacterClass_CharacterClassId",
-                schema: "data",
-                table: "Character",
-                column: "CharacterClassId",
-                principalSchema: "config",
-                principalTable: "CharacterClass",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Character_GameMapDefinition_CurrentMapId",
-                schema: "data",
-                table: "Character",
-                column: "CurrentMapId",
-                principalSchema: "config",
-                principalTable: "GameMapDefinition",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_GameMapDefinitionDropItemGroup_GameMapDefinition_GameMapDefinitionId",
-                schema: "config",
-                table: "GameMapDefinitionDropItemGroup",
-                column: "GameMapDefinitionId",
-                principalSchema: "config",
-                principalTable: "GameMapDefinition",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_EnterGate_GameMapDefinition_GameMapDefinitionId",
-                schema: "config",
-                table: "EnterGate",
-                column: "GameMapDefinitionId",
-                principalSchema: "config",
-                principalTable: "GameMapDefinition",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_EnterGate_ExitGate_TargetGateId",
-                schema: "config",
-                table: "EnterGate",
-                column: "TargetGateId",
-                principalSchema: "config",
-                principalTable: "ExitGate",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_GameMapDefinition_ExitGate_DeathSafezoneId",
-                schema: "config",
-                table: "GameMapDefinition",
-                column: "DeathSafezoneId",
-                principalSchema: "config",
-                principalTable: "ExitGate",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_GameMapDefinition_GameConfiguration_GameConfigurationId",
-                schema: "config",
-                table: "GameMapDefinition");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ExitGate_GameMapDefinition_MapId",
-                schema: "config",
-                table: "ExitGate");
-
             migrationBuilder.DropTable(
                 name: "AttributeRelationship",
                 schema: "config");
@@ -3059,6 +3004,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
+                name: "ExitGate",
+                schema: "config");
+
+            migrationBuilder.DropTable(
                 name: "ItemCraftingRequiredItem",
                 schema: "config");
 
@@ -3167,6 +3116,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
+                name: "GameMapDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
                 name: "Guild",
                 schema: "data");
 
@@ -3188,14 +3141,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "GameConfiguration",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "GameMapDefinition",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "ExitGate",
                 schema: "config");
         }
     }

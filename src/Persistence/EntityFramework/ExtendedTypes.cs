@@ -2444,53 +2444,53 @@ public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<Monste
             }
         }
 
-        public ICollection<EnterGate> RawGates { get; } = new List<EnterGate>();        
+        public ICollection<EnterGate> RawEnterGates { get; } = new List<EnterGate>();        
         /// <inheritdoc/>
         [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.EnterGate> Gates
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.EnterGate> EnterGates
         {
             get
             {
-                return base.Gates ?? (base.Gates = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.EnterGate, EnterGate>(this.RawGates)); 
+                return base.EnterGates ?? (base.EnterGates = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.EnterGate, EnterGate>(this.RawEnterGates)); 
             }
         }
 
                 /// <summary>
-        /// Gets or sets the identifier of <see cref="DeathSafezone"/>.
+        /// Gets or sets the identifier of <see cref="SafezoneMap"/>.
         /// </summary>
-        public Guid? DeathSafezoneId { get; set; }
+        public Guid? SafezoneMapId { get; set; }
         
-        [ForeignKey("DeathSafezoneId")]
-        public ExitGate RawDeathSafezone
+        [ForeignKey("SafezoneMapId")]
+        public GameMapDefinition RawSafezoneMap
         { 
-            get { return base.DeathSafezone as ExitGate; }
-            set { base.DeathSafezone = value; } 
+            get { return base.SafezoneMap as GameMapDefinition; }
+            set { base.SafezoneMap = value; } 
         }
                 
         /// <inheritdoc/>
         [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.ExitGate DeathSafezone
+        public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition SafezoneMap
         {
             get
             {
-                return base.DeathSafezone;
+                return base.SafezoneMap;
             }
             
             set
             {
-                base.DeathSafezone = value;
-                this.DeathSafezoneId = this.RawDeathSafezone?.Id;
+                base.SafezoneMap = value;
+                this.SafezoneMapId = this.RawSafezoneMap?.Id;
             }
         }
 
-        public ICollection<ExitGate> RawSpawnGates { get; } = new List<ExitGate>();        
+        public ICollection<ExitGate> RawExitGates { get; } = new List<ExitGate>();        
         /// <inheritdoc/>
         [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ExitGate> SpawnGates
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ExitGate> ExitGates
         {
             get
             {
-                return base.SpawnGates ?? (base.SpawnGates = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ExitGate, ExitGate>(this.RawSpawnGates)); 
+                return base.ExitGates ?? (base.ExitGates = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ExitGate, ExitGate>(this.RawExitGates)); 
             }
         }
 

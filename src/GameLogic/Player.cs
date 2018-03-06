@@ -746,8 +746,14 @@ namespace MUnique.OpenMU.GameLogic
             if (this.respawnAfterDeathToken.CanBeCanceled && !this.respawnAfterDeathToken.IsCancellationRequested)
             {
                 this.respawnAfterDeathToken.ThrowIfCancellationRequested();
-                this.WarpTo(this.CurrentMap.Definition.DeathSafezone);
+                this.WarpTo(this.GetSpawnGateOfCurrentMap());
             }
+        }
+
+        private ExitGate GetSpawnGateOfCurrentMap()
+        {
+            var spawnTargetMap = this.CurrentMap.Definition.SafezoneMap ?? this.CurrentMap.Definition;
+            return spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
         }
 
         private void OnDeath(IAttackable killer)
@@ -771,7 +777,7 @@ namespace MUnique.OpenMU.GameLogic
                   this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
                   this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
                   this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility];
-                  this.WarpTo(this.SelectedCharacter.CurrentMap.DeathSafezone);
+                  this.WarpTo(this.GetSpawnGateOfCurrentMap());
               },
               this.respawnAfterDeathToken);
         }

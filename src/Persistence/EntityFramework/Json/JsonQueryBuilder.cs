@@ -75,7 +75,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// Determines whether only references should be selected instead of the whole type.
         /// </summary>
         /// <param name="parentAlias">The parent alias.</param>
-        /// <param name="targetType">Type of the target.</param>
+        /// <param name="navigation">The navigation.</param>
+        /// <returns>True, if only references should be selected; Otherwise, false.</returns>
+        protected virtual bool SelectReferences(string parentAlias, INavigation navigation)
+        {
+            return this.SelectReferences(parentAlias, navigation.GetTargetType());
+        }
+
+        /// <summary>
+        /// Determines whether only references should be selected instead of the whole type.
+        /// </summary>
+        /// <param name="parentAlias">The parent alias.</param>
+        /// <param name="targetType">The target type.</param>
         /// <returns>True, if only references should be selected; Otherwise, false.</returns>
         protected virtual bool SelectReferences(string parentAlias, IEntityType targetType)
         {
@@ -157,7 +168,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             }
 
             stringBuilder.Append(", (");
-            if (this.SelectReferences(parentAlias, targetType) || isBackReference)
+            if (this.SelectReferences(parentAlias, navigation) || isBackReference)
             {
                 stringBuilder.Append("json_build_object('$ref', ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).Append("\")");
             }

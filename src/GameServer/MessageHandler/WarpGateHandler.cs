@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
 
             ushort gateNr = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
-            EnterGate gate = player.SelectedCharacter.CurrentMap.Gates.FirstOrDefault(g => NumberConversionExtensions.ToUnsigned(g.Number) == gateNr);
+            EnterGate gate = player.SelectedCharacter.CurrentMap.EnterGates.FirstOrDefault(g => NumberConversionExtensions.ToUnsigned(g.Number) == gateNr);
             if (gate == null)
             {
                 Logger.WarnFormat("Gate {0} not found in current map {1}", gateNr,  player.SelectedCharacter.CurrentMap);

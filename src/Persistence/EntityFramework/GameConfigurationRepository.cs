@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public GameConfigurationRepository(IRepositoryManager repositoryManager)
             : base(repositoryManager)
         {
-            this.objectLoader = new JsonObjectLoader();
+            this.objectLoader = new GameConfigurationJsonObjectLoader();
         }
 
         /// <inheritdoc />

@@ -275,6 +275,8 @@
     <Compile Include="Json\AccountJsonObjectLoader.cs" />
     <Compile Include="Json\AccountJsonQueryBuilder.cs" />
     <Compile Include="Json\BinaryAsHexJsonConverter.cs" />
+    <Compile Include="Json\GameConfigurationJsonObjectLoader.cs" />
+    <Compile Include="Json\GameConfigurationJsonQueryBuilder.cs" />
     <Compile Include="Json\MultipleSourceReferenceResolver.cs" />
     <Compile Include="Json\ConfigurationIdReferenceResolver.cs" />
     <Compile Include="Json\IdReferenceResolver.cs" />

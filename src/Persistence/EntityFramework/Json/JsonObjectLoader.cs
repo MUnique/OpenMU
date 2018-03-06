@@ -23,16 +23,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonObjectLoader"/> class.
         /// </summary>
-        public JsonObjectLoader()
-        {
-            this.queryBuilder = new JsonQueryBuilder();
-            this.deserializer = new JsonObjectDeserializer { AreCircularReferencesExpected = true };
-            this.referenceResolver = new IdReferenceResolver();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonObjectLoader"/> class.
-        /// </summary>
         /// <param name="queryBuilder">The query builder.</param>
         /// <param name="deserializer">The deserializer.</param>
         /// <param name="referenceResolver">The reference resolver.</param>

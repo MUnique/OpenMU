@@ -60,11 +60,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateGameServerDefinitions(gameServerConfiguration, 3);
                 context.SaveChanges();
 
-                var safezone = this.gameConfiguration.Maps.First(map => map.Number == 0).SpawnGates.First(gate => gate.X1 == 133 && gate.X2 == 151);
+                var lorencia = this.gameConfiguration.Maps.First(map => map.Number == 0);
                 foreach (var map in this.gameConfiguration.Maps)
                 {
                     // set safezone to lorencia for now...
-                    map.DeathSafezone = safezone;
+                    map.SafezoneMap = lorencia;
                 }
 
                 this.CreateTestAccounts(10);
@@ -106,9 +106,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             }
 
             character.CurrentMap = character.CharacterClass.HomeMap;
-            character.PositionX = (byte)Rand.NextInt(character.CurrentMap.DeathSafezone.X1, character.CurrentMap.DeathSafezone.X2);
-            character.PositionY = (byte)Rand.NextInt(character.CurrentMap.DeathSafezone.Y1, character.CurrentMap.DeathSafezone.Y2);
             character.Attributes.First(a => a.Definition == Stats.Level).Value = (index * 10) + 1;
+            var spawnGate = character.CurrentMap.ExitGates.Where(m => m.IsSpawnGate).SelectRandom();
+            character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
+            character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
             character.LevelUpPoints = (int)(character.Attributes.First(a => a.Definition == Stats.Level).Value - 1) * character.CharacterClass.PointsPerLevelUp;
             character.Inventory = this.repositoryManager.CreateNew<ItemStorage>();
             character.Inventory.Money = 1000000;
@@ -158,7 +159,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private Item CreateSetItem(byte itemSlot, byte setNumber, byte group)
         {
             var item = this.repositoryManager.CreateNew<Item>();
-            item.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == group && def.Number == setNumber);
+            item.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == setNumber);
             item.Durability = item.Definition.Durability;
             item.ItemSlot = itemSlot;
             return item;

@@ -18,5 +18,14 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the map which will be entered.
         /// </summary>
         public virtual GameMapDefinition Map { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a spawn gate.
+        /// If the direction is specified, it's usually not a spawn gate, but a target of an <see cref="EnterGate"/>.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is spawn gate; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsSpawnGate => this.Direction == Direction.Undefined;
     }
 }

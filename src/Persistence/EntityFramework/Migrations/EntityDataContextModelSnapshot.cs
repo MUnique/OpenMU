@@ -447,8 +447,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("DeathSafezoneId");
-
                     b.Property<double>("ExpMultiplier");
 
                     b.Property<Guid?>("GameConfigurationId");
@@ -457,13 +455,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<short>("Number");
 
+                    b.Property<Guid?>("SafezoneMapId");
+
                     b.Property<byte[]>("TerrainData");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeathSafezoneId");
-
                     b.HasIndex("GameConfigurationId");
+
+                    b.HasIndex("SafezoneMapId");
 
                     b.ToTable("GameMapDefinition","config");
                 });
@@ -1790,7 +1790,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.EnterGate", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition")
-                        .WithMany("RawGates")
+                        .WithMany("RawEnterGates")
                         .HasForeignKey("GameMapDefinitionId");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawTargetGate")
@@ -1801,19 +1801,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawMap")
-                        .WithMany("RawSpawnGates")
+                        .WithMany("RawExitGates")
                         .HasForeignKey("MapId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawDeathSafezone")
-                        .WithMany()
-                        .HasForeignKey("DeathSafezoneId");
-
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration")
                         .WithMany("RawMaps")
                         .HasForeignKey("GameConfigurationId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawSafezoneMap")
+                        .WithMany()
+                        .HasForeignKey("SafezoneMapId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinitionDropItemGroup", b =>

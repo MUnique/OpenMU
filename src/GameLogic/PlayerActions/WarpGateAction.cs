@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            if (player.CurrentMap.Definition.Gates.Contains(enterGate) && !(player.X >= enterGate.X1 - INACCURACY &&
+            if (player.CurrentMap.Definition.EnterGates.Contains(enterGate) && !(player.X >= enterGate.X1 - INACCURACY &&
                   player.X <= enterGate.X2 + INACCURACY &&
                   player.Y >= enterGate.Y1 - INACCURACY &&
                   player.Y <= enterGate.Y2 + INACCURACY))
