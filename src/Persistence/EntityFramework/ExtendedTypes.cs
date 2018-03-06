@@ -544,6 +544,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
         }
 
+        public ICollection<ItemAppearance> RawEquippedItems { get; } = new List<ItemAppearance>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemAppearance> EquippedItems
+        {
+            get
+            {
+                return base.EquippedItems ?? (base.EquippedItems = new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.ItemAppearance, ItemAppearance>(this.RawEquippedItems)); 
+            }
+        }
+
                 
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -678,10 +689,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </summary>
     [Table("ItemAppearance", Schema = "data")]
     internal partial class ItemAppearance : MUnique.OpenMU.DataModel.Entities.ItemAppearance, IIdentifiable
-    {        
+    {
+        public ItemAppearance()
+        {
+            this.InitJoinCollections();
+        }         
 
         protected void InitJoinCollections()
         {
+          
+            this.VisibleOptions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, ItemAppearanceItemOptionType>(this.JoinedVisibleOptions, joinEntity => joinEntity.ItemOptionType, entity => new ItemAppearanceItemOptionType { ItemAppearance = this, ItemAppearanceId = this.Id, ItemOptionType = (ItemOptionType)entity, ItemOptionTypeId = ((ItemOptionType)entity).Id});
         }
 
         /// <summary>
@@ -689,7 +706,35 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Definition"/>.
+        /// </summary>
+        public Guid? DefinitionId { get; set; }
         
+        [ForeignKey("DefinitionId")]
+        public ItemDefinition RawDefinition
+        { 
+            get { return base.Definition as ItemDefinition; }
+            set { base.Definition = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Definition
+        {
+            get
+            {
+                return base.Definition;
+            }
+            
+            set
+            {
+                base.Definition = value;
+                this.DefinitionId = this.RawDefinition?.Id;
+            }
+        }
+
+                
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
@@ -4503,6 +4548,8 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Entity<CharacterDropItemGroup>().HasKey(join => new { join.CharacterId, join.DropItemGroupId });
             modelBuilder.Entity<Item>().HasMany(entity => entity.JoinedItemSetGroups).WithOne(join => join.Item);
             modelBuilder.Entity<ItemItemSetGroup>().HasKey(join => new { join.ItemId, join.ItemSetGroupId });
+            modelBuilder.Entity<ItemAppearance>().HasMany(entity => entity.JoinedVisibleOptions).WithOne(join => join.ItemAppearance);
+            modelBuilder.Entity<ItemAppearanceItemOptionType>().HasKey(join => new { join.ItemAppearanceId, join.ItemOptionTypeId });
             modelBuilder.Entity<GameServerConfiguration>().HasMany(entity => entity.JoinedMaps).WithOne(join => join.GameServerConfiguration);
             modelBuilder.Entity<GameServerConfigurationGameMapDefinition>().HasKey(join => new { join.GameServerConfigurationId, join.GameMapDefinitionId });
             modelBuilder.Entity<DropItemGroup>().HasMany(entity => entity.JoinedPossibleItems).WithOne(join => join.DropItemGroup);

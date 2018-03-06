@@ -110,7 +110,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             letterBody.Message = message;
             letterBody.SenderAppearance = this.gameContext.RepositoryManager.CreateNew<AppearanceData>();
             letterBody.SenderAppearance.CharacterClass = player.AppearanceData.CharacterClass;
-            letterBody.SenderAppearance.EquippedItems = player.AppearanceData.EquippedItems.ToList();
+            player.AppearanceData.EquippedItems.Select(i => i.MakePersistent(this.gameContext))
+                .ForEach(letterBody.SenderAppearance.EquippedItems.Add);
             letterBody.Rotation = rotation;
             letterBody.Animation = animation;
             return letterHeader;

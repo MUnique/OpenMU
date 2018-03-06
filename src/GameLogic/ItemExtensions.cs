@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
@@ -45,6 +47,47 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             return (byte)Math.Min(byte.MaxValue, result);
+        }
+
+        /// <summary>
+        /// Gets the item data which is relvant for the visual appearance of an item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>The item data which is relvant for the visual appearance of an item.</returns>
+        public static ItemAppearance GetAppearance(this Item item)
+        {
+            var appearance = new TemporaryItemAppearance
+            {
+                Definition = item.Definition,
+                ItemSlot = item.ItemSlot,
+                Level = item.Level,
+            };
+            item.ItemOptions
+                .Where(option => option.ItemOption.OptionType.IsVisible)
+                .Select(option => option.ItemOption.OptionType)
+                .ForEach(appearance.VisibleOptions.Add);
+            return appearance;
+        }
+
+        /// <summary>
+        /// Creates a persistent instance of the given <see cref="ItemAppearance"/> and returns it.
+        /// </summary>
+        /// <param name="itemAppearance">The item appearance.</param>
+        /// <param name="gameContext">The game context.</param>
+        /// <returns>A persistent instance of the given <see cref="ItemAppearance"/>.</returns>
+        public static ItemAppearance MakePersistent(this ItemAppearance itemAppearance, IGameContext gameContext)
+        {
+            var persistent = gameContext.RepositoryManager.CreateNew<ItemAppearance>();
+            persistent.ItemSlot = itemAppearance.ItemSlot;
+            persistent.Definition = itemAppearance.Definition;
+            persistent.Level = itemAppearance.Level;
+            itemAppearance.VisibleOptions.ForEach(o => persistent.VisibleOptions.Add(o));
+            return persistent;
+        }
+
+        private sealed class TemporaryItemAppearance : ItemAppearance
+        {
+            public override ICollection<ItemOptionType> VisibleOptions => base.VisibleOptions ?? (base.VisibleOptions = new List<ItemOptionType>());
         }
     }
 }

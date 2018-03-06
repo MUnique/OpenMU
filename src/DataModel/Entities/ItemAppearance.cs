@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Entities
 {
+    using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -17,14 +18,9 @@ namespace MUnique.OpenMU.DataModel.Entities
         public byte ItemSlot { get; set; }
 
         /// <summary>
-        /// Gets or sets the index.
+        /// Gets or sets the definition of the item.
         /// </summary>
-        public ushort Index { get; set; }
-
-        /// <summary>
-        /// Gets or sets the group.
-        /// </summary>
-        public byte Group { get; set; }
+        public virtual ItemDefinition Definition { get; set; }
 
         /// <summary>
         /// Gets or sets the level.
@@ -34,6 +30,6 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the visible options.
         /// </summary>
-        public virtual ItemOptionType[] VisibleOptions { get; set; }
+        public virtual ICollection<ItemOptionType> VisibleOptions { get; protected set; }
     }
 }

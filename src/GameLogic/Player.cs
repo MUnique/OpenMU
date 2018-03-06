@@ -831,18 +831,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     if (this.player.Inventory != null)
                     {
-                        return this.player.Inventory.EquippedItems
-                            .Select(item =>
-                                    {
-                                        return new ItemAppearance
-                                        {
-                                            Index = item.Definition.Number,
-                                            Group = item.Definition.Group,
-                                            ItemSlot = item.ItemSlot,
-                                            Level = item.Level,
-                                            VisibleOptions = item.ItemOptions.Select(option => option.ItemOption.OptionType).ToArray()
-                                        };
-                                    });
+                        return this.player.Inventory.EquippedItems.Select(item => item.GetAppearance());
                     }
 
                     return Enumerable.Empty<ItemAppearance>();

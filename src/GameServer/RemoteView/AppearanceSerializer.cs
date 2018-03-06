@@ -17,13 +17,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// </summary>
     public class AppearanceSerializer : IAppearanceSerializer
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AppearanceSerializer"/> class.
-        /// </summary>
-        public AppearanceSerializer()
-        {
-        }
-
         private enum PetIndex
         {
             Angel = 0,
@@ -130,8 +123,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
             else
             {
-                preview[indexIndex] = (byte)item.Index;
-                preview[groupIndex] |= (byte)((item.Group << 4) & 0xF0);
+                preview[indexIndex] = (byte)item.Definition.Number;
+                preview[groupIndex] |= (byte)((item.Definition.Group << 4) & 0xF0);
             }
         }
 
@@ -147,8 +140,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             else
             {
                 // item id
-                preview[firstIndex] |= (byte)((item.Index << (firstIndexHigh ? 4 : 0)) & (0x0F << (firstIndexHigh ? 4 : 0)));
-                byte multi = (byte)(item.Index / 16);
+                preview[firstIndex] |= (byte)((item.Definition.Number << (firstIndexHigh ? 4 : 0)) & (0x0F << (firstIndexHigh ? 4 : 0)));
+                byte multi = (byte)(item.Definition.Number / 16);
                 if (multi > 0)
                 {
                     byte bit1 = (byte)(multi % 2);
@@ -201,7 +194,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            switch ((WingIndex)wing.Index)
+            switch ((WingIndex)wing.Definition.Number)
             {
                 case WingIndex.WingsOfElf:
                 case WingIndex.WingsOfHeaven:
@@ -235,7 +228,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     break;
             }
 
-            switch ((WingIndex)wing.Index)
+            switch ((WingIndex)wing.Definition.Number)
             {
                 case WingIndex.WingsOfElf:
                     preview[9] |= 0x01;
@@ -320,12 +313,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            switch ((PetIndex)pet.Index)
+            switch ((PetIndex)pet.Definition.Number)
             {
                 case PetIndex.Angel:
                 case PetIndex.Imp:
                 case PetIndex.Unicorn:
-                    preview[5] |= (byte)pet.Index;
+                    preview[5] |= (byte)pet.Definition.Number;
                     break;
                 case PetIndex.Dinorant:
                     preview[5] |= 0x03;
@@ -351,7 +344,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     break;
             }
 
-            switch ((PetIndex)pet.Index)
+            switch ((PetIndex)pet.Definition.Number)
             {
                 case PetIndex.Panda:
                     preview[16] |= 0xE0;

@@ -13,13 +13,6 @@ namespace MUnique.OpenMU.DataModel.Entities
     public class AppearanceData : IAppearanceData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AppearanceData"/> class.
-        /// </summary>
-        public AppearanceData()
-        {
-        }
-
-        /// <summary>
         /// Gets or sets the character class.
         /// </summary>
         public virtual CharacterClass CharacterClass { get; set; }
@@ -27,6 +20,9 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the equipped items.
         /// </summary>
-        public IEnumerable<ItemAppearance> EquippedItems { get; set; }
+        public virtual ICollection<ItemAppearance> EquippedItems { get; protected set; }
+
+        /// <inheritdoc />
+        IEnumerable<ItemAppearance> IAppearanceData.EquippedItems => this.EquippedItems;
     }
 }

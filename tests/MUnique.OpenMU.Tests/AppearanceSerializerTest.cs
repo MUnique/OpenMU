@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameServer.RemoteView;
     using NUnit.Framework;
@@ -33,12 +34,12 @@ namespace MUnique.OpenMU.Tests
             var expected = new byte[] { 0x20, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xF8, 0x00, 0x00, 0x20, 0xFF, 0xFF, 0xFF, 0x00, 0x00 };
             Assert.That(data, Is.EquivalentTo(expected));
             //// Expected: equivalent to< 32, 0, 255, 255, 255, 255, 0, 0, 0, 248, 0, 0, 32, 255, 255, 255, 0, 0 >
-            ////              But was:  < 32, 0, 255, 15, 15, 255, 0, 0, 0, 248, 0, 0, 16, 255, 255, 255, 0, 0 >
+            ////              But was:  < 32, 0, 255, 255, 255, 243, 0, 0, 0, 248, 0, 0, 16, 255, 255, 255, 0, 0 >
         }
 
         private IEnumerable<ItemAppearance> GetSmallAxeEquipped()
         {
-            yield return new ItemAppearance { Group = 1 };
+            yield return new ItemAppearance { Definition = new ItemDefinition { Group = 1 } };
         }
     }
 }

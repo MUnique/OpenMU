@@ -845,17 +845,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     {
                         return this.character.Inventory.Items
                             .Where(item => item.ItemSlot <= InventoryConstants.LastEquippableItemSlotIndex)
-                            .Select(item =>
-                            {
-                                return new ItemAppearance
-                                {
-                                    Index = item.Definition.Number,
-                                    Group = item.Definition.Group,
-                                    ItemSlot = item.ItemSlot,
-                                    Level = item.Level,
-                                    VisibleOptions = item.ItemOptions.Select(option => option.ItemOption.OptionType).ToArray()
-                                };
-                            });
+                            .Select(item => item.GetAppearance());
                     }
 
                     return Enumerable.Empty<ItemAppearance>();

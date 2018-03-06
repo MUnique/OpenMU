@@ -81,6 +81,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public ICollection<ItemItemSetGroup> JoinedItemSetGroups { get; } = new List<ItemItemSetGroup>();
     }
 
+    [Table("ItemAppearanceItemOptionType", Schema = "data")]
+    internal partial class ItemAppearanceItemOptionType 
+    {
+        public Guid ItemAppearanceId { get; set; }
+        public ItemAppearance ItemAppearance { get; set; }
+
+        public Guid ItemOptionTypeId { get; set; }
+        public ItemOptionType ItemOptionType { get; set; }
+    }
+
+    internal partial class ItemAppearance
+    {
+        public ICollection<ItemAppearanceItemOptionType> JoinedVisibleOptions { get; } = new List<ItemAppearanceItemOptionType>();
+    }
+
     [Table("GameServerConfigurationGameMapDefinition", Schema = "config")]
     internal partial class GameServerConfigurationGameMapDefinition 
     {
