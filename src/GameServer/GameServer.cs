@@ -179,6 +179,7 @@ namespace MUnique.OpenMU.GameServer
             if (player != null)
             {
                 var newLetterIndex = player.SelectedCharacter.Letters.Count;
+                player.PersistenceContext.Attach(letter);
                 player.SelectedCharacter.Letters.Add(letter);
                 player.PlayerView.MessengerView.AddToLetterList(letter, (ushort)newLetterIndex, true);
             }
