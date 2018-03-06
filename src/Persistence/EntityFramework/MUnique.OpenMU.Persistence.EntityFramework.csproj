@@ -283,6 +283,7 @@
     <Compile Include="Json\JsonObjectLoader.cs" />
     <Compile Include="Json\JsonObjectDeserializer.cs" />
     <Compile Include="Json\JsonQueryBuilder.cs" />
+    <Compile Include="LetterBodyRepository.cs" />
     <Compile Include="List.cs" />
     <Compile Include="ListAdapter.cs" />
     <Compile Include="LoadingStatus.cs" />

@@ -92,6 +92,20 @@ namespace MUnique.OpenMU.Persistence
     }
 
     /// <summary>
+    /// A repository for letter bodies.
+    /// </summary>
+    /// <typeparam name="T">The type of a letter body. The type is not specified here, because the data model is not known to this assembly.</typeparam>
+    public interface ILetterBodyRepository<out T> : IRepository<T>
+    {
+        /// <summary>
+        /// Gets the letter body by the id of its header.
+        /// </summary>
+        /// <param name="headerId">The id of its header.</param>
+        /// <returns>The body of the header.</returns>
+        T GetBodyByHeaderId(Guid headerId);
+    }
+
+    /// <summary>
     /// A repository for friend view items.
     /// </summary>
     /// <typeparam name="T">The type for a friend view item. The type is not specified here, because the data model is not known to this assembly.</typeparam>

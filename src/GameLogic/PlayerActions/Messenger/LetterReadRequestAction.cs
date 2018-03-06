@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Action to read a letter.
@@ -42,7 +43,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             {
                 using (this.gameContext.RepositoryManager.UseContext(player.PersistenceContext))
                 {
-                    var letterBody = this.gameContext.RepositoryManager.GetRepository<LetterBody>().GetById(letter.Id);
+                    var letterBody = this.gameContext.RepositoryManager.GetRepository<LetterBody, ILetterBodyRepository<LetterBody>>().GetBodyByHeaderId(letter.Id);
                     if (letterBody != null)
                     {
                         letter.ReadFlag = true;
