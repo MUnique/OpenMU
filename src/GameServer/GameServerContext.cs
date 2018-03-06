@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer
 {
+    using System;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
@@ -65,5 +66,51 @@ namespace MUnique.OpenMU.GameServer
 
         /// <inheritdoc/>
         public GameServerConfiguration ServerConfiguration { get; }
+
+        /// <inheritdoc/>
+        public override void AddPlayer(Player player)
+        {
+            base.AddPlayer(player);
+            player.PlayerLeftWorld += this.PlayerLeftWorld;
+            player.PlayerEnteredWorld += this.PlayerEnteredWorld;
+        }
+
+        /// <inheritdoc/>
+        public override void RemovePlayer(Player player)
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            player.PlayerEnteredWorld -= this.PlayerEnteredWorld;
+            player.PlayerLeftWorld -= this.PlayerLeftWorld;
+            base.RemovePlayer(player);
+        }
+
+        private void PlayerEnteredWorld(object sender, EventArgs e)
+        {
+            if (sender is Player player)
+            {
+                this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
+                if (player.SelectedCharacter.GuildMemberInfo != null)
+                {
+                    player.ShortGuildID = this.GuildServer.GuildMemberEnterGame(player.SelectedCharacter.GuildMemberInfo.GuildId, player.SelectedCharacter.Name, this.Id);
+                    this.GuildCache.RegisterShortId(player.SelectedCharacter.GuildMemberInfo.GuildId, player.ShortGuildID);
+                }
+            }
+        }
+
+        private void PlayerLeftWorld(object sender, EventArgs e)
+        {
+            if (sender is Player player)
+            {
+                this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, 0xFF);
+                if (player.SelectedCharacter.GuildMemberInfo != null)
+                {
+                    this.GuildServer.GuildMemberLeaveGame(player.SelectedCharacter.GuildMemberInfo.GuildId, player.SelectedCharacter.Name, this.Id);
+                }
+            }
+        }
     }
 }

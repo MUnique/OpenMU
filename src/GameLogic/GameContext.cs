@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.GameLogic
         /// Adds the player to the game.
         /// </summary>
         /// <param name="player">The player.</param>
-        public void AddPlayer(Player player)
+        public virtual void AddPlayer(Player player)
         {
             player.PlayerLeftWorld += this.PlayerLeftWorld;
             player.PlayerEnteredWorld += this.PlayerEnteredWorld;
@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.GameLogic
         /// Removes the player from the game.
         /// </summary>
         /// <param name="player">The player.</param>
-        public void RemovePlayer(Player player)
+        public virtual void RemovePlayer(Player player)
         {
             if (player == null)
             {

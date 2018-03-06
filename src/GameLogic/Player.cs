@@ -798,18 +798,7 @@ namespace MUnique.OpenMU.GameLogic
             this.ClientReadyAfterMapChange();
 
             this.PlayerView.WorldView.UpdateRotation();
-
-            if (this.gameContext is IGameServerContext gameServerContext)
-            {
-                if (this.SelectedCharacter.GuildMemberInfo != null)
-                {
-                    this.ShortGuildID = gameServerContext.GuildServer.GuildMemberEnterGame(this.SelectedCharacter.GuildMemberInfo.GuildId, this.SelectedCharacter.Name, gameServerContext.Id);
-                    gameServerContext.GuildCache.RegisterShortId(this.selectedCharacter.GuildMemberInfo.GuildId, this.ShortGuildID);
-                }
-
-                this.PlayerView.MessengerView.InitializeMessenger(this.gameContext.Configuration.MaximumLetters);
-                gameServerContext.FriendServer.SetOnlineState(this.SelectedCharacter.Id, this.SelectedCharacter.Name, gameServerContext.Id);
-            }
+            this.PlayerView.MessengerView.InitializeMessenger(this.gameContext.Configuration.MaximumLetters);
         }
 
         private sealed class TemporaryItemStorage : ItemStorage

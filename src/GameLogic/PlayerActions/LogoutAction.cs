@@ -38,7 +38,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (player.SelectedCharacter != null)
             {
-                this.gameServerContext.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, 0xFF);
                 player.SelectedCharacter = null;
             }
 
