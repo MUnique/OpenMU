@@ -67,6 +67,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private CharacterClass CreateDarkLord(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
             var energyMinus15 = this.repositoryManager.CreateNew<AttributeDefinition>(Guid.NewGuid(), "TotalEnergy minus 15", "TotalEnergy minus 15");
+            this.gameConfiguration.Attributes.Add(energyMinus15);
 
             var result = this.repositoryManager.CreateNew<CharacterClass>();
             this.gameConfiguration.CharacterClasses.Add(result);
