@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
                 stopwatch.Start();
                 try
                 {
-                    var builder = new JsonQueryBuilder();
+                    var builder = new GameConfigurationJsonQueryBuilder();
                     result = builder.BuildJsonQueryForEntity(type);
                 }
                 finally
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             using (var installationContext = new ConfigurationContext())
             {
                 installationContext.Database.OpenConnection();
-                var builder = new JsonObjectLoader();
+                var builder = new GameConfigurationJsonObjectLoader();
                 IEnumerable<GameConfiguration> result;
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
