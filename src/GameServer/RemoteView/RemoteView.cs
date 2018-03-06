@@ -449,8 +449,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             packet[i++] = this.player.X;
             packet[i++] = this.player.Y;
             var unsignedMapNumber = ShortExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number);
-            packet[i++] = unsignedMapNumber.GetHighByte();
             packet[i++] = unsignedMapNumber.GetLowByte();
+            packet[i++] = unsignedMapNumber.GetHighByte();
             packet.SetLongSmallEndian(this.player.SelectedCharacter.Experience, i++);
             i += 7;
             packet.SetLongSmallEndian(this.context.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1], i++);

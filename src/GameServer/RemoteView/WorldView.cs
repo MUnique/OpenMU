@@ -163,7 +163,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void MapChange()
         {
             var map = this.player.SelectedCharacter.CurrentMap.Number;
-            this.connection.Send(new byte[] { 0xC3, 0x09, 0x1C, 0x0F, 1, NumberConversionExtensions.ToUnsigned(map).GetLowByte(), NumberConversionExtensions.ToUnsigned(map).GetHighByte(), this.player.SelectedCharacter.PositionX, this.player.SelectedCharacter.PositionY });
+            this.connection.Send(new byte[] { 0xC3, 0x09, 0x1C, 0x0F, 1, NumberConversionExtensions.ToUnsigned(map).GetHighByte(), NumberConversionExtensions.ToUnsigned(map).GetLowByte(), this.player.SelectedCharacter.PositionX, this.player.SelectedCharacter.PositionY });
         }
 
         /// <inheritdoc/>
