@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the warp list.
         /// </summary>
-        public IDictionary<ushort, WarpInfo> WarpList { get; protected set; }
+        public virtual ICollection<WarpInfo> WarpList { get; protected set; }
 
         /// <summary>
         /// Gets or sets the base drop item groups which are valid for the whole game.

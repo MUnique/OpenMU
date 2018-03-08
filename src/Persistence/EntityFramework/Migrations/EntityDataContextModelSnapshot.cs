@@ -377,9 +377,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("Direction");
 
-                    b.Property<Guid?>("MapId");
-
                     b.Property<bool>("IsSpawnGate");
+
+                    b.Property<Guid?>("MapId");
 
                     b.Property<byte>("X1");
 
@@ -1632,6 +1632,32 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("StatAttributeDefinition","config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.WarpInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Costs");
+
+                    b.Property<Guid?>("GameConfigurationId");
+
+                    b.Property<Guid?>("GateId");
+
+                    b.Property<int>("Index");
+
+                    b.Property<int>("LevelRequirement");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameConfigurationId");
+
+                    b.HasIndex("GateId");
+
+                    b.ToTable("WarpInfo","config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Account", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawVault")
@@ -2395,6 +2421,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass")
                         .WithMany("RawStatAttributes")
                         .HasForeignKey("CharacterClassId");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.WarpInfo", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration")
+                        .WithMany("RawWarpList")
+                        .HasForeignKey("GameConfigurationId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawGate")
+                        .WithMany()
+                        .HasForeignKey("GateId");
                 });
 #pragma warning restore 612, 618
         }

@@ -544,8 +544,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Direction = table.Column<int>(nullable: false),
-                    MapId = table.Column<Guid>(nullable: true),
                     IsSpawnGate = table.Column<bool>(nullable: false),
+                    MapId = table.Column<Guid>(nullable: true),
                     X1 = table.Column<byte>(nullable: false),
                     X2 = table.Column<byte>(nullable: false),
                     Y1 = table.Column<byte>(nullable: false),
@@ -989,6 +989,38 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     table.ForeignKey(
                         name: "FK_EnterGate_ExitGate_TargetGateId",
                         column: x => x.TargetGateId,
+                        principalSchema: "config",
+                        principalTable: "ExitGate",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WarpInfo",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Costs = table.Column<int>(nullable: false),
+                    GameConfigurationId = table.Column<Guid>(nullable: true),
+                    GateId = table.Column<Guid>(nullable: true),
+                    Index = table.Column<int>(nullable: false),
+                    LevelRequirement = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WarpInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WarpInfo_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_WarpInfo_ExitGate_GateId",
+                        column: x => x.GateId,
                         principalSchema: "config",
                         principalTable: "ExitGate",
                         principalColumn: "Id",
@@ -2677,6 +2709,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "CharacterClassId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_WarpInfo_GameConfigurationId",
+                schema: "config",
+                table: "WarpInfo",
+                column: "GameConfigurationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WarpInfo_GateId",
+                schema: "config",
+                table: "WarpInfo",
+                column: "GateId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Account_LoginName",
                 schema: "data",
                 table: "Account",
@@ -2969,6 +3013,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
+                name: "WarpInfo",
+                schema: "config");
+
+            migrationBuilder.DropTable(
                 name: "AccountCharacterClass",
                 schema: "data");
 
@@ -3005,10 +3053,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
-                name: "ExitGate",
-                schema: "config");
-
-            migrationBuilder.DropTable(
                 name: "ItemCraftingRequiredItem",
                 schema: "config");
 
@@ -3030,6 +3074,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "MasterSkillDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ExitGate",
                 schema: "config");
 
             migrationBuilder.DropTable(

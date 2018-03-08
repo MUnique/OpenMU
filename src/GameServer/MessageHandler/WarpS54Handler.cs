@@ -4,9 +4,10 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
-    using MUnique.OpenMU.DataModel.Configuration;
+    using System.Linq;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -35,20 +36,16 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            ushort warpInfoId = NumberConversionExtensions.MakeWord(packet[8], packet[9]);
-            WarpInfo warpInfo = this.GetWarpInfo(warpInfoId);
-            this.warpAction.WarpTo(player, warpInfo);
-        }
-
-        private WarpInfo GetWarpInfo(ushort warpInfoId)
-        {
-            if (this.GameContext.Configuration.WarpList == null)
+            ushort warpInfoIndex = NumberConversionExtensions.MakeWord(packet[8], packet[9]);
+            var warpInfo = this.GameContext.Configuration.WarpList?.FirstOrDefault(info => info.Index == warpInfoIndex);
+            if (warpInfo != null)
             {
-                return null;
+                this.warpAction.WarpTo(player, warpInfo);
             }
-
-            this.GameContext.Configuration.WarpList.TryGetValue(warpInfoId, out WarpInfo warpInfo);
-            return warpInfo;
+            else
+            {
+                player.PlayerView.ShowMessage($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal);
+            }
         }
     }
 }

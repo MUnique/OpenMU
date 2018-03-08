@@ -1136,6 +1136,17 @@ public ICollection<JewelMix> RawJewelMixes { get; } = new List<JewelMix>();
             }
         }
 
+        public ICollection<WarpInfo> RawWarpList { get; } = new List<WarpInfo>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.WarpInfo> WarpList
+        {
+            get
+            {
+                return base.WarpList ?? (base.WarpList = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.WarpInfo, WarpInfo>(this.RawWarpList)); 
+            }
+        }
+
         public ICollection<DropItemGroup> RawBaseDropItemGroups { get; } = new List<DropItemGroup>();        
         /// <inheritdoc/>
         [NotMapped]

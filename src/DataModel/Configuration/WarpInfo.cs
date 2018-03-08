@@ -7,16 +7,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// <summary>
     /// Defines a warp list entry.
     /// </summary>
-    /// <remarks>
-    /// AFAIK, this is only relevant if we want to host the server for clients of season 5 and below.
-    /// With season 6 and upwards, gates are used directly. Then I ask myself how the warp price is determined -> TODO.
-    /// </remarks>
     public class WarpInfo
     {
         /// <summary>
         /// Gets or sets the index.
         /// </summary>
-        public ushort Index { get; set; }
+        public int Index { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
@@ -24,14 +20,14 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the warp zen.
+        /// Gets or sets the warp costs.
         /// </summary>
-        public uint WarpCosts { get; set; }
+        public int Costs { get; set; }
 
         /// <summary>
-        /// Gets or sets the warp level req.
+        /// Gets or sets the level requirement which a character needs to fulfill so that it can warp to the <see cref="Gate"/>.
         /// </summary>
-        public ushort WarpLvlReq { get; set; }
+        public int LevelRequirement { get; set; }
 
         /// <summary>
         /// Gets or sets the gate.

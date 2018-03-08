@@ -27,6 +27,73 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var maps = gameConfiguration.Maps.ToDictionary(map => map.Number, map => map);
             var targetGates = this.CreateTargetGates(maps);
             this.CreateEnterGates(maps, targetGates);
+            this.CreateWarpEntries(targetGates, gameConfiguration);
+        }
+
+        /// <summary>
+        /// Creates the warp entries.
+        /// </summary>
+        /// <param name="gates">The gates.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        /// <remarks>
+        /// MoveReq.txt
+        /// Search Regex: (?m)^\s*(\d+)\s+\"(\S+)\"\s+\"(\S+)\"\s+(\d+)\s+(\d+)\s+(\d+)\s*?$
+        /// Replace by: gameConfiguration.WarpList.Add(this.CreateWarpInfo($1, "$2", $4, $5, gates[$6]));
+        /// </remarks>
+        private void CreateWarpEntries(IDictionary<short, ExitGate> gates, GameConfiguration gameConfiguration)
+        {
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(1, "Arena", 2000, 50, gates[50]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(2, "Lorencia", 2000, 10, gates[17]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(3, "Noria", 2000, 10, gates[27]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(4, "Elbeland", 2000, 10, gates[267]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(5, "Elbeland2", 2500, 30, gates[268]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(6, "Elbeland3", 3000, 40, gates[269]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(7, "Devias", 2000, 15, gates[22]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(8, "Devias2", 2500, 30, gates[72]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(9, "Devias3", 3000, 45, gates[73]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(10, "Devias4", 3500, 60, gates[74]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(11, "Dungeon", 3000, 20, gates[2]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(12, "Dungeon2", 3500, 50, gates[6]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(13, "Dungeon3", 4000, 60, gates[10]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(14, "Atlans", 4000, 70, gates[49]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(15, "Atlans2", 4500, 80, gates[75]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(16, "Atlans3", 5000, 90, gates[76]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(17, "LostTower", 5000, 80, gates[42]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(18, "LostTower2", 5500, 80, gates[31]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(19, "LostTower3", 6000, 90, gates[33]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(20, "LostTower4", 6500, 90, gates[35]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(21, "LostTower5", 7000, 100, gates[37]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(22, "LostTower6", 7500, 100, gates[39]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(23, "LostTower7", 8000, 110, gates[41]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(24, "Tarkan", 8000, 130, gates[57]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(25, "Tarkan2", 8500, 140, gates[77]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(26, "Icarus", 15000, 170, gates[63]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(27, "Aida", 8500, 130, gates[119]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(28, "Aida2", 8500, 230, gates[140]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(29, "Aida3", 19000, 400, gates[334]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(30, "Kanturu1", 20000, 160, gates[138]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(31, "Kanturu2", 15000, 160, gates[141]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(32, "Kanturu3", 19000, 180, gates[335]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(33, "KanturuRemain", 20000, 260, gates[139]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(34, "Karutan1", 14000, 130, gates[339]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(35, "Karutan2", 140000, 180, gates[348]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(36, "Crywolf", 270000, 100, gates[118]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(37, "Raklion", 250000, 230, gates[287]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(38, "Raklion2", 250000, 400, gates[336]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(39, "Vulcanus", 150000, 50, gates[294]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(40, "LorenMarket", 10000, 10, gates[333]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(41, "SwampOfCalmness", 300000, 400, gates[273]));
+        }
+
+        private WarpInfo CreateWarpInfo(ushort index, string name, int costs, int levelRequirement, ExitGate gate)
+        {
+            var warpInfo = this.repositoryManager.CreateNew<WarpInfo>();
+            warpInfo.Index = index;
+            warpInfo.Name = name;
+            warpInfo.Costs = costs;
+            warpInfo.LevelRequirement = levelRequirement;
+            warpInfo.Gate = gate;
+            return warpInfo;
         }
 
         private ExitGate CreateExitGate(GameMapDefinition map, byte x1, byte y1, byte x2, byte y2, byte direction, bool isSpawnGate = false)
@@ -178,6 +245,18 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(330, this.CreateExitGate(maps[66], 133, 68, 139, 74, 0, true));
             targetGates.Add(331, this.CreateExitGate(maps[67], 106, 58, 111, 62, 0, true));
             targetGates.Add(332, this.CreateExitGate(maps[68], 90, 10, 97, 17, 0, true));
+            targetGates.Add(333, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));
+            targetGates.Add(334, this.CreateExitGate(maps[33], 39, 46, 38, 51, 0, true));
+            targetGates.Add(335, this.CreateExitGate(maps[37], 71, 182, 71, 179, 0, true));
+            targetGates.Add(336, this.CreateExitGate(maps[57], 127, 35, 130, 40, 0, true));
+            targetGates.Add(337, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));
+            targetGates.Add(338, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0, true));
+            targetGates.Add(339, this.CreateExitGate(maps[80], 124, 123, 127, 125, 0, true));
+            targetGates.Add(348, this.CreateExitGate(maps[81], 162, 16, 163, 17, 5, true));
+            targetGates.Add(349, this.CreateExitGate(maps[80], 139, 115, 122, 112, 0, true));
+            targetGates.Add(350, this.CreateExitGate(maps[81], 140, 140, 130, 140, 0, true));
+            targetGates.Add(351, this.CreateExitGate(maps[38], 71, 182, 73, 182, 5, true));
+            targetGates.Add(352, this.CreateExitGate(maps[33], 44, 215, 44, 215, 5, true));
 
             targetGates.Add(2, this.CreateExitGate(maps[1], 107, 247, 110, 247, 1));
             targetGates.Add(4, this.CreateExitGate(maps[0], 121, 231, 123, 231, 1));
@@ -274,6 +353,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(278, this.CreateExitGate(maps[56], 204, 10, 206, 14, 0));
             targetGates.Add(281, this.CreateExitGate(maps[56], 65, 47, 67, 48, 0));
             targetGates.Add(284, this.CreateExitGate(maps[56], 62, 174, 63, 179, 0));
+            targetGates.Add(341, this.CreateExitGate(maps[80], 118, 44, 119, 46, 3));
+            targetGates.Add(343, this.CreateExitGate(maps[33], 237, 166, 240, 166, 1));
+            targetGates.Add(345, this.CreateExitGate(maps[81], 162, 12, 164, 14, 5));
+            targetGates.Add(347, this.CreateExitGate(maps[80], 188, 207, 189, 208, 1));
             return targetGates;
         }
 
@@ -415,6 +498,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             maps[72].EnterGates.Add(this.CreateEnterGate(323, targetGates[324], 30, 95, 32, 97, 0));
             maps[72].EnterGates.Add(this.CreateEnterGate(325, targetGates[326], 68, 160, 70, 162, 0));
             maps[72].EnterGates.Add(this.CreateEnterGate(327, targetGates[328], 223, 165, 225, 167, 0));
+            maps[33].EnterGates.Add(this.CreateEnterGate(340, targetGates[337], 237, 167, 240, 168, 160));
+            maps[80].EnterGates.Add(this.CreateEnterGate(342, targetGates[339], 116, 44, 117, 47, 160));
+            maps[80].EnterGates.Add(this.CreateEnterGate(344, targetGates[341], 186, 210, 190, 212, 160));
+            maps[81].EnterGates.Add(this.CreateEnterGate(346, targetGates[343], 161, 8, 165, 9, 160));
         }
     }
 }

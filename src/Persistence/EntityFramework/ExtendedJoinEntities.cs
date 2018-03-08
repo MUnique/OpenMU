@@ -14,17 +14,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     
-    [Table("GameConfigurationWarpInfo", Schema = "config")]
-    internal partial class GameConfigurationWarpInfo : IDictionaryEntity<UInt16, WarpInfo>
-    {
-        public UInt16 Key { get; set; }
-
-        public Guid ValueId { get; set; }
-
-        [ForeignKey("ValueId")]
-        public WarpInfo Value { get; set; }
-    }
-
     [Table("SkillPowerUpDefinition", Schema = "config")]
     internal partial class SkillPowerUpDefinition : IDictionaryEntity<Int32, PowerUpDefinition>
     {
