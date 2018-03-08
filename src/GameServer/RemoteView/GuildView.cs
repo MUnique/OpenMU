@@ -19,21 +19,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     {
         private const int PlayerEntryLength = 13;
 
+        private readonly Player player;
         private readonly IConnection connection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuildView"/> class.
+        /// Initializes a new instance of the <see cref="GuildView" /> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        public GuildView(IConnection connection)
+        /// <param name="player">The player.</param>
+        public GuildView(IConnection connection, Player player)
         {
+            this.player = player;
             this.connection = connection;
         }
 
         /// <inheritdoc/>
         public void PlayerLeftGuild(Player player)
         {
-            var playerId = player.Id;
+            var playerId = player.GetId(this.player);
             if (player.SelectedCharacter.GuildMemberInfo.Status == GuildPosition.GuildMaster)
             {
                 playerId |= 0x80;
@@ -79,15 +82,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             array[3] = 0x65;
             array[4] = (byte)guildPlayers.Count;
             int i = 0;
-            foreach (var player in guildPlayers)
+            foreach (var guildPlayer in guildPlayers)
             {
                 var offset = 5 + (i * 12);
-                var memberInfo = player.SelectedCharacter.GuildMemberInfo;
-                array[offset] = player.ShortGuildID.GetHighByte();
-                array[offset + 1] = player.ShortGuildID.GetLowByte();
+                var playerId = guildPlayer.GetId(this.player);
+                var memberInfo = guildPlayer.SelectedCharacter.GuildMemberInfo;
+                array[offset] = guildPlayer.ShortGuildID.GetHighByte();
+                array[offset + 1] = guildPlayer.ShortGuildID.GetLowByte();
                 array[offset + 4] = (byte)memberInfo.Status;
-                array[offset + 7] = (byte)(player.Id.GetHighByte() | (appearsNew ? 0x80 : 0));
-                array[offset + 8] = player.Id.GetLowByte();
+                array[offset + 7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
+                array[offset + 8] = playerId.GetLowByte();
                 ////todo: alliance id somewhere
 
                 i++;

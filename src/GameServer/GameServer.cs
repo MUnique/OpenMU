@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.GameServer
             this.freePlayerIds =
                 new ConcurrentBag<ushort>(
                     Enumerable.Range(
-                        gameServerDefinition.ServerConfiguration.MaximumNPCs + 1,
+                        ViewExtensions.ConstantPlayerId + 1,
                         gameServerDefinition.ServerConfiguration.MaximumPlayers).Select(id => (ushort)id));
             this.ServerInfo = new GameServerInfoAdapter(this, gameServerDefinition.ServerConfiguration);
         }

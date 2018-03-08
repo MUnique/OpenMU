@@ -46,19 +46,22 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ObjectGotKilled(IAttackable killed, IAttackable killer)
         {
-            this.connection.Send(new byte[] { 0xC1, 9, 0x17, killed.Id.GetHighByte(), killed.Id.GetLowByte(), 0, 0, killer.Id.GetHighByte(), killer.Id.GetLowByte() });
-            if (this.player.Id == killed.Id)
+            var killedId = killed.GetId(this.player);
+            var killerId = killer.GetId(this.player);
+            this.connection.Send(new byte[] { 0xC1, 9, 0x17, killedId.GetHighByte(), killedId.GetLowByte(), 0, 0, killerId.GetHighByte(), killerId.GetLowByte() });
+            if (this.player == killed && killer is Player killerPlayer)
             {
-                this.player.PlayerView.ShowMessage(string.Format("You got killed by {0}", killer.Id), MessageType.BlueNormal);
+                this.player.PlayerView.ShowMessage($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal);
             }
         }
 
         /// <inheritdoc/>
         public void ObjectMoved(ILocateable obj, MoveType type)
         {
+            var objectId = obj.GetId(this.player);
             if (type == MoveType.Instant)
             {
-                this.connection.Send(new byte[] { 0xC1, 0x08, (byte)PacketType.Teleport, obj.Id.GetHighByte(), obj.Id.GetLowByte(), obj.X, obj.Y, 0 });
+                this.connection.Send(new byte[] { 0xC1, 0x08, (byte)PacketType.Teleport, objectId.GetHighByte(), objectId.GetLowByte(), obj.X, obj.Y, 0 });
             }
             else
             {
@@ -71,7 +74,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
                 var stepsSize = (steps?.Count / 2) + 1 ?? 1;
                 byte[] walkPacket = new byte[7 + stepsSize];
-                walkPacket.SetValues<byte>(0xC1, (byte)walkPacket.Length, (byte)PacketType.Walk, obj.Id.GetHighByte(), obj.Id.GetLowByte(), supportWalk?.WalkTarget.X ?? obj.X, supportWalk?.WalkTarget.Y ?? obj.Y);
+                walkPacket.SetValues<byte>(0xC1, (byte)walkPacket.Length, (byte)PacketType.Walk, objectId.GetHighByte(), objectId.GetLowByte(), supportWalk?.WalkTarget.X ?? obj.X, supportWalk?.WalkTarget.Y ?? obj.Y);
                 if (steps != null)
                 {
                     for (int step = 0; step < steps.Count; step += 2)
@@ -149,13 +152,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// </remarks>
         public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, byte direction)
         {
+            var animatingId = animatingObj.GetId(this.player);
             if (targetObj == null)
             {
-                this.connection.Send(new byte[] { 0xC1, 0x07, 0x18, animatingObj.Id.GetHighByte(), animatingObj.Id.GetLowByte(), direction, animation });
+                this.connection.Send(new byte[] { 0xC1, 0x07, 0x18, animatingId.GetHighByte(), animatingId.GetLowByte(), direction, animation });
             }
             else
             {
-                this.connection.Send(new byte[] { 0xC1, 0x09, 0x18, animatingObj.Id.GetHighByte(), animatingObj.Id.GetLowByte(), direction, animation, targetObj.Id.GetHighByte(), targetObj.Id.GetLowByte() });
+                var targetId = targetObj.GetId(this.player);
+                this.connection.Send(new byte[] { 0xC1, 0x09, 0x18, animatingId.GetHighByte(), animatingId.GetLowByte(), direction, animation, targetId.GetHighByte(), targetId.GetLowByte() });
             }
         }
 
@@ -178,8 +183,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             int i = 4;
             foreach (var m in objects)
             {
-                packet[i] = m.Id.GetHighByte();
-                packet[i + 1] = m.Id.GetLowByte();
+                var objectId = m.GetId(this.player);
+                packet[i] = objectId.GetHighByte();
+                packet[i + 1] = objectId.GetLowByte();
                 i += 2;
             }
 
@@ -206,8 +212,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var nameArray = new byte[10];
             foreach (var newPlayer in newPlayerList)
             {
-                packetList.Add((byte)((newPlayer.Id >> 8) & 0xFF));
-                packetList.Add((byte)(newPlayer.Id & 0xFF));
+                var playerId = newPlayer.GetId(this.player);
+                packetList.Add(playerId.GetHighByte());
+                packetList.Add(playerId.GetLowByte());
                 packetList.Add(newPlayer.X); // 7
                 packetList.Add(newPlayer.Y); // 8
                 packetList.AddRange(newPlayer.GetAppearanceData(this.appearanceSerializer)); // 9 ... 26
@@ -283,15 +290,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             packet[3] = 0x13; ////Packet Id
             packet[4] = (byte)newObjectList.Count;
             int i = 0;
-            foreach (var mob in newObjectList)
+            foreach (var npc in newObjectList)
             {
                 var monsterOffset = i * NpcDataSize;
                 ////Mob Id:
-                packet[5 + monsterOffset] = (byte)((mob.Id >> 8) & 0xFF);
-                packet[6 + monsterOffset] = (byte)(mob.Id & 0xFF);
+                packet[5 + monsterOffset] = npc.Id.GetHighByte();
+                packet[6 + monsterOffset] = npc.Id.GetLowByte();
 
                 ////Mob Type:
-                var npcStats = mob.Definition;
+                var npcStats = npc.Definition;
                 if (npcStats != null)
                 {
                     packet[7 + monsterOffset] = (byte)((npcStats.Number >> 8) & 0xFF);
@@ -299,9 +306,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 }
 
                 ////Coords:
-                packet[9 + monsterOffset] = mob.X;
-                packet[10 + monsterOffset] = mob.Y;
-                var supportWalk = mob as ISupportWalk;
+                packet[9 + monsterOffset] = npc.X;
+                packet[10 + monsterOffset] = npc.Y;
+                var supportWalk = npc as ISupportWalk;
                 if (supportWalk?.IsWalking ?? false)
                 {
                     packet[11 + monsterOffset] = supportWalk.WalkTarget.X;
@@ -309,11 +316,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 }
                 else
                 {
-                    packet[11 + monsterOffset] = mob.X;
-                    packet[12 + monsterOffset] = mob.Y;
+                    packet[11 + monsterOffset] = npc.X;
+                    packet[12 + monsterOffset] = npc.Y;
                 }
 
-                packet[13 + monsterOffset] = (byte)((int)mob.Rotation << 4);
+                packet[13 + monsterOffset] = (byte)((int)npc.Rotation << 4);
                 ////14 = offset byte for magic effects - currently we don't show them for NPCs
                 i++;
             }
@@ -330,13 +337,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowSkillAnimation(Player attackingPlayer, IAttackable target, Skill skill)
         {
+            var playerId = attackingPlayer.GetId(this.player);
+            var targetId = target.GetId(this.player);
             var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
             this.connection.Send(new byte[]
             {
                 0xC3, 9, 0x19,
                 skillId.GetHighByte(), skillId.GetLowByte(),
-                attackingPlayer.Id.GetHighByte(), attackingPlayer.Id.GetLowByte(),
-                target.Id.GetHighByte(), target.Id.GetLowByte()
+                playerId.GetHighByte(), playerId.GetLowByte(),
+                targetId.GetHighByte(), targetId.GetLowByte()
             });
         }
 
@@ -344,12 +353,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ShowAreaSkillAnimation(Player playerWhichPerformsSkill, Skill skill, byte x, byte y, byte rotation)
         {
             var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
+            var playerId = playerWhichPerformsSkill.GetId(this.player);
 
             // Example: C3 0A 1E 00 09 23 47 3D 62 3A
             this.connection.Send(new byte[]
             {
                 0xC3, 0x0A, 0x1E, skillId.GetHighByte(), skillId.GetLowByte(),
-                playerWhichPerformsSkill.Id.GetHighByte(), playerWhichPerformsSkill.Id.GetLowByte(), x, y, rotation
+                playerId.GetHighByte(), playerId.GetLowByte(), x, y, rotation
             });
         }
 
