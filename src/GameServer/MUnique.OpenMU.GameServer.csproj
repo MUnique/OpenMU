@@ -132,7 +132,7 @@
     <Compile Include="MessageHandler\Trade\TradeRequestHandler.cs" />
     <Compile Include="MessageHandler\WarehouseCloseHandler.cs" />
     <Compile Include="MessageHandler\WarpGateHandler.cs" />
-    <Compile Include="MessageHandler\WarpS54Handler.cs" />
+    <Compile Include="MessageHandler\WarpHandler.cs" />
     <Compile Include="RequestPlayerIdEventArgs.cs" />
     <None Include="packages.config" />
     <Compile Include="RemoteView\MessengerView.cs" />

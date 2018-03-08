@@ -106,7 +106,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             string[] sa = message.Split(' ');
             switch (sa[0])
             {
-                /* after Season 5.4 it works by a separate packet. look for WarpS54Action.
+                /* after Season 5.4 it works by a separate packet. look for WarpAction.
                 case "/move":
                 case "/warp":
                     ReadWarp(sa);

@@ -1,4 +1,4 @@
-﻿// <copyright file="WarpS54Handler.cs" company="MUnique">
+﻿// <copyright file="WarpHandler.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,21 +11,21 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.Network;
 
     /// <summary>
-    /// Handler for warp request packets (pre-season 6).
+    /// Handler for warp request packets.
     /// This one is called when a player uses the warp list.
     /// </summary>
-    internal class WarpS54Handler : BasePacketHandler
+    internal class WarpHandler : BasePacketHandler
     {
-        private readonly WarpS54Action warpAction;
+        private readonly WarpAction warpAction;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WarpS54Handler"/> class.
+        /// Initializes a new instance of the <see cref="WarpHandler"/> class.
         /// </summary>
         /// <param name="gameContext">The game context.</param>
-        public WarpS54Handler(IGameContext gameContext)
+        public WarpHandler(IGameContext gameContext)
             : base(gameContext)
         {
-            this.warpAction = new WarpS54Action(gameContext);
+            this.warpAction = new WarpAction();
         }
 
         /// <inheritdoc/>

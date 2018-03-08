@@ -215,7 +215,7 @@
     <Compile Include="PlayerActions\Trade\TradeMoneyAction.cs" />
     <Compile Include="PlayerActions\Trade\TradeRequestAction.cs" />
     <Compile Include="PlayerActions\WarpGateAction.cs" />
-    <Compile Include="PlayerActions\WarpS54Action.cs" />
+    <Compile Include="PlayerActions\WarpAction.cs" />
     <Compile Include="Views\IPlayerView.cs" />
     <Compile Include="IGameContext.cs" />
     <Compile Include="IMonsterIntelligence.cs" />
