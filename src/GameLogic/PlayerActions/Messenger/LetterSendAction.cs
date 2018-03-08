@@ -6,11 +6,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
     using System;
     using System.Linq;
-
+    using log4net;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
-    using log4net;
 
     /// <summary>
     /// Action to send a letter to another player.
