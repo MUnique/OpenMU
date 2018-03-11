@@ -71,6 +71,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ArrayExtensions.cs" />
     <Compile Include="AttackableExtensions.cs" />
     <Compile Include="Attributes\ItemAwareAttributeSystem.cs" />
     <Compile Include="Attributes\MonsterAttributeHolder.cs" />

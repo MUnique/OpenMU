@@ -217,8 +217,8 @@ namespace MUnique.OpenMU.GameLogic
         public virtual void Clear()
         {
             this.itemStorage.Items.Clear();
-            this.itemArray.Initialize();
-            this.usedSlots.Initialize();
+            this.itemArray.ClearToDefaults();
+            this.usedSlots.ClearToDefaults();
         }
 
         /// <summary>
