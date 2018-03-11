@@ -206,7 +206,6 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             this.itemStorage.Items.Remove(item);
-            item.Storage = null;
             var onEquippedItemsChanged = this.EquippedItemsChanged;
             if (onEquippedItemsChanged != null && this.IsWearingSlot(item.ItemSlot))
             {

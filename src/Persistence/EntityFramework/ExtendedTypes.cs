@@ -598,34 +598,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the identifier of <see cref="Storage"/>.
-        /// </summary>
-        public Guid? StorageId { get; set; }
-        
-        [ForeignKey("StorageId")]
-        public ItemStorage RawStorage
-        { 
-            get { return base.Storage as ItemStorage; }
-            set { base.Storage = value; } 
-        }
-                
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Entities.ItemStorage Storage
-        {
-            get
-            {
-                return base.Storage;
-            }
-            
-            set
-            {
-                base.Storage = value;
-                this.StorageId = this.RawStorage?.Id;
-            }
-        }
-
-                /// <summary>
         /// Gets or sets the identifier of <see cref="Definition"/>.
         /// </summary>
         public Guid? DefinitionId { get; set; }

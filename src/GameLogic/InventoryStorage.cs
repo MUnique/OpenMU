@@ -62,13 +62,6 @@ namespace MUnique.OpenMU.GameLogic
             return success;
         }
 
-        /// <inheritdoc/>
-        protected override void SetItemSlot(Item item, byte slot)
-        {
-            base.SetItemSlot(item, slot);
-            item.Storage = this.player.SelectedCharacter.Inventory;
-        }
-
         private void UpdateItemsOnChange(Item item)
         {
             this.player.ResetAppearanceCache();
@@ -87,7 +80,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.UpdateSetPowerUps();
             }
 
-            var itemAdded = Equals(item.Storage, this.player.SelectedCharacter.Inventory);
+            var itemAdded = this.EquippedItems.Contains(item);
             if (itemAdded)
             {
                 var factory = this.gameContext.ItemPowerUpFactory;

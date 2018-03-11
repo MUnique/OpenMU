@@ -618,11 +618,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("ItemSlot");
 
+                    b.Property<Guid?>("ItemStorageId");
+
                     b.Property<byte>("Level");
 
                     b.Property<int>("SocketCount");
-
-                    b.Property<Guid?>("StorageId");
 
                     b.Property<int?>("StorePrice");
 
@@ -630,7 +630,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("DefinitionId");
 
-                    b.HasIndex("StorageId");
+                    b.HasIndex("ItemStorageId");
 
                     b.ToTable("Item","data");
                 });
@@ -1916,9 +1916,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("DefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawStorage")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage")
                         .WithMany("RawItems")
-                        .HasForeignKey("StorageId");
+                        .HasForeignKey("ItemStorageId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearance", b =>

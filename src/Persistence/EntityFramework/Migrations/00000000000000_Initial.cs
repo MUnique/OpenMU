@@ -1755,9 +1755,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Durability = table.Column<byte>(nullable: false),
                     HasSkill = table.Column<bool>(nullable: false),
                     ItemSlot = table.Column<byte>(nullable: false),
+                    ItemStorageId = table.Column<Guid>(nullable: true),
                     Level = table.Column<byte>(nullable: false),
                     SocketCount = table.Column<int>(nullable: false),
-                    StorageId = table.Column<Guid>(nullable: true),
                     StorePrice = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -1771,8 +1771,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Item_ItemStorage_StorageId",
-                        column: x => x.StorageId,
+                        name: "FK_Item_ItemStorage_ItemStorageId",
+                        column: x => x.ItemStorageId,
                         principalSchema: "data",
                         principalTable: "ItemStorage",
                         principalColumn: "Id",
@@ -2813,10 +2813,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "DefinitionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Item_StorageId",
+                name: "IX_Item_ItemStorageId",
                 schema: "data",
                 table: "Item",
-                column: "StorageId");
+                column: "ItemStorageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemAppearance_AppearanceDataId",

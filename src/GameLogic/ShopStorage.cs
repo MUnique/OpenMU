@@ -45,7 +45,6 @@ namespace MUnique.OpenMU.GameLogic
         protected override void SetItemSlot(Item item, byte slot)
         {
             base.SetItemSlot(item, (byte)(slot + InventoryConstants.FirstStoreItemSlotIndex));
-            item.Storage = (this.ItemStorage as ItemStorageAdapter)?.ActualStorage;
         }
     }
 }
