@@ -93,6 +93,7 @@
     <Compile Include="IAreaOfInterestManager.cs" />
     <Compile Include="IAttackable.cs" />
     <Compile Include="IBucketMapObserver.cs" />
+    <Compile Include="IdGenerator.cs" />
     <Compile Include="IDropGenerator.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="ILocateable.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="NPC\BasicMonsterIntelligence.cs" />
     <Compile Include="NPC\Monster.cs" />
     <Compile Include="NPC\NonPlayerCharacter.cs" />
+    <Compile Include="Views\ViewExtensions.cs" />
     <Compile Include="Walker.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="ObservableExtensions.cs" />

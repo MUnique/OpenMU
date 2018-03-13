@@ -24,8 +24,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <param name="gameContext">The game context.</param>
         /// <param name="packetHandler">The packet handler.</param>
         /// <param name="connection">The remote connection.</param>
-        public RemotePlayer(ushort id, IGameServerContext gameContext, IPacketHandler packetHandler, IConnection connection)
-            : base(id, gameContext, null)
+        public RemotePlayer(IGameServerContext gameContext, IPacketHandler packetHandler, IConnection connection)
+            : base(gameContext, null)
         {
             this.PlayerView = new RemoteView(connection, this, gameContext, new AppearanceSerializer());
             this.Connection = connection;

@@ -35,12 +35,11 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// </summary>
         /// <param name="spawnInfo">The spawn information.</param>
         /// <param name="stats">The stats.</param>
-        /// <param name="id">The identifier.</param>
         /// <param name="map">The map on which this instance will spawn.</param>
         /// <param name="dropGenerator">The drop generator.</param>
         /// <param name="monsterIntelligence">The monster intelligence.</param>
-        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, ushort id, GameMap map, IDropGenerator dropGenerator, IMonsterIntelligence monsterIntelligence)
-            : base(spawnInfo, stats, id, map)
+        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, IMonsterIntelligence monsterIntelligence)
+            : base(spawnInfo, stats, map)
         {
             this.dropGenerator = dropGenerator;
             this.Attributes = new MonsterAttributeHolder(this);
@@ -48,6 +47,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.intelligence = monsterIntelligence;
             this.intelligence.Monster = this;
             this.intelligence.Start();
+            this.Initialize();
         }
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public Point WalkTarget { get; set; }
 
         /// <inheritdoc/>
-        public override void Respawn()
+        public override void Initialize()
         {
-            base.Respawn();
+            base.Initialize();
             this.Health = (int)this.Attributes[Stats.MaximumHealth];
             this.Alive = true;
         }
@@ -258,8 +258,15 @@ namespace MUnique.OpenMU.GameLogic.NPC
             {
                 this.ObserverLock.ExitWriteLock();
             }
+        }
 
-            this.CurrentMap.Remove(this);
+        /// <summary>
+        /// Respawns this instance on the map.
+        /// </summary>
+        private void Respawn()
+        {
+            this.Initialize();
+            this.CurrentMap.Respawn(this);
         }
 
         private bool Hit(uint damage, IAttackable attacker)

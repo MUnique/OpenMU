@@ -21,7 +21,6 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class GuildActionTest : GuildTestBase
     {
-        private const ushort GuildMasterId = 100;
         private Player guildMasterPlayer;
         private IGameServerContext gameServerContext;
         private Player player;
@@ -34,7 +33,7 @@ namespace MUnique.OpenMU.Tests
             this.guildMasterPlayer = this.CreateGuildMasterPlayer();
             this.gameServerContext = this.CreateGameServer();
             this.guildMasterPlayer.ShortGuildID = this.GuildServer.GuildMemberEnterGame(new Guid(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), this.GuildMaster.Name, 0);
-            this.player = TestHelper.GetPlayer(0);
+            this.player = TestHelper.GetPlayer();
             this.player.CurrentMap.Add(this.guildMasterPlayer);
             this.player.SelectedCharacter.Name = "Player";
         }
@@ -47,7 +46,7 @@ namespace MUnique.OpenMU.Tests
         {
             var guildRequestAction = new GuildRequestAction(this.gameServerContext);
             this.guildMasterPlayer.PlayerView.GuildView.Expect(v => v.ShowGuildJoinRequest(this.player));
-            guildRequestAction.RequestGuild(this.player, GuildMasterId);
+            guildRequestAction.RequestGuild(this.player, this.guildMasterPlayer.Id);
             Assert.That(this.guildMasterPlayer.LastGuildRequester, Is.SameAs(this.player));
             this.guildMasterPlayer.PlayerView.GuildView.VerifyAllExpectations();
         }
@@ -86,7 +85,7 @@ namespace MUnique.OpenMU.Tests
         public void GuildCreationDialog()
         {
             var action = new GuildMasterAnswerAction();
-            this.player.OpenedNpc = new NonPlayerCharacter(null, null, 1, null);
+            this.player.OpenedNpc = new NonPlayerCharacter(null, null, null);
             this.player.PlayerView.GuildView.Expect(g => g.ShowGuildCreationDialog());
             action.ProcessAnswer(this.player, GuildMasterAnswerAction.Answer.ShowDialog);
             this.player.PlayerView.GuildView.VerifyAllExpectations();
@@ -126,7 +125,7 @@ namespace MUnique.OpenMU.Tests
         private void RequestGuildAndRespond(bool acceptRequest)
         {
             var guildRequestAction = new GuildRequestAction(this.gameServerContext);
-            guildRequestAction.RequestGuild(this.player, GuildMasterId);
+            guildRequestAction.RequestGuild(this.player, this.guildMasterPlayer.Id);
             var guildResponseAction = new GuildRequestAnswerAction(this.gameServerContext);
             guildResponseAction.AnswerRequest(this.guildMasterPlayer, acceptRequest);
         }
@@ -143,7 +142,7 @@ namespace MUnique.OpenMU.Tests
 
         private Player CreateGuildMasterPlayer()
         {
-            var masterPlayer = TestHelper.GetPlayer(GuildMasterId);
+            var masterPlayer = TestHelper.GetPlayer();
             this.GuildMaster = masterPlayer.SelectedCharacter;
             this.GuildMaster.Name = "GuildMaster";
             this.GuildMaster.GuildMemberInfo = this.Guild.Members.First();

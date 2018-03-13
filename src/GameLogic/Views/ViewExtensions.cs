@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView
+namespace MUnique.OpenMU.GameLogic.Views
 {
     using MUnique.OpenMU.GameLogic;
 
@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <summary>
         /// The constant player identifier which is sent to the player of a view to identify itself.
         /// </summary>
-        public const ushort ConstantPlayerId = 0x2001;
+        public const ushort ConstantPlayerId = 0x0102;
 
         /// <summary>
         /// Gets the <see cref="IIdentifiable.Id"/> of the <paramref name="identifiable"/> if it's not the same object

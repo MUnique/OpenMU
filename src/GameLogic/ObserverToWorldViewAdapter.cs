@@ -56,17 +56,22 @@ namespace MUnique.OpenMU.GameLogic
                 return;
             }
 
-            if (item is Player)
+            if (!item.IsActive())
             {
-                this.adaptee.WorldView.NewPlayersInScope(((Player)item).GetAsEnumerable());
+                return;
             }
-            else if (item is NonPlayerCharacter)
+
+            if (item is Player player)
             {
-                this.adaptee.WorldView.NewNpcsInScope(((NonPlayerCharacter)item).GetAsEnumerable());
+                this.adaptee.WorldView.NewPlayersInScope(player.GetAsEnumerable());
             }
-            else if (item is DroppedItem)
+            else if (item is NonPlayerCharacter npc)
             {
-                this.adaptee.WorldView.ShowDroppedItems(((DroppedItem)item).GetAsEnumerable(), sender != this);
+                this.adaptee.WorldView.NewNpcsInScope(npc.GetAsEnumerable());
+            }
+            else if (item is DroppedItem droppedItem)
+            {
+                this.adaptee.WorldView.ShowDroppedItems(droppedItem.GetAsEnumerable(), sender != this);
             }
             else
             {
@@ -135,7 +140,10 @@ namespace MUnique.OpenMU.GameLogic
             }
             else
             {
-                this.adaptee.WorldView.ObjectsOutOfScope(item.GetAsEnumerable());
+                if (item.IsActive())
+                {
+                    this.adaptee.WorldView.ObjectsOutOfScope(item.GetAsEnumerable());
+                }
             }
         }
 
@@ -170,7 +178,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             else
             {
-                var nonItems = oldItems.OfType<IIdentifiable>().Where(item => !(item is DroppedItem));
+                var nonItems = oldItems.OfType<ILocateable>().Where(item => !(item is DroppedItem)).WhereActive();
                 if (nonItems.Any())
                 {
                     this.adaptee.WorldView.ObjectsOutOfScope(nonItems);
@@ -204,13 +212,13 @@ namespace MUnique.OpenMU.GameLogic
                 this.observingLock.ExitWriteLock();
             }
 
-            var players = newItems.OfType<Player>();
+            var players = newItems.OfType<Player>().WhereActive();
             if (players.Any())
             {
                 this.adaptee.WorldView.NewPlayersInScope(players);
             }
 
-            var npcs = newItems.OfType<NonPlayerCharacter>();
+            var npcs = newItems.OfType<NonPlayerCharacter>().WhereActive();
             if (npcs.Any())
             {
                 this.adaptee.WorldView.NewNpcsInScope(npcs);

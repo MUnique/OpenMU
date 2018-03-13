@@ -20,20 +20,10 @@ namespace MUnique.OpenMU.Tests
     public static class TestHelper
     {
         /// <summary>
-        /// Gets a test player.
+        /// Gets the player.
         /// </summary>
         /// <returns>The test player.</returns>
         public static Player GetPlayer()
-        {
-            return GetPlayer(0);
-        }
-
-        /// <summary>
-        /// Gets the player.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns>The test player.</returns>
-        public static Player GetPlayer(ushort id)
         {
             var gameConfig = new GameConfiguration()
             {
@@ -42,20 +32,19 @@ namespace MUnique.OpenMU.Tests
             var gameContext = new GameContext(gameConfig, MockRepository.GenerateMock<IRepositoryManager>());
             gameContext.RepositoryManager.Stub(r => r.CreateNewAccountContext(gameConfig)).WhenCalled(invocation => invocation.ReturnValue = MockRepository.GenerateMock<IContext>()).Return(null);
             gameContext.RepositoryManager.Stub(r => r.GetRepository<Item>()).Return(MockRepository.GenerateStub<IRepository<Item>>());
-            return GetPlayer(id, gameContext);
+            return GetPlayer(gameContext);
         }
 
         /// <summary>
         /// Gets a test player.
         /// </summary>
-        /// <param name="id">The player identifier.</param>
         /// <param name="gameContext">The game context.</param>
         /// <returns>
         /// The test player.
         /// </returns>
-        public static Player GetPlayer(ushort id, IGameContext gameContext)
+        public static Player GetPlayer(IGameContext gameContext)
         {
-            var map = new GameMap(MockRepository.GenerateStub<GameMapDefinition>(), 60, 4, 0);
+            var map = new GameMap(MockRepository.GenerateStub<GameMapDefinition>(), 60, 4);
             map.Definition.Stub(d => d.DropItemGroups).Return(new List<DropItemGroup>());
             gameContext.MapList.Add(map.Definition.Number.ToUnsigned(), map);
             var character = MockRepository.GenerateStub<Character>();
@@ -118,12 +107,13 @@ namespace MUnique.OpenMU.Tests
 
             character.Stub(c => c.DropItemGroups).Return(new List<DropItemGroup>());
 
-            var player = new Player(id, gameContext, MockRepository.GenerateMock<IPlayerView>()) { Account = new Account() };
+            var player = new Player(gameContext, MockRepository.GenerateMock<IPlayerView>()) { Account = new Account() };
             player.PlayerView.Stub(v => v.InventoryView).Return(MockRepository.GenerateMock<IInventoryView>());
             player.PlayerView.Stub(v => v.WorldView).Return(MockRepository.GenerateMock<IWorldView>());
             player.PlayerView.Stub(v => v.TradeView).Return(MockRepository.GenerateMock<ITradeView>());
             player.PlayerView.Stub(v => v.GuildView).Return(MockRepository.GenerateMock<IGuildView>());
             player.PlayerView.Stub(v => v.PartyView).Return(MockRepository.GenerateMock<IPartyView>());
+            player.PlayerView.Stub(v => v.MessengerView).Return(MockRepository.GenerateMock<IMessengerView>());
             player.PlayerState.TryAdvanceTo(PlayerState.LoginScreen);
             player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
             player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection);

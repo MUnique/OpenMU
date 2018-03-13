@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
@@ -19,11 +19,11 @@ namespace MUnique.OpenMU.GameLogic
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(GameMap));
 
-        private readonly IDictionary<ushort, ILocateable> objectsInMap = new Dictionary<ushort, ILocateable>();
+        private readonly IDictionary<ushort, ILocateable> objectsInMap = new ConcurrentDictionary<ushort, ILocateable>();
 
         private readonly IAreaOfInterestManager areaOfInterestManager;
 
-        private readonly ConcurrentBag<ushort> freeDropIds;
+        private readonly IdGenerator objectIdGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameMap"/> class.
@@ -31,8 +31,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="mapDefinition">The map definition.</param>
         /// <param name="itemDropDuration">Duration of the item drop.</param>
         /// <param name="chunkSize">Size of the chunk.</param>
-        /// <param name="itemIdStart">The item identifier start.</param>
-        public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize, ushort itemIdStart)
+        public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
         {
             this.Definition = mapDefinition;
             this.ItemDropDuration = itemDropDuration;
@@ -40,7 +39,7 @@ namespace MUnique.OpenMU.GameLogic
             this.Terrain = new GameMapTerrain(this.Definition);
 
             this.areaOfInterestManager = new BucketAreaOfInterestManager(chunkSize);
-            this.freeDropIds = new ConcurrentBag<ushort>(Enumerable.Range(itemIdStart, (ushort)(short.MaxValue - itemIdStart)).Select(id => (ushort)id));
+            this.objectIdGenerator = new IdGenerator(ViewExtensions.ConstantPlayerId + 1, 0x7FFF);
         }
 
         /// <summary>
@@ -103,32 +102,40 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="locateable">The locateable.</param>
         public void Remove(ILocateable locateable)
         {
-            if (this.objectsInMap.Remove(locateable.Id) && locateable.Id != 0 && locateable is DroppedItem)
-            {
-                this.freeDropIds.Add(locateable.Id);
-            }
-
             this.areaOfInterestManager.RemoveObject(locateable);
+            if (this.objectsInMap.Remove(locateable.Id) && locateable.Id != 0)
+            {
+                this.objectIdGenerator.GiveBack(locateable.Id);
+
+                if (locateable is Player player)
+                {
+                    player.Id = 0;
+                }
+            }
         }
 
         /// <summary>
         /// Adds the locateable to the map.
         /// </summary>
-        /// <param name="locateable">The player.</param>
+        /// <param name="locateable">The locateable object.</param>
         public void Add(ILocateable locateable)
         {
             if (locateable is DroppedItem droppedItem)
             {
-                if (this.freeDropIds.TryTake(out ushort dropId))
-                {
-                    droppedItem.Id = dropId;
-                    Log.DebugFormat("{0}: AddDrop {1}", this.Definition, droppedItem.Id);
-                }
-                else
-                {
-                    Log.Warn("No free drop id available");
-                    return;
-                }
+                droppedItem.Id = (ushort)this.objectIdGenerator.GetId();
+                Log.DebugFormat("{0}: Added drop {1}, {2}", this.Definition, droppedItem.Id, droppedItem.Item);
+            }
+
+            if (locateable is Player player)
+            {
+                player.Id = (ushort)this.objectIdGenerator.GetId();
+                Log.DebugFormat("{0}: Added player {1}, {2}, ", this.Definition, player.Id, player);
+            }
+
+            if (locateable is NonPlayerCharacter npc)
+            {
+                npc.Id = (ushort)this.objectIdGenerator.GetId();
+                Log.DebugFormat("{0}: Added npc {1}, {2}", this.Definition, npc.Id, npc.Definition.Designation);
             }
 
             this.objectsInMap.Add(locateable.Id, locateable);
@@ -146,6 +153,16 @@ namespace MUnique.OpenMU.GameLogic
         public void Move(ILocateable locateable, byte newX, byte newY, object moveLock, MoveType moveType)
         {
             this.areaOfInterestManager.MoveObject(locateable, newX, newY, moveLock, moveType);
+        }
+
+        /// <summary>
+        /// Respawns the specified locateable.
+        /// </summary>
+        /// <param name="locateable">The locateable.</param>
+        public void Respawn(ILocateable locateable)
+        {
+            this.areaOfInterestManager.RemoveObject(locateable);
+            this.areaOfInterestManager.AddObject(locateable);
         }
     }
 }

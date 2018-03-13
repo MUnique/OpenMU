@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using log4net;
@@ -25,8 +24,6 @@ namespace MUnique.OpenMU.GameServer
         private static readonly ILog Logger = LogManager.GetLogger(typeof(GameServer));
 
         private readonly GameServerContext gameContext;
-
-        private readonly ConcurrentBag<ushort> freePlayerIds;
 
         private readonly ICollection<IGameServerListener> listeners = new List<IGameServerListener>();
 
@@ -60,11 +57,6 @@ namespace MUnique.OpenMU.GameServer
                 throw;
             }
 
-            this.freePlayerIds =
-                new ConcurrentBag<ushort>(
-                    Enumerable.Range(
-                        ViewExtensions.ConstantPlayerId + 1,
-                        gameServerDefinition.ServerConfiguration.MaximumPlayers).Select(id => (ushort)id));
             this.ServerInfo = new GameServerInfoAdapter(this, gameServerDefinition.ServerConfiguration);
         }
 
@@ -103,7 +95,6 @@ namespace MUnique.OpenMU.GameServer
         public void AddListener(IGameServerListener listener)
         {
             this.listeners.Add(listener);
-            listener.PlayerIdRequested += this.OnPlayerIdRequested;
             listener.PlayerConnected += this.OnPlayerConnected;
         }
 
@@ -354,12 +345,6 @@ namespace MUnique.OpenMU.GameServer
             }
         }
 
-        private void OnPlayerIdRequested(object sender, RequestPlayerIdEventArgs e)
-        {
-            e.Cancel = !this.freePlayerIds.TryTake(out ushort newPlayerId);
-            e.PlayerId = newPlayerId;
-        }
-
         private void OnPlayerConnected(object sender, PlayerConnectedEventArgs e)
         {
             var player = e.ConntectedPlayer;
@@ -389,42 +374,38 @@ namespace MUnique.OpenMU.GameServer
             var configuration = this.gameContext.ServerConfiguration;
             foreach (var map in configuration.Maps.OrderBy(m => m.Number))
             {
-                var gameMap = new GameMap(map, 60, 8, (ushort)(configuration.MaximumNPCs + configuration.MaximumPlayers + 1));
+                var gameMap = new GameMap(map, 60, 8);
                 this.Context.MapList.Add(map.Number.ToUnsigned(), gameMap);
             }
         }
 
         private void InitializeNpcs()
         {
-            ushort npcId = 0;
             var dropGenerator = new DefaultDropGenerator(this.Context.Configuration, Rand.GetRandomizer());
             foreach (var map in this.Context.MapList.Values.Where(m => m.Definition.MonsterSpawns.Any()))
             {
                 Logger.Debug($"Start creating monster instances for map {map}");
-                foreach (var spawn in map.Definition.MonsterSpawns)
+                foreach (var spawn in map.Definition.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Automatic))
                 {
                     for (int i = 0; i < spawn.Quantity; i++)
                     {
-                        npcId++;
-                        if (npcId > this.Context.ServerConfiguration.MaximumNPCs)
-                        {
-                            throw new InvalidOperationException(
-                                "Maximum npc count exceeded. Either increase the limit or remove monster instances.");
-                        }
-
                         var monsterDef = spawn.MonsterDefinition;
+                        NonPlayerCharacter npc;
+
+                        // TODO: Check if the condition is correct... NPCs are not attackable, but some might need to be (castle gates etc.)
                         if (monsterDef.AttackDelay > TimeSpan.Zero)
                         {
                             Logger.Debug($"Creating monster {spawn}");
-                            var monster = new Monster(spawn, monsterDef, npcId, map, dropGenerator, new BasicMonsterIntelligence(map));
-                            monster.Respawn();
+                            npc = new Monster(spawn, monsterDef, map, dropGenerator, new BasicMonsterIntelligence(map));
                         }
                         else
                         {
                             Logger.Debug($"Creating npc {spawn}");
-                            var npc = new NonPlayerCharacter(spawn, monsterDef, npcId, map);
-                            npc.Respawn();
+                            npc = new NonPlayerCharacter(spawn, monsterDef, map);
                         }
+
+                        npc.Initialize();
+                        map.Add(npc);
                     }
                 }
 
@@ -437,7 +418,6 @@ namespace MUnique.OpenMU.GameServer
             this.SetOfflineAtFriendServer(remotePlayer);
             this.SaveSessionOfPlayer(remotePlayer);
             this.SetOfflineAtLoginServer(remotePlayer);
-            this.freePlayerIds.Add(remotePlayer.Id);
             remotePlayer.Dispose();
         }
 

@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Tests
         public void PartyMemberAdd()
         {
             var party = new Party(5);
-            var partyMember = CreatePartyMember(1);
+            var partyMember = CreatePartyMember();
             party.Add(partyMember);
             Assert.That(party.PartyList, Contains.Item(partyMember));
         }
@@ -92,9 +92,9 @@ namespace MUnique.OpenMU.Tests
         public void PartyAutoClose()
         {
             var party = new Party(5);
-            var partyMember1 = CreatePartyMember(1);
+            var partyMember1 = CreatePartyMember();
             party.Add(partyMember1);
-            var partyMember2 = CreatePartyMember(2);
+            var partyMember2 = CreatePartyMember();
             party.Add(partyMember2);
             partyMember1.PlayerView.PartyView.Expect(v => v.PartyClosed());
             partyMember2.PlayerView.PartyView.Expect(v => v.PartyClosed());
@@ -114,8 +114,8 @@ namespace MUnique.OpenMU.Tests
         public void PartyHandlerAdd()
         {
             var handler = new PartyRequestAction();
-            var player = CreatePartyMember(1);
-            var toRequest = CreatePartyMember(2);
+            var player = CreatePartyMember();
+            var toRequest = CreatePartyMember();
             player.Observers.Add(toRequest);
             toRequest.PlayerView.PartyView.Expect(v => v.ShowPartyRequest(player));
 
@@ -132,8 +132,8 @@ namespace MUnique.OpenMU.Tests
         public void PartyResponseAcceptNewParty()
         {
             var handler = new PartyResponseAction(this.GetGameServer());
-            var player = CreatePartyMember(1);
-            var requester = CreatePartyMember(2);
+            var player = CreatePartyMember();
+            var requester = CreatePartyMember();
             player.LastPartyRequester = requester;
             player.PlayerState.TryAdvanceTo(PlayerState.PartyRequest);
             player.PlayerView.PartyView.Expect(v => v.UpdatePartyList());
@@ -157,13 +157,13 @@ namespace MUnique.OpenMU.Tests
             var handler = new PartyResponseAction(this.GetGameServer());
 
             // first put the player in a party with another player
-            var player = CreatePartyMember(1);
-            player.LastPartyRequester = CreatePartyMember(2);
+            var player = CreatePartyMember();
+            player.LastPartyRequester = CreatePartyMember();
             player.PlayerState.TryAdvanceTo(PlayerState.PartyRequest);
             handler.HandleResponse(player, true);
 
             // now another player will try to request party from the player, which should fail
-            var requester = CreatePartyMember(3);
+            var requester = CreatePartyMember();
             player.PlayerView.PartyView.Expect(v => v.ShowPartyRequest(requester)).Repeat.Never();
             player.LastPartyRequester = requester;
 
@@ -175,9 +175,9 @@ namespace MUnique.OpenMU.Tests
             player.PlayerView.PartyView.VerifyAllExpectations();
         }
 
-        private static Player CreatePartyMember(ushort id)
+        private static Player CreatePartyMember()
         {
-            var result = TestHelper.GetPlayer(id);
+            var result = TestHelper.GetPlayer();
             result.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
             return result;
         }
@@ -187,7 +187,7 @@ namespace MUnique.OpenMU.Tests
             var party = new Party(5);
             for (ushort i = 0; i < numberOfMembers; i++)
             {
-                var partyMember = CreatePartyMember(i);
+                var partyMember = CreatePartyMember();
                 party.Add(partyMember);
             }
 

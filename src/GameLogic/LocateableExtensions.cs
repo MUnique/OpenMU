@@ -5,12 +5,40 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Extensions for mu objects.
     /// </summary>
     public static class LocateableExtensions
     {
+        /// <summary>
+        /// Filters out inactive (non-alive) locateables.
+        /// </summary>
+        /// <typeparam name="T">Type of elements.</typeparam>
+        /// <param name="locateables">The locateables.</param>
+        /// <returns>
+        /// All active locateables of the given enumeration.
+        /// </returns>
+        public static IEnumerable<T> WhereActive<T>(this IEnumerable<T> locateables)
+            where T : ILocateable
+        {
+            return locateables.Where(l => l.IsActive());
+        }
+
+        /// <summary>
+        /// Determines whether this instance is active (alive).
+        /// </summary>
+        /// <param name="locateable">The locateable.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified locateable is active; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsActive(this ILocateable locateable)
+        {
+            return !(locateable is IAttackable attackable) || attackable.Alive;
+        }
+
         /// <summary>
         /// Gets the distance to another object.
         /// </summary>

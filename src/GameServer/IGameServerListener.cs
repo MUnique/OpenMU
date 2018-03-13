@@ -22,11 +22,6 @@ namespace MUnique.OpenMU.GameServer
         event EventHandler<PlayerConnectedEventArgs> PlayerConnected;
 
         /// <summary>
-        /// Occurs when the listener needs a free player identifier.
-        /// </summary>
-        event EventHandler<RequestPlayerIdEventArgs> PlayerIdRequested;
-
-        /// <summary>
         /// Starts this listener.
         /// </summary>
         void Start();

@@ -133,7 +133,6 @@
     <Compile Include="MessageHandler\WarehouseCloseHandler.cs" />
     <Compile Include="MessageHandler\WarpGateHandler.cs" />
     <Compile Include="MessageHandler\WarpHandler.cs" />
-    <Compile Include="RemoteView\ViewExtensions.cs" />
     <Compile Include="RequestPlayerIdEventArgs.cs" />
     <None Include="packages.config" />
     <Compile Include="RemoteView\MessengerView.cs" />

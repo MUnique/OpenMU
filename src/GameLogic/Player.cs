@@ -74,13 +74,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Initializes a new instance of the <see cref="Player" /> class.
         /// </summary>di
-        /// <param name="id">The id of the player.</param>
         /// <param name="gameContext">The game context.</param>
         /// <param name="playerView">The player view.</param>
-        public Player(ushort id, IGameContext gameContext, IPlayerView playerView)
+        public Player(IGameContext gameContext, IPlayerView playerView)
             : this()
         {
-            this.Id = id;
             this.gameContext = gameContext;
             this.PlayerView = playerView;
             this.PersistenceContext = this.gameContext.RepositoryManager.CreateNewAccountContext(gameContext.Configuration);
@@ -164,7 +162,7 @@ namespace MUnique.OpenMU.GameLogic
         public ITradeView TradeView => this.PlayerView.TradeView;
 
         /// <inheritdoc/>
-        public ushort Id { get; }
+        public ushort Id { get; set; }
 
         /// <inheritdoc/>
         public string Name => this.SelectedCharacter.Name;
@@ -492,9 +490,9 @@ namespace MUnique.OpenMU.GameLogic
             this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
             this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
             this.CurrentMap = this.gameContext.MapList[this.SelectedCharacter.CurrentMap.Number.ToUnsigned()];
-            this.CurrentMap.Add(this);
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.Alive = true;
+            this.CurrentMap.Add(this);
         }
 
         /// <summary>

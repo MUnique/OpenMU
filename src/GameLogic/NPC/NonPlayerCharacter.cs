@@ -22,18 +22,16 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// </summary>
         /// <param name="spawnInfo">The spawn information.</param>
         /// <param name="stats">The stats.</param>
-        /// <param name="id">The identifier.</param>
         /// <param name="map">The map on which this instance will spawn.</param>
-        public NonPlayerCharacter(MonsterSpawnArea spawnInfo, MonsterDefinition stats, ushort id, GameMap map)
+        public NonPlayerCharacter(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map)
         {
-            this.Id = id;
             this.SpawnArea = spawnInfo;
             this.Definition = stats;
             this.CurrentMap = map;
         }
 
         /// <inheritdoc/>
-        public ushort Id { get; }
+        public ushort Id { get; set; }
 
         /// <summary>
         /// Gets or sets the stats of this instance.
@@ -69,9 +67,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public Bucket<ILocateable> CurrentBucket { get; set; }
 
         /// <summary>
-        /// Respawns this instance.
+        /// Initializes this instance.
         /// </summary>
-        public virtual void Respawn()
+        public virtual void Initialize()
         {
             var spawnPoint = this.GetNewSpawnPoint(this.SpawnArea);
             var newx = spawnPoint.X;
@@ -89,8 +87,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.X = newx;
             this.Y = newy;
             this.Rotation = GetSpawnDirection(this.SpawnArea.Direction);
-
-            this.CurrentMap.Add(this);
         }
 
         /// <inheritdoc/>
