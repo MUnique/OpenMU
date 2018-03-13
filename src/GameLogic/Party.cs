@@ -198,9 +198,14 @@ namespace MUnique.OpenMU.GameLogic
             bool updateNeeded = partyMaster.PartyView.IsHealthUpdateNeeded();
             if (updateNeeded)
             {
-                for (var i = this.PartyList.Count - 1; i >= 0; i--)
+                partyMaster.PartyView.UpdatePartyHealth();
+                for (var i = this.PartyList.Count - 1; i >= 1; i--)
                 {
-                    this.PartyList[i].PartyView.UpdatePartyHealth();
+                    var member = this.PartyList[i];
+                    if (member.PartyView.IsHealthUpdateNeeded())
+                    {
+                        member.PartyView.UpdatePartyHealth();
+                    }
                 }
             }
         }
