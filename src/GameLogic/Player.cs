@@ -343,7 +343,10 @@ namespace MUnique.OpenMU.GameLogic
         public ItemAwareAttributeSystem Attributes { get; private set; }
 
         /// <inheritdoc/>
-        public Bucket<ILocateable> CurrentBucket { get; set; }
+        public Bucket<ILocateable> NewBucket { get; set; }
+
+        /// <inheritdoc/>
+        public Bucket<ILocateable> OldBucket { get; set; }
 
         /// <summary>
         /// Gets the appearance data of the player with the specified serializer.

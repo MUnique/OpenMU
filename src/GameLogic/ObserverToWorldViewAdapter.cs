@@ -50,9 +50,9 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var item = eventArgs.Item;
-            if (item is IHasBucketInformation hasBucketInfo && this.ObservingBuckets.Contains(hasBucketInfo.CurrentBucket))
+            if (item is IHasBucketInformation hasBucketInfo && this.ObservingBuckets.Contains(hasBucketInfo.OldBucket))
             {
-                // we already observe the bucket
+                // we already observe the bucket where the object came from
                 return;
             }
 
@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var hasBucketInfo = item as IHasBucketInformation;
-            if (hasBucketInfo?.CurrentBucket != null && this.ObservingBuckets.Contains(hasBucketInfo.CurrentBucket))
+            if (hasBucketInfo?.NewBucket != null && this.ObservingBuckets.Contains(hasBucketInfo.NewBucket))
             {
                 // CurrentBucket contains the new bucket if the object is moving. So in this case we still observe the new bucket and don't need to remove the object from observation.
                 return;
@@ -161,8 +161,8 @@ namespace MUnique.OpenMU.GameLogic
             {
                 oldItems = oldObjects.OfType<IObservable>().Where(item =>
                     this.observingObjects.Contains(item)
-                    && ((this.adaptee as IHasBucketInformation)?.CurrentBucket == null
-                        || (!(item is IHasBucketInformation) || !this.ObservingBuckets.Contains(((IHasBucketInformation)item).CurrentBucket)))).ToList();
+                    && ((this.adaptee as IHasBucketInformation)?.NewBucket == null
+                        || (!(item is IHasBucketInformation) || !this.ObservingBuckets.Contains(((IHasBucketInformation)item).NewBucket)))).ToList();
                 oldItems.ForEach(item => this.observingObjects.Remove(item));
             }
             finally
@@ -172,7 +172,7 @@ namespace MUnique.OpenMU.GameLogic
 
             oldItems.ForEach(item => item.RemoveObserver(this.adaptee));
 
-            if (this.adaptee is IHasBucketInformation bucketInformation && bucketInformation.CurrentBucket == null)
+            if (this.adaptee is IHasBucketInformation bucketInformation && bucketInformation.NewBucket == null)
             {
                 // adaptee (player) left the map or disconnected; it's not required to update the view
             }

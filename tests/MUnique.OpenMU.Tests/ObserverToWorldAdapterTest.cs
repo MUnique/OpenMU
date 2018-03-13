@@ -35,7 +35,9 @@ namespace MUnique.OpenMU.Tests
             map.Add(nonPlayer);
             view.Expect(v => v.NewNpcsInScope(null)).IgnoreArguments().Repeat.Once();
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
-            adapter.ObservingBuckets.Add(nonPlayer.CurrentBucket);
+            adapter.ObservingBuckets.Add(nonPlayer.NewBucket);
+            nonPlayer.OldBucket = nonPlayer.NewBucket; // oldbucket would be set, if it got moved on the map
+
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
             view.VerifyAllExpectations();
         }
@@ -63,12 +65,14 @@ namespace MUnique.OpenMU.Tests
                 Y = 128
             };
             map.Add(nonPlayer2);
-            adapter.ObservingBuckets.Add(nonPlayer1.CurrentBucket);
-            adapter.ObservingBuckets.Add(nonPlayer2.CurrentBucket);
+            adapter.ObservingBuckets.Add(nonPlayer1.NewBucket);
+            adapter.ObservingBuckets.Add(nonPlayer2.NewBucket);
+            view.Expect(v => v.NewNpcsInScope(null)).IgnoreArguments().Repeat.Twice();
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer1));
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer2));
 
             view.Expect(v => v.ObjectsOutOfScope(null)).IgnoreArguments().Repeat.Never();
+            view.Expect(v => v.ObjectMoved(null, MoveType.Instant)).IgnoreArguments().Repeat.Once();
             map.Move(nonPlayer1, nonPlayer2.X, nonPlayer2.Y, nonPlayer1, MoveType.Instant);
             view.VerifyAllExpectations();
         }
