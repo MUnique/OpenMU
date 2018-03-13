@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading;
 
@@ -62,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the players by character name dictionary.
         /// </summary>
-        public IDictionary<string, Player> PlayersByCharacterName { get; } = new Dictionary<string, Player>();
+        public IDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>();
 
         /// <summary>
         /// Adds the player to the game.
