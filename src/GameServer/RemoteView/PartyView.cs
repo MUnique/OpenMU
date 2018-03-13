@@ -72,8 +72,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[offset + 12] = partyMember.X;
                 packet[offset + 13] = partyMember.Y;
                 ////14 + 15 are unknown
-                packet.SetIntegerSmallEndian(partyMember.CurrentHealth, offset + 16);
-                packet.SetIntegerSmallEndian(partyMember.MaximumHealth, offset + 20);
+                packet.SetIntegerBigEndian(partyMember.CurrentHealth, offset + 16);
+                packet.SetIntegerBigEndian(partyMember.MaximumHealth, offset + 20);
                 offset += serializedSizePerPlayer;
             }
 
