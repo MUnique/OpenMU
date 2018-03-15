@@ -51,12 +51,14 @@ Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte
 | 11 | 1 | bit | Left hand item ancient option flag |
 | 11 | 1 | bit | Right hand item ancient option flag |
 | 11 | 1 | bit | Full ancient set flag |
-| 12 | 4 | bit | Left hand item group. 0xF = empty |
+| 12 | 3 | bit | Left hand item group. 111 = empty |
+| 12 | 1 | bit | unused or empty flag? |
 | 12 | 1 | bit | unused |
 | 12 | 1 | bit | Fenrir flag |
 | 12 | 1 | bit | unused |
 | 12 | 1 | bit | Dark horse flag |
-| 13 | 4 | bit | Right hand item group. 0xF = empty |
+| 13 | 3 | bit | Right hand item group. 111 = empty |
+| 13 | 1 | bit | unused or empty flag? |
 | 13 | 4 | bit | Helm item index (6-9th bit). 0xF = empty |
 | 14 | 4 | bit | Armor item index (6-9th bit). 0xF = empty |
 | 14 | 4 | bit | Pants item index (6-9th bit). 0xF = empty |

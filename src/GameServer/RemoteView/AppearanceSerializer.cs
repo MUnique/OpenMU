@@ -124,7 +124,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             else
             {
                 preview[indexIndex] = (byte)item.Definition.Number;
-                preview[groupIndex] |= (byte)((item.Definition.Group << 4) & 0xF0);
+                preview[groupIndex] |= (byte)(item.Definition.Group << 5);
             }
         }
 
