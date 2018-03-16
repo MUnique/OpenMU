@@ -31,17 +31,17 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// The direction looking to the south east.
         /// </summary>
-        SouthEast = 2,
+        SouthWest = 2,
 
         /// <summary>
         /// The direction looking to the east.
         /// </summary>
-        East = 3,
+        West = 3,
 
         /// <summary>
         /// The direction looking to the north east.
         /// </summary>
-        NorthEast = 4,
+        NorthWest = 4,
 
         /// <summary>
         /// The direction looking to the north.
@@ -51,16 +51,16 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// The direction looking to the north west.
         /// </summary>
-        NorthWest = 6,
+        NorthEast = 6,
 
         /// <summary>
         /// The direction looking to the west.
         /// </summary>
-        West = 7,
+        East = 7,
 
         /// <summary>
         /// The direction looking to the south west.
         /// </summary>
-        SouthWest = 8,
+        SouthEast = 8,
     }
 }
