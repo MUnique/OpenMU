@@ -99,5 +99,11 @@ namespace MUnique.OpenMU.Pathfinding
         {
             return (this.x * 0x100) + this.y;
         }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{this.x}, {this.y}";
+        }
     }
 }

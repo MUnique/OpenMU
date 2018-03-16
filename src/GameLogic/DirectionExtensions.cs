@@ -80,6 +80,70 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Rotates the direction by 90 degree to the right.
+        /// </summary>
+        /// <param name="direction">The direction which should get rotated to the right.</param>
+        /// <returns>The rotated direction.</returns>
+        public static Direction RotateRight(this Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Undefined:
+                    return Direction.Undefined;
+                case Direction.South:
+                    return Direction.West;
+                case Direction.North:
+                    return Direction.East;
+                case Direction.East:
+                    return Direction.South;
+                case Direction.West:
+                    return Direction.North;
+                case Direction.SouthEast:
+                    return Direction.SouthWest;
+                case Direction.SouthWest:
+                    return Direction.NorthWest;
+                case Direction.NorthEast:
+                    return Direction.SouthEast;
+                case Direction.NorthWest:
+                    return Direction.NorthEast;
+            }
+
+            throw new ArgumentException($"Direction value {direction} is not defined", nameof(direction));
+        }
+
+        /// <summary>
+        /// Rotates the direction by 90 degree to the left.
+        /// </summary>
+        /// <param name="direction">The direction which should get rotated to the left.</param>
+        /// <returns>The rotated direction.</returns>
+        public static Direction RotateLeft(this Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Undefined:
+                    return Direction.Undefined;
+                case Direction.South:
+                    return Direction.East;
+                case Direction.North:
+                    return Direction.West;
+                case Direction.East:
+                    return Direction.North;
+                case Direction.West:
+                    return Direction.South;
+                case Direction.SouthEast:
+                    return Direction.NorthEast;
+                case Direction.SouthWest:
+                    return Direction.SouthEast;
+                case Direction.NorthEast:
+                    return Direction.NorthWest;
+                case Direction.NorthWest:
+                    return Direction.SouthWest;
+            }
+
+            throw new ArgumentException($"Direction value {direction} is not defined", nameof(direction));
+        }
+
+        /// <summary>
         /// Gets the direction from one point to another.
         /// </summary>
         /// <param name="from">The origin point.</param>

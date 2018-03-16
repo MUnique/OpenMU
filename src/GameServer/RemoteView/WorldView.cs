@@ -43,6 +43,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.appearanceSerializer = appearanceSerializer;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="ISupportWalk.NextDirections"/> should be send when an object moved.
+        /// This is usually not required, because the game client calculates a proper path anyway and doesn't use the suggested path.
+        /// </summary>
+        public bool SendWalkDirections { get; set; }
+
         /// <inheritdoc/>
         public void ObjectGotKilled(IAttackable killed, IAttackable killer)
         {
@@ -66,22 +72,26 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             else
             {
                 IList<Direction> steps = null;
-                var supportWalk = obj as ISupportWalk;
-                if (supportWalk != null)
+                var x = obj.X;
+                var y = obj.Y;
+                if (this.SendWalkDirections && obj is ISupportWalk supportWalk)
                 {
                     steps = supportWalk.NextDirections.Select(d => d.Direction).ToList();
+                    x = supportWalk.WalkTarget.X;
+                    y = supportWalk.WalkTarget.Y;
                 }
 
-                var stepsSize = (steps?.Count / 2) + 1 ?? 1;
+                var stepsSize = (steps?.Count / 2) + 2 ?? 1;
                 byte[] walkPacket = new byte[7 + stepsSize];
-                walkPacket.SetValues<byte>(0xC1, (byte)walkPacket.Length, (byte)PacketType.Walk, objectId.GetHighByte(), objectId.GetLowByte(), supportWalk?.WalkTarget.X ?? obj.X, supportWalk?.WalkTarget.Y ?? obj.Y);
+                walkPacket.SetValues<byte>(0xC1, (byte)walkPacket.Length, (byte)PacketType.Walk, objectId.GetHighByte(), objectId.GetLowByte(), x, y);
                 if (steps != null)
                 {
-                    for (int step = 0; step < steps.Count; step += 2)
+                    walkPacket[7] = (byte)((int)steps.First() << 4 | (int)steps.Count);
+                    for (int i = 0; i < steps.Count; i += 2)
                     {
-                        var index = 7 + (step / 2);
-                        var firstStep = steps[step];
-                        var secondStep = steps.Count > step + 2 ? steps[step + 2] : Direction.Undefined;
+                        var index = 8 + (i / 2);
+                        var firstStep = steps[i];
+                        var secondStep = steps.Count > i + 2 ? steps[i + 2] : Direction.Undefined;
                         walkPacket[index] = (byte)((int)firstStep << 4 | (int)secondStep);
                     }
                 }
