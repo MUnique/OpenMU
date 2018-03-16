@@ -29,8 +29,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
             byte invPos = packet[3];
             byte invTarget = packet[4];
             //// byte itemUseType = packet[5]; ////Dont know for what its used yet
-
-            this.consumeAction.HandleConsumeRequest(player, invPos, invTarget);
+            using (player.GameContext.RepositoryManager.UseContext(player.PersistenceContext))
+            {
+                this.consumeAction.HandleConsumeRequest(player, invPos, invTarget);
+            }
         }
     }
 }
