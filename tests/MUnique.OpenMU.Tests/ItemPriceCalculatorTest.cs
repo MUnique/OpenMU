@@ -335,7 +335,7 @@ namespace MUnique.OpenMU.Tests
             {
                 var optionLink = new ItemOptionLink
                 {
-                    ItemOption = new ItemOption
+                    ItemOption = new IncreasableItemOption
                     {
                         OptionType = ItemOptionTypes.Luck
                     }
@@ -347,7 +347,7 @@ namespace MUnique.OpenMU.Tests
             {
                 var optionLink = new ItemOptionLink
                 {
-                    ItemOption = new ItemOption
+                    ItemOption = new IncreasableItemOption
                     {
                         OptionType = ItemOptionTypes.Option
                     }

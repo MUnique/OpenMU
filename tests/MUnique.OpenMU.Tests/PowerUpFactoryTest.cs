@@ -160,7 +160,7 @@ namespace MUnique.OpenMU.Tests
 
         private ItemOptionLink GetOption(AttributeDefinition targetAttribute, float value)
         {
-            var option = new ItemOption
+            var option = new IncreasableItemOption
             {
                 OptionType = ItemOptionTypes.Option,
                 PowerUpDefinition = new PowerUpDefinition
