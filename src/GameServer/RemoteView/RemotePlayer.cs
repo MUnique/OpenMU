@@ -20,7 +20,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <summary>
         /// Initializes a new instance of the <see cref="RemotePlayer"/> class.
         /// </summary>
-        /// <param name="id">The identifier.</param>
         /// <param name="gameContext">The game context.</param>
         /// <param name="packetHandler">The packet handler.</param>
         /// <param name="connection">The remote connection.</param>
