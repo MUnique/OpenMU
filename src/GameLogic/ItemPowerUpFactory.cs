@@ -62,9 +62,9 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public IEnumerable<PowerUpWrapper> GetSetPowerUps(IEnumerable<Item> wearingItems, AttributeSystem attributeHolder)
+        public IEnumerable<PowerUpWrapper> GetSetPowerUps(IEnumerable<Item> equippedItems, AttributeSystem attributeHolder)
         {
-            var itemGroups = wearingItems
+            var itemGroups = equippedItems
                 .Where(i => i.Durability > 0)
                 .Where(i => i.ItemSetGroups != null)
                 .SelectMany(i => i.ItemSetGroups)
@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                var itemsOfGroup = wearingItems.Where(i => i.Level >= group.MinimumSetLevel).Select(i => i.Definition);
+                var itemsOfGroup = equippedItems.Where(i => i.Level >= group.MinimumSetLevel).Select(i => i.Definition);
 
                 var itemCount = group.CountDistinct ? itemsOfGroup.Distinct().Count() : itemsOfGroup.Count();
                 if (itemCount >= group.MinimumItemCount)
