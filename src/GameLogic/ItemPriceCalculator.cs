@@ -258,10 +258,9 @@ namespace MUnique.OpenMU.GameLogic
                 dropLevel += 25;
             }
 
-            Func<Item, long> func;
-            if (SpecialItemDictionary.TryGetValue(GetId(item.Definition.Group, item.Definition.Number), out func))
+            if (SpecialItemDictionary.TryGetValue(GetId(item.Definition.Group, item.Definition.Number), out var specialItemPriceFunction))
             {
-                price = func(item);
+                price = specialItemPriceFunction(item);
             }
             else if (definition.Value > 0)
             {
