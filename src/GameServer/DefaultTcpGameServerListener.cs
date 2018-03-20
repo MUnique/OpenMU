@@ -56,9 +56,6 @@ namespace MUnique.OpenMU.GameServer
         public event EventHandler<PlayerConnectedEventArgs> PlayerConnected;
 
         /// <inheritdoc/>
-        public event EventHandler<RequestPlayerIdEventArgs> PlayerIdRequested;
-
-        /// <inheritdoc/>
         public void Start()
         {
             if (this.gslistener != null && this.gslistener.Server.IsBound)
