@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the item option.
         /// </summary>
-        public virtual ItemOption ItemOption { get; set; }
+        public virtual IncreasableItemOption ItemOption { get; set; }
 
         /// <summary>
         /// Gets or sets the level.

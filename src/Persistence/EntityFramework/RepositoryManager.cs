@@ -46,6 +46,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             this.RegisterRepository(new GenericRepository<PacketHandlerConfiguration>(this));
 
             this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this, config => config.RawItemOptions));
+            this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(this, config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).ToList()));
+            this.RegisterRepository(new ConfigurationTypeRepository<ItemOption>(this, config => config.RawItemSetGroups.SelectMany(o => o.JoinedOptions).Select(o => o.ItemOption).ToList()));
             this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(this, config => config.RawAttributes));
             this.RegisterRepository(new ConfigurationTypeRepository<DropItemGroup>(this, config => config.RawBaseDropItemGroups));
             this.RegisterRepository(new ConfigurationTypeRepository<CharacterClass>(this, config => config.RawCharacterClasses));

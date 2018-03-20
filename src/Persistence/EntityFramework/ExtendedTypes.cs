@@ -39,15 +39,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public Guid? ItemOptionId { get; set; }
         
         [ForeignKey("ItemOptionId")]
-        public ItemOption RawItemOption
+        public IncreasableItemOption RawItemOption
         { 
-            get { return base.ItemOption as ItemOption; }
+            get { return base.ItemOption as IncreasableItemOption; }
             set { base.ItemOption = value; } 
         }
                 
         /// <inheritdoc/>
         [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOption ItemOption
+        public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption ItemOption
         {
             get
             {

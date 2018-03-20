@@ -105,8 +105,7 @@ namespace MUnique.OpenMU.GameLogic
                 var powerUp = option.PowerUpDefinition;
                 if (optionLink.Level > 1)
                 {
-                    var levelRelated = option as IncreasableItemOption;
-                    var optionOfLevel = levelRelated?.LevelDependentOptions.FirstOrDefault(l => l.Level == optionLink.Level);
+                    var optionOfLevel = option.LevelDependentOptions.FirstOrDefault(l => l.Level == optionLink.Level);
                     if (optionOfLevel == null)
                     {
                         // TODO: Log, this should never happen.

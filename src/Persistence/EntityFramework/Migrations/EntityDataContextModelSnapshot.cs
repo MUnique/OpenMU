@@ -2104,7 +2104,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawItemOptions")
                         .HasForeignKey("ItemId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOption", "RawItemOption")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreaseableItemOption", "RawItemOption")
                         .WithMany()
                         .HasForeignKey("ItemOptionId");
                 });

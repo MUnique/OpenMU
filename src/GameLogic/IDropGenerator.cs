@@ -226,7 +226,7 @@ namespace MUnique.OpenMU.GameLogic
 
                 if (this.randomizer.NextRandomBool(excellentOptions.AddChance))
                 {
-                    ItemOption option = excellentOptions.PossibleOptions.SelectRandom(this.randomizer);
+                    var option = excellentOptions.PossibleOptions.SelectRandom(this.randomizer);
                     while (item.ItemOptions.Any(o => o.ItemOption == option))
                     {
                         option = excellentOptions.PossibleOptions.SelectRandom(this.randomizer);

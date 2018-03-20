@@ -2068,7 +2068,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         name: "FK_ItemOptionLink_ItemOption_ItemOptionId",
                         column: x => x.ItemOptionId,
                         principalSchema: "config",
-                        principalTable: "ItemOption",
+                        principalTable: "IncreasableItemOption",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
