@@ -21,7 +21,7 @@ var Contents = {
     SERVER_LIST: 0,
     ACCOUNT_LIST: 1,
     LOG_VIEW: 2
-}
+};
 
 var FluxMixin = Fluxxor.FluxMixin(React),
     FluxChildMixin = Fluxxor.FluxChildMixin(React),
