@@ -33,5 +33,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
                 player.PlayerView.MessengerView.ChatRoomCreated(authenticationInfo, friendName, true);
             }
         }
+
+        /// <summary>
+        /// Invites the friend to an existing chat room.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="friendName">Name of the friend.</param>
+        /// <param name="roomId">The room identifier.</param>
+        /// <param name="requestId">The request identifier.</param>
+        public void InviteFriendToChat(Player player, string friendName, ushort roomId, uint requestId)
+        {
+            var result = this.gameContext.FriendServer.InviteFriendToChatRoom(player.SelectedCharacter.Name, friendName, roomId);
+            player.PlayerView.MessengerView.ShowFriendInvitationResult(result, requestId);
+        }
     }
 }

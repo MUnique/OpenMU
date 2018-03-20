@@ -172,6 +172,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
+        public void ShowFriendInvitationResult(bool success, uint requestId)
+        {
+            var packet = new byte[]
+            {
+                0xC3, 8, 0xCB,
+                success ? (byte)1 : (byte)0,
+                0, 0, 0, 0
+            };
+            packet.SetIntegerSmallEndian(requestId, 4);
+            this.connection.Send(packet);
+        }
+
+        /// <inheritdoc/>
         public void ShowLetter(LetterBody letter)
         {
             var letterIndex = this.player.SelectedCharacter.Letters.IndexOf(letter.Header);

@@ -71,6 +71,7 @@
     </AdditionalFiles>
     <Compile Include="DefaultTcpGameServerListener.cs" />
     <Compile Include="IGameServerListener.cs" />
+    <Compile Include="MessageHandler\Friends\ChatRoomInvitationRequest.cs" />
     <Compile Include="PacketType.cs" />
     <Compile Include="PlayerConnectedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

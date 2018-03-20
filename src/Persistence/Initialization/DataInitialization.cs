@@ -535,6 +535,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             yield return this.CreatePacketConfig<AddFriendHandler>(PacketType.FriendAdd);
             yield return this.CreatePacketConfig<DeleteFriendHandler>(PacketType.FriendDelete);
             yield return this.CreatePacketConfig<ChatRequestHandler>(PacketType.ChatRoomCreate);
+            yield return this.CreatePacketConfig<ChatRoomInvitationRequest>(PacketType.ChatRoomInvitationReq);
             yield return this.CreatePacketConfig<FriendAddResponseHandler>(PacketType.FriendAddReponse);
             yield return this.CreatePacketConfig<ChangeOnlineStateHandler>(PacketType.FriendStateClient);
         }

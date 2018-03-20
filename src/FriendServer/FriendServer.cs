@@ -178,6 +178,39 @@ namespace MUnique.OpenMU.FriendServer
             return authenticationInfoPlayer;
         }
 
+        /// <inheritdoc />
+        public bool InviteFriendToChatRoom(string playerName, string friendName, ushort roomId)
+        {
+            if (!this.OnlineFriends.TryGetValue(playerName, out var player))
+            {
+                return false;
+            }
+
+            if (!this.OnlineFriends.TryGetValue(friendName, out var friend))
+            {
+                return false;
+            }
+
+            if (!friend.HasSubscriber(player))
+            {
+                return false;
+            }
+
+            if (!this.GameServers.TryGetValue(friend.ServerId, out var gameServerOfFriend))
+            {
+                return false;
+            }
+
+            var authenticationInfoFriend = this.chatServer.RegisterClient(roomId, friendName);
+            if (authenticationInfoFriend != null)
+            {
+                gameServerOfFriend.ChatRoomCreated(authenticationInfoFriend, playerName);
+                return true;
+            }
+
+            return false;
+        }
+
         /// <inheritdoc/>
         /// <remarks>Note, that the ServerId is not filled by this implementation. The player will receive it separately when the subscription is created.</remarks>
         public IEnumerable<FriendViewItem> GetFriendList(Guid characterId)

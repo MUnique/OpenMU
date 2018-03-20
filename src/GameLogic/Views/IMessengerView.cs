@@ -55,6 +55,13 @@ namespace MUnique.OpenMU.GameLogic.Views
         void InitializeMessenger(int maxLetters);
 
         /// <summary>
+        /// Shows the friend invitation result.
+        /// </summary>
+        /// <param name="result">If set to <c>true</c>, the invitation has been sent to the inviteds player.</param>
+        /// <param name="requestId">The request identifier.</param>
+        void ShowFriendInvitationResult(bool result, uint requestId);
+
+        /// <summary>
         /// Adds a letter to the view.
         /// </summary>
         /// <param name="letter">Letter which should be added.</param>

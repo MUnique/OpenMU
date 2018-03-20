@@ -96,5 +96,14 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="characterId">Character id.</param>
         /// <returns>The character names of all open friend requests.</returns>
         IEnumerable<string> GetOpenFriendRequests(Guid characterId);
+
+        /// <summary>
+        /// Invites a friend to an existing chat room.
+        /// </summary>
+        /// <param name="selectedCharacterName">Name of the selected character.</param>
+        /// <param name="friendName">Name of the friend.</param>
+        /// <param name="roomNumber">The room number.</param>
+        /// <returns>The success of the invitation.</returns>
+        bool InviteFriendToChatRoom(string selectedCharacterName, string friendName, ushort roomNumber);
     }
 }
