@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.AttributeSystem
                 return true;
             }
 
-            if (ReferenceEquals(lhs, null) || ReferenceEquals(rhs, null))
+            if (lhs is null || rhs is null)
             {
                 return false;
             }
