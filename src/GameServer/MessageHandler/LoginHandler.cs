@@ -81,9 +81,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             ////Player.StartTick = DateTime.Now;
             this.loginAction.Login(player, username, password);
 
-            var gameServerContext = this.gameContext as GameServerContext;
-            var remotePlayer = player as RemotePlayer;
-            if (gameServerContext != null && remotePlayer != null)
+            if (this.gameContext is GameServerContext gameServerContext && player is RemotePlayer remotePlayer)
             {
                 var versionStartIndex = startTickCountIndex + 4;
                 byte[] version = new byte[5];

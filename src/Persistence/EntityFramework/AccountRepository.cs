@@ -54,8 +54,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
         private Account LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContext context)
         {
-            var manager = this.RepositoryManager as RepositoryManager;
-            if (manager != null)
+            if (this.RepositoryManager is RepositoryManager manager)
             {
                 var accountInfo = context.Context.Set<Account>()
                     .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
