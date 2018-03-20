@@ -28,26 +28,33 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 player.NextDirections.Clear();
                 if (moveType == MoveType.Walk)
                 {
-                    // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
-                    var sourcePoint = new Point(x, y);
-                    var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
-                    Point target = sourcePoint;
-
-                    // we need to reverse the steps, because we put it on a stack - where the top element is the next step.
-                    foreach (var step in steps.Reverse())
+                    if (packet.Length > 6)
                     {
-                        if (player.NextDirections.Count == 0)
+                        // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
+                        var sourcePoint = new Point(x, y);
+                        var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
+                        Point target = sourcePoint;
+
+                        // we need to reverse the steps, because we put it on a stack - where the top element is the next step.
+                        foreach (var step in steps.Reverse())
                         {
-                            // the first direction (which will end up at the bottom of the stack) is our target
-                            target = step.To;
+                            if (player.NextDirections.Count == 0)
+                            {
+                                // the first direction (which will end up at the bottom of the stack) is our target
+                                target = step.To;
+                            }
+
+                            player.NextDirections.Push(step);
                         }
 
-                        player.NextDirections.Push(step);
+                        player.WalkTarget = target;
+
+                        player.Move(player.WalkTarget.X, player.WalkTarget.Y, MoveType.Walk);
                     }
-
-                    player.WalkTarget = target;
-
-                    player.Move(player.WalkTarget.X, player.WalkTarget.Y, MoveType.Walk);
+                    else
+                    {
+                        player.Rotation = (Direction)((packet[5] >> 4) & 0x0F);
+                    }
                 }
                 else
                 {
