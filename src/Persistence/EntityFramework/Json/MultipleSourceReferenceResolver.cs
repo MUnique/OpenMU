@@ -22,8 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <param name="fallbackResolvers">The fallback resolvers.</param>
         public MultipleSourceReferenceResolver(IReferenceResolver mainResolver, params IReferenceResolver[] fallbackResolvers)
         {
-            this.resolvers = new List<IReferenceResolver>();
-            this.resolvers.Add(mainResolver);
+            this.resolvers = new List<IReferenceResolver> { mainResolver };
             foreach (var resolver in fallbackResolvers)
             {
                 this.resolvers.Add(resolver);
