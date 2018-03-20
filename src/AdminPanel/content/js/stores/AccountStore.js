@@ -51,7 +51,7 @@ var AccountStore = Fluxxor.createStore({
     },
 
     getCurrentPage: function () {
-        return (this.currentOffset / this.currentCount) + 1;
+        return this.currentOffset / this.currentCount + 1;
     },
 
     getCurrent: function() {
