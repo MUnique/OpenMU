@@ -74,16 +74,30 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 IList<Direction> steps = null;
                 var x = obj.X;
                 var y = obj.Y;
-                if (this.SendWalkDirections && obj is ISupportWalk supportWalk)
+                Direction rotation = Direction.Undefined;
+                if (obj is ISupportWalk supportWalk)
                 {
-                    steps = supportWalk.NextDirections.Select(d => d.Direction).ToList();
+                    if (this.SendWalkDirections)
+                    {
+                        steps = supportWalk.NextDirections.Select(d => d.Direction).ToList();
+
+                        // The last one is the rotation
+                        rotation = steps.LastOrDefault();
+                        steps.RemoveAt(steps.Count - 1);
+                    }
+
+                    if (obj is IRotateable rotateable)
+                    {
+                        rotation = rotateable.Rotation.RotateLeft();
+                    }
+
                     x = supportWalk.WalkTarget.X;
                     y = supportWalk.WalkTarget.Y;
                 }
 
                 var stepsSize = (steps?.Count / 2) + 2 ?? 1;
                 byte[] walkPacket = new byte[7 + stepsSize];
-                walkPacket.SetValues<byte>(0xC1, (byte)walkPacket.Length, (byte)PacketType.Walk, objectId.GetHighByte(), objectId.GetLowByte(), x, y);
+                walkPacket.SetValues<byte>(0xC1, (byte)walkPacket.Length, (byte)PacketType.Walk, objectId.GetHighByte(), objectId.GetLowByte(), x, y, (byte)((steps?.Count ?? 0) | ((byte)rotation) << 4));
                 if (steps != null)
                 {
                     walkPacket[7] = (byte)((int)steps.First() << 4 | (int)steps.Count);

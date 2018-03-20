@@ -573,7 +573,6 @@ namespace MUnique.OpenMU.GameLogic
                 this.walker.Start();
             }
 
-            this.PlayerView.WorldView.ObjectMoved(this, moveType);
             Logger.DebugFormat("Move: Observer Count: {0}", this.Observers.Count);
         }
 
