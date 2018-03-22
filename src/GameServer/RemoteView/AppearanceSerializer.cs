@@ -68,13 +68,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             return this.GetPreviewCharSet(appearance.CharacterClass, appearance.EquippedItems);
         }
 
-        private byte[] GetPreviewCharSet(CharacterClass characterClass, IEnumerable<ItemAppearance> wearingItems)
+        private byte[] GetPreviewCharSet(CharacterClass characterClass, IEnumerable<ItemAppearance> equippedItems)
         {
             byte[] preview = new byte[18];
             ItemAppearance[] itemArray = new ItemAppearance[12];
             for (byte i = 0; i < itemArray.Length; i++)
             {
-                itemArray[i] = wearingItems.FirstOrDefault(item => item.ItemSlot == i);
+                itemArray[i] = equippedItems.FirstOrDefault(item => item.ItemSlot == i);
             }
 
             preview[0] = (byte)(characterClass.Number << 3 & 0xF8);
@@ -128,19 +128,29 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
+        private byte GetOrMaskForHighNibble(int value)
+        {
+            return (byte)((value << 4) & 0xF0);
+        }
+
+        private byte GetOrMaskForLowNibble(int value)
+        {
+            return (byte)(value & 0x0F);
+        }
+
         private void SetArmorPiece(byte[] preview, ItemAppearance item, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
         {
             if (item == null)
             {
                 // if the item is not equipped every index bit is set to 1
-                preview[firstIndex] |= (byte)(0x0F << (firstIndexHigh ? 4 : 0));
+                preview[firstIndex] |= firstIndexHigh ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);
                 preview[9] |= secondIndexMask;
-                preview[thirdIndex] |= (byte)(0x0F << (thirdIndexHigh ? 4 : 0));
+                preview[thirdIndex] |= thirdIndexHigh ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);
             }
             else
             {
                 // item id
-                preview[firstIndex] |= (byte)((item.Definition.Number << (firstIndexHigh ? 4 : 0)) & (0x0F << (firstIndexHigh ? 4 : 0)));
+                preview[firstIndex] |= firstIndexHigh ? this.GetOrMaskForHighNibble(item.Definition.Number) : this.GetOrMaskForLowNibble(item.Definition.Number);
                 byte multi = (byte)(item.Definition.Number / 16);
                 if (multi > 0)
                 {
@@ -191,6 +201,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             if (wing == null)
             {
+                preview[5] |= 0b0000_1100;
                 return;
             }
 
@@ -309,7 +320,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             if (pet == null)
             {
-                preview[5] |= 0x03;
+                preview[5] |= 0b0000_0011;
                 return;
             }
 

@@ -87,12 +87,12 @@ The bytes are represented in binary format. X means the bit is used by something
 
 | Item                  | 5th byte | 10th byte | 12th byte |
 |-----------------------|----------|-----------|-----------|
-| Guardian Angel        | xxxx0000 |
-| Imp                   | xxxx0001 |
-| Unicorn               | xxxx0010 |
-| Dinorant              | xxxx0011 | xxxxxxx1  ||
-| Fenrir                | xxxx0011 |           | xxxxxx1x  |
-| Default               | xxxx1111 |
+| Guardian Angel        | xxxxxx00 |
+| Imp                   | xxxxxx01 |
+| Unicorn               | xxxxxx10 |
+| Dinorant              | xxxxxx11 | xxxxxxx1  ||
+| Fenrir                | xxxxxx11 |           | xxxxxx1x  |
+| None                  | xxxxxx11 | xxxxxxx0  |
 
 
 And some other pets:
@@ -130,6 +130,7 @@ And some other pets:
 | Cape of Emperor       | Lord Emperor    | xxxx11xx | xxxxx101 |
 | Wing of Dimension     | Dimension Master| xxxx11xx | xxxxx110 |
 | Cape of Overrule      | Fist Master     | xxxx11xx | xxxxx111 |
+| None                  |                 | xxxx11xx | xxxxx000 |
 
 #### Small Wings ####
 

@@ -19,13 +19,11 @@ namespace MUnique.OpenMU.Tests
     public class AppearanceSerializerTest
     {
         /// <summary>
-        /// Tests how a new (naked) dark knight with small axe would be serialized.
+        /// Tests if a new (naked) dark knight with small axe would be serialized correctly.
         /// </summary>
         [Test]
         public void NewDarkKnightWithSmallAxe()
         {
-            // character list with dk and small axe: C1 2A F3 00 00 00 01 00 00 74 65 73 74 30 00 00 00 00 00 01 0E 00 00 20 00 FF FF FF FF 00 00 00 F8 00 00 20 FF FF FF 00 00 00
-            // (this packet is not 100 % correct - it wears some strange thing as wing)
             var serializer = new AppearanceSerializer();
             var appeareanceData = MockRepository.GenerateStub<IAppearanceData>();
             appeareanceData.Stub(a => a.CharacterClass).Return(new CharacterClass() { Number = 0x20 >> 3 }); // Dark Knight;
@@ -33,8 +31,6 @@ namespace MUnique.OpenMU.Tests
             var data = serializer.GetAppearanceData(appeareanceData);
             var expected = new byte[] { 0x20, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xF8, 0x00, 0x00, 0x20, 0xFF, 0xFF, 0xFF, 0x00, 0x00 };
             Assert.That(data, Is.EquivalentTo(expected));
-            //// Expected: equivalent to< 32, 0, 255, 255, 255, 255, 0, 0, 0, 248, 0, 0, 32, 255, 255, 255, 0, 0 >
-            ////              But was:  < 32, 0, 255, 255, 255, 243, 0, 0, 0, 248, 0, 0, 16, 255, 255, 255, 0, 0 >
         }
 
         private IEnumerable<ItemAppearance> GetSmallAxeEquipped()
