@@ -96,7 +96,7 @@ When a client requests to invite another friend to an existing chat room, the fo
 | 1 | byte | 0xC1   | Packet header - type |
 | 1 | byte | 0x16   | Packet header - length of the packet |
 | 1 | byte | 0xA1   | Packet Type 'chat room invitation' |
-| 1 | byte | 0x00   | ? |
+| 1 | byte | 0x00   | Padding |
 | 2 | ushort |  | Chat Room Id |
 | 10 | string |    | Name of the character who should be invited to the room  |
 | 2 | ushort |    | Player id of the character to which a chat room invitation should be sent, big endian |
