@@ -55,12 +55,13 @@ When a client requests to create a new chat room, the following data packet is s
 | 1 | byte | 0xA0   | Packet Type 'chat room creation' |
 | 10 | string |     | Name of the character who wants to create the room |
 | 10 | string |     | Name of the character who should be invited to the room  |
+| 1 | byte | 0x01   | "Type", not relevant? |
 | 2 | ushort |      | Player id of the character who wants to create the room, big endian  |
 | 2 | ushort |      | Server id of the character who wants to create the room, big endian  |
 | 2 | ushort |      | Player id of the character who should be invited, big endian |
 | 2 | ushort |      | Server id of the character who should be invited, big endian |
 
-Example: C1 25 A0 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59 20 01 00 01 20 02 00 01
+Example: C1 25 A0 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59 01 20 01 00 01 20 02 00 01
 
 ### Chat Room Creation Responses
 For each of both players, there is one data packet sent back to the ExDB Server:
