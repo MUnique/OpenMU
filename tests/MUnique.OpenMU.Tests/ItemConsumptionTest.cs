@@ -4,12 +4,15 @@
 
 namespace MUnique.OpenMU.Tests
 {
+    using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+    using MUnique.OpenMU.Persistence;
     using NUnit.Framework;
     using Rhino.Mocks;
 
@@ -38,11 +41,39 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests the jewel of life consume.
+        /// Tests the jewel of life consumption.
         /// </summary>
-        public void JewelOfLife()
+        /// <param name="numberOfOptions">The number of options.</param>
+        /// <param name="expectation">If set to <c>true</c>, the item upgrade is expected; Otherwise, not.</param>
+        [TestCase(1, true)]
+        [TestCase(2, true)]
+        [TestCase(3, true)]
+        [TestCase(4, true)]
+        [TestCase(5, false)]
+        public void JewelOfLife(int numberOfOptions, bool expectation)
         {
-            Assert.That(true, Is.False);
+            var repositoryManager = new BaseRepositoryManager();
+            var consumeHandler = new LifeJewelConsumeHandler(repositoryManager);
+            consumeHandler.Configuration.SuccessChance = 1;
+            var player = this.GetPlayer();
+            var upgradeableItem = this.GetItemWithPossibleOption();
+            var upgradableItemSlot = (byte)(ItemSlot + 1);
+            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+            bool success = false;
+            for (int i = 0; i < numberOfOptions; i++)
+            {
+                var item = this.GetItem();
+                player.Inventory.AddItem(ItemSlot, item);
+                item.Durability = 1;
+
+                success = consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
+            }
+
+            Assert.That(success, Is.EqualTo(expectation));
+            if (success)
+            {
+                Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(numberOfOptions));
+            }
         }
 
         /// <summary>
@@ -206,6 +237,30 @@ namespace MUnique.OpenMU.Tests
             player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.CurrentMana, 0));
 
             return player;
+        }
+
+        private Item GetItemWithPossibleOption()
+        {
+            var item = MockRepository.GenerateStub<Item>();
+            item.Stub(i => i.ItemOptions).Return(new List<ItemOptionLink>());
+            item.Definition = MockRepository.GenerateStub<ItemDefinition>();
+            item.Definition.Stub(d => d.PossibleItemOptions).Return(new List<ItemOptionDefinition>());
+            item.Definition.Stub(d => d.BasePowerUpAttributes).Return(new List<ItemBasePowerUpDefinition>());
+            item.Durability = 1;
+            item.Definition.Width = 1;
+            item.Definition.Height = 2;
+            var option = MockRepository.GenerateStub<ItemOptionDefinition>();
+            option.Stub(o => o.PossibleOptions).Return(new List<IncreasableItemOption>());
+            option.MaximumOptionsPerItem = 4;
+            option.AddsRandomly = true;
+            option.Name = "Damage Option";
+
+            var possibleOption = MockRepository.GenerateStub<IncreasableItemOption>();
+            possibleOption.OptionType = ItemOptionTypes.Option;
+            possibleOption.Stub(o => o.LevelDependentOptions).Return(new List<ItemOptionOfLevel>());
+            option.PossibleOptions.Add(possibleOption);
+            item.Definition.PossibleItemOptions.Add(option);
+            return item;
         }
     }
 }
