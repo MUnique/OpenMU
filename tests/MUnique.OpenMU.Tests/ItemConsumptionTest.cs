@@ -41,16 +41,16 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests the jewel of life consumption.
+        /// Test if the jewel of life consumption increases the item option level by 1 until the maximum level is reached.
         /// </summary>
         /// <param name="numberOfOptions">The number of options.</param>
-        /// <param name="expectation">If set to <c>true</c>, the item upgrade is expected; Otherwise, not.</param>
+        /// <param name="consumptionExpectation">If set to <c>true</c>, the item consumption is expected; Otherwise, not.</param>
         [TestCase(1, true)]
         [TestCase(2, true)]
         [TestCase(3, true)]
         [TestCase(4, true)]
         [TestCase(5, false)]
-        public void JewelOfLife(int numberOfOptions, bool expectation)
+        public void JewelOfLife(int numberOfOptions, bool consumptionExpectation)
         {
             var repositoryManager = new BaseRepositoryManager();
             var consumeHandler = new LifeJewelConsumeHandler(repositoryManager);
@@ -59,21 +59,90 @@ namespace MUnique.OpenMU.Tests
             var upgradeableItem = this.GetItemWithPossibleOption();
             var upgradableItemSlot = (byte)(ItemSlot + 1);
             player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
-            bool success = false;
+            bool jolConsumed = false;
             for (int i = 0; i < numberOfOptions; i++)
             {
                 var item = this.GetItem();
                 player.Inventory.AddItem(ItemSlot, item);
                 item.Durability = 1;
 
-                success = consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
+                jolConsumed = consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
             }
 
-            Assert.That(success, Is.EqualTo(expectation));
-            if (success)
+            Assert.That(jolConsumed, Is.EqualTo(consumptionExpectation));
+            if (jolConsumed)
             {
-                Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(numberOfOptions));
+                Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
+                Assert.That(upgradeableItem.ItemOptions.First().Level, Is.EqualTo(numberOfOptions));
             }
+        }
+
+        /// <summary>
+        /// Tests if a failed Jewels of life reduces the option level (in case level > 1).
+        /// </summary>
+        [Test]
+        public void JewelOfLifeFailReducesOptionLevel()
+        {
+            var repositoryManager = new BaseRepositoryManager();
+            var consumeHandler = new LifeJewelConsumeHandler(repositoryManager);
+            consumeHandler.Configuration.SuccessChance = 1;
+            var player = this.GetPlayer();
+            var upgradeableItem = this.GetItemWithPossibleOption();
+            var upgradableItemSlot = (byte)(ItemSlot + 1);
+            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+
+            // we're adding 3 options first
+            for (int i = 0; i < 3; i++)
+            {
+                var item = this.GetItem();
+                player.Inventory.AddItem(ItemSlot, item);
+                item.Durability = 1;
+
+                consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
+            }
+
+            // then adding fails, so one option needs to be removed
+            consumeHandler.Configuration.SuccessChance = 0;
+            var jol = this.GetItem();
+            player.Inventory.AddItem(ItemSlot, jol);
+            jol.Durability = 1;
+            var jolConsumed = consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
+
+            Assert.That(jolConsumed, Is.True);
+            Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
+            Assert.That(upgradeableItem.ItemOptions.First().Level, Is.EqualTo(2));
+        }
+
+        /// <summary>
+        /// Tests if a failed Jewels of life removes the option (in case level = 1).
+        /// </summary>
+        [Test]
+        public void JewelOfLifeFailRemovesOption()
+        {
+            var repositoryManager = new BaseRepositoryManager();
+            var consumeHandler = new LifeJewelConsumeHandler(repositoryManager);
+            consumeHandler.Configuration.SuccessChance = 1;
+            var player = this.GetPlayer();
+            var upgradeableItem = this.GetItemWithPossibleOption();
+            var upgradableItemSlot = (byte)(ItemSlot + 1);
+            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+
+            var jol = this.GetItem();
+            player.Inventory.AddItem(ItemSlot, jol);
+            jol.Durability = 1;
+
+            consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
+            Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
+
+            // then adding fails, so one option needs to be removed
+            consumeHandler.Configuration.SuccessChance = 0;
+            var jol2 = this.GetItem();
+            player.Inventory.AddItem(ItemSlot, jol2);
+            jol2.Durability = 1;
+            var jolConsumed = consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
+
+            Assert.That(jolConsumed, Is.True);
+            Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(0));
         }
 
         /// <summary>
@@ -259,6 +328,13 @@ namespace MUnique.OpenMU.Tests
             possibleOption.OptionType = ItemOptionTypes.Option;
             possibleOption.Stub(o => o.LevelDependentOptions).Return(new List<ItemOptionOfLevel>());
             option.PossibleOptions.Add(possibleOption);
+            for (int level = 1; level <= 4; level++)
+            {
+                var levelDependentOption = new ItemOptionOfLevel();
+                levelDependentOption.Level = level;
+                possibleOption.LevelDependentOptions.Add(levelDependentOption);
+            }
+
             item.Definition.PossibleItemOptions.Add(option);
             return item;
         }

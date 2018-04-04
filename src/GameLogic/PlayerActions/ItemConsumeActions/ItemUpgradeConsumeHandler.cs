@@ -147,8 +147,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
         private bool ItemHasOptionAlready(Item item)
         {
-            var definition = item.Definition.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType));
-            return item.ItemOptions.Count(o => o.ItemOption.OptionType == this.Configuration.OptionType) >= definition.MaximumOptionsPerItem;
+            return item.ItemOptions.Any(o => o.ItemOption.OptionType == this.Configuration.OptionType);
         }
 
         private bool ItemCanHaveOption(Item item)

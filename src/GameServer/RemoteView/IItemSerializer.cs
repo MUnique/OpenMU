@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             array[startIndex + 1] = (byte)((item.Level << 3) & 0x78);
             ////Item Option:
             ////It is splitted into 2 parts. Webzen... :-/
-            var itemOptionLevel = item.ItemOptions.Count(o => o.ItemOption.OptionType == ItemOptionTypes.Option);
+            var itemOptionLevel = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.Option)?.Level ?? 0;
             array[startIndex + 1] += (byte)(itemOptionLevel & 3); // setting the first 2 bits
             array[startIndex + 3] = (byte)((itemOptionLevel & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte.
 

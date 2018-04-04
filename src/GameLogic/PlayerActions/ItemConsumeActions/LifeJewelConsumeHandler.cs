@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
         public LifeJewelConsumeHandler(IRepositoryManager repositoryManager)
-            : base(repositoryManager, new ItemUpgradeConfiguration { AddsOption = true, IncreasesOption = false, FailResult = ItemFailResult.DecreaseOptionByOneOrRemove, OptionType = ItemOptionTypes.Option, SuccessChance = 0.5 })
+            : base(repositoryManager, new ItemUpgradeConfiguration { AddsOption = true, IncreasesOption = true, FailResult = ItemFailResult.DecreaseOptionByOneOrRemove, OptionType = ItemOptionTypes.Option, SuccessChance = 0.5 })
         {
         }
     }
