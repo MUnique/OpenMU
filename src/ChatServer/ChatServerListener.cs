@@ -30,13 +30,13 @@ namespace MUnique.OpenMU.ChatServer
 
         private readonly RandomNumberGenerator randomNumberGenerator;
 
-        private readonly string publicIp;
-
         private readonly IList<IChatClient> connectedClients = new List<IChatClient>();
 
         private readonly Timer clientCleanupTimer;
 
         private readonly Timer roomCleanupTimer;
+
+        private string publicIp;
 
         private Listener chatClientListener;
 
@@ -48,7 +48,6 @@ namespace MUnique.OpenMU.ChatServer
         {
             this.port = port;
             this.manager = new ChatRoomManager();
-            this.publicIp = PublicIpResolver.GetIPv4().ToString();
             this.randomNumberGenerator = RandomNumberGenerator.Create();
 
             this.clientCleanupTimer = new Timer(1000 * 60); // every 60 seconds
@@ -161,7 +160,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <returns>The ip address of the server.</returns>
         public string GetIPAddress()
         {
-            return this.publicIp;
+            return this.publicIp ?? (this.publicIp = PublicIpResolver.GetIPv4().ToString());
         }
 
         /// <summary>
