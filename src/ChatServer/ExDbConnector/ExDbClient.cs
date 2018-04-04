@@ -135,7 +135,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// </remarks>
         private void ReadChatRoomInvitation(byte[] packet)
         {
-            var roomId = NumberConversionExtensions.MakeWord(packet[5], packet[4]);
+            var roomId = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
             var clientName = packet.ExtractString(6, 10, Encoding.UTF8);
             var clientPlayerId = packet.TryMakeWordBigEndian(16);
             var clientServerId = packet.TryMakeWordBigEndian(18);
