@@ -5,8 +5,9 @@ That means, you should be a developer and know what you're doing if you want to 
 
 
 Requirements:
-* Windows OS (should run with Mono under Linux, but not tested)
-* .NET Framework 4.6
+* Windows OS
+  * It runs with Mono under Linux (probably MacOS, too), but compiling the AdminPanel doesn't fully work.
+* .NET Framework 4.6.1
 * PostgreSQL installed
 * Visual Studio 2017 installed
 * This repository cloned
@@ -14,10 +15,12 @@ Requirements:
   * 1234 (admin panel)
   * 55901, 55902, 55903 (game servers)
   * 44405 (connect server)
+  * 55980 (chat server)
 * Knowledge or way to start a game client, connecting to the server (I wont provide that, but there is a ClientLauncher project) :)
 
 If you have that, you'll need to do:
 * Open the solution of OpenMU with Visual Studio
+* Right click the solution and 'Restore NuGet Packages'
 * Edit OpenMU\Persistence\EntityFramework\ConnectionSettings.xml, so that the connection strings are correct - however only the user/password of the first connection string needs to be correct. The server will try to create the other roles specified by the settings.
 * Build the solution 
 * Start MUnique.OpenMU.Startup
