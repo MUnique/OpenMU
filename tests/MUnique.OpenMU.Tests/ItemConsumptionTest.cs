@@ -27,9 +27,34 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Tests the jewel of bless consume.
         /// </summary>
-        public void JewelOfBless()
+        /// <param name="itemLevel">The item level.</param>
+        /// <param name="consumptionExpectation">if set to <c>true</c>, the item consumption is expected.</param>
+        [TestCase(0, true)]
+        [TestCase(1, true)]
+        [TestCase(2, true)]
+        [TestCase(3, true)]
+        [TestCase(4, true)]
+        [TestCase(5, true)]
+        [TestCase(6, false)]
+        [TestCase(7, false)]
+        public void JewelOfBless(byte itemLevel, bool consumptionExpectation)
         {
-            Assert.That(true, Is.False);
+            var repositoryManager = new BaseRepositoryManager();
+            var consumeHandler = new BlessJewelConsumeHandler(repositoryManager);
+
+            var player = this.GetPlayer();
+            var upgradeableItem = this.GetItemWithPossibleOption();
+            upgradeableItem.Level = itemLevel;
+            var upgradableItemSlot = (byte)(ItemSlot + 1);
+            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+            var bless = this.GetItem();
+            player.Inventory.AddItem(ItemSlot, bless);
+            bless.Durability = 1;
+
+            var consumed = consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
+
+            Assert.That(consumed, Is.EqualTo(consumptionExpectation));
+            Assert.That(upgradeableItem.Level, consumed ? Is.EqualTo(itemLevel + 1) : Is.EqualTo(itemLevel));
         }
 
         /// <summary>
