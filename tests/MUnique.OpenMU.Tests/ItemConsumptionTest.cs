@@ -58,11 +58,57 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests the jewel of soul consume.
+        /// Tests the jewel of soul consumption.
         /// </summary>
-        public void JewelOfSoul()
+        /// <param name="itemLevel">The item level before consuming the jewel of soul.</param>
+        /// <param name="consumptionExpectation">If set to <c>true</c>, the consumption of the jewel of soul is expected.</param>
+        /// <param name="success">If set to <c>true</c>, the randomizer returns <c>true</c> when asked about wether the item level should be increased. However, it doesn't have any effect if the item is already level 9 or higher.</param>
+        /// <param name="expectedItemLevel">The expected item level after trying to consume the jewel of soul.</param>
+        [TestCase(0, true, true, 1)]
+        [TestCase(1, true, true, 2)]
+        [TestCase(2, true, true, 3)]
+        [TestCase(3, true, true, 4)]
+        [TestCase(4, true, true, 5)]
+        [TestCase(5, true, true, 6)]
+        [TestCase(6, true, true, 7)]
+        [TestCase(7, true, true, 8)]
+        [TestCase(8, true, true, 9)]
+        [TestCase(9, false, true, 9)]
+        [TestCase(10, false, true, 10)]
+        [TestCase(11, false, true, 11)]
+        [TestCase(12, false, true, 12)]
+        [TestCase(13, false, true, 13)]
+        [TestCase(14, false, true, 14)]
+        [TestCase(15, false, true, 15)]
+        [TestCase(0, true, false, 0)]
+        [TestCase(1, true, false, 0)]
+        [TestCase(2, true, false, 1)]
+        [TestCase(3, true, false, 2)]
+        [TestCase(4, true, false, 3)]
+        [TestCase(5, true, false, 4)]
+        [TestCase(6, true, false, 5)]
+        [TestCase(7, true, false, 0)]
+        [TestCase(8, true, false, 0)]
+        public void JewelOfSoul(byte itemLevel, bool consumptionExpectation, bool success, byte expectedItemLevel)
         {
-            Assert.That(true, Is.False);
+            var repositoryManager = new BaseRepositoryManager();
+            var randomizer = MockRepository.GenerateStub<IRandomizer>();
+            randomizer.Stub(r => r.NextRandomBool(50)).Return(success);
+            var consumeHandler = new SoulJewelConsumeHandler(repositoryManager, randomizer);
+
+            var player = this.GetPlayer();
+            var upgradeableItem = this.GetItemWithPossibleOption();
+            upgradeableItem.Level = itemLevel;
+            var upgradableItemSlot = (byte)(ItemSlot + 1);
+            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+            var soul = this.GetItem();
+            player.Inventory.AddItem(ItemSlot, soul);
+            soul.Durability = 1;
+
+            var consumed = consumeHandler.ConsumeItem(player, ItemSlot, upgradableItemSlot);
+
+            Assert.That(consumed, Is.EqualTo(consumptionExpectation));
+            Assert.That(upgradeableItem.Level, Is.EqualTo(expectedItemLevel));
         }
 
         /// <summary>

@@ -14,15 +14,29 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     /// <summary>
     /// Consume handler for the Jewel of Soul which increases the item level by one until the level of 9 with a chance of 50%.
     /// </summary>
+    /// <seealso cref="MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions.ItemModifyConsumeHandler" />
     public class SoulJewelConsumeHandler : ItemModifyConsumeHandler
     {
+        private readonly IRandomizer randomizer;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SoulJewelConsumeHandler"/> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
         public SoulJewelConsumeHandler(IRepositoryManager repositoryManager)
+            : this(repositoryManager, Rand.GetRandomizer())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SoulJewelConsumeHandler"/> class.
+        /// </summary>
+        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="randomizer">The randomizer.</param>
+        public SoulJewelConsumeHandler(IRepositoryManager repositoryManager, IRandomizer randomizer)
             : base(repositoryManager)
         {
+            this.randomizer = randomizer;
         }
 
         /// <inheritdoc/>
@@ -39,7 +53,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 percent += 25;
             }
 
-            if (Rand.NextRandomBool(percent))
+            if (this.randomizer.NextRandomBool(percent))
             {
                 item.Level++;
                 return true; // true doesnt mean that it was successful, just that the consumption happend.
