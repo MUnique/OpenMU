@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -42,7 +43,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
             SkillEntry skillEntry = player.SkillList.GetSkill(skillId);
             ushort targetId = NumberConversionExtensions.MakeWord(packet[10], packet[9]);
-            if (player.CurrentMap.GetObject(targetId) is IAttackable target)
+            if (player.GetObject(targetId) is IAttackable target)
             {
                 this.skillHitAction.AttackTarget(player, target, skillEntry);
             }

@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameServer.RemoteView;
+
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using MUnique.OpenMU.GameLogic;
@@ -37,8 +40,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
+            // The target can be the own player too, for example when using buff skills.
             ushort targetId = NumberConversionExtensions.MakeWord(packet[6], packet[5]);
-            if (player.CurrentMap.GetObject(targetId) is IAttackable target)
+            if (player.GetObject(targetId) is IAttackable target)
             {
                 this.attackAction.PerformSkill(player, target, skillId);
             }
