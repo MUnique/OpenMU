@@ -109,6 +109,7 @@ namespace MUnique.OpenMU.GameServer
                 if (player.SelectedCharacter.GuildMemberInfo != null)
                 {
                     this.GuildServer.GuildMemberLeaveGame(player.SelectedCharacter.GuildMemberInfo.GuildId, player.SelectedCharacter.Name, this.Id);
+                    player.ShortGuildID = 0;
                 }
             }
         }
