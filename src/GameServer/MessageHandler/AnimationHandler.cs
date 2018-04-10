@@ -27,21 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 player.Rotation = (Direction)rotation;
             }
 
-            player.ObserverLock.EnterReadLock();
-            try
-            {
-                player.Observers.ForEach(o =>
-                {
-                    if (o != player)
-                    {
-                        o.WorldView.ShowAnimation(player, animation, null, rotation);
-                    }
-                });
-            }
-            finally
-            {
-                player.ObserverLock.ExitReadLock();
-            }
+            player.ForEachObservingPlayer(o => o.WorldView.ShowAnimation(player, animation, null, rotation), false);
         }
     }
 }
