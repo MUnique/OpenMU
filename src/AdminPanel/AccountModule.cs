@@ -46,7 +46,9 @@ namespace MUnique.OpenMU.AdminPanel
 
             try
             {
-                using (var context = this.repositoryManager.UseTemporaryContext())
+                var configs = this.repositoryManager.GetRepository<GameConfiguration>().GetAll();
+                using (var context = this.repositoryManager.CreateNewAccountContext(configs.First()))
+                using (this.repositoryManager.UseContext(context))
                 {
                     var dto = this.Bind<AccountDto>();
                     Account account = dto.Id == Guid.Empty ? this.repositoryManager.CreateNew<Account>() : this.repositoryManager.GetRepository<Account>().GetById(dto.Id);
