@@ -70,7 +70,7 @@ namespace MUnique.OpenMU.GuildServer
         /// <inheritdoc/>
         public bool GuildExists(string guildName)
         {
-            var repository = this.repositoryManager.GetRepository<Guild, IGuildRepository<Guild>>();
+            var repository = this.repositoryManager.GetRepository<Guild, IGuildRepository>();
 
             return repository.GuildWithNameExists(guildName);
         }

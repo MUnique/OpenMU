@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence
 {
     using System;
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
     /// A base repository which can return an object by an id.
@@ -57,8 +58,7 @@ namespace MUnique.OpenMU.Persistence
     /// <summary>
     /// A repository for guilds.
     /// </summary>
-    /// <typeparam name="T">The type for guilds. The type is not specified here, because the data model is not known to this assembly.</typeparam>
-    public interface IGuildRepository<out T> : IRepository<T>
+    public interface IGuildRepository
     {
         /// <summary>
         /// Returns if the guild with the specified name exists.
@@ -71,8 +71,7 @@ namespace MUnique.OpenMU.Persistence
     /// <summary>
     /// A repository for accounts.
     /// </summary>
-    /// <typeparam name="T">The type for accounts. The type is not specified here, because the data model is not known to this assembly.</typeparam>
-    public interface IAccountRepository<out T> : IRepository<T>
+    public interface IAccountRepository
     {
         /// <summary>
         /// Gets the account by login name if the password is correct.
@@ -80,7 +79,7 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="loginName">The login name.</param>
         /// <param name="password">The password.</param>
         /// <returns>The account, if the password is correct. Otherwise, null.</returns>
-        T GetAccountByLoginName(string loginName, string password);
+        Account GetAccountByLoginName(string loginName, string password);
 
         /// <summary>
         /// Gets the accounts ordered by login name.
@@ -88,7 +87,7 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="skip">The skip count.</param>
         /// <param name="count">The count.</param>
         /// <returns>The account objects, without depending data.</returns>
-        IEnumerable<T> GetAccountsOrderedByLoginName(int skip, int count);
+        IEnumerable<Account> GetAccountsOrderedByLoginName(int skip, int count);
     }
 
     /// <summary>

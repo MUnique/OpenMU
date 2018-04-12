@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <summary>
     /// Repository for accounts.
     /// </summary>
-    internal class AccountRepository : GenericRepository<Account>, IAccountRepository<Account>
+    internal class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountRepository"/> class.
@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        public Account GetAccountByLoginName(string loginName, string password)
+        public DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
         {
             using (var context = this.GetContext())
             {
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc />
-        public IEnumerable<Account> GetAccountsOrderedByLoginName(int skip, int count)
+        public IEnumerable<DataModel.Entities.Account> GetAccountsOrderedByLoginName(int skip, int count)
         {
             using (var context = this.GetContext())
             {

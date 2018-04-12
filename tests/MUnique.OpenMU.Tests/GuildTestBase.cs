@@ -82,8 +82,7 @@ namespace MUnique.OpenMU.Tests
         {
             public TestRepositoryManager()
             {
-                var guildRepository = MockRepository.GenerateStub<IGuildRepository<Guild>>();
-
+                var guildRepository = MockRepository.GenerateStub<ITestGuildRepository>();
                 this.RegisterRepository(guildRepository);
             }
 
@@ -106,6 +105,13 @@ namespace MUnique.OpenMU.Tests
                 }
 
                 return base.CreateNew<T>(args);
+            }
+
+            /// <summary>
+            /// An interface which inherits from <see cref="IGuildRepository"/> and <see cref="IRepository{Guild}"/> for easy stubbing of a guild repository.
+            /// </summary>
+            private interface ITestGuildRepository : IGuildRepository, IRepository<Guild>
+            {
             }
         }
     }

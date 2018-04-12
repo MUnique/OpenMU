@@ -35,9 +35,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         public void RegisterRepositories()
         {
-            this.RegisterRepository(new AccountRepository(this));
+            this.RegisterRepository<Account>(new AccountRepository(this));
             this.RegisterRepository(new LetterBodyRepository(this));
-            this.RegisterRepository(new GuildRepository(this));
+            this.RegisterRepository<Guild>(new GuildRepository(this));
             this.RegisterRepository(new FriendViewItemRepository(this));
             this.RegisterRepository(new CachedRepository<GameConfiguration>(new GameConfigurationRepository(this)));
             this.RegisterRepository(new GenericRepository<GameServerConfiguration>(this));

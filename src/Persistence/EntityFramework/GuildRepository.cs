@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// Repository for instances of <see cref="Guild"/>.
     /// </summary>
     internal class GuildRepository : GenericRepository<Guild>, IGuildRepository<Guild>
+    internal class GuildRepository : GenericRepository<Guild>, IGuildRepository
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildRepository"/> class.

@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.AdminPanel
             using (var context = this.repositoryManager.CreateNewAccountContext(configs.First()))
             using (this.repositoryManager.UseContext(context))
             {
-                var accounts = this.repositoryManager.GetRepository<Account, IAccountRepository<Account>>().GetAccountsOrderedByLoginName(offset, count)
+                var accounts = this.repositoryManager.GetRepository<Account, IAccountRepository>().GetAccountsOrderedByLoginName(offset, count)
                     .Select(a => new AccountDto
                     {
                         Id = a.GetId(),

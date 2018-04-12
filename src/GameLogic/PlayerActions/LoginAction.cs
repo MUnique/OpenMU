@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             {
                 using (this.gameServerContext.RepositoryManager.UseContext(player.PersistenceContext))
                 {
-                    var repository = this.gameServerContext.RepositoryManager.GetRepository<Account, IAccountRepository<Account>>();
+                    var repository = this.gameServerContext.RepositoryManager.GetRepository<Account, IAccountRepository>();
                     account = repository.GetAccountByLoginName(username, password);
                 }
             }
