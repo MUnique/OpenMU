@@ -39,9 +39,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
                 using (var accountContext = manager.CreateNewAccountContext(gameConfiguraton))
                 using (manager.UseContext(accountContext))
                 {
-                    var account1 =
-                        manager.GetRepository<DataModel.Entities.Account, IAccountRepository<DataModel.Entities.Account>>()
-                            .GetAccountByLoginName("test1", "test1");
+                    var account1 = manager.GetRepository<DataModel.Entities.Account, IAccountRepository>().GetAccountByLoginName("test1", "test1");
                     Assert.That(account1, Is.Not.Null);
                     Assert.That(account1.LoginName, Is.EqualTo("test1"));
                 }
