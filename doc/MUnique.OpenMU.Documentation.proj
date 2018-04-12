@@ -21,6 +21,7 @@
     <None Include="Packets\C111 - Hit request.md" />
     <None Include="Packets\C1F352 - Master skill level increase response.md" />
     <None Include="Packets\C3F101 - Login request %28by client%29.md" />
+    <None Include="GameMap.md" />
     <None Include="Progress.md" />
     <None Include="Readme.md" />
     <Pandoc Include="Packets\C100 - Chat message %28by client%29.md" />
