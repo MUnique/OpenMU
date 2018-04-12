@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 var result = context.Context.Set<T>().Find(id);
                 if (result == null)
                 {
-                    Log.Warn($"Object with id {id} could not be found.");
+                    Log.Debug($"Object with id {id} could not be found.");
                 }
                 else
                 {
