@@ -36,32 +36,29 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             if (guildMaster.Account.SecurityCode != securityCode)
             {
                 guildMaster.PlayerView.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
-                Log.WarnFormat("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, guildMaster.Account.SecurityCode, guildMaster.SelectedCharacter.Name);
+                Log.DebugFormat("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, guildMaster.Account.SecurityCode, guildMaster.SelectedCharacter.Name);
 
                 guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.Failed);
                 return;
             }
 
-            var guildId = guildMaster.SelectedCharacter?.GuildMemberInfo?.Id;
-            if (guildId.HasValue)
+            if (guildMaster.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                if (guildMaster.SelectedCharacter.GuildMemberInfo.Status == DataModel.Entities.GuildPosition.GuildMaster)
-                {
-                    guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.Failed);
-                }
-
-                if (nickname == guildMaster.SelectedCharacter.Name)
-                {
-                    this.gameContext.GuildServer.DeleteGuild(guildId.Value);
-                    this.gameContext.GuildCache.Invalidate(guildId.Value);
-                    guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.GuildDisband);
-                    return;
-                }
-                else
-                {
-                    this.gameContext.GuildServer.KickPlayer(guildId.Value, nickname);
-                }
+                // todo: log possible hacker action
+                guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.Failed);
+                return;
             }
+
+            if (nickname == guildMaster.SelectedCharacter.Name)
+            {
+                this.gameContext.GuildServer.KickMember(guildMaster.GuildStatus.GuildId, nickname);
+                this.gameContext.GuildCache.Invalidate(guildMaster.GuildStatus.GuildId);
+                guildMaster.GuildStatus = null;
+                guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.GuildDisband);
+                return;
+            }
+
+            this.gameContext.GuildServer.KickMember(guildMaster.GuildStatus.GuildId, nickname);
         }
     }
 }

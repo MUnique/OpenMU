@@ -91,6 +91,12 @@ namespace MUnique.OpenMU.Persistence
         }
 
         /// <inheritdoc/>
+        public virtual IContext CreateNewGuildContext()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
         public IDisposable UseContext(IContext context)
         {
             Stack<IContext> contextsOfCurrentThread;

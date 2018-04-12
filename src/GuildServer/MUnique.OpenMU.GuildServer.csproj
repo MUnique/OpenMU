@@ -69,7 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj">
-      <Project>{5282F509-D758-4A42-994C-F71A4C631FDA}</Project>
+      <Project>{5282f509-d758-4a42-994c-f71a4c631fda}</Project>
       <Name>MUnique.OpenMU.DataModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj">

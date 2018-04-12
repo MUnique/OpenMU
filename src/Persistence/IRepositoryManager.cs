@@ -2,10 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
+
 namespace MUnique.OpenMU.Persistence
 {
     using System;
-    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// Description of IRepositoryManager.
@@ -71,12 +74,17 @@ namespace MUnique.OpenMU.Persistence
 
         /// <summary>
         /// Creates a new context which is used by the friend server.
-        /// It manages basically only <see cref="MUnique.OpenMU.DataModel.Entities.FriendViewItem"/>s.
+        /// It manages basically only <see cref="FriendViewItem"/>s.
         /// </summary>
         /// <returns>A new context which is used by the friend server.</returns>
         IContext CreateNewFriendServerContext();
 
-        //// TODO: CreateNewGuildContext();
+        /// <summary>
+        /// Creates a new context which is used by the guild server.
+        /// It manages basically only <see cref="Guild"/>s and <see cref="GuildMember"/>s.
+        /// </summary>
+        /// <returns>A new context which is used by the guild server.</returns>
+        IContext CreateNewGuildContext();
 
         /// <summary>
         /// Puts this context on the context stack of the current thread to be used for the upcoming repository actions.

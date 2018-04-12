@@ -33,19 +33,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         public void RequestGuild(Player player, ushort guildMasterId)
         {
             Player guildmaster = player.CurrentMap.GetObject(guildMasterId) as Player;
-            if (guildmaster == null)
-            {
-                return; // player not found
-            }
 
-            if (guildmaster.SelectedCharacter.GuildMemberInfo == null)
+            if (guildmaster?.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                return; // not even in a guild
-            }
-
-            if (guildmaster.SelectedCharacter.GuildMemberInfo.Status != DataModel.Entities.GuildPosition.GuildMaster)
-            {
-                return; // not a guildmaster
+                return; // targetted player not in a guild or not the guild master
             }
 
             if (guildmaster.LastGuildRequester != null)

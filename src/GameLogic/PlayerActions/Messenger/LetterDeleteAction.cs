@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// Action to delete a letter.

@@ -2,17 +2,20 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.Persistence
 {
     using System;
     using System.Collections.Concurrent;
     using System.Threading;
 
     /// <summary>
-    /// A generator which generates id which should be unique within an instance this generator.
+    /// A generator which generates id which should be unique within an instance of a generator.
     /// Ids which are no longer used can be given back to the generator, e.g. when an object joins a game map,
     /// it gets an id, later when it leaves the map, it gives the id back, so another player can use it.
     /// </summary>
+    /// <remarks>
+    /// The namespace for this class is probably not the right one - we're missing something like a "Utility" namespace for things like that.
+    /// </remarks>
     public class IdGenerator
     {
         private readonly int maxValue;

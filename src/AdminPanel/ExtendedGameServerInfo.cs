@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.AdminPanel
         {
             get
             {
-                return this.gameServer.ServerInfo.Maps.Select(map => new GameMapInfo { Id = map.Map.Number, Name = map.Map.Name, PlayerCount = map.Players.Count, ServerId = this.gameServer.Id }).ToList();
+                return this.gameServer.ServerInfo.Maps.Select(map => new GameMapInfo { Id = map.MapNumber, Name = map.MapName, PlayerCount = map.Players.Count, ServerId = this.gameServer.Id }).ToList();
             }
         }
 

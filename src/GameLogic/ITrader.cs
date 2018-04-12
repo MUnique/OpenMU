@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -35,7 +36,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the short guild identifier.
         /// </summary>
-        ushort ShortGuildID { get; set; }
+        GuildMemberStatus GuildStatus { get; set; }
 
         /// <summary>
         /// Gets the inventory.

@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.Persistence;
     using NUnit.Framework;
     using Rhino.Mocks;
+    using Guild = DataModel.Entities.Guild;
 
     /// <summary>
     /// Base class for guild related tests.
@@ -48,11 +49,6 @@ namespace MUnique.OpenMU.Tests
         protected Character GuildMaster { get; set; }
 
         /// <summary>
-        /// Gets or sets the guild.
-        /// </summary>
-        protected Guild Guild { get; set; }
-
-        /// <summary>
         /// Setups the test objects.
         /// </summary>
         [SetUp]
@@ -65,28 +61,38 @@ namespace MUnique.OpenMU.Tests
             this.GuildMaster = this.GetGuildMaster();
             this.GameServers = new Dictionary<int, IGameServer> { { 0, this.GameServer0 }, { 1, this.GameServer1 } };
             this.GuildServer = new OpenMU.GuildServer.GuildServer(this.GameServers, this.RepositoryManager);
-            this.Guild = this.GuildServer.CreateGuild("Foobar", this.GuildMaster.Name, this.GuildMaster.Id, new byte[0], out ushort _, out GuildMemberInfo masterGuildMemberInfo);
-            this.GuildMaster.GuildMemberInfo = masterGuildMemberInfo;
-
-            this.RepositoryManager.GetRepository<Guild>().Stub(r => r.GetById(this.Guild.Id)).Return(this.Guild);
+            var guildStatus = this.GuildServer.CreateGuild("Foobar", this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
+            this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, this.GuildMaster.Id, 0);
         }
 
         private Character GetGuildMaster()
         {
             var result = MockRepository.GenerateStub<Character>();
             result.Name = "GuildMaster";
+            result.Id = new Guid("{32992D83-D3B4-444F-9652-BC0B5921EB64}");
             return result;
         }
 
-        private class TestRepositoryManager : BaseRepositoryManager
+        private sealed class TestRepositoryManager : BaseRepositoryManager
         {
+            private readonly IList<Guild> guilds = new List<Guild>();
+            private readonly IList<GuildMember> members = new List<GuildMember>();
+
             public TestRepositoryManager()
             {
                 var guildRepository = MockRepository.GenerateStub<ITestGuildRepository>();
+                guildRepository.Stub(r => r.GetAll()).WhenCalled(i => i.ReturnValue = this.guilds).Return(null);
+                guildRepository.Stub(r => r.GetMemberNames(Guid.Empty)).IgnoreArguments()
+                    .Return(new Dictionary<Guid, string>
+                    {
+                        { new Guid("{32992D83-D3B4-444F-9652-BC0B5921EB64}"), "GuildMaster" }
+                    });
                 this.RegisterRepository(guildRepository);
+                this.RegisterRepository(MockRepository.GenerateStub<IRepository<GuildMember>>());
+                this.GetRepository<GuildMember>().Stub(r => r.GetAll()).WhenCalled(i => i.ReturnValue = this.members).Return(null);
             }
 
-            public override IContext CreateNewContext()
+            public override IContext CreateNewGuildContext()
             {
                 var context = MockRepository.GenerateStub<IContext>();
                 context.Stub(c => c.SaveChanges()).Return(true);
@@ -99,9 +105,18 @@ namespace MUnique.OpenMU.Tests
                 {
                     var guild = MockRepository.GenerateStub<Guild>();
                     guild.Id = Guid.NewGuid();
-                    guild.Stub(g => g.Members).Return(new List<GuildMemberInfo>());
-                    this.GetRepository<Guild>().Stub(r => r.GetById(guild.Id)).Return(guild);
+                    guild.Stub(g => g.Members).Return(new List<GuildMember>());
+                    this.GetRepository<Guild>().Stub(r => r.GetById(guild.Id)).IgnoreArguments().Return(guild);
+                    this.guilds.Add(guild);
                     return guild as T;
+                }
+
+                if (typeof(T) == typeof(GuildMember))
+                {
+                    var member = MockRepository.GenerateStub<GuildMember>();
+                    this.GetRepository<GuildMember>().Stub(r => r.GetById(member.Id)).IgnoreArguments().Return(member);
+                    this.members.Add(member);
+                    return member as T;
                 }
 
                 return base.CreateNew<T>(args);

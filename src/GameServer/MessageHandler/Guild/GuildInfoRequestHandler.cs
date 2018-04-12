@@ -27,8 +27,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         /// <inheritdoc/>
         public void HandlePacket(Player player, byte[] packet)
         {
-            var shortGuildId = NumberConversionExtensions.MakeWord(packet[5], packet[4]);
-            this.requestAction.RequestGuildInfo(player, shortGuildId);
+            var guildId = packet.MakeDwordBigEndian(4);
+            this.requestAction.RequestGuildInfo(player, guildId);
         }
     }
 }

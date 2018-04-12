@@ -21,6 +21,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.EnsureSchema(
                 name: "config");
 
+            migrationBuilder.EnsureSchema(
+                name: "guild");
+
             migrationBuilder.CreateTable(
                 name: "GameConfiguration",
                 schema: "config",
@@ -110,40 +113,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Guild",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    AllianceGuildId = table.Column<Guid>(nullable: true),
-                    HostilityId = table.Column<Guid>(nullable: true),
-                    Logo = table.Column<byte[]>(nullable: true),
-                    Master = table.Column<string>(nullable: true),
-                    MasterId = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(maxLength: 8, nullable: false),
-                    Notice = table.Column<string>(nullable: true),
-                    Score = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Guild", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Guild_Guild_AllianceGuildId",
-                        column: x => x.AllianceGuildId,
-                        principalSchema: "data",
-                        principalTable: "Guild",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Guild_Guild_HostilityId",
-                        column: x => x.HostilityId,
-                        principalSchema: "data",
-                        principalTable: "Guild",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ItemStorage",
                 schema: "data",
                 columns: table => new
@@ -154,6 +123,38 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ItemStorage", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Guild",
+                schema: "guild",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    AllianceGuildId = table.Column<Guid>(nullable: true),
+                    HostilityId = table.Column<Guid>(nullable: true),
+                    Logo = table.Column<byte[]>(nullable: true),
+                    Name = table.Column<string>(maxLength: 8, nullable: false),
+                    Notice = table.Column<string>(nullable: true),
+                    Score = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Guild", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Guild_Guild_AllianceGuildId",
+                        column: x => x.AllianceGuildId,
+                        principalSchema: "guild",
+                        principalTable: "Guild",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Guild_Guild_HostilityId",
+                        column: x => x.HostilityId,
+                        principalSchema: "guild",
+                        principalTable: "Guild",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -375,29 +376,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "GameServerConfiguration",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GuildMemberInfo",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterId = table.Column<Guid>(nullable: false),
-                    GuildId = table.Column<Guid>(nullable: false),
-                    ServerId = table.Column<byte>(nullable: false),
-                    Status = table.Column<byte>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GuildMemberInfo", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GuildMemberInfo_Guild_GuildId",
-                        column: x => x.GuildId,
-                        principalSchema: "data",
-                        principalTable: "Guild",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -904,7 +882,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     CreateDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     CurrentMapId = table.Column<Guid>(nullable: true),
                     Experience = table.Column<long>(nullable: false),
-                    GuildMemberInfoId = table.Column<Guid>(nullable: true),
                     InventoryExtensions = table.Column<int>(nullable: false),
                     InventoryId = table.Column<Guid>(nullable: true),
                     KeyConfiguration = table.Column<byte[]>(nullable: true),
@@ -943,13 +920,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.CurrentMapId,
                         principalSchema: "config",
                         principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Character_GuildMemberInfo_GuildMemberInfoId",
-                        column: x => x.GuildMemberInfoId,
-                        principalSchema: "data",
-                        principalTable: "GuildMemberInfo",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -1166,6 +1136,34 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "AttributeDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GuildMember",
+                schema: "guild",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    GuildId = table.Column<Guid>(nullable: false),
+                    Status = table.Column<byte>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GuildMember", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GuildMember_Guild_GuildId",
+                        column: x => x.GuildId,
+                        principalSchema: "guild",
+                        principalTable: "Guild",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GuildMember_Character_Id",
+                        column: x => x.Id,
+                        principalSchema: "data",
+                        principalTable: "Character",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2045,35 +2043,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemOptionLink",
-                schema: "data",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    ItemId = table.Column<Guid>(nullable: true),
-                    ItemOptionId = table.Column<Guid>(nullable: true),
-                    Level = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemOptionLink", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemOptionLink_Item_ItemId",
-                        column: x => x.ItemId,
-                        principalSchema: "data",
-                        principalTable: "Item",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ItemOptionLink_ItemOption_ItemOptionId",
-                        column: x => x.ItemOptionId,
-                        principalSchema: "config",
-                        principalTable: "IncreasableItemOption",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ItemAppearanceItemOptionType",
                 schema: "data",
                 columns: table => new
@@ -2162,6 +2131,35 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.PowerUpDefinitionId,
                         principalSchema: "config",
                         principalTable: "PowerUpDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemOptionLink",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    ItemId = table.Column<Guid>(nullable: true),
+                    ItemOptionId = table.Column<Guid>(nullable: true),
+                    Level = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemOptionLink", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemOptionLink_Item_ItemId",
+                        column: x => x.ItemId,
+                        principalSchema: "data",
+                        principalTable: "Item",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemOptionLink_IncreasableItemOption_ItemOptionId",
+                        column: x => x.ItemOptionId,
+                        principalSchema: "config",
+                        principalTable: "IncreasableItemOption",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -2764,12 +2762,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "CurrentMapId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Character_GuildMemberInfoId",
-                schema: "data",
-                table: "Character",
-                column: "GuildMemberInfoId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Character_InventoryId",
                 schema: "data",
                 table: "Character",
@@ -2787,24 +2779,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 table: "CharacterDropItemGroup",
                 column: "DropItemGroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Guild_AllianceGuildId",
-                schema: "data",
-                table: "Guild",
-                column: "AllianceGuildId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Guild_HostilityId",
-                schema: "data",
-                table: "Guild",
-                column: "HostilityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GuildMemberInfo_GuildId",
-                schema: "data",
-                table: "GuildMemberInfo",
-                column: "GuildId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Item_DefinitionId",
@@ -2895,6 +2869,31 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 table: "StatAttribute",
                 column: "DefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Guild_AllianceGuildId",
+                schema: "guild",
+                table: "Guild",
+                column: "AllianceGuildId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Guild_HostilityId",
+                schema: "guild",
+                table: "Guild",
+                column: "HostilityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Guild_Name",
+                schema: "guild",
+                table: "Guild",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GuildMember_GuildId",
+                schema: "guild",
+                table: "GuildMember",
+                column: "GuildId");
         }
 
         /// <inheritdoc/>
@@ -3053,11 +3052,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
+                name: "GuildMember",
+                schema: "guild");
+
+            migrationBuilder.DropTable(
                 name: "ItemCraftingRequiredItem",
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "IncreasableItemOption",
+                name: "ItemOption",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -3097,7 +3100,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
-                name: "ItemOption",
+                name: "IncreasableItemOption",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -3105,11 +3108,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
-                name: "SimpleCraftingSettings",
-                schema: "config");
+                name: "Guild",
+                schema: "guild");
 
             migrationBuilder.DropTable(
-                name: "ItemOptionDefinition",
+                name: "SimpleCraftingSettings",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -3123,6 +3126,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.DropTable(
                 name: "AppearanceData",
                 schema: "data");
+
+            migrationBuilder.DropTable(
+                name: "ItemOptionDefinition",
+                schema: "config");
 
             migrationBuilder.DropTable(
                 name: "ItemOptionType",
@@ -3149,10 +3156,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "GuildMemberInfo",
-                schema: "data");
-
-            migrationBuilder.DropTable(
                 name: "ItemSlotType",
                 schema: "config");
 
@@ -3167,10 +3170,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.DropTable(
                 name: "GameMapDefinition",
                 schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "Guild",
-                schema: "data");
 
             migrationBuilder.DropTable(
                 name: "MagicEffectDefinition",

@@ -17,13 +17,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             base.OnModelCreating(modelBuilder);
             var types = modelBuilder.Model.GetEntityTypes().ToList();
-            var configTypes = types.Where(t => t.ClrType.BaseType?.Namespace?.Contains("Configuration") ?? (t.ClrType.BaseType?.Namespace?.Contains("AttributeSystem") ?? false && t.ClrType.Name != nameof(StatAttribute))).ToList();
+            var configTypes = types.Where(t => t.ClrType.BaseType?.Namespace?.Contains("Configuration") ?? (t.ClrType.BaseType?.Namespace?.Contains("AttributeSystem") ?? false)).ToList();
             foreach (var type in configTypes)
             {
                 modelBuilder.Ignore(type.ClrType);
             }
 
             modelBuilder.Ignore(typeof(AttributeDefinition));
+
+            modelBuilder.Ignore<Guild>();
+            modelBuilder.Ignore<GuildMember>();
         }
     }
 }

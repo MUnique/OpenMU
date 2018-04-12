@@ -6,11 +6,15 @@ namespace MUnique.OpenMU.Interfaces
 {
     using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
     /// Interface for the guild server.
     /// </summary>
+    /// <remarks>
+    /// A little note about the guild id:
+    ///   The original GMO server uses an 32-bit integer in all of its messages. However, actually it's only using (or used?) 16 bits of it for created guilds (see struct SDHP_GUILDCREATED).
+    ///   Some people may remember the "guildbug" on GMO - I guess the keys exceeded these 16 bits and somehow caused a crash... but after restart of the servers it started working again.
+    /// </remarks>
     public interface IGuildServer
     {
         /// <summary>
@@ -19,7 +23,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="guildId">The guild id.</param>
         /// <param name="sender">The sender.</param>
         /// <param name="message">The message.</param>
-        void GuildMessage(Guid guildId, string sender, string message);
+        void GuildMessage(uint guildId, string sender, string message);
 
         /// <summary>
         /// Notifies the guild server that an alliance message was sent and maybe needs to be forwarded to the game servers.
@@ -27,7 +31,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="guildId">The guild id.</param>
         /// <param name="sender">The sender.</param>
         /// <param name="message">The message.</param>
-        void AllianceMessage(Guid guildId, string sender, string message);
+        void AllianceMessage(uint guildId, string sender, string message);
 
         /// <summary>
         /// Checks if the guild with the specified name exists.
@@ -41,90 +45,68 @@ namespace MUnique.OpenMU.Interfaces
         /// </summary>
         /// <param name="guildId">The guild identifier.</param>
         /// <returns>The guild.</returns>
-        Guild GetGuild(Guid guildId);
+        Guild GetGuild(uint guildId);
 
         /// <summary>
-        /// Creates the guild.
+        /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="PlayerEnteredGame"/> is not required.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="masterName">Name of the master.</param>
         /// <param name="masterId">The master identifier.</param>
         /// <param name="logo">The logo.</param>
-        /// <param name="shortGuildId">The short guild identifier.</param>
-        /// <param name="masterGuildMemberInfo">The master guild member information.</param>
-        /// <returns>
-        /// The identifier of the created guild.
-        /// </returns>
-        Guild CreateGuild(string name, string masterName, Guid masterId, byte[] logo, out ushort shortGuildId, out GuildMemberInfo masterGuildMemberInfo);
+        /// <param name="serverId">The identifier of the server on which the guild is getting created.</param>
+        /// <returns>The guild member status of the creator (guild master).</returns>
+        GuildMemberStatus CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId);
 
         /// <summary>
-        /// Updates the guild.
-        /// </summary>
-        /// <param name="guild">The guild.</param>
-        /// <returns>The success.</returns>
-        bool UpdateGuild(Guild guild);
-
-        /// <summary>
-        /// Deletes the guild with the specified id.
-        /// </summary>
-        /// <param name="guildId">The guild identifier.</param>
-        /// <returns>The success.</returns>
-        bool DeleteGuild(Guid guildId);
-
-        /// <summary>
-        /// Creates the guild member.
+        /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="PlayerEnteredGame"/> is not required.
         /// </summary>
         /// <param name="guildId">The guild identifier.</param>
         /// <param name="characterId">The identifier.</param>
         /// <param name="characterName">The name.</param>
         /// <param name="role">The role of the member.</param>
+        /// <param name="serverId">The identifier of the server on which the guild member is getting created.</param>
         /// <returns>The created guild member info.</returns>
-        GuildMemberInfo CreateGuildMember(Guid guildId, Guid characterId, string characterName, GuildPosition role);
+        GuildMemberStatus CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId);
 
         /// <summary>
-        /// Updates the guild member.
-        /// </summary>
-        /// <param name="guildMember">The guild member.</param>
-        /// <returns>The success.</returns>
-        bool UpdateGuildMember(GuildMemberInfo guildMember);
-
-        /// <summary>
-        /// Deletes the guild member.
-        /// </summary>
-        /// <param name="guildMember">The guild member.</param>
-        /// <returns>The success.</returns>
-        bool DeleteGuildMember(GuildMemberInfo guildMember);
-
-        /// <summary>
-        /// Notifies the guild server that a guild member entered the game.
+        /// Updates the guild member position.
         /// </summary>
         /// <param name="guildId">The guild identifier.</param>
-        /// <param name="guildMemberName">Name of the guild member.</param>
+        /// <param name="characterId">The id of the character.</param>
+        /// <param name="role">The role.</param>
+        void ChangeGuildMemberPosition(uint guildId, Guid characterId, GuildPosition role);
+
+        /// <summary>
+        /// Notifies the guild server that a player (potential guild member) entered the game.
+        /// </summary>
+        /// <param name="characterId">The character identifier.</param>
+        /// <param name="characterName">Name of the character.</param>
         /// <param name="serverId">The identifier of the server on which the guild member entered.</param>
-        /// <returns>The short guild identifier.</returns>
-        ushort GuildMemberEnterGame(Guid guildId, string guildMemberName, byte serverId);
+        /// <returns>The guild member status if it's a guild member; Otherwise, null.</returns>
+        GuildMemberStatus PlayerEnteredGame(Guid characterId, string characterName, byte serverId);
 
         /// <summary>
         /// Notifies the guild server that a guild member left the game.
         /// </summary>
         /// <param name="guildId">The guild identifier.</param>
-        /// <param name="guildMemberName">Name of the guild member.</param>
+        /// <param name="guildMemberId">The identifier of the guild member.</param>
         /// <param name="serverId">The identifier of the server from which the guild member left.</param>
-        void GuildMemberLeaveGame(Guid guildId, string guildMemberName, byte serverId);
+        void GuildMemberLeftGame(uint guildId, Guid guildMemberId, byte serverId);
 
         /// <summary>
         /// Gets the guild member list.
         /// </summary>
         /// <param name="guildId">The guild identifier.</param>
         /// <returns>The guild member list.</returns>
-        IEnumerable<GuildListEntry> GetGuildList(Guid guildId);
+        IEnumerable<GuildListEntry> GetGuildList(uint guildId);
 
         /// <summary>
         /// Kicks a guild member from a guild.
         /// </summary>
         /// <param name="guildId">The guild identifier.</param>
         /// <param name="playerName">Name of the player which is getting kicked.</param>
-        void KickPlayer(Guid guildId, string playerName);
+        void KickMember(uint guildId, string playerName);
     }
 
     /// <summary>

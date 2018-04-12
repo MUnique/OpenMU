@@ -4,9 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
-    using System;
     using System.Collections.Concurrent;
-    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// A cache for guild data.
@@ -15,9 +14,7 @@ namespace MUnique.OpenMU.GameLogic
     {
         private readonly IGameServerContext gameServer;
 
-        private readonly ConcurrentDictionary<ushort, Guid> shortIdToGuid;
-
-        private readonly ConcurrentDictionary<Guid, GuildInfo> cache;
+        private readonly ConcurrentDictionary<uint, byte[]> cache;
 
         private readonly IGuildInfoSerializer guildInfoSerializer;
 
@@ -30,8 +27,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.gameServer = gameServer;
             this.guildInfoSerializer = serializer;
-            this.cache = new ConcurrentDictionary<Guid, GuildInfo>();
-            this.shortIdToGuid = new ConcurrentDictionary<ushort, Guid>();
+            this.cache = new ConcurrentDictionary<uint, byte[]>();
         }
 
         /// <summary>
@@ -43,55 +39,35 @@ namespace MUnique.OpenMU.GameLogic
             /// Serializes the specified guild.
             /// </summary>
             /// <param name="guild">The guild.</param>
-            /// <param name="shortId">The short identifier.</param>
+            /// <param name="guildId">The guild identifier.</param>
             /// <returns>
             /// The serialized guild data.
             /// </returns>
-            byte[] Serialize(Guild guild, ushort shortId);
+            byte[] Serialize(Guild guild, uint guildId);
         }
 
         /// <summary>
         /// Invalidates the cached data of the guild with the specified id.
         /// </summary>
         /// <param name="guildId">The id of the guild which data should get invalidated.</param>
-        public void Invalidate(Guid guildId)
+        public void Invalidate(uint guildId)
         {
             this.cache.TryRemove(guildId, out var _);
-        }
-
-        /// <summary>
-        /// Registers the short identifier.
-        /// </summary>
-        /// <param name="guildId">The guild identifier.</param>
-        /// <param name="shortId">The short identifier.</param>
-        public void RegisterShortId(Guid guildId, ushort shortId)
-        {
-            this.shortIdToGuid.AddOrUpdate(shortId, i => guildId, (i, guid) => guid);
         }
 
         /// <summary>
         /// Returns the Guild Info Data of a Guild. It will either
         /// take the data out of the cache, or get it from the database.
         /// </summary>
-        /// <param name="shortGuildId">The id of the guild.</param>
+        /// <param name="guildId">The id of the guild.</param>
         /// <returns>The data of the guild.</returns>
-        internal byte[] GetGuildData(ushort shortGuildId)
+        internal byte[] GetGuildData(uint guildId)
         {
-            var guildInfo = this.GetGuildInfo(shortGuildId);
-            return guildInfo?.Data;
+            var guildInfo = this.GetGuildInfo(guildId);
+            return guildInfo;
         }
 
-        private GuildInfo GetGuildInfo(ushort shortId)
-        {
-            if (this.shortIdToGuid.TryGetValue(shortId, out var guildId))
-            {
-                return this.GetGuildInfo(guildId, shortId);
-            }
-
-            return null;
-        }
-
-        private GuildInfo GetGuildInfo(Guid guildId, ushort shortId)
+        private byte[] GetGuildInfo(uint guildId)
         {
             if (this.cache.TryGetValue(guildId, out var guildInfo))
             {
@@ -99,17 +75,9 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var guild = this.gameServer.GuildServer.GetGuild(guildId);
-            var data = this.guildInfoSerializer.Serialize(guild, shortId);
-            guildInfo = new GuildInfo { Data = data, AllyGuildId = guild.AllianceGuild?.Id };
-            this.cache.TryAdd(guildId, guildInfo);
-            return guildInfo;
-        }
-
-        private class GuildInfo
-        {
-            internal byte[] Data { get; set; }
-
-            internal Guid? AllyGuildId { get; set; }
+            var data = this.guildInfoSerializer.Serialize(guild, guildId);
+            this.cache.TryAdd(guildId, data);
+            return data;
         }
     }
 }

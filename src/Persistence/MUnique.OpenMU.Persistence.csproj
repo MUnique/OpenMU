@@ -60,6 +60,7 @@
     <Compile Include="AttributeDefinitionExtensions.cs" />
     <Compile Include="BaseRepositoryManager.cs" />
     <Compile Include="IContext.cs" />
+    <Compile Include="IdGenerator.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="IRepositoryManager.cs" />
     <Compile Include="MemoryRepository{TValue}.cs" />
@@ -83,6 +84,10 @@
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj">
       <Project>{5282f509-d758-4a42-994c-f71a4c631fda}</Project>
       <Name>MUnique.OpenMU.DataModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj">
+      <Project>{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}</Project>
+      <Name>MUnique.OpenMU.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

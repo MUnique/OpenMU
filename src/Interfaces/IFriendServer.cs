@@ -9,8 +9,6 @@ namespace MUnique.OpenMU.Interfaces
     using System;
     using System.Collections.Generic;
 
-    using MUnique.OpenMU.DataModel.Entities;
-
     /// <summary>
     /// Defines some server ids which are used for some specific states.
     /// </summary>

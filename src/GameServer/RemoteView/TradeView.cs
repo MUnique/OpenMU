@@ -75,8 +75,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 var tradePartnerLevel = (ushort)this.trader.TradingPartner.Level;
                 packet[14] = tradePartnerLevel.GetHighByte();
                 packet[15] = tradePartnerLevel.GetLowByte();
-                packet[16] = this.trader.TradingPartner.ShortGuildID.GetHighByte();
-                packet[17] = this.trader.TradingPartner.ShortGuildID.GetLowByte();
+
+                var guildId = this.trader.TradingPartner.GuildStatus?.GuildId ?? 0;
+                packet.SetIntegerBigEndian(guildId, 16);
             }
 
             this.connection.Send(packet);

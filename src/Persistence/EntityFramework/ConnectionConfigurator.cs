@@ -31,6 +31,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// The configuration role which can load configuration data.
         /// </summary>
         Configuration,
+
+        /// <summary>
+        /// The configuration role which can load configuration data.
+        /// </summary>
+        Guild,
     }
 
     /// <summary>
@@ -95,6 +100,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     return typeof(EntityDataContext);
                 case DatabaseRole.Configuration:
                     return typeof(ConfigurationContext);
+                case DatabaseRole.Guild:
+                    return typeof(GuildContext);
             }
 
             throw new ArgumentException($"Role {role} unknown.");

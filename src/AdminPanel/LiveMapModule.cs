@@ -40,14 +40,14 @@ namespace MUnique.OpenMU.AdminPanel
         {
             var gameServer = this.servers.OfType<IGameServer>().FirstOrDefault(s => s.Id == (byte)parameters.serverId);
 
-            var map = gameServer?.ServerInfo.Maps.FirstOrDefault(m => m.Map.Number == (short)parameters.mapId);
+            var map = gameServer?.ServerInfo.Maps.FirstOrDefault(m => m.MapNumber == (short)parameters.mapId);
             if (map == null)
             {
                 Log.Warn($"requested map not available. map number: {parameters.mapId}; server id: {parameters.serverId}");
                 return null;
             }
 
-            var terrain = new GameMapTerrain(map.Map);
+            var terrain = new GameMapTerrain(map.MapName, map.TerrainData);
             using (var bitmap = new Bitmap(0x100, 0x100, PixelFormat.Format32bppArgb))
             {
                 for (int y = 0; y < 0x100; y++)

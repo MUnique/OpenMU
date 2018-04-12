@@ -93,10 +93,11 @@ namespace MUnique.OpenMU.GameServer
             if (sender is Player player)
             {
                 this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
-                if (player.SelectedCharacter.GuildMemberInfo != null)
+                player.GuildStatus = this.GuildServer.PlayerEnteredGame(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
+                if (player.GuildStatus != null)
                 {
-                    player.ShortGuildID = this.GuildServer.GuildMemberEnterGame(player.SelectedCharacter.GuildMemberInfo.GuildId, player.SelectedCharacter.Name, this.Id);
-                    this.GuildCache.RegisterShortId(player.SelectedCharacter.GuildMemberInfo.GuildId, player.ShortGuildID);
+                    // = this.GuildServer.GuildMemberEnterGame(player.SelectedCharacter.GuildMemberInfo.GuildId, player.SelectedCharacter.Name, this.Id);
+                    // this.GuildCache.RegisterShortId(player.SelectedCharacter.GuildMemberInfo.GuildId, player.GuildStatus);
                 }
             }
         }
@@ -106,10 +107,10 @@ namespace MUnique.OpenMU.GameServer
             if (sender is Player player)
             {
                 this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, 0xFF);
-                if (player.SelectedCharacter.GuildMemberInfo != null)
+                if (player.GuildStatus != null)
                 {
-                    this.GuildServer.GuildMemberLeaveGame(player.SelectedCharacter.GuildMemberInfo.GuildId, player.SelectedCharacter.Name, this.Id);
-                    player.ShortGuildID = 0;
+                    this.GuildServer.GuildMemberLeftGame(player.GuildStatus.GuildId, player.SelectedCharacter.Id, this.Id);
+                    player.GuildStatus = null;
                 }
             }
         }

@@ -6,10 +6,11 @@
 
 namespace MUnique.OpenMU.GuildServer
 {
+    using System;
     using System.Collections.Generic;
-
-    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using Guild = MUnique.OpenMU.DataModel.Entities.Guild;
 
     /// <summary>
     /// This is a container Class which holds a Guild object, and a list of all guild members
@@ -21,17 +22,18 @@ namespace MUnique.OpenMU.GuildServer
         /// Initializes a new instance of the <see cref="GuildContainer" /> class.
         /// </summary>
         /// <param name="guild">The guild.</param>
-        /// <param name="shortId">The short identifier.</param>
+        /// <param name="id">The short identifier.</param>
         /// <param name="databaseContext">The database context.</param>
-        internal GuildContainer(Guild guild, ushort shortId, IContext databaseContext)
+        internal GuildContainer(DataModel.Entities.Guild guild, uint id, IContext databaseContext)
         {
             this.DatabaseContext = databaseContext;
             this.Guild = guild;
-            this.ShortId = shortId;
-            this.Members = new SortedList<string, GuildMemberInfo>();
+            this.Id = id;
+            this.Members = new SortedList<Guid, GuildListEntry>();
             foreach (var member in this.Guild.Members)
             {
-                this.Members.Add(member.Name, member);
+                // TODO: Somehow get the player names
+                this.Members.Add(member.Id, new GuildListEntry { PlayerName = "TODO_name", ServerId = GuildServer.OfflineServerId, PlayerPosition = member.Status });
             }
         }
 
@@ -44,28 +46,51 @@ namespace MUnique.OpenMU.GuildServer
         /// <summary>
         /// Gets the guild.
         /// </summary>
-        public Guild Guild { get; }
+        public DataModel.Entities.Guild Guild { get; }
 
         /// <summary>
-        /// Gets the short identifier.
+        /// Gets the identifier.
         /// </summary>
-        public ushort ShortId { get; }
+        public uint Id { get; }
 
         /// <summary>
         /// Gets the members.
         /// </summary>
-        public IDictionary<string, GuildMemberInfo> Members { get; }
+        public IDictionary<Guid, GuildListEntry> Members { get; }
 
         /// <summary>
         /// Sets the server identifier of the member.
         /// </summary>
-        /// <param name="memberName">Name of the member.</param>
+        /// <param name="memberId">Id of the member.</param>
         /// <param name="serverId">The server identifier.</param>
-        public void SetServerId(string memberName, byte serverId)
+        public void SetServerId(Guid memberId, byte serverId)
         {
-            if (this.Members.TryGetValue(memberName, out GuildMemberInfo guildMemberInfo))
+            if (this.Members.TryGetValue(memberId, out GuildListEntry listEntry))
             {
-                guildMemberInfo.ServerId = serverId;
+                listEntry.ServerId = serverId;
+            }
+        }
+
+        /// <summary>
+        /// Loads the member names from the database.
+        /// </summary>
+        /// <param name="repositoryManager">The repository manager.</param>
+        public void LoadMemberNames(IRepositoryManager repositoryManager)
+        {
+            using (repositoryManager.UseContext(this.DatabaseContext))
+            {
+                var repository = repositoryManager.GetRepository<Guild, IGuildRepository>();
+                var memberNames = repository.GetMemberNames(this.Guild.Id);
+                if (memberNames != null)
+                {
+                    foreach (var member in this.Members)
+                    {
+                        if (memberNames.TryGetValue(member.Key, out string name))
+                        {
+                            member.Value.PlayerName = name;
+                        }
+                    }
+                }
             }
         }
     }

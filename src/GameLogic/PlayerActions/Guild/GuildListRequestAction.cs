@@ -26,12 +26,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="player">The player.</param>
         public void RequestGuildList(Player player)
         {
-            if (player.SelectedCharacter.GuildMemberInfo == null)
+            if (player.GuildStatus == null)
             {
                 return;
             }
 
-            var players = this.gameContext.GuildServer.GetGuildList(player.SelectedCharacter.GuildMemberInfo.GuildId);
+            var players = this.gameContext.GuildServer.GetGuildList(player.GuildStatus.GuildId);
             player.PlayerView.GuildView.ShowGuildList(players);
         }
     }

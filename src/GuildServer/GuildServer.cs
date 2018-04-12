@@ -9,9 +9,10 @@ namespace MUnique.OpenMU.GuildServer
     using System.Collections.Generic;
     using System.Linq;
     using log4net;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using Guild = MUnique.OpenMU.DataModel.Entities.Guild;
+    using GuildMember = MUnique.OpenMU.DataModel.Entities.GuildMember;
 
     /// <summary>
     /// GuildServer which is managing the guilds. All Guilds of online guild members will be cached here.
@@ -25,13 +26,12 @@ namespace MUnique.OpenMU.GuildServer
         /// </summary>
         public const byte OfflineServerId = 0xFF;
 
-        private const ushort NonGuild = 0;
-
         private static readonly ILog Log = LogManager.GetLogger(typeof(GuildServer));
 
         private readonly IDictionary<int, IGameServer> gameServers;
-        private readonly IDictionary<Guid, GuildContainer> guildDictionary;
-        private readonly ConcurrentQueue<ushort> freeIds;
+        private readonly IDictionary<uint, GuildContainer> guildDictionary;
+        private readonly IDictionary<Guid, uint> guildIdMapping;
+        private readonly IdGenerator idGenerator;
         private readonly IRepositoryManager repositoryManager;
 
         /// <summary>
@@ -43,12 +43,13 @@ namespace MUnique.OpenMU.GuildServer
         {
             this.gameServers = gameServers;
             this.repositoryManager = repositoryManager;
-            this.guildDictionary = new ConcurrentDictionary<Guid, GuildContainer>();
-            this.freeIds = new ConcurrentQueue<ushort>(Enumerable.Range(1, ushort.MaxValue - 1).Select(i => (ushort)i));
+            this.guildDictionary = new ConcurrentDictionary<uint, GuildContainer>();
+            this.idGenerator = new IdGenerator(1, int.MaxValue);
+            this.guildIdMapping = new ConcurrentDictionary<Guid, uint>();
         }
 
         /// <inheritdoc/>
-        public void GuildMessage(Guid guildId, string sender, string message)
+        public void GuildMessage(uint guildId, string sender, string message)
         {
             // TODO: threadsafe?
             foreach (var gameServer in this.gameServers.Values)
@@ -58,7 +59,7 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc/>
-        public void AllianceMessage(Guid guildId, string sender, string message)
+        public void AllianceMessage(uint guildId, string sender, string message)
         {
             // TODO: threadsafe?
             foreach (var gameServer in this.gameServers.Values)
@@ -76,7 +77,7 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc/>
-        public Guild GetGuild(Guid guildId)
+        public MUnique.OpenMU.Interfaces.Guild GetGuild(uint guildId)
         {
             if (this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
             {
@@ -87,30 +88,27 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc/>
-        public Guild CreateGuild(string name, string masterName, Guid masterId, byte[] logo, out ushort shortGuildId, out GuildMemberInfo masterGuildMemberInfo)
+        public GuildMemberStatus CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
         {
-            shortGuildId = NonGuild;
-            var context = this.repositoryManager.CreateNewContext();
+            var context = this.repositoryManager.CreateNewGuildContext();
             using (this.repositoryManager.UseContext(context))
             {
                 var guild = this.repositoryManager.CreateNew<Guild>();
                 guild.Name = name;
-                guild.Master = masterName;
-                guild.MasterId = masterId;
                 guild.Logo = logo;
 
-                masterGuildMemberInfo = this.repositoryManager.CreateNew<GuildMemberInfo>();
-                masterGuildMemberInfo.GuildId = guild.Id;
-                masterGuildMemberInfo.CharacterId = masterId;
-                masterGuildMemberInfo.Name = masterName;
+                var masterGuildMemberInfo = this.repositoryManager.CreateNew<GuildMember>();
+                masterGuildMemberInfo.Id = masterId;
                 masterGuildMemberInfo.Status = GuildPosition.GuildMaster;
+
                 guild.Members.Add(masterGuildMemberInfo);
 
                 if (context.SaveChanges())
                 {
                     var container = this.CreateGuildContainer(guild, context);
-                    shortGuildId = container.ShortId;
-                    return guild;
+                    container.SetServerId(masterId, serverId);
+                    container.Members[masterId].PlayerName = masterName;
+                    return new GuildMemberStatus(container.Id, GuildPosition.GuildMaster);
                 }
             }
 
@@ -118,76 +116,13 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc/>
-        public bool UpdateGuild(Guild guild)
-        {
-            if (this.guildDictionary.TryGetValue(guild.Id, out GuildContainer guildContainer))
-            {
-                using (this.repositoryManager.UseContext(guildContainer.DatabaseContext))
-                {
-                    if (guild != guildContainer.Guild)
-                    {
-                        guildContainer.Guild.Hostility = guild.Hostility;
-                        guildContainer.Guild.AllianceGuild = guild.AllianceGuild;
-                        guildContainer.Guild.Notice = guild.Notice;
-
-                        // i think notice can be removed. it should move to the guildcontainer.
-                        guildContainer.Guild.Score = guild.Score;
-                    }
-
-                    guildContainer.DatabaseContext.SaveChanges();
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Removes a guild from the server and the database.
-        ///
-        /// First we are trying to get the guild out of our dictionary.
-        /// We are assuming that all guilds are in the dictionary, because
-        /// we are holding all guilds of all ingame-characters in it.
-        /// So this method is only called usefully from the gameserver itself,
-        /// by player interaction.
-        /// </summary>
-        /// <param name="guildId">The id of the guild which should be deleted</param>
-        /// <returns>The success.</returns>
-        public bool DeleteGuild(Guid guildId)
-        {
-            if (!this.guildDictionary.TryGetValue(guildId, out GuildContainer guildContainer))
-            {
-                return false;
-            }
-
-            Guild guild = guildContainer.Guild;
-            using (this.repositoryManager.UseContext(guildContainer.DatabaseContext))
-            {
-                var repository = this.repositoryManager.GetRepository<Guild>();
-                repository.Delete(guild);
-            }
-
-            guildContainer.DatabaseContext.Dispose();
-
-            this.guildDictionary.Remove(guildContainer.Guild.Id);
-            this.freeIds.Enqueue(guildContainer.ShortId);
-
-            foreach (var gameServer in this.gameServers.Values)
-            {
-                gameServer.GuildDeleted(guildContainer.Guild.Id);
-            }
-
-            // TODO: Inform gameServers that guildwar/hostility ended
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public GuildMemberInfo CreateGuildMember(Guid guildId, Guid characterId, string characterName, GuildPosition role)
+        public GuildMemberStatus CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId)
         {
             try
             {
                 if (this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
                 {
-                    if (guild.Members.ContainsKey(characterName))
+                    if (guild.Members.ContainsKey(characterId))
                     {
                         Log.WarnFormat("Guildmember already exists: {0}", characterName);
                         return null;
@@ -195,17 +130,14 @@ namespace MUnique.OpenMU.GuildServer
 
                     using (this.repositoryManager.UseContext(guild.DatabaseContext))
                     {
-                        var guildMember = this.repositoryManager.CreateNew<GuildMemberInfo>();
-                        guildMember.CharacterId = characterId;
-                        guildMember.GuildId = guildId;
-                        guildMember.Name = characterName;
+                        var guildMember = this.repositoryManager.CreateNew<GuildMember>();
+                        guildMember.Id = characterId;
                         guildMember.Status = role;
-
-                        guild.Members.Add(guildMember.Name, guildMember);
                         guild.Guild.Members.Add(guildMember);
 
                         guild.DatabaseContext.SaveChanges();
-                        return guildMember;
+                        guild.Members.Add(characterId, new GuildListEntry { PlayerName = characterName, PlayerPosition = guildMember.Status, ServerId = serverId });
+                        return new GuildMemberStatus(guildId, guildMember.Status);
                     }
                 }
             }
@@ -219,17 +151,22 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc/>
-        public bool UpdateGuildMember(GuildMemberInfo guildMember)
+        public void ChangeGuildMemberPosition(uint guildId, Guid characterId, GuildPosition role)
         {
             try
             {
-                if (this.guildDictionary.TryGetValue(guildMember.GuildId, out GuildContainer guild))
+                if (this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
                 {
                     using (this.repositoryManager.UseContext(guild.DatabaseContext))
                     {
-                        var guildMemberInfo = guild.Members[guildMember.Name];
-                        guildMemberInfo.Status = guildMember.Status; // its just the status which can be changed
-                        return guild.DatabaseContext.SaveChanges();
+                        var guildMember = guild.Guild.Members.FirstOrDefault(m => m.Id == characterId);
+                        if (guildMember != null)
+                        {
+                            guildMember.Status = role;
+                            guild.DatabaseContext.SaveChanges();
+                            var listEntry = guild.Members[characterId];
+                            listEntry.PlayerPosition = role;
+                        }
                     }
                 }
             }
@@ -237,100 +174,117 @@ namespace MUnique.OpenMU.GuildServer
             {
                 Log.Error(ex);
             }
-
-            return false;
         }
 
-        /// <inheritdoc/>
-        public bool DeleteGuildMember(GuildMemberInfo guildMember)
+        /// <inheritdoc />
+        public GuildMemberStatus PlayerEnteredGame(Guid characterId, string characterName, byte serverId)
         {
-            try
+            var repository = this.repositoryManager.GetRepository<GuildMember>();
+            var guildMember = repository.GetById(characterId); // we use the same id for Character.Id and GuildMemberInfo.Id
+            if (guildMember != null)
             {
-                var repository = this.repositoryManager.GetRepository<GuildMemberInfo>();
-                if (repository.Delete(guildMember))
-                {
-                    if (this.guildDictionary.TryGetValue(guildMember.GuildId, out GuildContainer guild))
-                    {
-                        guild.Members.Remove(guildMember.Name);
-                        guild.Guild.Members.Remove(guildMember);
-                    }
-
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex);
+                var guildId = this.GuildMemberEnterGame(guildMember.GuildId, guildMember.Id, serverId);
+                return new GuildMemberStatus(guildId, guildMember.Status);
             }
 
-            return false;
+            return null;
         }
 
         /// <inheritdoc/>
-        public ushort GuildMemberEnterGame(Guid guildId, string guildMemberName, byte serverId)
-        {
-            GuildContainer guild = this.GetOrCreateGuildContainer(guildId);
-            if (guild != null)
-            {
-                guild.SetServerId(guildMemberName, serverId);
-                return guild.ShortId;
-            }
-
-            return NonGuild;
-        }
-
-        /// <inheritdoc/>
-        public void GuildMemberLeaveGame(Guid guildId, string guildMemberName, byte serverId)
+        public void GuildMemberLeftGame(uint guildId, Guid guildMemberId, byte serverId)
         {
             if (this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
             {
-                guild.SetServerId(guildMemberName, OfflineServerId);
+                guild.SetServerId(guildMemberId, OfflineServerId);
                 if (guild.Members.Values.All(member => member.ServerId == OfflineServerId))
                 {
-                    this.guildDictionary.Remove(guild.Guild.Id);
-                    this.freeIds.Enqueue(guild.ShortId);
+                    this.RemoveGuildContainer(guild);
                 }
             }
         }
 
         /// <inheritdoc/>
-        public IEnumerable<GuildListEntry> GetGuildList(Guid guildId)
+        public IEnumerable<GuildListEntry> GetGuildList(uint guildId)
         {
             if (!this.guildDictionary.TryGetValue(guildId, out GuildContainer guildContainer))
             {
-                yield break;
+                return Enumerable.Empty<GuildListEntry>();
             }
 
-            foreach (var guildmember in guildContainer.Members.Values)
-            {
-                var entry = new GuildListEntry();
-                entry.PlayerName = guildmember.Name;
-                entry.PlayerPosition = guildmember.Status;
-                entry.ServerId = guildmember.ServerId;
-                yield return entry;
-            }
+            return guildContainer.Members.Values;
         }
 
         /// <inheritdoc/>
-        public void KickPlayer(Guid guildId, string playerName)
+        public void KickMember(uint guildId, string playerName)
         {
             if (!this.guildDictionary.TryGetValue(guildId, out GuildContainer guildContainer))
             {
+                Log.Warn($"Guild {guildId} not found, so Player {playerName} can't be kicked.");
                 return;
             }
 
-            if (!guildContainer.Members.TryGetValue(playerName, out GuildMemberInfo guildMemberInfo))
+            var kvp = guildContainer.Members.FirstOrDefault(m => m.Value.PlayerName == playerName);
+            if (default(KeyValuePair<Guid, GuildListEntry>).Equals(kvp))
             {
+                Log.Warn($"Guild {guildId} and Player {playerName} not found, so it can't be kicked.");
                 return;
             }
 
-            guildContainer.Members.Remove(playerName);
-            if (this.gameServers.TryGetValue(guildMemberInfo.ServerId, out IGameServer gameServer))
+            var member = kvp.Value;
+            if (member.PlayerPosition == GuildPosition.GuildMaster)
+            {
+                this.DeleteGuild(guildContainer);
+                return;
+            }
+
+            guildContainer.Members.Remove(kvp.Key);
+
+            var guildMemberInfo = guildContainer.Guild.Members.FirstOrDefault(m => m.Id == kvp.Key);
+            var repository = this.repositoryManager.GetRepository<GuildMember>();
+            repository.Delete(guildMemberInfo);
+            if (this.gameServers.TryGetValue(member.ServerId, out IGameServer gameServer))
             {
                 gameServer.GuildPlayerKicked(playerName);
             }
+        }
+
+        /// <summary>
+        /// Removes a guild from the server and the database.
+        /// First we are trying to get the guild out of our dictionary.
+        /// We are assuming that all guilds are in the dictionary, because
+        /// we are holding all guilds of all ingame-characters in it.
+        /// So this method is only called usefully from the gameserver itself,
+        /// by player interaction.
+        /// </summary>
+        /// <param name="guildContainer">The container of the guild which should be deleted</param>
+        private void DeleteGuild(GuildContainer guildContainer)
+        {
+            using (this.repositoryManager.UseContext(guildContainer.DatabaseContext))
+            {
+                var repository = this.repositoryManager.GetRepository<Guild>();
+                repository.Delete(guildContainer.Guild);
+            }
+
+            this.RemoveGuildContainer(guildContainer);
+
+            foreach (var gameServer in this.gameServers.Values)
+            {
+                gameServer.GuildDeleted(guildContainer.Id);
+            }
+
+            // TODO: Inform gameServers that guildwar/hostility ended
+        }
+
+        private uint GuildMemberEnterGame(Guid guildId, Guid characterId, byte serverId)
+        {
+            var guild = this.GetOrCreateGuildContainer(guildId);
+            if (guild == null)
+            {
+                throw new ArgumentException($"Guild not found. Id: {guildId}", nameof(guildId));
+            }
+
+            guild.SetServerId(characterId, serverId);
+            return guild.Id;
         }
 
         private Guild LoadGuildInternal(Guid guildId)
@@ -341,9 +295,9 @@ namespace MUnique.OpenMU.GuildServer
 
         private GuildContainer GetOrCreateGuildContainer(Guid guildId)
         {
-            if (!this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
+            if (!this.guildIdMapping.TryGetValue(guildId, out var shortGuildId) || !this.guildDictionary.TryGetValue(shortGuildId, out GuildContainer guild))
             {
-                var context = this.repositoryManager.CreateNewContext();
+                var context = this.repositoryManager.CreateNewGuildContext();
                 using (this.repositoryManager.UseContext(context))
                 {
                     var guildinfo = this.LoadGuildInternal(guildId);
@@ -355,6 +309,7 @@ namespace MUnique.OpenMU.GuildServer
                     }
 
                     guild = this.CreateGuildContainer(guildinfo, context);
+                    guild.LoadMemberNames(this.repositoryManager);
                 }
             }
 
@@ -363,15 +318,21 @@ namespace MUnique.OpenMU.GuildServer
 
         private GuildContainer CreateGuildContainer(Guild guild, IContext databaseContext)
         {
-            if (!this.freeIds.TryDequeue(out ushort shortId))
-            {
-                throw new Exception("no free short id");
-            }
+            var id = (uint)this.idGenerator.GetId();
 
-            var guildContainer = new GuildContainer(guild, shortId, databaseContext);
-            this.guildDictionary.Add(guild.Id, guildContainer);
+            var guildContainer = new GuildContainer(guild, id, databaseContext);
+            this.guildDictionary.Add(id, guildContainer);
+            this.guildIdMapping.Add(guild.Id, id);
 
             return guildContainer;
+        }
+
+        private void RemoveGuildContainer(GuildContainer guildContainer)
+        {
+            this.guildDictionary.Remove(guildContainer.Id);
+            this.guildIdMapping.Remove(guildContainer.Guild.Id);
+            this.idGenerator.GiveBack((int)guildContainer.Id);
+            guildContainer.DatabaseContext.Dispose();
         }
     }
 }

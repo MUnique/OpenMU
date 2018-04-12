@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using GameLogic.Views;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void PlayerLeftGuild(Player player)
         {
             var playerId = player.GetId(this.player);
-            if (player.SelectedCharacter.GuildMemberInfo.Status == GuildPosition.GuildMaster)
+            if (player.GuildStatus.Position == GuildPosition.GuildMaster)
             {
                 playerId |= 0x80;
             }
@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // C2 00 11
             // 65
             // 01
-            // 34 4A 00 00 80 00 00
+            // 34 4B 00 00 80 00 00
             // A4 F2 00 00 00
             var array = new byte[(guildPlayers.Count * 12) + 5];
             array[0] = 0xC2;
@@ -86,13 +86,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 var offset = 5 + (i * 12);
                 var playerId = guildPlayer.GetId(this.player);
-                var memberInfo = guildPlayer.SelectedCharacter.GuildMemberInfo;
-                array[offset] = guildPlayer.ShortGuildID.GetHighByte();
-                array[offset + 1] = guildPlayer.ShortGuildID.GetLowByte();
-                array[offset + 4] = (byte)memberInfo.Status;
+
+                array.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId, offset);
+                array[offset + 4] = (byte)guildPlayer.GuildStatus.Position;
                 array[offset + 7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
                 array[offset + 8] = playerId.GetLowByte();
-                ////todo: alliance id somewhere
+                ////todo: for alliances there is an extra packet, code 0x67
 
                 i++;
             }
@@ -116,14 +115,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             packet[4] = playerCount > 0 ? (byte)1 : (byte)0;
             packet[5] = (byte)playerCount;
 
-            ////TODO: 18 bytes missing here... guild logo?
-            // next 4 bytes "TotalScore"
-            // next byte "Score"
-            // next 9 bytes "RivalGuild"
+            uint totalScore = 0; // TODO
+            byte score = 0; // TODO
+            string rivalGuildName = "TODO"; // TODO
+            packet.SetIntegerBigEndian(totalScore, 8); // 2 bytes are padding (6+7)
+            packet[12] = score;
+            Encoding.UTF8.GetBytes(rivalGuildName, 0, rivalGuildName.Length, packet, 13);
+            //// next 2 bytes are padding (22+23)
             int i = 0;
             foreach (var player in players)
             {
-                Encoding.ASCII.GetBytes(player.PlayerName, 0, player.PlayerName.Length, packet, 23 + (i * PlayerEntryLength));
+                var offset = 24 + (i * PlayerEntryLength);
+                Encoding.ASCII.GetBytes(player.PlayerName, 0, player.PlayerName.Length, packet, offset);
                 packet[34 + (i * PlayerEntryLength)] = player.ServerId;
                 packet[35 + (i * PlayerEntryLength)] = (byte)player.PlayerPosition;
                 i++;

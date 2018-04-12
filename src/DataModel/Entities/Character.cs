@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.DataModel.Entities
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// The hero state of a player. Given enough time, the state converges to <see cref="Normal"/>.
@@ -164,11 +165,6 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the stat attributes.
         /// </summary>
         public virtual ICollection<StatAttribute> Attributes { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the guild member information.
-        /// </summary>
-        public virtual GuildMemberInfo GuildMemberInfo { get; set; }
 
         /// <summary>
         /// Gets or sets the letters.

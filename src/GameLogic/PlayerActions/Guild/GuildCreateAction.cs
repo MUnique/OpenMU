@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
@@ -45,21 +44,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 return;
             }
 
-            ushort guildId;
-            GuildMemberInfo masterGuildMemberInfo;
-            var guild = this.gameContext.GuildServer.CreateGuild(guildName, creator.SelectedCharacter.Name, creator.SelectedCharacter.Id, guildEmblem, out guildId, out masterGuildMemberInfo);
-            var result = guildId > 0 ? GuildCreateErrorDetail.None : GuildCreateErrorDetail.GuildAlreadyExist;
-            creator.PlayerView.GuildView.ShowGuildCreateResult(result);
-            if (result != GuildCreateErrorDetail.None)
+            creator.GuildStatus = this.gameContext.GuildServer.CreateGuild(guildName, creator.SelectedCharacter.Name, creator.SelectedCharacter.Id, guildEmblem, this.gameContext.Id);
+            if (creator.GuildStatus == null)
             {
+                creator.PlayerView.GuildView.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
                 return;
             }
 
-            creator.ShortGuildID = guildId;
-            this.gameContext.GuildCache.RegisterShortId(guild.Id, guildId);
-            creator.SelectedCharacter.GuildMemberInfo = masterGuildMemberInfo;
+            creator.PlayerView.GuildView.ShowGuildCreateResult(GuildCreateErrorDetail.None);
 
-            this.gameContext.GuildServer.GuildMemberEnterGame(guild.Id, creator.SelectedCharacter.Name, this.gameContext.Id);
             Log.InfoFormat("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);
         }
     }

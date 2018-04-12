@@ -191,8 +191,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 var preview = this.appearanceSerializer.GetAppearanceData(new CharacterAppearanceDataAdapter(character));
                 Buffer.BlockCopy(preview, 0, packet, offset + 15, preview.Length);
 
-                var guildStatusIndex = offset + 15 + 18;
-                packet[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
+                //// var guildStatusIndex = offset + 15 + 18;
+                //// TODO: packet[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
 
                 i++;
             }

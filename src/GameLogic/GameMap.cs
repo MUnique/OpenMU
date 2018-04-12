@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// The game map which contains instances of players, npcs, drops, and more.

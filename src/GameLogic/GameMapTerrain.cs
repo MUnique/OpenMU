@@ -23,18 +23,28 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="definition">The game map definition.</param>
         public GameMapTerrain(GameMapDefinition definition)
+            : this(definition.Name, definition.TerrainData)
         {
-            if (definition.TerrainData == null)
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameMapTerrain"/> class.
+        /// </summary>
+        /// <param name="mapName">Name of the map.</param>
+        /// <param name="terrainData">The terrain data.</param>
+        public GameMapTerrain(string mapName, byte[] terrainData)
+        {
+            if (terrainData == null)
             {
-                Log.Warn($"Terrain data for {definition.Name} not defined.");
+                Log.Warn($"Terrain data for {mapName} not defined.");
                 return;
             }
 
-            using (var memoryStream = new MemoryStream(definition.TerrainData))
+            using (var memoryStream = new MemoryStream(terrainData))
             {
-                Log.Debug($"Start reading terrain data for {definition.Name}.");
+                Log.Debug($"Start reading terrain data for {mapName}.");
                 this.ReadTerrainData(memoryStream);
-                Log.Debug($"Finished reading terrain data for {definition.Name}.");
+                Log.Debug($"Finished reading terrain data for {mapName}.");
             }
         }
 

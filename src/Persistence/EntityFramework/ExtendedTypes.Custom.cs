@@ -137,4 +137,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             return persistentLink;
         }
     }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.GuildMember"/>.
+    /// </summary>
+    internal partial class GuildMember
+    {
+        /// <summary>
+        /// Gets or sets the character. This property just exists to define the foreign key.
+        /// </summary>
+        [ForeignKey(nameof(Id))]
+        public Character Character { get; set; }
+    }
 }

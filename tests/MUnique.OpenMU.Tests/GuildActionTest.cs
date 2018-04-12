@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameServer.RemoteView;
+    using MUnique.OpenMU.Interfaces;
     using NUnit.Framework;
     using Rhino.Mocks;
 
@@ -32,7 +33,7 @@ namespace MUnique.OpenMU.Tests
             base.Setup();
             this.guildMasterPlayer = this.CreateGuildMasterPlayer();
             this.gameServerContext = this.CreateGameServer();
-            this.guildMasterPlayer.ShortGuildID = this.GuildServer.GuildMemberEnterGame(new Guid(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), this.GuildMaster.Name, 0);
+            this.guildMasterPlayer.GuildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, 0);
             this.player = TestHelper.GetPlayer();
             this.player.CurrentMap.Add(this.guildMasterPlayer);
             this.player.SelectedCharacter.Name = "Player";
@@ -59,9 +60,9 @@ namespace MUnique.OpenMU.Tests
         {
             this.player.PlayerView.GuildView.Expect(v => v.GuildJoinResponse(GuildRequestAnswerResult.Accepted));
             this.RequestGuildAndRespond(true);
-            Assert.That(this.player.ShortGuildID, Is.Not.EqualTo(0));
-            Assert.That(this.player.SelectedCharacter.GuildMemberInfo, Is.Not.Null);
-            Assert.That(this.player.SelectedCharacter.GuildMemberInfo.GuildId, Is.EqualTo(this.Guild.Id));
+
+            Assert.That(this.player.GuildStatus, Is.Not.Null);
+            Assert.That(this.player.GuildStatus.GuildId, Is.Not.EqualTo(0));
             this.player.PlayerView.GuildView.VerifyAllExpectations();
         }
 
@@ -73,8 +74,7 @@ namespace MUnique.OpenMU.Tests
         {
             this.player.PlayerView.GuildView.Expect(v => v.GuildJoinResponse(GuildRequestAnswerResult.Refused));
             this.RequestGuildAndRespond(false);
-            Assert.That(this.player.ShortGuildID, Is.EqualTo(0));
-            Assert.That(this.player.SelectedCharacter.GuildMemberInfo, Is.Null);
+            Assert.That(this.player.GuildStatus, Is.Null);
             this.player.PlayerView.GuildView.VerifyAllExpectations();
         }
 
@@ -98,13 +98,12 @@ namespace MUnique.OpenMU.Tests
         public void GuildCreate()
         {
             var action = new GuildCreateAction(this.gameServerContext);
-            action.CreateGuild(this.player, "Foobar", new byte[0]);
-            Assert.That(this.player.ShortGuildID, Is.Not.EqualTo(0));
-            Assert.That(this.player.SelectedCharacter.GuildMemberInfo, Is.Not.Null);
-            Assert.That(this.player.SelectedCharacter.GuildMemberInfo.Status, Is.EqualTo(GuildPosition.GuildMaster));
-            var repository = this.RepositoryManager.GetRepository<Guild>();
-            var newGuild = repository.GetById(this.player.SelectedCharacter.GuildMemberInfo.GuildId);
-            Assert.That(newGuild.Members, Contains.Item(this.player.SelectedCharacter.GuildMemberInfo));
+            action.CreateGuild(this.player, "Foobar2", new byte[0]);
+            Assert.That(this.player.GuildStatus, Is.Not.Null);
+            Assert.That(this.player.GuildStatus.Position, Is.EqualTo(GuildPosition.GuildMaster));
+            var repository = this.RepositoryManager.GetRepository<DataModel.Entities.Guild>();
+            var newGuild = repository.GetAll().First(g => g.Name == "Foobar2");
+            Assert.That(newGuild.Members.Any(m => m.Id == this.player.SelectedCharacter.Id), Is.True);
         }
 
         /// <summary>
@@ -118,7 +117,7 @@ namespace MUnique.OpenMU.Tests
             this.player.PlayerView.GuildView.Expect(v => v.ShowGuildList(null)).IgnoreArguments();
             action.RequestGuildList(this.player);
             this.player.PlayerView.GuildView.VerifyAllExpectations();
-            var guildList = this.GuildServer.GetGuildList(this.Guild.Id);
+            var guildList = this.GuildServer.GetGuildList(this.player.GuildStatus.GuildId);
             Assert.That(guildList.Any(entry => entry.PlayerName == this.player.SelectedCharacter.Name), Is.True);
         }
 
@@ -145,7 +144,7 @@ namespace MUnique.OpenMU.Tests
             var masterPlayer = TestHelper.GetPlayer();
             this.GuildMaster = masterPlayer.SelectedCharacter;
             this.GuildMaster.Name = "GuildMaster";
-            this.GuildMaster.GuildMemberInfo = this.Guild.Members.First();
+            this.GuildMaster.Id = Guid.NewGuid();
             return masterPlayer;
         }
     }

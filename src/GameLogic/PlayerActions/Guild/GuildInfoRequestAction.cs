@@ -24,10 +24,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// Requests the guild information.
         /// </summary>
         /// <param name="player">The player.</param>
-        /// <param name="shortGuildId">The short guild identifier.</param>
-        public void RequestGuildInfo(Player player, ushort shortGuildId)
+        /// <param name="guildId">The guild identifier.</param>
+        public void RequestGuildInfo(Player player, uint guildId)
         {
-            byte[] guildInfo = this.gameContext.GuildCache.GetGuildData(shortGuildId);
+            byte[] guildInfo = this.gameContext.GuildCache.GetGuildData(guildId);
             if (guildInfo != null)
             {
                 player.PlayerView.GuildView.ShowGuildInfo(guildInfo);

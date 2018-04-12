@@ -87,6 +87,8 @@
     <Compile Include="Configuration\Items\ItemOfItemSet.cs" />
     <Compile Include="Configuration\Items\ItemOption.cs" />
     <Compile Include="Configuration\Items\ItemOptionDefinition.cs" />
+    <Compile Include="Entities\Guild.cs" />
+    <Compile Include="Entities\GuildMember.cs" />
     <Compile Include="Entities\ItemOptionLink.cs" />
     <Compile Include="Configuration\Items\ItemOptionOfLevel.cs" />
     <Compile Include="Configuration\Items\ItemOptionType.cs" />
@@ -111,16 +113,12 @@
     <Compile Include="Configuration\GameMapDefinition.cs" />
     <Compile Include="Configuration\MagicEffectDefinition.cs" />
     <Compile Include="Configuration\Skill.cs" />
-    <Compile Include="Entities\FriendViewItem.cs" />
-    <Compile Include="Entities\Guild.cs" />
-    <Compile Include="Entities\GuildMemberInfo.cs" />
     <Compile Include="Entities\AppearanceData.cs" />
     <Compile Include="Entities\IAppearanceData.cs" />
     <Compile Include="Entities\Item.cs" />
     <Compile Include="Entities\ItemAppearance.cs" />
     <Compile Include="Entities\ItemStorage.cs" />
     <Compile Include="Entities\LetterBody.cs" />
-    <Compile Include="Entities\LetterHeader.cs" />
     <Compile Include="Entities\SkillEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -136,6 +134,10 @@
     <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj">
       <Project>{3dd171e2-4f6e-486a-8420-f6935c4da03c}</Project>
       <Name>MUnique.OpenMU.AttributeSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj">
+      <Project>{cb8a2c80-8ecd-44d6-98b7-ab35891b66fd}</Project>
+      <Name>MUnique.OpenMU.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

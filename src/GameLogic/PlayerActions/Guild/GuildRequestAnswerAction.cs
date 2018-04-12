@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
     using System.Collections.Generic;
-    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Interfaces;
     using Views;
 
     /// <summary>
@@ -37,18 +37,23 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 return;
             }
 
-            if (lastGuildRequester.SelectedCharacter.GuildMemberInfo != null)
+            if (lastGuildRequester.GuildStatus != null)
             {
                 lastGuildRequester.PlayerView.GuildView.GuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
                 return;
             }
 
+            if (player.GuildStatus?.Position != GuildPosition.GuildMaster)
+            {
+                // todo log possible hacker action?
+                return;
+            }
+
             if (accept)
             {
-                var guildMember = this.gameContext.GuildServer.CreateGuildMember(player.SelectedCharacter.GuildMemberInfo.GuildId, player.LastGuildRequester.SelectedCharacter.Id, player.LastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember);
-                player.LastGuildRequester.SelectedCharacter.GuildMemberInfo = guildMember;
+                var guildStatus = this.gameContext.GuildServer.CreateGuildMember(player.GuildStatus.GuildId, player.LastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, this.gameContext.Id);
+                lastGuildRequester.GuildStatus = guildStatus;
 
-                player.LastGuildRequester.ShortGuildID = this.gameContext.GuildServer.GuildMemberEnterGame(guildMember.GuildId, guildMember.Name, this.gameContext.Id);
                 var playerList = new List<Player>(1) { player };
                 player.ForEachObservingPlayer(p => p.PlayerView.GuildView.AssignPlayersToGuild(playerList, false), true);
             }

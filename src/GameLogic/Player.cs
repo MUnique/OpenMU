@@ -236,7 +236,7 @@ namespace MUnique.OpenMU.GameLogic
         public ISkillList SkillList { get; private set; }
 
         /// <inheritdoc/>
-        public ushort ShortGuildID { get; set; }
+        public GuildMemberStatus GuildStatus { get; set; }
 
         /// <inheritdoc/>
         public Direction Rotation { get; set; }

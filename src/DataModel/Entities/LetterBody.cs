@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
+    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// The body of a letter.

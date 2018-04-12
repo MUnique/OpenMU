@@ -66,6 +66,14 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="name">The name.</param>
         /// <returns>True, if the guild with the specified name exists.</returns>
         bool GuildWithNameExists(string name);
+
+        /// <summary>
+        /// Gets the member names of a guild.
+        /// </summary>
+        /// <param name="guildId">The guild identifier.</param>
+        /// <returns>The member names of a guild.</returns>
+        /// <remarks>Since names are stored in Character.Name and not duplicated.</remarks>
+        IReadOnlyDictionary<Guid, string> GetMemberNames(Guid guildId);
     }
 
     /// <summary>

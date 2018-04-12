@@ -9,6 +9,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using System;
 
@@ -186,8 +187,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<long>("Experience");
 
-                    b.Property<Guid?>("GuildMemberInfoId");
-
                     b.Property<int>("InventoryExtensions");
 
                     b.Property<Guid?>("InventoryId");
@@ -227,8 +226,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("CharacterClassId");
 
                     b.HasIndex("CurrentMapId");
-
-                    b.HasIndex("GuildMemberInfoId");
 
                     b.HasIndex("InventoryId");
 
@@ -545,10 +542,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte[]>("Logo");
 
-                    b.Property<string>("Master");
-
-                    b.Property<Guid>("MasterId");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(8);
@@ -563,19 +556,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("HostilityId");
 
-                    b.ToTable("Guild","data");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Guild","guild");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GuildMemberInfo", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GuildMember", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("CharacterId");
+                    b.Property<Guid>("Id");
 
                     b.Property<Guid>("GuildId");
-
-                    b.Property<byte>("ServerId");
 
                     b.Property<byte>("Status");
 
@@ -583,7 +574,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("GuildMemberInfo","data");
+                    b.ToTable("GuildMember","guild");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", b =>
@@ -1746,10 +1737,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("CurrentMapId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GuildMemberInfo", "RawGuildMemberInfo")
-                        .WithMany()
-                        .HasForeignKey("GuildMemberInfoId");
-
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawInventory")
                         .WithMany()
                         .HasForeignKey("InventoryId");
@@ -1892,11 +1879,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("HostilityId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GuildMemberInfo", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GuildMember", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild")
                         .WithMany("RawMembers")
                         .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Character")
+                        .WithMany()
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -2104,7 +2096,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawItemOptions")
                         .HasForeignKey("ItemId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreaseableItemOption", "RawItemOption")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", "RawItemOption")
                         .WithMany()
                         .HasForeignKey("ItemOptionId");
                 });

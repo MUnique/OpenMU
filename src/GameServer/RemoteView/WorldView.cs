@@ -275,7 +275,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     (shopPlayers ?? (shopPlayers = new List<Player>())).Add(newPlayer);
                 }
 
-                if (newPlayer.SelectedCharacter.GuildMemberInfo != null)
+                if (newPlayer.GuildStatus != null)
                 {
                     (guildPlayers ?? (guildPlayers = new List<Player>())).Add(newPlayer);
                 }

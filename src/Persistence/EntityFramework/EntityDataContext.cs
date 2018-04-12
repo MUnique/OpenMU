@@ -30,16 +30,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Guild>(entity =>
-            {
-                entity.Property(guild => guild.Name).HasMaxLength(8).IsRequired();
-            });
-
-            modelBuilder.Entity<GuildMemberInfo>(e =>
-            {
-                e.Ignore(g => g.Name);
-            });
-
             modelBuilder.Entity<FriendViewItem>(e =>
             {
                 e.Ignore(item => item.CharacterName);
@@ -124,6 +114,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     key.ValueGenerated = Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAdd;
                 }
             }
+
+            GuildContext.ConfigureModel(modelBuilder);
         }
     }
 }

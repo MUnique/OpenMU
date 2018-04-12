@@ -18,6 +18,133 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using Newtonsoft.Json;
 
     /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.Guild"/>.
+    /// </summary>
+    [Table("Guild", Schema = "data")]
+    internal partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+public ICollection<GuildMember> RawMembers { get; } = new List<GuildMember>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Entities.GuildMember> Members
+        {
+            get
+            {
+                return base.Members ?? (base.Members = new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.GuildMember, GuildMember>(this.RawMembers)); 
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="Hostility"/>.
+        /// </summary>
+        public Guid? HostilityId { get; set; }
+        
+        [ForeignKey("HostilityId")]
+        public Guild RawHostility
+        { 
+            get { return base.Hostility as Guild; }
+            set { base.Hostility = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.Interfaces.Guild Hostility
+        {
+            get
+            {
+                return base.Hostility;
+            }
+            
+            set
+            {
+                base.Hostility = value;
+                this.HostilityId = this.RawHostility?.Id;
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="AllianceGuild"/>.
+        /// </summary>
+        public Guid? AllianceGuildId { get; set; }
+        
+        [ForeignKey("AllianceGuildId")]
+        public Guild RawAllianceGuild
+        { 
+            get { return base.AllianceGuild as Guild; }
+            set { base.AllianceGuild = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.Interfaces.Guild AllianceGuild
+        {
+            get
+            {
+                return base.AllianceGuild;
+            }
+            
+            set
+            {
+                base.AllianceGuild = value;
+                this.AllianceGuildId = this.RawAllianceGuild?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.GuildMember"/>.
+    /// </summary>
+    [Table("GuildMember", Schema = "data")]
+    internal partial class GuildMember : MUnique.OpenMU.DataModel.Entities.GuildMember, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.ItemOptionLink"/>.
     /// </summary>
     [Table("ItemOptionLink", Schema = "data")]
@@ -245,42 +372,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
         }
 
-                /// <summary>
-        /// Gets or sets the identifier of <see cref="GuildMemberInfo"/>.
-        /// </summary>
-        public Guid? GuildMemberInfoId { get; set; }
-        
-        [ForeignKey("GuildMemberInfoId")]
-        public GuildMemberInfo RawGuildMemberInfo
-        { 
-            get { return base.GuildMemberInfo as GuildMemberInfo; }
-            set { base.GuildMemberInfo = value; } 
-        }
-                
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Entities.GuildMemberInfo GuildMemberInfo
-        {
-            get
-            {
-                return base.GuildMemberInfo;
-            }
-            
-            set
-            {
-                base.GuildMemberInfo = value;
-                this.GuildMemberInfoId = this.RawGuildMemberInfo?.Id;
-            }
-        }
-
         public IList<LetterHeader> RawLetters { get; } = new List<LetterHeader>();        
         /// <inheritdoc/>
         [NotMapped]
-        public override IList<MUnique.OpenMU.DataModel.Entities.LetterHeader> Letters
+        public override IList<MUnique.OpenMU.Interfaces.LetterHeader> Letters
         {
             get
             {
-                return base.Letters ?? (base.Letters = new ListAdapter<MUnique.OpenMU.DataModel.Entities.LetterHeader, LetterHeader>(this.RawLetters)); 
+                return base.Letters ?? (base.Letters = new ListAdapter<MUnique.OpenMU.Interfaces.LetterHeader, LetterHeader>(this.RawLetters)); 
             }
         }
 
@@ -324,163 +423,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
                 
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-    }
-
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.FriendViewItem"/>.
-    /// </summary>
-    [Table("FriendViewItem", Schema = "data")]
-    internal partial class FriendViewItem : MUnique.OpenMU.DataModel.Entities.FriendViewItem, IIdentifiable
-    {        
-
-        protected void InitJoinCollections()
-        {
-        }
-        
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-    }
-
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.Guild"/>.
-    /// </summary>
-    [Table("Guild", Schema = "data")]
-    internal partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifiable
-    {        
-
-        protected void InitJoinCollections()
-        {
-        }
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Hostility"/>.
-        /// </summary>
-        public Guid? HostilityId { get; set; }
-        
-        [ForeignKey("HostilityId")]
-        public Guild RawHostility
-        { 
-            get { return base.Hostility as Guild; }
-            set { base.Hostility = value; } 
-        }
-                
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Entities.Guild Hostility
-        {
-            get
-            {
-                return base.Hostility;
-            }
-            
-            set
-            {
-                base.Hostility = value;
-                this.HostilityId = this.RawHostility?.Id;
-            }
-        }
-
-                /// <summary>
-        /// Gets or sets the identifier of <see cref="AllianceGuild"/>.
-        /// </summary>
-        public Guid? AllianceGuildId { get; set; }
-        
-        [ForeignKey("AllianceGuildId")]
-        public Guild RawAllianceGuild
-        { 
-            get { return base.AllianceGuild as Guild; }
-            set { base.AllianceGuild = value; } 
-        }
-                
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Entities.Guild AllianceGuild
-        {
-            get
-            {
-                return base.AllianceGuild;
-            }
-            
-            set
-            {
-                base.AllianceGuild = value;
-                this.AllianceGuildId = this.RawAllianceGuild?.Id;
-            }
-        }
-
-        public ICollection<GuildMemberInfo> RawMembers { get; } = new List<GuildMemberInfo>();        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.GuildMemberInfo> Members
-        {
-            get
-            {
-                return base.Members ?? (base.Members = new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.GuildMemberInfo, GuildMemberInfo>(this.RawMembers)); 
-            }
-        }
-
-                
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-    }
-
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.GuildMemberInfo"/>.
-    /// </summary>
-    [Table("GuildMemberInfo", Schema = "data")]
-    internal partial class GuildMemberInfo : MUnique.OpenMU.DataModel.Entities.GuildMemberInfo, IIdentifiable
-    {        
-
-        protected void InitJoinCollections()
-        {
-        }
-        
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
@@ -797,7 +739,7 @@ public ICollection<Item> RawItems { get; } = new List<Item>();
                 
         /// <inheritdoc/>
         [NotMapped]
-        public override MUnique.OpenMU.DataModel.Entities.LetterHeader Header
+        public override MUnique.OpenMU.Interfaces.LetterHeader Header
         {
             get
             {
@@ -840,36 +782,6 @@ public ICollection<Item> RawItems { get; } = new List<Item>();
         }
 
                 
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-    }
-
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.LetterHeader"/>.
-    /// </summary>
-    [Table("LetterHeader", Schema = "data")]
-    internal partial class LetterHeader : MUnique.OpenMU.DataModel.Entities.LetterHeader, IIdentifiable
-    {        
-
-        protected void InitJoinCollections()
-        {
-        }
-        
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
@@ -4449,6 +4361,66 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
     }
 
     /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.Interfaces.LetterHeader"/>.
+    /// </summary>
+    [Table("LetterHeader", Schema = "data")]
+    internal partial class LetterHeader : MUnique.OpenMU.Interfaces.LetterHeader, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.Interfaces.FriendViewItem"/>.
+    /// </summary>
+    [Table("FriendViewItem", Schema = "data")]
+    internal partial class FriendViewItem : MUnique.OpenMU.Interfaces.FriendViewItem, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
     /// DbContext which sets all extended base types to ignore.
     /// </summary>
     public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
@@ -4456,18 +4428,16 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
         /// <inheritdoc/>
         protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
         {
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildMember>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemOptionLink>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Account>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Character>();
-            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.FriendViewItem>();
-            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
-            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildMemberInfo>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AppearanceData>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Item>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemAppearance>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemStorage>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();
-            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterHeader>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.EnterGate>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ExitGate>();
@@ -4517,6 +4487,8 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.AttributeRelationship>();
             modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.SimpleElement>();
             modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.AttributeRelationshipElement>();
+            modelBuilder.Ignore<MUnique.OpenMU.Interfaces.LetterHeader>();
+            modelBuilder.Ignore<MUnique.OpenMU.Interfaces.FriendViewItem>();
         }
 
         /// <summary>

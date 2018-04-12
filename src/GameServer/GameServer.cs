@@ -137,10 +137,10 @@ namespace MUnique.OpenMU.GameServer
         }
 
         /// <inheritdoc/>
-        public void GuildChatMessage(Guid guildId, string sender, string message)
+        public void GuildChatMessage(uint guildId, string sender, string message)
         {
             var guildplayers = from player in this.gameContext.PlayerList
-                where player.SelectedCharacter?.GuildMemberInfo?.GuildId == guildId
+                where player.GuildStatus?.GuildId == guildId
                 select player;
 
             foreach (var player in guildplayers)
@@ -150,10 +150,10 @@ namespace MUnique.OpenMU.GameServer
         }
 
         /// <inheritdoc/>
-        public void AllianceChatMessage(Guid guildId, string sender, string message)
+        public void AllianceChatMessage(uint guildId, string sender, string message)
         {
             var guildplayers = from player in this.gameContext.PlayerList
-                where player.SelectedCharacter?.GuildMemberInfo?.GuildId == guildId
+                where player.GuildStatus?.GuildId == guildId
                 select player;
 
             // TODO: determine alliance
@@ -249,18 +249,12 @@ namespace MUnique.OpenMU.GameServer
         }
 
         /// <inheritdoc/>
-        public void GuildDeleted(Guid guildId)
+        public void GuildDeleted(uint guildId)
         {
             this.gameContext.PlayerList
-                .Where(
-                    player =>
-                        player.SelectedCharacter?.GuildMemberInfo != null &&
-                        player.SelectedCharacter.GuildMemberInfo.GuildId == guildId)
+                .Where(player => player.GuildStatus?.GuildId == guildId)
                 .ForEach(RemovePlayerFromGuild);
-            this.gameContext.PlayerList
-                .SelectMany(player => player.Account?.Characters).Where(c => c.GuildMemberInfo?.GuildId == guildId)
-                .ForEach(character => character.GuildMemberInfo = null);
-            ////todo: alliance things?
+            //// todo: alliance things?
         }
 
         /// <inheritdoc/>
@@ -269,7 +263,6 @@ namespace MUnique.OpenMU.GameServer
             Player player = this.gameContext.GetPlayerByCharacterName(playerName);
             if (player == null)
             {
-                this.RemovePlayerFromGuild(playerName);
                 return;
             }
 
@@ -328,21 +321,8 @@ namespace MUnique.OpenMU.GameServer
 
         private static void RemovePlayerFromGuild(Player player)
         {
-            player.ShortGuildID = 0;
-            player.SelectedCharacter.GuildMemberInfo = null;
+            player.GuildStatus = null;
             player.ForEachObservingPlayer(observer => observer.PlayerView.GuildView.PlayerLeftGuild(player), true);
-        }
-
-        private void RemovePlayerFromGuild(string characterName)
-        {
-            var affectedPlayer =
-                this.gameContext.PlayerList.FirstOrDefault(
-                    p => p.Account?.Characters.Any(c => c.Name == characterName) ?? false);
-            var character = affectedPlayer?.Account.Characters.FirstOrDefault(c => c.Name == characterName);
-            if (character != null)
-            {
-                character.GuildMemberInfo = null;
-            }
         }
 
         private void OnPlayerConnected(object sender, PlayerConnectedEventArgs e)
@@ -518,7 +498,11 @@ namespace MUnique.OpenMU.GameServer
                     this.players = players;
                 }
 
-                public GameMapDefinition Map => this.map.Definition;
+                public short MapNumber => this.map.Definition.Number;
+
+                public string MapName => this.map.Definition.Name;
+
+                public byte[] TerrainData => this.map.Definition.TerrainData;
 
                 public System.Collections.Generic.IList<IPlayerInfo> Players
                 {
