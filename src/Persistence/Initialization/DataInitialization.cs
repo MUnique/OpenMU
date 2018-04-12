@@ -295,13 +295,16 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             var itemOption = this.repositoryManager.CreateNew<IncreasableItemOption>();
             itemOption.OptionType = this.gameConfiguration.ItemOptionTypes.FirstOrDefault(o => o == ItemOptionTypes.Option);
-
-            for (int level = 1; level <= 4; level++)
+            itemOption.PowerUpDefinition = this.repositoryManager.CreateNew<PowerUpDefinition>();
+            itemOption.PowerUpDefinition.TargetAttribute = this.gameConfiguration.Attributes.First(a => a == attributeDefinition);
+            itemOption.PowerUpDefinition.Boost = this.repositoryManager.CreateNew<PowerUpDefinitionValue>();
+            itemOption.PowerUpDefinition.Boost.ConstantValue.Value = 4;
+            for (int level = 2; level <= 4; level++)
             {
                 var levelDependentOption = this.repositoryManager.CreateNew<ItemOptionOfLevel>();
                 levelDependentOption.Level = level;
                 var powerUpDefinition = this.repositoryManager.CreateNew<PowerUpDefinition>();
-                powerUpDefinition.TargetAttribute = this.gameConfiguration.Attributes.First(a => a == attributeDefinition);
+                powerUpDefinition.TargetAttribute = itemOption.PowerUpDefinition.TargetAttribute;
                 powerUpDefinition.Boost = this.repositoryManager.CreateNew<PowerUpDefinitionValue>();
                 powerUpDefinition.Boost.ConstantValue.Value = level * 4;
                 levelDependentOption.PowerUpDefinition = powerUpDefinition;
