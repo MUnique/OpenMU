@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
     public class IncreasableItemOption : ItemOption
     {
         /// <summary>
-        /// Gets or sets the level dependent options.
+        /// Gets or sets the level dependent options for option levels over 1.
         /// </summary>
         public virtual ICollection<ItemOptionOfLevel> LevelDependentOptions { get; protected set; }
     }
