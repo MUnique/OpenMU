@@ -106,6 +106,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             gate.Y2 = y2;
             gate.Direction = (Direction)direction;
             gate.IsSpawnGate = isSpawnGate;
+            map.ExitGates.Add(gate);
             return gate;
         }
 
