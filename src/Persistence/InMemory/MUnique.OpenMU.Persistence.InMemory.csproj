@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{23B216A0-B407-4A76-A387-0B9E72B15363}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MUnique.OpenMU.Persistence.InMemory</RootNamespace>
+    <AssemblyName>MUnique.OpenMU.Persistence.InMemory</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\bin\Debug\MUnique.OpenMU.Persistence.InMemory.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\bin\Release\MUnique.OpenMU.Persistence.InMemory.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BCrypt.Net-Next, Version=2.1.1.0, Culture=neutral, PublicKeyToken=748c6c715e2d42e3, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BCrypt.Net-Next.2.1.1\lib\net452\BCrypt.Net-Next.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AccountRepository.cs" />
+    <Compile Include="FriendViewItemRepository.cs" />
+    <Compile Include="InMemoryRepositoryManager.cs" />
+    <Compile Include="LetterBodyRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj">
+      <Project>{3DD171E2-4F6E-486A-8420-F6935C4DA03C}</Project>
+      <Name>MUnique.OpenMU.AttributeSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj">
+      <Project>{5282f509-d758-4a42-994c-f71a4c631fda}</Project>
+      <Name>MUnique.OpenMU.DataModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interfaces\MUnique.OpenMU.Interfaces.csproj">
+      <Project>{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}</Project>
+      <Name>MUnique.OpenMU.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj">
+      <Project>{B54420E7-17E7-43B5-84D9-7320133289B3}</Project>
+      <Name>MUnique.OpenMU.Persistence.EntityFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MUnique.OpenMU.Persistence.csproj">
+      <Project>{6e809fa9-888c-474f-8a84-70eecbc7e42d}</Project>
+      <Name>MUnique.OpenMU.Persistence</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+    </AdditionalFiles>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

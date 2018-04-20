@@ -134,6 +134,10 @@
       <Project>{A956C55B-08A8-41B9-BF72-03427BC6BB22}</Project>
       <Name>MUnique.OpenMU.LoginServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj">
+      <Project>{23b216a0-b407-4a76-a387-0b9e72b15363}</Project>
+      <Name>MUnique.OpenMU.Persistence.InMemory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj">
       <Project>{b54420e7-17e7-43b5-84d9-7320133289b3}</Project>
       <Name>MUnique.OpenMU.Persistence.EntityFramework</Name>

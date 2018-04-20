@@ -24,6 +24,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.Initialization;
+    using MUnique.OpenMU.Persistence.InMemory;
 
     /// <summary>
     /// The startup class for an all-in-one game server.
@@ -44,7 +45,16 @@ namespace MUnique.OpenMU.Startup
         /// <param name="args">The command line args.</param>
         public Program(string[] args)
         {
-            this.repositoryManager = this.PrepareRepositoryManager(args.Contains("-reinit"));
+            if (args.Contains("-demo"))
+            {
+                this.repositoryManager = new InMemoryRepositoryManager();
+                var initialization = new DataInitialization(this.repositoryManager);
+                initialization.CreateInitialData();
+            }
+            else
+            {
+                this.repositoryManager = this.PrepareRepositoryManager(args.Contains("-reinit"));
+            }
 
             Log.Info("Start initializing sub-components");
             var loginServer = new LoginServer();
