@@ -26,7 +26,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
         {
             var manager = new RepositoryManager();
             manager.RegisterRepositories();
-            manager.ReInitializeDatabase();
+            manager.ReCreateDatabase();
+            var initialization = new DataInitialization(manager);
+            initialization.CreateInitialData();
 
             // Loading game configuration
             using (var context = manager.CreateNewConfigurationContext())
