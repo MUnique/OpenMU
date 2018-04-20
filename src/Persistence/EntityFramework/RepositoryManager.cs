@@ -26,11 +26,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         private static readonly ILog Log = LogManager.GetLogger(nameof(RepositoryManager));
 
         /// <summary>
-        /// A cache which holds extended types (Value) for their corresponding base type (Key).
-        /// </summary>
-        private readonly IDictionary<Type, Type> efCoreTypes = new Dictionary<Type, Type>();
-
-        /// <summary>
         /// Registers the repositories.
         /// </summary>
         public void RegisterRepositories()
@@ -181,7 +176,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </returns>
         public override T CreateNew<T>(params object[] args)
         {
-            var instance = this.CreateNewInternal<T>(args);
+            var instance = TypeHelper.CreateNew<T>(args);
             if (instance != null)
             {
                 if (this.GetCurrentContext() is EntityFrameworkContext context)
@@ -212,29 +207,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
 
             base.RegisterRepository(type, repository);
-        }
-
-        private T CreateNewInternal<T>(params object[] args)
-            where T : class
-        {
-            var efType = this.GetEfCoreTypeOf<T>();
-            if (args.Length == 0)
-            {
-                return Activator.CreateInstance(efType) as T;
-            }
-
-            return this.CreateNew(efType, args) as T;
-        }
-
-        private Type GetEfCoreTypeOf<T>()
-        {
-            if (!this.efCoreTypes.TryGetValue(typeof(T), out Type efCoreType))
-            {
-                efCoreType = this.GetType().Assembly.GetTypes().First(t => typeof(T).IsAssignableFrom(t));
-                this.efCoreTypes.Add(typeof(T), efCoreType);
-            }
-
-            return efCoreType;
         }
     }
 }

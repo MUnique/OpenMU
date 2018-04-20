@@ -304,6 +304,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExtendedTypes.tt</DependentUpon>
     </Compile>
+    <Compile Include="TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
