@@ -6,8 +6,6 @@ namespace MUnique.OpenMU.FriendServer
 {
     using System;
     using System.Collections.Generic;
-
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
