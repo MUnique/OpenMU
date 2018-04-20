@@ -64,6 +64,7 @@
     <Compile Include="IRepository.cs" />
     <Compile Include="IRepositoryManager.cs" />
     <Compile Include="MemoryRepository{TValue}.cs" />
+    <Compile Include="NullContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryManagerExtensions.cs" />
     <Compile Include="RepositoryNotFoundException.cs" />

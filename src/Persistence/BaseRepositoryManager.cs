@@ -63,37 +63,37 @@ namespace MUnique.OpenMU.Persistence
         /// <inheritdoc/>
         public virtual IContext CreateNewContext()
         {
-            throw new NotImplementedException();
+            return new NullContext();
         }
 
         /// <inheritdoc/>
         public virtual IContext CreateNewContext(GameConfiguration gameConfiguration)
         {
-            throw new NotImplementedException();
+            return new NullContext();
         }
 
         /// <inheritdoc/>
         public virtual IContext CreateNewAccountContext(GameConfiguration gameConfiguration)
         {
-            throw new NotImplementedException();
+            return new NullContext();
         }
 
         /// <inheritdoc/>
         public virtual IContext CreateNewConfigurationContext()
         {
-            throw new NotImplementedException();
+            return new NullContext();
         }
 
         /// <inheritdoc />
         public virtual IContext CreateNewFriendServerContext()
         {
-            throw new NotImplementedException();
+            return new NullContext();
         }
 
         /// <inheritdoc/>
         public virtual IContext CreateNewGuildContext()
         {
-            throw new NotImplementedException();
+            return new NullContext();
         }
 
         /// <inheritdoc/>
