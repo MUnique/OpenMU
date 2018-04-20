@@ -81,6 +81,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
             }
         }
 
+        private long CalcNeededMasterExp(long lvl)
+        {
+            // f(x) = 505 * x^3 + 35278500 * x + 228045 * x^2
+            return (505 * lvl * lvl * lvl) + (35278500 * lvl) + (228045 * lvl * lvl);
+        }
+
         private long CalculateNeededExperience(long level)
         {
             if (level == 0)
@@ -564,6 +570,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.CharacterNameRegex = "^[a-zA-Z0-9]{3,10}$";
             this.gameConfiguration.MaximumPasswordLength = 20;
             this.gameConfiguration.MaximumPartySize = 5;
+            this.gameConfiguration.ExperienceTable =
+                Enumerable.Range(0, gameConfiguration.MaximumLevel + 1)
+                    .Select(level => this.CalculateNeededExperience(level))
+                    .ToArray();
+            this.gameConfiguration.MasterExperienceTable =
+                Enumerable.Range(0, 201).Select(level => this.CalcNeededMasterExp(level)).ToArray();
             var moneyDropItemGroup = this.repositoryManager.CreateNew<DropItemGroup>();
             moneyDropItemGroup.Chance = 0.5;
             moneyDropItemGroup.ItemType = SpecialItemType.Money;
