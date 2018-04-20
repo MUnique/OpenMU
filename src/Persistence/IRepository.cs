@@ -155,19 +155,4 @@ namespace MUnique.OpenMU.Persistence
         /// <returns>The created friend view item.</returns>
         T CreateNewFriendViewItem(string characterName, string friendName);
     }
-
-    /// <summary>
-    /// A repository for preview data.
-    /// </summary>
-    /// <typeparam name="T">The type for preview data. The type is not specified here, because the data model is not known to this assembly.</typeparam>
-    public interface IPreviewDataRepository<out T>
-    {
-        /// <summary>
-        /// Gets the preview data by account.
-        /// </summary>
-        /// <typeparam name="TAccount">The type of the account.</typeparam>
-        /// <param name="account">The account.</param>
-        /// <returns>The preview data of the account.</returns>
-        T[] GetByAccount<TAccount>(TAccount account);
-    }
 }
