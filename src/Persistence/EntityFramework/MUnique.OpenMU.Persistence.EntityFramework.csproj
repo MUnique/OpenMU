@@ -328,10 +328,6 @@
       <Project>{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}</Project>
       <Name>MUnique.OpenMU.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj">
-      <Project>{A044DA9E-CB5C-4087-B67A-02E1049920C1}</Project>
-      <Name>MUnique.OpenMU.Persistence.Initialization</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MUnique.OpenMU.Persistence.csproj">
       <Project>{6e809fa9-888c-474f-8a84-70eecbc7e42d}</Project>
       <Name>MUnique.OpenMU.Persistence</Name>

@@ -5,12 +5,10 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using log4net;
     using Microsoft.EntityFrameworkCore;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
-    using MUnique.OpenMU.Persistence.Initialization;
     using Npgsql.Logging;
 
     /// <summary>
@@ -30,9 +28,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         public void RegisterRepositories()
         {
-            this.RegisterRepository<Account>(new AccountRepository(this));
+            this.RegisterRepository(new AccountRepository(this));
             this.RegisterRepository(new LetterBodyRepository(this));
-            this.RegisterRepository<Guild>(new GuildRepository(this));
+            this.RegisterRepository(new GuildRepository(this));
             this.RegisterRepository(new FriendViewItemRepository(this));
             this.RegisterRepository(new CachedRepository<GameConfiguration>(new GameConfigurationRepository(this)));
             this.RegisterRepository(new GenericRepository<GameServerConfiguration>(this));
@@ -106,20 +104,26 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             using (var installationContext = new EntityDataContext())
             {
-                var isNewDatabase = !installationContext.Database.GetAppliedMigrations().Any();
                 installationContext.Database.Migrate();
-                if (isNewDatabase)
-                {
-                    var dataInitialization = new DataInitialization(this);
-                    dataInitialization.CreateInitialData();
-                }
             }
         }
 
         /// <summary>
-        /// Reinitializes the database by deleting it and running the initialization process again.
+        /// Determines if the database exists already, by checking if any migration has been applied.
         /// </summary>
-        public void ReInitializeDatabase()
+        /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
+        public bool DatabaseExists()
+        {
+            using (var installationContext = new EntityDataContext())
+            {
+                return installationContext.Database.GetAppliedMigrations().Any();
+            }
+        }
+
+        /// <summary>
+        /// Recreates the database by deleting and creating it again.
+        /// </summary>
+        public void ReCreateDatabase()
         {
             using (var installationContext = new EntityDataContext())
             {
@@ -143,13 +147,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc />
-        public override IContext CreateNewContext(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+        public override IContext CreateNewContext(DataModel.Configuration.GameConfiguration gameConfiguration)
         {
             return new EntityFrameworkContext(new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration });
         }
 
         /// <inheritdoc />
-        public override IContext CreateNewAccountContext(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+        public override IContext CreateNewAccountContext(DataModel.Configuration.GameConfiguration gameConfiguration)
         {
             return new EntityFrameworkContext(new AccountContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration });
         }

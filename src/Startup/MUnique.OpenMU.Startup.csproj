@@ -138,6 +138,10 @@
       <Project>{b54420e7-17e7-43b5-84d9-7320133289b3}</Project>
       <Name>MUnique.OpenMU.Persistence.EntityFramework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj">
+      <Project>{A044DA9E-CB5C-4087-B67A-02E1049920C1}</Project>
+      <Name>MUnique.OpenMU.Persistence.Initialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj">
       <Project>{6E809FA9-888C-474F-8A84-70EECBC7E42D}</Project>
       <Name>MUnique.OpenMU.Persistence</Name>

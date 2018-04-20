@@ -23,6 +23,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.LoginServer;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
+    using MUnique.OpenMU.Persistence.Initialization;
 
     /// <summary>
     /// The startup class for an all-in-one game server.
@@ -34,7 +35,7 @@ namespace MUnique.OpenMU.Startup
         private readonly AdminPanel adminPanel;
         private readonly IDictionary<int, IGameServer> gameServers = new Dictionary<int, IGameServer>();
         private readonly IList<IManageableServer> servers = new List<IManageableServer>();
-        private readonly RepositoryManager repositoryManager;
+        private readonly IRepositoryManager repositoryManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Program"/> class.
@@ -43,30 +44,8 @@ namespace MUnique.OpenMU.Startup
         /// <param name="args">The command line args.</param>
         public Program(string[] args)
         {
-            this.repositoryManager = new RepositoryManager();
-            this.repositoryManager.InitializeSqlLogging();
-            if (args.Contains("-reinit"))
-            {
-                Console.WriteLine("The database is getting reininitialized...");
-                this.repositoryManager.ReInitializeDatabase();
-            }
-            else if (!this.repositoryManager.IsDatabaseUpToDate())
-            {
-                Console.WriteLine("The database needs to be updated before the server can be started. Apply update? (y/n)");
-                var key = Console.ReadLine()?.ToLowerInvariant();
-                if (key == "y")
-                {
-                    this.repositoryManager.ApplyAllPendingUpdates();
-                    Console.WriteLine("The database has been successfully updated.");
-                }
-                else
-                {
-                    Console.WriteLine("Cancelled the update process, can't start the server.");
-                    return;
-                }
-            }
+            this.repositoryManager = this.PrepareRepositoryManager(args.Contains("-reinit"));
 
-            this.repositoryManager.RegisterRepositories();
             Log.Info("Start initializing sub-components");
             var loginServer = new LoginServer();
             var chatServer = new ChatServerListener(55980);
@@ -154,7 +133,40 @@ namespace MUnique.OpenMU.Startup
             }
 
             this.adminPanel.Dispose();
-            this.repositoryManager.Dispose();
+            (this.repositoryManager as IDisposable)?.Dispose();
+        }
+
+        private IRepositoryManager PrepareRepositoryManager(bool reinit)
+        {
+            var manager = new RepositoryManager();
+            manager.InitializeSqlLogging();
+            if (reinit || !manager.DatabaseExists())
+            {
+                Log.Info("The database is getting (re-)ininitialized...");
+                manager.ReCreateDatabase();
+                var initialization = new DataInitialization(manager);
+                initialization.CreateInitialData();
+                Log.Info("...initialization finished.");
+            }
+            else if (!manager.IsDatabaseUpToDate())
+            {
+                Console.WriteLine("The database needs to be updated before the server can be started. Apply update? (y/n)");
+                var key = Console.ReadLine()?.ToLowerInvariant();
+                if (key == "y")
+                {
+                    manager.ApplyAllPendingUpdates();
+                    Console.WriteLine("The database has been successfully updated.");
+                }
+                else
+                {
+                    Console.WriteLine("Cancelled the update process, can't start the server.");
+                    return null;
+                }
+            }
+
+            manager.RegisterRepositories();
+
+            return manager;
         }
 
         private IEnumerable<GameServerDefinition> GetGameServers()
