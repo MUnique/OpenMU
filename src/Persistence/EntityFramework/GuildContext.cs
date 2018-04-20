@@ -12,13 +12,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
     public class GuildContext : DbContext
     {
-        /// <inheritdoc/>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-            this.Configure(optionsBuilder);
-        }
-
         /// <summary>
         /// Configures the model, especially defines that <see cref="Guild"/> and <see cref="GuildMember"/> are created in a separate "guild" schema.
         /// </summary>
@@ -37,6 +30,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 e.HasIndex(guild => guild.Name).IsUnique();
                 e.ToTable(nameof(Guild), "guild");
             });
+        }
+
+        /// <inheritdoc/>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            this.Configure(optionsBuilder);
         }
 
         /// <inheritdoc/>
