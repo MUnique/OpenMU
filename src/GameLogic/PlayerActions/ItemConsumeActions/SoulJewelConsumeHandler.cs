@@ -6,6 +6,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
+    using System;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -65,7 +66,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             }
             else
             {
-                item.Level--;
+                item.Level = (byte)Math.Max(item.Level - 1, 0);
             }
 
             return true;
