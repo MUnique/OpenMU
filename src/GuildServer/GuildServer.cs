@@ -96,7 +96,7 @@ namespace MUnique.OpenMU.GuildServer
                 var guild = this.repositoryManager.CreateNew<Guild>();
                 guild.Name = name;
                 guild.Logo = logo;
-
+                masterGuildMemberInfo.GuildId = guild.Id;
                 var masterGuildMemberInfo = this.repositoryManager.CreateNew<GuildMember>();
                 masterGuildMemberInfo.Id = masterId;
                 masterGuildMemberInfo.Status = GuildPosition.GuildMaster;
@@ -133,6 +133,7 @@ namespace MUnique.OpenMU.GuildServer
                         var guildMember = this.repositoryManager.CreateNew<GuildMember>();
                         guildMember.Id = characterId;
                         guildMember.Status = role;
+                        guildMember.GuildId = guild.Guild.Id;
                         guild.Guild.Members.Add(guildMember);
 
                         guild.DatabaseContext.SaveChanges();
