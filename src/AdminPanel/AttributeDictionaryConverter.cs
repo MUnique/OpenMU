@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Linq;
+using MUnique.OpenMU.DataModel.Configuration;
+
 namespace MUnique.OpenMU.AdminPanel
 {
     using System;
@@ -15,15 +18,15 @@ namespace MUnique.OpenMU.AdminPanel
     /// </summary>
     public class AttributeDictionaryConverter : DefaultJavaScriptConverter
     {
-        private readonly IRepositoryManager repositoryManager;
+        private readonly IPersistenceContextProvider persistenceContextProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AttributeDictionaryConverter"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public AttributeDictionaryConverter(IRepositoryManager repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public AttributeDictionaryConverter(IPersistenceContextProvider persistenceContextProvider)
         {
-            this.repositoryManager = repositoryManager;
+            this.persistenceContextProvider = persistenceContextProvider;
         }
 
         /// <inheritdoc/>
@@ -39,11 +42,17 @@ namespace MUnique.OpenMU.AdminPanel
         public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
         {
             var result = new Dictionary<AttributeDefinition, float>();
-            var repo = this.repositoryManager.GetRepository<AttributeDefinition>();
-            foreach (var kvp in dictionary)
+            using (var configContext = this.persistenceContextProvider.CreateNewConfigurationContext())
             {
-                var attributeDefinition = repo.GetById(Guid.Parse(kvp.Key));
-                result.Add(attributeDefinition, float.Parse((string)kvp.Value));
+                var configuration = configContext.Get<GameConfiguration>().FirstOrDefault();
+                using (var context = this.persistenceContextProvider.CreateNewContext(configuration))
+                {
+                    foreach (var kvp in dictionary)
+                    {
+                        var attributeDefinition = context.GetById<AttributeDefinition>(Guid.Parse(kvp.Key));
+                        result.Add(attributeDefinition, float.Parse((string) kvp.Value));
+                    }
+                }
             }
 
             return result;

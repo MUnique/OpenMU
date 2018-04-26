@@ -68,6 +68,9 @@
     <Reference Include="Microsoft.EntityFrameworkCore.Design, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.EntityFrameworkCore.Design.2.0.1\lib\net461\Microsoft.EntityFrameworkCore.Design.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.InMemory, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.EntityFrameworkCore.InMemory.2.0.1\lib\netstandard2.0\Microsoft.EntityFrameworkCore.InMemory.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.EntityFrameworkCore.Relational, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.EntityFrameworkCore.Relational.2.0.1\lib\netstandard2.0\Microsoft.EntityFrameworkCore.Relational.dll</HintPath>
     </Reference>
@@ -246,12 +249,14 @@
     <Compile Include="ConnectionSetting.cs" />
     <Compile Include="ConnectionSettings.cs" />
     <Compile Include="ExtendedModelMetaData.cs" />
+    <Compile Include="CharacterName.cs" />
+    <Compile Include="FriendServerContext.cs" />
     <Compile Include="GameServerDefinitionRepository.cs" />
     <Compile Include="GuildContext.cs" />
+    <Compile Include="GuildServerContext.cs" />
     <Compile Include="IConfigurationTypeRepository.cs" />
     <Compile Include="IDictionaryEntity.cs" />
     <Compile Include="IIdentifiable.cs" />
-    <Compile Include="CachedEfRepository{T}.cs" />
     <Compile Include="CachedRepository{T}.cs" />
     <Compile Include="CollectionAdapter.cs" />
     <Compile Include="CollectionToStringAdapter.cs" />
@@ -260,14 +265,11 @@
     <Compile Include="EntityFrameworkContext.cs" />
     <Compile Include="ExtendedTypes.Custom.cs" />
     <Compile Include="FriendContext.cs" />
-    <Compile Include="FriendViewItemRepository.cs" />
     <Compile Include="GameConfigurationRepository.cs" />
     <Compile Include="GenericRepository{T}.cs" />
-    <Compile Include="GuildRepository.cs" />
     <Compile Include="ILoadByProperty.cs" />
     <Compile Include="ILoadingStatusAware.cs" />
     <Compile Include="ILoadingStatusAwareList.cs" />
-    <Compile Include="INotifyAddedObject.cs" />
     <Compile Include="ExtendedJoinEntities.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -290,20 +292,21 @@
     <Compile Include="LoadingStatus.cs" />
     <Compile Include="ManyToManyCollectionAdapter.cs" />
     <Compile Include="Migrations\00000000000001_AddRoles.cs" />
-    <Compile Include="Migrations\00000000000002_AddFriendView.cs" />
     <Compile Include="Migrations\00000000000000_Initial.cs" />
     <Compile Include="Migrations\00000000000000_Initial.designer.cs">
       <DependentUpon>00000000000000_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\EntityDataContextModelSnapshot.cs" />
     <Compile Include="NpgsqlLog4NetLoggingProvider.cs" />
+    <Compile Include="PlayerContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepositoryManager.cs" />
+    <Compile Include="PersistenceContextProvider.cs" />
     <Compile Include="ExtendedTypes.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ExtendedTypes.tt</DependentUpon>
     </Compile>
+    <Compile Include="RepositoryManager.cs" />
     <Compile Include="TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>

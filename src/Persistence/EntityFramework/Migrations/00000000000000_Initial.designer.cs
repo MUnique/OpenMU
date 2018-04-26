@@ -387,7 +387,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("ExitGate","config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.FriendViewItem", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Friend", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -402,7 +402,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FriendViewItem","data");
+                    b.ToTable("Friend","friend");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", b =>

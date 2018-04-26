@@ -2,17 +2,17 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence
+namespace MUnique.OpenMU.Persistence.InMemory
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
     /// <summary>
-    /// A repository wich lives on memory only.
+    /// A repository which lives on memory only.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public class MemoryRepository<TValue> : IRepository<TValue>
+    public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     {
         private readonly IDictionary<Guid, TValue> values = new Dictionary<Guid, TValue>();
 
@@ -24,6 +24,25 @@ namespace MUnique.OpenMU.Persistence
         public void Add(Guid key, TValue obj)
         {
             this.values.Add(key, obj);
+        }
+
+        /// <inheritdoc />
+        public void Add(Guid key, object obj)
+        {
+            if (obj is TValue value)
+            {
+                this.values.Add(key, value);
+            }
+            else
+            {
+                throw new ArgumentException($"Given object is not of type {typeof(TValue)}", nameof(obj));
+            }
+        }
+
+        /// <inheritdoc />
+        public void Remove(Guid key)
+        {
+            this.Delete(key);
         }
 
         /// <inheritdoc/>

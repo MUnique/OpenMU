@@ -18,19 +18,19 @@ namespace MUnique.OpenMU.AdminPanel
     {
         private readonly IList<IManageableServer> servers;
 
-        private readonly IRepositoryManager repositoryManager;
+        private readonly IPersistenceContextProvider persistenceContextProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MyBootstrapper"/> class.
         /// </summary>
         /// <param name="servers">All manageable servers.</param>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public MyBootstrapper(IList<IManageableServer> servers, IRepositoryManager repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public MyBootstrapper(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider)
         {
             this.servers = servers;
-            this.repositoryManager = repositoryManager;
+            this.persistenceContextProvider = persistenceContextProvider;
 
-            JsonSettings.Converters.Add(new AttributeDictionaryConverter(this.repositoryManager));
+            JsonSettings.Converters.Add(new AttributeDictionaryConverter(this.persistenceContextProvider));
             JsonSettings.Converters.Add(new TimeSpanConverter());
         }
 
@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.AdminPanel
         {
             base.ConfigureApplicationContainer(container);
             container.Register(this.servers);
-            container.Register(this.repositoryManager);
+            container.Register(this.persistenceContextProvider);
         }
     }
 }

@@ -119,7 +119,17 @@ public ICollection<GuildMember> RawMembers { get; } = new List<GuildMember>();
     /// </summary>
     [Table("GuildMember", Schema = "data")]
     internal partial class GuildMember : MUnique.OpenMU.DataModel.Entities.GuildMember, IIdentifiable
-    {        
+    {
+        public GuildMember()
+        {
+            this.InitJoinCollections();
+        } 
+
+        public GuildMember(System.Guid id)
+          : base (id)
+        {
+            this.InitJoinCollections();
+        }        
 
         protected void InitJoinCollections()
         {
@@ -4391,10 +4401,10 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
     }
 
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.Interfaces.FriendViewItem"/>.
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.Interfaces.Friend"/>.
     /// </summary>
-    [Table("FriendViewItem", Schema = "data")]
-    internal partial class FriendViewItem : MUnique.OpenMU.Interfaces.FriendViewItem, IIdentifiable
+    [Table("Friend", Schema = "data")]
+    internal partial class Friend : MUnique.OpenMU.Interfaces.Friend, IIdentifiable
     {        
 
         protected void InitJoinCollections()
@@ -4488,7 +4498,7 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.SimpleElement>();
             modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.AttributeRelationshipElement>();
             modelBuilder.Ignore<MUnique.OpenMU.Interfaces.LetterHeader>();
-            modelBuilder.Ignore<MUnique.OpenMU.Interfaces.FriendViewItem>();
+            modelBuilder.Ignore<MUnique.OpenMU.Interfaces.Friend>();
         }
 
         /// <summary>

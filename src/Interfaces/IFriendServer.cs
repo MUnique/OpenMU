@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Interfaces
         /// </summary>
         /// <param name="characterId">Id of the character.</param>
         /// <returns>The friend list of a character.</returns>
-        IEnumerable<FriendViewItem> GetFriendList(Guid characterId);
+        IEnumerable<string> GetFriendList(Guid characterId);
 
         /// <summary>
         /// Sets the online state of a character.

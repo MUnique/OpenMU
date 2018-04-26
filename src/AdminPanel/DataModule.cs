@@ -21,45 +21,46 @@ namespace MUnique.OpenMU.AdminPanel
     public class DataModule : NancyModule
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(DataModule));
-        private readonly IRepositoryManager repositoryManager;
+        private readonly IPersistenceContextProvider persistenceContextProvider;
         private readonly IList<string> registeredRepositoryTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataModule"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public DataModule(IRepositoryManager repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public DataModule(IPersistenceContextProvider persistenceContextProvider)
             : base("/data")
         {
-            this.repositoryManager = repositoryManager;
+            this.persistenceContextProvider = persistenceContextProvider;
             this.registeredRepositoryTypes = new List<string>();
             this.Get["/registered"] = _ => this.Response.AsJson(this.registeredRepositoryTypes);
 
-            this.RegisterRepository(repositoryManager.GetRepository<GameConfiguration>());
+            this.RegisterType<GameConfiguration>();
 
             // TODO: add authentification
         }
 
-        private void RegisterRepository<T>(IRepository<T> repository)
+        private void RegisterType<T>()
             where T : class
         {
             var className = typeof(T).Name;
             this.Get[className] = _ =>
-                {
-                    var allData = repository.GetAll();
-                    var list = JsonConvert.SerializeObject(
-                        allData,
-                        Formatting.None,
-                        new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            {
+                var context = this.persistenceContextProvider.CreateNewContext();
+                var allData = context.Get<T>();
+                var list = JsonConvert.SerializeObject(
+                    allData,
+                    Formatting.None,
+                    new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-                    return list;
-                };
-            this.Get[className + "/{id:guid}"] = _ => this.Response.AsJson(repository.GetById((Guid)_.id));
+                return list;
+            };
+            this.Get[className + "/{id:guid}"] = _ => FormatterExtensions.AsJson<T>(this.Response, this.GetById<T>((Guid)_.id));
             this.Get[className + "/enums"] = _ => this.GetEnums<T>();
-            this.Post[className] = _ => this.Save(repository);
-            this.Post[className + "/all"] = _ => this.SaveAll(repository);
-            this.Delete[className] = _ => repository.Delete(this.Bind<T>());
-            this.Delete[className + "/{id:guid}"] = _ => repository.Delete((Guid)_.id);
+            this.Post[className] = _ => this.Save<T>();
+            this.Post[className + "/all"] = _ => this.SaveAll<T>();
+            this.Delete[className] = _ => this.DeleteItem(this.Bind<T>());
+            this.Delete[className + "/{id:guid}"] = _ => this.DeleteItemById<T>((Guid)_.id);
 
             this.registeredRepositoryTypes.Add(className);
         }
@@ -71,17 +72,17 @@ namespace MUnique.OpenMU.AdminPanel
             return result;
         }
 
-        private dynamic SaveAll<T>(IRepository<T> repository)
+        private dynamic SaveAll<T>()
             where T : class
         {
             try
             {
                 var foo = this.Bind<IEnumerable<T>>();
-                using (var context = this.repositoryManager.UseTemporaryContext())
+                using (var context = this.persistenceContextProvider.CreateNewContext())
                 {
                     foreach (T item in foo)
                     {
-                        this.UpdateOrCreateObject(repository, item);
+                        this.UpdateOrCreateObject(context, item);
                     }
 
                     return context.SaveChanges();
@@ -94,7 +95,7 @@ namespace MUnique.OpenMU.AdminPanel
             }
         }
 
-        private dynamic Save<T>(IRepository<T> repository)
+        private dynamic Save<T>()
             where T : class
         {
             byte[] body = new byte[this.Request.Body.Length];
@@ -105,10 +106,10 @@ namespace MUnique.OpenMU.AdminPanel
 
             try
             {
-                using (var context = this.repositoryManager.UseTemporaryContext())
+                using (var context = this.persistenceContextProvider.CreateNewContext())
                 {
                     var item = this.Bind<T>();
-                    this.UpdateOrCreateObject(repository, item);
+                    this.UpdateOrCreateObject(context, item);
                     return context.SaveChanges();
                 }
             }
@@ -119,11 +120,64 @@ namespace MUnique.OpenMU.AdminPanel
             }
         }
 
-        private void UpdateOrCreateObject<T>(IRepository<T> repository, T item)
+        private dynamic GetById<T>(Guid id)
+            where T : class
+        {
+            try
+            {
+                using (var context = this.persistenceContextProvider.CreateNewContext())
+                {
+                    return context.GetById<T>(id);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                return false;
+            }
+        }
+
+        private dynamic DeleteItemById<T>(Guid id)
+            where T : class
+        {
+            try
+            {
+                using (var context = this.persistenceContextProvider.CreateNewContext())
+                {
+                    context.Delete(context.GetById<T>(id));
+                    return context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                return false;
+            }
+        }
+
+        private dynamic DeleteItem<T>(T item)
+            where T : class
+        {
+            try
+            {
+               using (var context = this.persistenceContextProvider.CreateNewContext())
+               {
+                   context.Delete(item);
+                   return context.SaveChanges();
+               }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                return false;
+            }
+        }
+
+        private void UpdateOrCreateObject<T>(IContext context, T item)
             where T : class
         {
             var itemId = item.GetId();
-            T persistentItem = itemId != Guid.Empty ? repository.GetById(itemId) : this.repositoryManager.CreateNew<T>();
+            T persistentItem = itemId != Guid.Empty ? context.GetById<T>(itemId) : context.CreateNew<T>();
 
             FieldInfo[] myObjectFields = item.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 

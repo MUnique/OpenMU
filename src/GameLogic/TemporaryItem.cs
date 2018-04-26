@@ -27,11 +27,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Makes this item persistent.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="persistenceContext">The persistence context where the item should be added.</param>
         /// <returns>The persistent item.</returns>
-        public Item MakePersistent(IRepositoryManager repositoryManager)
+        public Item MakePersistent(IContext persistenceContext)
         {
-            var persistentItem = repositoryManager.CreateNew<Item>();
+            var persistentItem = persistenceContext.CreateNew<Item>();
             persistentItem.AssignValues(this);
             return persistentItem;
         }

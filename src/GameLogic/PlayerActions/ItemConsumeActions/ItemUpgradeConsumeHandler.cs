@@ -20,10 +20,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemUpgradeConsumeHandler"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="configuration">The configuration.</param>
-        internal ItemUpgradeConsumeHandler(IRepositoryManager repositoryManager, ItemUpgradeConfiguration configuration)
-            : base(repositoryManager)
+        internal ItemUpgradeConsumeHandler(IPersistenceContextProvider persistenceContextProvider, ItemUpgradeConfiguration configuration)
+            : base(persistenceContextProvider)
         {
             this.Configuration = configuration;
         }
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         internal ItemUpgradeConfiguration Configuration { get; }
 
         /// <inheritdoc/>
-        protected override bool ModifyItem(Item item)
+        protected override bool ModifyItem(Item item, IContext persistenceContext)
         {
             if (!this.ItemCanHaveOption(item))
             {
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return this.TryUpgradeItemOption(item);
             }
 
-            return this.TryAddItemOption(item);
+            return this.TryAddItemOption(item, persistenceContext);
         }
 
         private bool TryUpgradeItemOption(Item item)
@@ -118,7 +118,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             }
         }
 
-        private bool TryAddItemOption(Item item)
+        private bool TryAddItemOption(Item item, IContext persistenceContext)
         {
             if (!this.Configuration.AddsOption)
             {
@@ -136,7 +136,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                     return false;
                 }
 
-                var optionLink = this.RepositoryManager.CreateNew<ItemOptionLink>();
+                var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
                 optionLink.ItemOption = possibleOptions.SelectRandom();
                 optionLink.Level = 1;
                 item.ItemOptions.Add(optionLink);

@@ -4,23 +4,29 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
+    using System;
+    using System.Collections.Generic;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
-    /// Implementation of <see cref="IContext"/> for the entity framework <see cref="RepositoryManager"/>.
+    /// Implementation of <see cref="IContext"/> for the entity framework <see cref="PersistenceContextProvider"/>.
     /// </summary>
-    internal sealed class EntityFrameworkContext : IContext
+    public class EntityFrameworkContext : IContext
     {
+        [Obsolete]
         private readonly bool isOwner;
+        private readonly PersistenceContextProvider contextProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityFrameworkContext" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="contextProvider">The contextProvider.</param>
         /// <param name="isOwner">if set to <c>true</c> this instance owns the <paramref name="context" />.</param>
-        public EntityFrameworkContext(DbContext context, bool isOwner = true)
+        public EntityFrameworkContext(DbContext context, PersistenceContextProvider contextProvider, bool isOwner = true)
         {
             this.Context = context;
+            this.contextProvider = contextProvider;
             this.isOwner = isOwner;
         }
 
@@ -28,6 +34,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Gets the entity framework context.
         /// </summary>
         public DbContext Context { get; private set; }
+
+        /// <summary>
+        /// Gets the context provider.
+        /// </summary>
+        /// <value>
+        /// The context provider.
+        /// </value>
+        protected PersistenceContextProvider ContextProvider => this.contextProvider;
 
         /// <inheritdoc/>
         public bool SaveChanges()
@@ -63,6 +77,55 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
 
             this.Context = null;
+        }
+
+        /// <summary>
+        /// Creates a new instance of <typeparamref name="T" />.
+        /// </summary>
+        /// <typeparam name="T">The type which should get created.</typeparam>
+        /// <param name="args">The arguments which are handed 1-to-1 to the constructor. If no arguments are given, the default constructor will be called.</param>
+        /// <returns>
+        /// A new instance of <typeparamref name="T" />.
+        /// </returns>
+        public T CreateNew<T>(params object[] args)
+            where T : class
+        {
+            var instance = TypeHelper.CreateNew<T>(args);
+            if (instance != null)
+            {
+                this.Context.Add(instance);
+            }
+
+            return instance;
+        }
+
+        /// <inheritdoc/>
+        public bool Delete<T>(T obj)
+            where T : class
+        {
+            return this.Context.Remove(obj) != null;
+        }
+
+        /// <inheritdoc/>
+        public T GetById<T>(Guid id)
+            where T : class
+        {
+            using (this.contextProvider.UseContext(this))
+            {
+                var repository = this.contextProvider.RepositoryManager.GetRepository<T>();
+                return repository.GetById(id);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<T> Get<T>()
+            where T : class
+        {
+            using (this.contextProvider.UseContext(this))
+            {
+                var repository = this.contextProvider.RepositoryManager.GetRepository<T>();
+                return repository.GetAll();
+            }
         }
     }
 }

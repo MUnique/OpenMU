@@ -62,6 +62,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ChatServerAuthenticationInfo.cs" />
+    <Compile Include="Friend.cs" />
     <Compile Include="FriendViewItem.cs" />
     <Compile Include="Guild.cs" />
     <Compile Include="GuildMemberStatus.cs" />

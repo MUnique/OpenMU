@@ -4,54 +4,23 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory
 {
-    using System;
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.Persistence.EntityFramework;
-
     /// <summary>
-    /// A repository manager which uses in-memory repositories, e.g. for testing or demo purposes.
+    /// A repository manager which creates new in-memory repositories on-demand.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.Persistence.BaseRepositoryManager" />
     public class InMemoryRepositoryManager : BaseRepositoryManager
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InMemoryRepositoryManager"/> class.
+        /// Gets the memory repository, and creates it if it wasn't created yet.
         /// </summary>
-        public InMemoryRepositoryManager()
+        /// <typeparam name="T">The type of the business object.</typeparam>
+        /// <returns>The memory repository.</returns>
+        public new MemoryRepository<T> GetRepository<T>()
         {
-            this.RegisterRepository(new MemoryRepository<GameConfiguration>());
-            var accountRepository = new AccountRepository();
-            this.RegisterRepository(accountRepository);
-            this.RegisterRepository(new FriendViewItemRepository(accountRepository));
-            this.RegisterRepository(new LetterBodyRepository());
-        }
-
-        /// <inheritdoc />
-        public override IRepository<T> GetRepository<T>()
-        {
-            return this.InternalGetRepository(typeof(T)) as IRepository<T>
+            return this.InternalGetRepository(typeof(T)) as MemoryRepository<T>
                    ?? this.CreateAndRegisterMemoryRepository<T>();
         }
 
-        /// <inheritdoc/>
-        public override T CreateNew<T>(params object[] args)
-        {
-            var newObject = TypeHelper.CreateNew<T>(args);
-            if (newObject is IIdentifiable identifiable)
-            {
-                if (identifiable.Id == Guid.Empty)
-                {
-                    identifiable.Id = Guid.NewGuid();
-                }
-
-                var repository = this.GetRepository<T>() as MemoryRepository<T>;
-                repository?.Add(identifiable.Id, newObject);
-            }
-
-            return newObject;
-        }
-
-        private IRepository<T> CreateAndRegisterMemoryRepository<T>()
+        private MemoryRepository<T> CreateAndRegisterMemoryRepository<T>()
         {
             var repository = new MemoryRepository<T>();
             this.RegisterRepository(repository);

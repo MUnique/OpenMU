@@ -17,16 +17,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemModifyConsumeHandler"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        protected ItemModifyConsumeHandler(IRepositoryManager repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        protected ItemModifyConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
         {
-            this.RepositoryManager = repositoryManager;
+            this.PersistenceContextProvider = persistenceContextProvider;
         }
 
         /// <summary>
         /// Gets the repository manager.
         /// </summary>
-        protected IRepositoryManager RepositoryManager { get; }
+        protected IPersistenceContextProvider PersistenceContextProvider { get; }
 
         /// <inheritdoc/>
         public bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (!this.ModifyItem(item))
+            if (!this.ModifyItem(item, player.PersistenceContext))
             {
                 return false;
             }
@@ -64,7 +64,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// Modifies the item.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <param name="persistenceContext">The persistence context.</param>
         /// <returns>Flag indicating whether the modification of the item occured.</returns>
-        protected abstract bool ModifyItem(Item item);
+        protected abstract bool ModifyItem(Item item, IContext persistenceContext);
     }
 }

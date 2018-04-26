@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     internal class GenericRepository<T> : IRepository<T>, ILoadByProperty
         where T : class
     {
-        private readonly IRepositoryManager repositoryManager;
+        private readonly PersistenceContextProvider contextProvider;
 
         /// <summary>
         /// The complete meta model of the entity type in <see cref="EntityDataContext"/>.
@@ -32,10 +32,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericRepository{T}"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public GenericRepository(IRepositoryManager repositoryManager)
+        /// <param name="contextProvider">The repository manager.</param>
+        public GenericRepository(PersistenceContextProvider contextProvider)
         {
-            this.repositoryManager = repositoryManager;
+            this.contextProvider = contextProvider;
             using (var completeContext = new EntityDataContext())
             {
                 this.fullEntityType = completeContext.Model.FindEntityType(typeof(T));
@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <summary>
         /// Gets the repository manager.
         /// </summary>
-        protected IRepositoryManager RepositoryManager => this.repositoryManager;
+        protected PersistenceContextProvider ContextProvider => this.contextProvider;
 
         private static ILog Log { get; } = LogManager.GetLogger(typeof(GenericRepository<>).MakeGenericType(typeof(T)));
 
@@ -173,7 +173,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             loadStatusAware.LoadingStatus = LoadingStatus.Loading;
 
-            if (this.repositoryManager.GetRepository(foreignKeyProperty.DeclaringEntityType.ClrType) is ILoadByProperty repository)
+            if (this.contextProvider.RepositoryManager.GetRepository(foreignKeyProperty.DeclaringEntityType.ClrType) is ILoadByProperty repository)
             {
                 var foreignKeyValue = entityEntry.Property(navigation.ForeignKey.PrincipalKey.Properties.First().Name).CurrentValue;
                 var items = repository.LoadByProperty(foreignKeyProperty, foreignKeyValue);
@@ -224,7 +224,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 IRepository repository = null;
                 try
                 {
-                    repository = this.repositoryManager.GetRepository(navigation.GetTargetType().ClrType);
+                    repository = this.contextProvider.RepositoryManager.GetRepository(navigation.GetTargetType().ClrType);
                 }
                 catch (RepositoryNotFoundException ex)
                 {
@@ -262,9 +262,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>The context.</returns>
         protected virtual EntityFrameworkContext GetContext()
         {
-            var context = this.repositoryManager.GetCurrentContext() as EntityFrameworkContext;
+            var context = this.contextProvider.GetCurrentContext() as EntityFrameworkContext;
 
-            return new EntityFrameworkContext(context?.Context ?? new EntityDataContext(), context == null);
+            return new EntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.contextProvider, context == null);
         }
 
         private IEnumerable LoadByPropertyInternal(IProperty property, object propertyValue, DbContext context)

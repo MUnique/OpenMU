@@ -81,8 +81,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         {
             using (var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
             using (var partnerContext = tradingPartner.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
-            using (var itemContext = this.gameContext.RepositoryManager.CreateNewAccountContext(this.gameContext.Configuration))
-            using (this.gameContext.RepositoryManager.UseContext(itemContext))
+            using (var itemContext = this.gameContext.PersistenceContextProvider.CreateNewPlayerContext(this.gameContext.Configuration))
             {
                 if (!context.Allowed || !partnerContext.Allowed)
                 {

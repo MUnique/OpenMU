@@ -14,16 +14,16 @@ namespace MUnique.OpenMU.Persistence.Initialization
     /// </summary>
     public class Gates
     {
-        private IRepositoryManager repositoryManager;
+        private IContext context;
 
         /// <summary>
         /// Initializes the gates.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager. It should contain a filled game map repository.</param>
+        /// <param name="context">The repository manager.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
-        public void Initialize(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
+        public void Initialize(IContext context, GameConfiguration gameConfiguration)
         {
-            this.repositoryManager = repositoryManager;
+            this.context = context;
             var maps = gameConfiguration.Maps.ToDictionary(map => map.Number, map => map);
             var targetGates = this.CreateTargetGates(maps);
             this.CreateEnterGates(maps, targetGates);
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private WarpInfo CreateWarpInfo(ushort index, string name, int costs, int levelRequirement, ExitGate gate)
         {
-            var warpInfo = this.repositoryManager.CreateNew<WarpInfo>();
+            var warpInfo = this.context.CreateNew<WarpInfo>();
             warpInfo.Index = index;
             warpInfo.Name = name;
             warpInfo.Costs = costs;
@@ -98,7 +98,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private ExitGate CreateExitGate(GameMapDefinition map, byte x1, byte y1, byte x2, byte y2, byte direction, bool isSpawnGate = false)
         {
-            var gate = this.repositoryManager.CreateNew<ExitGate>();
+            var gate = this.context.CreateNew<ExitGate>();
             gate.Map = map;
             gate.X1 = x1;
             gate.Y1 = y1;
@@ -363,7 +363,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private EnterGate CreateEnterGate(short number, ExitGate targetGate, byte x1, byte y1, byte x2, byte y2, short levelRequirement)
         {
-            var enterGate = this.repositoryManager.CreateNew<EnterGate>();
+            var enterGate = this.context.CreateNew<EnterGate>();
             enterGate.Number = number;
             enterGate.LevelRequirement = levelRequirement;
             enterGate.TargetGate = targetGate;

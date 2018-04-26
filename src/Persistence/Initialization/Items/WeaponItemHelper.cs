@@ -15,10 +15,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <summary>
         /// Initializes a new instance of the <see cref="WeaponItemHelper" /> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configration.</param>
-        public WeaponItemHelper(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
-            : base(repositoryManager, gameConfiguration)
+        public WeaponItemHelper(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
         {
         }
 

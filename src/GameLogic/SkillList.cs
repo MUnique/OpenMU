@@ -71,7 +71,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public void AddLearnedSkill(Skill skill)
         {
-            var skillEntry = this.player.GameContext.RepositoryManager.CreateNew<SkillEntry>();
+            var skillEntry = this.player.PersistenceContext.CreateNew<SkillEntry>();
             skillEntry.Skill = skill;
             skillEntry.Level = 0;
             this.AddLearnedSkill(skillEntry);

@@ -19,13 +19,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Exile";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IRepositoryManager repositoryManager, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
         {
             yield break;
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
         {
             // no monsters here
         }

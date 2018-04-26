@@ -15,9 +15,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <summary>
         /// Initializes a new instance of the <see cref="HigherRefineStoneConsumeHandler" /> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public HigherRefineStoneConsumeHandler(IRepositoryManager repositoryManager)
-            : base(repositoryManager, new ItemUpgradeConfiguration { AddsOption = false, IncreasesOption = true, OptionType = ItemOptionTypes.HarmonyOption, SuccessChance = 0.5, FailResult = ItemFailResult.SetOptionToLevelOne })
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public HigherRefineStoneConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
+            : base(persistenceContextProvider, new ItemUpgradeConfiguration { AddsOption = false, IncreasesOption = true, OptionType = ItemOptionTypes.HarmonyOption, SuccessChance = 0.5, FailResult = ItemFailResult.SetOptionToLevelOne })
         {
         }
     }

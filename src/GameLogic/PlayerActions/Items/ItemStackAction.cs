@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     player.PlayerView.InventoryView.ItemConsumed(jewel.ItemSlot, true);
                 }
 
-                var stacked = this.gameContext.RepositoryManager.CreateNew<Item>();
+                var stacked = player.PersistenceContext.CreateNew<Item>();
                 stacked.Definition = mix.MixedJewel;
                 stacked.Level = (byte)(stackSize / 10);
                 stacked.Durability = 1;
@@ -132,7 +132,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             player.PlayerView.InventoryView.ItemConsumed(slot, true);
             foreach (var freeSlot in freeSlots)
             {
-                var jewel = this.gameContext.RepositoryManager.CreateNew<Item>();
+                var jewel = player.PersistenceContext.CreateNew<Item>();
                 jewel.Definition = mix.SingleJewel;
                 jewel.Durability = 1;
                 jewel.ItemSlot = freeSlot;

@@ -35,13 +35,13 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="gameServerDefinition">The game server definition.</param>
         /// <param name="guildServer">The guild server.</param>
         /// <param name="loginServer">The login server.</param>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="friendServer">The friend server.</param>
         public GameServer(
             GameServerDefinition gameServerDefinition,
             IGuildServer guildServer,
             ILoginServer loginServer,
-            IRepositoryManager repositoryManager,
+            IPersistenceContextProvider persistenceContextProvider,
             IFriendServer friendServer)
         {
             this.Id = gameServerDefinition.ServerID;
@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameServer
 
             try
             {
-                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, repositoryManager);
+                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider);
             }
             catch (Exception ex)
             {

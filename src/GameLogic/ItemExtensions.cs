@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Extension methods for <see cref="Item"/>.
@@ -72,11 +73,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Creates a persistent instance of the given <see cref="ItemAppearance"/> and returns it.
         /// </summary>
         /// <param name="itemAppearance">The item appearance.</param>
-        /// <param name="gameContext">The game context.</param>
+        /// <param name="persistenceContext">The persistence context where the object should be added.</param>
         /// <returns>A persistent instance of the given <see cref="ItemAppearance"/>.</returns>
-        public static ItemAppearance MakePersistent(this ItemAppearance itemAppearance, IGameContext gameContext)
+        public static ItemAppearance MakePersistent(this ItemAppearance itemAppearance, IContext persistenceContext)
         {
-            var persistent = gameContext.RepositoryManager.CreateNew<ItemAppearance>();
+            var persistent = persistenceContext.CreateNew<ItemAppearance>();
             persistent.ItemSlot = itemAppearance.ItemSlot;
             persistent.Definition = itemAppearance.Definition;
             persistent.Level = itemAppearance.Level;

@@ -47,16 +47,13 @@ namespace MUnique.OpenMU.GameLogic
             Item convertedItem = null;
             if (item is TemporaryItem temporaryItem)
             {
-                using (this.player.GameContext.RepositoryManager.UseContext(this.player.PersistenceContext))
-                {
-                    convertedItem = temporaryItem.MakePersistent(this.player.GameContext.RepositoryManager);
-                }
+                convertedItem = temporaryItem.MakePersistent(this.player.PersistenceContext);
             }
 
             var success = base.AddItem(slot, item);
             if (!success && convertedItem != null)
             {
-                this.player.GameContext.RepositoryManager.GetRepository<Item>().Delete(convertedItem);
+                this.player.PersistenceContext.Delete(convertedItem);
             }
 
             return success;

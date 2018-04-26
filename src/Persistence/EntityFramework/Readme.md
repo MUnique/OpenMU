@@ -1,6 +1,7 @@
 ﻿# Persistence by Entity Framework Core
 
-This project implements the persistence layer by using the Entity Framework Core. The database should be free to choose, but we test with PostgreSQL.
+This project implements the persistence layer by using the Entity Framework Core.
+The database should be free to choose, but we test with PostgreSQL and it might be possible that the migrations are only working on PostgreSQL, too.
 
 ## Entity Model
 
@@ -31,6 +32,7 @@ If you're interested of how the result looks like, have a look at [ExtendedTypes
 ## Schemas
 
 To keep access to game configuration data restricted for account contexts (= connected clients), we put configuration and account data into separate schemas.
+There might be additional schemas and users for the friend and guild servers.
 
 ### Configuration
 
@@ -41,16 +43,18 @@ So this user should have the required rights to grant this rights.
 
 ## Repository Pattern
 
-We decided to use a repository pattern to keep the application code independent of a specific ORM or database. The application itself uses just a tiny amount of these repositories (most likely AccountRepository and GameConfigurationRepository).
-However, each entity type has basically one repository, some are manually implemented, some are generic.
-The implementation of this pattern is probably not the same as all of the examples of what you'll find at the internet. Workarounds and different requirements result in different implementations ;-)
+All application logic uses the contexts provided by the [PersistenceContextProvider](PersistenceContextProvider.cs). The provided contexts load their data not directly from ef core contexts,
+but access repositories. That's because we want to eagerly load objects which means we want to retrieve the complete object graph with all dependent data, when we access our "Contexts".
+We're also caching configuration data with this approach, by using so called [ConfigurationTypeRepositories](ConfigurationTypeRepository.cs).
 
-There is a "RepositoryManager" which holds and "manages" all of these repositories.
-Because the actual persistent type is not known to the application, it also offers a method to create new objects by giving it the known base type. Of course, using a dependency injection container could also be used at a later stage.
+Each entity type has basically one repository, some are manually implemented, some are generic. There is a [RepositoryManager](RepositoryManager.cs) which holds and "manages" all of these repositories.
+The implementation of this pattern is probably not the same as all of the examples of what you'll find at the internet. Workarounds and different requirements result in different implementations ;-)
 
 ### Loading whole object graphs
 
-We want to keep the usage of these repositories in the application code low, so we have to load objects as a whole.
+As the application code expects a fully loaded object when loading through the contexts, we have to load objects as a whole.
+It might also be possible to lazy-load dependent data, but this can lead to bad performance here. As we know that we actually need the whole data in our use cases,
+it makes sense to fully load the objects up-front.
 
 For example, when we want to load a game configuration, we want to load all collection and navigation properties and cache them for later accesses.
 That seems slow at the start of the server, but it's an advantage when loading accounts which reference a lot of configuration data later.
@@ -63,38 +67,25 @@ To load all whole object graphs, the repositories are iterating through the navi
 If they are not loaded yet (specified by each EntityEntry), it loads them by accessing the repository of the property type.
 This is also the reason why every type needs it's own repository, otherwise it wouldn't work.
 
+#### Loading full objects by json queries
+
+The repositories of Accounts and GameConfiguration objects load their objects (and all dependencies) in one go - by using some JSON functions of PostgreSQL.
+You can read about it [here](https://munique.net/loading-complex-data-with-postgresql-json-functions/) and [here](https://github.com/MUnique/OpenMU/issues/10).
+
+
 ### Context management
 The concept of a context is probably most common when working with EntityFramework ORMs.
 
-The application code does not directly use DBContext of the entity framework. We have an abstraction by using an interface IContext,
-and an [implementation](EntityFrameworkContext.cs) which holds the DBContext. Other ORMs do have similar concepts 
-(like NHibernate sessions) and we try to keep the context abstraction compatible to such usage cases.
+The application code does not directly use DBContext of the entity framework. We have an abstraction by using an interface IContext and some
+inherited ones for different use-cases. The [base implementation](EntityFrameworkContext.cs) holds the DBContext which is used by the repositories.
+Other ORMs do have similar concepts (like NHibernate sessions) and we try to keep the context abstraction compatible to such use cases.
 
 In case of this server, it gives each connected account one account context. All of the changes of one account are tracked in this context.
 When we want to save an account we just call SaveChanges on this context. Sounds easy, right? :)
 
 However, it gets difficult when more than one account is involved by an entity, e.g. Items which are changing the owner to another account, 
-by trade or drop/pickup. These are challenges which are still to solve.
+by trade or drop/pickup. When doing a trade, the items of both trading players are attached to a new *trade context*, which saves the changes on trade completion.
+After a trade finished, the traded items are attached to their corresponding contexts of their players.
 
 With this abstraction of a context we can also use other ORMs such as NHibernate or NoSQL databases which save documents with just one call - 
-we would save and commit the corresponding account of such sessions at the SaveChanges method.
-
-#### Creating new entity instances
-Because the creation of a new object needs to be done on a context (for change tracking etc.), there needs to be a context to which the item is added.
-We use some kind of a thread-specific stack, which means that if you want to create a new entity, a context needs to be on the stack. To put one on to the stack, there is the function UseContext at the RepositoryManager.
-The usage is like the following:
-```csharp
-Account CreateAndSaveNewAccount(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
-{
-  var accountContext = repositoryManager.CreateNewAccountContext(gameConfiguration);
-  using (repositoryManager.UseContext(accountContext))
-  {
-    var account = repositoryManager.CreateNew<Account>(); // requires that a context is on the stack on the same thread
-    // set some values...
-  }
-
-  context.SaveChanges(); // can be outside of using
-
-  return account;
-}
-```
+we would save and commit the corresponding data of such sessions at the SaveChanges method.

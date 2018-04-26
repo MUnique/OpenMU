@@ -23,9 +23,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <summary>
         /// Initializes a new instance of the <see cref="GameConfigurationRepository"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public GameConfigurationRepository(IRepositoryManager repositoryManager)
-            : base(repositoryManager)
+        /// <param name="contextProvider">The context provider.</param>
+        public GameConfigurationRepository(PersistenceContextProvider contextProvider)
+            : base(contextProvider)
         {
             this.objectLoader = new GameConfigurationJsonObjectLoader();
         }
@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public override GameConfiguration GetById(Guid id)
         {
-            var currentContext = this.RepositoryManager.GetCurrentContext() as EntityFrameworkContext;
+            var currentContext = this.ContextProvider.GetCurrentContext() as EntityFrameworkContext;
             if (currentContext == null)
             {
                 throw new InvalidOperationException("There is no current context set.");
@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public override IEnumerable<GameConfiguration> GetAll()
         {
-            var currentContext = this.RepositoryManager.GetCurrentContext() as EntityFrameworkContext;
+            var currentContext = this.ContextProvider.GetCurrentContext() as EntityFrameworkContext;
             if (currentContext == null)
             {
                 throw new InvalidOperationException("There is no current context set.");

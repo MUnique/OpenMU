@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var letters = this.player.SelectedCharacter.Letters;
             var friends = this.friendServer.GetFriendList(this.player.SelectedCharacter.Id);
-            var friendList = friends as ICollection<FriendViewItem> ?? friends.ToList();
+            var friendList = friends as ICollection<string> ?? friends.ToList();
 
             var letterCount = (byte)letters.Count;
             if (friendList.Count == 0)
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 foreach (var friend in friendList)
                 {
                     var offset = 7 + (i * sizePerFriend);
-                    Encoding.ASCII.GetBytes(friend.FriendName, 0, friend.FriendName.Length, packet, offset);
+                    Encoding.ASCII.GetBytes(friend, 0, friend.Length, packet, offset);
                     packet[offset + sizePerFriend - 1] = 0xFF;
                     i++;
                 }

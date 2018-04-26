@@ -15,9 +15,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <summary>
         /// Initializes a new instance of the <see cref="HarmonyJewelConsumeHandler" /> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public HarmonyJewelConsumeHandler(IRepositoryManager repositoryManager)
-            : base(repositoryManager, new ItemUpgradeConfiguration { AddsOption = true, IncreasesOption = false, OptionType = ItemOptionTypes.HarmonyOption, SuccessChance = 0.5 })
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public HarmonyJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
+            : base(persistenceContextProvider, new ItemUpgradeConfiguration { AddsOption = true, IncreasesOption = false, OptionType = ItemOptionTypes.HarmonyOption, SuccessChance = 0.5 })
         {
         }
     }

@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
-    using System.Collections.Generic;
     using System.Linq;
     using BCrypt.Net;
     using Microsoft.EntityFrameworkCore;
@@ -13,19 +12,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <summary>
     /// Repository for accounts.
     /// </summary>
-    internal class AccountRepository : GenericRepository<Account>, IAccountRepository
+    internal class AccountRepository : GenericRepository<Account>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountRepository"/> class.
         /// </summary>
-        /// <param name="manager">The manager.</param>
-        public AccountRepository(IRepositoryManager manager)
-            : base(manager)
+        /// <param name="contextProvider">The context provider.</param>
+        public AccountRepository(PersistenceContextProvider contextProvider)
+            : base(contextProvider)
         {
         }
 
-        /// <inheritdoc/>
-        public DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
+        /// <summary>
+        /// Gets the account by login name if the password is correct.
+        /// </summary>
+        /// <param name="loginName">The login name.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>The account, if the password is correct. Otherwise, null.</returns>
+        internal DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
         {
             using (var context = this.GetContext())
             {
@@ -39,40 +43,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
         }
 
-        /// <inheritdoc />
-        public IEnumerable<DataModel.Entities.Account> GetAccountsOrderedByLoginName(int skip, int count)
-        {
-            using (var context = this.GetContext())
-            {
-                var accounts = context.Context.Set<Account>()
-                    .OrderBy(a => a.LoginName)
-                    .Skip(skip)
-                    .Take(count);
-                return accounts.ToList();
-            }
-        }
-
         private Account LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContext context)
         {
-            if (this.RepositoryManager is RepositoryManager manager)
+            var accountInfo = context.Context.Set<Account>()
+                .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
+                .FirstOrDefault(a => a.LoginName == loginName && BCrypt.Verify(password, a.PasswordHash, false));
+            if (accountInfo != null)
             {
-                var accountInfo = context.Context.Set<Account>()
-                    .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
-                    .FirstOrDefault(a => a.LoginName == loginName && BCrypt.Verify(password, a.PasswordHash, false));
-                if (accountInfo != null)
-                {
-                    manager.EnsureCachesForCurrentGameConfiguration();
+                this.ContextProvider.RepositoryManager.EnsureCachesForCurrentGameConfiguration();
 
-                    context.Context.Database.OpenConnection();
-                    try
-                    {
-                        var objectLoader = new AccountJsonObjectLoader();
-                        return objectLoader.LoadObject<Account>(accountInfo.Id, context.Context);
-                    }
-                    finally
-                    {
-                        context.Context.Database.CloseConnection();
-                    }
+                context.Context.Database.OpenConnection();
+                try
+                {
+                    var objectLoader = new AccountJsonObjectLoader();
+                    return objectLoader.LoadObject<Account>(accountInfo.Id, context.Context);
+                }
+                finally
+                {
+                    context.Context.Database.CloseConnection();
                 }
             }
 

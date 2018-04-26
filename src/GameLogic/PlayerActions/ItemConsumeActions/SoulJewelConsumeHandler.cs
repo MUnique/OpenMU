@@ -23,25 +23,25 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <summary>
         /// Initializes a new instance of the <see cref="SoulJewelConsumeHandler"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public SoulJewelConsumeHandler(IRepositoryManager repositoryManager)
-            : this(repositoryManager, Rand.GetRandomizer())
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public SoulJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
+            : this(persistenceContextProvider, Rand.GetRandomizer())
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoulJewelConsumeHandler"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="randomizer">The randomizer.</param>
-        public SoulJewelConsumeHandler(IRepositoryManager repositoryManager, IRandomizer randomizer)
-            : base(repositoryManager)
+        public SoulJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider, IRandomizer randomizer)
+            : base(persistenceContextProvider)
         {
             this.randomizer = randomizer;
         }
 
         /// <inheritdoc/>
-        protected override bool ModifyItem(Item item)
+        protected override bool ModifyItem(Item item, IContext persistenceContext)
         {
             if (item.Level > 8)
             {

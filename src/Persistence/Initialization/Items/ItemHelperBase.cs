@@ -43,17 +43,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemHelperBase" /> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configration.</param>
-        public ItemHelperBase(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
+        public ItemHelperBase(IContext context, GameConfiguration gameConfiguration)
         {
-            this.RepositoryManager = repositoryManager;
+            this.Context = context;
             this.GameConfiguration = gameConfiguration;
 
             this.damageBonusPerLevel = new List<LevelBonus>();
             for (int level = 1; level <= MaximumItemLevel; level++)
             {
-                var levelBonus = this.RepositoryManager.CreateNew<LevelBonus>();
+                var levelBonus = this.Context.CreateNew<LevelBonus>();
                 levelBonus.Level = level;
                 levelBonus.AdditionalValue = DamageIncreaseByLevel[level];
                 this.damageBonusPerLevel.Add(levelBonus);
@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <value>
         /// The repository manager.
         /// </value>
-        protected IRepositoryManager RepositoryManager { get; }
+        protected IContext Context { get; }
 
         /// <summary>
         /// Gets the item repository.
@@ -129,7 +129,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 if (this.excellentDefenseOptions == null)
                 {
-                    var definition = this.RepositoryManager.CreateNew<ItemOptionDefinition>();
+                    var definition = this.Context.CreateNew<ItemOptionDefinition>();
                     this.GameConfiguration.ItemOptions.Add(definition);
                     definition.Name = "Excellent Defense Options";
                     definition.AddChance = 0.001f;
@@ -158,7 +158,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 if (this.excellentPhysicalWeaponOptions == null)
                 {
-                    var definition = this.RepositoryManager.CreateNew<ItemOptionDefinition>();
+                    var definition = this.Context.CreateNew<ItemOptionDefinition>();
                     this.GameConfiguration.ItemOptions.Add(definition);
                     definition.Name = "Excellent Physical Weapon Options";
                     definition.AddChance = 0.001f;
@@ -187,7 +187,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 if (this.excellentWizardyWeaponOptions == null)
                 {
-                    var definition = this.RepositoryManager.CreateNew<ItemOptionDefinition>();
+                    var definition = this.Context.CreateNew<ItemOptionDefinition>();
                     this.GameConfiguration.ItemOptions.Add(definition);
                     definition.Name = "Excellent Wizardry Weapon Options";
                     definition.AddChance = 0.001f;
@@ -244,7 +244,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             int energyRequirement, int vitalityRequirement, int leadershipRequirement,
             int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
         {
-            var item = this.RepositoryManager.CreateNew<ItemDefinition>();
+            var item = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(item);
             item.Name = name;
             item.Group = group;
@@ -265,17 +265,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var qualifiedCharacterClasses = this.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
             qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-            var minDamagePowerUp = this.RepositoryManager.CreateNew<ItemBasePowerUpDefinition>();
+            var minDamagePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
             minDamagePowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MinimumPhysBaseDmgByWeapon);
             minDamagePowerUp.BaseValue = minimumDamage;
-            var maxDamagePowerUp = this.RepositoryManager.CreateNew<ItemBasePowerUpDefinition>();
+            var maxDamagePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
             maxDamagePowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MaximumPhysBaseDmgByWeapon);
             maxDamagePowerUp.BaseValue = maximumDamage;
             this.damageBonusPerLevel.ForEach(minDamagePowerUp.BonusPerLevel.Add);
             this.damageBonusPerLevel.ForEach(maxDamagePowerUp.BonusPerLevel.Add);
             item.BasePowerUpAttributes.Add(minDamagePowerUp);
             item.BasePowerUpAttributes.Add(maxDamagePowerUp);
-            var speedPowerUp = this.RepositoryManager.CreateNew<ItemBasePowerUpDefinition>();
+            var speedPowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
             speedPowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.AttackSpeed);
             speedPowerUp.BaseValue = attackSpeed;
             item.BasePowerUpAttributes.Add(speedPowerUp);
@@ -327,12 +327,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 item.PossibleItemOptions.Add(this.WizardryDamageOption);
                 item.PossibleItemOptions.Add(this.ExcellentWizardryWeaponOptions);
-                var staffRisePowerUpMinDmg = this.RepositoryManager.CreateNew<ItemBasePowerUpDefinition>();
+                var staffRisePowerUpMinDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 staffRisePowerUpMinDmg.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MinimumWizBaseDmg);
                 staffRisePowerUpMinDmg.BaseValue = 1f + (staffRise / 100f);
                 //// TODO: staffRisePowerUpMinDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
                 item.BasePowerUpAttributes.Add(staffRisePowerUpMinDmg);
-                var staffRisePowerUpMaxDmg = this.RepositoryManager.CreateNew<ItemBasePowerUpDefinition>();
+                var staffRisePowerUpMaxDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 staffRisePowerUpMaxDmg.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MaximumPhysBaseDmg);
                 staffRisePowerUpMaxDmg.BaseValue = 1f + (staffRise / 100f);
                 //// TODO: staffRisePowerUpMaxDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
@@ -348,7 +348,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The attribute requirement.</returns>
         protected AttributeRequirement CreateAttributeRequirement(AttributeDefinition attributeDefinition, int minimumValue)
         {
-            var requirement = this.RepositoryManager.CreateNew<AttributeRequirement>();
+            var requirement = this.Context.CreateNew<AttributeRequirement>();
             requirement.Attribute = attributeDefinition;
             requirement.MinimumValue = minimumValue;
             return requirement;
@@ -440,12 +440,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private IncreasableItemOption CreateExcellentDefenseOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
         {
-            var itemOption = this.RepositoryManager.CreateNew<IncreasableItemOption>();
+            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
             itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
             itemOption.Number = number;
-            itemOption.PowerUpDefinition = this.RepositoryManager.CreateNew<PowerUpDefinition>();
+            itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
             itemOption.PowerUpDefinition.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
-            itemOption.PowerUpDefinition.Boost = this.RepositoryManager.CreateNew<PowerUpDefinitionValue>();
+            itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             itemOption.PowerUpDefinition.Boost.ConstantValue.Value = value;
             itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
             return itemOption;
@@ -453,12 +453,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private IncreasableItemOption CreateExcellentAttackOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
         {
-            var itemOption = this.RepositoryManager.CreateNew<IncreasableItemOption>();
+            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
             itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
             itemOption.Number = number;
-            itemOption.PowerUpDefinition = this.RepositoryManager.CreateNew<PowerUpDefinition>();
+            itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
             itemOption.PowerUpDefinition.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
-            itemOption.PowerUpDefinition.Boost = this.RepositoryManager.CreateNew<PowerUpDefinitionValue>();
+            itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             itemOption.PowerUpDefinition.Boost.ConstantValue.Value = value;
             itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
             return itemOption;

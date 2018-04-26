@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Action to send a letter to another player.
@@ -61,10 +62,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             LetterHeader letter = null;
             try
             {
-                using (var context = this.gameContext.RepositoryManager.CreateNewAccountContext(this.gameContext.Configuration))
-                using (this.gameContext.RepositoryManager.UseContext(context))
+                using (var context = this.gameContext.PersistenceContextProvider.CreateNewPlayerContext(this.gameContext.Configuration))
                 {
-                    letter = this.CreateLetter(player, receiver, message, title, rotation, animation);
+                    letter = this.CreateLetter(context, player, receiver, message, title, rotation, animation);
 
                     if (!context.SaveChanges())
                     {
@@ -97,20 +97,20 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             }
         }
 
-        private LetterHeader CreateLetter(Player player, string receiver, string message, string title, byte rotation, byte animation)
+        private LetterHeader CreateLetter(IContext context, Player player, string receiver, string message, string title, byte rotation, byte animation)
         {
-            var letterHeader = this.gameContext.RepositoryManager.CreateNew<LetterHeader>();
+            var letterHeader = context.CreateNew<LetterHeader>();
             letterHeader.LetterDate = DateTime.Now;
             letterHeader.Sender = player.SelectedCharacter.Name;
             letterHeader.Receiver = receiver;
             letterHeader.Subject = title;
 
-            var letterBody = this.gameContext.RepositoryManager.CreateNew<LetterBody>();
+            var letterBody = context.CreateNew<LetterBody>();
             letterBody.Header = letterHeader;
             letterBody.Message = message;
-            letterBody.SenderAppearance = this.gameContext.RepositoryManager.CreateNew<AppearanceData>();
+            letterBody.SenderAppearance = player.PersistenceContext.CreateNew<AppearanceData>();
             letterBody.SenderAppearance.CharacterClass = player.AppearanceData.CharacterClass;
-            player.AppearanceData.EquippedItems.Select(i => i.MakePersistent(this.gameContext))
+            player.AppearanceData.EquippedItems.Select(i => i.MakePersistent(player.PersistenceContext))
                 .ForEach(letterBody.SenderAppearance.EquippedItems.Add);
             letterBody.Rotation = rotation;
             letterBody.Animation = animation;

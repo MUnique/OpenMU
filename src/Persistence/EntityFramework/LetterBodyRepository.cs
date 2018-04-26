@@ -10,18 +10,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <summary>
     /// Repository which is able to load <see cref="LetterBody"/>s for a specific letter header.
     /// </summary>
-    internal class LetterBodyRepository : GenericRepository<LetterBody>, ILetterBodyRepository<LetterBody>
+    internal class LetterBodyRepository : GenericRepository<LetterBody>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LetterBodyRepository"/> class.
         /// </summary>
-        /// <param name="manager">The manager.</param>
-        public LetterBodyRepository(IRepositoryManager manager)
-            : base(manager)
+        /// <param name="contextProvider">The context provider.</param>
+        public LetterBodyRepository(PersistenceContextProvider contextProvider)
+            : base(contextProvider)
         {
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the letter body by the id of its header.
+        /// </summary>
+        /// <param name="headerId">The id of its header.</param>
+        /// <returns>The body of the header.</returns>
         public LetterBody GetBodyByHeaderId(Guid headerId)
         {
             using (var context = this.GetContext())

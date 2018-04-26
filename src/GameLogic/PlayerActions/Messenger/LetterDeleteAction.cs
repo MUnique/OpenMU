@@ -41,15 +41,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             var letterIndex = player.SelectedCharacter.Letters.IndexOf(letter);
             player.SelectedCharacter.Letters.RemoveAt(letterIndex);
             player.PlayerView.MessengerView.LetterDeleted((ushort)letterIndex);
-
-            // TODO: Deleting it from the repository should not be required.
-            using (this.gameContext.RepositoryManager.UseContext(player.PersistenceContext))
-            {
-                if (!this.gameContext.RepositoryManager.GetRepository<LetterHeader>().Delete(letter))
-                {
-                    Log.WarnFormat("Player {0} tried to delete a letter, no success. LetterID: {1}", player.SelectedCharacter.Name, letterIndex);
-                }
-            }
         }
     }
 }

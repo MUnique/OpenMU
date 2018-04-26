@@ -42,7 +42,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Ignore<Character>();
             ConfigureModel(modelBuilder);
+            modelBuilder.Entity<GuildMember>().Ignore(m => m.Character);
+            modelBuilder.Entity<CharacterName>().HasKey(f => f.Id);
         }
     }
 }

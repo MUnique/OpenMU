@@ -30,12 +30,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<FriendViewItem>(e =>
-            {
-                e.Ignore(item => item.CharacterName);
-                e.Ignore(item => item.FriendName);
-            });
-
             modelBuilder.Entity<AttributeDefinition>();
             modelBuilder.Entity<PowerUpDefinitionWithDuration>()
                 .HasOne(d => d.RawBoost)
@@ -98,7 +92,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<LetterBody>().HasOne(body => body.RawHeader);
 
             // TODO:
-            modelBuilder.Entity<GameConfiguration>().Ignore(c => c.ExperienceTable).Ignore(c => c.MasterExperienceTable).Ignore(c => c.WarpList);
+            modelBuilder.Entity<GameConfiguration>().Ignore(c => c.ExperienceTable)
+                .Ignore(c => c.MasterExperienceTable);
 
             // join entity keys:
             modelBuilder.Entity<SkillPowerUpDefinition>().HasKey(e => new { e.Key, e.ValueId });
@@ -116,6 +111,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
 
             GuildContext.ConfigureModel(modelBuilder);
+            FriendContext.ConfigureModel(modelBuilder);
         }
     }
 }

@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 }
 
                 // Create new Item
-                var resultItem = this.gameContext.RepositoryManager.CreateNew<Item>();
+                var resultItem = player.PersistenceContext.CreateNew<Item>();
                 resultItem.Definition = i.ItemDefinition;
                 resultItem.Level = (byte)Rand.NextInt(i.RandLvlMin, i.RandLvlMax);
                 resultItem.Durability = resultItem.GetMaximumDurabilityOfOnePiece(); // TODO: I think sometimes that's not correct, e.g. Potions of Bless/Soul!

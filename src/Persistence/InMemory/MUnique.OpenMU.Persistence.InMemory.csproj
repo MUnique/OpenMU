@@ -41,17 +41,17 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AccountRepository.cs" />
-    <Compile Include="FriendViewItemRepository.cs" />
+    <Compile Include="FriendServerInMemoryContext.cs" />
+    <Compile Include="GuildServerInMemoryContext.cs" />
+    <Compile Include="IMemoryRepository.cs" />
+    <Compile Include="InMemoryContext.cs" />
+    <Compile Include="InMemoryPersistenceContextProvider.cs" />
     <Compile Include="InMemoryRepositoryManager.cs" />
-    <Compile Include="LetterBodyRepository.cs" />
+    <Compile Include="MemoryRepository{TValue}.cs" />
+    <Compile Include="PlayerInMemoryContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj">
-      <Project>{3DD171E2-4F6E-486A-8420-F6935C4DA03C}</Project>
-      <Name>MUnique.OpenMU.AttributeSystem</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj">
       <Project>{5282f509-d758-4a42-994c-f71a4c631fda}</Project>
       <Name>MUnique.OpenMU.DataModel</Name>

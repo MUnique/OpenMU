@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+// ReSharper disable UnusedMember.Global used by T4 templates
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System;

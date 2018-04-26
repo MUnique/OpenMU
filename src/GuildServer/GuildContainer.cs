@@ -8,9 +8,9 @@ namespace MUnique.OpenMU.GuildServer
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
-    using Guild = MUnique.OpenMU.DataModel.Entities.Guild;
 
     /// <summary>
     /// This is a container Class which holds a Guild object, and a list of all guild members
@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GuildServer
         /// <param name="guild">The guild.</param>
         /// <param name="id">The short identifier.</param>
         /// <param name="databaseContext">The database context.</param>
-        internal GuildContainer(DataModel.Entities.Guild guild, uint id, IContext databaseContext)
+        internal GuildContainer(DataModel.Entities.Guild guild, uint id, IGuildServerContext databaseContext)
         {
             this.DatabaseContext = databaseContext;
             this.Guild = guild;
@@ -32,8 +32,8 @@ namespace MUnique.OpenMU.GuildServer
             this.Members = new SortedList<Guid, GuildListEntry>();
             foreach (var member in this.Guild.Members)
             {
-                // TODO: Somehow get the player names
-                this.Members.Add(member.Id, new GuildListEntry { PlayerName = "TODO_name", ServerId = GuildServer.OfflineServerId, PlayerPosition = member.Status });
+                // The player names are loaded separately, if required.
+                this.Members.Add(member.Id, new GuildListEntry { PlayerName = null, ServerId = GuildServer.OfflineServerId, PlayerPosition = member.Status });
             }
         }
 
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GuildServer
         /// Gets the database context of the guild
         /// </summary>
         /// <remarks>Each guild holds its own database context.</remarks>
-        public IContext DatabaseContext { get; }
+        public IGuildServerContext DatabaseContext { get; }
 
         /// <summary>
         /// Gets the guild.
@@ -74,21 +74,17 @@ namespace MUnique.OpenMU.GuildServer
         /// <summary>
         /// Loads the member names from the database.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public void LoadMemberNames(IRepositoryManager repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public void LoadMemberNames(IPersistenceContextProvider persistenceContextProvider)
         {
-            using (repositoryManager.UseContext(this.DatabaseContext))
+            var memberNames = this.DatabaseContext.GetMemberNames(this.Guild.Id);
+            if (memberNames != null)
             {
-                var repository = repositoryManager.GetRepository<Guild, IGuildRepository>();
-                var memberNames = repository.GetMemberNames(this.Guild.Id);
-                if (memberNames != null)
+                foreach (var member in this.Members.Where(m => m.Value.PlayerName == null))
                 {
-                    foreach (var member in this.Members)
+                    if (memberNames.TryGetValue(member.Key, out string name))
                     {
-                        if (memberNames.TryGetValue(member.Key, out string name))
-                        {
-                            member.Value.PlayerName = name;
-                        }
+                        member.Value.PlayerName = name;
                     }
                 }
             }

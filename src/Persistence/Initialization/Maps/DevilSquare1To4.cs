@@ -23,25 +23,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Devil Square (1-4)";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IRepositoryManager repositoryManager, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
         {
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[17], 35, 0, SpawnTrigger.AutomaticDuringEvent, 119, 150, 80, 115);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[15], 35, 0, SpawnTrigger.AutomaticDuringEvent, 119, 150, 80, 115);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[10], 35, 0, SpawnTrigger.AutomaticDuringEvent, 121, 151, 152, 184);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[39], 35, 0, SpawnTrigger.AutomaticDuringEvent, 121, 151, 152, 184);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[41], 35, 0, SpawnTrigger.AutomaticDuringEvent, 49, 79, 138, 173);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[37], 35, 0, SpawnTrigger.AutomaticDuringEvent, 49, 79, 138, 173);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[64], 35, 0, SpawnTrigger.AutomaticDuringEvent, 53, 83, 74, 109);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[65], 35, 0, SpawnTrigger.AutomaticDuringEvent, 53, 83, 74, 109);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[17], 35, 0, SpawnTrigger.AutomaticDuringEvent, 119, 150, 80, 115);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[15], 35, 0, SpawnTrigger.AutomaticDuringEvent, 119, 150, 80, 115);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[10], 35, 0, SpawnTrigger.AutomaticDuringEvent, 121, 151, 152, 184);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[39], 35, 0, SpawnTrigger.AutomaticDuringEvent, 121, 151, 152, 184);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[41], 35, 0, SpawnTrigger.AutomaticDuringEvent, 49, 79, 138, 173);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[37], 35, 0, SpawnTrigger.AutomaticDuringEvent, 49, 79, 138, 173);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[64], 35, 0, SpawnTrigger.AutomaticDuringEvent, 53, 83, 74, 109);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[65], 35, 0, SpawnTrigger.AutomaticDuringEvent, 53, 83, 74, 109);
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
         {
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 64;
                 monster.Designation = "Orc Archer";
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 7 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;
@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             }
 
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 65;
                 monster.Designation = "Elite Orc";
@@ -105,7 +105,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 8 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;

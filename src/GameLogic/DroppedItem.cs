@@ -135,13 +135,13 @@ namespace MUnique.OpenMU.GameLogic
             {
                 Log.Info($"Item '{this.Item}' which was dropped by player {this.dropper} is getting deleted.");
                 this.dropper.PersistenceContext.Detach(this.Item);
-                var repositoryManager = this.dropper.GameContext.RepositoryManager;
+                var repositoryManager = this.dropper.GameContext.PersistenceContextProvider;
 
                 // We could use here the persistence context of the dropper - but if it logged out and is not saving anymore, the deletion would not be saved.
                 // So we use a new temporary persistence context instead.
-                using (var context = repositoryManager.UseTemporaryContext())
+                using (var context = repositoryManager.CreateNewContext())
                 {
-                    repositoryManager.GetRepository<Item>().Delete(this.Item);
+                    context.Delete(this.Item);
                     context.SaveChanges();
                 }
             }

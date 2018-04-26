@@ -20,16 +20,16 @@ namespace MUnique.OpenMU.AdminPanel
     public class AccountModule : NancyModule
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(AccountModule));
-        private readonly IRepositoryManager repositoryManager;
+        private readonly IPersistenceContextProvider persistenceContextProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountModule"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public AccountModule(IRepositoryManager repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public AccountModule(IPersistenceContextProvider persistenceContextProvider)
             : base("/admin/account")
         {
-            this.repositoryManager = repositoryManager;
+            this.persistenceContextProvider = persistenceContextProvider;
 
             this.Get["save"] = this.SaveAccount;
             this.Get["delete/{accountId:string}"] = this.DeleteAccount;
@@ -46,16 +46,20 @@ namespace MUnique.OpenMU.AdminPanel
 
             try
             {
-                var configs = this.repositoryManager.GetRepository<GameConfiguration>().GetAll();
-                using (var context = this.repositoryManager.CreateNewAccountContext(configs.First()))
-                using (this.repositoryManager.UseContext(context))
+                using (var configContext = this.persistenceContextProvider.CreateNewConfigurationContext())
                 {
-                    var dto = this.Bind<AccountDto>();
-                    Account account = dto.Id == Guid.Empty ? this.repositoryManager.CreateNew<Account>() : this.repositoryManager.GetRepository<Account>().GetById(dto.Id);
+                    var configuration = configContext.Get<GameConfiguration>().FirstOrDefault();
+                    using (var context = this.persistenceContextProvider.CreateNewPlayerContext(configuration))
+                    {
+                        var dto = this.Bind<AccountDto>();
+                        Account account = dto.Id == Guid.Empty
+                            ? context.CreateNew<Account>()
+                            : context.GetById<Account>(dto.Id);
 
-                    this.AssignAccountValues(account, dto);
+                        this.AssignAccountValues(account, dto);
 
-                    return context.SaveChanges();
+                        return context.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
@@ -81,9 +85,9 @@ namespace MUnique.OpenMU.AdminPanel
             var accountId = this.ExtractAccountId(parameters);
             try
             {
-                using (var context = this.repositoryManager.UseTemporaryContext())
+                using (var context = this.persistenceContextProvider.CreateNewContext())
                 {
-                    var success = this.repositoryManager.GetRepository<Account>().Delete(accountId);
+                    var success = context.Delete(accountId);
 
                     return success && context.SaveChanges();
                 }
@@ -106,11 +110,9 @@ namespace MUnique.OpenMU.AdminPanel
         {
             var offset = (int)parameters.offset;
             var count = (int)parameters.count;
-            var configs = this.repositoryManager.GetRepository<GameConfiguration>().GetAll();
-            using (var context = this.repositoryManager.CreateNewAccountContext(configs.First()))
-            using (this.repositoryManager.UseContext(context))
+            using (var context = this.persistenceContextProvider.CreateNewPlayerContext(null))
             {
-                var accounts = this.repositoryManager.GetRepository<Account, IAccountRepository>().GetAccountsOrderedByLoginName(offset, count)
+                var accounts = context.GetAccountsOrderedByLoginName(offset, count)
                     .Select(a => new AccountDto
                     {
                         Id = a.GetId(),

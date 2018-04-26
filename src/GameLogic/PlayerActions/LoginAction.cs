@@ -38,11 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             Account account = null;
             try
             {
-                using (this.gameServerContext.RepositoryManager.UseContext(player.PersistenceContext))
-                {
-                    var repository = this.gameServerContext.RepositoryManager.GetRepository<Account, IAccountRepository>();
-                    account = repository.GetAccountByLoginName(username, password);
-                }
+                account = player.PersistenceContext.GetAccountByLoginName(username, password);
             }
             catch (Exception ex)
             {

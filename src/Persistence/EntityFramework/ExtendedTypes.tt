@@ -46,7 +46,7 @@ customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationship));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.SimpleElement));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationshipElement));
 customTypes.Add(typeof(MUnique.OpenMU.Interfaces.LetterHeader));
-customTypes.Add(typeof(MUnique.OpenMU.Interfaces.FriendViewItem));
+customTypes.Add(typeof(MUnique.OpenMU.Interfaces.Friend));
 
 
 string customTypeSuffix = string.Empty;

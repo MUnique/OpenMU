@@ -29,10 +29,10 @@ namespace MUnique.OpenMU.AdminPanel
         /// </summary>
         /// <param name="port">The port.</param>
         /// <param name="servers">All manageable servers, including game servers, connect servers etc.</param>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public AdminPanel(ushort port, IList<IManageableServer> servers, IRepositoryManager repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public AdminPanel(ushort port, IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider)
         {
-            Startup.Bootstrapper = new MyBootstrapper(servers, repositoryManager);
+            Startup.Bootstrapper = new MyBootstrapper(servers, persistenceContextProvider);
             var startOptions = new StartOptions($"http://+:{port}")
             {
                 ServerFactory = typeof(OwinHttpListener).Namespace,

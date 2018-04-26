@@ -7,9 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System;
     using System.Linq;
     using log4net;
-    using Microsoft.EntityFrameworkCore;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
-    using Npgsql.Logging;
 
     /// <summary>
     /// A repository manager which utilizes repositories which use the entity framework core to do data access.
@@ -21,39 +19,38 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </remarks>
     public class RepositoryManager : BaseRepositoryManager
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(RepositoryManager));
+        private static readonly ILog Log = LogManager.GetLogger(nameof(PersistenceContextProvider));
 
         /// <summary>
         /// Registers the repositories.
         /// </summary>
-        public void RegisterRepositories()
+        /// <param name="contextProvider">The context provider which is required in most of the repositories.</param>
+        public void RegisterRepositories(PersistenceContextProvider contextProvider)
         {
-            this.RegisterRepository(new AccountRepository(this));
-            this.RegisterRepository(new LetterBodyRepository(this));
-            this.RegisterRepository(new GuildRepository(this));
-            this.RegisterRepository(new FriendViewItemRepository(this));
-            this.RegisterRepository(new CachedRepository<GameConfiguration>(new GameConfigurationRepository(this)));
-            this.RegisterRepository(new GenericRepository<GameServerConfiguration>(this));
-            this.RegisterRepository(new GameServerDefinitionRepository(this));
-            this.RegisterRepository(new GenericRepository<MainPacketHandlerConfiguration>(this));
-            this.RegisterRepository(new GenericRepository<PacketHandlerConfiguration>(this));
+            this.RegisterRepository(new AccountRepository(contextProvider));
+            this.RegisterRepository(new LetterBodyRepository(contextProvider));
+            this.RegisterRepository(new CachedRepository<GameConfiguration>(new GameConfigurationRepository(contextProvider)));
+            this.RegisterRepository(new GenericRepository<GameServerConfiguration>(contextProvider));
+            this.RegisterRepository(new GameServerDefinitionRepository(contextProvider));
+            this.RegisterRepository(new GenericRepository<MainPacketHandlerConfiguration>(contextProvider));
+            this.RegisterRepository(new GenericRepository<PacketHandlerConfiguration>(contextProvider));
 
-            this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this, config => config.RawItemOptions));
-            this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(this, config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).ToList()));
-            this.RegisterRepository(new ConfigurationTypeRepository<ItemOption>(this, config => config.RawItemSetGroups.SelectMany(o => o.JoinedOptions).Select(o => o.ItemOption).ToList()));
-            this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(this, config => config.RawAttributes));
-            this.RegisterRepository(new ConfigurationTypeRepository<DropItemGroup>(this, config => config.RawBaseDropItemGroups));
-            this.RegisterRepository(new ConfigurationTypeRepository<CharacterClass>(this, config => config.RawCharacterClasses));
-            this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionType>(this, config => config.RawItemOptionTypes));
-            this.RegisterRepository(new ConfigurationTypeRepository<ItemSetGroup>(this, config => config.RawItemSetGroups));
-            this.RegisterRepository(new ConfigurationTypeRepository<ItemSlotType>(this, config => config.RawItemSlotTypes));
-            this.RegisterRepository(new ConfigurationTypeRepository<ItemDefinition>(this, config => config.RawItems));
-            this.RegisterRepository(new ConfigurationTypeRepository<JewelMix>(this, config => config.RawJewelMixes));
-            this.RegisterRepository(new ConfigurationTypeRepository<MagicEffectDefinition>(this, config => config.RawMagicEffects));
-            this.RegisterRepository(new ConfigurationTypeRepository<GameMapDefinition>(this, config => config.RawMaps));
-            this.RegisterRepository(new ConfigurationTypeRepository<MasterSkillRoot>(this, config => config.RawMasterSkillRoots));
-            this.RegisterRepository(new ConfigurationTypeRepository<MonsterDefinition>(this, config => config.RawMonsters));
-            this.RegisterRepository(new ConfigurationTypeRepository<Skill>(this, config => config.RawSkills));
+            this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(contextProvider, config => config.RawItemOptions));
+            this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(contextProvider, config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).ToList()));
+            this.RegisterRepository(new ConfigurationTypeRepository<ItemOption>(contextProvider, config => config.RawItemSetGroups.SelectMany(o => o.JoinedOptions).Select(o => o.ItemOption).ToList()));
+            this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(contextProvider, config => config.RawAttributes));
+            this.RegisterRepository(new ConfigurationTypeRepository<DropItemGroup>(contextProvider, config => config.RawBaseDropItemGroups));
+            this.RegisterRepository(new ConfigurationTypeRepository<CharacterClass>(contextProvider, config => config.RawCharacterClasses));
+            this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionType>(contextProvider, config => config.RawItemOptionTypes));
+            this.RegisterRepository(new ConfigurationTypeRepository<ItemSetGroup>(contextProvider, config => config.RawItemSetGroups));
+            this.RegisterRepository(new ConfigurationTypeRepository<ItemSlotType>(contextProvider, config => config.RawItemSlotTypes));
+            this.RegisterRepository(new ConfigurationTypeRepository<ItemDefinition>(contextProvider, config => config.RawItems));
+            this.RegisterRepository(new ConfigurationTypeRepository<JewelMix>(contextProvider, config => config.RawJewelMixes));
+            this.RegisterRepository(new ConfigurationTypeRepository<MagicEffectDefinition>(contextProvider, config => config.RawMagicEffects));
+            this.RegisterRepository(new ConfigurationTypeRepository<GameMapDefinition>(contextProvider, config => config.RawMaps));
+            this.RegisterRepository(new ConfigurationTypeRepository<MasterSkillRoot>(contextProvider, config => config.RawMasterSkillRoots));
+            this.RegisterRepository(new ConfigurationTypeRepository<MonsterDefinition>(contextProvider, config => config.RawMonsters));
+            this.RegisterRepository(new ConfigurationTypeRepository<Skill>(contextProvider, config => config.RawSkills));
 
             var registeredTypes = this.Repositories.Keys.ToList();
             using (var entityContext = new EntityDataContext())
@@ -64,7 +61,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 {
                     Log.Debug($"No repository registered for type {type}, creating a generic one.");
                     var repositoryType = typeof(GenericRepository<>).MakeGenericType(type);
-                    var repository = Activator.CreateInstance(repositoryType, this as IRepositoryManager) as IRepository;
+                    var repository = Activator.CreateInstance(repositoryType, contextProvider) as IRepository;
 
                     this.RegisterRepository(type, repository);
                 }
@@ -81,121 +78,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             {
                 repository.EnsureCacheForCurrentConfiguration();
             }
-        }
-
-        /// <summary>
-        /// Determines whether the database schema is up to date.
-        /// </summary>
-        /// <returns>
-        ///   <c>true</c> if [is database up to date]; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsDatabaseUpToDate()
-        {
-            using (var installationContext = new EntityDataContext())
-            {
-                return !installationContext.Database.GetPendingMigrations().Any();
-            }
-        }
-
-        /// <summary>
-        /// Applies all pending updates to the database schema.
-        /// </summary>
-        public void ApplyAllPendingUpdates()
-        {
-            using (var installationContext = new EntityDataContext())
-            {
-                installationContext.Database.Migrate();
-            }
-        }
-
-        /// <summary>
-        /// Determines if the database exists already, by checking if any migration has been applied.
-        /// </summary>
-        /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
-        public bool DatabaseExists()
-        {
-            using (var installationContext = new EntityDataContext())
-            {
-                return installationContext.Database.GetAppliedMigrations().Any();
-            }
-        }
-
-        /// <summary>
-        /// Recreates the database by deleting and creating it again.
-        /// </summary>
-        public void ReCreateDatabase()
-        {
-            using (var installationContext = new EntityDataContext())
-            {
-                installationContext.Database.EnsureDeleted();
-                this.ApplyAllPendingUpdates();
-            }
-        }
-
-        /// <summary>
-        /// Initializes the logging of sql statements.
-        /// </summary>
-        public void InitializeSqlLogging()
-        {
-            NpgsqlLogManager.Provider = new NpgsqlLog4NetLoggingProvider();
-        }
-
-        /// <inheritdoc />
-        public override IContext CreateNewContext()
-        {
-            return new EntityFrameworkContext(new EntityDataContext());
-        }
-
-        /// <inheritdoc />
-        public override IContext CreateNewContext(DataModel.Configuration.GameConfiguration gameConfiguration)
-        {
-            return new EntityFrameworkContext(new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration });
-        }
-
-        /// <inheritdoc />
-        public override IContext CreateNewAccountContext(DataModel.Configuration.GameConfiguration gameConfiguration)
-        {
-            return new EntityFrameworkContext(new AccountContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration });
-        }
-
-        /// <inheritdoc />
-        public override IContext CreateNewConfigurationContext()
-        {
-            return new EntityFrameworkContext(new ConfigurationContext());
-        }
-
-        /// <inheritdoc />
-        public override IContext CreateNewFriendServerContext()
-        {
-            return new EntityFrameworkContext(new FriendContext());
-        }
-
-        /// <summary>
-        /// Creates a new instance of <typeparamref name="T" />.
-        /// </summary>
-        /// <typeparam name="T">The type which should get created.</typeparam>
-        /// <param name="args">The arguments which are handed 1-to-1 to the constructor. If no arguments are given, the default constructor will be called.</param>
-        /// <returns>
-        /// A new instance of <typeparamref name="T" />.
-        /// </returns>
-        public override T CreateNew<T>(params object[] args)
-        {
-            var instance = TypeHelper.CreateNew<T>(args);
-            if (instance != null)
-            {
-                if (this.GetCurrentContext() is EntityFrameworkContext context)
-                {
-                    context.Context.Add(instance);
-                    var repository = this.InternalGetRepository(typeof(T)) as INotifyAddedObject;
-                    repository?.ObjectAdded(instance);
-                }
-                else
-                {
-                    throw new InvalidOperationException("CreateNew was called outside of a context-usage");
-                }
-            }
-
-            return instance;
         }
 
         /// <summary>

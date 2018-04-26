@@ -87,25 +87,22 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return null;
             }
 
-            using (this.gameContext.RepositoryManager.UseContext(player.PersistenceContext))
-            {
-                var character = this.gameContext.RepositoryManager.CreateNew<Character>();
-                character.CharacterClass = charclass;
-                character.Name = name;
-                character.CharacterSlot = freeSlot.Value;
-                character.CreateDate = DateTime.Now;
-                character.KeyConfiguration = new byte[30];
-                var attributes = character.CharacterClass.StatAttributes.Select(a => this.gameContext.RepositoryManager.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
-                attributes.ForEach(character.Attributes.Add);
-                character.CurrentMap = charclass.HomeMap;
-                var randomSpawnGate = character.CurrentMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-                character.PositionX = (byte)Rand.NextInt(randomSpawnGate.X1, randomSpawnGate.X2);
-                character.PositionY = (byte)Rand.NextInt(randomSpawnGate.Y1, randomSpawnGate.Y2);
-                character.Inventory = this.gameContext.RepositoryManager.CreateNew<ItemStorage>();
-                account.Characters.Add(character);
-                Log.Debug("Creating Character Complete.");
-                return character;
-            }
+            var character = player.PersistenceContext.CreateNew<Character>();
+            character.CharacterClass = charclass;
+            character.Name = name;
+            character.CharacterSlot = freeSlot.Value;
+            character.CreateDate = DateTime.Now;
+            character.KeyConfiguration = new byte[30];
+            var attributes = character.CharacterClass.StatAttributes.Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
+            attributes.ForEach(character.Attributes.Add);
+            character.CurrentMap = charclass.HomeMap;
+            var randomSpawnGate = character.CurrentMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
+            character.PositionX = (byte)Rand.NextInt(randomSpawnGate.X1, randomSpawnGate.X2);
+            character.PositionY = (byte)Rand.NextInt(randomSpawnGate.Y1, randomSpawnGate.Y2);
+            character.Inventory = player.PersistenceContext.CreateNew<ItemStorage>();
+            account.Characters.Add(character);
+            Log.Debug("Creating Character Complete.");
+            return character;
         }
 
         private byte? GetFreeSlot(Account account)

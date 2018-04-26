@@ -41,14 +41,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             var letter = player.SelectedCharacter.Letters[letterIndex];
             if (letter != null)
             {
-                using (this.gameContext.RepositoryManager.UseContext(player.PersistenceContext))
+                var letterBody = player.PersistenceContext.GetLetterBodyByHeaderId(letter.Id);
+                if (letterBody != null)
                 {
-                    var letterBody = this.gameContext.RepositoryManager.GetRepository<LetterBody, ILetterBodyRepository<LetterBody>>().GetBodyByHeaderId(letter.Id);
-                    if (letterBody != null)
-                    {
-                        letter.ReadFlag = true;
-                        player.PlayerView.MessengerView.ShowLetter(letterBody);
-                    }
+                    letter.ReadFlag = true;
+                    player.PlayerView.MessengerView.ShowLetter(letterBody);
                 }
             }
             else

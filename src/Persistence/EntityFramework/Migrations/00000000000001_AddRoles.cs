@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql($"DROP ROLE IF EXISTS {ConnectionConfigurator.GetRoleName(DatabaseRole.Account)}, {ConnectionConfigurator.GetRoleName(DatabaseRole.Configuration)}, {ConnectionConfigurator.GetRoleName(DatabaseRole.Guild)};");
+            migrationBuilder.Sql($"DROP ROLE IF EXISTS {ConnectionConfigurator.GetRoleName(DatabaseRole.Account)}, {ConnectionConfigurator.GetRoleName(DatabaseRole.Configuration)}, {ConnectionConfigurator.GetRoleName(DatabaseRole.Guild)}, {ConnectionConfigurator.GetRoleName(DatabaseRole.Friend)};");
 
             var accountRoleName = ConnectionConfigurator.GetRoleName(DatabaseRole.Account);
 
@@ -45,6 +45,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.Sql($"GRANT SELECT ON TABLE data.\"Character\" TO GROUP {guildRoleName};");
 
             migrationBuilder.Sql($"GRANT USAGE ON SCHEMA data, guild TO GROUP {guildRoleName};");
+
+            var friendRoleName = ConnectionConfigurator.GetRoleName(DatabaseRole.Friend);
+
+            migrationBuilder.Sql($"CREATE ROLE {friendRoleName} WITH LOGIN PASSWORD '{ConnectionConfigurator.GetRolePassword(DatabaseRole.Friend)}';");
+
+            migrationBuilder.Sql($"GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA friend TO GROUP {friendRoleName};");
+            migrationBuilder.Sql($"GRANT SELECT ON TABLE data.\"Character\" TO GROUP {friendRoleName};");
+
+            migrationBuilder.Sql($"GRANT USAGE ON SCHEMA data, friend TO GROUP {friendRoleName};");
         }
 
         /// <inheritdoc/>
@@ -53,6 +62,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.Sql($"DROP ROLE IF EXISTS {ConnectionConfigurator.GetRoleName(DatabaseRole.Account)};");
             migrationBuilder.Sql($"DROP ROLE IF EXISTS {ConnectionConfigurator.GetRoleName(DatabaseRole.Configuration)};");
             migrationBuilder.Sql($"DROP ROLE IF EXISTS {ConnectionConfigurator.GetRoleName(DatabaseRole.Guild)};");
+            migrationBuilder.Sql($"DROP ROLE IF EXISTS {ConnectionConfigurator.GetRoleName(DatabaseRole.Friend)};");
         }
      }
 }

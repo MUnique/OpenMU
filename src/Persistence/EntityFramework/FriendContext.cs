@@ -7,10 +7,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
-    /// Context to load instances of <see cref="FriendViewItem"/>.
+    /// Context to load instances of <see cref="Friend"/>s.
     /// </summary>
     public class FriendContext : DbContext
     {
+        /// <summary>
+        /// Configures the model.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder.</param>
+        internal static void ConfigureModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Friend>().ToTable("Friend", "friend");
+            modelBuilder.Entity<Friend>(e =>
+            {
+                e.HasAlternateKey(f => new { f.CharacterId, f.FriendId });
+            });
+        }
+
         /// <inheritdoc/>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -21,13 +34,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<FriendViewItem>().ToTable("FriendView");
-            modelBuilder.Entity<FriendViewItem>(e =>
-            {
-                e.HasAlternateKey(f => new { f.CharacterId, f.FriendId });
-                e.Property(f => f.CharacterName).ValueGeneratedOnAddOrUpdate();
-                e.Property(f => f.FriendName).ValueGeneratedOnAddOrUpdate();
-            });
+            ConfigureModel(modelBuilder);
+            modelBuilder.Entity<CharacterName>().HasKey(f => f.Id);
         }
     }
 }

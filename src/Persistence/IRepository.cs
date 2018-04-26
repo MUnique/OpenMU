@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence
 {
     using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
     /// A base repository which can return an object by an id.
@@ -53,106 +52,5 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="id">The identifier of the object which should be deleted.</param>
         /// <returns>The success.</returns>
         bool Delete(Guid id);
-    }
-
-    /// <summary>
-    /// A repository for guilds.
-    /// </summary>
-    public interface IGuildRepository
-    {
-        /// <summary>
-        /// Returns if the guild with the specified name exists.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>True, if the guild with the specified name exists.</returns>
-        bool GuildWithNameExists(string name);
-
-        /// <summary>
-        /// Gets the member names of a guild.
-        /// </summary>
-        /// <param name="guildId">The guild identifier.</param>
-        /// <returns>The member names of a guild.</returns>
-        /// <remarks>Since names are stored in Character.Name and not duplicated.</remarks>
-        IReadOnlyDictionary<Guid, string> GetMemberNames(Guid guildId);
-    }
-
-    /// <summary>
-    /// A repository for accounts.
-    /// </summary>
-    public interface IAccountRepository
-    {
-        /// <summary>
-        /// Gets the account by login name if the password is correct.
-        /// </summary>
-        /// <param name="loginName">The login name.</param>
-        /// <param name="password">The password.</param>
-        /// <returns>The account, if the password is correct. Otherwise, null.</returns>
-        Account GetAccountByLoginName(string loginName, string password);
-
-        /// <summary>
-        /// Gets the accounts ordered by login name.
-        /// </summary>
-        /// <param name="skip">The skip count.</param>
-        /// <param name="count">The count.</param>
-        /// <returns>The account objects, without depending data.</returns>
-        IEnumerable<Account> GetAccountsOrderedByLoginName(int skip, int count);
-    }
-
-    /// <summary>
-    /// A repository for letter bodies.
-    /// </summary>
-    /// <typeparam name="T">The type of a letter body. The type is not specified here, because the data model is not known to this assembly.</typeparam>
-    public interface ILetterBodyRepository<out T> : IRepository<T>
-    {
-        /// <summary>
-        /// Gets the letter body by the id of its header.
-        /// </summary>
-        /// <param name="headerId">The id of its header.</param>
-        /// <returns>The body of the header.</returns>
-        T GetBodyByHeaderId(Guid headerId);
-    }
-
-    /// <summary>
-    /// A repository for friend view items.
-    /// </summary>
-    /// <typeparam name="T">The type for a friend view item. The type is not specified here, because the data model is not known to this assembly.</typeparam>
-    public interface IFriendViewItemRepository<out T> : IRepository<T>
-    {
-        /// <summary>
-        /// Gets the friend view item by friend.
-        /// </summary>
-        /// <param name="characterName">Name of the character holding the friend view item in its friendlist.</param>
-        /// <param name="friendName">Name of the friend.</param>
-        /// <returns>The friend view item of the friend.</returns>
-        T GetByFriend(string characterName, string friendName);
-
-        /// <summary>
-        /// Gets the friends of a character.
-        /// </summary>
-        /// <param name="characterId">Id of the character.</param>
-        /// <returns>The friends of the character.</returns>
-        IEnumerable<T> GetFriends(Guid characterId);
-
-        /// <summary>
-        /// Deletes the friend with name <paramref name="friendName"/> from the friendlist of <paramref name="characterName"/>.
-        /// </summary>
-        /// <param name="characterName">Name of the character holding the friend view item in its friendlist.</param>
-        /// <param name="friendName">Name of the friend.</param>
-        void Delete(string characterName, string friendName);
-
-        /// <summary>
-        /// Gets the names from characters which requested a friendship to the character with the specified id and are not answered yet.
-        /// </summary>
-        /// <param name="characterId">Id of the character.</param>
-        /// <returns>The open friend requester names.</returns>
-        IEnumerable<string> GetOpenFriendRequesterNames(Guid characterId);
-
-        /// <summary>
-        /// Creates a new friend view item.
-        /// </summary>
-        /// <param name="characterName">Name of the character.</param>
-        /// <param name="friendName">Name of the friend.</param>
-        /// <returns>The created friend view item.</returns>
-        T CreateNewFriendViewItem(string characterName, string friendName);
     }
 }

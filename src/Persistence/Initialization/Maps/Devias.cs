@@ -23,51 +23,51 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Devias";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IRepositoryManager repositoryManager, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
         {
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[540], 1, 1, SpawnTrigger.Automatic, 233, 233, 66, 66);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[406], 1, 3, SpawnTrigger.Automatic, 181, 181, 35, 35);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[385], 1, 1, SpawnTrigger.Automatic, 197, 197, 53, 53);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[478], 1, 3, SpawnTrigger.Automatic, 191, 191, 17, 17);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[256], 1, 3, SpawnTrigger.Automatic, 193, 193, 13, 13);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[522], 1, 1, SpawnTrigger.Automatic, 229, 229, 221, 221);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[229], 1, 3, SpawnTrigger.Automatic, 183, 183, 30, 30);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[233], 1, 3, SpawnTrigger.Automatic, 217, 217, 29, 29);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[233], 1, 3, SpawnTrigger.Automatic, 217, 217, 20, 20);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[235], 1, 3, SpawnTrigger.Automatic, 183, 183, 32, 32);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[244], 1, 3, SpawnTrigger.Automatic, 226, 226, 25, 25);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[245], 1, 3, SpawnTrigger.Automatic, 225, 225, 41, 41);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[246], 1, 3, SpawnTrigger.Automatic, 186, 186, 47, 47);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[247], 1, 5, SpawnTrigger.Automatic, 224, 224, 79, 79);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[247], 1, 5, SpawnTrigger.Automatic, 219, 219, 79, 79);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[247], 1, 7, SpawnTrigger.Automatic, 169, 169, 45, 45);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[247], 1, 7, SpawnTrigger.Automatic, 169, 169, 39, 39);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[241], 1, 1, SpawnTrigger.Automatic, 215, 215, 45, 45);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[240], 1, 2, SpawnTrigger.Automatic, 218, 218, 63, 63);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[257], 1, 3, SpawnTrigger.Automatic, 219, 219, 76, 76);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[566], 1, 3, SpawnTrigger.Automatic, 204, 204, 61, 61);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[379], 1, 3, SpawnTrigger.Automatic, 13, 13, 28, 28);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[540], 1, 1, SpawnTrigger.Automatic, 233, 233, 66, 66);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[406], 1, 3, SpawnTrigger.Automatic, 181, 181, 35, 35);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[385], 1, 1, SpawnTrigger.Automatic, 197, 197, 53, 53);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[478], 1, 3, SpawnTrigger.Automatic, 191, 191, 17, 17);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[256], 1, 3, SpawnTrigger.Automatic, 193, 193, 13, 13);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[522], 1, 1, SpawnTrigger.Automatic, 229, 229, 221, 221);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[229], 1, 3, SpawnTrigger.Automatic, 183, 183, 30, 30);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[233], 1, 3, SpawnTrigger.Automatic, 217, 217, 29, 29);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[233], 1, 3, SpawnTrigger.Automatic, 217, 217, 20, 20);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[235], 1, 3, SpawnTrigger.Automatic, 183, 183, 32, 32);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[244], 1, 3, SpawnTrigger.Automatic, 226, 226, 25, 25);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[245], 1, 3, SpawnTrigger.Automatic, 225, 225, 41, 41);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[246], 1, 3, SpawnTrigger.Automatic, 186, 186, 47, 47);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, 5, SpawnTrigger.Automatic, 224, 224, 79, 79);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, 5, SpawnTrigger.Automatic, 219, 219, 79, 79);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, 7, SpawnTrigger.Automatic, 169, 169, 45, 45);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, 7, SpawnTrigger.Automatic, 169, 169, 39, 39);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[241], 1, 1, SpawnTrigger.Automatic, 215, 215, 45, 45);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[240], 1, 2, SpawnTrigger.Automatic, 218, 218, 63, 63);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 3, SpawnTrigger.Automatic, 219, 219, 76, 76);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[566], 1, 3, SpawnTrigger.Automatic, 204, 204, 61, 61);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[379], 1, 3, SpawnTrigger.Automatic, 13, 13, 28, 28);
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[20], 10, 0, SpawnTrigger.Automatic, 194, 194, 165, 165);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[20], 10, 0, SpawnTrigger.Automatic, 36, 36, 25, 25);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[20], 15, 0, SpawnTrigger.Automatic, 210, 242, 210, 220);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[20], 200, 0, SpawnTrigger.Automatic, 0, 251, 128, 245);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[25], 75, 0, SpawnTrigger.Automatic, 0, 128, 128, 245);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[23], 75, 0, SpawnTrigger.Automatic, 0, 128, 0, 128);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[22], 75, 0, SpawnTrigger.Automatic, 0, 128, 0, 128);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[24], 65, 0, SpawnTrigger.Automatic, 128, 251, 0, 128);
-            yield return this.CreateMonsterSpawn(repositoryManager, mapDefinition, npcDictionary[21], 35, 0, SpawnTrigger.Automatic, 128, 251, 0, 128);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 10, 0, SpawnTrigger.Automatic, 194, 194, 165, 165);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 10, 0, SpawnTrigger.Automatic, 36, 36, 25, 25);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 15, 0, SpawnTrigger.Automatic, 210, 242, 210, 220);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 200, 0, SpawnTrigger.Automatic, 0, 251, 128, 245);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[25], 75, 0, SpawnTrigger.Automatic, 0, 128, 128, 245);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[23], 75, 0, SpawnTrigger.Automatic, 0, 128, 0, 128);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[22], 75, 0, SpawnTrigger.Automatic, 0, 128, 0, 128);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[24], 65, 0, SpawnTrigger.Automatic, 128, 251, 0, 128);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[21], 35, 0, SpawnTrigger.Automatic, 128, 251, 0, 128);
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
         {
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 19;
                 monster.Designation = "Yeti";
@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 0 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;
@@ -103,7 +103,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             }
 
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 20;
                 monster.Designation = "Elite Yeti";
@@ -131,7 +131,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 1 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;
@@ -139,7 +139,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             }
 
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 21;
                 monster.Designation = "Assassin";
@@ -167,7 +167,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 0 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;
@@ -175,7 +175,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             }
 
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 22;
                 monster.Designation = "Ice Monster";
@@ -203,7 +203,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 0 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;
@@ -211,7 +211,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             }
 
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 23;
                 monster.Designation = "Hommerd";
@@ -239,7 +239,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 0 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;
@@ -247,7 +247,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             }
 
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 24;
                 monster.Designation = "Worm";
@@ -275,7 +275,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 0 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;
@@ -283,7 +283,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             }
 
             {
-                var monster = repositoryManager.CreateNew<MonsterDefinition>();
+                var monster = context.CreateNew<MonsterDefinition>();
                 gameConfiguration.Monsters.Add(monster);
                 monster.Number = 25;
                 monster.Designation = "Ice Queen";
@@ -311,7 +311,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 4 },
                 }.Select(kvp =>
                 {
-                    var attribute = repositoryManager.CreateNew<MonsterAttribute>();
+                    var attribute = context.CreateNew<MonsterAttribute>();
                     attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
                     attribute.Value = kvp.Value;
                     return attribute;

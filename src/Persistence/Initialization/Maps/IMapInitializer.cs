@@ -14,11 +14,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// Initializes the data for the implemented game map.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
         /// <returns>
         /// The created game map definition for the implemented game map.
         /// </returns>
-        GameMapDefinition Initialize(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration);
+        GameMapDefinition Initialize(IContext context, GameConfiguration gameConfiguration);
     }
 }

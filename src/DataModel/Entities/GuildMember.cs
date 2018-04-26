@@ -13,6 +13,22 @@ namespace MUnique.OpenMU.DataModel.Entities
     public class GuildMember
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="GuildMember"/> class.
+        /// </summary>
+        public GuildMember()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildMember"/> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        public GuildMember(Guid id)
+        {
+            this.Id = id;
+        }
+
+        /// <summary>
         /// Gets or sets the identifier. Should be the same id as the character id to which it belongs.
         /// </summary>
         public Guid Id { get; set; }

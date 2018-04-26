@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the persistence context of the trader. It needs to be updated when a trade finishes.
         /// </summary>
-        IContext PersistenceContext { get; }
+        IPlayerContext PersistenceContext { get; }
 
         /// <summary>
         /// Gets the trade view.

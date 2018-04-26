@@ -26,13 +26,13 @@ namespace MUnique.OpenMU.GameLogic
         /// Initializes a new instance of the <see cref="GameContext"/> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public GameContext(GameConfiguration configuration, IRepositoryManager repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider)
         {
             try
             {
                 this.Configuration = configuration;
-                this.RepositoryManager = repositoryManager;
+                this.PersistenceContextProvider = persistenceContextProvider;
                 this.MapList = new Dictionary<ushort, GameMap>();
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
             }
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.GameLogic
         public IItemPowerUpFactory ItemPowerUpFactory { get; } = new ItemPowerUpFactory();
 
         /// <inheritdoc/>
-        public IRepositoryManager RepositoryManager { get; }
+        public IPersistenceContextProvider PersistenceContextProvider { get; }
 
         /// <summary>
         /// Gets the player list.

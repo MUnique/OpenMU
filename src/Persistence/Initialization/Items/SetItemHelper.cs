@@ -25,10 +25,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <summary>
         /// Initializes a new instance of the <see cref="SetItemHelper" /> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configration.</param>
-        public SetItemHelper(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
-            : base(repositoryManager, gameConfiguration)
+        public SetItemHelper(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
         {
             this.CreateBonusDefensePerLevel();
             var slotTypes = gameConfiguration.ItemSlotTypes;
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private void CreateArmor(string itemName, byte number, byte group, byte height, byte dropLevel, int baseDefense, byte baseDurability, int strengthRequirement, int agilityRequirement, IEnumerable<CharacterClass> characterRequirement)
         {
-            var itemDefinition = this.RepositoryManager.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(itemDefinition);
 
             itemDefinition.Name = itemName;
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             itemDefinition.Durability = baseDurability;
             characterRequirement.ToList().ForEach(itemDefinition.QualifiedCharacters.Add);
 
-            var defensePowerUp = this.RepositoryManager.CreateNew<ItemBasePowerUpDefinition>();
+            var defensePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
             defensePowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.DefenseBase);
             defensePowerUp.BaseValue = baseDefense;
             this.defenseBonusPerLevel.ForEach(defensePowerUp.BonusPerLevel.Add);
@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.defenseBonusPerLevel = new List<LevelBonus>();
             for (int level = 1; level <= MaximumItemLevel; level++)
             {
-                var levelBonus = this.RepositoryManager.CreateNew<LevelBonus>();
+                var levelBonus = this.Context.CreateNew<LevelBonus>();
                 levelBonus.Level = level;
                 levelBonus.AdditionalValue = DefenseIncreaseByLevel[level];
                 this.defenseBonusPerLevel.Add(levelBonus);

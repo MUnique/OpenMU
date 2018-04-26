@@ -17,14 +17,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <summary>
         /// Initializes a new instance of the <see cref="BlessJewelConsumeHandler"/> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        public BlessJewelConsumeHandler(IRepositoryManager repositoryManager)
-            : base(repositoryManager)
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        public BlessJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
+            : base(persistenceContextProvider)
         {
         }
 
         /// <inheritdoc/>
-        protected override bool ModifyItem(Item item)
+        protected override bool ModifyItem(Item item, IContext persistenceContext)
         {
             byte level = item.Level;
             if (level > 5)

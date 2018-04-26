@@ -24,6 +24,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.EnsureSchema(
                 name: "guild");
 
+            migrationBuilder.EnsureSchema(
+                name: "friend");
+
             migrationBuilder.CreateTable(
                 name: "GameConfiguration",
                 schema: "config",
@@ -97,8 +100,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FriendViewItem",
-                schema: "data",
+                name: "Friend",
+                schema: "friend",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -109,7 +112,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FriendViewItem", x => x.Id);
+                    table.PrimaryKey("PK_Friend", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -3024,8 +3027,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
-                name: "FriendViewItem",
-                schema: "data");
+                name: "Friend",
+                schema: "friend");
 
             migrationBuilder.DropTable(
                 name: "ItemAppearanceItemOptionType",

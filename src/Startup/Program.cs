@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Startup
         private readonly AdminPanel adminPanel;
         private readonly IDictionary<int, IGameServer> gameServers = new Dictionary<int, IGameServer>();
         private readonly IList<IManageableServer> servers = new List<IManageableServer>();
-        private readonly IRepositoryManager repositoryManager;
+        private readonly IPersistenceContextProvider persistenceContextProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Program"/> class.
@@ -47,31 +47,32 @@ namespace MUnique.OpenMU.Startup
         {
             if (args.Contains("-demo"))
             {
-                this.repositoryManager = new InMemoryRepositoryManager();
-                var initialization = new DataInitialization(this.repositoryManager);
+                this.persistenceContextProvider = new InMemoryPersistenceContextProvider();
+                var initialization = new DataInitialization(this.persistenceContextProvider);
                 initialization.CreateInitialData();
             }
             else
             {
-                this.repositoryManager = this.PrepareRepositoryManager(args.Contains("-reinit"));
+                this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"));
             }
 
             Log.Info("Start initializing sub-components");
+            var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
             var loginServer = new LoginServer();
             var chatServer = new ChatServerListener(55980);
             this.servers.Add(chatServer);
-            var guildServer = new GuildServer(this.gameServers, this.repositoryManager);
-            var friendServer = new FriendServer(this.gameServers, chatServer, this.repositoryManager);
+            var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
+            var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
             var connectServer = ConnectServerFactory.CreateConnectServer();
             this.servers.Add(connectServer);
             Log.Info("Start initializing game servers");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var gameServerDefinition in this.GetGameServers())
+            foreach (var gameServerDefinition in persistenceContext.Get<GameServerDefinition>())
             {
                 using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
                 {
-                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.repositoryManager, friendServer);
+                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer);
                     foreach (var mainPacketHandler in gameServer.Context.PacketHandlers)
                     {
                         gameServer.AddListener(new DefaultTcpGameServerListener(gameServerDefinition.NetworkPort, gameServer.ServerInfo, gameServer.Context, connectServer, mainPacketHandler));
@@ -90,7 +91,7 @@ namespace MUnique.OpenMU.Startup
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
             Log.Info("Start initializing admin panel");
 
-            this.adminPanel = new AdminPanel(1234, this.servers, this.repositoryManager);
+            this.adminPanel = new AdminPanel(1234, this.servers, this.persistenceContextProvider);
             Log.Info("Admin panel initialized");
 
             if (args.Contains("-autostart"))
@@ -143,13 +144,13 @@ namespace MUnique.OpenMU.Startup
             }
 
             this.adminPanel.Dispose();
-            (this.repositoryManager as IDisposable)?.Dispose();
+            (this.persistenceContextProvider as IDisposable)?.Dispose();
         }
 
-        private IRepositoryManager PrepareRepositoryManager(bool reinit)
+        private IPersistenceContextProvider PrepareRepositoryManager(bool reinit)
         {
-            var manager = new RepositoryManager();
-            manager.InitializeSqlLogging();
+            PersistenceContextProvider.InitializeSqlLogging();
+            var manager = new PersistenceContextProvider();
             if (reinit || !manager.DatabaseExists())
             {
                 Log.Info("The database is getting (re-)ininitialized...");
@@ -174,17 +175,7 @@ namespace MUnique.OpenMU.Startup
                 }
             }
 
-            manager.RegisterRepositories();
-
             return manager;
-        }
-
-        private IEnumerable<GameServerDefinition> GetGameServers()
-        {
-            using (this.repositoryManager.UseTemporaryConfigurationContext())
-            {
-                return this.repositoryManager.GetRepository<GameServerDefinition>().GetAll();
-            }
         }
     }
 }

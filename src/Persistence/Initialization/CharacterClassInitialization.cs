@@ -19,17 +19,17 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private const int LorenciaMapId = 0;
         private const int NoriaMapId = 3;
 
-        private readonly IRepositoryManager repositoryManager;
+        private readonly IContext context;
         private readonly GameConfiguration gameConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterClassInitialization" /> class.
         /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
-        public CharacterClassInitialization(IRepositoryManager repositoryManager, GameConfiguration gameConfiguration)
+        public CharacterClassInitialization(IContext context, GameConfiguration gameConfiguration)
         {
-            this.repositoryManager = repositoryManager;
+            this.context = context;
             this.gameConfiguration = gameConfiguration;
         }
 
@@ -66,10 +66,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private CharacterClass CreateDarkLord(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
-            var energyMinus15 = this.repositoryManager.CreateNew<AttributeDefinition>(Guid.NewGuid(), "TotalEnergy minus 15", "TotalEnergy minus 15");
+            var energyMinus15 = this.context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "TotalEnergy minus 15", "TotalEnergy minus 15");
             this.gameConfiguration.Attributes.Add(energyMinus15);
 
-            var result = this.repositoryManager.CreateNew<CharacterClass>();
+            var result = this.context.CreateNew<CharacterClass>();
             this.gameConfiguration.CharacterClasses.Add(result);
             result.CanGetCreated = canGetCreated;
             result.HomeMap = this.gameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
@@ -172,7 +172,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private CharacterClass CreateMagicGladiator(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
-            var result = this.repositoryManager.CreateNew<CharacterClass>();
+            var result = this.context.CreateNew<CharacterClass>();
             this.gameConfiguration.CharacterClasses.Add(result);
             result.CanGetCreated = canGetCreated;
             result.HomeMap = this.gameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
@@ -270,7 +270,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private CharacterClass CreateElf(CharacterClassNumber number, string name, short pointsPerLevelUp, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
-            var result = this.repositoryManager.CreateNew<CharacterClass>();
+            var result = this.context.CreateNew<CharacterClass>();
             this.gameConfiguration.CharacterClasses.Add(result);
             result.CanGetCreated = canGetCreated;
             result.HomeMap = this.gameConfiguration.Maps.FirstOrDefault(map => map.Number == NoriaMapId);
@@ -365,7 +365,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private CharacterClass CreateWizard(CharacterClassNumber number, string name, short pointsPerLevelUp, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
-            var result = this.repositoryManager.CreateNew<CharacterClass>();
+            var result = this.context.CreateNew<CharacterClass>();
             this.gameConfiguration.CharacterClasses.Add(result);
             result.CanGetCreated = canGetCreated;
             result.HomeMap = this.gameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
@@ -460,7 +460,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private CharacterClass CreateKnight(CharacterClassNumber number, string name, short pointsPerLevelUp, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
-            var result = this.repositoryManager.CreateNew<CharacterClass>();
+            var result = this.context.CreateNew<CharacterClass>();
             this.gameConfiguration.CharacterClasses.Add(result);
             result.CanGetCreated = canGetCreated;
             result.HomeMap = this.gameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
@@ -537,19 +537,19 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private StatAttributeDefinition CreateStatAttributeDefinition(AttributeDefinition attribute, int value, bool increasableByPlayer)
         {
-            var definition = this.repositoryManager.CreateNew<StatAttributeDefinition>(this.gameConfiguration.Attributes.First(a => a == attribute), value, increasableByPlayer);
+            var definition = this.context.CreateNew<StatAttributeDefinition>(this.gameConfiguration.Attributes.First(a => a == attribute), value, increasableByPlayer);
             return definition;
         }
 
         private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply)
         {
-            var relationship = this.repositoryManager.CreateNew<AttributeRelationship>(this.gameConfiguration.Attributes.FirstOrDefault(a => a == targetAttribute) ?? targetAttribute, multiplier, this.gameConfiguration.Attributes.FirstOrDefault(a => a == sourceAttribute) ?? sourceAttribute, inputOperator);
+            var relationship = this.context.CreateNew<AttributeRelationship>(this.gameConfiguration.Attributes.FirstOrDefault(a => a == targetAttribute) ?? targetAttribute, multiplier, this.gameConfiguration.Attributes.FirstOrDefault(a => a == sourceAttribute) ?? sourceAttribute, inputOperator);
             return relationship;
         }
 
         private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute)
         {
-            return this.repositoryManager.CreateNew<ConstValueAttribute>(value, this.gameConfiguration.Attributes.First(a => a == attribute));
+            return this.context.CreateNew<ConstValueAttribute>(value, this.gameConfiguration.Attributes.First(a => a == attribute));
         }
     }
 }

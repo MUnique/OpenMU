@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the repository manager. Used to retrieve data, e.g. from a database.
         /// </summary>
-        IRepositoryManager RepositoryManager { get; }
+        IPersistenceContextProvider PersistenceContextProvider { get; }
 
         /// <summary>
         /// Gets the item power up factory.

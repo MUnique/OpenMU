@@ -55,6 +55,7 @@
     <Compile Include="CharacterClassNumber.cs" />
     <Compile Include="DataInitialization.cs" />
     <Compile Include="Gates.cs" />
+    <Compile Include="IMemoryRepository.cs" />
     <Compile Include="Items\ItemHelperBase.cs" />
     <Compile Include="Items\Jewels.cs" />
     <Compile Include="Items\Potions.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Maps\LostTower.cs" />
     <Compile Include="Maps\Noria.cs" />
     <Compile Include="Maps\Tarkan.cs" />
+    <Compile Include="MemoryRepository{TValue}.cs" />
     <Compile Include="NpcInitialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Terrains.Designer.cs">

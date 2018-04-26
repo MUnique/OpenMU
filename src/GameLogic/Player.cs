@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.gameContext = gameContext;
             this.PlayerView = playerView;
-            this.PersistenceContext = this.gameContext.RepositoryManager.CreateNewAccountContext(gameContext.Configuration);
+            this.PersistenceContext = this.gameContext.PersistenceContextProvider.CreateNewPlayerContext(gameContext.Configuration);
             this.walker = new Walker(this);
         }
 
@@ -156,7 +156,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the persistence context.
         /// </summary>
-        public IContext PersistenceContext { get; }
+        public IPlayerContext PersistenceContext { get; }
 
         /// <inheritdoc />
         public ITradeView TradeView => this.PlayerView.TradeView;
