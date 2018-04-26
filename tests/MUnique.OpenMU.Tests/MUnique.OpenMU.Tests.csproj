@@ -133,6 +133,10 @@
       <Project>{44CD0416-61D6-4848-8864-5DE7B971604A}</Project>
       <Name>MUnique.OpenMU.Pathfinding</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj">
+      <Project>{23b216a0-b407-4a76-a387-0b9e72b15363}</Project>
+      <Name>MUnique.OpenMU.Persistence.InMemory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Persistence\MUnique.OpenMU.Persistence.csproj">
       <Project>{6E809FA9-888C-474F-8A84-70EECBC7E42D}</Project>
       <Name>MUnique.OpenMU.Persistence</Name>

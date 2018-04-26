@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
-    using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
     using Rhino.Mocks;
 
@@ -39,8 +39,8 @@ namespace MUnique.OpenMU.Tests
         [TestCase(7, false)]
         public void JewelOfBless(byte itemLevel, bool consumptionExpectation)
         {
-            var repositoryManager = new BaseRepositoryManager();
-            var consumeHandler = new BlessJewelConsumeHandler(repositoryManager);
+            var contextProvider = new InMemoryPersistenceContextProvider();
+            var consumeHandler = new BlessJewelConsumeHandler(contextProvider);
 
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();
@@ -91,10 +91,10 @@ namespace MUnique.OpenMU.Tests
         [TestCase(8, true, false, 0)]
         public void JewelOfSoul(byte itemLevel, bool consumptionExpectation, bool success, byte expectedItemLevel)
         {
-            var repositoryManager = new BaseRepositoryManager();
+            var contextProvider = new InMemoryPersistenceContextProvider();
             var randomizer = MockRepository.GenerateStub<IRandomizer>();
             randomizer.Stub(r => r.NextRandomBool(50)).Return(success);
-            var consumeHandler = new SoulJewelConsumeHandler(repositoryManager, randomizer);
+            var consumeHandler = new SoulJewelConsumeHandler(contextProvider, randomizer);
 
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();
@@ -123,8 +123,8 @@ namespace MUnique.OpenMU.Tests
         [TestCase(5, false)]
         public void JewelOfLife(int numberOfOptions, bool consumptionExpectation)
         {
-            var repositoryManager = new BaseRepositoryManager();
-            var consumeHandler = new LifeJewelConsumeHandler(repositoryManager);
+            var contextProvider = new InMemoryPersistenceContextProvider();
+            var consumeHandler = new LifeJewelConsumeHandler(contextProvider);
             consumeHandler.Configuration.SuccessChance = 1;
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();
@@ -154,8 +154,8 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void JewelOfLifeFailReducesOptionLevel()
         {
-            var repositoryManager = new BaseRepositoryManager();
-            var consumeHandler = new LifeJewelConsumeHandler(repositoryManager);
+            var contextProvider = new InMemoryPersistenceContextProvider();
+            var consumeHandler = new LifeJewelConsumeHandler(contextProvider);
             consumeHandler.Configuration.SuccessChance = 1;
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();
@@ -190,8 +190,8 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void JewelOfLifeFailRemovesOption()
         {
-            var repositoryManager = new BaseRepositoryManager();
-            var consumeHandler = new LifeJewelConsumeHandler(repositoryManager);
+            var contextProvider = new InMemoryPersistenceContextProvider();
+            var consumeHandler = new LifeJewelConsumeHandler(contextProvider);
             consumeHandler.Configuration.SuccessChance = 1;
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();

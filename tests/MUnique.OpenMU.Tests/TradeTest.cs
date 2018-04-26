@@ -6,14 +6,13 @@ namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
     using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
     using Rhino.Mocks;
 
@@ -95,7 +94,7 @@ namespace MUnique.OpenMU.Tests
             trader2.TradeView.Expect(view => view.TradeFinished(TradeResult.Success));
 
             var gameContext = MockRepository.GenerateStub<IGameContext>();
-            gameContext.Stub(c => c.RepositoryManager).Return(new TestRepositoryManager());
+            gameContext.Stub(c => c.PersistenceContextProvider).Return(new InMemoryPersistenceContextProvider());
             var tradeButtonHandler = new TradeButtonAction(gameContext);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Unchecked);
             Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.TradeOpened);
@@ -132,7 +131,7 @@ namespace MUnique.OpenMU.Tests
             Assert.That(trader1.TemporaryStorage.Items.First(), Is.SameAs(item1));
 
             var gameContext = MockRepository.GenerateStub<IGameContext>();
-            gameContext.Stub(c => c.RepositoryManager).Return(new TestRepositoryManager());
+            gameContext.Stub(c => c.PersistenceContextProvider).Return(new InMemoryPersistenceContextProvider());
             var tradeButtonHandler = new TradeButtonAction(gameContext);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
@@ -164,13 +163,5 @@ namespace MUnique.OpenMU.Tests
         }
 
         //// TODO: Test fail scenarios
-
-        private class TestRepositoryManager : BaseRepositoryManager
-        {
-            public override IContext CreateNewAccountContext(GameConfiguration gameConfiguration)
-            {
-                return MockRepository.GenerateStub<IContext>();
-            }
-        }
     }
 }

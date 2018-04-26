@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.Persistence.InMemory;
     using Rhino.Mocks;
 
     /// <summary>
@@ -29,9 +29,9 @@ namespace MUnique.OpenMU.Tests
             {
                 RecoveryInterval = int.MaxValue
             };
-            var gameContext = new GameContext(gameConfig, MockRepository.GenerateMock<IRepositoryManager>());
-            gameContext.RepositoryManager.Stub(r => r.CreateNewAccountContext(gameConfig)).WhenCalled(invocation => invocation.ReturnValue = MockRepository.GenerateMock<IContext>()).Return(null);
-            gameContext.RepositoryManager.Stub(r => r.GetRepository<Item>()).Return(MockRepository.GenerateStub<IRepository<Item>>());
+            var gameContext = new GameContext(gameConfig, new InMemoryPersistenceContextProvider());
+            // gameContext.PersistenceContextProvider.Stub(r => r.CreateNewPlayerContext(gameConfig)).WhenCalled(invocation => invocation.ReturnValue = new BasePlayerContext()).Return(null);
+            // gameContext.PersistenceContextProvider.Stub(r => r.GetRepository<Item>()).Return(MockRepository.GenerateStub<IRepository<Item>>());
             return GetPlayer(gameContext);
         }
 

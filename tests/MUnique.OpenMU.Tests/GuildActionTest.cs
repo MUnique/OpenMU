@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Tests
 {
     using System;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
@@ -31,12 +30,16 @@ namespace MUnique.OpenMU.Tests
         public override void Setup()
         {
             base.Setup();
-            this.guildMasterPlayer = this.CreateGuildMasterPlayer();
+
             this.gameServerContext = this.CreateGameServer();
+            this.guildMasterPlayer = TestHelper.GetPlayer();
+            this.guildMasterPlayer.SelectedCharacter.Id = this.GuildMaster.Id;
+            this.guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
             this.guildMasterPlayer.GuildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, 0);
             this.player = TestHelper.GetPlayer();
             this.player.CurrentMap.Add(this.guildMasterPlayer);
             this.player.SelectedCharacter.Name = "Player";
+            this.player.SelectedCharacter.Id = Guid.NewGuid();
         }
 
         /// <summary>
@@ -101,8 +104,8 @@ namespace MUnique.OpenMU.Tests
             action.CreateGuild(this.player, "Foobar2", new byte[0]);
             Assert.That(this.player.GuildStatus, Is.Not.Null);
             Assert.That(this.player.GuildStatus.Position, Is.EqualTo(GuildPosition.GuildMaster));
-            var repository = this.RepositoryManager.GetRepository<DataModel.Entities.Guild>();
-            var newGuild = repository.GetAll().First(g => g.Name == "Foobar2");
+            var context = this.PersistenceContextProvider.CreateNewGuildContext();
+            var newGuild = context.Get<DataModel.Entities.Guild>().First(g => g.Name == "Foobar2");
             Assert.That(newGuild.Members.Any(m => m.Id == this.player.SelectedCharacter.Id), Is.True);
         }
 
@@ -137,15 +140,6 @@ namespace MUnique.OpenMU.Tests
             gameServer.Stub(g => g.GuildServer).Return(this.GuildServer);
 
             return gameServer;
-        }
-
-        private Player CreateGuildMasterPlayer()
-        {
-            var masterPlayer = TestHelper.GetPlayer();
-            this.GuildMaster = masterPlayer.SelectedCharacter;
-            this.GuildMaster.Name = "GuildMaster";
-            this.GuildMaster.Id = Guid.NewGuid();
-            return masterPlayer;
         }
     }
 }
