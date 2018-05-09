@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Server Log</title>
         <link rel="stylesheet" href="@Path['~/content/css/bootstrap.css']">
-        <script src="@Path['~/content/js/react/react.js']"></script>
-        <script src="@Path['~/content/js/react/react-dom.js']"></script>
+        <script src="@Path['~/content/js/react.js']"></script>
+        <script src="@Path['~/content/js/react-dom.js']"></script>
         <script src="@Path['~/content/js/fluxxor.js']"></script>
         
         

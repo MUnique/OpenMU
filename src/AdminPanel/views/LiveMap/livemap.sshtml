@@ -10,8 +10,8 @@
         <script src="@Path['~/content/js/bootstrap.min.js']"></script>
         <script src="@Path['~/content/js/jquery.signalR-2.2.2.js']"></script>
         <script src="@Path['~/signalr/hubs']"></script>
-        <script src="@Path['~/content/js/react/react.js']"></script>
-        <script src="@Path['~/content/js/react/react-dom.js']"></script>
+        <script src="@Path['~/content/js/react.js']"></script>
+        <script src="@Path['~/content/js/react-dom.js']"></script>
         <script src="@Path['~/content/js/fluxxor.js']"></script>
 
         <script src="@Path['~/content/js/app.js']"></script>
