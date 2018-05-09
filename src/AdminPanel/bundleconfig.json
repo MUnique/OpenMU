@@ -1,0 +1,19 @@
+[
+  {
+    "outputFileName": "content/bundles/app.js",
+    "inputFiles": [
+      "content/js/constants/*.js",
+      "content/js/actions/*.js",
+      "content/js/components/*.js",
+      "content/js/stores/*.js"
+    ],
+    "includeInProject": false
+  },
+  {
+    "outputFileName": "content/bundles/app.css",
+    "inputFiles": [
+      "content/css/*.css"
+    ],
+    "includeInProject": false
+  }
+]

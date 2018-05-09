@@ -75,6 +75,9 @@
     <Reference Include="CsQuery">
       <HintPath>..\packages\CsQuery.1.3.3\lib\net40\CsQuery.dll</HintPath>
     </Reference>
+    <Reference Include="dotnet-bundle, Version=2.7.385.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BundlerMinifier.Core.2.7.385\lib\net452\dotnet-bundle.exe</HintPath>
+    </Reference>
     <Reference Include="JavaScriptEngineSwitcher.ChakraCore, Version=2.4.8.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
       <HintPath>..\packages\JavaScriptEngineSwitcher.ChakraCore.2.4.8\lib\net45\JavaScriptEngineSwitcher.ChakraCore.dll</HintPath>
     </Reference>
@@ -144,6 +147,9 @@
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NUglify, Version=1.5.10.0, Culture=neutral, PublicKeyToken=15bc7810aec21b5e, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUglify.1.5.10\lib\net40\NUglify.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -162,6 +168,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
     <Reference Include="VroomJs, Version=1.2.3.0, Culture=neutral, PublicKeyToken=e7c52e67fcb0044f, processorArchitecture=MSIL">
       <HintPath>..\packages\VroomJs.1.2.3\lib\net45\VroomJs.dll</HintPath>
     </Reference>
@@ -183,13 +190,11 @@
     <Compile Include="WorldObserverToHubAdapter.cs" />
     <None Include="app.config" />
     <Compile Include="TimeSpanConverter.cs" />
+    <None Include="bundleconfig.json" />
     <None Include="content\bootstrap-theme.css.map" />
     <None Include="content\bootstrap.css.map" />
     <None Include="content\js\components\MapList.jsx" />
     <None Include="content\js\components\MapItem.jsx" />
-    <None Include="CopyScripts.proj">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="content\bootstrap-theme.min.css.map" />
     <None Include="content\bootstrap.min.css.map" />
     <None Include="content\js\components\LogTable.jsx" />
@@ -314,11 +319,42 @@
     <Content Include="Scripts\jquery-2.2.0.js" />
     <Content Include="Scripts\jquery-2.2.0.min.js" />
   </ItemGroup>
+  <ItemGroup>
+    <ScriptsFiles Include="Scripts\**\*.js;content\bundles\*.js">
+      <InProject>false</InProject>
+    </ScriptsFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <CssFiles Include="content\**\*.css">
+      <InProject>false</InProject>
+    </CssFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <FontFiles Include="fonts\*.*">
+      <InProject>false</InProject>
+    </FontFiles>
+  </ItemGroup>
+  <Target Name="CopyScripts" AfterTargets="Build">
+    <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(OutputPath)content\js\" />
+    <Copy SourceFiles="@(CssFiles)" DestinationFolder="$(OutputPath)content\css\" />
+    <Copy SourceFiles="@(FontFiles)" DestinationFolder="$(OutputPath)content\fonts\" />
+  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectDirectory)TransformBabel.proj" />
-  <Import Project="$(ProjectDirectory)CopyScripts.proj" />
-  <Target Name="BuildAndCopyScripts" AfterTargets="Build">
+  <Target Name="CallTransformBabel" BeforeTargets="BeforeCompile">
     <CallTarget Targets="TransformBabel" Condition="$(TRAVIS) == ''" />
-    <CallTarget Targets="CopyScripts" Condition="$(TRAVIS) == ''" />
+  </Target>
+  <Import Project="..\packages\BuildBundlerMinifier.2.7.385\build\BuildBundlerMinifier.targets" Condition="Exists('..\packages\BuildBundlerMinifier.2.7.385\build\BuildBundlerMinifier.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\BuildBundlerMinifier.2.7.385\build\BuildBundlerMinifier.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildBundlerMinifier.2.7.385\build\BuildBundlerMinifier.targets'))" />
+  </Target>
+  <Target Name="CleanUpBabelResult" AfterTargets="Build">
+    <CreateItem Include=".\**\*.generated.js*">
+      <Output TaskParameter="Include" ItemName="FilesToDelete" />
+    </CreateItem>
+    <Delete Files="@(FilesToDelete)" />
   </Target>
 </Project>
