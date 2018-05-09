@@ -130,7 +130,7 @@ And some other pets:
 | Cape of Emperor       | Lord Emperor    | xxxx11xx | xxxxx101 |
 | Wing of Dimension     | Dimension Master| xxxx11xx | xxxxx110 |
 | Cape of Overrule      | Fist Master     | xxxx11xx | xxxxx111 |
-| None                  |                 | xxxx11xx | xxxxx000 |
+| None                  |                 | xxxx00xx | xxxxx000 |
 
 #### Small Wings ####
 

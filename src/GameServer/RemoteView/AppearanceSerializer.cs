@@ -201,7 +201,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             if (wing == null)
             {
-                preview[5] |= 0b0000_1100;
                 return;
             }
 
