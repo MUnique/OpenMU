@@ -250,7 +250,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     preview[9] |= 0x03;
                     break;
                 case WingIndex.WingsOfMistery:
-                    preview[5] |= 0x04;
+                    preview[9] |= 0x04;
                     break;
                 case WingIndex.WingsOfSpirit:
                     preview[9] |= 0x01;
