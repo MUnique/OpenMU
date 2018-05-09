@@ -10,16 +10,14 @@ namespace MUnique.OpenMU.Pathfinding
     public struct PathResultNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PathResultNode"/> struct.
+        /// Initializes a new instance of the <see cref="PathResultNode" /> struct.
         /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="px">The px.</param>
-        /// <param name="py">The py.</param>
-        public PathResultNode(byte x, byte y, byte px, byte py)
+        /// <param name="point">The point.</param>
+        /// <param name="previousPoint">The previous point.</param>
+        public PathResultNode(Point point, Point previousPoint)
         {
-            this.ThisPoint = new Point(x, y);
-            this.PreviousPoint = new Point(px, py);
+            this.ThisPoint = point;
+            this.PreviousPoint = previousPoint;
         }
 
         /// <summary>

@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
             Point nextStep;
             while (this.nextSteps.TryGetValue(new PointCombination(start, end), out nextStep))
             {
-                result.Add(new PathResultNode(nextStep.X, nextStep.Y, start.X, start.Y));
+                result.Add(new PathResultNode(nextStep, start));
                 start = nextStep;
             }
 
