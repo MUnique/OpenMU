@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
 
             try
             {
-                var chatServer = new ChatServerListener(chatServerListenerPort);
+                var chatServer = new ChatServerListener(chatServerListenerPort, null);
                 chatServer.Xor32Key = customXor32Key ?? chatServer.Xor32Key;
                 chatServer.Start();
                 var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort);

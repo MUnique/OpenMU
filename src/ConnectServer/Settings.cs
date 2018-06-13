@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.ConnectServer
     /// <summary>
     /// The settings of the connect server.
     /// </summary>
-    internal class Settings
+    public class Settings
     {
         /// <summary>
         /// Gets or sets a value indicating whether the client should get disconnected when a unknown packet is getting received.

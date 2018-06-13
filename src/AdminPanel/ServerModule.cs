@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.AdminPanel
 
             if (server is IGameServer gameServer)
             {
-                return new ExtendedGameServerInfo(gameServer);
+                return new GameServerInfo(gameServer);
             }
 
             return

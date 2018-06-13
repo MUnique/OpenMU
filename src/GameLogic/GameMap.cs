@@ -7,10 +7,12 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -26,16 +28,22 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly IdGenerator objectIdGenerator;
 
+        private readonly IMapStateObserver stateObserver;
+
+        private int playerCount;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameMap"/> class.
+        /// Initializes a new instance of the <see cref="GameMap" /> class.
         /// </summary>
         /// <param name="mapDefinition">The map definition.</param>
         /// <param name="itemDropDuration">Duration of the item drop.</param>
         /// <param name="chunkSize">Size of the chunk.</param>
-        public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
+        /// <param name="stateObserver">The map state observer.</param>
+        public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize, IMapStateObserver stateObserver)
         {
             this.Definition = mapDefinition;
             this.ItemDropDuration = itemDropDuration;
+            this.stateObserver = stateObserver;
             Log.DebugFormat("Creating GameMap {0}", this.Definition);
             this.Terrain = new GameMapTerrain(this.Definition);
 
@@ -111,6 +119,8 @@ namespace MUnique.OpenMU.GameLogic
                 if (locateable is Player player)
                 {
                     player.Id = 0;
+                    Interlocked.Decrement(ref this.playerCount);
+                    this.stateObserver?.PlayerCountChanged(this.MapId, this.playerCount);
                 }
             }
         }
@@ -131,6 +141,8 @@ namespace MUnique.OpenMU.GameLogic
             {
                 player.Id = (ushort)this.objectIdGenerator.GetId();
                 Log.DebugFormat("{0}: Added player {1}, {2}, ", this.Definition, player.Id, player);
+                Interlocked.Increment(ref this.playerCount);
+                this.stateObserver?.PlayerCountChanged(this.MapId, this.playerCount);
             }
 
             if (locateable is NonPlayerCharacter npc)

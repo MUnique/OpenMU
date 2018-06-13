@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TestPlayerEntersMap()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Stub(p => p.Id).Return(1);
             player1.X = 100;
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TestPlayerMovesInMap()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Stub(p => p.Id).Return(1);
 
@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void PlayerMovesOutOfRange()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Stub(p => p.Id).Return(1);
             player1.X = 101;
@@ -103,7 +103,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void PlayerMovesOutAndIntoTheRange()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Stub(p => p.Id).Return(1);
             player1.X = 101;
@@ -132,7 +132,7 @@ namespace MUnique.OpenMU.Tests
         /// [Test]
         public void TestPerformanceMove()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Stub(p => p.Id).Return(1);
 
@@ -161,7 +161,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TestPlayerLeavesMap()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Stub(p => p.Id).Return(1);
             player1.X = 100;

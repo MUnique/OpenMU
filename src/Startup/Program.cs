@@ -57,13 +57,14 @@ namespace MUnique.OpenMU.Startup
             }
 
             Log.Info("Start initializing sub-components");
+            var signalRServerObserver = new SignalRGameServerStateObserver();
             var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
             var loginServer = new LoginServer();
-            var chatServer = new ChatServerListener(55980);
+            var chatServer = new ChatServerListener(55980, signalRServerObserver);
             this.servers.Add(chatServer);
             var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
             var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
-            var connectServer = ConnectServerFactory.CreateConnectServer();
+            var connectServer = ConnectServerFactory.CreateConnectServer(signalRServerObserver);
             this.servers.Add(connectServer);
             Log.Info("Start initializing game servers");
             Stopwatch stopwatch = new Stopwatch();
@@ -72,7 +73,7 @@ namespace MUnique.OpenMU.Startup
             {
                 using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
                 {
-                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer);
+                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer, signalRServerObserver);
                     foreach (var mainPacketHandler in gameServer.Context.PacketHandlers)
                     {
                         gameServer.AddListener(new DefaultTcpGameServerListener(gameServerDefinition.NetworkPort, gameServer.ServerInfo, gameServer.Context, connectServer, mainPacketHandler));

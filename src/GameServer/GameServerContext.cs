@@ -19,20 +19,22 @@ namespace MUnique.OpenMU.GameServer
     public class GameServerContext : GameContext, IGameServerContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameServerContext"/> class.
+        /// Initializes a new instance of the <see cref="GameServerContext" /> class.
         /// </summary>
         /// <param name="gameServerDefinition">The game server definition.</param>
         /// <param name="guildServer">The guild server.</param>
         /// <param name="loginServer">The login server.</param>
         /// <param name="friendServer">The friend server.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        /// <param name="stateObserver">The state observer.</param>
         public GameServerContext(
             GameServerDefinition gameServerDefinition,
             IGuildServer guildServer,
             ILoginServer loginServer,
             IFriendServer friendServer,
-            IPersistenceContextProvider persistenceContextProvider)
-            : base(gameServerDefinition.GameConfiguration, persistenceContextProvider)
+            IPersistenceContextProvider persistenceContextProvider,
+            IServerStateObserver stateObserver)
+            : base(gameServerDefinition.GameConfiguration, persistenceContextProvider, new ServerStateToGameStateObserverAdapter(stateObserver, gameServerDefinition.ServerID))
         {
             this.Id = gameServerDefinition.ServerID;
             this.GuildServer = guildServer;

@@ -1,0 +1,9 @@
+[
+  {
+    "outputFileName": "content/bundles/app.css",
+    "inputFiles": [
+      "content/css/*.css"
+    ],
+    "includeInProject": false
+  }
+]
