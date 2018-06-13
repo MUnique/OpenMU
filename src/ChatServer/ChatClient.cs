@@ -155,8 +155,8 @@ namespace MUnique.OpenMU.ChatServer
                 this.room = null;
             }
 
-            this.connection = null;
             this.connection?.Disconnect();
+            this.connection = null;
             if (this.Disconnected != null)
             {
                 this.Disconnected(this, EventArgs.Empty);
