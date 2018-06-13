@@ -39,6 +39,7 @@ namespace MUnique.OpenMU.AdminPanel
                 AppStartup = typeof(Startup).AssemblyQualifiedName
             };
             WorldObserverHub.Servers = servers;
+            ServerListHub.Servers = servers;
 
             // you might need to allow it first with netsh:
             // netsh http add urlacl http://+:1234/ user=[Username]

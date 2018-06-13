@@ -64,6 +64,7 @@
     <Compile Include="ChatServerAuthenticationInfo.cs" />
     <Compile Include="Friend.cs" />
     <Compile Include="FriendViewItem.cs" />
+    <Compile Include="ServerStateToGameStateObserverAdapter.cs" />
     <Compile Include="Guild.cs" />
     <Compile Include="GuildMemberStatus.cs" />
     <Compile Include="GuildPosition.cs" />
@@ -71,9 +72,12 @@
     <Compile Include="IConnectServer.cs" />
     <Compile Include="IFriendServer.cs" />
     <Compile Include="IGameServer.cs" />
+    <Compile Include="IGameStateObserver.cs" />
     <Compile Include="IGuildServer.cs" />
     <Compile Include="ILoginServer.cs" />
     <Compile Include="IManageableServer.cs" />
+    <Compile Include="IMapStateObserver.cs" />
+    <Compile Include="IServerStateObserver.cs" />
     <Compile Include="LetterHeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpecialServerIds.cs" />

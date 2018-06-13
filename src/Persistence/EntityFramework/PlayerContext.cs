@@ -19,9 +19,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="contextProvider">The contextProvider.</param>
-        /// <param name="isOwner">if set to <c>true</c> this instance owns the <paramref name="context" />.</param>
-        public PlayerContext(DbContext context, PersistenceContextProvider contextProvider, bool isOwner = true)
-            : base(context, contextProvider, isOwner)
+        public PlayerContext(DbContext context, PersistenceContextProvider contextProvider)
+            : base(context, contextProvider)
         {
         }
 

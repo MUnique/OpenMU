@@ -7,27 +7,40 @@
         
         <link rel="stylesheet" href="@Path['~/content/css/bootstrap.css']">
         <script src="@Path['~/content/js/jquery-2.2.0.min.js']"></script>
-        <script src="@Path['~/content/js/react.js']"></script>
-        <script src="@Path['~/content/js/react-dom.js']"></script>
-        
-        <script src="@Path['~/content/js/fluxxor.js']"></script>
         <script src="@Path['~/content/js/jquery.signalR-2.2.2.js']"></script>
         <script src="@Path['~/signalr/hubs']"></script>
+        <script src="@Path['~/content/js/system-production.js']"></script>
         <script src="@Path['~/content/js/app.js']"></script>
         <link rel="stylesheet" href="@Path['~/content/css/app.css']">
+        
+        <script src="@Path['~/content/js/bootstrap.min.js']"></script>
+        <script>
+            
+            // To be able to resolve react etc. in the modules, SystemJS needs to be configured.
+            // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
+            // TODO: Extract to external script?
+            System.config({
+              map: {
+                'Chartjs': '@Path['~/content/js/Chart.js']',
+                'three': '@Path['~/content/js/three.min.js']',
+                'tween': '@Path['~/content/js/tween.min.js']',
+                'react': '@Path['~/content/js/react.js']',
+                'react-dom': '@Path['~/content/js/react-dom.js']',
+                'react-chartjs': '@Path['~/content/js/react-chartjs.js']',
+                'react-redux': '@Path['~/content/js/react-redux.js']',
+                'redux': '@Path['~/content/js/redux.js']',
+                'redux-thunk': '@Path['~/content/js/redux-thunk.js']'
+              }
+            });
+
+            // First import the App module, then execute it.
+            System.import("components/App")
+                .then(m => console.log('App module resolved'))
+                .catch(err => console.error(err));
+        </script>
     </head>
     <body> 
         <div id="content"></div>
         
-        <script src="@Path['~/content/js/bootstrap.min.js']"></script>
-        <script>
-            var flux = new Fluxxor.Flux({ 
-                CommonStateStore: new CommonStateStore(),
-                ServerStore: new ServerStore(),
-                LogStore: new LogStore(),
-                AccountStore: new AccountStore()
-            }, AdminActions);
-            ReactDOM.render(React.createElement(Layout, { flux: flux }), document.getElementById('content'));
-        </script>
     </body>
 </html>

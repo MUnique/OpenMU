@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.ChatServer
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Timers;
@@ -27,6 +28,7 @@ namespace MUnique.OpenMU.ChatServer
         private readonly ChatRoomManager manager;
 
         private readonly int port;
+        private readonly IServerStateObserver stateObserver;
 
         private readonly RandomNumberGenerator randomNumberGenerator;
 
@@ -40,13 +42,17 @@ namespace MUnique.OpenMU.ChatServer
 
         private Listener chatClientListener;
 
+        private ServerState serverState;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatServerListener"/> class.
+        /// Initializes a new instance of the <see cref="ChatServerListener" /> class.
         /// </summary>
         /// <param name="port">The port.</param>
-        public ChatServerListener(int port)
+        /// <param name="stateObserver">The state observer.</param>
+        public ChatServerListener(int port, IServerStateObserver stateObserver)
         {
             this.port = port;
+            this.stateObserver = stateObserver;
             this.manager = new ChatRoomManager();
             this.randomNumberGenerator = RandomNumberGenerator.Create();
 
@@ -65,7 +71,18 @@ namespace MUnique.OpenMU.ChatServer
         public int Id => SpecialServerIds.ChatServer;
 
         /// <inheritdoc/>
-        public ServerState ServerState { get; private set; }
+        public ServerState ServerState
+        {
+            get => this.serverState;
+            private set
+            {
+                if (value != this.serverState)
+                {
+                    this.serverState = value;
+                    this.stateObserver?.ServerStateChanged(this.Id, value);
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public int MaximumConnections => int.MaxValue;
@@ -196,12 +213,14 @@ namespace MUnique.OpenMU.ChatServer
         {
             var chatClient = new ChatClient(e.AcceptedConnection, this.manager);
             this.connectedClients.Add(chatClient);
+            this.stateObserver?.PlayerCountChanged(this.Id, this.CurrentConnections);
             chatClient.Disconnected += this.ChatClient_Disconnected;
         }
 
         private void ChatClient_Disconnected(object sender, EventArgs e)
         {
             this.connectedClients.Remove(sender as IChatClient);
+            this.stateObserver?.PlayerCountChanged(this.Id, this.CurrentConnections);
         }
 
         private void ClientCleanupInactiveClients(object sender, ElapsedEventArgs e)

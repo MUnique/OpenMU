@@ -18,24 +18,41 @@ namespace MUnique.OpenMU.ConnectServer
     internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectServer));
+        private readonly IServerStateObserver stateObserver;
+        private ServerState serverState;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectServer" /> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        public ConnectServer(Settings settings)
+        /// <param name="stateObserver">The state observer.</param>
+        public ConnectServer(Settings settings, IServerStateObserver stateObserver)
         {
+            this.stateObserver = stateObserver;
             this.Settings = settings;
 
             this.ConnectInfos = new Dictionary<ushort, byte[]>();
             this.ServerList = new ServerList();
 
             this.ClientListener = new ClientListener(this);
+            this.ClientListener.ConnectedClientsChanged += (sender, args) =>
+                this.stateObserver.PlayerCountChanged(this.Id, this.CurrentConnections);
             this.CreatePlugins();
         }
 
         /// <inheritdoc/>
-        public ServerState ServerState { get; private set; }
+        public ServerState ServerState
+        {
+            get => this.serverState;
+            private set
+            {
+                if (value != this.serverState)
+                {
+                    this.serverState = value;
+                    this.stateObserver.ServerStateChanged(this.Id, value);
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public string Description => "Connect Server";
@@ -114,6 +131,7 @@ namespace MUnique.OpenMU.ConnectServer
                 };
                 if (gameServer is INotifyPropertyChanged notifier)
                 {
+                    // TODO: gameServer did never implement INotifyPropertyChanged, so this never worked!
                     notifier.PropertyChanged += this.HandleServerPropertyChanged;
                 }
 

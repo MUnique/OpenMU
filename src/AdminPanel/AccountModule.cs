@@ -31,8 +31,8 @@ namespace MUnique.OpenMU.AdminPanel
         {
             this.persistenceContextProvider = persistenceContextProvider;
 
-            this.Get["save"] = this.SaveAccount;
-            this.Get["delete/{accountId:string}"] = this.DeleteAccount;
+            this.Post["save"] = this.SaveAccount;
+            this.Post["delete/{accountId:string}"] = this.DeleteAccount;
             this.Get["list/{offset:int}/{count:int}"] = this.GetAccounts;
         }
 
@@ -58,7 +58,8 @@ namespace MUnique.OpenMU.AdminPanel
 
                         this.AssignAccountValues(account, dto);
 
-                        return context.SaveChanges();
+                        context.SaveChanges();
+                        return account.GetId();
                     }
                 }
             }

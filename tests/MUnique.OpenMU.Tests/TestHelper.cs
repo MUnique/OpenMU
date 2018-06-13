@@ -29,9 +29,7 @@ namespace MUnique.OpenMU.Tests
             {
                 RecoveryInterval = int.MaxValue
             };
-            var gameContext = new GameContext(gameConfig, new InMemoryPersistenceContextProvider());
-            // gameContext.PersistenceContextProvider.Stub(r => r.CreateNewPlayerContext(gameConfig)).WhenCalled(invocation => invocation.ReturnValue = new BasePlayerContext()).Return(null);
-            // gameContext.PersistenceContextProvider.Stub(r => r.GetRepository<Item>()).Return(MockRepository.GenerateStub<IRepository<Item>>());
+            var gameContext = new GameContext(gameConfig, new InMemoryPersistenceContextProvider(), null);
             return GetPlayer(gameContext);
         }
 
@@ -44,7 +42,7 @@ namespace MUnique.OpenMU.Tests
         /// </returns>
         public static Player GetPlayer(IGameContext gameContext)
         {
-            var map = new GameMap(MockRepository.GenerateStub<GameMapDefinition>(), 60, 4);
+            var map = new GameMap(MockRepository.GenerateStub<GameMapDefinition>(), 60, 4, null);
             map.Definition.Stub(d => d.DropItemGroups).Return(new List<DropItemGroup>());
             gameContext.MapList.Add(map.Definition.Number.ToUnsigned(), map);
             var character = MockRepository.GenerateStub<Character>();

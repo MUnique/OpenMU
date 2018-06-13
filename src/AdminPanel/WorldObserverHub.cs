@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.AdminPanel
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNet.SignalR;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
@@ -49,8 +48,9 @@ namespace MUnique.OpenMU.AdminPanel
         /// <remarks>
         /// This is a bit dirty... the AdminPanel should not have the reference to  GameLogic.
         /// Instead we need to extract some interfaces.
+        /// TODO: It should also be possible to observe multiple maps through one connection.
         /// </remarks>
-        public void Listen(byte serverId, ushort mapId)
+        public void Subscribe(byte serverId, ushort mapId)
         {
             IGameServer gameServer = this.servers.OfType<IGameServer>().FirstOrDefault(g => g.Id == serverId);
             if (gameServer == null)
@@ -78,8 +78,10 @@ namespace MUnique.OpenMU.AdminPanel
             }
         }
 
-        /// <inheritdoc/>
-        public override Task OnDisconnected(bool stopCalled)
+        /// <summary>
+        /// Unsubscribes from this hub.
+        /// </summary>
+        public void Unsubscribe()
         {
             if (Observers.TryGetValue(this.Context.ConnectionId, out WorldObserverToHubAdapter observer))
             {
@@ -89,8 +91,6 @@ namespace MUnique.OpenMU.AdminPanel
                 FreeIds.Enqueue(observer.Id);
                 observer.Dispose();
             }
-
-            return base.OnDisconnected(stopCalled);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="newObjects">The new objects.</param>
         public void NewNpcsInScope(WorldObserverToHubAdapter sender, IEnumerable<NonPlayerCharacter> newObjects)
         {
-            this.Clients.Client(sender.ConnectionId).NewNPCsInScope(newObjects.Select(o => new { Id = o.Id, Name = o.Definition.Designation, X = o.X, Y = o.Y, Rotation = o.Rotation, IsMonster = o is Monster }));
+            this.Clients.Client(sender.ConnectionId).NewNPCsInScope(newObjects.Select(o => new { id = o.Id, name = o.Definition.Designation, x = o.X, y = o.Y, rotation = o.Rotation, serverId = sender.ServerId, mapId = sender.MapId, isMonster = o is Monster }));
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.AdminPanel
         {
             this.Clients.Client(sender.ConnectionId).NewPlayersInScope(newObjects.Select(o => new
             {
-                Id = o.Id, Name = o.Name, X = o.X, Y = o.Y, Rotation = o.Rotation, ServerId = sender.ServerId
+                id = o.Id, name = o.Name, x = o.X, y = o.Y, rotation = o.Rotation, serverId = sender.ServerId, mapId = sender.MapId
             }));
         }
 
@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.AdminPanel
                 x = walkable.WalkTarget.X;
                 y = walkable.WalkTarget.Y;
                 walkDelay = (int)walkable.StepDelay.TotalMilliseconds;
-                var walkSteps = walkable.NextDirections.Select(step => new { step.To.X, step.To.Y, step.Direction }).ToList();
+                var walkSteps = walkable.NextDirections.Select(step => new { x = step.To.Y, y = step.To.Y, direction = step.Direction }).ToList();
 
                 // TODO: Can errors happen here when NextDirection changes in the meantime?
                 var lastStep = walkable.NextDirections.LastOrDefault();
@@ -162,7 +162,7 @@ namespace MUnique.OpenMU.AdminPanel
                     var lastDirection = lastStep.To.GetDirectionTo(walkable.WalkTarget);
                     if (lastDirection != Direction.Undefined)
                     {
-                        walkSteps.Add(new { X = x, Y = y, Direction = lastDirection });
+                        walkSteps.Add(new { x, y, direction = lastDirection });
                     }
                 }
 
@@ -222,7 +222,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="freshDrops">if set to <c>true</c> this items are fresh drops; Otherwise they are already laying on the ground when reaching a newly discovered part of the map.</param>
         public void ShowDroppedItems(WorldObserverToHubAdapter sender, IEnumerable<DroppedItem> droppedItems, bool freshDrops)
         {
-            this.Clients.Client(sender.ConnectionId).ShowDroppedItems(droppedItems.Select(drop => new { Id = drop.Id, X = drop.X, Y = drop.Y, ItemName = drop.Item.ToString() }), freshDrops);
+            this.Clients.Client(sender.ConnectionId).ShowDroppedItems(droppedItems.Select(drop => new { id = drop.Id, x = drop.X, y = drop.Y, itemName = drop.Item.ToString() }), freshDrops);
         }
 
         /// <summary>

@@ -8,9 +8,9 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading;
-
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -22,12 +22,15 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly Timer recoverTimer;
 
+        private readonly IGameStateObserver stateObserver;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext"/> class.
+        /// Initializes a new instance of the <see cref="GameContext" /> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider)
+        /// <param name="stateObserver">The state observer.</param>
+        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IGameStateObserver stateObserver)
         {
             try
             {
@@ -41,6 +44,8 @@ namespace MUnique.OpenMU.GameLogic
                 Log.Error(ex);
                 throw;
             }
+
+            this.stateObserver = stateObserver;
         }
 
         /// <inheritdoc/>
@@ -75,6 +80,7 @@ namespace MUnique.OpenMU.GameLogic
             player.PlayerEnteredWorld += this.PlayerEnteredWorld;
             player.PlayerDisconnected += this.PlayerDisconnected;
             this.PlayerList.Add(player);
+            this.stateObserver?.PlayerCountChanged(this.PlayerList.Count);
         }
 
         /// <summary>
@@ -96,6 +102,7 @@ namespace MUnique.OpenMU.GameLogic
             player.CurrentMap?.Remove(player);
 
             this.PlayerList.Remove(player);
+            this.stateObserver?.PlayerCountChanged(this.PlayerList.Count);
 
             player.PlayerDisconnected -= this.PlayerDisconnected;
             player.PlayerEnteredWorld -= this.PlayerEnteredWorld;

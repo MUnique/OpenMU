@@ -26,30 +26,35 @@ namespace MUnique.OpenMU.GameServer
         private readonly GameServerContext gameContext;
 
         private readonly ICollection<IGameServerListener> listeners = new List<IGameServerListener>();
+        private readonly IServerStateObserver stateObserver;
 
         private bool initialized;
+        private ServerState serverState;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameServer"/> class.
+        /// Initializes a new instance of the <see cref="GameServer" /> class.
         /// </summary>
         /// <param name="gameServerDefinition">The game server definition.</param>
         /// <param name="guildServer">The guild server.</param>
         /// <param name="loginServer">The login server.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="friendServer">The friend server.</param>
+        /// <param name="stateObserver">The state observer.</param>
         public GameServer(
             GameServerDefinition gameServerDefinition,
             IGuildServer guildServer,
             ILoginServer loginServer,
             IPersistenceContextProvider persistenceContextProvider,
-            IFriendServer friendServer)
+            IFriendServer friendServer,
+            IServerStateObserver stateObserver)
         {
             this.Id = gameServerDefinition.ServerID;
             this.Description = gameServerDefinition.Description;
+            this.stateObserver = stateObserver;
 
             try
             {
-                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider);
+                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, stateObserver);
             }
             catch (Exception ex)
             {
@@ -74,7 +79,18 @@ namespace MUnique.OpenMU.GameServer
         public GameServerContext Context => this.gameContext;
 
         /// <inheritdoc/>
-        public ServerState ServerState { get; set; }
+        public ServerState ServerState
+        {
+            get => this.serverState;
+            set
+            {
+                if (this.serverState != value)
+                {
+                    this.serverState = value;
+                    this.stateObserver?.ServerStateChanged(this.Id, value);
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public int MaximumConnections => this.ServerInfo.MaximumPlayers;
@@ -103,6 +119,7 @@ namespace MUnique.OpenMU.GameServer
         {
             using (this.PushServerLogContext())
             {
+                this.ServerState = ServerState.Starting;
                 this.Initialize();
                 foreach (var listener in this.listeners)
                 {
@@ -354,8 +371,9 @@ namespace MUnique.OpenMU.GameServer
             var configuration = this.gameContext.ServerConfiguration;
             foreach (var map in configuration.Maps.OrderBy(m => m.Number))
             {
-                var gameMap = new GameMap(map, 60, 8);
+                var gameMap = new GameMap(map, 60, 8, this.stateObserver?.GetMapStateObserver(this.Id));
                 this.Context.MapList.Add(map.Number.ToUnsigned(), gameMap);
+                this.stateObserver?.MapAdded(this.Id, new GameServerInfoAdapter.GameMapInfo(gameMap, Enumerable.Empty<Player>()));
             }
         }
 
@@ -364,6 +382,7 @@ namespace MUnique.OpenMU.GameServer
             var dropGenerator = new DefaultDropGenerator(this.Context.Configuration, Rand.GetRandomizer());
             foreach (var map in this.Context.MapList.Values.Where(m => m.Definition.MonsterSpawns.Any()))
             {
+                // TODO: Should this code be moved into the GameMap class?
                 Logger.Debug($"Start creating monster instances for map {map}");
                 foreach (var spawn in map.Definition.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Automatic))
                 {
@@ -486,7 +505,7 @@ namespace MUnique.OpenMU.GameServer
                 return this.gameServer.ToString();
             }
 
-            private class GameMapInfo : IGameMapInfo
+            internal class GameMapInfo : IGameMapInfo
             {
                 private readonly GameMap map;
 

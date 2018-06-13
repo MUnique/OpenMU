@@ -39,6 +39,11 @@ namespace MUnique.OpenMU.ConnectServer
         }
 
         /// <summary>
+        /// Occurs when the number of connected clients changed.
+        /// </summary>
+        public event EventHandler ConnectedClientsChanged;
+
+        /// <summary>
         /// Gets the connected clients.
         /// </summary>
         public ICollection<Client> Clients { get; }
@@ -113,6 +118,7 @@ namespace MUnique.OpenMU.ConnectServer
             }
 
             this.AddClient(socket);
+            this.ConnectedClientsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void AddClient(Socket socket)
@@ -151,6 +157,7 @@ namespace MUnique.OpenMU.ConnectServer
             }
 
             this.clientPool.Add(client);
+            this.ConnectedClientsChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

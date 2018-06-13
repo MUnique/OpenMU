@@ -4,9 +4,7 @@
 
 namespace MUnique.OpenMU.Interfaces
 {
-    using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// The state of the server.
