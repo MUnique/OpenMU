@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.Pathfinding.Tests
         private IPathFinder pathFinder;
 
         /// <summary>
-        /// Sets up the path finder an a basic grid.
+        /// Sets up the path finder with a basic, unrestricted grid.
         /// </summary>
         [SetUp]
         public void SetUp()
