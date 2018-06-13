@@ -79,6 +79,12 @@ namespace MUnique.OpenMU.GameLogic
         {
             try
             {
+                if (this.walkLock == null)
+                {
+                    Log.Debug("walker already disposed");
+                    return;
+                }
+
                 var attackable = this.walkSupporter as IAttackable;
                 bool stop;
                 this.walkLock.EnterReadLock();

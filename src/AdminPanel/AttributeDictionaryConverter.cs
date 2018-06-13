@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Linq;
-using MUnique.OpenMU.DataModel.Configuration;
-
 namespace MUnique.OpenMU.AdminPanel
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence;
     using Nancy.Json;
 
@@ -50,7 +49,7 @@ namespace MUnique.OpenMU.AdminPanel
                     foreach (var kvp in dictionary)
                     {
                         var attributeDefinition = context.GetById<AttributeDefinition>(Guid.Parse(kvp.Key));
-                        result.Add(attributeDefinition, float.Parse((string) kvp.Value));
+                        result.Add(attributeDefinition, float.Parse((string)kvp.Value));
                     }
                 }
             }

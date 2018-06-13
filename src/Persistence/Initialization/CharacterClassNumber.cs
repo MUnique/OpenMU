@@ -88,5 +88,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// The dimension master
         /// </summary>
         DimensionMaster = 0xB8 >> 3,
+
+        /// <summary>
+        /// The rage fighter.
+        /// </summary>
+        RageFighter = 0xC0 >> 3,
+
+        /// <summary>
+        /// The fist master.
+        /// </summary>
+        FistMaster = 0xC8 >> 3,
     }
 }

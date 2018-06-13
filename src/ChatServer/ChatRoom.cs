@@ -226,7 +226,7 @@ namespace MUnique.OpenMU.ChatServer
             try
             {
                 roomIsEmpty = this.connectedClients.Count < 1;
-                if (roomIsEmpty)
+                if (!roomIsEmpty)
                 {
                     this.SendChatRoomClientUpdate(chatClient, ChatRoomClientUpdateType.Left);
                 }
