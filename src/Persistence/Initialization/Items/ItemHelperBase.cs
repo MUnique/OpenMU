@@ -262,7 +262,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             item.Durability = durability;
-            var qualifiedCharacterClasses = this.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
+            var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
             qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
             var minDamagePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
@@ -352,90 +352,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             requirement.Attribute = attributeDefinition;
             requirement.MinimumValue = minimumValue;
             return requirement;
-        }
-
-        private IEnumerable<CharacterClass> DetermineCharacterClasses(int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
-        {
-            var characterClasses = this.GameConfiguration.CharacterClasses;
-            if (wizardClass > 0)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkWizard);
-                if (wizardClass > 1)
-                {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.SoulMaster);
-                    if (wizardClass > 2)
-                    {
-                        yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.GrandMaster);
-                    }
-                }
-            }
-
-            if (knightClass > 0)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkKnight);
-                if (knightClass > 1)
-                {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BladeKnight);
-                    if (knightClass > 2)
-                    {
-                        yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BattleMaster);
-                    }
-                }
-            }
-
-            if (elfClass > 0)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.FairyElf);
-                if (elfClass > 1)
-                {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.MuseElf);
-                    if (elfClass > 2)
-                    {
-                        yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.HighElf);
-                    }
-                }
-            }
-
-            if (magicGladiatorClass > 0)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.MagicGladiator);
-                if (magicGladiatorClass > 1)
-                {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DuelMaster);
-                }
-            }
-
-            if (darkLordClass > 0)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkLord);
-                if (darkLordClass > 1)
-                {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.LordEmperor);
-                }
-            }
-
-            ////if (summonerClass > 0)
-            ////{
-            ////    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.Summoner);
-            ////    if (summonerClass > 1)
-            ////    {
-            ////        yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BloodySummoner);
-            ////        if (summonerClass > 2)
-            ////        {
-            ////            yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DimensionMaster);
-            ////        }
-            ////    }
-            ////}
-
-            //// TODO
-            ////if (ragefighterClass > 0)
-            ////{
-            ////    yield return characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.RageFighter);
-            ////    if (ragefighterClass > 1)
-            ////    {
-            ////        yield return characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.FistMaster);
-            ////    }
-            ////}
         }
 
         private IncreasableItemOption CreateExcellentDefenseOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
