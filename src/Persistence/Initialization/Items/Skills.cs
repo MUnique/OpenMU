@@ -422,6 +422,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private void CreateSkill(short skillId, string name, int levelRequirement, int damage, int manaConsumption, int abilityConsumption, short distance, int energyRequirement, int leadershipRequirement, int elementalModifier, int attackType, int useType, int count, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int rank, int group, int masterp)
         {
             var skill = this.context.CreateNew<Skill>();
+            this.gameConfiguration.Skills.Add(skill);
             skill.SkillID = skillId;
             skill.Name = name;
             if (levelRequirement > 0)
