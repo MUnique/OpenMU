@@ -19,21 +19,21 @@ namespace MUnique.OpenMU.AdminPanel
         private static readonly ILog Log = LogManager.GetLogger(typeof(SystemHub));
         private static readonly PerformanceCounter CpuCounterTotal;
         private static readonly PerformanceCounter CpuCounterInstance;
-        private static readonly PerformanceCounter BytesSentCounter;
-        private static readonly PerformanceCounter BytesReceivedCounter;
+        //// private static readonly PerformanceCounter BytesSentCounter;
+        //// private static readonly PerformanceCounter BytesReceivedCounter;
         private static readonly Timer Timer;
 
         static SystemHub()
         {
             CpuCounterInstance = new PerformanceCounter("Process", "% Processor Time", Process.GetCurrentProcess().ProcessName); // TODO: What if there are multiple processes?
             CpuCounterTotal = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-            BytesSentCounter = new PerformanceCounter(".Net CLR Networking", "Bytes Sent"); // Does always return 0 :-(
-            BytesReceivedCounter = new PerformanceCounter(".Net CLR Networking", "Bytes Received"); // Does always return 0 :-(
+            //// BytesSentCounter = new PerformanceCounter(".Net CLR Networking", "Bytes Sent"); // Does always return 0 :-(
+            //// BytesReceivedCounter = new PerformanceCounter(".Net CLR Networking", "Bytes Received"); // Does always return 0 :-(
 
             CpuCounterTotal.NextValue();
             CpuCounterInstance.NextValue();
-            BytesSentCounter.NextValue();
-            BytesReceivedCounter.NextValue();
+            //// BytesSentCounter.NextValue();
+            //// BytesReceivedCounter.NextValue();
 
             Timer = new Timer(1000);
             Timer.Elapsed += TimerElapsed;
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.AdminPanel
         private static void TimerElapsed(object sender, ElapsedEventArgs e)
         {
             var hubContext = GlobalHost.ConnectionManager.GetHubContext<SystemHub, ISystemHubClient>();
-            hubContext.Clients.Group(SubscriberGroup).Update(CpuCounterTotal.NextValue(), CpuCounterInstance.NextValue(), BytesReceivedCounter.NextValue(), BytesSentCounter.NextValue());
+            hubContext.Clients.Group(SubscriberGroup).Update(CpuCounterTotal.NextValue(), CpuCounterInstance.NextValue(), 0, 0); ////BytesReceivedCounter.NextValue(), BytesSentCounter.NextValue());
         }
     }
 }
