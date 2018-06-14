@@ -59,6 +59,7 @@
     <Compile Include="Items\CharacterClassHelper.cs" />
     <Compile Include="Items\ItemHelperBase.cs" />
     <Compile Include="Items\Jewels.cs" />
+    <Compile Include="Items\Orbs.cs" />
     <Compile Include="Items\Potions.cs" />
     <Compile Include="Items\SetItemHelper.cs" />
     <Compile Include="Items\Skills.cs" />

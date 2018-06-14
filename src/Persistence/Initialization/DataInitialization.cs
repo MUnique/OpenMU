@@ -592,6 +592,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             new CharacterClassInitialization(this.context, this.gameConfiguration).CreateCharacterClasses();
             new Skills(this.context, this.gameConfiguration).Initialize();
+            new Orbs(this.context, this.gameConfiguration).Initialize();
             var setHelper = new SetItemHelper(this.context, this.gameConfiguration);
             setHelper.CreateSets();
             var weaponHelper = new WeaponItemHelper(this.context, this.gameConfiguration);
