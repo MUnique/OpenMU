@@ -11,20 +11,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     /// <summary>
     /// Initialization logic for <see cref="Skill"/>s.
     /// </summary>
-    internal class Skills
+    internal class Skills : InitializerBase
     {
-        private readonly IContext context;
-        private readonly GameConfiguration gameConfiguration;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Skills"/> class.
         /// </summary>
         /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
         public Skills(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
         {
-            this.context = context;
-            this.gameConfiguration = gameConfiguration;
         }
 
         /// <summary>
@@ -34,7 +30,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// Regex: (?m)^\s*(\d+)\s+\"(.+?)\"\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(-*\d+)\s(-*\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s*$
         /// Replace by: this.CreateSkill($1, "$2", $3, $4, $5, $6, $7, $9, $10, $11, $12, $13, $15, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28);
         /// </remarks>
-        public void Initialize()
+        public override void Initialize()
         {
             this.CreateSkill(1, "Poison", 30, 12, 42, 0, 6, 100, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(2, "Meteorite", 21, 21, 12, 0, 6, 100, 0, 4, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0);
@@ -134,7 +130,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateSkill(236, "Flame Strike", 100, 140, 20, 25, 3, 0, 0, 3, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(237, "Gigantic Storm", 220, 110, 120, 10, 6, 118, 0, 5, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(238, "Chaotic Diseier", 100, 190, 50, 15, 6, 16, 0, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-            this.CreateSkill(239, "生魂广场自爆技能", 100, 140, 20, 25, 3, 0, 0, 3, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
+            this.CreateSkill(239, "Doppelganger Self Explosion", 100, 140, 20, 25, 3, 0, 0, 3, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(260, "Killing Blow", 0, 0, 9, 0, 2, 0, 0, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
             this.CreateSkill(261, "Beast Uppercut", 0, 0, 9, 0, 2, 0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
             this.CreateSkill(262, "Chain Drive", 150, 0, 15, 20, 4, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
@@ -421,13 +417,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private void CreateSkill(short skillId, string name, int levelRequirement, int damage, int manaConsumption, int abilityConsumption, short distance, int energyRequirement, int leadershipRequirement, int elementalModifier, int attackType, int useType, int count, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int rank, int group, int masterp)
         {
-            var skill = this.context.CreateNew<Skill>();
-            this.gameConfiguration.Skills.Add(skill);
+            var skill = this.Context.CreateNew<Skill>();
+            this.GameConfiguration.Skills.Add(skill);
             skill.SkillID = skillId;
             skill.Name = name;
             if (levelRequirement > 0)
             {
-                var requirement = this.context.CreateNew<AttributeRequirement>();
+                var requirement = this.Context.CreateNew<AttributeRequirement>();
                 requirement.Attribute = Stats.Level;
                 requirement.MinimumValue = levelRequirement;
                 skill.Requirements.Add(requirement);
@@ -435,7 +431,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             if (leadershipRequirement > 0)
             {
-                var requirement = this.context.CreateNew<AttributeRequirement>();
+                var requirement = this.Context.CreateNew<AttributeRequirement>();
                 requirement.Attribute = Stats.TotalLeadership;
                 requirement.MinimumValue = leadershipRequirement;
                 skill.Requirements.Add(requirement);
@@ -443,7 +439,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             if (energyRequirement > 0)
             {
-                var requirement = this.context.CreateNew<AttributeRequirement>();
+                var requirement = this.Context.CreateNew<AttributeRequirement>();
                 requirement.Attribute = Stats.TotalEnergy;
                 requirement.MinimumValue = energyRequirement;
                 skill.Requirements.Add(requirement);
@@ -451,7 +447,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             if (damage > 0)
             {
-                var levelDependentDamage = this.context.CreateNew<LevelDependentDamage>();
+                var levelDependentDamage = this.Context.CreateNew<LevelDependentDamage>();
                 levelDependentDamage.Damage = damage;
                 levelDependentDamage.Level = 0; // TODO: or is it 1?
                 skill.AttackDamage.Add(levelDependentDamage);
@@ -459,7 +455,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             if (manaConsumption > 0)
             {
-                var requirement = this.context.CreateNew<AttributeRequirement>();
+                var requirement = this.Context.CreateNew<AttributeRequirement>();
                 requirement.Attribute = Stats.CurrentMana;
                 requirement.MinimumValue = manaConsumption;
                 skill.ConsumeRequirements.Add(requirement);
@@ -467,7 +463,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             if (abilityConsumption > 0)
             {
-                var requirement = this.context.CreateNew<AttributeRequirement>();
+                var requirement = this.Context.CreateNew<AttributeRequirement>();
                 requirement.Attribute = Stats.CurrentAbility;
                 requirement.MinimumValue = manaConsumption;
                 skill.ConsumeRequirements.Add(requirement);
@@ -475,7 +471,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             skill.Range = distance;
             skill.DamageType = attackType == 1 ? DamageType.Wizardry : DamageType.Physical;
-            var classes = this.gameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
+            var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
             foreach (var characterClass in classes)
             {
                 skill.QualifiedCharacters.Add(characterClass);
