@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             if (!EfCoreTypes.TryGetValue(typeof(TBase), out Type efCoreType))
             {
-                efCoreType = typeof(TypeHelper).Assembly.GetTypes().First(t => typeof(TBase).IsAssignableFrom(t));
+                efCoreType = typeof(TypeHelper).Assembly.GetTypes().First(t => t.BaseType == typeof(TBase));
                 EfCoreTypes.Add(typeof(TBase), efCoreType);
             }
 
