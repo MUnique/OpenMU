@@ -10,43 +10,39 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     /// <summary>
     /// Class which contains item definitions for jewels.
     /// </summary>
-    public class Potions
+    public class Potions : InitializerBase
     {
-        private readonly IContext context;
-        private readonly GameConfiguration gameConfiguration;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Potions"/> class.
         /// </summary>
         /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
         public Potions(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
         {
-            this.context = context;
-            this.gameConfiguration = gameConfiguration;
         }
 
         /// <summary>
         /// Creates the potion item definitions.
         /// </summary>
-        public void Initialize()
+        public override void Initialize()
         {
-            this.gameConfiguration.Items.Add(this.CreateApple());
-            this.gameConfiguration.Items.Add(this.CreateSmallHealingPotion());
-            this.gameConfiguration.Items.Add(this.CreateMediumHealingPotion());
-            this.gameConfiguration.Items.Add(this.CreateLargeHealingPotion());
-            this.gameConfiguration.Items.Add(this.CreateSmallManaPotion());
-            this.gameConfiguration.Items.Add(this.CreateMediumManaPotion());
-            this.gameConfiguration.Items.Add(this.CreateLargeManaPotion());
-            this.gameConfiguration.Items.Add(this.CreateSmallShieldPotion());
-            this.gameConfiguration.Items.Add(this.CreateMediumShieldPotion());
-            this.gameConfiguration.Items.Add(this.CreateLargeShieldPotion());
-            this.gameConfiguration.Items.Add(this.CreateAlcohol());
+            this.GameConfiguration.Items.Add(this.CreateApple());
+            this.GameConfiguration.Items.Add(this.CreateSmallHealingPotion());
+            this.GameConfiguration.Items.Add(this.CreateMediumHealingPotion());
+            this.GameConfiguration.Items.Add(this.CreateLargeHealingPotion());
+            this.GameConfiguration.Items.Add(this.CreateSmallManaPotion());
+            this.GameConfiguration.Items.Add(this.CreateMediumManaPotion());
+            this.GameConfiguration.Items.Add(this.CreateLargeManaPotion());
+            this.GameConfiguration.Items.Add(this.CreateSmallShieldPotion());
+            this.GameConfiguration.Items.Add(this.CreateMediumShieldPotion());
+            this.GameConfiguration.Items.Add(this.CreateLargeShieldPotion());
+            this.GameConfiguration.Items.Add(this.CreateAlcohol());
         }
 
         private ItemDefinition CreateAlcohol()
         {
-            var alcohol = this.context.CreateNew<ItemDefinition>();
+            var alcohol = this.Context.CreateNew<ItemDefinition>();
             alcohol.Name = "Ale";
             alcohol.Number = 9;
             alcohol.Group = 14;
@@ -66,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created apple definition.</returns>
         private ItemDefinition CreateApple()
         {
-            var apple = this.context.CreateNew<ItemDefinition>();
+            var apple = this.Context.CreateNew<ItemDefinition>();
             apple.Name = "Apple";
             apple.Number = 0;
             apple.Group = 14;
@@ -86,7 +82,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created small healing potion definition.</returns>
         private ItemDefinition CreateSmallHealingPotion()
         {
-            var potion = this.context.CreateNew<ItemDefinition>();
+            var potion = this.Context.CreateNew<ItemDefinition>();
             potion.Name = "Small Healing Potion";
             potion.Number = 1;
             potion.Group = 14;
@@ -106,7 +102,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created medium healing potion definition.</returns>
         private ItemDefinition CreateMediumHealingPotion()
         {
-            var potion = this.context.CreateNew<ItemDefinition>();
+            var potion = this.Context.CreateNew<ItemDefinition>();
             potion.Name = "Medium Healing Potion";
             potion.Number = 2;
             potion.Group = 14;
@@ -126,7 +122,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created large healing definition.</returns>
         private ItemDefinition CreateLargeHealingPotion()
         {
-            var definition = this.context.CreateNew<ItemDefinition>();
+            var definition = this.Context.CreateNew<ItemDefinition>();
             definition.Name = "Large Healing Potion";
             definition.Number = 3;
             definition.Group = 14;
@@ -146,7 +142,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created small mana potion definition.</returns>
         private ItemDefinition CreateSmallManaPotion()
         {
-            var potion = this.context.CreateNew<ItemDefinition>();
+            var potion = this.Context.CreateNew<ItemDefinition>();
             potion.Name = "Small Mana Potion";
             potion.Number = 4;
             potion.Group = 14;
@@ -166,7 +162,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created medium mana potion definition.</returns>
         private ItemDefinition CreateMediumManaPotion()
         {
-            var potion = this.context.CreateNew<ItemDefinition>();
+            var potion = this.Context.CreateNew<ItemDefinition>();
             potion.Name = "Medium Mana Potion";
             potion.Number = 5;
             potion.Group = 14;
@@ -186,7 +182,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created large mana definition.</returns>
         private ItemDefinition CreateLargeManaPotion()
         {
-            var definition = this.context.CreateNew<ItemDefinition>();
+            var definition = this.Context.CreateNew<ItemDefinition>();
             definition.Name = "Large Mana Potion";
             definition.Number = 6;
             definition.Group = 14;
@@ -206,7 +202,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created small shield potion definition.</returns>
         private ItemDefinition CreateSmallShieldPotion()
         {
-            var potion = this.context.CreateNew<ItemDefinition>();
+            var potion = this.Context.CreateNew<ItemDefinition>();
             potion.Name = "Small Shield Potion";
             potion.Number = 35;
             potion.Group = 14;
@@ -225,7 +221,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created medium shield potion definition.</returns>
         private ItemDefinition CreateMediumShieldPotion()
         {
-            var potion = this.context.CreateNew<ItemDefinition>();
+            var potion = this.Context.CreateNew<ItemDefinition>();
             potion.Name = "Medium Shield Potion";
             potion.Number = 36;
             potion.Group = 14;
@@ -244,7 +240,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created large shield definition.</returns>
         private ItemDefinition CreateLargeShieldPotion()
         {
-            var definition = this.context.CreateNew<ItemDefinition>();
+            var definition = this.Context.CreateNew<ItemDefinition>();
             definition.Name = "Large Shield Potion";
             definition.Number = 37;
             definition.Group = 14;

@@ -10,36 +10,30 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     /// <summary>
     /// Class which contains item definitions for jewels.
     /// </summary>
-    public class Jewels
+    public class Jewels : InitializerBase
     {
-        private readonly IContext context;
-        private readonly GameConfiguration gameConfiguration;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Jewels"/> class.
         /// </summary>
         /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
         public Jewels(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
         {
-            this.context = context;
-            this.gameConfiguration = gameConfiguration;
         }
 
-        /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        public void Initialize()
+        /// <inheritdoc/>
+        public override void Initialize()
         {
-            this.gameConfiguration.Items.Add(this.CreateJewelOfBless());
-            this.gameConfiguration.Items.Add(this.CreateJewelOfSoul());
-            this.gameConfiguration.Items.Add(this.CreateJewelOfLife());
-            this.gameConfiguration.Items.Add(this.CreateJewelOfCreation());
-            this.gameConfiguration.Items.Add(this.CreateJewelOfGuardian());
-            this.gameConfiguration.Items.Add(this.CreateJewelOfHarmony());
-            this.gameConfiguration.Items.Add(this.CreateGemstone());
-            this.gameConfiguration.Items.Add(this.CreateLowerRefineStone());
-            this.gameConfiguration.Items.Add(this.CreateHigherRefineStone());
+            this.GameConfiguration.Items.Add(this.CreateJewelOfBless());
+            this.GameConfiguration.Items.Add(this.CreateJewelOfSoul());
+            this.GameConfiguration.Items.Add(this.CreateJewelOfLife());
+            this.GameConfiguration.Items.Add(this.CreateJewelOfCreation());
+            this.GameConfiguration.Items.Add(this.CreateJewelOfGuardian());
+            this.GameConfiguration.Items.Add(this.CreateJewelOfHarmony());
+            this.GameConfiguration.Items.Add(this.CreateGemstone());
+            this.GameConfiguration.Items.Add(this.CreateLowerRefineStone());
+            this.GameConfiguration.Items.Add(this.CreateHigherRefineStone());
         }
 
         /// <summary>
@@ -48,7 +42,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Bless'.</returns>
         private ItemDefinition CreateJewelOfBless()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Jewel of Bless";
             itemDefinition.Number = 13;
             itemDefinition.Group = 14;
@@ -68,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Bless'.</returns>
         private ItemDefinition CreateJewelOfSoul()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Jewel of Soul";
             itemDefinition.Number = 14;
             itemDefinition.Group = 14;
@@ -88,7 +82,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Life'.</returns>
         private ItemDefinition CreateJewelOfLife()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Jewel of Soul";
             itemDefinition.Number = 16;
             itemDefinition.Group = 14;
@@ -107,7 +101,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Creation'.</returns>
         private ItemDefinition CreateJewelOfCreation()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Jewel of Creation";
             itemDefinition.Number = 22;
             itemDefinition.Group = 14;
@@ -126,7 +120,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Guardian'.</returns>
         private ItemDefinition CreateJewelOfGuardian()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Jewel of Guardian";
             itemDefinition.Number = 31;
             itemDefinition.Group = 14;
@@ -144,7 +138,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Gemstone'.</returns>
         private ItemDefinition CreateGemstone()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Gemstone";
             itemDefinition.Number = 41;
             itemDefinition.Group = 14;
@@ -163,7 +157,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Harmony'.</returns>
         private ItemDefinition CreateJewelOfHarmony()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Jewel of Harmony";
             itemDefinition.Number = 42;
             itemDefinition.Group = 14;
@@ -183,7 +177,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Lower refine stone'.</returns>
         private ItemDefinition CreateLowerRefineStone()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Lower refine stone";
             itemDefinition.Number = 43;
             itemDefinition.Group = 14;
@@ -203,7 +197,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns><see cref="ItemDefinition"/> for the 'Higher refine stone'.</returns>
         private ItemDefinition CreateHigherRefineStone()
         {
-            var itemDefinition = this.context.CreateNew<ItemDefinition>();
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
             itemDefinition.Name = "Higher refine stone";
             itemDefinition.Number = 44;
             itemDefinition.Group = 14;
