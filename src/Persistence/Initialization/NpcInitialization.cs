@@ -838,6 +838,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Designation = "Soccerball";
                 this.gameConfiguration.Monsters.Add(def);
             }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 579;
+                def.Designation = "David";
+                this.gameConfiguration.Monsters.Add(def);
+            }
         }
 
         private ItemStorage CreateMerchantStoreWithPotions()

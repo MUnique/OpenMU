@@ -446,10 +446,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.Maps.Add(new Tarkan().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new DevilSquare1To4().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new Icarus().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Elvenland().Initialize(this.context, this.gameConfiguration));
 
             var mapNames = new List<string>
             {
-                "Lorencia", "Dungeon", "Devias", "Noria", "Lost_Tower", "Exile", "Arena", "Atlans", "Tarkan", "Devil_Square (1-4)", "Icarus", // 10
+                "Lorencia", "Dungeon", "Devias", "Noria", "Lost Tower", "Exile", "Arena", "Atlans", "Tarkan", "Devil_Square (1-4)", "Icarus", // 10
                 "Blood_Castle 1", "Blood_Castle 2", "Blood_Castle 3", "Blood_Castle 4", "Blood_Castle 5", "Blood_Castle 6", "Blood_Castle 7", "Chaos_Castle 1", "Chaos_Castle 2", "Chaos_Castle 3", // 20
                 "Chaos_Castle 4", "Chaos_Castle 5", "Chaos_Castle 6", "Kalima 1", "Kalima 2", "Kalima 3", "Kalima 4", "Kalima 5", "Kalima 6", "Valley of Loren", // 30
                 "Land_of_Trials", "Devil_Square (5-6)", "Aida", "Crywolf Fortress", "?", "Kalima 7", "Kanturu_I", "Kanturu_III", "Kanturu_Event", "Silent Map?", // 40
@@ -461,20 +462,19 @@ namespace MUnique.OpenMU.Persistence.Initialization
             };
 
             var skipCount = this.gameConfiguration.Maps.Count;
-            mapNames.Skip(skipCount).Select((mapName, i) =>
+            mapNames.Where(name => name != "?" && !this.gameConfiguration.Maps.Any(m => m.Name == name)).ToList()
+                .ForEach((mapName) =>
                 {
                     var map = this.context.CreateNew<GameMapDefinition>();
                     map.Name = mapName;
-                    map.Number = (short)(i + skipCount);
+                    map.Number = (short)mapNames.IndexOf(mapName);
                     map.ExpMultiplier = 1;
                     var terrain =
-                        Terrains.ResourceManager.GetObject("Terrain" + (i + 1 + skipCount).ToString()) as byte[]
+                        Terrains.ResourceManager.GetObject("Terrain" + (map.Number + 1).ToString()) as byte[]
                         ?? Terrains.ResourceManager.GetObject("Terrain" + (mapNames.IndexOf(mapName.Substring(0, mapName.Length - 1) + "1") + 1)) as byte[];
                     map.TerrainData = terrain;
-                    return map;
-                })
-                .Where(map => map.Number > 0 && map.Name != "?")
-                .ForEach(map => this.gameConfiguration.Maps.Add(map));
+                    this.gameConfiguration.Maps.Add(map);
+                });
         }
 
         private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)

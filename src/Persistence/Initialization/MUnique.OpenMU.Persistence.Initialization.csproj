@@ -74,6 +74,7 @@
     <Compile Include="Maps\Devias.cs" />
     <Compile Include="Maps\DevilSquare1To4.cs" />
     <Compile Include="Maps\Dungeon.cs" />
+    <Compile Include="Maps\Elvenland.cs" />
     <Compile Include="Maps\Exile.cs" />
     <Compile Include="Maps\Icarus.cs" />
     <Compile Include="Maps\IMapInitializer.cs" />
