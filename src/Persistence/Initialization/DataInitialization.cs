@@ -595,8 +595,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Orbs(this.context, this.gameConfiguration).Initialize();
             new Scrolls(this.context, this.gameConfiguration).Initialize();
             new Wings(this.context, this.gameConfiguration).Initialize();
-            var setHelper = new SetItemHelper(this.context, this.gameConfiguration);
-            setHelper.CreateSets();
+            new ExcellentOptions(this.context, this.gameConfiguration).Initialize();
+            new Armors(this.context, this.gameConfiguration).Initialize();
             var weaponHelper = new WeaponItemHelper(this.context, this.gameConfiguration);
             weaponHelper.InitializeWeapons();
             new Potions(this.context, this.gameConfiguration).Initialize();

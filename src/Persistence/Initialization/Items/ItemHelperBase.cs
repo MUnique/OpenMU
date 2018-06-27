@@ -121,35 +121,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         }
 
         /// <summary>
-        /// Gets the excellent defense options.
-        /// </summary>
-        protected ItemOptionDefinition ExcellentDefenseOptions
-        {
-            get
-            {
-                if (this.excellentDefenseOptions == null)
-                {
-                    var definition = this.Context.CreateNew<ItemOptionDefinition>();
-                    this.GameConfiguration.ItemOptions.Add(definition);
-                    definition.Name = "Excellent Defense Options";
-                    definition.AddChance = 0.001f;
-                    definition.AddsRandomly = true;
-                    definition.MaximumOptionsPerItem = 2;
-
-                    definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(1, Stats.MoneyAmountRate, 1.4f, AggregateType.Multiplicate));
-                    definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(2, Stats.DefenseRatePvm, 1.1f, AggregateType.Multiplicate));
-                    definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(4, Stats.DamageReflection, 0.4f, AggregateType.AddRaw));
-                    definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(8, Stats.DamageReceiveDecrement, 0.96f, AggregateType.Multiplicate));
-                    definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(16, Stats.MaximumMana, 1.04f, AggregateType.Multiplicate));
-                    definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(32, Stats.MaximumHealth, 1.04f, AggregateType.Multiplicate));
-                    this.excellentDefenseOptions = definition;
-                }
-
-                return this.excellentDefenseOptions;
-            }
-        }
-
-        /// <summary>
         /// Gets the excellent physical weapon options.
         /// </summary>
         private ItemOptionDefinition ExcellentPhysicalWeaponOptions
@@ -352,19 +323,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             requirement.Attribute = attributeDefinition;
             requirement.MinimumValue = minimumValue;
             return requirement;
-        }
-
-        private IncreasableItemOption CreateExcellentDefenseOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
-        {
-            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
-            itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
-            itemOption.Number = number;
-            itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-            itemOption.PowerUpDefinition.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
-            itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            itemOption.PowerUpDefinition.Boost.ConstantValue.Value = value;
-            itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
-            return itemOption;
         }
 
         private IncreasableItemOption CreateExcellentAttackOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)

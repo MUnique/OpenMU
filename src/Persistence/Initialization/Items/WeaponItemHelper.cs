@@ -12,6 +12,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     /// <seealso cref="MUnique.OpenMU.Persistence.Initialization.Items.ItemHelperBase" />
     internal class WeaponItemHelper : ItemHelperBase
     {
+        //// private static readonly int[] rise = new int[] { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 };
+        //// private static readonly int[] dmgadd = new int[] { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WeaponItemHelper" /> class.
         /// </summary>
