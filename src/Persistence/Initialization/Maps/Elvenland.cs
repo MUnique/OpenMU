@@ -33,20 +33,20 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[256], 1, 1, SpawnTrigger.Automatic, 36, 36, 241, 241); // Lahap
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[415], 1, 1, SpawnTrigger.Automatic, 43, 43, 229, 229); // Silvia
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[416], 1, 1, SpawnTrigger.Automatic, 28, 28, 236, 236); // Rhea
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[417], 1, 1, SpawnTrigger.Automatic, 35, 35, 219, 219); // Marce
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 1, SpawnTrigger.Automatic, 41, 41, 191, 191); // Shadow Phantom Soldier
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 1, SpawnTrigger.Automatic, 56, 56, 232, 232); // Shadow Phantom Soldier
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 1, SpawnTrigger.Automatic, 72, 72, 219, 220); // Shadow Phantom Soldier
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[240], 1, 1, SpawnTrigger.Automatic, 35, 35, 219, 219); // Safety Guardian
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[385], 1, 1, SpawnTrigger.Automatic, 54, 54, 243, 243); // Mirage
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[256], 1, 1, SpawnTrigger.Automatic, 37, 37, 242, 242); // Lahap
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[415], 1, 1, SpawnTrigger.Automatic, 44, 44, 229, 229); // Silvia
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[416], 1, 2, SpawnTrigger.Automatic, 29, 29, 237, 237); // Rhea
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[417], 1, 1, SpawnTrigger.Automatic, 37, 37, 218, 218); // Marce
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 3, SpawnTrigger.Automatic, 44, 44, 189, 189); // Shadow Phantom Soldier
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 1, SpawnTrigger.Automatic, 57, 57, 231, 231); // Shadow Phantom Soldier
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 1, SpawnTrigger.Automatic, 74, 74, 219, 220); // Shadow Phantom Soldier
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[240], 1, 1, SpawnTrigger.Automatic, 51, 51, 229, 229); // Safety Guardian
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[385], 1, 1, SpawnTrigger.Automatic, 55, 55, 243, 243); // Mirage
             yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[452], 1, 1, SpawnTrigger.Automatic, 45, 45, 243, 243); // Seed Master
             yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[453], 1, 1, SpawnTrigger.Automatic, 49, 49, 243, 243); // Seed Researcher
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[540], 1, 1, SpawnTrigger.Automatic, 48, 48, 216, 216); // Lugard
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[492], 1, 1, SpawnTrigger.Automatic, 21, 21, 225, 225); // Moss
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[579], 1, 1, SpawnTrigger.Automatic, 49, 49, 243, 243); // David
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[540], 1, 2, SpawnTrigger.Automatic, 49, 49, 216, 216); // Lugard
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[492], 1, 2, SpawnTrigger.Automatic, 22, 22, 225, 225); // Moss
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[579], 1, 3, SpawnTrigger.Automatic, 20, 20, 214, 214); // David
 
             // Monsters:
             yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[418], 80, 0, SpawnTrigger.Automatic, 0, 128, 128, 245); // Strange Rabbit
