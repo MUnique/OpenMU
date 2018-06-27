@@ -1001,7 +1001,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MinimumItemCount");
 
-                    b.Property<int>("MinimumSetLevel");
+                    b.Property<int>("SetLevel");
 
                     b.Property<string>("Name");
 

@@ -269,7 +269,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     CountDistinct = table.Column<bool>(nullable: false),
                     GameConfigurationId = table.Column<Guid>(nullable: true),
                     MinimumItemCount = table.Column<int>(nullable: false),
-                    MinimumSetLevel = table.Column<int>(nullable: false),
+                    SetLevel = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>

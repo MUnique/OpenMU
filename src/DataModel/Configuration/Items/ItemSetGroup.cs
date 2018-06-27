@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the minimum level which all of the items of the set need to have to get the bonus.
         /// </summary>
-        public int MinimumSetLevel { get; set; }
+        public int SetLevel { get; set; }
 
         /// <summary>
         /// Gets or sets the options. If the options depend on the item count, this options need to be ordered correctly.

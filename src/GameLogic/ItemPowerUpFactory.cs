@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                var itemsOfGroup = equippedItems.Where(i => i.Level >= group.MinimumSetLevel).Select(i => i.Definition);
+                var itemsOfGroup = equippedItems.Where(i => group.SetLevel == 0 || i.Level == group.SetLevel).Select(i => i.Definition);
 
                 var itemCount = group.CountDistinct ? itemsOfGroup.Distinct().Count() : itemsOfGroup.Count();
                 if (itemCount >= group.MinimumItemCount)
