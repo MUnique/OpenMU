@@ -845,6 +845,23 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Designation = "David";
                 this.gameConfiguration.Monsters.Add(def);
             }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 577;
+                def.Designation = "Leina the General Goods Merchant";
+                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.NpcWindow = NpcWindow.Merchant;
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 578;
+                def.Designation = "Weapons Merchant Bolo";
+                def.NpcWindow = NpcWindow.Merchant;
+                this.gameConfiguration.Monsters.Add(def);
+            }
         }
 
         private ItemStorage CreateMerchantStoreWithPotions()

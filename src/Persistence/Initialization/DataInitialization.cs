@@ -447,6 +447,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.Maps.Add(new DevilSquare1To4().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new Icarus().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new Elvenland().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Karutan1().Initialize(this.context, this.gameConfiguration));
 
             var mapNames = new List<string>
             {

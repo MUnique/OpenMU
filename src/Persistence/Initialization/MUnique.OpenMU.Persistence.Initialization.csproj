@@ -73,6 +73,7 @@
     <Compile Include="Maps\Arena.cs" />
     <Compile Include="Maps\Atlans.cs" />
     <Compile Include="Maps\BaseMapInitializer.cs" />
+    <Compile Include="Maps\Karutan1.cs" />
     <Compile Include="Maps\Devias.cs" />
     <Compile Include="Maps\DevilSquare1To4.cs" />
     <Compile Include="Maps\Dungeon.cs" />
