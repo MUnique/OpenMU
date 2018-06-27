@@ -83,7 +83,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private ItemDefinition CreateJewelOfLife()
         {
             var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-            itemDefinition.Name = "Jewel of Soul";
+            itemDefinition.Name = "Jewel of Life";
             itemDefinition.Number = 16;
             itemDefinition.Group = 14;
             itemDefinition.DropsFromMonsters = true;
