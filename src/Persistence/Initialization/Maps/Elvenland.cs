@@ -47,6 +47,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[540], 1, 2, SpawnTrigger.Automatic, 49, 49, 216, 216); // Lugard
             yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[492], 1, 2, SpawnTrigger.Automatic, 22, 22, 225, 225); // Moss
             yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[579], 1, 3, SpawnTrigger.Automatic, 20, 20, 214, 214); // David
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[568], 1, 2, SpawnTrigger.Automatic, 55, 55, 199, 199); // Wandering Merchant Zyro
 
             // Monsters:
             yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[418], 80, 0, SpawnTrigger.Automatic, 0, 128, 128, 245); // Strange Rabbit
