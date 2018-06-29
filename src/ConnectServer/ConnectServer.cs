@@ -150,7 +150,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// <inheritdoc/>
         public void UnregisterGameServer(IGameServerInfo gameServer)
         {
-            Logger.WarnFormat("GameServer {0} is unregistering", gameServer);
+            Logger.InfoFormat("GameServer {0} is unregistering", gameServer);
             var serverListItem = this.ServerList.Servers.FirstOrDefault(s => s.ServerId == gameServer.Id);
             if (serverListItem != null)
             {
@@ -164,7 +164,7 @@ namespace MUnique.OpenMU.ConnectServer
                 notifier.PropertyChanged -= this.HandleServerPropertyChanged;
             }
 
-            Logger.WarnFormat("GameServer {0} has unregistered", gameServer);
+            Logger.InfoFormat("GameServer {0} has unregistered", gameServer);
         }
 
         private void CreatePlugins()

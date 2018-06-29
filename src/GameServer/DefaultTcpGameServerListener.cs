@@ -98,7 +98,7 @@ namespace MUnique.OpenMU.GameServer
             }
             catch (ObjectDisposedException ex)
             {
-                this.Log(l => l.Warn("gslistener has been disposed", ex));
+                this.Log(l => l.Debug("listener has been disposed", ex));
                 return;
             }
             catch (Exception ex)

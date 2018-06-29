@@ -86,9 +86,9 @@ namespace MUnique.OpenMU.ConnectServer
             {
                 newClient = await this.clientListener.AcceptSocketAsync();
             }
-            catch (ObjectDisposedException ex)
+            catch (ObjectDisposedException)
             {
-                Logger.Warn("gslistener has been disposed", ex);
+                // this exception is expected when the clientListener got disposed. In this case we don't want to spam the log.
                 return;
             }
             catch (Exception ex)
