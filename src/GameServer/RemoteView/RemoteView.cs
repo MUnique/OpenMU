@@ -581,29 +581,35 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             const int maxCharacterNameLength = 10;
             const int maxStoreNameLength = 36;
+            const int itemPriceSize = 4;
+            var sizePerItem = this.itemSerializer.NeededSpace + itemPriceSize + 4; // don't know yet, where the additional 4 bytes come from
 
             // TODO:  Maybe cache the result, because a lot of players could request the same list.
             var playerId = requestedPlayer.GetId(this.player);
             var itemlist = requestedPlayer.ShopStorage.Items.ToList();
             var itemcount = itemlist.Count;
-            var packet = new byte[6 + maxCharacterNameLength + maxStoreNameLength + (itemcount * (8 + this.itemSerializer.NeededSpace))];
+            var packet = new byte[11 + maxCharacterNameLength + maxStoreNameLength + (itemcount * sizePerItem)];
             packet[0] = 0xC2;
-            packet[3] = 1;
-            packet[4] = playerId.GetLowByte();
-            packet[5] = playerId.GetHighByte();
+            packet[1] = (byte)((packet.Length >> 8) & 0xFF);
+            packet[2] = (byte)(packet.Length & 0xFF);
+            packet[3] = 0x3F;
+            packet[4] = 0x05;
+            packet[5] = 1;
+            packet[6] = playerId.GetHighByte();
+            packet[7] = playerId.GetLowByte();
 
-            Encoding.UTF8.GetBytes(this.player.SelectedCharacter.Name, 0, Math.Min(maxCharacterNameLength, this.player.SelectedCharacter.Name.Length), packet, 6);
+            Encoding.UTF8.GetBytes(this.player.SelectedCharacter.Name, 0, Math.Min(maxCharacterNameLength, this.player.SelectedCharacter.Name.Length), packet, 8);
             var storeName = requestedPlayer.ShopStorage.StoreName;
-            Encoding.UTF8.GetBytes(storeName, 0, Math.Min(storeName.Length, maxStoreNameLength), packet, 16);
-            packet[6 + maxCharacterNameLength + maxStoreNameLength] = (byte)itemcount;
+            Encoding.UTF8.GetBytes(storeName, 0, Math.Min(storeName.Length, maxStoreNameLength), packet, 18);
+            packet[8 + maxCharacterNameLength + maxStoreNameLength] = (byte)itemcount;
             int i = 0;
+
             foreach (var item in itemlist)
             {
-                var offset = 7 + maxCharacterNameLength + maxStoreNameLength + (i * (8 + this.itemSerializer.NeededSpace)); // not sure about the last part...
-                var slot = item.ItemSlot - InventoryConstants.FirstStoreItemSlotIndex;
-                packet[offset + 0] = (byte)slot;
+                var offset = 9 + maxCharacterNameLength + maxStoreNameLength + (i * sizePerItem);
+                packet[offset + 0] = item.ItemSlot;
                 this.itemSerializer.SerializeItem(packet, offset + 1, item);
-                packet.SetIntegerSmallEndian((uint)(item.StorePrice ?? 0), offset + 4 + this.itemSerializer.NeededSpace);
+                packet.SetIntegerBigEndian((uint)(item.StorePrice ?? 0), offset + 4 + this.itemSerializer.NeededSpace);
             }
 
             this.connection.Send(packet);
