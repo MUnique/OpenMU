@@ -4,11 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using MUnique.OpenMU.DataModel.Configuration;
-    using System;
 
     /// <summary>
     /// Gates initialization.
