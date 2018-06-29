@@ -575,7 +575,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.MaximumPasswordLength = 20;
             this.gameConfiguration.MaximumPartySize = 5;
             this.gameConfiguration.ExperienceTable =
-                Enumerable.Range(0, this.gameConfiguration.MaximumLevel + 1)
+                Enumerable.Range(0, this.gameConfiguration.MaximumLevel + 2)
                     .Select(level => this.CalculateNeededExperience(level))
                     .ToArray();
             this.gameConfiguration.MasterExperienceTable =

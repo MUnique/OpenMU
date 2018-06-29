@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             if (gameConfiguration != null)
             {
                 gameConfiguration.ExperienceTable =
-                    Enumerable.Range(0, gameConfiguration.MaximumLevel + 1)
+                    Enumerable.Range(0, gameConfiguration.MaximumLevel + 2)
                         .Select(level => this.CalculateNeededExperience(level))
                         .ToArray();
                 gameConfiguration.MasterExperienceTable =
