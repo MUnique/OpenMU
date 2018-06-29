@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             if (slot == 8 && player.OpenedNpc == null)
             {
-                Log.WarnFormat("Cheater Warning: Player tried to repair pet slot, without opened Monster. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
+                Log.WarnFormat("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
                 return;
             }
 
