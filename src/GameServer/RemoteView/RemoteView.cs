@@ -628,8 +628,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             packet[1] = (byte)((packet.Length >> 8) & 0xFF);
             packet[2] = (byte)(packet.Length & 0xFF);
             packet[3] = 0x3F;
-            packet[4] = (byte)shopCount;
-            int offset = 5;
+            packet[5] = (byte)shopCount;
+            int offset = 6;
             foreach (var shopPlayer in playersWithShop)
             {
                 var shopPlayerId = shopPlayer.GetId(this.player);
