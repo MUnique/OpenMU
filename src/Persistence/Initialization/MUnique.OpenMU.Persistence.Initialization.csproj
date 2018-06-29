@@ -70,6 +70,7 @@
     <Compile Include="Items\Skills.cs" />
     <Compile Include="Items\WeaponItemHelper.cs" />
     <Compile Include="Items\Wings.cs" />
+    <Compile Include="Maps\Aida.cs" />
     <Compile Include="Maps\Arena.cs" />
     <Compile Include="Maps\Atlans.cs" />
     <Compile Include="Maps\BaseMapInitializer.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Maps\LostTower.cs" />
     <Compile Include="Maps\Noria.cs" />
     <Compile Include="Maps\Tarkan.cs" />
+    <Compile Include="Maps\Vulcanus.cs" />
     <Compile Include="MemoryRepository{TValue}.cs" />
     <Compile Include="NpcInitialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
