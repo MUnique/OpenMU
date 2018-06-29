@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using System.Linq;
 
     using MUnique.OpenMU.DataModel.Configuration;
+    using System;
 
     /// <summary>
     /// Gates initialization.
@@ -98,6 +99,16 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private ExitGate CreateExitGate(GameMapDefinition map, byte x1, byte y1, byte x2, byte y2, byte direction, bool isSpawnGate = false)
         {
+            if (x1 > x2)
+            {
+                throw new ArgumentException("x1 > x2");
+            }
+
+            if (y1 > y2)
+            {
+                throw new ArgumentException("y1 > y2");
+            }
+
             var gate = this.context.CreateNew<ExitGate>();
             gate.Map = map;
             gate.X1 = x1;
@@ -144,11 +155,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(69, this.CreateExitGate(maps[14], 12, 5, 14, 10, 0, true));
             targetGates.Add(70, this.CreateExitGate(maps[15], 12, 5, 14, 10, 0, true));
             targetGates.Add(71, this.CreateExitGate(maps[16], 12, 5, 14, 10, 0, true));
-            targetGates.Add(72, this.CreateExitGate(maps[2], 23, 27, 27, 24, 0, true));
-            targetGates.Add(73, this.CreateExitGate(maps[2], 224, 231, 227, 227, 0, true));
-            targetGates.Add(74, this.CreateExitGate(maps[2], 69, 181, 72, 178, 0, true));
-            targetGates.Add(75, this.CreateExitGate(maps[7], 225, 53, 228, 50, 0, true));
-            targetGates.Add(76, this.CreateExitGate(maps[7], 62, 163, 68, 157, 0, true));
+            targetGates.Add(72, this.CreateExitGate(maps[2], 23, 24, 27, 27, 0, true));
+            targetGates.Add(73, this.CreateExitGate(maps[2], 224, 227, 227, 231, 0, true));
+            targetGates.Add(74, this.CreateExitGate(maps[2], 69, 178, 72, 181, 0, true));
+            targetGates.Add(75, this.CreateExitGate(maps[7], 225, 50, 228, 53, 0, true));
+            targetGates.Add(76, this.CreateExitGate(maps[7], 62, 157, 68, 163, 0, true));
             targetGates.Add(77, this.CreateExitGate(maps[8], 91, 160, 93, 161, 0, true));
             targetGates.Add(80, this.CreateExitGate(maps[17], 12, 5, 14, 10, 0, true));
             targetGates.Add(82, this.CreateExitGate(maps[18], 31, 88, 36, 95, 0, true));
@@ -169,7 +180,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(101, this.CreateExitGate(maps[30], 84, 180, 100, 222, 0, true));
             targetGates.Add(104, this.CreateExitGate(maps[30], 87, 209, 100, 232, 0, true));
             targetGates.Add(105, this.CreateExitGate(maps[30], 72, 10, 104, 199, 0, true));
-            targetGates.Add(106, this.CreateExitGate(maps[30], 131, 94, 138, 92, 0, true));
+            targetGates.Add(106, this.CreateExitGate(maps[30], 131, 92, 138, 94, 0, true));
             targetGates.Add(111, this.CreateExitGate(maps[32], 133, 91, 141, 99, 0, true));
             targetGates.Add(112, this.CreateExitGate(maps[32], 135, 162, 142, 170, 0, true));
             targetGates.Add(116, this.CreateExitGate(maps[36], 10, 16, 17, 22, 0, true));
@@ -217,18 +228,18 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(291, this.CreateExitGate(maps[58], 160, 24, 161, 27, 0, true));
             targetGates.Add(293, this.CreateExitGate(maps[57], 174, 23, 175, 25, 0, true));
             targetGates.Add(294, this.CreateExitGate(maps[63], 120, 129, 126, 134, 0, true));
-            targetGates.Add(295, this.CreateExitGate(maps[64], 101, 64, 0, 0, 0, true));
-            targetGates.Add(296, this.CreateExitGate(maps[64], 101, 75, 0, 0, 0, true));
-            targetGates.Add(297, this.CreateExitGate(maps[64], 101, 113, 0, 0, 0, true));
-            targetGates.Add(298, this.CreateExitGate(maps[64], 101, 124, 0, 0, 0, true));
-            targetGates.Add(299, this.CreateExitGate(maps[64], 154, 64, 0, 0, 0, true));
-            targetGates.Add(300, this.CreateExitGate(maps[64], 154, 75, 0, 0, 0, true));
-            targetGates.Add(301, this.CreateExitGate(maps[64], 154, 113, 0, 0, 0, true));
-            targetGates.Add(302, this.CreateExitGate(maps[64], 154, 124, 0, 0, 0, true));
-            targetGates.Add(303, this.CreateExitGate(maps[64], 100, 70, 0, 0, 0, true));
-            targetGates.Add(304, this.CreateExitGate(maps[64], 100, 120, 0, 0, 0, true));
-            targetGates.Add(305, this.CreateExitGate(maps[64], 150, 70, 0, 0, 0, true));
-            targetGates.Add(306, this.CreateExitGate(maps[64], 150, 120, 0, 0, 0, true));
+            targetGates.Add(295, this.CreateExitGate(maps[64], 101, 64, 101, 64, 0, true));
+            targetGates.Add(296, this.CreateExitGate(maps[64], 101, 75, 101, 75, 0, true));
+            targetGates.Add(297, this.CreateExitGate(maps[64], 101, 113, 101, 113, 0, true));
+            targetGates.Add(298, this.CreateExitGate(maps[64], 101, 124, 101, 124, 0, true));
+            targetGates.Add(299, this.CreateExitGate(maps[64], 154, 64, 154, 64, 0, true));
+            targetGates.Add(300, this.CreateExitGate(maps[64], 154, 75, 154, 75, 0, true));
+            targetGates.Add(301, this.CreateExitGate(maps[64], 154, 113, 154, 113, 0, true));
+            targetGates.Add(302, this.CreateExitGate(maps[64], 154, 124, 154, 124, 0, true));
+            targetGates.Add(303, this.CreateExitGate(maps[64], 100, 70, 100, 70, 0, true));
+            targetGates.Add(304, this.CreateExitGate(maps[64], 100, 120, 100, 120, 0, true));
+            targetGates.Add(305, this.CreateExitGate(maps[64], 150, 70, 150, 70, 0, true));
+            targetGates.Add(306, this.CreateExitGate(maps[64], 150, 120, 150, 120, 0, true));
             targetGates.Add(307, this.CreateExitGate(maps[69], 231, 15, 233, 17, 0, true));
             targetGates.Add(309, this.CreateExitGate(maps[69], 202, 24, 203, 27, 0, true));
             targetGates.Add(311, this.CreateExitGate(maps[69], 179, 65, 181, 67, 0, true));
@@ -247,15 +258,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(331, this.CreateExitGate(maps[67], 106, 58, 111, 62, 0, true));
             targetGates.Add(332, this.CreateExitGate(maps[68], 90, 10, 97, 17, 0, true));
             targetGates.Add(333, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));
-            targetGates.Add(334, this.CreateExitGate(maps[33], 39, 46, 38, 51, 0, true));
-            targetGates.Add(335, this.CreateExitGate(maps[37], 71, 182, 71, 179, 0, true));
+            targetGates.Add(334, this.CreateExitGate(maps[33], 38, 46, 39, 51, 0, true));
+            targetGates.Add(335, this.CreateExitGate(maps[37], 71, 179, 71, 182, 0, true));
             targetGates.Add(336, this.CreateExitGate(maps[57], 127, 35, 130, 40, 0, true));
             targetGates.Add(337, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));
             targetGates.Add(338, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0, true));
             targetGates.Add(339, this.CreateExitGate(maps[80], 124, 123, 127, 125, 0, true));
             targetGates.Add(348, this.CreateExitGate(maps[81], 162, 16, 163, 17, 5, true));
-            targetGates.Add(349, this.CreateExitGate(maps[80], 139, 115, 122, 112, 0, true));
-            targetGates.Add(350, this.CreateExitGate(maps[81], 140, 140, 130, 140, 0, true));
+            targetGates.Add(349, this.CreateExitGate(maps[80], 122, 112, 139, 115, 0, true));
+            targetGates.Add(350, this.CreateExitGate(maps[81], 130, 140, 140, 140, 0, true));
             targetGates.Add(351, this.CreateExitGate(maps[38], 71, 182, 73, 182, 5, true));
             targetGates.Add(352, this.CreateExitGate(maps[33], 44, 215, 44, 215, 5, true));
 
@@ -287,9 +298,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(65, this.CreateExitGate(maps[4], 17, 249, 19, 249, 1));
             targetGates.Add(97, this.CreateExitGate(maps[30], 164, 198, 187, 209, 0));
             targetGates.Add(99, this.CreateExitGate(maps[30], 90, 236, 99, 239, 0));
-            targetGates.Add(103, this.CreateExitGate(maps[30], 29, 42, 30, 37, 0));
+            targetGates.Add(103, this.CreateExitGate(maps[30], 29, 37, 30, 42, 0));
             targetGates.Add(108, this.CreateExitGate(maps[0], 235, 13, 239, 13, 0));
-            targetGates.Add(110, this.CreateExitGate(maps[30], 131, 94, 138, 92, 0));
+            targetGates.Add(110, this.CreateExitGate(maps[30], 131, 92, 138, 94, 0));
             targetGates.Add(113, this.CreateExitGate(maps[33], 76, 9, 78, 16, 0));
             targetGates.Add(114, this.CreateExitGate(maps[34], 231, 37, 234, 45, 0));
             targetGates.Add(122, this.CreateExitGate(maps[3], 220, 31, 226, 34, 0));
