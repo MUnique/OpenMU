@@ -74,6 +74,7 @@
     <Compile Include="Maps\Arena.cs" />
     <Compile Include="Maps\Atlans.cs" />
     <Compile Include="Maps\BaseMapInitializer.cs" />
+    <Compile Include="Maps\CrywolfFortress.cs" />
     <Compile Include="Maps\Karutan1.cs" />
     <Compile Include="Maps\Devias.cs" />
     <Compile Include="Maps\DevilSquare1To4.cs" />
@@ -82,10 +83,16 @@
     <Compile Include="Maps\Exile.cs" />
     <Compile Include="Maps\Icarus.cs" />
     <Compile Include="Maps\IMapInitializer.cs" />
+    <Compile Include="Maps\Karutan2.cs" />
+    <Compile Include="Maps\LandOfTrials.cs" />
     <Compile Include="Maps\Lorencia.cs" />
+    <Compile Include="Maps\LorenMarket.cs" />
     <Compile Include="Maps\LostTower.cs" />
     <Compile Include="Maps\Noria.cs" />
+    <Compile Include="Maps\SantaVillage.cs" />
+    <Compile Include="Maps\SilentMap.cs" />
     <Compile Include="Maps\Tarkan.cs" />
+    <Compile Include="Maps\ValleyOfLoren.cs" />
     <Compile Include="Maps\Vulcanus.cs" />
     <Compile Include="MemoryRepository{TValue}.cs" />
     <Compile Include="NpcInitialization.cs" />

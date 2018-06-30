@@ -448,8 +448,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.Maps.Add(new Icarus().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new Elvenland().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new Karutan1().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Karutan2().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new Aida().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new Vulcanus().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new CrywolfFortress().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new LandOfTrials().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new LorenMarket().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new SantaVillage().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new SilentMap().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new ValleyOfLoren().Initialize(this.context, this.gameConfiguration));
 
             var mapNames = new List<string>
             {
