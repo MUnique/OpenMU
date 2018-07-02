@@ -457,6 +457,19 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.Maps.Add(new SantaVillage().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new SilentMap().Initialize(this.context, this.gameConfiguration));
             this.gameConfiguration.Maps.Add(new ValleyOfLoren().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new BarracksOfBalgass().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new BalgassRefuge().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Kalima1().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Kalima2().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Kalima3().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Kalima4().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Kalima5().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Kalima6().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Kalima7().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new KanturuRelics().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new KanturuRuins().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new Raklion().Initialize(this.context, this.gameConfiguration));
+            this.gameConfiguration.Maps.Add(new SwampOfCalmness().Initialize(this.context, this.gameConfiguration));
 
             var mapNames = new List<string>
             {
@@ -465,7 +478,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 "Chaos_Castle 4", "Chaos_Castle 5", "Chaos_Castle 6", "Kalima 1", "Kalima 2", "Kalima 3", "Kalima 4", "Kalima 5", "Kalima 6", "Valley of Loren", // 30
                 "Land_of_Trials", "Devil_Square (5-6)", "Aida", "Crywolf Fortress", "?", "Kalima 7", "Kanturu_I", "Kanturu_III", "Kanturu_Event", "Silent Map?", // 40
                 "Barracks of Balgass", "Balgass Refuge", "?", "?", "Illusion_Temple 1", "Illusion_Temple 2", "Illusion_Temple 3", "Illusion_Temple 4", "Illusion_Temple 5", "Illusion_Temple 6", // 50
-                "Elvenland", "Blood_Castle 8", "Chaos_Castle 7", "?", "?", "Swamp_Of Calmness", "LaCleon", "LaCleonBoss", "?", "?", // 60
+                "Elvenland", "Blood_Castle 8", "Chaos_Castle 7", "?", "?", "Swamp Of Calmness", "LaCleon", "LaCleonBoss", "?", "?", // 60
                 "?", "Santa Village", "Vulcanus", "Duel Arena", "Double Gear 1", "Double Gear 2", "Double Gear 3", "Double Gear 4", "Empire Fortress 1", // 69
                 "Empire Fortress 2", "Empire Fortress 3", "Empire Fortress 4", "Empire Fortress 5", "?", "?", "?", "?", "?", "LorenMarket", // 79
                 "Karutan1", "Karutan2"
