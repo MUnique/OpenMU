@@ -16,8 +16,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     /// </summary>
     internal class Noria : BaseMapInitializer
     {
+        /// <summary>
+        /// The default number of the noria map.
+        /// </summary>
+        public const byte Number = 3;
+
         /// <inheritdoc/>
-        protected override byte MapNumber => 3;
+        protected override byte MapNumber => Number;
 
         /// <inheritdoc/>
         protected override string MapName => "Noria";

@@ -643,7 +643,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     case CharacterClassNumber.FairyElf:
                     case CharacterClassNumber.HighElf:
                     case CharacterClassNumber.MuseElf:
-                        mapNumber = 3; // Noria
+                        mapNumber = Noria.Number;
+                        break;
+                    case CharacterClassNumber.BloodySummoner:
+                    case CharacterClassNumber.Summoner:
+                        mapNumber = Elvenland.Number;
                         break;
                     default:
                         mapNumber = Lorencia.Number;
