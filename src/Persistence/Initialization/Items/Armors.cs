@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private static readonly int[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
 
         private List<LevelBonus> defenseBonusPerLevel;
+        private List<LevelBonus> shieldDefenseBonusPerLevel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Armors"/> class.
@@ -41,6 +42,30 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         public override void Initialize()
         {
             this.CreateBonusDefensePerLevel();
+
+            // Shields:
+            this.CreateShield(0, 1, 0, 2, 2, "Small Shield", 3, 1, 3, 22, 0, 70, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0);
+            this.CreateShield(1, 1, 0, 2, 2, "Horn Shield", 9, 3, 9, 28, 0, 100, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
+            this.CreateShield(2, 1, 0, 2, 2, "Kite Shield", 12, 4, 12, 32, 0, 110, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
+            this.CreateShield(3, 1, 0, 2, 2, "Elven Shield", 21, 8, 21, 36, 0, 30, 100, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+            this.CreateShield(4, 1, 18, 2, 2, "Buckler", 6, 2, 6, 24, 0, 80, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0);
+            this.CreateShield(5, 1, 18, 2, 2, "Dragon Slayer Shield", 35, 10, 36, 44, 0, 100, 40, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
+            this.CreateShield(6, 1, 18, 2, 2, "Skull Shield", 15, 5, 15, 34, 0, 110, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0);
+            this.CreateShield(7, 1, 18, 2, 2, "Spiked Shield", 30, 9, 30, 40, 0, 130, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
+            this.CreateShield(8, 1, 18, 2, 2, "Tower Shield", 40, 11, 40, 46, 0, 130, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0);
+            this.CreateShield(9, 1, 18, 2, 2, "Plate Shield", 25, 8, 25, 38, 0, 120, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
+            this.CreateShield(10, 1, 18, 2, 2, "Big Round Shield", 18, 6, 18, 35, 0, 120, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
+            this.CreateShield(11, 1, 18, 2, 2, "Serpent Shield", 45, 12, 45, 48, 0, 130, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0);
+            this.CreateShield(12, 1, 18, 2, 2, "Bronze Shield", 54, 13, 54, 52, 0, 140, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0);
+            this.CreateShield(13, 1, 18, 2, 2, "Dragon Shield", 60, 14, 60, 60, 0, 120, 40, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0);
+            this.CreateShield(14, 1, 0, 2, 3, "Legendary Shield", 48, 7, 48, 50, 0, 90, 25, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0);
+            this.CreateShield(15, 1, 0, 2, 3, "Grand Soul Shield", 74, 12, 55, 55, 0, 70, 23, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateShield(16, 1, 0, 2, 2, "Elemental Shield", 66, 11, 28, 51, 0, 30, 60, 30, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+            this.CreateShield(17, 1, 18, 2, 2, "CrimsonGlory", 104, 19, 90, 51, 0, 95, 48, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+            this.CreateShield(18, 1, 18, 2, 2, "Salamander Shield", 102, 20, 96, 51, 0, 80, 61, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+            this.CreateShield(19, 1, 0, 2, 2, "Frost Barrier", 99, 14, 58, 51, 0, 26, 53, 26, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+            this.CreateShield(20, 1, 18, 2, 2, "Guardian Shiled", 106, 12, 30, 51, 0, 54, 18, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateShield(21, 1, 18, 2, 2, "Cross Shield", 70, 16, 75, 65, 0, 140, 55, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
 
             // Helmets:
             this.CreateArmor(0, 2, 2, 2, "Bronze Helm", 16, 9, 34, 0, 80, 20, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0);
@@ -340,11 +365,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             return defenseBonus;
         }
 
-        private void CreateSetGroup(int setLevel, ItemOption option, IEnumerable<ItemDefinition> group)
+        private void CreateSetGroup(int setLevel, ItemOption option, ICollection<ItemDefinition> group)
         {
             var setForDefense = this.Context.CreateNew<ItemSetGroup>();
             setForDefense.Name = $"{group.First().Name.Split(' ')[0]} Defense Bonus (Level {setLevel})";
-            setForDefense.MinimumItemCount = group.Count();
+            setForDefense.MinimumItemCount = group.Count;
             setForDefense.Options.Add(option);
             setForDefense.SetLevel = (byte)setLevel;
 
@@ -397,7 +422,34 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
         }
 
-        private void CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+        private void CreateShield(byte number, byte slot, byte skill, byte width, byte height, string name, byte dropLevel, int defense, int defenseRate, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+        {
+            var shield = this.CreateArmor(number, slot, width, height, name, dropLevel, 0, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement,darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
+            if (skill != 0)
+            {
+                shield.Skill = this.GameConfiguration.Skills.First(s => s.SkillID == skill);
+            }
+
+            if (defense > 0)
+            {
+                var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+                powerUp.TargetAttribute = Stats.DefenseBase;
+                powerUp.BaseValue = defense;
+                this.shieldDefenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
+                shield.BasePowerUpAttributes.Add(powerUp);
+            }
+
+            if (defenseRate > 0)
+            {
+                var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+                powerUp.TargetAttribute = Stats.DefenseRatePvm;
+                powerUp.BaseValue = defenseRate;
+                this.defenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
+                shield.BasePowerUpAttributes.Add(powerUp);
+            }
+        }
+
+        private ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
         {
             var armor = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(armor);
@@ -437,17 +489,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             armor.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.DefenseOptionsName));
             //// TODO: HarmonyOptions for level 380 items
             //// TODO: JoH Options
+
+            return armor;
         }
 
         private void CreateBonusDefensePerLevel()
         {
             this.defenseBonusPerLevel = new List<LevelBonus>();
+            this.shieldDefenseBonusPerLevel = new List<LevelBonus>();
             for (int level = 1; level <= 15; level++)
             {
                 var levelBonus = this.Context.CreateNew<LevelBonus>();
                 levelBonus.Level = level;
                 levelBonus.AdditionalValue = DefenseIncreaseByLevel[level];
                 this.defenseBonusPerLevel.Add(levelBonus);
+
+                var shieldLevelBonus = this.Context.CreateNew<LevelBonus>();
+                levelBonus.Level = level;
+                levelBonus.AdditionalValue = level;
+                this.shieldDefenseBonusPerLevel.Add(shieldLevelBonus);
             }
         }
 
