@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(33, "PeaceSwamp", 15000, 400, gates[273]));
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(34, "Raklion", 15000, 280, gates[287]));
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(37, "Vulcan", 15000, 30, gates[294]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(38, "MarketLoren", 18000, 200, gates[333]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(44, "LorenMarket", 18000, 200, gates[333]));
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(43, "Elbeland3", 3000, 10, gates[269]));
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(45, "KanturuRuins3", 9000, 160, gates[335]));
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(46, "Karutan1", 13000, 170, gates[339]));
