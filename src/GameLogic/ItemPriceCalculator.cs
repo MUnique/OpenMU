@@ -346,24 +346,18 @@ namespace MUnique.OpenMU.GameLogic
                         break;
                 }
 
-                var excCount = item.ItemOptions.Count(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent);
-
-                if (IsWing(item))
+                // For each wing option, add 25%
+                var wingOptionCount = item.ItemOptions.Count(o => o.ItemOption.OptionType == ItemOptionTypes.Wing);
+                for (int i = 0; i < wingOptionCount; i++)
                 {
-                    // TODO: Instead of using ItemOptionTypes.Excellent for wings, introduce another option type. Then we can remove this if statement.
-                    // For each wing option, add 25%
-                    for (int i = 0; i < excCount; i++)
-                    {
-                        price += (long)(price * 0.25);
-                    }
+                    price += (long)(price * 0.25);
                 }
-                else
+
+                // For each excellent option double the value
+                var excCount = item.ItemOptions.Count(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent);
+                for (int i = 0; i < excCount; i++)
                 {
-                    // For each excellent option double the value
-                    for (int i = 0; i < excCount; i++)
-                    {
-                        price += price;
-                    }
+                    price += price;
                 }
             }
 

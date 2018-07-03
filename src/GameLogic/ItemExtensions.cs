@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             else if (item.ItemOptions.Any(link => link.ItemOption.OptionType == ItemOptionTypes.Excellent))
             {
-                // TODO: Exclude Wings and archangel weapons, but I guess it's not a big issue if we don't, because of their already high durability
+                // TODO: archangel weapons, but I guess it's not a big issue if we don't, because of their already high durability
                 result += 15;
             }
 
