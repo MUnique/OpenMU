@@ -34,8 +34,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private readonly List<LevelBonus> damageBonusPerLevel;
 
-        private ItemOptionDefinition excellentDefenseOptions;
-
         private ItemOptionDefinition excellentPhysicalWeaponOptions;
 
         private ItemOptionDefinition excellentWizardyWeaponOptions;
