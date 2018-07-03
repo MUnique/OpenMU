@@ -383,7 +383,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private void BuildSets()
         {
-            var sets = this.GameConfiguration.Items.Where(item => item.Group >= 3 && item.Group <= 6).GroupBy(item => item.Number);
+            var sets = this.GameConfiguration.Items.Where(item => item.Group >= 7 && item.Group <= 11).GroupBy(item => item.Number);
 
             var defenseRateBonus = this.Context.CreateNew<ItemOption>();
             defenseRateBonus.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
@@ -417,7 +417,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
                 for (int setLevel = 10; setLevel <= 15; setLevel++)
                 {
-                    this.CreateSetGroup(setLevel, defenseBonus[setLevel], group);
+                    this.CreateSetGroup(setLevel, defenseBonus[setLevel], group.ToList());
                 }
             }
         }
