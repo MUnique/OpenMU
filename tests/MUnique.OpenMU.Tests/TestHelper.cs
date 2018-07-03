@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
+
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
@@ -25,11 +27,17 @@ namespace MUnique.OpenMU.Tests
         /// <returns>The test player.</returns>
         public static Player GetPlayer()
         {
-            var gameConfig = new GameConfiguration()
-            {
-                RecoveryInterval = int.MaxValue
-            };
-            var gameContext = new GameContext(gameConfig, new InMemoryPersistenceContextProvider(), null);
+            var gameConfig = MockRepository.GenerateStub<GameConfiguration>();
+            gameConfig.RecoveryInterval = int.MaxValue;
+            gameConfig.Stub(c => c.Maps).Return(new List<GameMapDefinition>());
+            gameConfig.Stub(c => c.Items).Return(new List<ItemDefinition>());
+            var map = MockRepository.GenerateStub<GameMapDefinition>();
+            map.Stub(m => m.DropItemGroups).Return(new List<DropItemGroup>());
+            map.Stub(m => m.MonsterSpawns).Return(new List<MonsterSpawnArea>());
+            gameConfig.Maps.Add(map);
+
+            var mapInitializer = new MapInitializer(gameConfig, null);
+            var gameContext = new GameContext(gameConfig, new InMemoryPersistenceContextProvider(), null, mapInitializer);
             return GetPlayer(gameContext);
         }
 
@@ -42,14 +50,11 @@ namespace MUnique.OpenMU.Tests
         /// </returns>
         public static Player GetPlayer(IGameContext gameContext)
         {
-            var map = new GameMap(MockRepository.GenerateStub<GameMapDefinition>(), 60, 4, null);
-            map.Definition.Stub(d => d.DropItemGroups).Return(new List<DropItemGroup>());
-            gameContext.MapList.Add(map.Definition.Number.ToUnsigned(), map);
             var character = MockRepository.GenerateStub<Character>();
             character.Inventory = MockRepository.GenerateStub<ItemStorage>();
             character.Inventory.Stub(i => i.Items).Return(new List<Item>());
             character.Stub(c => c.LearnedSkills).Return(new List<SkillEntry>());
-            character.CurrentMap = map.Definition;
+            character.CurrentMap = gameContext.GetMap(0)?.Definition;
             character.CharacterClass = MockRepository.GenerateStub<CharacterClass>();
             character.CharacterClass.Stub(c => c.StatAttributes).Return(
                 new List<StatAttributeDefinition>

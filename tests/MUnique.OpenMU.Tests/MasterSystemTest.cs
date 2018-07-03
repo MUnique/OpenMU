@@ -8,10 +8,8 @@ namespace MUnique.OpenMU.Tests
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Character;
-    using MUnique.OpenMU.Persistence;
     using NUnit.Framework;
     using Rhino.Mocks;
 
@@ -38,8 +36,8 @@ namespace MUnique.OpenMU.Tests
         [SetUp]
         public void Setup()
         {
-            this.context = this.CreateGameContext();
-            this.player = TestHelper.GetPlayer(this.context);
+            this.player = TestHelper.GetPlayer();
+            this.context = player.GameContext;
             this.skillRank0 = this.CreateSkill(1, 0, 1, null, this.player.SelectedCharacter.CharacterClass);
             this.skillRank1 = this.CreateSkill(2, 1, 1, null, this.player.SelectedCharacter.CharacterClass);
             this.skillRank2 = this.CreateSkill((short)this.skillIdRank2, 2, 1, null, this.player.SelectedCharacter.CharacterClass);
@@ -222,26 +220,6 @@ namespace MUnique.OpenMU.Tests
             skill.MasterDefinitions.Add(masterDef);
 
             return skill;
-        }
-
-        private IGameContext CreateGameContext()
-        {
-            var stub = MockRepository.GenerateStub<IGameContext>();
-            stub.Stub(c => c.PersistenceContextProvider).Return(MockRepository.GenerateStub<IPersistenceContextProvider>());
-            stub.Stub(c => c.MapList).Return(new Dictionary<ushort, GameMap>());
-
-            var accountContext = MockRepository.GenerateStub<IPlayerContext>();
-            accountContext.Stub(m => m.CreateNew<SkillEntry>())
-                .WhenCalled(a => a.ReturnValue = new SkillEntry())
-                .Repeat.Any()
-                .Return(null);
-
-            var gameConfig = MockRepository.GenerateStub<GameConfiguration>();
-            gameConfig.RecoveryInterval = int.MaxValue;
-            stub.Stub(c => c.Configuration).Return(gameConfig);
-
-            stub.PersistenceContextProvider.Stub(m => m.CreateNewPlayerContext(gameConfig)).Return(accountContext);
-            return stub;
         }
     }
 }

@@ -29,14 +29,16 @@ namespace MUnique.OpenMU.GameLogic
         GameConfiguration Configuration { get; }
 
         /// <summary>
-        /// Gets the maps which are hosted by the game.
-        /// </summary>
-        IDictionary<ushort, GameMap> MapList { get; }
-
-        /// <summary>
         /// Gets the players of the game in a list.
         /// </summary>
         IList<Player> PlayerList { get; }
+
+        /// <summary>
+        /// Gets the maps which is meant to be hosted by the game.
+        /// </summary>
+        /// <param name="mapId">The map identifier.</param>
+        /// <returns>The hosted GameMap instance.</returns>
+        GameMap GetMap(ushort mapId);
 
         /// <summary>
         /// Gets the player object by character name.

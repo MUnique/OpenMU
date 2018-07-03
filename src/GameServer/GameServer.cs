@@ -11,8 +11,6 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
@@ -28,7 +26,6 @@ namespace MUnique.OpenMU.GameServer
         private readonly ICollection<IGameServerListener> listeners = new List<IGameServerListener>();
         private readonly IServerStateObserver stateObserver;
 
-        private bool initialized;
         private ServerState serverState;
 
         /// <summary>
@@ -54,7 +51,8 @@ namespace MUnique.OpenMU.GameServer
 
             try
             {
-                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, stateObserver);
+                var mapInitializer = new GameServerMapInitializer(gameServerDefinition, this.Id, stateObserver);
+                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, stateObserver, mapInitializer);
             }
             catch (Exception ex)
             {
@@ -120,7 +118,6 @@ namespace MUnique.OpenMU.GameServer
             using (this.PushServerLogContext())
             {
                 this.ServerState = ServerState.Starting;
-                this.Initialize();
                 foreach (var listener in this.listeners)
                 {
                     listener.Start();
@@ -295,18 +292,14 @@ namespace MUnique.OpenMU.GameServer
                 throw new ArgumentException("worldObserver needs to implement ILocateable", nameof(worldObserver));
             }
 
-            if (this.gameContext.MapList.TryGetValue(mapId, out GameMap map))
+            var map = this.gameContext.GetMap(mapId);
+            if (map != null)
             {
                 map.Add(locateableObserver);
             }
             else
             {
                 var message = $"map with id {mapId} not found.";
-                if (!this.gameContext.MapList.Any())
-                {
-                    message += " Maps not initialized yet.";
-                }
-
                 throw new ArgumentException(message);
             }
         }
@@ -314,7 +307,8 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void UnregisterMapObserver(ushort mapId, ushort worldObserverId)
         {
-            if (this.gameContext.MapList.TryGetValue(mapId, out GameMap map))
+            var map = this.gameContext.GetMap(mapId);
+            if (map != null)
             {
                 var observer = map.GetObject(worldObserverId);
                 map.Remove(observer);
@@ -349,67 +343,6 @@ namespace MUnique.OpenMU.GameServer
             player.PlayerView.ShowLoginWindow();
             player.PlayerState.TryAdvanceTo(PlayerState.LoginScreen);
             e.ConntectedPlayer.PlayerDisconnected += (s, args) => this.OnPlayerDisconnected(player);
-        }
-
-        private void Initialize()
-        {
-            if (this.initialized)
-            {
-                return;
-            }
-
-            Logger.Info("Initializing game server...");
-
-            this.InitializeMaps();
-            this.InitializeNpcs();
-            this.initialized = true;
-        }
-
-        private void InitializeMaps()
-        {
-            Logger.Info("Initializing Maps...");
-            var configuration = this.gameContext.ServerConfiguration;
-            foreach (var map in configuration.Maps.OrderBy(m => m.Number))
-            {
-                var gameMap = new GameMap(map, 60, 8, this.stateObserver?.GetMapStateObserver(this.Id));
-                this.Context.MapList.Add(map.Number.ToUnsigned(), gameMap);
-                this.stateObserver?.MapAdded(this.Id, new GameServerInfoAdapter.GameMapInfo(gameMap, Enumerable.Empty<Player>()));
-            }
-        }
-
-        private void InitializeNpcs()
-        {
-            var dropGenerator = new DefaultDropGenerator(this.Context.Configuration, Rand.GetRandomizer());
-            foreach (var map in this.Context.MapList.Values.Where(m => m.Definition.MonsterSpawns.Any()))
-            {
-                // TODO: Should this code be moved into the GameMap class?
-                Logger.Debug($"Start creating monster instances for map {map}");
-                foreach (var spawn in map.Definition.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Automatic))
-                {
-                    for (int i = 0; i < spawn.Quantity; i++)
-                    {
-                        var monsterDef = spawn.MonsterDefinition;
-                        NonPlayerCharacter npc;
-
-                        // TODO: Check if the condition is correct... NPCs are not attackable, but some might need to be (castle gates etc.)
-                        if (monsterDef.AttackDelay > TimeSpan.Zero)
-                        {
-                            Logger.Debug($"Creating monster {spawn}");
-                            npc = new Monster(spawn, monsterDef, map, dropGenerator, new BasicMonsterIntelligence(map));
-                        }
-                        else
-                        {
-                            Logger.Debug($"Creating npc {spawn}");
-                            npc = new NonPlayerCharacter(spawn, monsterDef, map);
-                        }
-
-                        npc.Initialize();
-                        map.Add(npc);
-                    }
-                }
-
-                Logger.Debug($"Finished creating monster instances for map {map}");
-            }
         }
 
         private void OnPlayerDisconnected(Player remotePlayer)
@@ -472,106 +405,6 @@ namespace MUnique.OpenMU.GameServer
             }
 
             return log4net.ThreadContext.Stacks["gameserver"].Push(this.Id.ToString());
-        }
-
-        private class GameServerInfoAdapter : IGameServerInfo
-        {
-            private readonly GameServer gameServer;
-            private readonly GameServerConfiguration configuration;
-
-            public GameServerInfoAdapter(GameServer gameServer, GameServerConfiguration configuration)
-            {
-                this.gameServer = gameServer;
-                this.configuration = configuration;
-            }
-
-            public byte Id => this.gameServer.Id;
-
-            public string Description => this.gameServer.Description;
-
-            public ServerState State => this.gameServer.ServerState;
-
-            public int OnlinePlayerCount => this.gameServer.Context.PlayerList.Count;
-
-            public int MaximumPlayers => this.configuration.MaximumPlayers;
-
-            public IList<IGameMapInfo> Maps
-            {
-                get { return this.gameServer.Context.MapList.Values.Select(map => new GameMapInfo(map, this.gameServer.Context.PlayerList.Where(p => p.CurrentMap == map).ToList())).ToList<IGameMapInfo>(); }
-            }
-
-            public override string ToString()
-            {
-                return this.gameServer.ToString();
-            }
-
-            internal class GameMapInfo : IGameMapInfo
-            {
-                private readonly GameMap map;
-
-                private readonly IEnumerable<Player> players;
-
-                public GameMapInfo(GameMap map, IEnumerable<Player> players)
-                {
-                    this.map = map;
-                    this.players = players;
-                }
-
-                public short MapNumber => this.map.Definition.Number;
-
-                public string MapName => this.map.Definition.Name;
-
-                public byte[] TerrainData => this.map.Definition.TerrainData;
-
-                public System.Collections.Generic.IList<IPlayerInfo> Players
-                {
-                    get { return this.players.Select(p => new PlayerInfo(p) as IPlayerInfo).ToList(); }
-                }
-            }
-
-            private class PlayerInfo : IPlayerInfo
-            {
-                private readonly Player player;
-
-                public PlayerInfo(Player player)
-                {
-                    this.player = player;
-                }
-
-                public string HostAdress
-                {
-                    get
-                    {
-                        var remotePlayer = this.player as RemotePlayer;
-                        if (remotePlayer?.Connection != null)
-                        {
-                            return remotePlayer.Connection.ToString();
-                        }
-
-                        return "N/A";
-                    }
-                }
-
-                public string CharacterName
-                {
-                    get
-                    {
-                        var character = this.player.SelectedCharacter;
-                        if (character != null)
-                        {
-                            return character.Name;
-                        }
-
-                        return "N/A";
-                    }
-                }
-
-                public string AccountName => this.player.Account.LoginName;
-
-                public byte LocationX => this.player.X;
-
-                public byte LocationY => this.player.Y;
-            }
         }
     }
 }

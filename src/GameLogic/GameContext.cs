@@ -20,9 +20,13 @@ namespace MUnique.OpenMU.GameLogic
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(GameContext));
 
+        private readonly IDictionary<ushort, GameMap> mapList;
+
         private readonly Timer recoverTimer;
 
         private readonly IGameStateObserver stateObserver;
+
+        private readonly IMapInitializer mapInitializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameContext" /> class.
@@ -30,13 +34,14 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="configuration">The configuration.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="stateObserver">The state observer.</param>
-        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IGameStateObserver stateObserver)
+        /// <param name="mapInitializer">The map initializer.</param>
+        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IGameStateObserver stateObserver, IMapInitializer mapInitializer)
         {
             try
             {
                 this.Configuration = configuration;
                 this.PersistenceContextProvider = persistenceContextProvider;
-                this.MapList = new Dictionary<ushort, GameMap>();
+                this.mapList = new Dictionary<ushort, GameMap>();
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
             }
             catch (Exception ex)
@@ -46,10 +51,13 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             this.stateObserver = stateObserver;
+            this.mapInitializer = mapInitializer;
         }
 
-        /// <inheritdoc/>
-        public IDictionary<ushort, GameMap> MapList { get; }
+        /// <summary>
+        /// Gets the initialized maps which are hosted on this context.
+        /// </summary>
+        public IEnumerable<GameMap> Maps => this.mapList.Values;
 
         /// <inheritdoc/>
         public GameConfiguration Configuration { get; }
@@ -69,6 +77,37 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the players by character name dictionary.
         /// </summary>
         public IDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>();
+
+        /// <inheritdoc/>
+        public GameMap GetMap(ushort mapId)
+        {
+            if (this.mapList.TryGetValue(mapId, out var map))
+            {
+                return map;
+            }
+
+            GameMap createdMap;
+            lock (this.mapInitializer)
+            {
+                if (this.mapList.TryGetValue(mapId, out map))
+                {
+                    return map;
+                }
+
+                createdMap = this.mapInitializer.CreateGameMap(mapId);
+                if (createdMap == null)
+                {
+                    return null;
+                }
+
+                this.mapList.Add(mapId, createdMap);
+            }
+
+            // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
+            this.mapInitializer.InitializeState(createdMap);
+
+            return createdMap;
+        }
 
         /// <summary>
         /// Adds the player to the game.

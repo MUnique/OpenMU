@@ -81,6 +81,7 @@
     <AdditionalFiles Include="..\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
+    <Compile Include="MapInitializer.cs" />
     <Compile Include="BucketAreaOfInterestManager.cs" />
     <Compile Include="BucketItemEventArgs.cs" />
     <Compile Include="BucketMap{T}.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="IDropGenerator.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="ILocateable.cs" />
+    <Compile Include="IMapInitializer.cs" />
     <Compile Include="InventoryConstants.cs" />
     <Compile Include="InventoryStorage.cs" />
     <Compile Include="IPartyMember.cs" />

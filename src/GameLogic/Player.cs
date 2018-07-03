@@ -492,7 +492,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
             this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
-            this.CurrentMap = this.gameContext.MapList[this.SelectedCharacter.CurrentMap.Number.ToUnsigned()];
+            this.CurrentMap = this.gameContext.GetMap(this.SelectedCharacter.CurrentMap.Number.ToUnsigned());
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.Alive = true;
             this.CurrentMap.Add(this);

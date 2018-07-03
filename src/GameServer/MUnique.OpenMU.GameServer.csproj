@@ -64,12 +64,15 @@
     </Compile>
     <Compile Include="ConfigurableMainPacketHandler.cs" />
     <Compile Include="ConfigurablePacketHandler.cs" />
+    <Compile Include="GameMapInfoAdapter.cs" />
     <Compile Include="GameServer.cs" />
     <Compile Include="GameServerContext.cs" />
     <AdditionalFiles Include="..\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
     <Compile Include="DefaultTcpGameServerListener.cs" />
+    <Compile Include="GameServerInfoAdapter.cs" />
+    <Compile Include="GameServerMapInitializer.cs" />
     <Compile Include="IGameServerListener.cs" />
     <Compile Include="MessageHandler\Friends\ChatRoomInvitationRequest.cs" />
     <Compile Include="PacketType.cs" />
