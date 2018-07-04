@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.GameLogic
                     }
                 }
 
-                foreach (var powerUp in this.GetPowerUpsOfItemOptions(item.ItemOptions, attributeHolder))
+                foreach (var powerUp in this.GetPowerUpsOfItemOptions(item, attributeHolder))
                 {
                     yield return powerUp;
                 }
@@ -92,8 +92,9 @@ namespace MUnique.OpenMU.GameLogic
             return result.SelectMany(p => PowerUpWrapper.CreateByPowerUpDefintion(p, attributeHolder));
         }
 
-        private IEnumerable<PowerUpWrapper> GetPowerUpsOfItemOptions(IEnumerable<ItemOptionLink> options, AttributeSystem attributeHolder)
+        private IEnumerable<PowerUpWrapper> GetPowerUpsOfItemOptions(Item item, AttributeSystem attributeHolder)
         {
+            var options = item.ItemOptions;
             if (options == null)
             {
                 yield break;
@@ -103,9 +104,10 @@ namespace MUnique.OpenMU.GameLogic
             {
                 var option = optionLink.ItemOption;
                 var powerUp = option.PowerUpDefinition;
-                if (optionLink.Level > 1)
+                var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
+                if (level > 1)
                 {
-                    var optionOfLevel = option.LevelDependentOptions.FirstOrDefault(l => l.Level == optionLink.Level);
+                    var optionOfLevel = option.LevelDependentOptions.FirstOrDefault(l => l.Level == level);
                     if (optionOfLevel == null)
                     {
                         // TODO: Log, this should never happen.

@@ -1989,6 +1989,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     ItemOptionDefinitionId = table.Column<Guid>(nullable: true),
                     Number = table.Column<int>(nullable: false),
+                    LevelType = table.Column<int>(nullable: false),
                     OptionTypeId = table.Column<Guid>(nullable: true),
                     PowerUpDefinitionId = table.Column<Guid>(nullable: true)
                 },

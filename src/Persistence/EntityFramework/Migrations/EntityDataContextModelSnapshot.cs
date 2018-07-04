@@ -584,6 +584,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("ItemOptionDefinitionId");
 
+                    b.Property<int>("LevelType");
+
                     b.Property<int>("Number");
 
                     b.Property<Guid?>("OptionTypeId");
