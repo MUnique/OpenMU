@@ -484,7 +484,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 "Karutan1", "Karutan2"
             };
 
-            var skipCount = this.gameConfiguration.Maps.Count;
             mapNames.Where(name => name != "?" && !this.gameConfiguration.Maps.Any(m => m.Name == name)).ToList()
                 .ForEach((mapName) =>
                 {
