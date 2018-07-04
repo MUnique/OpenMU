@@ -77,9 +77,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(37, "Vulcan", 15000, 30, gates[294]));
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(44, "LorenMarket", 18000, 200, gates[333]));
             gameConfiguration.WarpList.Add(this.CreateWarpInfo(43, "Elbeland3", 3000, 10, gates[269]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(45, "KanturuRuins3", 9000, 160, gates[335]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(46, "Karutan1", 13000, 170, gates[339]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(47, "Karutan2", 14000, 180, gates[348]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(45, "KanturuRuins3", 9000, 160, gates[334]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(46, "Karutan1", 13000, 170, gates[335]));
+            gameConfiguration.WarpList.Add(this.CreateWarpInfo(47, "Karutan2", 14000, 180, gates[344]));
         }
 
         private WarpInfo CreateWarpInfo(ushort index, string name, int costs, int levelRequirement, ExitGate gate)
@@ -254,17 +254,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(331, this.CreateExitGate(maps[67], 106, 58, 111, 62, 0, true));
             targetGates.Add(332, this.CreateExitGate(maps[68], 90, 10, 97, 17, 0, true));
             targetGates.Add(333, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));
-            targetGates.Add(334, this.CreateExitGate(maps[33], 38, 46, 39, 51, 0, true));
-            targetGates.Add(335, this.CreateExitGate(maps[37], 71, 179, 71, 182, 0, true));
-            targetGates.Add(336, this.CreateExitGate(maps[57], 127, 35, 130, 40, 0, true));
-            targetGates.Add(337, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));
-            targetGates.Add(338, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0, true));
-            targetGates.Add(339, this.CreateExitGate(maps[80], 124, 123, 127, 125, 0, true));
-            targetGates.Add(348, this.CreateExitGate(maps[81], 162, 16, 163, 17, 5, true));
-            targetGates.Add(349, this.CreateExitGate(maps[80], 122, 112, 139, 115, 0, true));
-            targetGates.Add(350, this.CreateExitGate(maps[81], 130, 140, 140, 140, 0, true));
-            targetGates.Add(351, this.CreateExitGate(maps[38], 71, 182, 73, 182, 5, true));
-            targetGates.Add(352, this.CreateExitGate(maps[33], 44, 215, 44, 215, 5, true));
+            targetGates.Add(334, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0, true));
+            targetGates.Add(335, this.CreateExitGate(maps[80], 124, 123, 127, 125, 0, true));
+            targetGates.Add(344, this.CreateExitGate(maps[81], 162, 16, 163, 17, 5, true));
 
             targetGates.Add(2, this.CreateExitGate(maps[1], 107, 247, 110, 247, 1));
             targetGates.Add(4, this.CreateExitGate(maps[0], 121, 231, 123, 231, 1));
@@ -361,10 +353,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             targetGates.Add(278, this.CreateExitGate(maps[56], 204, 10, 206, 14, 0));
             targetGates.Add(281, this.CreateExitGate(maps[56], 65, 47, 67, 48, 0));
             targetGates.Add(284, this.CreateExitGate(maps[56], 62, 174, 63, 179, 0));
-            targetGates.Add(341, this.CreateExitGate(maps[80], 118, 44, 119, 46, 3));
-            targetGates.Add(343, this.CreateExitGate(maps[33], 237, 166, 240, 166, 1));
-            targetGates.Add(345, this.CreateExitGate(maps[81], 162, 12, 164, 14, 5));
-            targetGates.Add(347, this.CreateExitGate(maps[80], 188, 207, 189, 208, 1));
+            targetGates.Add(337, this.CreateExitGate(maps[80], 118, 44, 119, 46, 3));
+            targetGates.Add(339, this.CreateExitGate(maps[33], 237, 166, 240, 166, 1));
+            targetGates.Add(341, this.CreateExitGate(maps[81], 162, 12, 164, 14, 5));
+            targetGates.Add(343, this.CreateExitGate(maps[80], 188, 207, 189, 208, 1));
             return targetGates;
         }
 
@@ -506,10 +498,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             maps[72].EnterGates.Add(this.CreateEnterGate(323, targetGates[324], 30, 95, 32, 97, 0));
             maps[72].EnterGates.Add(this.CreateEnterGate(325, targetGates[326], 68, 160, 70, 162, 0));
             maps[72].EnterGates.Add(this.CreateEnterGate(327, targetGates[328], 223, 165, 225, 167, 0));
-            maps[33].EnterGates.Add(this.CreateEnterGate(340, targetGates[337], 237, 167, 240, 168, 160));
-            maps[80].EnterGates.Add(this.CreateEnterGate(342, targetGates[339], 116, 44, 117, 47, 160));
-            maps[80].EnterGates.Add(this.CreateEnterGate(344, targetGates[341], 186, 210, 190, 212, 160));
-            maps[81].EnterGates.Add(this.CreateEnterGate(346, targetGates[343], 161, 8, 165, 9, 160));
+            maps[33].EnterGates.Add(this.CreateEnterGate(336, targetGates[337], 237, 167, 240, 168, 160));
+            maps[80].EnterGates.Add(this.CreateEnterGate(338, targetGates[339], 116, 44, 117, 47, 160));
+            maps[80].EnterGates.Add(this.CreateEnterGate(340, targetGates[341], 186, 210, 190, 212, 160));
+            maps[81].EnterGates.Add(this.CreateEnterGate(342, targetGates[343], 161, 8, 165, 9, 160));
         }
     }
 }
