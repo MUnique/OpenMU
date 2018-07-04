@@ -484,7 +484,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 "Karutan1", "Karutan2"
             };
 
-            mapNames.Where(name => name != "?" && !this.gameConfiguration.Maps.Any(m => m.Name == name)).ToList()
+            mapNames.Where(name => name != "?" && this.gameConfiguration.Maps.All(m => m.Name != name)).ToList()
                 .ForEach((mapName) =>
                 {
                     var map = this.context.CreateNew<GameMapDefinition>();
