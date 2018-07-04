@@ -892,6 +892,83 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Designation = "Wandering Merchant Zyro";
                 this.gameConfiguration.Monsters.Add(def);
             }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 658;
+                def.Designation = "Cursed Statue";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 659;
+                def.Designation = "Captured Stone Statue (1)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 660;
+                def.Designation = "Captured Stone Statue (2)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 661;
+                def.Designation = "Captured Stone Statue (3)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 662;
+                def.Designation = "Captured Stone Statue (4)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 663;
+                def.Designation = "Captured Stone Statue (5)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 664;
+                def.Designation = "Captured Stone Statue (6)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 665;
+                def.Designation = "Captured Stone Statue (7)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 666;
+                def.Designation = "Captured Stone Statue (8)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 667;
+                def.Designation = "Captured Stone Statue (9)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
+
+            {
+                var def = this.context.CreateNew<MonsterDefinition>();
+                def.Number = 668;
+                def.Designation = "Captured Stone Statue (10)";
+                this.gameConfiguration.Monsters.Add(def);
+            }
         }
 
         private ItemStorage CreateMerchantStoreWithPotions()
