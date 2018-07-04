@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
 {
     using System;
     using System.Linq;
+    using Microsoft.EntityFrameworkCore;
     using MUnique.OpenMU.Persistence.EntityFramework;
+    using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
 
     /// <summary>
@@ -24,17 +26,28 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
         {
             var manager = new PersistenceContextProvider();
             manager.ReCreateDatabase();
-            var initialization = new DataInitialization(manager);
+            this.TestDataInitialization(new PersistenceContextProvider());
+        }
+
+        [Test]
+        public void TestDataInitializationInMemory()
+        {
+            this.TestDataInitialization(new InMemoryPersistenceContextProvider());
+        }
+
+        private void TestDataInitialization(IPersistenceContextProvider contextProvider)
+        {
+            var initialization = new DataInitialization(contextProvider);
             initialization.CreateInitialData();
 
             // Loading game configuration
-            using (var context = manager.CreateNewConfigurationContext())
+            using (var context = contextProvider.CreateNewConfigurationContext())
             {
-                var gameConfiguraton = context.Get<GameConfiguration>().FirstOrDefault();
+                var gameConfiguraton = context.Get<DataModel.Configuration.GameConfiguration>().FirstOrDefault();
                 Assert.That(gameConfiguraton, Is.Not.Null);
 
                 // Testing loading of an account
-                using (var accountContext = manager.CreateNewPlayerContext(gameConfiguraton))
+                using (var accountContext = contextProvider.CreateNewPlayerContext(gameConfiguraton))
                 {
                     var account1 = accountContext.GetAccountByLoginName("test1", "test1");
                     Assert.That(account1, Is.Not.Null);
