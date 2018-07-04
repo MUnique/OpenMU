@@ -159,6 +159,10 @@
       <Project>{a044da9e-cb5c-4087-b67a-02e1049920c1}</Project>
       <Name>MUnique.OpenMU.Persistence.Initialization</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj">
+      <Project>{23B216A0-B407-4A76-A387-0B9E72B15363}</Project>
+      <Name>MUnique.OpenMU.Persistence.InMemory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Persistence\MUnique.OpenMU.Persistence.csproj">
       <Project>{6e809fa9-888c-474f-8a84-70eecbc7e42d}</Project>
       <Name>MUnique.OpenMU.Persistence</Name>
