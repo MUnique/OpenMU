@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameServer.RemoteView;
 
     /// <summary>
     /// Initializer for wing items.
@@ -24,12 +25,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private static readonly int[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
         private static readonly int[] DefenseIncreaseByLevelThirdWings = { 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 41, 47, 54, 62, 71, 81 };
-
-        private readonly IncreasableItemOption healthRecoverOption;
-        private readonly IncreasableItemOption physicalDamageOption;
-        private readonly IncreasableItemOption wizardryDamageOption;
-        private readonly IncreasableItemOption curseDamageOption;
-        private readonly IncreasableItemOption defenseOption;
 
         private List<LevelBonus> defenseBonusPerLevel;
         private List<LevelBonus> defenseBonusPerLevelThridWings;
@@ -49,21 +44,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateAbsorbBonusPerLevel();
             this.CreateBonusDefensePerLevel();
             this.CreateDamageIncreaseBonusPerLevel();
-            this.healthRecoverOption = this.CreateOption(0, Stats.HealthRecovery, AggregateType.AddRaw, 0.01f);
-            this.physicalDamageOption = this.CreateOption(0, Stats.MaximumPhysBaseDmg, AggregateType.AddRaw, 4f);
-            this.wizardryDamageOption = this.CreateOption(0, Stats.MaximumWizBaseDmg, AggregateType.AddRaw, 4f);
-            this.curseDamageOption = this.CreateOption(0, Stats.MaximumCurseBaseDmg, AggregateType.AddRaw, 4f);
-            this.defenseOption = this.CreateOption(0, Stats.DefenseBase, AggregateType.AddRaw, 4f);
         }
 
-        [Flags]
-        private enum Options
+        private enum OptionType
         {
-            HealthRecover = 1,
-            PhysDamage = 2,
-            WizDamage = 4,
-            CurseDamage = 8,
-            Defense = 16
+            HealthRecover,
+            PhysDamage,
+            WizDamage,
+            CurseDamage,
+            Defense
         }
 
         /// <summary>
@@ -77,39 +66,90 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// https://wiki.infinitymu.net/index.php?title=2nd_Level_Wing
         /// https://wiki.infinitymu.net/index.php?title=3rd_Level_Wing
         /// http://www.guiamuonline.com/items-de-mu-online/wings
+        /// Item option numbers:
+        /// 3rd wings:
+        /// 0x11 (3) -> Damage
+        /// 0x00 (0) -> Recover
+        /// 0x10 (2) -> Defense (for Ruin it's WizDamage)
+        /// 2nd wings:
+        ///             PDamage Recover WizDamage   CurseDmg
+        /// Spirit       0x00    0x10
+        /// Soul                 0x00    0x10
+        /// Dragon       0x10    0x00
+        /// Darkness     0x10            0x00
+        /// Warrior Cl   0x10    0x00
+        /// Despair              0x00               0x10
         /// </remarks>
         public override void Initialize()
         {
             // First class wings:
-            this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, 0, 0, 0, 0, Options.HealthRecover, 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
-            this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, 1, 0, 0, 0, Options.WizDamage, 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
-            this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, 1, 0, 0, 0, Options.PhysDamage, 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
-            this.CreateWing(41, 4, 2, "Wing of Curse", 100, 10, 200, 180, 0, 0, 0, 0, 0, 1, 0, Options.CurseDamage, 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
+            this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, 0, 0, 0, 0, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
+            this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
+            this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
+            this.CreateWing(41, 4, 2, "Wing of Curse", 100, 10, 200, 180, 0, 0, 0, 0, 0, 1, 0, this.BuildOptions((0, OptionType.CurseDamage)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
 
             // Second class wings:
             var secondWingOptions = this.CreateSecondClassWingOptions();
-            this.CreateWing(3, 5, 3, "Wings of Spirits", 150, 30, 200, 215, 0, 0, 2, 0, 0, 0, 0, Options.HealthRecover | Options.PhysDamage, 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
-            this.CreateWing(4, 5, 3, "Wings of Soul", 150, 30, 200, 215, 2, 0, 0, 0, 0, 0, 0, Options.HealthRecover | Options.WizDamage, 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
-            this.CreateWing(5, 3, 3, "Wings of Dragon", 150, 45, 200, 215, 0, 2, 0, 0, 0, 0, 0, Options.HealthRecover | Options.PhysDamage, 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
-            this.CreateWing(6, 4, 2, "Wings of Darkness", 150, 40, 200, 215, 0, 0, 0, 1, 0, 0, 0, Options.WizDamage | Options.PhysDamage, 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
-            this.CreateWing(42, 4, 3, "Wings of Despair", 150, 30, 200, 215, 0, 0, 0, 0, 0, 2, 0, Options.HealthRecover | Options.CurseDamage, 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
+            this.CreateWing(3, 5, 3, "Wings of Spirits", 150, 30, 200, 215, 0, 0, 2, 0, 0, 0, 0, this.BuildOptions((0b10, OptionType.HealthRecover), (0b00, OptionType.PhysDamage)), 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
+            this.CreateWing(4, 5, 3, "Wings of Soul", 150, 30, 200, 215, 2, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.WizDamage)), 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
+            this.CreateWing(5, 3, 3, "Wings of Dragon", 150, 45, 200, 215, 0, 2, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
+            this.CreateWing(6, 4, 2, "Wings of Darkness", 150, 40, 200, 215, 0, 0, 0, 1, 0, 0, 0, this.BuildOptions((0b00, OptionType.WizDamage), (0b10, OptionType.PhysDamage)), 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
+            this.CreateWing(42, 4, 3, "Wings of Despair", 150, 30, 200, 215, 0, 0, 0, 0, 0, 2, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.CurseDamage)), 32, 25, this.damageIncreasePerLevelSecondWings, this.defenseBonusPerLevel, secondWingOptions);
 
             // The capes are a bit of a hybrid. Their damage gets increased like first wings, but they start slightly lower than 2nd wings.
-            this.CreateWing(49, 2, 3, "Cape of Fighter", 180, 15, 200, 180, 0, 0, 0, 0, 0, 0, 1, Options.HealthRecover | Options.PhysDamage, 20, 10, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, secondWingOptions);
-            this.CreateWing(30, 2, 3, "Cape of Lord", 180, 15, 200, 180, 0, 0, 0, 0, 1, 0, 0, Options.PhysDamage, 20, 10, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, this.CreateCapeOptions()).Group = 13;
+            this.CreateWing(49, 2, 3, "Cape of Fighter", 180, 15, 200, 180, 0, 0, 0, 0, 0, 0, 1, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 20, 10, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, secondWingOptions);
+            this.CreateWing(30, 2, 3, "Cape of Lord", 180, 15, 200, 180, 0, 0, 0, 0, 1, 0, 0, this.BuildOptions((0b00, OptionType.PhysDamage)), 20, 10, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, this.CreateCapeOptions()).Group = 13;
 
             // Third class wings:
             var thirdWingOptions = this.CreateThirdClassWingOptions();
-            this.CreateWing(36, 4, 3, "Wing of Storm", 150, 60, 220, 300, 0, 3, 0, 0, 0, 0, 0, Options.HealthRecover | Options.PhysDamage | Options.Defense, 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
-            this.CreateWing(37, 4, 3, "Wing of Eternal", 150, 45, 220, 300, 3, 0, 0, 0, 0, 0, 0, Options.HealthRecover | Options.PhysDamage | Options.Defense, 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
-            this.CreateWing(38, 4, 3, "Wing of Illusion", 150, 45, 220, 300, 0, 0, 3, 0, 0, 0, 0, Options.HealthRecover | Options.PhysDamage | Options.Defense, 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
-            this.CreateWing(39, 4, 3, "Wing of Ruin", 150, 55, 220, 300, 0, 0, 0, 3, 0, 0, 0, Options.HealthRecover | Options.PhysDamage | Options.WizDamage, 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
-            this.CreateWing(40, 2, 3, "Cape of Emperor", 150, 45, 220, 300, 0, 0, 0, 0, 3, 0, 0, Options.HealthRecover | Options.PhysDamage | Options.Defense, 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
-            this.CreateWing(43, 4, 3, "Wing of Dimension", 150, 45, 220, 300, 0, 0, 0, 0, 0, 3, 0, Options.HealthRecover | Options.CurseDamage | Options.Defense, 42, 24, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
-            this.CreateWing(50, 2, 3, "Cape of Overrule", 150, 45, 220, 300, 0, 0, 0, 0, 0, 0, 3, Options.HealthRecover | Options.PhysDamage | Options.Defense, 42, 24, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
+            this.CreateWing(36, 4, 3, "Wing of Storm", 150, 60, 220, 300, 0, 3, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
+            this.CreateWing(37, 4, 3, "Wing of Eternal", 150, 45, 220, 300, 3, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.WizDamage), (0b10, OptionType.Defense)), 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
+            this.CreateWing(38, 4, 3, "Wing of Illusion", 150, 45, 220, 300, 0, 0, 3, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
+            this.CreateWing(39, 4, 3, "Wing of Ruin", 150, 55, 220, 300, 0, 0, 0, 3, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.WizDamage)), 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
+            this.CreateWing(40, 2, 3, "Cape of Emperor", 150, 45, 220, 300, 0, 0, 0, 0, 3, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
+            this.CreateWing(43, 4, 3, "Wing of Dimension", 150, 45, 220, 300, 0, 0, 0, 0, 0, 3, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.CurseDamage), (0b10, OptionType.Defense)), 42, 24, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
+            this.CreateWing(50, 2, 3, "Cape of Overrule", 150, 45, 220, 300, 0, 0, 0, 0, 0, 0, 3, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 42, 24, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
         }
 
-        private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, Options possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, List<LevelBonus> damageIncreasePerLevel, List<LevelBonus> defenseIncreasePerLevel, ItemOptionDefinition wingOptionDefinition)
+        /// <summary>
+        /// Builds the options based on the given parameters.
+        /// </summary>
+        /// <remarks>
+        /// Some wings can possibly have different item options of <see cref="ItemOptionTypes.Option"/>, depending on the outcome of consumption of the 'Jewel of Life'.
+        /// Since webzen did a "great" job defining different numbers (representations in their transmitted item data) for the same options,
+        /// we have to build <see cref="IncreasableItemOption"/>s for each item separately.
+        /// We don't want to handle this stuff per-item in our <see cref="ItemSerializer"/> since we want a generic solution.
+        /// </remarks>
+        /// <param name="optionsWithNumbers">The tuples of option type with their number.</param>
+        /// <returns>The built <see cref="IncreasableItemOption"/>s.</returns>
+        private IEnumerable<IncreasableItemOption> BuildOptions(params (int, OptionType)[] optionsWithNumbers)
+        {
+            foreach (var tuple in optionsWithNumbers)
+            {
+                switch (tuple.Item2)
+                {
+                    case OptionType.CurseDamage:
+                        yield return this.CreateOption(tuple.Item1, Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, 4f);
+                        break;
+                    case OptionType.Defense:
+                        yield return this.CreateOption(tuple.Item1, Stats.DefenseBase, 0, AggregateType.AddRaw, 4f);
+                        break;
+                    case OptionType.HealthRecover:
+                        yield return this.CreateOption(tuple.Item1, Stats.HealthRecovery, 0, AggregateType.AddRaw, 0.01f);
+                        break;
+                    case OptionType.PhysDamage:
+                        yield return this.CreateOption(tuple.Item1, Stats.MaximumPhysBaseDmg, 0, AggregateType.AddRaw, 4f);
+                        break;
+                    case OptionType.WizDamage:
+                        yield return this.CreateOption(tuple.Item1, Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, 4f);
+                        break;
+                    default:
+                        throw new ArgumentException("unknown OptionType");
+                }
+            }
+        }
+
+        private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, List<LevelBonus> damageIncreasePerLevel, List<LevelBonus> defenseIncreasePerLevel, ItemOptionDefinition wingOptionDefinition)
         {
             var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
             if (wingOptionDefinition != null)
@@ -141,52 +181,30 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
             this.GameConfiguration.ItemOptions.Add(optionDefinition);
             optionDefinition.Name = $"{name} Options";
-            optionDefinition.AddChance = 0.5f;
+            optionDefinition.AddChance = 0.25f;
             optionDefinition.AddsRandomly = true;
             optionDefinition.MaximumOptionsPerItem = 1;
-
-            if (possibleOptions.HasFlag(Options.PhysDamage))
+            foreach (var option in possibleOptions)
             {
-                optionDefinition.PossibleOptions.Add(this.physicalDamageOption);
-            }
-
-            if (possibleOptions.HasFlag(Options.WizDamage))
-            {
-                optionDefinition.PossibleOptions.Add(this.wizardryDamageOption);
-            }
-
-            if (possibleOptions.HasFlag(Options.CurseDamage))
-            {
-                optionDefinition.PossibleOptions.Add(this.curseDamageOption);
-            }
-
-            if (possibleOptions.HasFlag(Options.HealthRecover))
-            {
-                optionDefinition.PossibleOptions.Add(this.healthRecoverOption);
-            }
-
-            if (possibleOptions.HasFlag(Options.Defense))
-            {
-                optionDefinition.PossibleOptions.Add(this.defenseOption);
+                optionDefinition.PossibleOptions.Add(option);
             }
 
             return wing;
         }
 
-        private IncreasableItemOption CreateOption(int number, AttributeDefinition attributeDefinition, AggregateType aggregateType, float valueIncrementPerLevel)
+        private IncreasableItemOption CreateOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, float valueIncrementPerLevel)
         {
             var itemOption = this.Context.CreateNew<IncreasableItemOption>();
             itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
             itemOption.Number = number;
 
-            var targetAttribute = this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
-            itemOption.PowerUpDefinition = this.CreatePowerUpDefinition(targetAttribute, 0, aggregateType);
+            itemOption.PowerUpDefinition = this.CreatePowerUpDefinition(attributeDefinition, value, aggregateType);
 
             for (int level = 1; level <= MaximumOptionLevel; level++)
             {
                 var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
                 optionOfLevel.Level = level;
-                optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(targetAttribute, level * valueIncrementPerLevel, aggregateType);
+                optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute, level * valueIncrementPerLevel, aggregateType);
                 itemOption.LevelDependentOptions.Add(optionOfLevel);
             }
 
