@@ -105,7 +105,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             for (int i = 0; i < MaximumSockets; i++)
             {
-                array[startIndex + i] = NoSocket;
+                array[startIndex + i] = i < item.SocketCount ? EmptySocket : NoSocket;
             }
 
             var socketOptions = item.ItemOptions.Where(o => o.ItemOption.OptionType == ItemOptionTypes.SocketOption).Select(o => o.ItemOption.Number);
