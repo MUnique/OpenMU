@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Tests
         public void Setup()
         {
             this.player = TestHelper.GetPlayer();
-            this.context = player.GameContext;
+            this.context = this.player.GameContext;
             this.skillRank0 = this.CreateSkill(1, 0, 1, null, this.player.SelectedCharacter.CharacterClass);
             this.skillRank1 = this.CreateSkill(2, 1, 1, null, this.player.SelectedCharacter.CharacterClass);
             this.skillRank2 = this.CreateSkill((short)this.skillIdRank2, 2, 1, null, this.player.SelectedCharacter.CharacterClass);
