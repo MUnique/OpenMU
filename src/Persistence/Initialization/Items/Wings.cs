@@ -337,7 +337,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.AddsRandomly = true;
             definition.MaximumOptionsPerItem = 1;
 
-            // TODO: The option number order is probably not correct yet - need to check with game client
             definition.PossibleOptions.Add(this.CreateWingOption(1, Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw)); // Ignore opponent's defensive power by 5%
             definition.PossibleOptions.Add(this.CreateWingOption(2, Stats.DamageReflection, 0.05f, AggregateType.AddRaw)); // Ignore opponent's defensive power by 5%
             definition.PossibleOptions.Add(this.CreateWingOption(3, Stats.FullyRecoverHealthAfterHitChance, 0.05f, AggregateType.AddRaw)); // Fully restore health when hit by 5 %
