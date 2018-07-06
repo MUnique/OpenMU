@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.Internal;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework;
@@ -407,6 +408,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("RequestOpen");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("CharacterId", "FriendId");
 
                     b.ToTable("Friend","friend");
                 });
@@ -840,6 +843,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("ItemDefinitionCharacterClass","config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemOptionDefinition", b =>
+                {
+                    b.Property<Guid>("ItemDefinitionId");
+
+                    b.Property<Guid>("ItemOptionDefinitionId");
+
+                    b.HasKey("ItemDefinitionId", "ItemOptionDefinitionId");
+
+                    b.HasIndex("ItemOptionDefinitionId");
+
+                    b.ToTable("ItemDefinitionItemOptionDefinition","config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemSetGroup", b =>
                 {
                     b.Property<Guid>("ItemDefinitionId");
@@ -919,8 +935,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("GameConfigurationId");
 
-                    b.Property<Guid?>("ItemDefinitionId");
-
                     b.Property<int>("MaximumOptionsPerItem");
 
                     b.Property<string>("Name");
@@ -928,8 +942,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");
-
-                    b.HasIndex("ItemDefinitionId");
 
                     b.ToTable("ItemOptionDefinition","config");
                 });
@@ -1009,9 +1021,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MinimumItemCount");
 
-                    b.Property<int>("SetLevel");
-
                     b.Property<string>("Name");
+
+                    b.Property<int>("SetLevel");
 
                     b.HasKey("Id");
 
@@ -2029,6 +2041,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemOptionDefinition", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                        .WithMany("JoinedPossibleItemOptions")
+                        .HasForeignKey("ItemDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", "ItemOptionDefinition")
+                        .WithMany()
+                        .HasForeignKey("ItemOptionDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemSetGroup", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
@@ -2086,10 +2111,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration")
                         .WithMany("RawItemOptions")
                         .HasForeignKey("GameConfigurationId");
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition")
-                        .WithMany("RawPossibleItemOptions")
-                        .HasForeignKey("ItemDefinitionId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionLink", b =>

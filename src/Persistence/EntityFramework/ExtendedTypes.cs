@@ -2858,6 +2858,8 @@ public ICollection<ItemOptionOfLevel> RawLevelDependentOptions { get; } = new Li
             this.QualifiedCharacters = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, ItemDefinitionCharacterClass>(this.JoinedQualifiedCharacters, joinEntity => joinEntity.CharacterClass, entity => new ItemDefinitionCharacterClass { ItemDefinition = this, ItemDefinitionId = this.Id, CharacterClass = (CharacterClass)entity, CharacterClassId = ((CharacterClass)entity).Id});
           
             this.PossibleItemSetGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, ItemDefinitionItemSetGroup>(this.JoinedPossibleItemSetGroups, joinEntity => joinEntity.ItemSetGroup, entity => new ItemDefinitionItemSetGroup { ItemDefinition = this, ItemDefinitionId = this.Id, ItemSetGroup = (ItemSetGroup)entity, ItemSetGroupId = ((ItemSetGroup)entity).Id});
+          
+            this.PossibleItemOptions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition, ItemDefinitionItemOptionDefinition>(this.JoinedPossibleItemOptions, joinEntity => joinEntity.ItemOptionDefinition, entity => new ItemDefinitionItemOptionDefinition { ItemDefinition = this, ItemDefinitionId = this.Id, ItemOptionDefinition = (ItemOptionDefinition)entity, ItemOptionDefinitionId = ((ItemOptionDefinition)entity).Id});
         }
 
         /// <summary>
@@ -2918,17 +2920,6 @@ public ICollection<ItemOptionOfLevel> RawLevelDependentOptions { get; } = new Li
             {
                 base.Skill = value;
                 this.SkillId = this.RawSkill?.Id;
-            }
-        }
-
-        public ICollection<ItemOptionDefinition> RawPossibleItemOptions { get; } = new List<ItemOptionDefinition>();        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition> PossibleItemOptions
-        {
-            get
-            {
-                return base.PossibleItemOptions ?? (base.PossibleItemOptions = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition, ItemOptionDefinition>(this.RawPossibleItemOptions)); 
             }
         }
 
@@ -4533,6 +4524,8 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Entity<ItemDefinitionCharacterClass>().HasKey(join => new { join.ItemDefinitionId, join.CharacterClassId });
             modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedPossibleItemSetGroups).WithOne(join => join.ItemDefinition);
             modelBuilder.Entity<ItemDefinitionItemSetGroup>().HasKey(join => new { join.ItemDefinitionId, join.ItemSetGroupId });
+            modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedPossibleItemOptions).WithOne(join => join.ItemDefinition);
+            modelBuilder.Entity<ItemDefinitionItemOptionDefinition>().HasKey(join => new { join.ItemDefinitionId, join.ItemOptionDefinitionId });
             modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.JoinedOptions).WithOne(join => join.ItemSetGroup);
             modelBuilder.Entity<ItemSetGroupItemOption>().HasKey(join => new { join.ItemSetGroupId, join.ItemOptionId });
             modelBuilder.Entity<ItemCraftingRequiredItem>().HasMany(entity => entity.JoinedRequiredItemOptions).WithOne(join => join.ItemCraftingRequiredItem);

@@ -46,6 +46,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             yield return typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition);
             yield return typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemOption);
             yield return typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType);
+            yield return typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition);
             yield return typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup);
             yield return typeof(MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition);
             yield return typeof(MUnique.OpenMU.DataModel.Configuration.Skill);
