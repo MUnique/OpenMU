@@ -1185,7 +1185,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     ItemSlotId = table.Column<Guid>(nullable: true),
                     MaximumSockets = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    Number = table.Column<byte>(nullable: false),
+                    Number = table.Column<short>(nullable: false),
                     SkillId = table.Column<Guid>(nullable: true),
                     Value = table.Column<int>(nullable: false),
                     Width = table.Column<byte>(nullable: false)

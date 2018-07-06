@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private const byte SkillFlag = 128;
 
-        private const byte Option380Flag = 128;
+        private const byte Option380Flag = 0x08;
 
         private const byte NoSocket = 0xFF;
 
@@ -57,8 +57,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void SerializeItem(byte[] array, int startIndex, Item item)
         {
-            array[startIndex] = item.Definition.Number;
-            ////Item Level:
+            array[startIndex] = (byte)item.Definition.Number;
             array[startIndex + 1] = (byte)((item.Level << 3) & 0x78);
             ////Item Option:
             ////It is splitted into 2 parts. Webzen... :-/
@@ -69,9 +68,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             array[startIndex + 2] = item.Durability;
 
             array[startIndex + 3] |= GetExcellentByte(item);
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Level380Option))
+
+            if ((item.Definition.Number & 0x100) == 0x100)
             {
-                array[startIndex + 3] |= Option380Flag;
+                // Support for 512 items per Group
+                array[startIndex + 3] |= 0x80;
             }
 
             if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck))
@@ -91,6 +92,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
 
             array[startIndex + 5] = (byte)(item.Definition.Group << 4);
+            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Level380Option))
+            {
+                array[startIndex + 5] |= Option380Flag;
+            }
+
             array[startIndex + 6] = GetHarmonyByte(item);
             SetSocketBytes(array, startIndex + 7, item);
         }

@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the (Sub-)Id of this item. Must be unique in an item group.
         /// </summary>
-        public byte Number { get; set; }
+        public short Number { get; set; }
 
         /// <summary>
         /// Gets or sets the item slot where it can get equipped.
