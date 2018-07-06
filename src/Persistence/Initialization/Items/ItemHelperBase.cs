@@ -136,10 +136,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
                     definition.PossibleOptions.Add(this.CreateExcellentAttackOption(1, Stats.ManaAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
                     definition.PossibleOptions.Add(this.CreateExcellentAttackOption(2, Stats.HealthAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
-                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(4, Stats.AttackSpeed, 7, AggregateType.AddRaw));
-                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(8, Stats.MaximumPhysBaseDmg, 1.02f, AggregateType.Multiplicate));
-                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(16, Stats.MaximumPhysBaseDmg, 20, AggregateType.AddRaw)); // TODO: Dependent on character level!
-                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(32, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
+                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
+                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(4, Stats.MaximumPhysBaseDmg, 1.02f, AggregateType.Multiplicate));
+                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(5, Stats.MaximumPhysBaseDmg, 20, AggregateType.AddRaw)); // TODO: Dependent on character level!
+                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
                     this.excellentPhysicalWeaponOptions = definition;
                 }
 
@@ -165,10 +165,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
                     definition.PossibleOptions.Add(this.CreateExcellentAttackOption(1, Stats.ManaAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
                     definition.PossibleOptions.Add(this.CreateExcellentAttackOption(2, Stats.HealthAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
-                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(4, Stats.AttackSpeed, 7, AggregateType.AddRaw));
-                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(8, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate));
-                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(16, Stats.MaximumWizBaseDmg, 20, AggregateType.AddRaw)); // TODO: Dependent on character level!
-                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(32, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
+                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
+                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(4, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate));
+                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(5, Stats.MaximumWizBaseDmg, 20, AggregateType.AddRaw)); // TODO: Dependent on character level!
+                    definition.PossibleOptions.Add(this.CreateExcellentAttackOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
                     this.excellentWizardyWeaponOptions = definition;
                 }
 

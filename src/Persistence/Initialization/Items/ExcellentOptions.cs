@@ -50,10 +50,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(1, Stats.MoneyAmountRate, 1.4f, AggregateType.Multiplicate));
             definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(2, Stats.DefenseRatePvm, 1.1f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(4, Stats.DamageReflection, 0.4f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(8, Stats.DamageReceiveDecrement, 0.96f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(16, Stats.MaximumMana, 1.04f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(32, Stats.MaximumHealth, 1.04f, AggregateType.Multiplicate));
+            definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(3, Stats.DamageReflection, 0.4f, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(4, Stats.DamageReceiveDecrement, 0.96f, AggregateType.Multiplicate));
+            definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(5, Stats.MaximumMana, 1.04f, AggregateType.Multiplicate));
+            definition.PossibleOptions.Add(this.CreateExcellentDefenseOption(6, Stats.MaximumHealth, 1.04f, AggregateType.Multiplicate));
         }
 
         private IncreasableItemOption CreateExcellentDefenseOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
