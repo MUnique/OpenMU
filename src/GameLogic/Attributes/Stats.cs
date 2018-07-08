@@ -205,6 +205,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         /// <summary>
         /// Gets the combo bonus attribute definition.
+        /// TODO
         /// </summary>
         public static AttributeDefinition ComboBonus { get; } = new AttributeDefinition(new Guid("53A479FE-8A73-4A45-AACA-5B1AA4362CF9"), "comboBonus", string.Empty);
 
@@ -245,11 +246,13 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         /// <summary>
         /// Gets the shield block damage decrement attribute definition.
+        /// TODO: Usage in a shield skill handler
         /// </summary>
         public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new AttributeDefinition(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "shieldBlockDamageDecrement", string.Empty);
 
         /// <summary>
         /// Gets the ice resistance attribute definition.
+        /// TODO Consider resistancies of monsters, players and the attacking skills
         /// </summary>
         public static AttributeDefinition IceResistance { get; } = new AttributeDefinition(new Guid("47235C36-41BB-44B4-8823-6FC415709F59"), "iceResistance", string.Empty);
 
