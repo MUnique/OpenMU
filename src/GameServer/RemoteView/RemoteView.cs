@@ -752,6 +752,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 colorResult = DamageColor.CriticalBlue;
             }
+            else if (attributes.HasFlag(DamageAttributes.Reflected))
+            {
+                colorResult = DamageColor.DarkPink;
+            }
 
             byte result = (byte)colorResult;
             if (attributes.HasFlag(DamageAttributes.Double))

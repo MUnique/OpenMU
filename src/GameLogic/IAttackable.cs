@@ -31,5 +31,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="attacker">The attacker.</param>
         /// <param name="skill">The skill.</param>
         void AttackBy(IAttackable attacker, SkillEntry skill);
+
+        /// <summary>
+        /// Reflects the damage which was done previously with <see cref="AttackBy" /> or even <see cref="ReflectDamage" /> to the <paramref name="reflector" />.
+        /// </summary>
+        /// <param name="reflector">The reflector.</param>
+        /// <param name="damage">The damage.</param>
+        void ReflectDamage(IAttackable reflector, uint damage);
     }
 }

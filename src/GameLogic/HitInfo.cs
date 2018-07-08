@@ -45,7 +45,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// The damage was tripled (e.g. combo skill).
         /// </summary>
-        Triple = 32
+        Triple = 32,
+
+        /// <summary>
+        /// The damage was reflected.
+        /// </summary>
+        Reflected = 64,
     }
 
     /// <summary>

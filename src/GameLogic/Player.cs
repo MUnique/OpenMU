@@ -369,26 +369,55 @@ namespace MUnique.OpenMU.GameLogic
         public void AttackBy(IAttackable attacker, SkillEntry skill)
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
-
-            int oversd = (int)(this.Attributes[Stats.CurrentShield] - hitInfo.DamageSD);
-            if (oversd < 0)
+            if (hitInfo.DamageHP == 0)
             {
-                this.Attributes[Stats.CurrentShield] = 0;
-                hitInfo.DamageHP += (uint)(oversd * (-1));
-            }
-            else
-            {
-                this.Attributes[Stats.CurrentShield] = oversd;
+                return;
             }
 
-            this.Attributes[Stats.CurrentHealth] -= hitInfo.DamageHP;
-            this.PlayerView.ShowHit(this, hitInfo);
-            (attacker as Player)?.PlayerView.ShowHit(this, hitInfo);
-
-            if (this.Attributes[Stats.CurrentHealth] < 1)
+            if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
             {
-                this.OnDeath(attacker);
+                this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
+                this.PlayerView.UpdateCurrentManaAndHp();
             }
+
+            if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]))
+            {
+                this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
+                this.PlayerView.UpdateCurrentManaAndHp();
+            }
+
+            this.Hit(hitInfo, attacker);
+
+            (attacker as Player)?.AfterHitTarget();
+        }
+
+        /// <summary>
+        /// Is called after the player successfully hit a target.
+        /// </summary>
+        public void AfterHitTarget()
+        {
+            this.Attributes[Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
+        }
+
+        /// <inheritdoc/>
+        public void ReflectDamage(IAttackable reflector, uint damage)
+        {
+            this.Hit(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector);
+        }
+
+        /// <summary>
+        /// Is called after the player killed a <see cref="Monster"/>.
+        /// Adds recovered mana and health to the players attributes.
+        /// </summary>
+        public void AfterKilledMonster()
+        {
+            foreach (var recoverAfterMonsterKill in Stats.AfterMonsterKillRegenerationAttributes)
+            {
+                var additionalValue = (uint)(this.Attributes[recoverAfterMonsterKill.RegenerationMultiplier] * this.Attributes[recoverAfterMonsterKill.MaximumAttribute]);
+                this.Attributes[recoverAfterMonsterKill.CurrentAttribute] = (uint)Math.Min(this.Attributes[recoverAfterMonsterKill.MaximumAttribute], this.Attributes[recoverAfterMonsterKill.CurrentAttribute] + additionalValue);
+            }
+
+            this.PlayerView.UpdateCurrentManaAndHp();
         }
 
         /// <summary>
@@ -754,6 +783,42 @@ namespace MUnique.OpenMU.GameLogic
         {
             var spawnTargetMap = this.CurrentMap.Definition.SafezoneMap ?? this.CurrentMap.Definition;
             return spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
+        }
+
+        private void Hit(HitInfo hitInfo, IAttackable attacker)
+        {
+            int oversd = (int)(this.Attributes[Stats.CurrentShield] - hitInfo.DamageSD);
+            if (oversd < 0)
+            {
+                this.Attributes[Stats.CurrentShield] = 0;
+                hitInfo.DamageHP += (uint)(oversd * (-1));
+            }
+            else
+            {
+                this.Attributes[Stats.CurrentShield] = oversd;
+            }
+
+            this.Attributes[Stats.CurrentHealth] -= hitInfo.DamageHP;
+            this.PlayerView.ShowHit(this, hitInfo);
+            (attacker as Player)?.PlayerView.ShowHit(this, hitInfo);
+
+            if (this.Attributes[Stats.CurrentHealth] < 1)
+            {
+                this.OnDeath(attacker);
+            }
+
+            var reflectPercentage = this.Attributes[Stats.DamageReflection];
+            if (reflectPercentage > 0)
+            {
+                var reflectedDamage = (hitInfo.DamageHP + hitInfo.DamageSD) * reflectPercentage;
+                Task.Delay(500).ContinueWith(task =>
+                {
+                    if (attacker.Alive)
+                    {
+                        attacker.ReflectDamage(this, (uint)reflectedDamage);
+                    }
+                }).Start();
+            }
         }
 
         private void OnDeath(IAttackable killer)
