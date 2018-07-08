@@ -521,7 +521,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 0xC1, 0x0A, (byte)PacketType.Hit, targetId.GetHighByte(), targetId.GetLowByte(),
                                     healthDamage.GetHighByte(), healthDamage.GetLowByte(),
                                     this.GetDamageColor(hitInfo.Attributes),
-                                    shieldDamage.GetLowByte(), shieldDamage.GetHighByte()
+                                    shieldDamage.GetHighByte(), shieldDamage.GetLowByte()
             });
         }
 
