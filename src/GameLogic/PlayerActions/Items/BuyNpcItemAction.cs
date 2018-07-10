@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return;
             }
 
-            var price = this.priceCalculator.CalculateSellingPrice(storeItem);
+            var price = this.priceCalculator.CalculateBuyingPrice(storeItem);
             if (!player.TryRemoveMoney((int)price))
             {
                 player.PlayerView.ShowMessage("You don't have enough Money", MessageType.BlueNormal);
