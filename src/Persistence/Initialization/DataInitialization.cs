@@ -508,7 +508,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 "Chaos Castle 4", "Chaos Castle 5", "Chaos Castle 6", "Kalima 1", "Kalima 2", "Kalima 3", "Kalima 4", "Kalima 5", "Kalima 6", "Valley of Loren", // 30
                 "Land_of_Trials", "Devil Square (5-6)", "Aida", "Crywolf Fortress", "?", "Kalima 7", "Kanturu_I", "Kanturu_III", "Kanturu_Event", "Silent Map?", // 40
                 "Barracks of Balgass", "Balgass Refuge", "?", "?", "Illusion Temple 1", "Illusion Temple 2", "Illusion Temple 3", "Illusion Temple 4", "Illusion Temple 5", "Illusion Temple 6", // 50
-                "Elvenland", "Blood_Castle 8", "Chaos_Castle 7", "?", "?", "Swamp Of Calmness", "LaCleon", "LaCleonBoss", "?", "?", // 60
+                "Elvenland", "Blood Castle 8", "Chaos Castle 7", "?", "?", "Swamp Of Calmness", "LaCleon", "LaCleonBoss", "?", "?", // 60
                 "?", "Santa Village", "Vulcanus", "Duel Arena", "Double Gear 1", "Double Gear 2", "Double Gear 3", "Double Gear 4", "Empire Fortress 1", // 69
                 "Empire Fortress 2", "Empire Fortress 3", "Empire Fortress 4", "Empire Fortress 5", "?", "?", "?", "?", "?", "LorenMarket", // 79
                 "Karutan1", "Karutan2"
