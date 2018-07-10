@@ -818,7 +818,7 @@ namespace MUnique.OpenMU.GameLogic
                     {
                         attacker.ReflectDamage(this, (uint)reflectedDamage);
                     }
-                }).Start();
+                });
             }
         }
 
