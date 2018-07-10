@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             }
 
             Item item = player.Inventory.GetItem(itemSlot);
-            if (item == null)
+            if (item == null || item.Durability == 0)
             {
                 return false;
             }
