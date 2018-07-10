@@ -11,13 +11,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     /// </summary>
     public class LearnablesConsumeHandler : IItemConsumeHandler
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LearnablesConsumeHandler"/> class.
-        /// </summary>
-        public LearnablesConsumeHandler()
-        {
-        }
-
         /// <inheritdoc/>
         public bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
         {
