@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// The type of the range calculation type.
@@ -129,33 +130,23 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="range">The maximum range.</param>
         /// <param name="rangeType">Type of the range.</param>
         /// <returns>The items which are in range of the specified coordinate and range.</returns>
-        public IEnumerable<T> GetInRange(int x, int y, int range, RangeType rangeType)
+        public IEnumerable<ILocateable> GetInRange(int x, int y, int range, RangeType rangeType)
         {
-            var retList = new List<T>();
-
-            int maxX = Math.Min(x + range, this.SideLength * this.BucketSideLength) / this.BucketSideLength;
-            int maxY = Math.Min(y + range, this.SideLength * this.BucketSideLength) / this.BucketSideLength;
-            int minX = Math.Max(x - range, 0) / this.BucketSideLength;
-            int minY = Math.Max(y - range, 0) / this.BucketSideLength;
-            for (int i = minX; maxX > i; ++i)
+            var result = new List<ILocateable>();
+            var buckets = this.GetBucketsInRange(x, y, range, rangeType);
+            foreach (var bucket in buckets)
             {
-                for (int j = minY; maxY > j; ++j)
+                if (rangeType == RangeType.Quadratic)
                 {
-                    if (rangeType == RangeType.Quadratic)
-                    {
-                        retList.AddRange(this.list[i + (j * this.SideLength)]);
-                    }
-                    else
-                    {
-                        if (IsInRangeExact(i, j, x / this.BucketSideLength, y / this.BucketSideLength, range))
-                        {
-                            retList.AddRange(this.list[i + (j * this.SideLength)]);
-                        }
-                    }
+                    result.AddRange(bucket.OfType<ILocateable>().Where(obj => obj.IsInRange(x, y, range)));
+                }
+                else
+                {
+                    result.AddRange(bucket.OfType<ILocateable>().Where(obj => IsInRangeExact(obj.X, obj.Y, x, y, range)));
                 }
             }
 
-            return retList;
+            return result;
         }
 
         /// <summary>
@@ -172,9 +163,9 @@ namespace MUnique.OpenMU.GameLogic
             int maxY = Math.Min(y + range, this.SideLength * this.BucketSideLength) / this.BucketSideLength;
             int minX = Math.Max(x - range, 0) / this.BucketSideLength;
             int minY = Math.Max(y - range, 0) / this.BucketSideLength;
-            for (int i = minX; maxX > i; ++i)
+            for (int i = minX; maxX >= i; ++i)
             {
-                for (int j = minY; maxY > j; ++j)
+                for (int j = minY; maxY >= j; ++j)
                 {
                     if (rangeType == RangeType.Quadratic)
                     {
