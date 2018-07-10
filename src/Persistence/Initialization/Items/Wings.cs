@@ -227,7 +227,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (levelRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.Level;
+                requirement.Attribute = this.GameConfiguration.Attributes.First(a => a == Stats.Level);
                 requirement.MinimumValue = levelRequirement;
                 //// TODO: each level increases the requirement by 5 Levels
                 wing.Requirements.Add(requirement);
@@ -236,7 +236,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (defense > 0)
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUp.TargetAttribute = Stats.DefenseBase;
+                powerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.DefenseBase);
                 powerUp.BaseValue = defense;
                 wing.BasePowerUpAttributes.Add(powerUp);
             }
