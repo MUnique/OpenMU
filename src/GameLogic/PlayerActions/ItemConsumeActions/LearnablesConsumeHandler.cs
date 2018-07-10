@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (player.SkillList.ContainsSkill(learnable.Skill.SkillID.ToUnsigned()))
+            if (learnable.Skill == null || player.SkillList.ContainsSkill(learnable.Skill.SkillID.ToUnsigned()))
             {
                 return false;
             }
