@@ -605,6 +605,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
             rightHand.ItemSlots.Add(1);
             this.gameConfiguration.ItemSlotTypes.Add(rightHand);
 
+            var leftOrRightHand = this.context.CreateNew<ItemSlotType>();
+            leftOrRightHand.Description = "Left or Right Hand";
+            leftOrRightHand.ItemSlots.Add(0);
+            leftOrRightHand.ItemSlots.Add(1);
+            this.gameConfiguration.ItemSlotTypes.Add(leftOrRightHand);
+
             var helm = this.context.CreateNew<ItemSlotType>();
             helm.Description = "Helm";
             helm.ItemSlots.Add(2);

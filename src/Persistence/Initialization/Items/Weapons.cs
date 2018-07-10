@@ -299,7 +299,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             item.Width = width;
             item.DropLevel = dropLevel;
             item.DropsFromMonsters = dropsFromMonsters;
-            item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(slot));
+            if (slot == 0 && knightClass > 0 && width == 1)
+            {
+                item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
+            }
+            else
+            {
+                item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(slot));
+            }
+
             if (skillNumber > 0)
             {
                 var itemSkill = this.GameConfiguration.Skills.First(s => s.SkillID == skillNumber);
