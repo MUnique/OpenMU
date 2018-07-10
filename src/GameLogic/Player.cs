@@ -596,6 +596,7 @@ namespace MUnique.OpenMU.GameLogic
         public void Move(byte newx, byte newy, MoveType moveType)
         {
             Logger.DebugFormat("Move: Player is moving to {0} {1}, Type {2}", newx, newy, moveType);
+            this.walker.Stop();
             this.CurrentMap.Move(this, newx, newy, this.moveLock, moveType);
             if (moveType == MoveType.Walk)
             {

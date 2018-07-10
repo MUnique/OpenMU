@@ -44,17 +44,22 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
+        /// <remarks>
+        /// This needs to take into account, that the <see cref="Walker"/> might change the <see cref="ILocateable.X"/> and <see cref="ILocateable.Y"/>,
+        /// but not updating the buckets. So accessing the bucket of the current coordinates might not be the current bucket!
+        /// </remarks>
         public void RemoveObject(ILocateable obj)
         {
             if (obj is IHasBucketInformation bucketInfo)
             {
-                bucketInfo.OldBucket = this.Map[obj.X, obj.Y];
+                bucketInfo.NewBucket?.Remove(obj);
+                bucketInfo.OldBucket?.Remove(obj);
+                bucketInfo.OldBucket = bucketInfo.NewBucket;
                 bucketInfo.NewBucket = null;
             }
-
-            if (!this.Map[obj.X, obj.Y].Remove(obj))
+            else
             {
-                return;
+                this.Map[obj.X, obj.Y].Remove(obj);
             }
 
             if (obj is IBucketMapObserver observingPlayer)
