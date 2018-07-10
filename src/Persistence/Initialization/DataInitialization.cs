@@ -69,6 +69,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 }
 
                 this.CreateTestAccounts(10);
+                this.CreateTest300();
+                this.CreateTest400();
 
                 this.context.SaveChanges();
             }
@@ -112,31 +114,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
             account.Vault = this.context.CreateNew<ItemStorage>();
 
-            var character = this.context.CreateNew<Character>();
-            account.Characters.Add(character);
-            character.CharacterClass = this.gameConfiguration.CharacterClasses.First(c => c.Number == (byte)CharacterClassNumber.DarkKnight);
-            character.Name = loginName;
-            character.CharacterSlot = 0;
-            character.CreateDate = DateTime.Now;
-            character.KeyConfiguration = new byte[30];
-            foreach (
-                var attribute in
-                character.CharacterClass.StatAttributes.Select(
-                    a => this.context.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)))
-            {
-                character.Attributes.Add(attribute);
-            }
-
-            character.CurrentMap = character.CharacterClass.HomeMap;
-            var spawnGate = character.CurrentMap.ExitGates.Where(m => m.IsSpawnGate).SelectRandom();
-            character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
-            character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
             var level = (index * 10) + 1;
-            character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
-            character.Experience = this.CalculateNeededExperience(level);
-            character.LevelUpPoints = (int)(character.Attributes.First(a => a.Definition == Stats.Level).Value - 1) * character.CharacterClass.PointsPerLevelUp;
-            character.Inventory = this.context.CreateNew<ItemStorage>();
-            character.Inventory.Money = 1000000;
+            var character = this.CreateCharacter(loginName, CharacterClassNumber.DarkKnight, level);
+            account.Characters.Add(character);
+
             character.Inventory.Items.Add(this.CreateSmallAxe(0));
             character.Inventory.Items.Add(this.CreateJewelOfBless(12));
             character.Inventory.Items.Add(this.CreateJewelOfBless(13));
@@ -176,17 +157,257 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather armor
             character.Inventory.Items.Add(this.CreateSetItem(47, 5, 7)); // Leather helm
             character.Inventory.Items.Add(this.CreateSetItem(49, 5, 9)); // Leather pants
-            character.Inventory.Items.Add(this.CreateSetItem(63, 5, 10)); // Leather gloves
-            character.Inventory.Items.Add(this.CreateSetItem(65, 5, 11)); // Leather boots
+            character.Inventory.Items.Add(this.CreateSetItem(63, 5, 10, Stats.DamageReflection)); // Leather gloves
+            character.Inventory.Items.Add(this.CreateSetItem(65, 5, 11, Stats.DamageReflection)); // Leather boots
         }
 
-        private Item CreateSetItem(byte itemSlot, byte setNumber, byte group)
+        private Character CreateCharacter(string name, CharacterClassNumber characterClass, int level)
+        {
+            var character = this.context.CreateNew<Character>();
+            character.CharacterClass = this.gameConfiguration.CharacterClasses.First(c => c.Number == (byte)characterClass);
+            character.Name = name;
+            character.CharacterSlot = 0;
+            character.CreateDate = DateTime.Now;
+            character.KeyConfiguration = new byte[30];
+            foreach (
+                var attribute in
+                character.CharacterClass.StatAttributes.Select(
+                    a => this.context.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)))
+            {
+                character.Attributes.Add(attribute);
+            }
+
+            character.CurrentMap = character.CharacterClass.HomeMap;
+            var spawnGate = character.CurrentMap.ExitGates.Where(m => m.IsSpawnGate).SelectRandom();
+            character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
+            character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
+            character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
+            character.Experience = this.CalculateNeededExperience(level);
+            character.LevelUpPoints = (int)(character.Attributes.First(a => a.Definition == Stats.Level).Value - 1) * character.CharacterClass.PointsPerLevelUp;
+            character.Inventory = this.context.CreateNew<ItemStorage>();
+            character.Inventory.Money = 1000000;
+            return character;
+        }
+
+        private void CreateTest400()
+        {
+            var loginName = "test400";
+
+            var account = this.context.CreateNew<Account>();
+            account.LoginName = loginName;
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
+            account.Vault = this.context.CreateNew<ItemStorage>();
+
+            var character = this.CreateCharacter(loginName, CharacterClassNumber.BattleMaster, 400);
+            account.Characters.Add(character);
+            character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
+            character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+            character.LevelUpPoints -= 1500; // for the added strength and agility
+            character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+            character.MasterLevelUpPoints = 100; // To test master skill tree
+
+            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 19, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Sword+15+16+L+ExcDmg
+            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 22, 15, 4, true, true)); // Bone Blade+15+16+L
+
+            // Dragon Knight Set+15+16+L:
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 29, 8, null, 15, 4, true));
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 29, 7, null, 15, 4, true));
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 29, 9, null, 15, 4, true));
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 29, 10, null, 15, 4, true));
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 29, 11, null, 15, 4, true));
+            character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 36, 15)); // Wing of Storm +15
+            character.Inventory.Items.Add(this.CreateJewelOfBless(12));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(13));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(14));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(15));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(16));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(17));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(18));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(19));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(20));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(21));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(22));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(23));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(24));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(25));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(26));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(27));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(28));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(29));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(30));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(31));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(32));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(33));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(34));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(35));
+            character.Inventory.Items.Add(this.CreateHealthPotion(36, 3));
+            character.Inventory.Items.Add(this.CreateHealthPotion(37, 3));
+            character.Inventory.Items.Add(this.CreateHealthPotion(38, 3));
+            character.Inventory.Items.Add(this.CreateHealthPotion(39, 3));
+            character.Inventory.Items.Add(this.CreateManaPotion(40, 2));
+            character.Inventory.Items.Add(this.CreateManaPotion(41, 2));
+            character.Inventory.Items.Add(this.CreateManaPotion(42, 2));
+            character.Inventory.Items.Add(this.CreateAlcohol(43));
+            character.Inventory.Items.Add(this.CreateShieldPotion(44, 2));
+            character.Inventory.Items.Add(this.CreateShieldPotion(45, 2));
+            character.Inventory.Items.Add(this.CreateOrb(46, 7));
+            character.Inventory.Items.Add(this.CreateOrb(47, 12));
+            character.Inventory.Items.Add(this.CreateOrb(48, 14));
+            character.Inventory.Items.Add(this.CreateOrb(49, 19));
+            character.Inventory.Items.Add(this.CreateOrb(50, 44));
+        }
+
+        private void CreateTest300()
+        {
+            var loginName = "test300";
+
+            var account = this.context.CreateNew<Account>();
+            account.LoginName = loginName;
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
+            account.Vault = this.context.CreateNew<ItemStorage>();
+
+            var character = this.CreateCharacter(loginName, CharacterClassNumber.BladeKnight, 300);
+            account.Characters.Add(character);
+
+            character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
+            character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+            character.LevelUpPoints -= 600; // for the added strength and agility
+            character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
+            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 5, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Blade+13+16+L+ExcDmg
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 6, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Exc Scale Armor+13+16+L
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 6, 7, Stats.MaximumHealth, 13, 4, true)); // Exc Scale Helm+13+16+L
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 6, 9, Stats.MoneyAmountRate, 13, 4, true)); // Exc Scale Pants+13+16+L
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 6, 10, Stats.MaximumMana, 13, 4, true)); // Exc Scale Gloves+13+16+L
+            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 6, 11, Stats.DamageReflection, 13, 4, true)); // Exc Scale Boots+13+16+L
+            character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 5, 13)); // Dragon Wings +13
+            character.Inventory.Items.Add(this.CreateJewelOfBless(12));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(13));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(14));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(15));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(16));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(17));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(18));
+            character.Inventory.Items.Add(this.CreateJewelOfBless(19));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(20));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(21));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(22));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(23));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(24));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(25));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(26));
+            character.Inventory.Items.Add(this.CreateJewelOfSoul(27));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(28));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(29));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(30));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(31));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(32));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(33));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(34));
+            character.Inventory.Items.Add(this.CreateJewelOfLife(35));
+            character.Inventory.Items.Add(this.CreateHealthPotion(36, 3));
+            character.Inventory.Items.Add(this.CreateHealthPotion(37, 3));
+            character.Inventory.Items.Add(this.CreateHealthPotion(38, 3));
+            character.Inventory.Items.Add(this.CreateHealthPotion(39, 3));
+            character.Inventory.Items.Add(this.CreateManaPotion(40, 2));
+            character.Inventory.Items.Add(this.CreateManaPotion(41, 2));
+            character.Inventory.Items.Add(this.CreateManaPotion(42, 2));
+            character.Inventory.Items.Add(this.CreateAlcohol(43));
+            character.Inventory.Items.Add(this.CreateShieldPotion(44, 2));
+            character.Inventory.Items.Add(this.CreateShieldPotion(45, 2));
+            character.Inventory.Items.Add(this.CreateOrb(46, 7));
+            character.Inventory.Items.Add(this.CreateOrb(47, 12));
+            character.Inventory.Items.Add(this.CreateOrb(48, 14));
+            character.Inventory.Items.Add(this.CreateOrb(49, 19));
+            character.Inventory.Items.Add(this.CreateOrb(50, 44));
+        }
+
+        private Item CreateTestWing(byte itemSlot, byte number, byte level)
+        {
+            var item = this.context.CreateNew<Item>();
+            item.Definition = this.gameConfiguration.Items.First(def => def.Group == 12 && def.Number == number);
+            item.Durability = item.Definition.Durability;
+            item.ItemSlot = itemSlot;
+            item.Level = level;
+            var option = item.Definition.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Wing));
+            var optionLink = this.context.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = option.PossibleOptions.SelectRandom();
+            item.ItemOptions.Add(optionLink);
+            return item;
+        }
+
+        private Item CreateSetItem(byte itemSlot, byte setNumber, byte group, AttributeDefinition targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
         {
             var item = this.context.CreateNew<Item>();
             item.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == setNumber);
+            item.Level = level;
             item.Durability = item.Definition.Durability;
             item.ItemSlot = itemSlot;
+            if (targetExcellentOption != null)
+            {
+                var optionLink = this.context.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .Where(o => o.OptionType == ItemOptionTypes.Excellent)
+                    .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+                item.ItemOptions.Add(optionLink);
+            }
+
+            if (optionLevel > 0)
+            {
+                var optionLink = this.context.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .First(o => o.OptionType == ItemOptionTypes.Option);
+                optionLink.Level = optionLevel;
+                item.ItemOptions.Add(optionLink);
+            }
+
+            if (luck)
+            {
+                var optionLink = this.context.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .First(o => o.OptionType == ItemOptionTypes.Luck);
+                item.ItemOptions.Add(optionLink);
+            }
+
             return item;
+        }
+
+        private Item CreateWeapon(byte itemSlot, byte group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition targetExcellentOption = null)
+        {
+            var weapon = this.context.CreateNew<Item>();
+            weapon.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == number);
+            weapon.Durability = weapon.Definition?.Durability ?? 0;
+            weapon.ItemSlot = itemSlot;
+            weapon.Level = level;
+            weapon.HasSkill = skill;
+            if (targetExcellentOption != null)
+            {
+                var optionLink = this.context.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .Where(o => o.OptionType == ItemOptionTypes.Excellent)
+                    .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+                weapon.ItemOptions.Add(optionLink);
+            }
+
+            if (optionLevel > 0)
+            {
+                var optionLink = this.context.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .First(o => o.OptionType == ItemOptionTypes.Option);
+                optionLink.Level = optionLevel;
+                weapon.ItemOptions.Add(optionLink);
+            }
+
+            if (luck)
+            {
+                var optionLink = this.context.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .First(o => o.OptionType == ItemOptionTypes.Luck);
+                weapon.ItemOptions.Add(optionLink);
+            }
+
+            return weapon;
         }
 
         private Item CreateAlcohol(byte itemSlot)
@@ -211,6 +432,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private Item CreateShieldPotion(byte itemSlot, byte size)
         {
             return this.CreatePotion(itemSlot, (byte)(size + 35));
+        }
+
+        private Item CreateOrb(byte itemSlot, byte itemNumber)
+        {
+            var potion = this.context.CreateNew<Item>();
+            potion.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == 12 && def.Number == itemNumber);
+            potion.Durability = 1;
+            potion.ItemSlot = itemSlot;
+            return potion;
         }
 
         private Item CreatePotion(byte itemSlot, byte itemNumber)
@@ -245,6 +475,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             jewel.ItemSlot = itemSlot;
             return jewel;
         }
+
+
 
         private Item CreateSmallAxe(byte itemSlot)
         {
@@ -295,7 +527,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             var definition = this.context.CreateNew<ItemOptionDefinition>();
 
-            definition.Name = "Option";
+            definition.Name = attributeDefinition.Designation + " Option";
             definition.AddChance = 0.25f;
             definition.AddsRandomly = true;
             definition.MaximumOptionsPerItem = 1;
@@ -338,7 +570,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 persistentOptionType.Description = optionType.Description;
                 persistentOptionType.Id = optionType.Id;
                 persistentOptionType.Name = optionType.Name;
-                persistentOptionType.IsVisible = optionType.IsVisible;
                 this.gameConfiguration.ItemOptionTypes.Add(persistentOptionType);
             }
         }
@@ -642,6 +873,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.DefenseBase));
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumPhysBaseDmg));
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumWizBaseDmg));
+            this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumCurseBaseDmg));
 
             new CharacterClassInitialization(this.context, this.gameConfiguration).CreateCharacterClasses();
             new Skills(this.context, this.gameConfiguration).Initialize();
@@ -650,8 +882,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Wings(this.context, this.gameConfiguration).Initialize();
             new ExcellentOptions(this.context, this.gameConfiguration).Initialize();
             new Armors(this.context, this.gameConfiguration).Initialize();
-            var weaponHelper = new WeaponItemHelper(this.context, this.gameConfiguration);
-            weaponHelper.InitializeWeapons();
+            new Weapons(this.context, this.gameConfiguration).Initialize();
             new Potions(this.context, this.gameConfiguration).Initialize();
             new Jewels(this.context, this.gameConfiguration).Initialize();
             this.CreateNpcs();
