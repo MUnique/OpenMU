@@ -64,14 +64,13 @@
     <Compile Include="IInitializer.cs" />
     <Compile Include="InitializerBase.cs" />
     <Compile Include="Items\ExcellentOptions.cs" />
-    <Compile Include="Items\ItemHelperBase.cs" />
     <Compile Include="Items\Jewels.cs" />
     <Compile Include="Items\OptionExtensions.cs" />
     <Compile Include="Items\Orbs.cs" />
     <Compile Include="Items\Potions.cs" />
     <Compile Include="Items\Scrolls.cs" />
     <Compile Include="Items\Skills.cs" />
-    <Compile Include="Items\WeaponItemHelper.cs" />
+    <Compile Include="Items\Weapons.cs" />
     <Compile Include="Items\Wings.cs" />
     <Compile Include="Maps\Aida.cs" />
     <Compile Include="Maps\Arena.cs" />
