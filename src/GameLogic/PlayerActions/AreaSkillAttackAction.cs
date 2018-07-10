@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         private void PerformAutomaticHits(Player player, ushort extraTargetId, byte targetAreaCenterX, byte targetAreaCenterY, SkillEntry skillEntry, Skill skill)
         {
             bool extraTarget = extraTargetId == 0xFFFF;
-            var attackablesInRange = player.CurrentMap.GetAttackablesInRange(targetAreaCenterX, targetAreaCenterY, skill.Range / 2);
+            var attackablesInRange = player.CurrentMap.GetAttackablesInRange(targetAreaCenterX, targetAreaCenterY, skill.Range);
             if (!this.gameContext.Configuration.AreaSkillHitsPlayer)
             {
                 attackablesInRange = attackablesInRange.Where(a => !(a is Player));
