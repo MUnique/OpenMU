@@ -37,7 +37,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             // Check Requirements
             if (!player.CompliesRequirements(learnable))
             {
-                // TODO:Send unsuccessful packet
                 return false;
             }
 
