@@ -21,27 +21,26 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         public PowerUpDefinitionValue()
         {
-            this.ConstantValue = new SimpleElement();
-            this.ConstantValue.ValueChanged += (sender, args) =>
-            {
-                var element = sender as IElement;
-                if (element != null)
-                {
-                    this.Value = element.Value;
-                    this.AggregateType = element.AggregateType;
-                }
-            };
+            this.ConstantValue = new MUnique.OpenMU.AttributeSystem.SimpleElement();
         }
 
         /// <summary>
         /// Gets the value.
         /// </summary>
-        public float Value { get; private set; }
+        public float Value
+        {
+            get => this.ConstantValue.Value;
+            set => this.ConstantValue.Value = value;
+        }
 
         /// <summary>
         /// Gets the type of the aggregate.
         /// </summary>
-        public AggregateType AggregateType { get; private set; }
+        public AggregateType AggregateType
+        {
+            get => this.ConstantValue.AggregateType;
+            set => this.ConstantValue.AggregateType = value;
+        }
 
         /// <summary>
         /// Gets or sets the parent as boost identifier.
