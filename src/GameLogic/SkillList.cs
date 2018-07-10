@@ -80,12 +80,20 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public bool RemoveItemSkill(ushort skillId)
         {
-            if (this.availableSkills.TryGetValue(skillId, out SkillEntry skillEntry) && this.availableSkills.Remove(skillId))
+            this.availableSkills.TryGetValue(skillId, out SkillEntry skillEntry);
+            if (skillEntry == null)
             {
-                return this.itemSkills.Remove(skillEntry);
+                return false;
             }
 
-            return false;
+            // We need to take into account that we there might be multiple items equipped with the same skill
+            var skillRemoved = this.itemSkills.Remove(skillEntry);
+            if (skillRemoved && this.itemSkills.All(s => s.Skill.SkillID != skillId))
+            {
+                this.availableSkills.Remove(skillId);
+            }
+
+            return true;
         }
 
         /// <inheritdoc/>
@@ -96,11 +104,16 @@ namespace MUnique.OpenMU.GameLogic
 
         private void AddItemSkill(Skill skill)
         {
-            var skillEntry = new SkillEntry(); // Create by repository manager? Probably not, but I'm not sure...
+            var skillEntry = new SkillEntry();
             skillEntry.Skill = skill;
             skillEntry.Level = 0;
             this.itemSkills.Add(skillEntry);
-            this.availableSkills.Add(skill.SkillID.ToUnsigned(), skillEntry);
+
+            // Item skills are always level 0, so it doesn't matter which one is added to the dictionary.
+            if (!this.ContainsSkill((ushort)skill.SkillID))
+            {
+                this.availableSkills.Add(skill.SkillID.ToUnsigned(), skillEntry);
+            }
         }
 
         private void AddLearnedSkill(SkillEntry skill)
