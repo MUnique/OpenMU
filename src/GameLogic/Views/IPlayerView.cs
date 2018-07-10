@@ -252,8 +252,13 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// Adds the skill to the skill list.
         /// </summary>
         /// <param name="skill">The skill.</param>
-        /// <param name="skillIndex">Index of the skill.</param>
-        void AddSkill(Skill skill, int skillIndex);
+        void AddSkill(Skill skill);
+
+        /// <summary>
+        /// Removes the skill from the skill list.
+        /// </summary>
+        /// <param name="skill">The skill.</param>
+        void RemoveSkill(Skill skill);
 
         /// <summary>
         /// Shows the effects of drinking alcohol.

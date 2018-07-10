@@ -58,6 +58,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private readonly IAppearanceSerializer appearanceSerializer;
 
         /// <summary>
+        /// This contains again all available skills. However, we need this to maintain the indexes. It can happen that the list contains holes after a skill got removed!
+        /// </summary>
+        private IList<Skill> skillList;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="RemoteView"/> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -161,6 +166,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public IInventoryView InventoryView { get; }
 
+        private IList<Skill> SkillList => this.skillList ?? (this.skillList = new List<Skill>());
+
         /// <inheritdoc/>
         public void ShowCharacterList()
         {
@@ -234,10 +241,36 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
-        public void AddSkill(Skill skill, int skillIndex)
+        public void AddSkill(Skill skill)
         {
             byte[] packet = { 0xC1, 0x0A, 0xF3, 0x11, 0xFE, 0, 0, 0, 0, 0 };
-            packet[6] = (byte)skillIndex;
+            byte? skillIndex = null;
+            for (byte i = 0; i < this.SkillList.Count; i++)
+            {
+                if (this.SkillList[i] == null)
+                {
+                    skillIndex = i;
+                }
+            }
+
+            if (skillIndex == null)
+            {
+                this.SkillList.Add(skill);
+                skillIndex = (byte)(this.SkillList.Count - 1);
+            }
+
+            packet[6] = skillIndex.Value;
+            var unsignedSkillId = ShortExtensions.ToUnsigned(skill.SkillID);
+            packet[7] = unsignedSkillId.GetLowByte();
+            packet[8] = unsignedSkillId.GetHighByte();
+            this.connection.Send(packet);
+        }
+
+        /// <inheritdoc/>
+        public void RemoveSkill(Skill skill)
+        {
+            byte[] packet = { 0xC1, 0x0A, 0xF3, 0x11, 0xFF, 0, 0, 0, 0, 0 };
+            packet[6] = (byte)this.SkillList.IndexOf(skill);
             var unsignedSkillId = ShortExtensions.ToUnsigned(skill.SkillID);
             packet[7] = unsignedSkillId.GetLowByte();
             packet[8] = unsignedSkillId.GetHighByte();
@@ -540,6 +573,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void UpdateSkillList()
         {
+            this.SkillList.Clear();
             byte[] packet = new byte[6 + (4 * this.player.SkillList.SkillCount)];
             packet[0] = 0xC1;
             packet[1] = (byte)packet.Length;
@@ -552,6 +586,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 int offset = i * 4;
                 packet[6 + offset] = i;
+                this.SkillList.Add(skillEntry.Skill);
                 var unsignedSkillId = ShortExtensions.ToUnsigned(skillEntry.Skill.SkillID);
                 packet[7 + offset] = unsignedSkillId.GetLowByte();
                 packet[8 + offset] = unsignedSkillId.GetHighByte();

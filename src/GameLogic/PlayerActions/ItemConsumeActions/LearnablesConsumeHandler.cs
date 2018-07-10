@@ -38,9 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            var skillIndex = player.SkillList.SkillCount;
             player.SkillList.AddLearnedSkill(learnable.Skill);
-            player.PlayerView.AddSkill(learnable.Skill, skillIndex);
             item.Durability--;
             player.Inventory.RemoveItem(item);
             player.PersistenceContext.Delete(item);

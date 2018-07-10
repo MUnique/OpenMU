@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public IEnumerable<SkillEntry> Skills => this.learnedSkills;
+        public IEnumerable<SkillEntry> Skills => this.availableSkills.Values;
 
         /// <inheritdoc/>
         public byte SkillCount => (byte)this.availableSkills.Count;
@@ -90,6 +90,7 @@ namespace MUnique.OpenMU.GameLogic
             var skillRemoved = this.itemSkills.Remove(skillEntry);
             if (skillRemoved && this.itemSkills.All(s => s.Skill.SkillID != skillId))
             {
+                this.player.PlayerView.RemoveSkill(skillEntry.Skill);
                 this.availableSkills.Remove(skillId);
             }
 
@@ -113,6 +114,7 @@ namespace MUnique.OpenMU.GameLogic
             if (!this.ContainsSkill((ushort)skill.SkillID))
             {
                 this.availableSkills.Add(skill.SkillID.ToUnsigned(), skillEntry);
+                this.player.PlayerView.AddSkill(skill);
             }
         }
 
@@ -120,6 +122,8 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.availableSkills.Add(skill.Skill.SkillID.ToUnsigned(), skill);
             this.learnedSkills.Add(skill);
+
+            this.player.PlayerView.AddSkill(skill.Skill);
         }
 
         private void CreatePowerUpWrappers(SkillEntry skillEntry)
