@@ -338,6 +338,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 persistentOptionType.Description = optionType.Description;
                 persistentOptionType.Id = optionType.Id;
                 persistentOptionType.Name = optionType.Name;
+                persistentOptionType.IsVisible = optionType.IsVisible;
                 this.gameConfiguration.ItemOptionTypes.Add(persistentOptionType);
             }
         }
