@@ -45,16 +45,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (learnable != null && learnable.Skill != null)
-            {
-                var skillIndex = player.SkillList.SkillCount;
-                player.SkillList.AddLearnedSkill(learnable.Skill);
-                player.PlayerView.AddSkill(learnable.Skill, skillIndex);
-                player.Inventory.RemoveItem(item);
-                return true;
-            }
-
-            return false;
+            var skillIndex = player.SkillList.SkillCount;
+            player.SkillList.AddLearnedSkill(learnable.Skill);
+            player.PlayerView.AddSkill(learnable.Skill, skillIndex);
+            item.Durability--;
+            player.Inventory.RemoveItem(item);
+            player.PersistenceContext.Delete(item);
+            return true;
         }
     }
 }
