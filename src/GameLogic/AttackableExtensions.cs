@@ -87,7 +87,8 @@ namespace MUnique.OpenMU.GameLogic
                 attributes |= DamageAttributes.Double;
             }
 
-            return defender.GetHitInfo((uint)dmg, attributes, attacker);
+            var minimumDamage = attacker.Attributes[Stats.Level] / 10;
+            return defender.GetHitInfo(Math.Max((uint)dmg, (uint)minimumDamage), attributes, attacker);
         }
 
         /// <summary>
