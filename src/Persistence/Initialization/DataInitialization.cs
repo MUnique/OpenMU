@@ -729,7 +729,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             foreach (var map in maps)
             {
-                map.Initialize(this.context, this.gameConfiguration);
+                this.gameConfiguration.Maps.Add(map.Initialize(this.context, this.gameConfiguration));
             }
 
             var mapNames = new List<string>
