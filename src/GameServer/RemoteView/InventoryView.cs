@@ -157,7 +157,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ItemSoldToNpc(bool success)
         {
             var message = new byte[] { 0xC3, 0x08, 0x33, success ? (byte)1 : (byte)0, 0, 0, 0, 0 };
-            message.SetIntegerSmallEndian((uint)this.player.Money, 4);
+            message.SetIntegerBigEndian((uint)this.player.Money, 4);
             this.connection.Send(message);
         }
 
