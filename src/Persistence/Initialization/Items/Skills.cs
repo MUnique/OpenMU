@@ -424,7 +424,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (levelRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.Level;
+                requirement.Attribute = Stats.Level.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = levelRequirement;
                 skill.Requirements.Add(requirement);
             }
@@ -432,7 +432,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (leadershipRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalLeadership;
+                requirement.Attribute = Stats.TotalLeadership.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = leadershipRequirement;
                 skill.Requirements.Add(requirement);
             }
@@ -440,7 +440,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (energyRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalEnergy;
+                requirement.Attribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = energyRequirement;
                 skill.Requirements.Add(requirement);
             }
@@ -456,7 +456,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (manaConsumption > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.CurrentMana;
+                requirement.Attribute = Stats.CurrentMana.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = manaConsumption;
                 skill.ConsumeRequirements.Add(requirement);
             }
@@ -464,7 +464,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (abilityConsumption > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.CurrentAbility;
+                requirement.Attribute = Stats.CurrentAbility.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = manaConsumption;
                 skill.ConsumeRequirements.Add(requirement);
             }

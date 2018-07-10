@@ -134,6 +134,7 @@
     <Compile Include="MemoryRepository{TValue}.cs" />
     <Compile Include="NpcInitialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatsExtensions.cs" />
     <Compile Include="Terrains.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

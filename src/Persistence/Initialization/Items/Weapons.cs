@@ -328,37 +328,37 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (levelRequirement > 0)
             {
                 item.Requirements.Add(
-                    this.CreateAttributeRequirement(this.GameConfiguration.Attributes.First(a => a == Stats.Level), levelRequirement));
+                    this.CreateAttributeRequirement(Stats.Level, levelRequirement));
             }
 
             if (strengthRequirement > 0)
             {
                 item.Requirements.Add(
-                    this.CreateAttributeRequirement(this.GameConfiguration.Attributes.First(a => a == Stats.TotalStrength), strengthRequirement));
+                    this.CreateAttributeRequirement(Stats.TotalStrength, strengthRequirement));
             }
 
             if (agilityRequirement > 0)
             {
                 item.Requirements.Add(
-                    this.CreateAttributeRequirement(this.GameConfiguration.Attributes.First(a => a == Stats.TotalAgility), agilityRequirement));
+                    this.CreateAttributeRequirement(Stats.TotalAgility, agilityRequirement));
             }
 
             if (energyRequirement > 0)
             {
                 item.Requirements.Add(
-                    this.CreateAttributeRequirement(this.GameConfiguration.Attributes.First(a => a == Stats.TotalEnergy), energyRequirement));
+                    this.CreateAttributeRequirement(Stats.TotalEnergy, energyRequirement));
             }
 
             if (vitalityRequirement > 0)
             {
                 item.Requirements.Add(
-                    this.CreateAttributeRequirement(this.GameConfiguration.Attributes.First(a => a == Stats.TotalVitality), vitalityRequirement));
+                    this.CreateAttributeRequirement(Stats.TotalVitality, vitalityRequirement));
             }
 
             if (leadershipRequirement > 0)
             {
                 item.Requirements.Add(
-                    this.CreateAttributeRequirement(this.GameConfiguration.Attributes.First(a => a == Stats.TotalLeadership), leadershipRequirement));
+                    this.CreateAttributeRequirement(Stats.TotalLeadership, leadershipRequirement));
             }
 
             item.PossibleItemOptions.Add(this.Luck);
@@ -382,7 +382,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                     item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.CurseAttackOptionsName));
 
                     var staffRisePowerUpMinDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                    staffRisePowerUpMinDmg.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MinimumWizBaseDmg);
+                    staffRisePowerUpMinDmg.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(this.GameConfiguration);
                     staffRisePowerUpMinDmg.BaseValue = 1f + (staffRise / 100f);
                     this.staffRiseBonusPerLevel.ForEach(staffRisePowerUpMinDmg.BonusPerLevel.Add);
                     //// TODO: staffRisePowerUpMinDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
@@ -390,7 +390,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                     item.BasePowerUpAttributes.Add(staffRisePowerUpMinDmg);
 
                     var staffRisePowerUpMaxDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                    staffRisePowerUpMaxDmg.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MaximumWizBaseDmg);
+                    staffRisePowerUpMaxDmg.TargetAttribute = Stats.MaximumWizBaseDmg.GetPersistent(this.GameConfiguration);
                     staffRisePowerUpMaxDmg.BaseValue = 1f + (staffRise / 100f);
                     this.staffRiseBonusPerLevel.ForEach(staffRisePowerUpMaxDmg.BonusPerLevel.Add);
                     //// TODO: staffRisePowerUpMaxDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
@@ -409,7 +409,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         protected AttributeRequirement CreateAttributeRequirement(AttributeDefinition attributeDefinition, int minimumValue)
         {
             var requirement = this.Context.CreateNew<AttributeRequirement>();
-            requirement.Attribute = attributeDefinition;
+            requirement.Attribute = attributeDefinition.GetPersistent(this.GameConfiguration);
             requirement.MinimumValue = minimumValue;
             return requirement;
         }

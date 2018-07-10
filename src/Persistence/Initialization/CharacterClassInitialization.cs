@@ -537,19 +537,19 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private StatAttributeDefinition CreateStatAttributeDefinition(AttributeDefinition attribute, int value, bool increasableByPlayer)
         {
-            var definition = this.context.CreateNew<StatAttributeDefinition>(this.gameConfiguration.Attributes.First(a => a == attribute), value, increasableByPlayer);
+            var definition = this.context.CreateNew<StatAttributeDefinition>(attribute.GetPersistent(this.gameConfiguration), value, increasableByPlayer);
             return definition;
         }
 
         private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply)
         {
-            var relationship = this.context.CreateNew<AttributeRelationship>(this.gameConfiguration.Attributes.FirstOrDefault(a => a == targetAttribute) ?? targetAttribute, multiplier, this.gameConfiguration.Attributes.FirstOrDefault(a => a == sourceAttribute) ?? sourceAttribute, inputOperator);
+            var relationship = this.context.CreateNew<AttributeRelationship>(targetAttribute.GetPersistent(this.gameConfiguration) ?? targetAttribute, multiplier, sourceAttribute.GetPersistent(this.gameConfiguration) ?? sourceAttribute, inputOperator);
             return relationship;
         }
 
         private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute)
         {
-            return this.context.CreateNew<ConstValueAttribute>(value, this.gameConfiguration.Attributes.First(a => a == attribute));
+            return this.context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(this.gameConfiguration));
         }
     }
 }

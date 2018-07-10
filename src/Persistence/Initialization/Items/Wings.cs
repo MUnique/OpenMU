@@ -163,7 +163,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (damageAbsorbInitial > 0)
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUp.TargetAttribute = Stats.DamageReceiveDecrement;
+                powerUp.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = damageAbsorbInitial;
                 this.damageAbsorbPerLevel.ForEach(powerUp.BonusPerLevel.Add);
                 wing.BasePowerUpAttributes.Add(powerUp);
@@ -172,7 +172,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (damageIncreaseInitial > 0)
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUp.TargetAttribute = Stats.AttackDamageIncrease;
+                powerUp.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = damageIncreaseInitial;
                 damageIncreasePerLevel?.ForEach(powerUp.BonusPerLevel.Add);
                 wing.BasePowerUpAttributes.Add(powerUp);
@@ -227,7 +227,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (levelRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = this.GameConfiguration.Attributes.First(a => a == Stats.Level);
+                requirement.Attribute = Stats.Level.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = levelRequirement;
                 //// TODO: each level increases the requirement by 5 Levels
                 wing.Requirements.Add(requirement);
@@ -236,7 +236,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (defense > 0)
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.DefenseBase);
+                powerUp.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = defense;
                 wing.BasePowerUpAttributes.Add(powerUp);
             }
@@ -371,7 +371,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private PowerUpDefinition CreatePowerUpDefinition(AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
         {
             var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-            powerUpDefinition.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
+            powerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
             powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUpDefinition.Boost.ConstantValue.Value = value;
             powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;

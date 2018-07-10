@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (levelRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.Level;
+                requirement.Attribute = Stats.Level.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = levelRequirement;
                 orb.Requirements.Add(requirement);
             }
@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (energyRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalEnergy;
+                requirement.Attribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = energyRequirement;
                 orb.Requirements.Add(requirement);
             }
@@ -93,7 +93,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (strengthRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalStrength;
+                requirement.Attribute = Stats.TotalStrength.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = strengthRequirement;
                 orb.Requirements.Add(requirement);
             }
@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (agilityRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalAgility;
+                requirement.Attribute = Stats.TotalAgility.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = agilityRequirement;
                 orb.Requirements.Add(requirement);
             }
@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (leadershipRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalLeadership;
+                requirement.Attribute = Stats.TotalLeadership.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = leadershipRequirement;
                 orb.Requirements.Add(requirement);
             }

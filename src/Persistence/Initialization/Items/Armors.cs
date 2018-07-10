@@ -519,7 +519,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             //// TODO: each level increases some requirements
-            var persistentAttribute = this.GameConfiguration.Attributes.First(a => a == attribute);
+            var persistentAttribute = attribute.GetPersistent(this.GameConfiguration);
             var requirement = this.CreateAttributeRequirement(persistentAttribute, requiredValue);
             armor.Requirements.Add(requirement);
         }
