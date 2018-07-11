@@ -165,6 +165,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Y - 1), Math.Min(0xFF, this.Y + 2));
             if (this.CurrentMap.Terrain.AIgrid[randx, randy] == 1)
             {
+                this.WalkTarget = new Point(randx, randy);
                 this.Move(randx, randy, MoveType.Walk);
             }
         }
