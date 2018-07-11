@@ -164,7 +164,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUp.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
-                powerUp.BaseValue = damageAbsorbInitial;
+                powerUp.BaseValue = 0f - (damageAbsorbInitial / 100f);
                 this.damageAbsorbPerLevel.ForEach(powerUp.BonusPerLevel.Add);
                 wing.BasePowerUpAttributes.Add(powerUp);
             }
@@ -260,13 +260,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 var absorb = this.Context.CreateNew<LevelBonus>();
                 absorb.Level = level;
-                absorb.AdditionalValue = 2 * level;
+                absorb.AdditionalValue = 0f - (0.02f * level);
                 this.damageIncreasePerLevelFirstWings.Add(absorb);
                 this.damageIncreasePerLevelThirdWings.Add(absorb);
 
                 var absorbSecondWing = this.Context.CreateNew<LevelBonus>();
                 absorbSecondWing.Level = level;
-                absorbSecondWing.AdditionalValue = level;
+                absorbSecondWing.AdditionalValue = 0f - (0.01f * level);
                 this.damageIncreasePerLevelSecondWings.Add(absorbSecondWing);
             }
         }
@@ -279,7 +279,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 var absorb = this.Context.CreateNew<LevelBonus>();
                 absorb.Level = level;
-                absorb.AdditionalValue = 2 * level;
+                absorb.AdditionalValue = 0f - (0.02f * level);
                 this.damageAbsorbPerLevel.Add(absorb);
             }
         }
