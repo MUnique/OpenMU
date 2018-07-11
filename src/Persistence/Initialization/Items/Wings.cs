@@ -173,7 +173,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUp.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
-                powerUp.BaseValue = damageIncreaseInitial;
+                powerUp.BaseValue = damageIncreaseInitial / 100f;
                 damageIncreasePerLevel?.ForEach(powerUp.BonusPerLevel.Add);
                 wing.BasePowerUpAttributes.Add(powerUp);
             }
