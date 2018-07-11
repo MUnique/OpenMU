@@ -93,6 +93,20 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             return parentAlias[0] > 'a' && this.referencableTypes.Contains(targetType);
         }
 
+        /// <summary>
+        /// Gets the navigations of the entity type.
+        /// </summary>
+        /// <param name="entityType">Type of the entity.</param>
+        /// <returns>The navigations of the entity type</returns>
+        /// <remarks>
+        /// Can be overwritten to apply sorting.
+        /// TODO: Can sorting based on dependencies be done automatically?
+        /// </remarks>
+        protected virtual IEnumerable<INavigation> GetNavigations(IEntityType entityType)
+        {
+            return entityType.GetNavigations();
+        }
+
         private IEntityType GetNavigationType(INavigation navigation)
         {
             if (navigation.IsCollection())
@@ -121,7 +135,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 return;
             }
 
-            var navigations = entityType.GetNavigations();
+            var navigations = this.GetNavigations(entityType);
 
             foreach (var navigation in navigations)
             {

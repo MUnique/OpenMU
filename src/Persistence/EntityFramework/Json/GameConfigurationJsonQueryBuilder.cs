@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -28,6 +30,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             return base.SelectReferences(parentAlias, navigation)
                 || navigation.PropertyInfo == SafezoneMapProperty
                 || navigation.PropertyInfo == TargetGateProperty;
+        }
+
+        /// <inheritdoc/>
+        protected override IEnumerable<INavigation> GetNavigations(IEntityType entityType)
+        {
+            if (entityType.ClrType != typeof(GameConfiguration))
+            {
+                return base.GetNavigations(entityType);
+            }
+
+            var navigations = base.GetNavigations(entityType).ToList();
+
+            // We move the maps with their spawn points to the end because they depend on all other data
+            var mapsProperty = navigations.First(nav => nav.Name == "RawMaps");
+            navigations.Remove(mapsProperty);
+            navigations.Add(mapsProperty);
+            return navigations;
         }
     }
 }
