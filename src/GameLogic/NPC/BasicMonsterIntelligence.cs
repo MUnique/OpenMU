@@ -51,7 +51,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public void RegisterHit(IAttackable attacker)
         {
-            // this ai does not care if it gets hit.
+            if (this.currentTarget == null)
+            {
+                this.currentTarget = attacker;
+            }
         }
 
         private IAttackable SearchNextTarget()
