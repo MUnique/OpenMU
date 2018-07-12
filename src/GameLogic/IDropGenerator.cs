@@ -139,7 +139,8 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     if (this.randomizer.NextRandomBool(option.AddChance))
                     {
-                        var newOption = option.PossibleOptions.SelectRandom(this.randomizer);
+                        var remainingOptions = option.PossibleOptions.Where(possibleOption => item.ItemOptions.All(link => link.ItemOption != possibleOption));
+                        var newOption = remainingOptions.SelectRandom(this.randomizer);
                         var itemOptionLink = new ItemOptionLink();
                         itemOptionLink.ItemOption = newOption;
                         itemOptionLink.Level = 1;
