@@ -255,6 +255,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.Inventory.Items.Add(this.CreateOrb(48, 14));
             character.Inventory.Items.Add(this.CreateOrb(49, 19));
             character.Inventory.Items.Add(this.CreateOrb(50, 44));
+            character.Inventory.Items.Add(this.CreateFullOptionJewellery(52, 20)); // Wizards Ring
+            character.Inventory.Items.Add(this.CreateFullOptionJewellery(53, 8)); // Ring of Ice
+            character.Inventory.Items.Add(this.CreateFullOptionJewellery(54, 9)); // Ring of Poison
+            character.Inventory.Items.Add(this.CreateFullOptionJewellery(55, 12)); // Pendant of Lightning
         }
 
         private void CreateTest300()
@@ -321,6 +325,27 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.Inventory.Items.Add(this.CreateOrb(48, 14));
             character.Inventory.Items.Add(this.CreateOrb(49, 19));
             character.Inventory.Items.Add(this.CreateOrb(50, 44));
+
+            character.Inventory.Items.Add(this.CreateFullOptionJewellery(52, 20)); // Wizards Ring
+            character.Inventory.Items.Add(this.CreateFullOptionJewellery(53, 8)); // Ring of Ice
+            character.Inventory.Items.Add(this.CreateFullOptionJewellery(54, 9)); // Ring of Poison
+            character.Inventory.Items.Add(this.CreateFullOptionJewellery(55, 12)); // Pendant of Lightning
+        }
+
+        private Item CreateFullOptionJewellery(byte itemSlot, int number)
+        {
+            var item = this.context.CreateNew<Item>();
+            item.Definition = this.gameConfiguration.Items.First(def => def.Group == 13 && def.Number == number);
+            item.Durability = item.Definition.Durability;
+            item.ItemSlot = itemSlot;
+            foreach (var possibleOption in item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions))
+            {
+                var optionLink = this.context.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = possibleOption;
+                item.ItemOptions.Add(optionLink);
+            }
+
+            return item;
         }
 
         private Item CreateTestWing(byte itemSlot, byte number, byte level)
@@ -891,6 +916,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Weapons(this.context, this.gameConfiguration).Initialize();
             new Potions(this.context, this.gameConfiguration).Initialize();
             new Jewels(this.context, this.gameConfiguration).Initialize();
+            new Jewellery(this.context, this.gameConfiguration).Initialize();
             this.CreateNpcs();
             this.CreateGameMapDefinitions();
             this.AssignCharacterClassHomeMaps();
@@ -926,3 +952,4 @@ namespace MUnique.OpenMU.Persistence.Initialization
         }
     }
 }
+

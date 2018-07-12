@@ -64,6 +64,7 @@
     <Compile Include="IInitializer.cs" />
     <Compile Include="InitializerBase.cs" />
     <Compile Include="Items\ExcellentOptions.cs" />
+    <Compile Include="Items\Jewellery.cs" />
     <Compile Include="Items\Jewels.cs" />
     <Compile Include="Items\OptionExtensions.cs" />
     <Compile Include="Items\Orbs.cs" />

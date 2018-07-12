@@ -53,5 +53,35 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         {
             return gameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumWizBaseDmg));
         }
+
+        /// <summary>
+        /// Gets the excellent defense options.
+        /// </summary>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        /// <returns>The excellent defense options.</returns>
+        public static ItemOptionDefinition ExcellentDefenseOptions(this GameConfiguration gameConfiguration)
+        {
+            return gameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.DefenseOptionsName);
+        }
+
+        /// <summary>
+        /// Gets the excellent physical attack options.
+        /// </summary>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        /// <returns>The excellent physical attack options.</returns>
+        public static ItemOptionDefinition ExcellentPhysicalAttackOptions(this GameConfiguration gameConfiguration)
+        {
+            return gameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName);
+        }
+
+        /// <summary>
+        /// Gets the excellent wizardry attack options.
+        /// </summary>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        /// <returns>The excellent wizardry attack options.</returns>
+        public static ItemOptionDefinition ExcellentWizardryAttackOptions(this GameConfiguration gameConfiguration)
+        {
+            return gameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName);
+        }
     }
 }
