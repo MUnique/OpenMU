@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             }
 
             Item item = player.Inventory.GetItem(itemSlot);
-            if (item == null || item.Durability == 0)
+            if (item == null)
             {
                 return false;
             }
@@ -39,7 +39,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             }
 
             player.SkillList.AddLearnedSkill(learnable.Skill);
-            item.Durability--;
             player.Inventory.RemoveItem(item);
             player.PersistenceContext.Delete(item);
             return true;
