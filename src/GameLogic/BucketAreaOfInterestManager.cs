@@ -30,12 +30,14 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public void AddObject(ILocateable obj)
         {
-            this.Map[obj.X, obj.Y].Add(obj);
+            var newBucket = this.Map[obj.X, obj.Y];
             if (obj is IHasBucketInformation bucketInfo)
             {
                 bucketInfo.OldBucket = null;
-                bucketInfo.NewBucket = this.Map[obj.X, obj.Y];
+                bucketInfo.NewBucket = newBucket;
             }
+
+            newBucket.Add(obj);
 
             if (obj is IBucketMapObserver observingPlayer)
             {
