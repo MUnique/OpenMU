@@ -159,8 +159,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The buckets in the specified range of the specified coordinate.</returns>
         public IEnumerable<Bucket<T>> GetBucketsInRange(int x, int y, int range, RangeType rangeType)
         {
-            int maxX = Math.Min(x + range, this.SideLength * this.BucketSideLength) / this.BucketSideLength;
-            int maxY = Math.Min(y + range, this.SideLength * this.BucketSideLength) / this.BucketSideLength;
+            int maxX = Math.Min(x + range, (this.SideLength - 1) * this.BucketSideLength) / this.BucketSideLength;
+            int maxY = Math.Min(y + range, (this.SideLength - 1) * this.BucketSideLength) / this.BucketSideLength;
             int minX = Math.Max(x - range, 0) / this.BucketSideLength;
             int minY = Math.Max(y - range, 0) / this.BucketSideLength;
             for (int i = minX; maxX >= i; ++i)
