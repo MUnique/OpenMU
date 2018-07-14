@@ -463,7 +463,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             var potion = this.context.CreateNew<Item>();
             potion.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == 12 && def.Number == itemNumber);
-            potion.Durability = 1;
             potion.ItemSlot = itemSlot;
             return potion;
         }
