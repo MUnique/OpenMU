@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 230;
                 def.Designation = "Alex";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 231;
                 def.Designation = "Thompson the Merchant";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -143,7 +143,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 242;
                 def.Designation = "Elf Lala";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -160,7 +160,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 244;
                 def.Designation = "Lumen The Barmaid";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -192,7 +192,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 248;
                 def.Designation = "Wandering Merchant";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreateWanderingMerchant();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -283,7 +283,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 376;
                 def.Designation = "Pamela the Supplier";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -292,7 +292,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 377;
                 def.Designation = "Angela the Supplier";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -562,7 +562,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 415;
                 def.Designation = "Silvia";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -571,7 +571,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 416;
                 def.Designation = "Rhea";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -579,7 +579,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 417;
                 def.Designation = "Marce";
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 def.NpcWindow = NpcWindow.Merchant;
                 this.gameConfiguration.Monsters.Add(def);
             }
@@ -857,7 +857,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 577;
                 def.Designation = "Leina the General Goods Merchant";
-                def.MerchantStore = this.CreateMerchantStoreWithPotions();
+                def.MerchantStore = this.CreatePotionGirl();
                 def.NpcWindow = NpcWindow.Merchant;
                 this.gameConfiguration.Monsters.Add(def);
             }
@@ -1147,95 +1147,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             {
                 merchantStore.Items.Add(item);
             }
-
-            return merchantStore;
-        }
-
-        private ItemStorage CreateMerchantStoreWithPotions()
-        {
-            var allPotions = this.gameConfiguration.Items.Where(item => item.Group == 14).ToList();
-            var merchantStore = this.context.CreateNew<ItemStorage>();
-
-            var apple = this.context.CreateNew<Item>();
-            apple.Definition = allPotions.First(def => def.Number == 0);
-            merchantStore.Items.Add(apple);
-
-            var smallHealingPotion = this.context.CreateNew<Item>();
-            smallHealingPotion.Definition = allPotions.First(def => def.Number == 1);
-            smallHealingPotion.ItemSlot = 1;
-            merchantStore.Items.Add(smallHealingPotion);
-
-            var mediumHealingPotion = this.context.CreateNew<Item>();
-            mediumHealingPotion.Definition = allPotions.First(def => def.Number == 2);
-            mediumHealingPotion.ItemSlot = 2;
-            merchantStore.Items.Add(mediumHealingPotion);
-
-            var largeHealingPotion = this.context.CreateNew<Item>();
-            largeHealingPotion.Definition = allPotions.First(def => def.Number == 3);
-            largeHealingPotion.ItemSlot = 3;
-            merchantStore.Items.Add(largeHealingPotion);
-
-            var smallManaPotion = this.context.CreateNew<Item>();
-            smallManaPotion.Definition = allPotions.First(def => def.Number == 4);
-            smallManaPotion.ItemSlot = 4;
-            merchantStore.Items.Add(smallManaPotion);
-
-            var mediumManaPotion = this.context.CreateNew<Item>();
-            mediumManaPotion.Definition = allPotions.First(def => def.Number == 5);
-            mediumManaPotion.ItemSlot = 5;
-            merchantStore.Items.Add(mediumManaPotion);
-
-            var largeManaPotion = this.context.CreateNew<Item>();
-            largeManaPotion.Definition = allPotions.First(def => def.Number == 6);
-            largeManaPotion.ItemSlot = 6;
-            merchantStore.Items.Add(largeManaPotion);
-
-            var ale = this.context.CreateNew<Item>();
-            ale.Definition = allPotions.First(def => def.Number == 9);
-            ale.ItemSlot = 7;
-            merchantStore.Items.Add(ale);
-
-            var applePlus1 = this.context.CreateNew<Item>();
-            applePlus1.Definition = allPotions.First(def => def.Number == 0);
-            applePlus1.ItemSlot = 8;
-            applePlus1.Level = 1;
-            merchantStore.Items.Add(applePlus1);
-
-            var smallHealingPotionPlus1 = this.context.CreateNew<Item>();
-            smallHealingPotionPlus1.Definition = allPotions.First(def => def.Number == 1);
-            smallHealingPotionPlus1.ItemSlot = 9;
-            smallHealingPotionPlus1.Level = 1;
-            merchantStore.Items.Add(smallHealingPotionPlus1);
-
-            var mediumHealingPotionPlus1 = this.context.CreateNew<Item>();
-            mediumHealingPotionPlus1.Definition = allPotions.First(def => def.Number == 2);
-            mediumHealingPotionPlus1.ItemSlot = 10;
-            mediumHealingPotionPlus1.Level = 1;
-            merchantStore.Items.Add(mediumHealingPotionPlus1);
-
-            var largeHealingPotionPlus1 = this.context.CreateNew<Item>();
-            largeHealingPotionPlus1.Definition = allPotions.First(def => def.Number == 3);
-            largeHealingPotionPlus1.ItemSlot = 11;
-            largeHealingPotionPlus1.Level = 1;
-            merchantStore.Items.Add(largeHealingPotionPlus1);
-
-            var smallManaPotionPlus1 = this.context.CreateNew<Item>();
-            smallManaPotionPlus1.Definition = allPotions.First(def => def.Number == 4);
-            smallManaPotionPlus1.ItemSlot = 12;
-            smallManaPotionPlus1.Level = 1;
-            merchantStore.Items.Add(smallManaPotionPlus1);
-
-            var mediumManaPotionPlus1 = this.context.CreateNew<Item>();
-            mediumManaPotionPlus1.Definition = allPotions.First(def => def.Number == 5);
-            mediumManaPotionPlus1.ItemSlot = 13;
-            mediumManaPotionPlus1.Level = 1;
-            merchantStore.Items.Add(mediumManaPotionPlus1);
-
-            var largeManaPotionPlus1 = this.context.CreateNew<Item>();
-            largeManaPotionPlus1.Definition = allPotions.First(def => def.Number == 6);
-            largeManaPotionPlus1.ItemSlot = 14;
-            largeManaPotionPlus1.Level = 1;
-            merchantStore.Items.Add(largeManaPotionPlus1);
 
             return merchantStore;
         }
