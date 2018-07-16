@@ -1,6 +1,6 @@
 # OpenMU Project #
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Build Status](https://travis-ci.org/MUnique/OpenMU.svg?branch=master)](https://travis-ci.org/MUnique/OpenMU)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Build Status](https://travis-ci.org/MUnique/OpenMU.svg?branch=master)](https://travis-ci.org/MUnique/OpenMU) [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/OpenMU-Project/Lobby)
 
 Welcome to the OpenMU project. 
 
