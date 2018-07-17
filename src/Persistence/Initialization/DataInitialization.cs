@@ -916,6 +916,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Potions(this.context, this.gameConfiguration).Initialize();
             new Jewels(this.context, this.gameConfiguration).Initialize();
             new Jewellery(this.context, this.gameConfiguration).Initialize();
+            ItemBuilder.Initialize(this.context, this.gameConfiguration);
             this.CreateNpcs();
             this.CreateGameMapDefinitions();
             this.AssignCharacterClassHomeMaps();
