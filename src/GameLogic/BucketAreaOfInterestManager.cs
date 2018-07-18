@@ -186,8 +186,13 @@ namespace MUnique.OpenMU.GameLogic
                     oldBucket = this.Map[oldX, oldY];
                 }
 
-                obj.X = newX;
-                obj.Y = newY;
+                // only set x and y of the object if it's not walking - the Walker sets these coordinates!
+                if (moveType != MoveType.Walk)
+                {
+                    obj.X = newX;
+                    obj.Y = newY;
+                }
+
                 oldBucket?.Remove(obj);
                 newBucket.Add(obj);
             }
