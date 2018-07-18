@@ -54,9 +54,10 @@ namespace MUnique.OpenMU.GameLogic
         {
             if (obj is IHasBucketInformation bucketInfo)
             {
+                // we remove the object from all known buckets and set old/new bucket to null
                 bucketInfo.NewBucket?.Remove(obj);
                 bucketInfo.OldBucket?.Remove(obj);
-                bucketInfo.OldBucket = bucketInfo.NewBucket;
+                bucketInfo.OldBucket = null;
                 bucketInfo.NewBucket = null;
             }
             else
