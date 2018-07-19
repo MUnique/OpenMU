@@ -361,7 +361,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             defenseBonus.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             defenseBonus.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
             defenseBonus.PowerUpDefinition.Boost.ConstantValue.Value = bonus;
-            defenseBonus.PowerUpDefinition.TargetAttribute = Stats.DefenseBase;
+            defenseBonus.PowerUpDefinition.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
             return defenseBonus;
         }
 
@@ -390,7 +390,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             defenseRateBonus.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             defenseRateBonus.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
             defenseRateBonus.PowerUpDefinition.Boost.ConstantValue.Value = 1.1f;
-            defenseRateBonus.PowerUpDefinition.TargetAttribute = Stats.DefenseRatePvm;
+            defenseRateBonus.PowerUpDefinition.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
 
             var defenseBonus = new Dictionary<int, ItemOption>
             {
@@ -433,7 +433,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (defense > 0)
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUp.TargetAttribute = Stats.DefenseBase;
+                powerUp.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = defense;
                 this.shieldDefenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
                 shield.BasePowerUpAttributes.Add(powerUp);
@@ -442,7 +442,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (defenseRate > 0)
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUp.TargetAttribute = Stats.DefenseRatePvm;
+                powerUp.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = defenseRate;
                 this.defenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
                 shield.BasePowerUpAttributes.Add(powerUp);
@@ -472,7 +472,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (defense > 0)
             {
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUp.TargetAttribute = Stats.DefenseBase;
+                powerUp.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = defense;
                 this.defenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
                 armor.BasePowerUpAttributes.Add(powerUp);
