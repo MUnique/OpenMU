@@ -227,6 +227,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 }
             }
 
+            foreach (var characterClass in this.GameConfiguration.CharacterClasses)
+            {
+                item.QualifiedCharacters.Add(characterClass);
+            }
+
             return item;
         }
     }
