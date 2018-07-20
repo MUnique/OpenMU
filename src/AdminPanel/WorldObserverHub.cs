@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.AdminPanel
                 x = walkable.WalkTarget.X;
                 y = walkable.WalkTarget.Y;
                 walkDelay = (int)walkable.StepDelay.TotalMilliseconds;
-                var walkSteps = walkable.NextDirections.Select(step => new { x = step.To.Y, y = step.To.Y, direction = step.Direction }).ToList();
+                var walkSteps = walkable.NextDirections.Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
 
                 // TODO: Can errors happen here when NextDirection changes in the meantime?
                 var lastStep = walkable.NextDirections.LastOrDefault();
