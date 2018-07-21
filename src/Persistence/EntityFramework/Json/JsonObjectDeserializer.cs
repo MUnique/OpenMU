@@ -33,25 +33,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             serializer.ReferenceResolver = referenceResolver;
             serializer.Converters.Add(new BinaryAsHexJsonConverter());
 
+            DelayedReferenceResolvingConverter deferredConverter = null;
             if (this.AreCircularReferencesExpected)
             {
-                // This is a very naive approach to fix references to objects which occur later in the document.
-                // The first run just have the task to fills the references in the IdReferenceResolver.
-                // Unfortunately there is currently no better way, because we have circular references.
-                var jsonString = textReader.ReadToEnd();
-                using (var stringReader = new StringReader(jsonString))
-                using (var jsonReader = new JsonTextReader(stringReader))
-                {
-                    serializer.Deserialize<T>(jsonReader);
-                }
-
-                textReader = new StringReader(jsonString);
+                // For circular references, we add a converter which collects actions to resolve unresolved references, so they can be resolved after deserializing.
+                deferredConverter = new DelayedReferenceResolvingConverter();
+                serializer.Converters.Add(deferredConverter);
             }
 
             using (textReader)
             using (var jsonReader = new JsonTextReader(textReader))
             {
                 var result = serializer.Deserialize<T>(jsonReader);
+                deferredConverter?.ResolveDelayedReferences();
                 return result;
             }
         }
