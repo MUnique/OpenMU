@@ -479,62 +479,39 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var packet = new byte[0x48];
             packet.SetValues<byte>(0xC3, (byte)packet.Length, 0xF3, 0x03);
-            var i = 4;
-            packet[i++] = this.player.X;
-            packet[i++] = this.player.Y;
+            packet[4] = this.player.X;
+            packet[5] = this.player.Y;
             var unsignedMapNumber = ShortExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number);
-            packet[i++] = unsignedMapNumber.GetLowByte();
-            packet[i++] = unsignedMapNumber.GetHighByte();
-            packet.SetLongSmallEndian(this.player.SelectedCharacter.Experience, i++);
-            i += 7;
-            packet.SetLongSmallEndian(this.context.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1], i++);
-            i += 7;
-            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.LevelUpPoints, i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseStrength], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseAgility], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseVitality], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseEnergy], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentHealth], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentMana], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentShield], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentAbility], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility], i++);
-            i++;
-            packet[i++] = 0;    // unknown
-            packet[i++] = 0x12; // unknown
-            packet.SetIntegerBigEndian((uint)this.player.Money, i++);
-            i += 3;
-            packet[i++] = (byte)this.player.SelectedCharacter.PlayerKillCount;
-            packet[i++] = (byte)this.player.SelectedCharacter.State;
-            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedFruitPoints, i++);
-            i++;
-            packet.SetShortBigEndian(127, i++); // TODO: MaxFruits, calculate the right value
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseLeadership], i++);
-            i++;
-            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedNegFruitPoints, i++);
-            i++;
-            packet.SetShortBigEndian(127, i++); // TODO: MaxNegFruits, calculate the right value
-            i++;
-            packet[i++] = this.player.Account.IsVaultExtended ? (byte)1 : (byte)0;
-            packet[i++] = 0x25; // unknown
-            packet[i++] = 0xAB; // unknown
-            packet[i] = 0x71; // unknown
+            packet[6] = unsignedMapNumber.GetLowByte();
+            packet[7] = unsignedMapNumber.GetHighByte();
+            packet.SetLongSmallEndian(this.player.SelectedCharacter.Experience, 8);
+            packet.SetLongSmallEndian(this.context.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1], 16);
+            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.LevelUpPoints, 24);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseStrength], 26);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseAgility], 28);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseVitality], 30);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseEnergy], 32);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentHealth], 34);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth], 36);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentMana], 38);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana], 40);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentShield], 42);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield], 44);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentAbility], 46);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility], 48);
+
+            //// 2 missing bytes here are padding
+            packet.SetIntegerBigEndian((uint)this.player.Money, 52);
+            packet[56] = (byte)this.player.SelectedCharacter.PlayerKillCount;
+            packet[57] = (byte)this.player.SelectedCharacter.State;
+            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedFruitPoints, 58);
+            packet.SetShortBigEndian(127, 60); // TODO: MaxFruits, calculate the right value
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseLeadership], 62);
+            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedNegFruitPoints, 64);
+            packet.SetShortBigEndian(127, 66); // TODO: MaxNegFruits, calculate the right value
+            packet[68] = this.player.Account.IsVaultExtended ? (byte)1 : (byte)0;
+            //// 3 additional bytes are padding
+
             this.connection.Send(packet);
         }
 
