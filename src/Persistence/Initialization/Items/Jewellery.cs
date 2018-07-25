@@ -217,7 +217,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 item.BasePowerUpAttributes.Add(powerUp);
                 powerUp.BaseValue = 0.2f;
-                powerUp.TargetAttribute = resistanceAttribute;
+                powerUp.TargetAttribute = resistanceAttribute.GetPersistent(this.GameConfiguration);
                 for (int i = 1; i <= 4; i++)
                 {
                     var levelBonus = this.Context.CreateNew<LevelBonus>();
