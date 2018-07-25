@@ -6,7 +6,7 @@ That means, you should be a developer and know what you're doing if you want to 
 
 Requirements:
 * Windows OS
-  * It runs with Mono under Linux (probably MacOS, too), but compiling the AdminPanel doesn't fully work.
+  * It runs with Mono under Linux, probably MacOS, too.
 * .NET Framework 4.6.1
 * PostgreSQL installed
 * Visual Studio 2017 installed
