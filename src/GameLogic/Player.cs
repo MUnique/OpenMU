@@ -369,8 +369,11 @@ namespace MUnique.OpenMU.GameLogic
         public void AttackBy(IAttackable attacker, SkillEntry skill)
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
+
             if (hitInfo.DamageHP == 0)
             {
+                this.PlayerView.ShowHit(this, hitInfo);
+                (attacker as Player)?.PlayerView.ShowHit(this, hitInfo);
                 return;
             }
 
