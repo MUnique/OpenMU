@@ -117,6 +117,12 @@ namespace MUnique.OpenMU.GameLogic
                     powerUp = optionOfLevel.PowerUpDefinition;
                 }
 
+                if (powerUp?.Boost == null)
+                {
+                    // Some options are level dependent. If they are at level 0, they might not have any boost yet.
+                    continue;
+                }
+
                 foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefintion(powerUp, attributeHolder))
                 {
                     yield return wrapper;
