@@ -19,6 +19,7 @@
     <Pandoc Include="Packets\C1F352 - Master skill level increase request.md" />
     <None Include="Packets\C111 - Hit response.md" />
     <None Include="Packets\C111 - Hit request.md" />
+    <None Include="Packets\C1F350 - Master Class Information.md" />
     <None Include="Packets\C1F352 - Master skill level increase response.md" />
     <None Include="Packets\C3F101 - Login request %28by client%29.md" />
     <None Include="GameMap.md" />

@@ -513,6 +513,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             //// 3 additional bytes are padding
 
             this.connection.Send(packet);
+
+            if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
+            {
+                this.SendMasterStats();
+            }
         }
 
         /// <remarks>
@@ -747,6 +752,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             message[6] = ViewExtensions.ConstantPlayerId.GetLowByte();
             Buffer.BlockCopy(this.lowestClientVersion, 0, message, 7, 5);
             this.connection.Send(message);
+        }
+
+        private void SendMasterStats()
+        {
+            var character = this.player.SelectedCharacter;
+            var packet = new byte[0x20];
+            packet.SetValues<byte>(0xC1, 0x20, 0xF3, 0x50);
+            var masterLevel = (ushort)this.player.Attributes[Stats.MasterLevel];
+            packet.SetShortBigEndian(masterLevel, 4);
+            packet.SetLongSmallEndian(character.MasterExperience, 6);
+            packet.SetLongSmallEndian(this.context.Configuration.MasterExperienceTable[masterLevel + 1], 14);
+            packet.SetShortBigEndian((ushort)character.MasterLevelUpPoints, 22);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth], 24);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana], 26);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield], 28);
+            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility], 30);
+
+            this.connection.Send(packet);
         }
 
         private byte GetDamageColor(DamageAttributes attributes)
