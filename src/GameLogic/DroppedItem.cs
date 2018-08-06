@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.GameLogic
     using System.Threading;
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// An item which got dropped on the ground of a map.
@@ -22,8 +21,8 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         private readonly object pickupLock;
 
-        private readonly GameMap map;
-        private readonly Player dropper;
+        private Player dropper;
+
         private Timer removeTimer;
 
         private bool availableToPick = true;
@@ -42,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic
             this.pickupLock = new object();
             this.X = x;
             this.Y = y;
-            this.map = map;
+            this.CurrentMap = map;
             this.dropper = dropper;
             this.removeTimer = new Timer(this.DisposeAndDelete, null, map.ItemDropDuration * 1000, Timeout.Infinite);
         }
@@ -68,7 +67,7 @@ namespace MUnique.OpenMU.GameLogic
         public ushort Id { get; set; }
 
         /// <inheritdoc/>
-        public GameMap CurrentMap => this.map;
+        public GameMap CurrentMap { get; }
 
         /// <summary>
         /// Tries to pick the item up by the specified player.
@@ -106,12 +105,13 @@ namespace MUnique.OpenMU.GameLogic
 
             Log.Info($"Item '{this.Item}' is getting picked by by player '{player}'.");
             this.Dispose();
-            if (this.dropper != null)
+            if (this.dropper != null && !this.dropper.PlayerState.Finished)
             {
                 this.dropper.PersistenceContext.SaveChanges(); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
                 this.dropper.PersistenceContext.Detach(this.Item);
-                player.PersistenceContext.Attach(this.Item);
             }
+
+            player.PersistenceContext.Attach(this.Item);
 
             return true;
         }
@@ -124,26 +124,45 @@ namespace MUnique.OpenMU.GameLogic
             {
                 this.removeTimer = null;
                 timer.Dispose();
-                this.map.Remove(this);
+                this.CurrentMap.Remove(this);
+                this.dropper = null;
             }
         }
 
         private void DisposeAndDelete(object state)
         {
-            this.Dispose();
-            if (this.dropper != null)
+            try
             {
-                Log.Info($"Item '{this.Item}' which was dropped by player {this.dropper} is getting deleted.");
-                this.dropper.PersistenceContext.Detach(this.Item);
-                var repositoryManager = this.dropper.GameContext.PersistenceContextProvider;
-
-                // We could use here the persistence context of the dropper - but if it logged out and is not saving anymore, the deletion would not be saved.
-                // So we use a new temporary persistence context instead.
-                using (var context = repositoryManager.CreateNewContext())
+                var player = this.dropper;
+                this.Dispose();
+                if (player != null)
                 {
-                    context.Delete(this.Item);
-                    context.SaveChanges();
+                    this.DeleteItem(player);
                 }
+            }
+            catch (Exception ex)
+            {
+                // we have to catch all errors, because it runs under a pooled thread without an additional safety net ;-)
+                Log.Error("Error during DroppedItem.DisposeAndDelete", ex);
+            }
+        }
+
+        private void DeleteItem(Player player)
+        {
+            Log.Info($"Item '{this.Item}' which was dropped by player {player} is getting deleted.");
+            if (!player.PlayerState.Finished)
+            {
+                player.PersistenceContext.Detach(this.Item);
+            }
+
+            var repositoryManager = player.GameContext.PersistenceContextProvider;
+
+            // We could use here the persistence context of the dropper - but if it logged out and is not saving anymore, the deletion would not be saved.
+            // So we use a new temporary persistence context instead.
+            using (var context = repositoryManager.CreateNewContext())
+            {
+                context.Delete(this.Item);
+                context.SaveChanges();
             }
         }
     }

@@ -38,7 +38,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             player.CurrentMap.Add(droppedItem);
             player.Inventory.RemoveItem(item);
             player.PlayerView.InventoryView.ItemDropResult(item.ItemSlot, true);
-            player.PersistenceContext.Detach(item);
         }
     }
 }
