@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic
                 Level = item.Level,
             };
             item.ItemOptions
-                .Where(option => option.ItemOption.OptionType.IsVisible)
+                .Where(option => option.ItemOption.OptionType?.IsVisible ?? false)
                 .Select(option => option.ItemOption.OptionType)
                 .ForEach(appearance.VisibleOptions.Add);
             return appearance;
