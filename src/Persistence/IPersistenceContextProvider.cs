@@ -37,6 +37,12 @@ namespace MUnique.OpenMU.Persistence
         IContext CreateNewConfigurationContext();
 
         /// <summary>
+        /// Creates the new trade context which is used to exchange items in a trade.
+        /// </summary>
+        /// <returns>The newly created context.</returns>
+        IContext CreateNewTradeContext();
+
+        /// <summary>
         /// Creates a new context which is used for accounts.
         /// This context should only care about the objects of a player;
         /// It should not track changes of configuration objects.

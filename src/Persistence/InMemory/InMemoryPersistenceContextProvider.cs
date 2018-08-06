@@ -27,6 +27,12 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
+        public IContext CreateNewTradeContext()
+        {
+            return new InMemoryContext(this.repositoryManager);
+        }
+
+        /// <inheritdoc/>
         public IPlayerContext CreateNewPlayerContext(GameConfiguration gameConfiguration)
         {
             return new PlayerInMemoryContext(this.repositoryManager);

@@ -68,6 +68,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 accountKey.DeleteBehavior = DeleteBehavior.Cascade;
             });
 
+            modelBuilder.Entity<ItemStorage>().HasMany(storage => storage.RawItems).WithOne(item => item.RawItemStorage);
             modelBuilder.Entity<GameServerDefinition>();
             modelBuilder.Entity<ItemBasePowerUpDefinition>().Ignore(d => d.BaseValueElement);
             modelBuilder.Entity<LevelBonus>().Ignore(l => l.AdditionalValueElement);

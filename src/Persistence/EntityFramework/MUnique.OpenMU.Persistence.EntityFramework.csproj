@@ -233,6 +233,7 @@
       <DependentUpon>ExtendedTypes.tt</DependentUpon>
     </Compile>
     <Compile Include="RepositoryManager.cs" />
+    <Compile Include="TradeContext.cs" />
     <Compile Include="TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>

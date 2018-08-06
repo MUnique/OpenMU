@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.Linq;
 
     /// <summary>
@@ -16,7 +17,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <typeparam name="TClass">The type of the class.</typeparam>
     /// <typeparam name="TEfCore">The type of the ef core.</typeparam>
     /// <seealso cref="System.Collections.Generic.ICollection{TClass}" />
-    internal class CollectionAdapter<TClass, TEfCore> : ICollection<TClass>
+    internal class CollectionAdapter<TClass, TEfCore> : ICollection<TClass>, INotifyCollectionChanged
         where TEfCore : TClass
     {
         /// <summary>
@@ -32,6 +33,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             this.rawCollection = rawCollection;
         }
+
+        /// <inheritdoc/>
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         /// <inheritdoc />
         public int Count => this.rawCollection.Count;
@@ -65,10 +69,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
 
             this.rawCollection.Add((TEfCore)item);
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<TEfCore> { (TEfCore)item }));
         }
 
         /// <inheritdoc />
-        public void Clear() => this.rawCollection.Clear();
+        public void Clear()
+        {
+            var items = this.rawCollection.ToList();
+            this.rawCollection.Clear();
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, items));
+        }
 
         /// <inheritdoc />
         public bool Contains(TClass item)
@@ -100,7 +110,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 return false;
             }
 
-            return this.rawCollection.Remove((TEfCore)item);
+            if (this.rawCollection.Remove((TEfCore) item))
+            {
+                this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new List<TEfCore> { (TEfCore)item }));
+                return true;
+            }
+
+            return false;
         }
     }
 }

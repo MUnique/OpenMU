@@ -27,6 +27,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             modelBuilder.Ignore<Guild>();
             modelBuilder.Ignore<GuildMember>();
+            modelBuilder.Entity<Item>(b => b.Ignore(e => e.RawItemStorage));
         }
     }
 }

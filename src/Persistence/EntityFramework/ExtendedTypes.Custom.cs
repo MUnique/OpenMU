@@ -5,6 +5,8 @@
 //     This source code extends auto-generated code of a T4 template.
 // </auto-generated>
 
+using System.Collections.Specialized;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System;
@@ -123,6 +125,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </summary>
     internal partial class Item
     {
+        public Guid? ItemStorageId { get; set; }
+
+        [ForeignKey("ItemStorageId")]
+        public ItemStorage RawItemStorage
+        {
+            get { return this.ItemStorage; }
+            set
+            {
+                this.ItemStorage = value;
+                this.ItemStorageId = value?.Id;
+            }
+        }
+
+        /// <inheritdoc/>
+        [NotMapped]
+        private ItemStorage ItemStorage { get; set; }
+
         /// <summary>
         /// Clones the item option link.
         /// </summary>
@@ -134,6 +153,41 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             var persistentLink = new ItemOptionLink();
             persistentLink.AssignValues(link);
             return persistentLink;
+        }
+    }
+
+    internal partial class ItemStorage
+    {
+        public ItemStorage()
+        {
+            var notifier = this.Items as INotifyCollectionChanged;
+            if (notifier != null)
+            {
+                notifier.CollectionChanged += this.OnItemsChanged;
+            }
+        }
+
+        private void OnItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+
+                case NotifyCollectionChangedAction.Add:
+                    foreach (Item item in e.NewItems)
+                    {
+                        item.RawItemStorage = this;
+                    }
+
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (Item item in e.OldItems)
+                    {
+                        item.RawItemStorage = null;
+                    }
+
+                    break;
+            }
         }
     }
 

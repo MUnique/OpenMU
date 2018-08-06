@@ -124,6 +124,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc />
+        public IContext CreateNewTradeContext()
+        {
+            return new EntityFrameworkContext(new TradeContext(), this);
+        }
+
+        /// <inheritdoc />
         public IFriendServerContext CreateNewFriendServerContext()
         {
             return new FriendServerContext(new FriendContext(), this);

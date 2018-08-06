@@ -1927,7 +1927,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("DefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawItemStorage")
                         .WithMany("RawItems")
                         .HasForeignKey("ItemStorageId");
                 });
