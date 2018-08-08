@@ -39,6 +39,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         /// <inheritdoc/>
         public void Dispose()
         {
+            // nothing to do here
         }
 
         /// <inheritdoc/>
