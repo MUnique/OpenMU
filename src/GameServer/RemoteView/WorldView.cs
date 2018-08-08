@@ -301,7 +301,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             const int NpcDataSize = 10;
 
-            if (newObjects == null && !newObjects.Any())
+            if (newObjects == null || !newObjects.Any())
             {
                 return;
             }
