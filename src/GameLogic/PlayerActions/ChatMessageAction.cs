@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
+    using System;
     using System.Collections.Generic;
     using log4net;
     using MUnique.OpenMU.GameLogic.Views;
@@ -148,7 +149,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             public int Compare(string x, string y)
             {
-                return string.Compare(y, x);
+                return string.Compare(y, x, StringComparison.InvariantCultureIgnoreCase);
             }
         }
     }
