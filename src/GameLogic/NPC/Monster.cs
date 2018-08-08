@@ -144,7 +144,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
             this.Hit(hitInfo, attacker);
-            if (hitInfo.DamageHP > 0)
+            if (hitInfo.HealthDamage > 0)
             {
                 (attacker as Player)?.AfterHitTarget();
             }
@@ -274,7 +274,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void Hit(HitInfo hitInfo, IAttackable attacker)
         {
-            var killed = this.TryHit(hitInfo.DamageHP + hitInfo.DamageSD, attacker);
+            var killed = this.TryHit(hitInfo.HealthDamage + hitInfo.ShieldDamage, attacker);
             (attacker as Player)?.PlayerView.ShowHit(this, hitInfo);
 
             if (killed)

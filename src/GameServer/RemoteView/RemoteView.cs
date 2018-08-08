@@ -528,8 +528,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowHit(IAttackable target, HitInfo hitInfo)
         {
-            var healthDamage = (ushort)(hitInfo.DamageHP & 0xFFFF);
-            var shieldDamage = (ushort)(hitInfo.DamageSD & 0xFFFF);
+            var healthDamage = (ushort)(hitInfo.HealthDamage & 0xFFFF);
+            var shieldDamage = (ushort)(hitInfo.ShieldDamage & 0xFFFF);
             var targetId = target.GetId(this.player);
             this.connection.Send(new byte[]
             {
