@@ -24,13 +24,13 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
         }
 
         /// <summary>
-        /// Gets or sets the start point.
+        /// Gets the start point.
         /// </summary>
-        public Point Start { get; set; }
+        public Point Start { get; }
 
         /// <summary>
-        /// Gets or sets the end point.
+        /// Gets the end point.
         /// </summary>
-        public Point End { get; set; }
+        public Point End { get; }
     }
 }

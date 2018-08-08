@@ -24,13 +24,13 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
         }
 
         /// <summary>
-        /// Gets or sets the start/end point combination which acts like a key for the next step.
+        /// Gets the start/end point combination which acts like a key for the next step.
         /// </summary>
-        public PointCombination Combination { get; set; }
+        public PointCombination Combination { get; }
 
         /// <summary>
-        /// Gets or sets the next step to get one step closer to the <see cref="PointCombination.End"/>.
+        /// Gets the next step to get one step closer to the <see cref="PointCombination.End"/>.
         /// </summary>
-        public Point NextStep { get; set; }
+        public Point NextStep { get; }
     }
 }
