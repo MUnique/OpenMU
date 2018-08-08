@@ -11,6 +11,8 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
+    using Unity;
+    using Unity.Lifetime;
 
     /// <summary>
     /// A main packet handler which can be configured.
