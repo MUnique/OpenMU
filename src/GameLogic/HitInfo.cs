@@ -59,19 +59,19 @@ namespace MUnique.OpenMU.GameLogic
     public struct HitInfo
     {
         /// <summary>
-        /// The attributes of the damage.
+        /// Gets the attributes of the damage.
         /// </summary>
-        public DamageAttributes Attributes;
+        public DamageAttributes Attributes { get; }
 
         /// <summary>
-        /// The damage which reduces the health points.
+        /// Gets or sets the damage which reduces the health points.
         /// </summary>
-        public uint DamageHP;
+        public uint DamageHP { get; set; }
 
         /// <summary>
-        /// The damage which reduces the shield points.
+        /// Gets or sets the damage which reduces the shield points.
         /// </summary>
-        public uint DamageSD;
+        public uint DamageSD { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HitInfo"/> struct.
