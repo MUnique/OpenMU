@@ -74,12 +74,11 @@ namespace MUnique.OpenMU.Startup
                 using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
                 {
                     var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer, signalRServerObserver);
-                    foreach (var mainPacketHandler in gameServer.Context.PacketHandlers)
+                    foreach (var mainPacketHandler in gameServer.Context.PacketHandlers.Take(1))
                     {
+                        // At the moment only one main packet handler should be used;
+                        // A TCP port can only be used for one TCP listener, so we have to introduce something to pair ports with main packets handlers.
                         gameServer.AddListener(new DefaultTcpGameServerListener(gameServerDefinition.NetworkPort, gameServer.ServerInfo, gameServer.Context, connectServer, mainPacketHandler));
-                        //// At the moment only one main packet handler should be used;
-                        //// A TCP port can only be used for one TCP listener, so we have to introduce something to pair ports with main packets handlers.
-                        break;
                     }
 
                     this.servers.Add(gameServer);
