@@ -47,8 +47,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             var accountInfo = context.Context.Set<Account>()
                 .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
-                .FirstOrDefault(a => a.LoginName == loginName && BCrypt.Verify(password, a.PasswordHash, false));
-            if (accountInfo != null)
+                .FirstOrDefault(a => a.LoginName == loginName);
+            if (accountInfo != null && BCrypt.Verify(password, accountInfo.PasswordHash))
             {
                 this.ContextProvider.RepositoryManager.EnsureCachesForCurrentGameConfiguration();
 

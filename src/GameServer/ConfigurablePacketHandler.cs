@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.Network;
+    using Unity;
 
     /// <summary>
     /// A configurable packet handler, which creates its sub packet handlers based on a configuration.
