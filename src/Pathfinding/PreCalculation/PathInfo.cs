@@ -13,16 +13,6 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
     public struct PathInfo
     {
         /// <summary>
-        /// The start/end point combination which acts like a key for the next step.
-        /// </summary>
-        public PointCombination Combination;
-
-        /// <summary>
-        /// The next step to get one step closer to the <see cref="PointCombination.End"/>.
-        /// </summary>
-        public Point NextStep;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PathInfo"/> struct.
         /// </summary>
         /// <param name="combination">The combination.</param>
@@ -32,5 +22,15 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
             this.Combination = combination;
             this.NextStep = nextStep;
         }
+
+        /// <summary>
+        /// Gets or sets the start/end point combination which acts like a key for the next step.
+        /// </summary>
+        public PointCombination Combination { get; set; }
+
+        /// <summary>
+        /// Gets or sets the next step to get one step closer to the <see cref="PointCombination.End"/>.
+        /// </summary>
+        public Point NextStep { get; set; }
     }
 }

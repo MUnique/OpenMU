@@ -19,11 +19,10 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
             const int elementSize = 8;
             while (source.Position + elementSize < source.Length)
             {
-                PathInfo pathInfo;
-                pathInfo.Combination.Start = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
-                pathInfo.Combination.End = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
-                pathInfo.NextStep = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
-                yield return pathInfo;
+                var start = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
+                var end = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
+                var nextStep = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
+                yield return new PathInfo(new PointCombination(start, end), nextStep);
             }
         }
 

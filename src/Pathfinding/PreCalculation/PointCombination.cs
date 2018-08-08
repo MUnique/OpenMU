@@ -13,16 +13,6 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
     public struct PointCombination
     {
         /// <summary>
-        /// The start point.
-        /// </summary>
-        public Point Start;
-
-        /// <summary>
-        /// The end point.
-        /// </summary>
-        public Point End;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PointCombination"/> struct.
         /// </summary>
         /// <param name="start">The start point.</param>
@@ -32,5 +22,15 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
             this.Start = start;
             this.End = end;
         }
+
+        /// <summary>
+        /// Gets or sets the start point.
+        /// </summary>
+        public Point Start { get; set; }
+
+        /// <summary>
+        /// Gets or sets the end point.
+        /// </summary>
+        public Point End { get; set; }
     }
 }

@@ -20,23 +20,21 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
         {
             const int elementSize = 6;
 
-            // ReSharper disable once TooWideLocalVariableScope we want to reduce stack allocations
-            PathInfo pathInfo;
             while (source.Position + elementSize < source.Length)
             {
                 byte startX = (byte)source.ReadByte();
                 byte startY = (byte)source.ReadByte();
                 byte startEndDiff = (byte)source.ReadByte();
                 byte startNextStepDiff = (byte)source.ReadByte();
-                pathInfo.Combination.Start = new Point(startX, startY);
+                var start = new Point(startX, startY);
                 byte xOffset = (byte)(startEndDiff >> 4 & 0x0F);
                 byte yOffset = (byte)(startEndDiff & 0x0F);
-                pathInfo.Combination.End = new Point((byte)(startX + xOffset), (byte)(startY + yOffset));
+                var end = new Point((byte)(startX + xOffset), (byte)(startY + yOffset));
 
                 byte xOffsetNext = (byte)(startNextStepDiff >> 4 & 0x0F);
                 byte yOffsetNext = (byte)(startNextStepDiff & 0x0F);
-                pathInfo.NextStep = new Point((byte)(startX + xOffsetNext), (byte)(startY + yOffsetNext));
-                yield return pathInfo;
+                var nextStep = new Point((byte)(startX + xOffsetNext), (byte)(startY + yOffsetNext));
+                yield return new PathInfo(new PointCombination(start, end), nextStep);
             }
         }
 
