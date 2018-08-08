@@ -135,8 +135,9 @@ namespace MUnique.OpenMU.ConnectServer
                     notifier.PropertyChanged += this.HandleServerPropertyChanged;
                 }
 
-                this.ServerList.Servers.Add(serverListItem);
                 this.ConnectInfos.Add(serverListItem.ServerId, serverListItem.ConnectInfo);
+                this.ServerList.Servers.Add(serverListItem);
+                this.ServerList.InvalidateCache();
             }
             catch (Exception ex)
             {
