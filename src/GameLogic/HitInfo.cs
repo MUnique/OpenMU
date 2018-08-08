@@ -59,6 +59,19 @@ namespace MUnique.OpenMU.GameLogic
     public struct HitInfo
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="HitInfo"/> struct.
+        /// </summary>
+        /// <param name="healthDamage">The damage which reduces the health points.</param>
+        /// <param name="shieldDamage"> The damage which reduces the shield points.</param>
+        /// <param name="attributes">The attributes.</param>
+        public HitInfo(uint healthDamage, uint shieldDamage, DamageAttributes attributes)
+        {
+            this.HealthDamage = healthDamage;
+            this.ShieldDamage = shieldDamage;
+            this.Attributes = attributes;
+        }
+
+        /// <summary>
         /// Gets the attributes of the damage.
         /// </summary>
         public DamageAttributes Attributes { get; }
@@ -72,18 +85,5 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets or sets the damage which reduces the shield points.
         /// </summary>
         public uint ShieldDamage { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HitInfo"/> struct.
-        /// </summary>
-        /// <param name="healthDamage">The damage which reduces the health points.</param>
-        /// <param name="shieldDamage"> The damage which reduces the shield points.</param>
-        /// <param name="attributes">The attributes.</param>
-        public HitInfo(uint healthDamage, uint shieldDamage, DamageAttributes attributes)
-        {
-            this.HealthDamage = healthDamage;
-            this.ShieldDamage = shieldDamage;
-            this.Attributes = attributes;
-        }
     }
 }
