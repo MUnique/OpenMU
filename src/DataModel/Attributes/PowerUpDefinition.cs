@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// <inheritdoc/>
         public override string ToString()
         {
-            string value = string.Empty;
+            string value;
             if (this.Boost != null && this.Boost.ConstantValue.Value > 0)
             {
                 value = this.Boost.ConstantValue.Value.ToString(CultureInfo.InvariantCulture);
@@ -35,6 +35,11 @@ namespace MUnique.OpenMU.DataModel.Attributes
             {
                 var relation = this.Boost.RelatedValues.First();
                 value = relation.InputAttribute.Designation + OperatorAsString(relation.InputOperator) + relation.InputOperand;
+            }
+            else
+            {
+                // no value defined, so we assume "0"
+                value = "0";
             }
 
             return value + " " + this.TargetAttribute.Designation;
@@ -47,9 +52,8 @@ namespace MUnique.OpenMU.DataModel.Attributes
                 case InputOperator.Add: return "+";
                 case InputOperator.Multiply: return "*";
                 case InputOperator.Exponentiate: return "^";
+                default: return string.Empty;
             }
-
-            return string.Empty;
         }
     }
 }
