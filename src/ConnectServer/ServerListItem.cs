@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.ConnectServer
 {
-    using System.Linq;
     using System.Net;
     using System.Text;
+    using MUnique.OpenMU.Network;
 
     /// <summary>
     /// A list item of an available server.
@@ -43,13 +43,9 @@ namespace MUnique.OpenMU.ConnectServer
         /// </value>
         public ushort ServerId
         {
-            get => (ushort)(this.data[0] | this.data[1] << 8);
+            get => this.data.MakeWordSmallEndian(0);
 
-            set
-            {
-                this.data[0] = (byte)(value & 0xFF);
-                this.data[1] = (byte)((value >> 8) & 0xFF);
-            }
+            set => this.data.SetShortSmallEndian(value, 0);
         }
 
         /// <summary>
@@ -80,7 +76,13 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         public IPEndPoint EndPoint
         {
-            get => new IPEndPoint(new IPAddress(this.ConnectInfo.Take(4).ToArray()), this.ConnectInfo[4] << 8 | this.ConnectInfo[5]);
+            get
+            {
+                var ip = IPAddress.Parse(this.ConnectInfo.ExtractString(5, 16, Encoding.UTF8));
+                var port = this.ConnectInfo.MakeWordBigEndian(this.ConnectInfo.Length - 2);
+
+                return new IPEndPoint(ip, port);
+            }
 
             set
             {
@@ -91,9 +93,7 @@ namespace MUnique.OpenMU.ConnectServer
 
                 var ip = value.Address.ToString();
                 Encoding.ASCII.GetBytes(ip, 0, ip.Length, this.ConnectInfo, 5);
-
-                this.ConnectInfo[this.ConnectInfo.Length - 1] = (byte)((value.Port >> 8) & 0xFF);
-                this.ConnectInfo[this.ConnectInfo.Length - 2] = (byte)(value.Port & 0xFF);
+                this.ConnectInfo.SetShortBigEndian((ushort)value.Port, this.ConnectInfo.Length - 2);
             }
         }
 
