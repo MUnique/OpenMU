@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System;
-
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
@@ -102,7 +100,7 @@ namespace MUnique.OpenMU.Tests
                 new AttributeRelationship(Stats.MaximumHealth, 2, Stats.Level),
                 new AttributeRelationship(Stats.MaximumHealth, 3, Stats.TotalVitality),
             });
-            characterClassMock.Setup(c => c.BaseAttributeValues).Returns(new List<ConstValueAttribute>()
+            characterClassMock.Setup(c => c.BaseAttributeValues).Returns(new List<ConstValueAttribute>
             {
                 new ConstValueAttribute(10, Stats.MaximumMana),
                 new ConstValueAttribute(35, Stats.MaximumHealth),
@@ -113,12 +111,11 @@ namespace MUnique.OpenMU.Tests
                 new ConstValueAttribute(1, Stats.MoneyAmountRate)
             });
             character.CharacterClass = characterClassMock.Object;
-            
+
             foreach (var attributeDef in character.CharacterClass.StatAttributes)
             {
                 character.Attributes.Add(new StatAttribute(attributeDef.Attribute, attributeDef.BaseValue));
             }
-
 
             var playerViewMock = new Mock<IPlayerView>();
             playerViewMock.Setup(v => v.InventoryView).Returns(new Mock<IInventoryView>().Object);
