@@ -65,14 +65,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
         private IEnumerable<WalkingStep> GetSteps(Point start, IEnumerable<Direction> directions)
         {
-            Point currentTarget;
-
             Point previousTarget = start;
-            // yield return new WalkingStep { Direction = directions.First(), To = start };
-
             foreach (var direction in directions)
             {
-                currentTarget = previousTarget.CalculateTargetPoint(direction);
+                var currentTarget = previousTarget.CalculateTargetPoint(direction);
                 yield return new WalkingStep { Direction = direction, To = currentTarget, From = previousTarget };
                 previousTarget = currentTarget;
             }
