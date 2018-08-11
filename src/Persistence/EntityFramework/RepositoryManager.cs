@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </remarks>
     public class RepositoryManager : BaseRepositoryManager
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(PersistenceContextProvider));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(PersistenceContextProvider));
 
         /// <summary>
         /// Registers the repositories.

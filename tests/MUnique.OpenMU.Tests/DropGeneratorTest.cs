@@ -6,12 +6,12 @@ namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the drop generator.
@@ -105,64 +105,66 @@ namespace MUnique.OpenMU.Tests
 
         private MonsterDefinition GetMonster(int numberOfDrops)
         {
-            var monster = MockRepository.GenerateStub<MonsterDefinition>();
-            monster.Stub(m => m.DropItemGroups).Return(new List<DropItemGroup>());
-
-            monster.NumberOfMaximumItemDrops = numberOfDrops;
-            monster.Stub(m => m.Attributes).Return(new List<MonsterAttribute>());
-            monster.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.Level, Value = 0 });
-            return monster;
+            var monster = new Mock<MonsterDefinition>();
+            monster.SetupAllProperties();
+            monster.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
+            monster.Setup(m => m.Attributes).Returns(new List<MonsterAttribute>());
+            monster.Object.NumberOfMaximumItemDrops = numberOfDrops;
+            monster.Object.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.Level, Value = 0 });
+            return monster.Object;
         }
 
         private IRandomizer GetRandomizer(int randomValue)
         {
-            var randomizer = MockRepository.GenerateMock<IRandomizer>();
-            randomizer.Stub(r => r.NextInt(0, 0)).IgnoreArguments().Return(randomValue).Repeat.Any();
-            randomizer.Stub(r => r.NextDouble()).Return(randomValue / 10000.0).Repeat.Any();
-            return randomizer;
+            var randomizer = new Mock<IRandomizer>();
+            randomizer.Setup(r => r.NextInt(It.IsAny<int>(), It.IsAny<int>())).Returns(randomValue);
+            randomizer.Setup(r => r.NextDouble()).Returns(randomValue / 10000.0);
+            return randomizer.Object;
         }
 
         private IRandomizer GetRandomizer2(int integerValue, double doubleValue)
         {
-            var randomizer = MockRepository.GenerateMock<IRandomizer>();
-            randomizer.Stub(r => r.NextInt(0, 0)).IgnoreArguments().Return(integerValue);
-            randomizer.Stub(r => r.NextDouble()).Return(doubleValue);
+            var randomizer = new Mock<IRandomizer>();
+            randomizer.Setup(r => r.NextInt(It.IsAny<int>(), It.IsAny<int>())).Returns(integerValue);
+            randomizer.Setup(r => r.NextDouble()).Returns(doubleValue);
 
-            return randomizer;
+            return randomizer.Object;
         }
 
         private GameConfiguration GetGameConfig()
         {
-            var gameConfiguration = MockRepository.GenerateStub<GameConfiguration>();
+            var gameConfiguration = new Mock<GameConfiguration>();
             var itemGroups = new List<DropItemGroup>
             {
                 this.GetDropItemGroup(1, SpecialItemType.RandomItem, true),
                 this.GetDropItemGroup(1000, SpecialItemType.Excellent, true),
                 this.GetDropItemGroup(3000, SpecialItemType.Money, true)
             };
-            gameConfiguration.Stub(c => c.BaseDropItemGroups).Return(itemGroups);
-            gameConfiguration.Stub(c => c.Items)
-                .Return(gameConfiguration.BaseDropItemGroups.SelectMany(g => g.PossibleItems).ToList());
-            return gameConfiguration;
+            gameConfiguration.Setup(c => c.BaseDropItemGroups).Returns(itemGroups);
+            gameConfiguration.Setup(c => c.Items)
+                .Returns(gameConfiguration.Object.BaseDropItemGroups.SelectMany(g => g.PossibleItems).ToList());
+            return gameConfiguration.Object;
         }
 
         private DropItemGroup GetDropItemGroup(int chance, SpecialItemType itemType, bool addItem)
         {
-            var dropItemGroup = MockRepository.GenerateStub<DropItemGroup>();
-            dropItemGroup.Chance = chance / 10000.0;
-            dropItemGroup.ItemType = itemType;
+            var dropItemGroup = new Mock<DropItemGroup>();
+            dropItemGroup.SetupAllProperties();
+            dropItemGroup.Object.Chance = chance / 10000.0;
+            dropItemGroup.Object.ItemType = itemType;
             var itemList = new List<ItemDefinition>();
-            dropItemGroup.Stub(g => g.PossibleItems).Return(itemList);
+            dropItemGroup.Setup(g => g.PossibleItems).Returns(itemList);
             if (addItem)
             {
-                var itemDefinition = MockRepository.GenerateStub<ItemDefinition>();
-                itemDefinition.DropsFromMonsters = true;
-                itemDefinition.Stub(d => d.PossibleItemSetGroups).Return(new List<ItemSetGroup>());
-                itemDefinition.Stub(d => d.PossibleItemOptions).Return(new List<ItemOptionDefinition>());
-                itemList.Add(itemDefinition);
+                var itemDefinition = new Mock<ItemDefinition>();
+                itemDefinition.SetupAllProperties();
+                itemDefinition.Object.DropsFromMonsters = true;
+                itemDefinition.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
+                itemDefinition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());
+                itemList.Add(itemDefinition.Object);
             }
 
-            return dropItemGroup;
+            return dropItemGroup.Object;
         }
     }
 }

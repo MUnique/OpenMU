@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.Network.Tests
     /// Test of the async connection implementation.
     /// </summary>
     [TestFixture]
+    [Ignore("It's using real sockets")]
     public class AsyncConnectionTest
     {
         /// <summary>

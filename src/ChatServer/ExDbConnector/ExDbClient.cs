@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     /// </summary>
     public class ExDbClient
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(ExDbClient));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ExDbClient));
 
         private readonly string host;
         private readonly int port;

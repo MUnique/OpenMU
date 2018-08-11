@@ -1,7 +1,7 @@
 ﻿import { Store } from "redux";
 import { ApplicationState } from "./index";
+import { HubConnection, HubConnectionBuilder, LogLevel } from "signalr";
 
-declare var $: { connection: { hub: HubConnection } };
 
 export interface HubProxy {
     server: HubServer;
@@ -12,42 +12,43 @@ export interface HubServer {
     unsubscribe(): void;
 }
 
-interface HubConnection {
-    start(onConnected: () => void): void;
-    start(): void;
-    stop(): void;
-    state: number;
-}
-
-export abstract class SignalRConnector<THubProxy extends HubProxy> {
-    static subscribers: any[] = [];
-    static postponedOnFirstSubscription: (() => void)[] = [];
+export abstract class SignalRConnector {
+    subscribers: any[] = [];
+    postponedOnFirstSubscription: (() => void)[] = [];
     hubSubscribers: number;
+    connection: HubConnection;
+    connected: boolean;
     protected store: Store<ApplicationState>;
-    protected hub: THubProxy = null;
 
     constructor(store: Store<ApplicationState>) {
         this.store = store;
         this.hubSubscribers = 0;
-        this.hub = this.initializeHub();
     }
 
     public subscribe(subscriber: any) {
         this.hubSubscribers++;
-        SignalRConnector.subscribers.push(subscriber);
-        if (SignalRConnector.subscribers.length === 1) {
-            SignalRConnector.postponedOnFirstSubscription.push(() => this.onFirstSubscription());
-            console.log("connection start");
-            $.connection.hub.start(SignalRConnector.onConnected);
+        this.subscribers.push(subscriber);
+        if (this.subscribers.length === 1) {
+            this.postponedOnFirstSubscription.push(() => this.onFirstSubscription());
+            let hubPath = this.getHubPath();
+            console.info("connecting to " + hubPath);
+
             // TODO: Handle errors, disconnects, reconnects etc. Extend FetchState accordingly
+            this.connection = new HubConnectionBuilder()
+                .withUrl(hubPath)
+                .configureLogging(LogLevel.Information)
+                .build();
+            this.connection.start()
+                .then(() => this.onConnected())
+                .catch(err => console.error(err.toString()));
         }
-        else if ($.connection.hub.state === 1) {
+        else if (this.connected) {
             console.log("connected, directly calling onFirstSubscription");
             this.onFirstSubscription();
         }
         else if (this.hubSubscribers === 1) {
             console.log("first subscriber of this specific hub type, but hub is already connecting. postponing the call to onFirstSubscription.");
-            SignalRConnector.postponedOnFirstSubscription.push(() => this.onFirstSubscription());
+            this.postponedOnFirstSubscription.push(() => this.onFirstSubscription());
         }
     }
 
@@ -58,29 +59,30 @@ export abstract class SignalRConnector<THubProxy extends HubProxy> {
             this.onLastUnsubscription();
         }
 
-        let index = SignalRConnector.subscribers.indexOf(subscriber);
+        let index = this.subscribers.indexOf(subscriber);
         if (index >= 0) {
-            SignalRConnector.subscribers.splice(index, 1);
-            if (SignalRConnector.subscribers.length === 0) {
+            this.subscribers.splice(index, 1);
+            if (this.subscribers.length === 0) {
                 console.log("connection stop");
-                $.connection.hub.stop();
+                this.connection.stop();
             }
         }
     }
 
-    protected abstract initializeHub(): THubProxy;
-
-    static onConnected(): void {
-        console.log("connected to SignalR server");
-        SignalRConnector.postponedOnFirstSubscription.forEach(callback => callback());
-        SignalRConnector.postponedOnFirstSubscription = [];
-    }
+    protected abstract getHubPath(): string;
 
     protected onFirstSubscription(): void {
-        this.hub.server.subscribe();
+        this.connection.send("Subscribe");
     }
 
     protected onLastUnsubscription(): void {
-        this.hub.server.unsubscribe();
+        this.connection.send("Unsubscribe");
+    }
+
+    private onConnected(): void {
+        console.log("connected to SignalR server");
+        this.connected = true;
+        this.postponedOnFirstSubscription.forEach(callback => callback());
+        this.postponedOnFirstSubscription = [];
     }
 }

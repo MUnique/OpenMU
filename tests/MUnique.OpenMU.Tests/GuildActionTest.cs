@@ -2,10 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace MUnique.OpenMU.Tests
 {
     using System;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
@@ -13,7 +16,6 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the guild player actions.
@@ -49,10 +51,9 @@ namespace MUnique.OpenMU.Tests
         public void GuildRequest()
         {
             var guildRequestAction = new GuildRequestAction(this.gameServerContext);
-            this.guildMasterPlayer.PlayerView.GuildView.Expect(v => v.ShowGuildJoinRequest(this.player));
             guildRequestAction.RequestGuild(this.player, this.guildMasterPlayer.Id);
             Assert.That(this.guildMasterPlayer.LastGuildRequester, Is.SameAs(this.player));
-            this.guildMasterPlayer.PlayerView.GuildView.VerifyAllExpectations();
+            Mock.Get(this.guildMasterPlayer.PlayerView.GuildView).Verify(g => g.ShowGuildJoinRequest(this.player), Times.Once);
         }
 
         /// <summary>
@@ -61,12 +62,11 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void GuildRequestAccept()
         {
-            this.player.PlayerView.GuildView.Expect(v => v.GuildJoinResponse(GuildRequestAnswerResult.Accepted));
             this.RequestGuildAndRespond(true);
 
             Assert.That(this.player.GuildStatus, Is.Not.Null);
             Assert.That(this.player.GuildStatus.GuildId, Is.Not.EqualTo(0));
-            this.player.PlayerView.GuildView.VerifyAllExpectations();
+            Mock.Get(this.player.PlayerView.GuildView).Verify(g => g.GuildJoinResponse(GuildRequestAnswerResult.Accepted), Times.Once);
         }
 
         /// <summary>
@@ -75,10 +75,9 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void GuildRequestRefuse()
         {
-            this.player.PlayerView.GuildView.Expect(v => v.GuildJoinResponse(GuildRequestAnswerResult.Refused));
             this.RequestGuildAndRespond(false);
             Assert.That(this.player.GuildStatus, Is.Null);
-            this.player.PlayerView.GuildView.VerifyAllExpectations();
+            Mock.Get(this.player.PlayerView.GuildView).Verify(g => g.GuildJoinResponse(GuildRequestAnswerResult.Refused), Times.Once);
         }
 
         /// <summary>
@@ -89,9 +88,8 @@ namespace MUnique.OpenMU.Tests
         {
             var action = new GuildMasterAnswerAction();
             this.player.OpenedNpc = new NonPlayerCharacter(null, null, null);
-            this.player.PlayerView.GuildView.Expect(g => g.ShowGuildCreationDialog());
             action.ProcessAnswer(this.player, GuildMasterAnswerAction.Answer.ShowDialog);
-            this.player.PlayerView.GuildView.VerifyAllExpectations();
+            Mock.Get(this.player.PlayerView.GuildView).Verify(g => g.ShowGuildCreationDialog(), Times.Once());
         }
 
         /// <summary>
@@ -117,10 +115,9 @@ namespace MUnique.OpenMU.Tests
         {
             this.RequestGuildAndRespond(true);
             var action = new GuildListRequestAction(this.gameServerContext);
-            this.player.PlayerView.GuildView.Expect(v => v.ShowGuildList(null)).IgnoreArguments();
             action.RequestGuildList(this.player);
-            this.player.PlayerView.GuildView.VerifyAllExpectations();
             var guildList = this.GuildServer.GetGuildList(this.player.GuildStatus.GuildId);
+            Mock.Get(this.player.PlayerView.GuildView).Verify(v => v.ShowGuildList(It.Is<IEnumerable<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this.player.SelectedCharacter.Name))), Times.Once());
             Assert.That(guildList.Any(entry => entry.PlayerName == this.player.SelectedCharacter.Name), Is.True);
         }
 
@@ -134,12 +131,12 @@ namespace MUnique.OpenMU.Tests
 
         private IGameServerContext CreateGameServer()
         {
-            var gameServer = MockRepository.GenerateMock<IGameServerContext>();
-            gameServer.Stub(g => g.Configuration).Return(new OpenMU.DataModel.Configuration.GameConfiguration());
-            gameServer.Stub(g => g.GuildCache).Return(new GuildCache(gameServer, new GuildInfoSerializer()));
-            gameServer.Stub(g => g.GuildServer).Return(this.GuildServer);
+            var gameServer = new Mock<IGameServerContext>();
+            gameServer.Setup(g => g.Configuration).Returns(new OpenMU.DataModel.Configuration.GameConfiguration());
+            gameServer.Setup(g => g.GuildCache).Returns(new GuildCache(gameServer.Object, new GuildInfoSerializer()));
+            gameServer.Setup(g => g.GuildServer).Returns(this.GuildServer);
 
-            return gameServer;
+            return gameServer.Object;
         }
     }
 }

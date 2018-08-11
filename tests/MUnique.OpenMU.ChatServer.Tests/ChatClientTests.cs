@@ -5,10 +5,10 @@
 namespace MUnique.OpenMU.ChatServer.Tests
 {
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Unit tests for the <see cref="ChatClient"/>.
@@ -25,12 +25,12 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager();
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var connection = MockRepository.GenerateMock<IConnection>();
-            var client = new ChatClient(connection, manager);
+            var connection = new Mock<IConnection>();
+            var client = new ChatClient(connection.Object, manager);
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
 
             var authentificationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            connection.Raise(c => c.PacketReceived += null, connection, authentificationPacket);
+            connection.Raise(c => c.PacketReceived += null, connection.Object, authentificationPacket);
             Assert.That(room.ConnectedClients, Contains.Item(client));
         }
 
@@ -43,15 +43,15 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager();
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var connection = MockRepository.GenerateMock<IConnection>();
-            var client = new ChatClient(connection, manager);
+            var connection = new Mock<IConnection>();
+            var client = new ChatClient(connection.Object, manager);
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450674"));
-            connection.Expect(c => c.Disconnect());
+            connection.Setup(c => c.Disconnect()).Verifiable();
 
             var authentificationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            connection.Raise(c => c.PacketReceived += null, connection, authentificationPacket);
+            connection.Raise(c => c.PacketReceived += null, connection.Object, authentificationPacket);
             Assert.That(room.ConnectedClients.Contains(client), Is.False);
-            connection.VerifyAllExpectations();
+            connection.Verify();
         }
 
         /// <summary>
@@ -67,17 +67,17 @@ namespace MUnique.OpenMU.ChatServer.Tests
 
             var authentificationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
 
-            var connection1 = MockRepository.GenerateMock<IConnection>();
-            var client1 = new ChatClient(connection1, manager);
-            connection1.Raise(c => c.PacketReceived += null, connection1, authentificationPacket);
+            var connection1 = new Mock<IConnection>();
+            var client1 = new ChatClient(connection1.Object, manager);
+            connection1.Raise(c => c.PacketReceived += null, connection1.Object, authentificationPacket);
 
-            var connection2 = MockRepository.GenerateMock<IConnection>();
-            var client2 = new ChatClient(connection2, manager);
-            connection2.Expect(c => c.Disconnect()).Repeat.AtLeastOnce();
-            connection2.Raise(c => c.PacketReceived += null, connection2, authentificationPacket);
+            var connection2 = new Mock<IConnection>();
+            var client2 = new ChatClient(connection2.Object, manager);
+            connection2.Setup(c => c.Disconnect()).Verifiable();
+            connection2.Raise(c => c.PacketReceived += null, connection2.Object, authentificationPacket);
             Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));
             Assert.That(room.ConnectedClients, Contains.Item(client1));
-            connection2.VerifyAllExpectations();
+            connection2.VerifyAll();
         }
 
         /// <summary>
@@ -89,12 +89,12 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager();
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var connection = MockRepository.GenerateMock<IConnection>();
-            var client = new ChatClient(connection, manager);
+            var connection = new Mock<IConnection>();
+            var client = new ChatClient(connection.Object, manager);
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
 
             var authentificationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            connection.Raise(c => c.PacketReceived += null, connection, authentificationPacket);
+            connection.Raise(c => c.PacketReceived += null, connection.Object, authentificationPacket);
             Assert.That(client.Nickname, Is.EqualTo("Bob"));
         }
 
@@ -107,13 +107,13 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager();
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var connection = MockRepository.GenerateMock<IConnection>();
-            var client = new ChatClient(connection, manager);
+            var connection = new Mock<IConnection>();
+            var client = new ChatClient(connection.Object, manager);
             var authInfo = new ChatServerAuthenticationInfo(3, roomId, "Bob", "128450673");
             room.RegisterClient(authInfo);
 
             var authentificationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            connection.Raise(c => c.PacketReceived += null, connection, authentificationPacket);
+            connection.Raise(c => c.PacketReceived += null, connection.Object, authentificationPacket);
             Assert.That(client.Index, Is.EqualTo(authInfo.Index));
         }
 
@@ -123,13 +123,13 @@ namespace MUnique.OpenMU.ChatServer.Tests
         [Test]
         public void SentMessageEncryptedProperly()
         {
-            var connection = MockRepository.GenerateMock<IConnection>();
-            var client = new ChatClient(connection, null);
+            var connection = new Mock<IConnection>();
+            var client = new ChatClient(connection.Object, null);
             var expectedPacket = new byte[] { 0xC1, 0x0B, 0x04, 0x01, 0x06, 0xBD, 0x8E, 0xEA, 0xBD, 0x8E, 0xEA };
-            connection.Expect(c => c.Send(null)).IgnoreArguments();
+            byte[] sentPacket = null;
+            connection.Setup(c => c.Send(It.IsAny<byte[]>())).Callback<byte[]>(arg => sentPacket = arg);
             client.SendMessage(1, "AAAAAA");
-            var arguments = connection.GetArgumentsForCallsMadeOn(c => c.Send(null));
-            var sentPacket = arguments.Last()[0] as byte[];
+
             Assert.That(expectedPacket, Is.EqualTo(sentPacket));
         }
 
@@ -142,17 +142,14 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager();
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var connection = MockRepository.GenerateMock<IConnection>();
-            var client = new ChatClient(connection, manager);
+            var connection = new Mock<IConnection>();
+            var client = new ChatClient(connection.Object, manager);
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
 
             var authentificationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            connection.Raise(c => c.PacketReceived += null, connection, authentificationPacket);
-            var arguments = connection.GetArgumentsForCallsMadeOn(c => c.Send(null));
-            var sentPacket = arguments.FirstOrDefault(p => (p.First() as byte[])[0] == 0xC2)[0] as byte[];
+            connection.Raise(c => c.PacketReceived += null, connection.Object, authentificationPacket);
             var expectedPacket = new byte[] { 0xC2, 0x00, 0x13, 0x02, 0x00, 0x00, 0x01, 0x00, 0x00, 0x42, 0x6F, 0x62, 0, 0, 0, 0, 0, 0, 0 };
-            Assert.That(sentPacket, Is.Not.Null);
-            Assert.That(sentPacket, Is.EquivalentTo(expectedPacket));
+            connection.Verify(c => c.Send(It.Is<byte[]>(arg => arg.SequenceEqual(expectedPacket))), Times.Once);
         }
 
         /// <summary>
@@ -164,29 +161,26 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager();
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var connection1 = MockRepository.GenerateMock<IConnection>();
-            var client1 = new ChatClient(connection1, manager);
+            var connection1 = new Mock<IConnection>();
+            var client1 = new ChatClient(connection1.Object, manager);
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
 
             var authentificationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            connection1.Raise(c => c.PacketReceived += null, connection1, authentificationPacket1);
+            connection1.Raise(c => c.PacketReceived += null, connection1.Object, authentificationPacket1);
 
-            var connection2 = MockRepository.GenerateMock<IConnection>();
-            var client2 = new ChatClient(connection2, manager);
+            var connection2 = new Mock<IConnection>();
+            var client2 = new ChatClient(connection2.Object, manager);
             var authentificationPacket2 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
-            connection2.Raise(c => c.PacketReceived += null, connection2, authentificationPacket2);
+            connection2.Raise(c => c.PacketReceived += null, connection2.Object, authentificationPacket2);
 
-            var arguments = connection2.GetArgumentsForCallsMadeOn(c => c.Send(null));
-            var sentPacket = arguments.FirstOrDefault(p => (p.First() as byte[])[0] == 0xC2)[0] as byte[];
             var expectedPacket = new byte[]
             {
                 0xC2, 0x00, 0x1E, 0x02, 0x00, 0x00, 0x02, 0x00,
                 0x00, 0x42, 0x6F, 0x62, 0, 0, 0, 0, 0, 0, 0,
                 0x01, 0x41, 0x6C, 0x69, 0x63, 0x65, 0, 0, 0, 0, 0,
             };
-            Assert.That(sentPacket, Is.Not.Null);
-            Assert.That(sentPacket, Is.EquivalentTo(expectedPacket));
+            connection2.Verify(c => c.Send(It.Is<byte[]>(p => p.SequenceEqual(expectedPacket))), Times.Once);
         }
 
         /// <summary>
@@ -198,26 +192,24 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager();
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var connection1 = MockRepository.GenerateMock<IConnection>();
-            var client1 = new ChatClient(connection1, manager);
+            var connection1 = new Mock<IConnection>();
+            var client1 = new ChatClient(connection1.Object, manager);
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
 
             var authentificationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            connection1.Raise(c => c.PacketReceived += null, connection1, authentificationPacket1);
+            connection1.Raise(c => c.PacketReceived += null, connection1.Object, authentificationPacket1);
 
-            var connection2 = MockRepository.GenerateMock<IConnection>();
-            var client2 = new ChatClient(connection2, manager);
+            var connection2 = new Mock<IConnection>();
+            var client2 = new ChatClient(connection2.Object, manager);
             var authentificationPacket2 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
-            connection2.Raise(c => c.PacketReceived += null, connection2, authentificationPacket2);
-            var arguments = connection1.GetArgumentsForCallsMadeOn(c => c.Send(null));
-            var sentPacket = arguments.FirstOrDefault(p => (p.First() as byte[])[0] == 0xC1)[0] as byte[];
+            connection2.Raise(c => c.PacketReceived += null, connection2.Object, authentificationPacket2);
+
             var expectedPacket = new byte[]
             {
                 0xC1, 0x0F, 0x01, 0x00, 0x01, 0x41, 0x6C, 0x69, 0x63, 0x65, 0, 0, 0, 0, 0,
             };
-            Assert.That(sentPacket, Is.Not.Null);
-            Assert.That(sentPacket, Is.EquivalentTo(expectedPacket));
+            connection1.Verify(c => c.Send(It.Is<byte[]>(p => p.SequenceEqual(expectedPacket))), Times.Once);
         }
 
         /// <summary>
@@ -230,31 +222,28 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager();
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var connection1 = MockRepository.GenerateMock<IConnection>();
-            var client1 = new ChatClient(connection1, manager);
+            var connection1 = new Mock<IConnection>();
+            var client1 = new ChatClient(connection1.Object, manager);
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
 
             var authentificationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            connection1.Raise(c => c.PacketReceived += null, connection1, authentificationPacket1);
+            connection1.Raise(c => c.PacketReceived += null, connection1.Object, authentificationPacket1);
 
-            var connection2 = MockRepository.GenerateMock<IConnection>();
-            var client2 = new ChatClient(connection2, manager);
+            var connection2 = new Mock<IConnection>();
+            var client2 = new ChatClient(connection2.Object, manager);
             var authentificationPacket2 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
-            connection2.Raise(c => c.PacketReceived += null, connection2, authentificationPacket2);
+            connection2.Raise(c => c.PacketReceived += null, connection2.Object, authentificationPacket2);
             client1.LogOff();
 
-            var arguments = connection2.GetArgumentsForCallsMadeOn(c => c.Send(null));
-            var sentPacket = arguments.FirstOrDefault(p => (p.Last() as byte[])[0] == 0xC1)[0] as byte[];
             var expectedPacket = new byte[]
             {
                 0xC1, 0x0F, 0x01, 0x01, 0x00, 0x42, 0x6F, 0x62, 0, 0, 0, 0, 0, 0, 0,
             };
 
+            connection2.Verify(c => c.Send(It.Is<byte[]>(p => p.SequenceEqual(expectedPacket))), Times.Once);
             Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));
             Assert.That(room.ConnectedClients, Contains.Item(client2));
-            Assert.That(sentPacket, Is.Not.Null);
-            Assert.That(sentPacket, Is.EquivalentTo(expectedPacket));
         }
     }
 }

@@ -30,8 +30,8 @@ namespace MUnique.OpenMU.AdminPanel
             this.servers = servers;
             this.persistenceContextProvider = persistenceContextProvider;
 
-            JsonSettings.Converters.Add(new AttributeDictionaryConverter(this.persistenceContextProvider));
-            JsonSettings.Converters.Add(new TimeSpanConverter());
+            JsonConfiguration.Default.Converters.Add(new AttributeDictionaryConverter(this.persistenceContextProvider));
+            JsonConfiguration.Default.Converters.Add(new TimeSpanConverter());
         }
 
         /// <inheritdoc/>

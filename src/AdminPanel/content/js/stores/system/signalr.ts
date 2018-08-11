@@ -1,9 +1,10 @@
 ﻿import { Middleware, MiddlewareAPI, Action, Store, Dispatch } from "redux";
 
 import { ApplicationState } from "../index";
-import { SignalRConnector, HubProxy } from "../signalr";
+import { SignalRConnector } from "../signalr";
 import { Constants, SystemSubscribeAction, SystemUnsubscribeAction, systemUpdate, } from "./actions";
 
+/*
 declare var $: { connection: { systemHub: SystemHubProxy } };
 
 interface SystemHubClient {
@@ -15,22 +16,24 @@ interface SystemHubProxy extends HubProxy {
 }
 
 interface ServerHub {
-}
+}*/
 
 export var systemHubConnector: SystemHubSignalRConnector;
 
-class SystemHubSignalRConnector extends SignalRConnector<SystemHubProxy> {
-
+class SystemHubSignalRConnector extends SignalRConnector {
     constructor(store: Store<ApplicationState>) {
         super(store);
     }
 
-    protected initializeHub(): SystemHubProxy {
-        var hubProxy = $.connection.systemHub;
-        hubProxy.client.update =
+    protected getHubPath(): string {
+        return "signalr/hubs/systemHub";
+    }
+
+    onFirstSubscription(): void {
+        this.connection.on("update",
             (cpuPercentTotal: number, cpuPercentInstance: number, bytesSent: number, bytesReceived: number) =>
-                this.store.dispatch(systemUpdate(cpuPercentTotal, cpuPercentInstance, bytesSent, bytesReceived));
-        return hubProxy;
+            this.store.dispatch(systemUpdate(cpuPercentTotal, cpuPercentInstance, bytesSent, bytesReceived)));
+        super.onFirstSubscription();
     }
 }
 

@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.AdminPanel
     /// <summary>
     /// <see cref="NancyModule"/> for all server related functions.
     /// </summary>
-    public class ServerModule : NancyModule
+    public sealed class ServerModule : NancyModule
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ServerModule));
         private readonly IList<IManageableServer> servers;
@@ -27,9 +27,9 @@ namespace MUnique.OpenMU.AdminPanel
             : base("admin/server")
         {
             this.servers = servers;
-            this.Get["shutdown/{serverId:int}"] = this.ShutdownServer;
-            this.Get["start/{serverId:int}"] = this.StartServer;
-            this.Get["list"] = _ => this.GetServerList().ToList();
+            this.Get("shutdown/{serverId:int}", args => this.ShutdownServer(args));
+            this.Get("start/{serverId:int}", args => this.StartServer(args));
+            this.Get("list", args => this.GetServerList().ToList());
         }
 
         private IEnumerable<object> GetServerList()

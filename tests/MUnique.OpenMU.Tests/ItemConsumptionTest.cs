@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -14,7 +15,6 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
     using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the item consumption action.
@@ -92,9 +92,9 @@ namespace MUnique.OpenMU.Tests
         public void JewelOfSoul(byte itemLevel, bool consumptionExpectation, bool success, byte expectedItemLevel)
         {
             var contextProvider = new InMemoryPersistenceContextProvider();
-            var randomizer = MockRepository.GenerateStub<IRandomizer>();
-            randomizer.Stub(r => r.NextRandomBool(50)).Return(success);
-            var consumeHandler = new SoulJewelConsumeHandler(contextProvider, randomizer);
+            var randomizer = new Mock<IRandomizer>();
+            randomizer.Setup(r => r.NextRandomBool(50)).Returns(success);
+            var consumeHandler = new SoulJewelConsumeHandler(contextProvider, randomizer.Object);
 
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();
@@ -304,11 +304,10 @@ namespace MUnique.OpenMU.Tests
         {
             var consumeHandler = new AlcoholConsumeHandler();
             var player = this.GetPlayer();
-            player.PlayerView.Expect(view => view.DrinkAlcohol()).Repeat.Never();
             var success = consumeHandler.ConsumeItem(player, 12, 0);
 
             Assert.That(success, Is.False);
-            player.PlayerView.VerifyAllExpectations();
+            Mock.Get(player.PlayerView).Verify(view => view.DrinkAlcohol(), Times.Never);
         }
 
         /// <summary>
@@ -321,12 +320,11 @@ namespace MUnique.OpenMU.Tests
             var player = this.GetPlayer();
             var item = this.GetItem();
             player.Inventory.AddItem(ItemSlot, item);
-            player.PlayerView.Expect(view => view.DrinkAlcohol()).Repeat.Once();
             var success = consumeHandler.ConsumeItem(player, ItemSlot, 0);
 
             Assert.That(success, Is.True);
             Assert.That(player.Inventory.Items.Any(), Is.False);
-            player.PlayerView.VerifyAllExpectations();
+            Mock.Get(player.PlayerView).Verify(view => view.DrinkAlcohol(), Times.Once);
         }
 
         /// <summary>
@@ -381,33 +379,38 @@ namespace MUnique.OpenMU.Tests
 
         private Item GetItemWithPossibleOption()
         {
-            var item = MockRepository.GenerateStub<Item>();
-            item.Stub(i => i.ItemOptions).Return(new List<ItemOptionLink>());
-            item.Definition = MockRepository.GenerateStub<ItemDefinition>();
-            item.Definition.Stub(d => d.PossibleItemOptions).Return(new List<ItemOptionDefinition>());
-            item.Definition.Stub(d => d.BasePowerUpAttributes).Return(new List<ItemBasePowerUpDefinition>());
-            item.Durability = 1;
-            item.Definition.Width = 1;
-            item.Definition.Height = 2;
-            var option = MockRepository.GenerateStub<ItemOptionDefinition>();
-            option.Stub(o => o.PossibleOptions).Return(new List<IncreasableItemOption>());
-            option.MaximumOptionsPerItem = 4;
-            option.AddsRandomly = true;
+            var item = new Mock<Item>();
+            item.SetupAllProperties();
+            item.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+            var definition = new Mock<ItemDefinition>();
+            definition.SetupAllProperties();
+            definition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());
+            definition.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+            item.Object.Definition = definition.Object;
+            item.Object.Durability = 1;
+            item.Object.Definition.Width = 1;
+            item.Object.Definition.Height = 2;
+            var option = new Mock<ItemOptionDefinition>();
+            option.SetupAllProperties();
+            option.Setup(o => o.PossibleOptions).Returns(new List<IncreasableItemOption>());
+            option.Object.MaximumOptionsPerItem = 4;
+            option.Object.AddsRandomly = true;
             option.Name = "Damage Option";
 
-            var possibleOption = MockRepository.GenerateStub<IncreasableItemOption>();
-            possibleOption.OptionType = ItemOptionTypes.Option;
-            possibleOption.Stub(o => o.LevelDependentOptions).Return(new List<ItemOptionOfLevel>());
-            option.PossibleOptions.Add(possibleOption);
+            var possibleOption = new Mock<IncreasableItemOption>();
+            possibleOption.SetupAllProperties();
+            possibleOption.Setup(o => o.LevelDependentOptions).Returns(new List<ItemOptionOfLevel>());
+            possibleOption.Object.OptionType = ItemOptionTypes.Option;
+            option.Object.PossibleOptions.Add(possibleOption.Object);
             for (int level = 1; level <= 4; level++)
             {
                 var levelDependentOption = new ItemOptionOfLevel();
                 levelDependentOption.Level = level;
-                possibleOption.LevelDependentOptions.Add(levelDependentOption);
+                possibleOption.Object.LevelDependentOptions.Add(levelDependentOption);
             }
 
-            item.Definition.PossibleItemOptions.Add(option);
-            return item;
+            item.Object.Definition.PossibleItemOptions.Add(option.Object);
+            return item.Object;
         }
     }
 }

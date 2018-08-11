@@ -4,11 +4,11 @@
 
 namespace MUnique.OpenMU.Tests
 {
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Party;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the party functions.
@@ -96,15 +96,14 @@ namespace MUnique.OpenMU.Tests
             party.Add(partyMember1);
             var partyMember2 = CreatePartyMember();
             party.Add(partyMember2);
-            partyMember1.PlayerView.PartyView.Expect(v => v.PartyClosed());
-            partyMember2.PlayerView.PartyView.Expect(v => v.PartyClosed());
             var partyMember2Index = (byte)(party.PartyList.Count - 1);
             party.KickPlayer(partyMember1, partyMember2Index);
             Assert.That(partyMember1.Party, Is.Null);
             Assert.That(partyMember2.Party, Is.Null);
             Assert.That(party.PartyList, Is.Null.Or.Empty);
-            partyMember1.PlayerView.PartyView.VerifyAllExpectations();
-            partyMember2.PlayerView.PartyView.VerifyAllExpectations();
+
+            Mock.Get(partyMember1.PlayerView.PartyView).Verify(v => v.PartyClosed(), Times.Once);
+            Mock.Get(partyMember2.PlayerView.PartyView).Verify(v => v.PartyClosed(), Times.Once);
         }
 
         /// <summary>
@@ -117,11 +116,10 @@ namespace MUnique.OpenMU.Tests
             var player = CreatePartyMember();
             var toRequest = CreatePartyMember();
             player.Observers.Add(toRequest);
-            toRequest.PlayerView.PartyView.Expect(v => v.ShowPartyRequest(player));
 
             handler.HandlePartyRequest(player, toRequest);
 
-            toRequest.PlayerView.PartyView.VerifyAllExpectations();
+            Mock.Get(toRequest.PlayerView.PartyView).Verify(v => v.ShowPartyRequest(player), Times.Once);
             Assert.That(toRequest.LastPartyRequester, Is.SameAs(player));
         }
 
@@ -136,15 +134,14 @@ namespace MUnique.OpenMU.Tests
             var requester = CreatePartyMember();
             player.LastPartyRequester = requester;
             player.PlayerState.TryAdvanceTo(PlayerState.PartyRequest);
-            player.PlayerView.PartyView.Expect(v => v.UpdatePartyList());
-            requester.PlayerView.PartyView.Expect(v => v.UpdatePartyList());
+
             handler.HandleResponse(player, true);
             Assert.That(player.Party, Is.Not.Null);
             Assert.That(player.Party.PartyMaster, Is.SameAs(requester));
             Assert.That(player.LastPartyRequester, Is.Null);
             Assert.That(player.Party.PartyList, Contains.Item(player));
-            player.PlayerView.PartyView.VerifyAllExpectations();
-            requester.PlayerView.PartyView.VerifyAllExpectations();
+            Mock.Get(player.PlayerView.PartyView).Verify(v => v.UpdatePartyList(), Times.AtLeastOnce);
+            Mock.Get(requester.PlayerView.PartyView).Verify(v => v.UpdatePartyList(), Times.AtLeastOnce);
         }
 
         /// <summary>
@@ -164,15 +161,12 @@ namespace MUnique.OpenMU.Tests
 
             // now another player will try to request party from the player, which should fail
             var requester = CreatePartyMember();
-            player.PlayerView.PartyView.Expect(v => v.ShowPartyRequest(requester)).Repeat.Never();
             player.LastPartyRequester = requester;
-
             handler.HandleResponse(player, true);
             Assert.That(player.Party.PartyList, Is.Not.Contains(requester));
             Assert.That(player.LastPartyRequester, Is.Null);
             Assert.That(requester.Party, Is.Null);
-            requester.PlayerView.PartyView.VerifyAllExpectations();
-            player.PlayerView.PartyView.VerifyAllExpectations();
+            Mock.Get(player.PlayerView.PartyView).Verify(v => v.ShowPartyRequest(requester), Times.Never);
         }
 
         private static Player CreatePartyMember()
@@ -196,10 +190,10 @@ namespace MUnique.OpenMU.Tests
 
         private IGameContext GetGameServer()
         {
-            var gameServer = MockRepository.GenerateStub<IGameContext>();
-            gameServer.Stub(g => g.Configuration).Return(new GameConfiguration());
-            gameServer.Configuration.MaximumPartySize = 5;
-            return gameServer;
+            var gameServer = new Mock<IGameContext>();
+            gameServer.Setup(g => g.Configuration).Returns(new GameConfiguration());
+            gameServer.Object.Configuration.MaximumPartySize = 5;
+            return gameServer.Object;
         }
     }
 }

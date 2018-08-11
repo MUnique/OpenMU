@@ -5,12 +5,12 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameServer.RemoteView;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the <see cref="AppearanceSerializer"/>.
@@ -25,10 +25,10 @@ namespace MUnique.OpenMU.Tests
         public void NewDarkKnightWithSmallAxe()
         {
             var serializer = new AppearanceSerializer();
-            var appeareanceData = MockRepository.GenerateStub<IAppearanceData>();
-            appeareanceData.Stub(a => a.CharacterClass).Return(new CharacterClass() { Number = 0x20 >> 3 }); // Dark Knight;
-            appeareanceData.Stub(a => a.EquippedItems).Return(this.GetSmallAxeEquipped());
-            var data = serializer.GetAppearanceData(appeareanceData);
+            var appeareanceData = new Mock<IAppearanceData>();
+            appeareanceData.Setup(a => a.CharacterClass).Returns(new CharacterClass() { Number = 0x20 >> 3 }); // Dark Knight;
+            appeareanceData.Setup(a => a.EquippedItems).Returns(this.GetSmallAxeEquipped());
+            var data = serializer.GetAppearanceData(appeareanceData.Object);
             var expected = new byte[] { 0x20, 0x00, 0xFF, 0xFF, 0xFF, 0xF3, 0x00, 0x00, 0x00, 0xF8, 0x00, 0x00, 0x20, 0xFF, 0xFF, 0xFF, 0x00, 0x00 };
             Assert.That(data, Is.EquivalentTo(expected));
         }

@@ -30,10 +30,10 @@ namespace MUnique.OpenMU.AdminPanel
             : base("/admin/account")
         {
             this.persistenceContextProvider = persistenceContextProvider;
-
-            this.Post["save"] = this.SaveAccount;
-            this.Post["delete/{accountId:string}"] = this.DeleteAccount;
-            this.Get["list/{offset:int}/{count:int}"] = this.GetAccounts;
+            
+            this.Post("save", args => this.SaveAccount(args));
+            this.Post("delete/{accountId:string}", args => this.DeleteAccount(args));
+            this.Get("list/{offset:int}/{count:int}", args => this.GetAccounts(args));
         }
 
         private object SaveAccount(dynamic parameters)

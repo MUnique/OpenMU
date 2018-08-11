@@ -5,10 +5,10 @@
 namespace MUnique.OpenMU.ChatServer.Tests
 {
     using System;
+    using Moq;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.Interfaces;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Unit tests for the <see cref="ChatRoom"/>.
@@ -78,8 +78,8 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
-            var chatClient = MockRepository.GenerateStub<IChatClient>();
-            Assert.That(room.TryJoin(chatClient), Is.False);
+            var chatClient = new Mock<IChatClient>();
+            Assert.That(room.TryJoin(chatClient.Object), Is.False);
         }
 
         /// <summary>
@@ -93,9 +93,9 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
-            var chatClient = MockRepository.GenerateStub<IChatClient>();
-            chatClient.Stub(c => c.AuthenticationToken).Return("987654321");
-            Assert.That(room.TryJoin(chatClient), Is.False);
+            var chatClient = new Mock<IChatClient>();
+            chatClient.Setup(c => c.AuthenticationToken).Returns("987654321");
+            Assert.That(room.TryJoin(chatClient.Object), Is.False);
         }
 
         /// <summary>
@@ -109,9 +109,9 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
-            var chatClient = MockRepository.GenerateStub<IChatClient>();
-            chatClient.Stub(c => c.AuthenticationToken).Return(authenticationInfo.AuthenticationToken);
-            Assert.That(room.TryJoin(chatClient), Is.True);
+            var chatClient = new Mock<IChatClient>();
+            chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
+            Assert.That(room.TryJoin(chatClient.Object), Is.True);
         }
 
         /// <summary>
@@ -125,11 +125,10 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
-            var chatClient = MockRepository.GenerateMock<IChatClient>();
-            chatClient.Stub(c => c.AuthenticationToken).Return(authenticationInfo.AuthenticationToken);
-            chatClient.Expect(c => c.SendChatRoomClientList(room.ConnectedClients));
-            room.TryJoin(chatClient);
-            chatClient.VerifyAllExpectations();
+            var chatClient = new Mock<IChatClient>();
+            chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
+            room.TryJoin(chatClient.Object);
+            chatClient.Verify(c => c.SendChatRoomClientList(room.ConnectedClients), Times.Once);
         }
 
         /// <summary>
@@ -143,11 +142,11 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
-            var chatClient = MockRepository.GenerateStub<IChatClient>();
-            chatClient.Stub(c => c.AuthenticationToken).Return(authenticationInfo.AuthenticationToken);
-            room.TryJoin(chatClient);
+            var chatClient = new Mock<IChatClient>();
+            chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
+            room.TryJoin(chatClient.Object);
             Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));
-            Assert.That(room.ConnectedClients, Contains.Item(chatClient));
+            Assert.That(room.ConnectedClients, Contains.Item(chatClient.Object));
         }
 
         /// <summary>
@@ -165,17 +164,17 @@ namespace MUnique.OpenMU.ChatServer.Tests
             room.RegisterClient(authenticationInfo0);
             room.RegisterClient(authenticationInfo1);
 
-            var chatClient0 = MockRepository.GenerateMock<IChatClient>();
-            chatClient0.Stub(c => c.AuthenticationToken).Return(authenticationInfo0.AuthenticationToken);
-            chatClient0.Expect(c => c.SendChatRoomClientUpdate(clientId1, authenticationInfo1.ClientName, ChatRoomClientUpdateType.Joined));
+            var chatClient0 = new Mock<IChatClient>();
+            chatClient0.SetupAllProperties();
+            chatClient0.Setup(c => c.AuthenticationToken).Returns(authenticationInfo0.AuthenticationToken);
+            var chatClient1 = new Mock<IChatClient>();
+            chatClient1.SetupAllProperties();
+            chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-            var chatClient1 = MockRepository.GenerateStub<IChatClient>();
-            chatClient1.Stub(c => c.AuthenticationToken).Return(authenticationInfo1.AuthenticationToken);
+            room.TryJoin(chatClient0.Object);
+            room.TryJoin(chatClient1.Object);
 
-            room.TryJoin(chatClient0);
-            room.TryJoin(chatClient1);
-
-            chatClient0.VerifyAllExpectations();
+            chatClient0.Verify(c => c.SendChatRoomClientUpdate(clientId1, authenticationInfo1.ClientName, ChatRoomClientUpdateType.Joined), Times.Once);
         }
 
         /// <summary>
@@ -193,19 +192,19 @@ namespace MUnique.OpenMU.ChatServer.Tests
             room.RegisterClient(authenticationInfo0);
             room.RegisterClient(authenticationInfo1);
 
-            var chatClient0 = MockRepository.GenerateStub<IChatClient>();
-            chatClient0.Stub(c => c.AuthenticationToken).Return(authenticationInfo0.AuthenticationToken);
+            var chatClient0 = new Mock<IChatClient>();
+            chatClient0.SetupAllProperties();
+            chatClient0.Setup(c => c.AuthenticationToken).Returns(authenticationInfo0.AuthenticationToken);
 
-            var chatClient1 = MockRepository.GenerateMock<IChatClient>();
-            chatClient1.Stub(c => c.AuthenticationToken).Return(authenticationInfo1.AuthenticationToken);
+            var chatClient1 = new Mock<IChatClient>();
+            chatClient1.SetupAllProperties();
+            chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-            room.TryJoin(chatClient0);
-            room.TryJoin(chatClient1);
+            room.TryJoin(chatClient0.Object);
+            room.TryJoin(chatClient1.Object);
 
-            chatClient1.Expect(c => c.SendChatRoomClientUpdate(clientId0, authenticationInfo0.ClientName, ChatRoomClientUpdateType.Left));
-            room.Leave(chatClient0);
-
-            chatClient1.VerifyAllExpectations();
+            room.Leave(chatClient0.Object);
+            chatClient1.Verify(c => c.SendChatRoomClientUpdate(clientId0, authenticationInfo0.ClientName, ChatRoomClientUpdateType.Left), Times.Once);
         }
 
         /// <summary>
@@ -224,21 +223,18 @@ namespace MUnique.OpenMU.ChatServer.Tests
             room.RegisterClient(authenticationInfo0);
             room.RegisterClient(authenticationInfo1);
 
-            var chatClient0 = MockRepository.GenerateMock<IChatClient>();
-            chatClient0.Stub(c => c.AuthenticationToken).Return(authenticationInfo0.AuthenticationToken);
+            var chatClient0 = new Mock<IChatClient>();
+            chatClient0.Setup(c => c.AuthenticationToken).Returns(authenticationInfo0.AuthenticationToken);
 
-            var chatClient1 = MockRepository.GenerateMock<IChatClient>();
-            chatClient1.Stub(c => c.AuthenticationToken).Return(authenticationInfo1.AuthenticationToken);
+            var chatClient1 = new Mock<IChatClient>();
+            chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-            room.TryJoin(chatClient0);
-            room.TryJoin(chatClient1);
+            room.TryJoin(chatClient0.Object);
+            room.TryJoin(chatClient1.Object);
 
-            chatClient0.Expect(c => c.SendMessage(clientId1, chatMessage));
-            chatClient1.Expect(c => c.SendMessage(clientId1, chatMessage));
             room.SendMessage(clientId1, chatMessage);
-
-            chatClient0.VerifyAllExpectations();
-            chatClient1.VerifyAllExpectations();
+            chatClient0.Verify(c => c.SendMessage(clientId1, chatMessage), Times.Once);
+            chatClient1.Verify(c => c.SendMessage(clientId1, chatMessage), Times.Once);
         }
 
         /// <summary>
@@ -256,18 +252,18 @@ namespace MUnique.OpenMU.ChatServer.Tests
             room.RegisterClient(authenticationInfo0);
             room.RegisterClient(authenticationInfo1);
 
-            var chatClient0 = MockRepository.GenerateStub<IChatClient>();
-            chatClient0.Stub(c => c.AuthenticationToken).Return(authenticationInfo0.AuthenticationToken);
+            var chatClient0 = new Mock<IChatClient>();
+            chatClient0.Setup(c => c.AuthenticationToken).Returns(authenticationInfo0.AuthenticationToken);
 
-            var chatClient1 = MockRepository.GenerateStub<IChatClient>();
-            chatClient1.Stub(c => c.AuthenticationToken).Return(authenticationInfo1.AuthenticationToken);
+            var chatClient1 = new Mock<IChatClient>();
+            chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
             var eventCalled = false;
             room.RoomClosed += (sender, e) => eventCalled = true;
-            room.TryJoin(chatClient0);
-            room.TryJoin(chatClient1);
-            room.Leave(chatClient0);
-            room.Leave(chatClient1);
+            room.TryJoin(chatClient0.Object);
+            room.TryJoin(chatClient1.Object);
+            room.Leave(chatClient0.Object);
+            room.Leave(chatClient1.Object);
             Assert.That(eventCalled, Is.True);
         }
     }

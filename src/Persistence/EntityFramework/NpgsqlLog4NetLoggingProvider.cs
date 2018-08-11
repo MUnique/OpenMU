@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>The logger.</returns>
         public NpgsqlLogger CreateLogger(string name)
         {
-            var logger = LogManager.GetLogger(name);
+            var logger = LogManager.GetLogger(typeof(NpgsqlLog4NetLoggingProvider).Assembly, name);
             return new NpgsqlLog4NetLogger(logger);
         }
 

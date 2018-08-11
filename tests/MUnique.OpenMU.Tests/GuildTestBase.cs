@@ -5,12 +5,12 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
+    using Moq;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Base class for guild related tests.
@@ -20,12 +20,12 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Gets or sets the first game server.
         /// </summary>
-        protected IGameServer GameServer0 { get; set; }
+        protected Mock<IGameServer> GameServer0 { get; set; }
 
         /// <summary>
         /// Gets or sets the second game server.
         /// </summary>
-        protected IGameServer GameServer1 { get; set; }
+        protected Mock<IGameServer> GameServer1 { get; set; }
 
         /// <summary>
         /// Gets or sets the repository manager.
@@ -53,12 +53,12 @@ namespace MUnique.OpenMU.Tests
         [SetUp]
         public virtual void Setup()
         {
-            this.GameServer0 = MockRepository.GenerateMock<IGameServer>();
-            this.GameServer1 = MockRepository.GenerateMock<IGameServer>();
+            this.GameServer0 = new Mock<IGameServer>();
+            this.GameServer1 = new Mock<IGameServer>();
             this.PersistenceContextProvider = new InMemoryPersistenceContextProvider();
 
             this.GuildMaster = this.GetGuildMaster();
-            this.GameServers = new Dictionary<int, IGameServer> { { 0, this.GameServer0 }, { 1, this.GameServer1 } };
+            this.GameServers = new Dictionary<int, IGameServer> { { 0, this.GameServer0.Object }, { 1, this.GameServer1.Object } };
             this.GuildServer = new OpenMU.GuildServer.GuildServer(this.GameServers, this.PersistenceContextProvider);
             var guildStatus = this.GuildServer.CreateGuild("Foobar", this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
             this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, this.GuildMaster.Id, 0);

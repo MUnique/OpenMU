@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
 {
     using System;
     using System.Linq;
-    using Microsoft.EntityFrameworkCore;
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;

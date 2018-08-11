@@ -1,205 +1,43 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <ProjectGuid>{E3C36FF6-7205-4F9C-9242-A6B3441FF7F7}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>Library</OutputType>
-    <RootNamespace>MUnique.OpenMU.Network</RootNamespace>
-    <AssemblyName>MUnique.OpenMU.Network</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <SignAssembly>False</SignAssembly>
-    <DelaySign>False</DelaySign>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <NoWin32Manifest>False</NoWin32Manifest>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/MUnique/OpenMU</RepositoryUrl>
+    <PackageProjectUrl>https://munique.net</PackageProjectUrl>
+    <PackageLicenseUrl>http://opensource.org/licenses/mit-license.php</PackageLicenseUrl>
+    <PackageTags>MUnique OpenMU tcp</PackageTags>
+    <PackageId>munique.openmu.network</PackageId>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>x86</PlatformTarget>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <FileAlignment>4096</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.Network.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Network.XML</DocumentationFile>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+	<DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Network.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Net.Http" />
+    <Compile Remove="Analyzer\**" />
+    <EmbeddedResource Remove="Analyzer\**" />
+    <None Remove="Analyzer\**" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="ArrayExtensions.cs" />
-    <Compile Include="ClientAcceptEventArgs.cs" />
-    <Compile Include="ComposableDecryptor.cs" />
-    <Compile Include="ComposableEncryptor.cs" />
-    <Compile Include="Connection.cs" />
-    <Compile Include="Counter.cs" />
-    <Compile Include="Decryptor.cs" />
-    <Compile Include="Encryptor.cs" />
-    <Compile Include="SimpleModulus\SimpleModulusDecryptor.cs" />
-    <Compile Include="Xor\DefaultKeys.cs" />
-    <Compile Include="IDecryptor.cs" />
-    <Compile Include="SimpleModulus\InvalidBlockChecksumException.cs" />
-    <Compile Include="Listener.cs" />
-    <Compile Include="NumberConversionExtensions.cs" />
-    <Compile Include="PacketTwister\IPacketTwister.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfPing.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfItemPickup.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfItemDrop.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfItemMove.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfItemConsume.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfNpcTalkRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfNpcDialogClose.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfNpcItemBuyRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfNpcItemSellRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfItemRepairRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfTradeRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfLoginLogout.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfTradeResponse.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfTradeMoney.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfTradeButton.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfTradeCancel.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfPersonalShop.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfPartyRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfPartyRequestAnswer.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfPartyList.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfPartyKick.cs" />
-    <Compile Include="PacketTwister\PacketTwister29.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfCharacterManagement.cs" />
-    <Compile Include="PacketTwister\PacketTwister30.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildJoinRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildJoinResponse.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildList.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildKick.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildMasterResponse.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildMasterInfo.cs" />
-    <Compile Include="PacketTwister\PacketTwister37.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildWarRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildInfo.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfChat.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfCastleSiege.cs" />
-    <Compile Include="PacketTwister\PacketTwister41.cs" />
-    <Compile Include="PacketTwister\PacketTwister42.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfCastleSiegeWeapon.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfCrywolf.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGuildAssign.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfAllianceJoinRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwister47.cs" />
-    <Compile Include="PacketTwister\PacketTwister48.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfGameGuardAuth.cs" />
-    <Compile Include="PacketTwister\PacketTwister5.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfVaultMoney.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfVaultClose.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfVaultPassword.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfChaosMachineMix.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfChaosMachineClose.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfDevilSquareEnter.cs" />
-    <Compile Include="PacketTwister\PacketTwisterDevilSquareRemainingTime.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfEventChipRegistration.cs" />
-    <Compile Include="PacketTwister\PacketTwister58.cs" />
-    <Compile Include="PacketTwister\PacketTwister59.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfWhisper.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfQuestInfoRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfQuestState.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfPetItemCommand.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfPetItemInfoRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfBloodCastleEnterRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfBloodCastleInfoRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfLottoRegistration.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfFriendList.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfFriendAddRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfFriendAddResponse.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfClientChecksum.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfFriendDeleteRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfFriendStateChange.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfLetterSendRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfLetterReadRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfLetterDeleteRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfLetterListRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfChatRoomCreateRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfChatInvitationRequest.cs" />
-    <Compile Include="PacketTwister\PacketTwister78.cs" />
-    <Compile Include="PacketTwister\PacketTwister79.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfAnimation.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfCashShop.cs" />
-    <Compile Include="PacketTwister\PacketTwister81.cs" />
-    <Compile Include="PacketTwister\PacketTwisterOfSkill.cs" />
-    <Compile Include="PacketTwister\PacketTwistRunner.cs" />
-    <Compile Include="PublicIpResolver.cs" />
-    <Compile Include="SimpleModulus\SimpleModulusKeyGenerator.cs" />
-    <Compile Include="SimpleModulus\SimpleModulusKeys.cs" />
-    <Compile Include="SimpleModulus\SimpleModulusKeySerializer.cs" />
-    <Compile Include="Xor\Xor32Decryptor.cs" />
-    <Compile Include="Xor\Xor32Encryptor.cs" />
-    <Compile Include="Xor\Xor3Decryptor.cs" />
-    <Compile Include="Xor\Xor3Encryptor.cs" />
-    <AdditionalFiles Include="..\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
-    <Compile Include="SimpleModulus\SimpleModulusBase.cs" />
-    <Compile Include="SimpleModulus\SimpleModulusEncryptor.cs" />
-    <Compile Include="IConnection.cs" />
-    <Compile Include="IEncryptor.cs" />
-    <Compile Include="ListPacketQueue.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="MUnique.OpenMU.Network.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
-    <None Include="Readme.md" />
+    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup Condition=" '$(TRAVIS)' == '' ">
-    <PostBuildEvent>nuget pack $(ProjectPath) -Symbols -Prop Configuration=$(ConfigurationName) -Prop Platform=$(Platform) -IncludeReferencedProjects
-exit 0;</PostBuildEvent>
-  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+  </ItemGroup>
+
 </Project>

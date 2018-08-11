@@ -4,11 +4,13 @@
 
 namespace MUnique.OpenMU.Tests
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Moq;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests for the <see cref="ObserverToWorldViewAdapter"/>.
@@ -22,10 +24,10 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void LocateableAddedAlreadyExists()
         {
-            var worldObserver = MockRepository.GenerateStub<IWorldObserver>();
-            var view = MockRepository.GenerateStrictMock<IWorldView>();
-            worldObserver.Stub(o => o.WorldView).Return(view);
-            var adapter = new ObserverToWorldViewAdapter(worldObserver, 12);
+            var worldObserver = new Mock<IWorldObserver>();
+            var view = new Mock<IWorldView>();
+            worldObserver.Setup(o => o.WorldView).Returns(view.Object);
+            var adapter = new ObserverToWorldViewAdapter(worldObserver.Object, 12);
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
             var nonPlayer = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
             {
@@ -33,13 +35,12 @@ namespace MUnique.OpenMU.Tests
                 Y = 128
             };
             map.Add(nonPlayer);
-            view.Expect(v => v.NewNpcsInScope(null)).IgnoreArguments().Repeat.Once();
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
             adapter.ObservingBuckets.Add(nonPlayer.NewBucket);
             nonPlayer.OldBucket = nonPlayer.NewBucket; // oldbucket would be set, if it got moved on the map
 
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
-            view.VerifyAllExpectations();
+            view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer))), Times.Once);
         }
 
         /// <summary>
@@ -48,10 +49,10 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void LocateableNotOutOfScopeWhenMovedToObservedBucket()
         {
-            var worldObserver = MockRepository.GenerateStub<IWorldObserver>();
-            var view = MockRepository.GenerateStrictMock<IWorldView>();
-            worldObserver.Stub(o => o.WorldView).Return(view);
-            var adapter = new ObserverToWorldViewAdapter(worldObserver, 12);
+            var worldObserver = new Mock<IWorldObserver>();
+            var view = new Mock<IWorldView>();
+            worldObserver.Setup(o => o.WorldView).Returns(view.Object);
+            var adapter = new ObserverToWorldViewAdapter(worldObserver.Object, 12);
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
             var nonPlayer1 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
             {
@@ -67,14 +68,16 @@ namespace MUnique.OpenMU.Tests
             map.Add(nonPlayer2);
             adapter.ObservingBuckets.Add(nonPlayer1.NewBucket);
             adapter.ObservingBuckets.Add(nonPlayer2.NewBucket);
-            view.Expect(v => v.NewNpcsInScope(null)).IgnoreArguments().Repeat.Twice();
+
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer1));
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer2));
 
-            view.Expect(v => v.ObjectsOutOfScope(null)).IgnoreArguments().Repeat.Never();
-            view.Expect(v => v.ObjectMoved(null, MoveType.Instant)).IgnoreArguments().Repeat.Once();
             map.Move(nonPlayer1, nonPlayer2.X, nonPlayer2.Y, nonPlayer1, MoveType.Instant);
-            view.VerifyAllExpectations();
+
+            view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1))), Times.Once);
+            view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2))), Times.Once);
+            view.Verify(v => v.ObjectsOutOfScope(It.IsAny<IEnumerable<IIdentifiable>>()), Times.Never);
+            view.Verify(v => v.ObjectMoved(It.Is<ILocateable>(arg => arg == nonPlayer1), MoveType.Instant), Times.Once);
         }
     }
 }
