@@ -153,6 +153,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             connection.Raise(c => c.PacketReceived += null, connection.Object, authentificationPacket);
             var expectedPacket = new byte[] { 0xC2, 0x00, 0x13, 0x02, 0x00, 0x00, 0x01, 0x00, 0x00, 0x42, 0x6F, 0x62, 0, 0, 0, 0, 0, 0, 0 };
             connection.Verify(c => c.Send(It.Is<byte[]>(arg => arg.SequenceEqual(expectedPacket))), Times.Once);
+            Assert.That(client.Nickname, Is.EqualTo("Bob"));
         }
 
         /// <summary>
@@ -184,6 +185,8 @@ namespace MUnique.OpenMU.ChatServer.Tests
                 0x01, 0x41, 0x6C, 0x69, 0x63, 0x65, 0, 0, 0, 0, 0,
             };
             connection2.Verify(c => c.Send(It.Is<byte[]>(p => p.SequenceEqual(expectedPacket))), Times.Once);
+            Assert.That(client1.Nickname, Is.EqualTo("Bob"));
+            Assert.That(client2.Nickname, Is.EqualTo("Alice"));
         }
 
         /// <summary>
@@ -213,6 +216,8 @@ namespace MUnique.OpenMU.ChatServer.Tests
                 0xC1, 0x0F, 0x01, 0x00, 0x01, 0x41, 0x6C, 0x69, 0x63, 0x65, 0, 0, 0, 0, 0,
             };
             connection1.Verify(c => c.Send(It.Is<byte[]>(p => p.SequenceEqual(expectedPacket))), Times.Once);
+            Assert.That(client1.Nickname, Is.EqualTo("Bob"));
+            Assert.That(client2.Nickname, Is.EqualTo("Alice"));
         }
 
         /// <summary>
