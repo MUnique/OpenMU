@@ -72,12 +72,15 @@ namespace MUnique.OpenMU.ChatServer.Tests
             connection1.Raise(c => c.PacketReceived += null, connection1.Object, authentificationPacket);
 
             var connection2 = new Mock<IConnection>();
+            var disconnectedRaised = false;
             var client2 = new ChatClient(connection2.Object, manager);
+            client2.Disconnected += (sender, e) => disconnectedRaised = true;
             connection2.Setup(c => c.Disconnect()).Verifiable();
             connection2.Raise(c => c.PacketReceived += null, connection2.Object, authentificationPacket);
             Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));
             Assert.That(room.ConnectedClients, Contains.Item(client1));
             connection2.VerifyAll();
+            Assert.That(disconnectedRaised, Is.True);
         }
 
         /// <summary>
