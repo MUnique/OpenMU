@@ -48,30 +48,6 @@ namespace MUnique.OpenMU.AdminPanel
                 })
                 .UseStartup<Startup>()
                 .Build();
-            
-            /*
-            var host = new WebHostBuilder()
-                .UseConfiguration(config)
-                .UseSetting(WebHostDefaults.PreventHostingStartupKey, "true")
-                .ConfigureLogging(factory =>
-                {
-                    factory.AddConsole();
-                })
-                .UseKestrel(options =>
-                {
-                    // Default port
-                    options.ListenLocalhost(5000);
-
-                    // Hub bound to TCP end point
-                    options.Listen(IPAddress.Any, 9001, builder =>
-                    {
-                        builder.UseHub<Chat>();
-                    });
-                })
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();*/
 
             host.Start();
             SignalRGameServerStateObserver.Services = host.Services;
@@ -101,7 +77,6 @@ namespace MUnique.OpenMU.AdminPanel
             // This method gets called by the runtime. Use this method to add services to the container.
             public void ConfigureServices(IServiceCollection services)
             {
-                
                 services.AddSignalR();
             }
 
@@ -120,8 +95,6 @@ namespace MUnique.OpenMU.AdminPanel
                     opt.MapHub<SystemHub>("/admin/signalr/hubs/systemHub");
                 });
                 app.UseOwin(x => x.UseNancy(opt => opt.Bootstrapper = Bootstrapper));
-                // app.UseStageMarker(PipelineStage.MapHandler);
-
             }
         }
     }
