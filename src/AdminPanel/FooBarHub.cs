@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Reflection;
+
 namespace MUnique.OpenMU.AdminPanel
 {
     using System.Collections.Concurrent;
@@ -35,7 +37,7 @@ namespace MUnique.OpenMU.AdminPanel
         {
             this.Listen(groupName);
             var client = this.Clients.Client(this.Context.ConnectionId);
-            var loggers = log4net.LogManager.GetCurrentLoggers().Select(log => log.Logger.Name).OrderBy(name => name).ToList();
+            var loggers = log4net.LogManager.GetAllRepositories().SelectMany(repo => repo.GetCurrentLoggers()).Select(log => log.Name).OrderBy(name => name).ToList();
 
             // connecting should not happen often, so a lock is sufficient here
             var cache = GetCache(groupName);

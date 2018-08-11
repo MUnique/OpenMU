@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.AdminPanel
     /// <summary>
     /// Module to manage players which are currently online.
     /// </summary>
-    public class PlayerModule : NancyModule
+    public sealed class PlayerModule : NancyModule
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(PlayerModule));
 
@@ -27,8 +27,8 @@ namespace MUnique.OpenMU.AdminPanel
             : base("admin/player")
         {
             this.servers = servers;
-            this.Get["disconnect/{serverId:int}/{playerName}"] = this.DisconnectPlayer;
-            this.Get["ban/{serverId:int}/{playerName}"] = this.BanPlayer;
+            this.Get("disconnect/{serverId:int}/{playerName}", args => this.DisconnectPlayer(args));
+            this.Get("ban/{serverId:int}/{playerName}", args => this.BanPlayer(args));
         }
 
         private object BanPlayer(dynamic parameters)

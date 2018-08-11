@@ -112,8 +112,8 @@ namespace MUnique.OpenMU.Startup
         /// <param name="args">The command line args.</param>
         public static void Main(string[] args)
         {
-            BasicConfigurator.Configure();
-            XmlConfigurator.ConfigureAndWatch(new FileInfo(Log4NetConfigFilePath));
+            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
 
             using (new Program(args))
             {

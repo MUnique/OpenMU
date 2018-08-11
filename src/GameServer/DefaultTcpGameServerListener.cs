@@ -134,6 +134,7 @@ namespace MUnique.OpenMU.GameServer
             }
             else
             {
+                socket.NoDelay = true;
                 var connection = new Connection(socket, new Encryptor(), new Decryptor());
                 var remotePlayer = new RemotePlayer(this.gameContext, this.mainPacketHandler, connection);
                 this.OnPlayerConnected(remotePlayer);

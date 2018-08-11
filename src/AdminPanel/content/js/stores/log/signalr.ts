@@ -2,11 +2,9 @@
 import Store = Redux.Store;
 import { LogEntryData } from "./types";
 import { ApplicationState } from "../index";
-import { SignalRConnector, HubProxy, HubServer } from "../signalr";
+import { SignalRConnector } from "../signalr";
 import { Constants, logInitialize, logEvent, LogSubscribeAction, LogUnsubscribeAction } from "./actions";
 
-
-declare var $: { connection: { fooBarHub: LogHubProxy } };
 
 interface LogEventArgs {
     Id: number;
@@ -14,6 +12,7 @@ interface LogEventArgs {
     LoggingEvent: LogEntryData;
 }
 
+/*
 interface LogHubClient {
     initialize: (loggers: string[], cachedEvents: LogEventArgs[]) => void;
     onLoggedEvent: (formattedEvent: any, logEvent: LogEntryData) => void;
@@ -22,31 +21,32 @@ interface LogHubClient {
 interface LogHubProxy extends HubProxy {
     client: LogHubClient;
     server: LogHubServer;
-}
+}*
 
 interface LogHubServer extends HubServer {
     subscribe(): void;
     subscribe(group: string, idOfLastReceivedEntry: number): void;
 }
-
+*/
 export var logTableConnector: LogTableSignalRConnector;
 
-class LogTableSignalRConnector extends SignalRConnector<LogHubProxy> {
+class LogTableSignalRConnector extends SignalRConnector {
+    
 
     constructor(store: Store<ApplicationState>) {
         super(store);
     }
 
     onFirstSubscription(): void {
-        this.hub.server.subscribe('MyGroup', this.store.getState().logTableState.idOfLastReceivedEntry);
+        this.connection.on("initialize", this.initialize);
+        this.connection.on("onLoggedEvent", this.onLoggedEvent);
+        this.connection.send("subscribe", "MyGroup", this.store.getState().logTableState.idOfLastReceivedEntry);
     }
 
-    protected initializeHub(): LogHubProxy {
-        var hubProxy = $.connection.fooBarHub;
-        hubProxy.client.initialize = (loggers, cachedEvents) => this.initialize(loggers, cachedEvents);
-        hubProxy.client.onLoggedEvent = (formattedEvent, loggedEvent) => this.onLoggedEvent(formattedEvent, loggedEvent);
-        return hubProxy;
+    protected getHubPath(): string {
+        return "signalr/hubs/fooBarHub";
     }
+
 
     private initialize(loggers: string[], cachedEvents: LogEventArgs[]) {
         if (console && console.log) {

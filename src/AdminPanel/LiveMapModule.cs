@@ -5,20 +5,18 @@
 namespace MUnique.OpenMU.AdminPanel
 {
     using System.Collections.Generic;
-    using System.Drawing;
-    using System.Drawing.Imaging;
     using System.Dynamic;
-    using System.IO;
     using System.Linq;
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.Interfaces;
     using Nancy;
+    using SkiaSharp;
 
     /// <summary>
     /// Module for all map related functions.
     /// </summary>
-    public class LiveMapModule : NancyModule
+    public sealed class LiveMapModule : NancyModule
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(LiveMapModule));
         private readonly IList<IManageableServer> servers;
@@ -32,8 +30,8 @@ namespace MUnique.OpenMU.AdminPanel
             : base("admin/livemap")
         {
             this.servers = servers;
-            this.Get["/"] = _ => this.View["livemap", this.model];
-            this.Get["terrain/{serverId:int}/{mapId:int}"] = this.RenderMap;
+            this.Get("/", _ => this.View["livemap", this.model]);
+            this.Get("terrain/{serverId:int}/{mapId:int}", args => this.RenderMap(args));
         }
 
         private Response RenderMap(dynamic parameters)
@@ -48,31 +46,35 @@ namespace MUnique.OpenMU.AdminPanel
             }
 
             var terrain = new GameMapTerrain(map.MapName, map.TerrainData);
-            using (var bitmap = new Bitmap(0x100, 0x100, PixelFormat.Format32bppArgb))
+            using (var bitmap = new SkiaSharp.SKBitmap(0x100, 0x100))
             {
                 for (int y = 0; y < 0x100; y++)
                 {
                     for (int x = 0; x < 0x100; x++)
                     {
-                        Color color = Color.FromArgb(unchecked((int)0xFF000000));
+                        var color = SKColors.Black;
                         if (terrain.SafezoneMap[y, x])
                         {
-                            color = Color.FromArgb(unchecked((int)0xFF808080));
+                            color = SKColors.Gray;
                         }
                         else if (terrain.WalkMap[y, x])
                         {
-                            color = Color.FromArgb(unchecked((int)0xFF00FF7F));
+                            color = SKColors.SpringGreen;
                         }
 
                         bitmap.SetPixel(x, y, color);
                     }
                 }
 
-                var memoryStream = new MemoryStream();
-                bitmap.Save(memoryStream, ImageFormat.Png);
-                memoryStream.Position = 0;
-                var response = this.Response.FromStream(memoryStream, "image/png");
-                return response;
+                using (var memoryStream = new SKDynamicMemoryWStream())
+                {
+                    if (SKPixmap.Encode(memoryStream, bitmap, SKEncodedImageFormat.Png, 100))
+                    {
+                        return this.Response.FromStream(memoryStream.DetachAsData().AsStream, "image/png");
+                    }
+                }
+
+                return null;
             }
         }
     }

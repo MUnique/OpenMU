@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("MUnique.OpenMU.Network contains all what's required to connect from and to a game server, using the MU Online network protocol. It also contains the encryption algorithms and keys which were used a few years ago at Season 6 Episode 3.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MUnique")]
 [assembly: AssemblyProduct("OpenMU")]

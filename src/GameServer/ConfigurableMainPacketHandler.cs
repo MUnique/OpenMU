@@ -5,12 +5,13 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
-    using Microsoft.Practices.Unity;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
+    using Unity;
+    using Unity.Lifetime;
 
     /// <summary>
     /// A main packet handler which can be configured.

@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.AdminPanel
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.AspNet.SignalR;
+    using Microsoft.AspNetCore.SignalR;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="disappearedItemIds">The ids of the disappeared items.</param>
         public void DroppedItemsDisappeared(WorldObserverToHubAdapter sender, IEnumerable<ushort> disappearedItemIds)
         {
-            this.Clients.Client(sender.ConnectionId).DroppedItemsDisappeared(disappearedItemIds);
+            this.Clients.Client(sender.ConnectionId).SendAsync("DroppedItemsDisappeared", disappearedItemIds);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="newObjects">The new objects.</param>
         public void NewNpcsInScope(WorldObserverToHubAdapter sender, IEnumerable<NonPlayerCharacter> newObjects)
         {
-            this.Clients.Client(sender.ConnectionId).NewNPCsInScope(newObjects.Select(o => new { id = o.Id, name = o.Definition.Designation, x = o.X, y = o.Y, rotation = o.Rotation, serverId = sender.ServerId, mapId = sender.MapId, isMonster = o is Monster }));
+            this.Clients.Client(sender.ConnectionId).SendAsync("NewNPCsInScope",newObjects.Select(o => new { id = o.Id, name = o.Definition.Designation, x = o.X, y = o.Y, rotation = o.Rotation, serverId = sender.ServerId, mapId = sender.MapId, isMonster = o is Monster }));
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="newObjects">The new objects.</param>
         public void NewPlayersInScope(WorldObserverToHubAdapter sender, IEnumerable<Player> newObjects)
         {
-            this.Clients.Client(sender.ConnectionId).NewPlayersInScope(newObjects.Select(o => new
+            this.Clients.Client(sender.ConnectionId).SendAsync("NewPlayersInScope", newObjects.Select(o => new
             {
                 id = o.Id, name = o.Name, x = o.X, y = o.Y, rotation = o.Rotation, serverId = sender.ServerId, mapId = sender.MapId
             }));
@@ -134,7 +134,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="killerObject">The object which killed the object.</param>
         public void ObjectGotKilled(WorldObserverToHubAdapter sender, IAttackable killedObject, IAttackable killerObject)
         {
-            this.Clients.Client(sender.ConnectionId).ObjectGotKilled(killedObject.Id, killerObject.Id);
+            this.Clients.Client(sender.ConnectionId).SendAsync("ObjectGotKilled", killedObject.Id, killerObject.Id);
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace MUnique.OpenMU.AdminPanel
                 y = movedObject.Y;
             }
 
-            this.Clients.Client(sender.ConnectionId).ObjectMoved(movedObject.Id, x, y, moveType, walkDelay, steps);
+            this.Clients.Client(sender.ConnectionId).SendAsync("ObjectMoved", movedObject.Id, x, y, moveType, walkDelay, steps);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="objects">The objects.</param>
         public void ObjectsOutOfScope(WorldObserverToHubAdapter sender, IEnumerable<IIdentifiable> objects)
         {
-            this.Clients.Client(sender.ConnectionId).ObjectsOutOfScope(objects.Select(o => o.Id));
+            this.Clients.Client(sender.ConnectionId).SendAsync("ObjectsOutOfScope",objects.Select(o => o.Id));
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="direction">The direction.</param>
         public void ShowAnimation(WorldObserverToHubAdapter sender, IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, byte direction)
         {
-            this.Clients.Client(sender.ConnectionId).ShowAnimation(animatingObj.Id, animation, targetObj?.Id, direction);
+            this.Clients.Client(sender.ConnectionId).SendAsync("ShowAnimation", animatingObj.Id, animation, targetObj?.Id, direction);
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="rotation">The rotation.</param>
         public void ShowAreaSkillAnimation(WorldObserverToHubAdapter sender, Player player, Skill skill, byte x, byte y, byte rotation)
         {
-            this.Clients.Client(sender.ConnectionId).ShowAreaSkillAnimation(player.Id, skill.SkillID, x, y, rotation);
+            this.Clients.Client(sender.ConnectionId).SendAsync("ShowAreaSkillAnimation", player.Id, skill.SkillID, x, y, rotation);
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="freshDrops">if set to <c>true</c> this items are fresh drops; Otherwise they are already laying on the ground when reaching a newly discovered part of the map.</param>
         public void ShowDroppedItems(WorldObserverToHubAdapter sender, IEnumerable<DroppedItem> droppedItems, bool freshDrops)
         {
-            this.Clients.Client(sender.ConnectionId).ShowDroppedItems(droppedItems.Select(drop => new { id = drop.Id, x = drop.X, y = drop.Y, itemName = drop.Item.ToString() }), freshDrops);
+            this.Clients.Client(sender.ConnectionId).SendAsync("ShowDroppedItems", droppedItems.Select(drop => new { id = drop.Id, x = drop.X, y = drop.Y, itemName = drop.Item.ToString() }), freshDrops);
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="skill">The skill.</param>
         public void ShowSkillAnimation(WorldObserverToHubAdapter sender, Player attackingPlayer, IAttackable target, Skill skill)
         {
-            this.Clients.Client(sender.ConnectionId).ShowSkillAnimation(attackingPlayer, target, skill);
+            this.Clients.Client(sender.ConnectionId).SendAsync("ShowSkillAnimation", attackingPlayer, target, skill);
         }
     }
 }

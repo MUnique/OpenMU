@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -13,7 +14,6 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the power up factory which is creating powerups based on the items a player has equipped.
@@ -115,20 +115,21 @@ namespace MUnique.OpenMU.Tests
 
         private ItemDefinition GetItemDefintion()
         {
-            var itemDefinition = MockRepository.GenerateStub<ItemDefinition>();
-            itemDefinition.Durability = 100;
-            itemDefinition.Stub(d => d.BasePowerUpAttributes).Return(new List<ItemBasePowerUpDefinition>());
-            return itemDefinition;
+            var itemDefinition = new Mock<ItemDefinition>();
+            itemDefinition.Object.Durability = 100;
+            itemDefinition.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+            return itemDefinition.Object;
         }
 
         private Item GetItem()
         {
-            var item = MockRepository.GenerateStub<Item>();
-            item.Definition = this.GetItemDefintion();
-            item.ItemSlot = 0;
-            item.Durability = item.Definition.Durability;
-            item.Stub(i => i.ItemOptions).Return(new List<ItemOptionLink>());
-            return item;
+            var item = new Mock<Item>();
+            item.SetupAllProperties();
+            item.Object.Definition = this.GetItemDefintion();
+            item.Object.ItemSlot = 0;
+            item.Object.Durability = item.Object.Definition.Durability;
+            item.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+            return item.Object;
         }
 
         private Item GetItemWithOption()
@@ -147,10 +148,12 @@ namespace MUnique.OpenMU.Tests
 
         private ItemBasePowerUpDefinition GetBasePowerUpDefinition()
         {
-            var result = MockRepository.GenerateStub<ItemBasePowerUpDefinition>();
+            var resultMock = new Mock<ItemBasePowerUpDefinition>();
+            resultMock.SetupAllProperties();
+            resultMock.Setup(r => r.BonusPerLevel).Returns(new List<LevelBonus>());
+            var result = resultMock.Object;
             result.BaseValueElement = new ConstantElement(PowerUpStrength);
             result.TargetAttribute = Stats.MaximumPhysBaseDmg;
-            result.Stub(r => r.BonusPerLevel).Return(new List<LevelBonus>());
             result.BonusPerLevel.Add(new LevelBonus(1, this.levelBonus[1]));
             result.BonusPerLevel.Add(new LevelBonus(2, this.levelBonus[2]));
             result.BonusPerLevel.Add(new LevelBonus(3, this.levelBonus[3]));
@@ -246,11 +249,11 @@ namespace MUnique.OpenMU.Tests
 
         private IEnumerable<Item> GetSet(bool complete, params byte[] levels)
         {
-            var armorSet = MockRepository.GenerateStub<IArmorSet>();
+            var armorSet = new Mock<IArmorSet>();
             if (!complete)
-                armorSet.Stub(a => a.NumberOfPieces).Return(levels.Length + 1);
+                armorSet.Setup(a => a.NumberOfPieces).Returns(levels.Length + 1);
             else
-                armorSet.Stub(a => a.NumberOfPieces).Return(levels.Length);
+                armorSet.Setup(a => a.NumberOfPieces).Returns(levels.Length);
             foreach(var level in levels)
             {
                 var item = GetItem();
@@ -266,21 +269,21 @@ namespace MUnique.OpenMU.Tests
         /// <returns>the ancient group.</returns>
         private IAncientGroup GetAncientGroup()
         {
-            var result = MockRepository.GenerateStub<IAncientGroup>();
-            result.Stub(link => link.Items).Return(new List<IAncientOptionLink>());
+            var result = new Mock<IAncientGroup>();
+            result.Setup(link => link.Items).Returns(new List<IAncientOptionLink>());
             for(int i=0;i<3;i++)
             {
-                var optionLink = MockRepository.GenerateStub<IAncientOptionLink>();
-                optionLink.Stub(o => o.ItemDefinition).Return(GetItemDefintion());
-                optionLink.Stub(o => o.PowerUp).Return(MockRepository.GenerateStub<IPowerUp>()); //this is the +5/10 vit/str etc bonus
+                var optionLink = new Mock<IAncientOptionLink>();
+                optionLink.Setup(o => o.ItemDefinition).Returns(GetItemDefintion());
+                optionLink.Setup(o => o.PowerUp).Returns(new Mock<IPowerUp>()); //this is the +5/10 vit/str etc bonus
                 result.Items.Add(optionLink);
             }
 
             //full set got 5 options:
-            result.Stub(link => link.Options).Return(new List<IPowerUp>());
+            result.Setup(link => link.Options).Returns(new List<IPowerUp>());
             for (int i = 0; i < 5; i++)
             {
-                result.Options.Add(MockRepository.GenerateStub<IPowerUp>());
+                result.Options.Add(new Mock<IPowerUp>());
             }
 
             return result;
@@ -307,7 +310,7 @@ namespace MUnique.OpenMU.Tests
             {
                 var item = GetItem();
                 item.AncientGroup = ancientGroup;
-                item.Stub(i => i.Definition).Return(ancientLink.ItemDefinition);
+                item.Setup(i => i.Definition).Returns(ancientLink.ItemDefinition);
                 items.Add(item);
             }
             var result = factory.GetSetPowerUps(items);
@@ -324,7 +327,7 @@ namespace MUnique.OpenMU.Tests
             {
                 var item = GetItem();
                 item.AncientGroup = ancientGroup;
-                item.Stub(i => i.Definition).Return(ancientLink.ItemDefinition);
+                item.Setup(i => i.Definition).Returns(ancientLink.ItemDefinition);
                 items.Add(item);
             }
             var result = factory.GetSetPowerUps(items);

@@ -6,11 +6,11 @@ namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the <see cref="Storage"/>.
@@ -135,9 +135,9 @@ namespace MUnique.OpenMU.Tests
 
         private ItemStorage CreateItemStorage()
         {
-            var storage = MockRepository.GenerateStub<ItemStorage>();
-            storage.Stub(s => s.Items).Return(new List<Item>());
-            return storage;
+            var storage = new Mock<ItemStorage>();
+            storage.Setup(s => s.Items).Returns(new List<Item>());
+            return storage.Object;
         }
     }
 }

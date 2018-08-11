@@ -1,264 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A044DA9E-CB5C-4087-B67A-02E1049920C1}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MUnique.OpenMU.Persistence.Initialization</RootNamespace>
-    <AssemblyName>MUnique.OpenMU.Persistence.Initialization</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\bin\Debug\MUnique.OpenMU.Persistence.Initialization.XML</DocumentationFile>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+    <DocumentationFile>..\..\..\bin\Debug\MUnique.OpenMU.Persistence.Initialization.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
-    <DocumentationFile>..\..\..\bin\Release\MUnique.OpenMU.Persistence.Initialization.XML</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Persistence.Initialization.xml</DocumentationFile>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="BCrypt.Net-Next, Version=2.1.1.0, Culture=neutral, PublicKeyToken=748c6c715e2d42e3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\BCrypt.Net-Next.2.1.1\lib\net452\BCrypt.Net-Next.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
+    <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="CharacterClassInitialization.cs" />
-    <Compile Include="CharacterClassNumber.cs" />
-    <Compile Include="DataInitialization.cs" />
-    <Compile Include="Gates.cs" />
-    <Compile Include="IMemoryRepository.cs" />
-    <Compile Include="Items\Armors.cs" />
-    <Compile Include="Items\CharacterClassHelper.cs" />
-    <Compile Include="IInitializer.cs" />
-    <Compile Include="InitializerBase.cs" />
-    <Compile Include="Items\ExcellentOptions.cs" />
-    <Compile Include="Items\ItemHelper.cs" />
-    <Compile Include="Items\Jewellery.cs" />
-    <Compile Include="Items\Jewels.cs" />
-    <Compile Include="Items\OptionExtensions.cs" />
-    <Compile Include="Items\Orbs.cs" />
-    <Compile Include="Items\Potions.cs" />
-    <Compile Include="Items\Scrolls.cs" />
-    <Compile Include="Items\Skills.cs" />
-    <Compile Include="Items\Weapons.cs" />
-    <Compile Include="Items\Wings.cs" />
-    <Compile Include="Maps\Aida.cs" />
-    <Compile Include="Maps\Arena.cs" />
-    <Compile Include="Maps\Atlans.cs" />
-    <Compile Include="Maps\BalgassRefuge.cs" />
-    <Compile Include="Maps\BarracksOfBalgass.cs" />
-    <Compile Include="Maps\BaseMapInitializer.cs" />
-    <Compile Include="Maps\BloodCastle1.cs" />
-    <Compile Include="Maps\BloodCastle2.cs" />
-    <Compile Include="Maps\BloodCastle3.cs" />
-    <Compile Include="Maps\BloodCastle4.cs" />
-    <Compile Include="Maps\BloodCastle5.cs" />
-    <Compile Include="Maps\BloodCastle6.cs" />
-    <Compile Include="Maps\BloodCastle7.cs" />
-    <Compile Include="Maps\BloodCastle8.cs" />
-    <Compile Include="Maps\ChaosCastle1.cs" />
-    <Compile Include="Maps\ChaosCastle2.cs" />
-    <Compile Include="Maps\ChaosCastle3.cs" />
-    <Compile Include="Maps\ChaosCastle4.cs" />
-    <Compile Include="Maps\ChaosCastle5.cs" />
-    <Compile Include="Maps\ChaosCastle6.cs" />
-    <Compile Include="Maps\ChaosCastle7.cs" />
-    <Compile Include="Maps\CrywolfFortress.cs" />
-    <Compile Include="Maps\DevilSquare5To7.cs" />
-    <Compile Include="Maps\IllusionTemple1.cs" />
-    <Compile Include="Maps\IllusionTemple2.cs" />
-    <Compile Include="Maps\IllusionTemple3.cs" />
-    <Compile Include="Maps\IllusionTemple4.cs" />
-    <Compile Include="Maps\IllusionTemple5.cs" />
-    <Compile Include="Maps\IllusionTemple6.cs" />
-    <Compile Include="Maps\Kalima1.cs" />
-    <Compile Include="Maps\Kalima2.cs" />
-    <Compile Include="Maps\Kalima3.cs" />
-    <Compile Include="Maps\Kalima4.cs" />
-    <Compile Include="Maps\Kalima5.cs" />
-    <Compile Include="Maps\Kalima6.cs" />
-    <Compile Include="Maps\Kalima7.cs" />
-    <Compile Include="Maps\KanturuRelics.cs" />
-    <Compile Include="Maps\KanturuRuins.cs" />
-    <Compile Include="Maps\Karutan1.cs" />
-    <Compile Include="Maps\Devias.cs" />
-    <Compile Include="Maps\DevilSquare1To4.cs" />
-    <Compile Include="Maps\Dungeon.cs" />
-    <Compile Include="Maps\Elvenland.cs" />
-    <Compile Include="Maps\Exile.cs" />
-    <Compile Include="Maps\Icarus.cs" />
-    <Compile Include="Maps\IMapInitializer.cs" />
-    <Compile Include="Maps\Karutan2.cs" />
-    <Compile Include="Maps\LandOfTrials.cs" />
-    <Compile Include="Maps\Lorencia.cs" />
-    <Compile Include="Maps\LorenMarket.cs" />
-    <Compile Include="Maps\LostTower.cs" />
-    <Compile Include="Maps\Noria.cs" />
-    <Compile Include="Maps\Raklion.cs" />
-    <Compile Include="Maps\SantaVillage.cs" />
-    <Compile Include="Maps\SilentMap.cs" />
-    <Compile Include="Maps\SwampOfCalmness.cs" />
-    <Compile Include="Maps\Tarkan.cs" />
-    <Compile Include="Maps\ValleyOfLoren.cs" />
-    <Compile Include="Maps\Vulcanus.cs" />
-    <Compile Include="MemoryRepository{TValue}.cs" />
-    <Compile Include="NpcInitialization.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StatsExtensions.cs" />
-    <Compile Include="Terrains.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Terrains.resx</DependentUpon>
-    </Compile>
-    <None Include="packages.config" />
-    <None Include="Readme.md" />
-    <None Include="Resources\Terrain1.att" />
-    <None Include="Resources\Terrain10.att" />
-    <None Include="Resources\Terrain11.att" />
-    <None Include="Resources\Terrain12.att" />
-    <None Include="Resources\Terrain19.att" />
-    <None Include="Resources\Terrain2.att" />
-    <None Include="Resources\Terrain25.att" />
-    <None Include="Resources\Terrain3.att" />
-    <None Include="Resources\Terrain31.att" />
-    <None Include="Resources\Terrain32.att" />
-    <None Include="Resources\Terrain33.att" />
-    <None Include="Resources\Terrain34.att" />
-    <None Include="Resources\Terrain34_Close.att" />
-    <None Include="Resources\Terrain35.att" />
-    <None Include="Resources\Terrain35_OCCUPIED.att" />
-    <None Include="Resources\Terrain35_PEACE.att" />
-    <None Include="Resources\Terrain35_WAR.att" />
-    <None Include="Resources\Terrain36.att" />
-    <None Include="Resources\Terrain37.att" />
-    <None Include="Resources\Terrain38.att" />
-    <None Include="Resources\Terrain39.att" />
-    <None Include="Resources\Terrain4.att" />
-    <None Include="Resources\Terrain40.att" />
-    <None Include="Resources\Terrain40_CLOSE.att" />
-    <None Include="Resources\Terrain40_OPEN.att" />
-    <None Include="Resources\Terrain41.att" />
-    <None Include="Resources\Terrain42.att" />
-    <None Include="Resources\Terrain43.att" />
-    <None Include="Resources\Terrain44.att" />
-    <None Include="Resources\Terrain46.att" />
-    <None Include="Resources\Terrain47.att" />
-    <None Include="Resources\Terrain5.att" />
-    <None Include="Resources\Terrain51.att" />
-    <None Include="Resources\Terrain52.att" />
-    <None Include="Resources\Terrain53.att" />
-    <None Include="Resources\Terrain54.att" />
-    <None Include="Resources\Terrain55.att" />
-    <None Include="Resources\Terrain56.att" />
-    <None Include="Resources\Terrain57.att" />
-    <None Include="Resources\Terrain58.att" />
-    <None Include="Resources\Terrain59.att" />
-    <None Include="Resources\Terrain6.att" />
-    <None Include="Resources\Terrain61.att" />
-    <None Include="Resources\Terrain62.att" />
-    <None Include="Resources\Terrain63.att" />
-    <None Include="Resources\Terrain64.att" />
-    <None Include="Resources\Terrain65.att" />
-    <None Include="Resources\Terrain66.att" />
-    <None Include="Resources\Terrain67.att" />
-    <None Include="Resources\Terrain68.att" />
-    <None Include="Resources\Terrain69.att" />
-    <None Include="Resources\Terrain7.att" />
-    <None Include="Resources\Terrain70.att" />
-    <None Include="Resources\Terrain71.att" />
-    <None Include="Resources\Terrain72.att" />
-    <None Include="Resources\Terrain73.att" />
-    <None Include="Resources\terrain74.att" />
-    <None Include="Resources\terrain75.att" />
-    <None Include="Resources\Terrain78.att" />
-    <None Include="Resources\Terrain79.att" />
-    <None Include="Resources\Terrain8.att" />
-    <None Include="Resources\terrain80.att" />
-    <None Include="Resources\Terrain81.att" />
-    <None Include="Resources\Terrain82.att" />
-    <None Include="Resources\Terrain9.att" />
+    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj">
-      <Project>{3dd171e2-4f6e-486a-8420-f6935c4da03c}</Project>
-      <Name>MUnique.OpenMU.AttributeSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj">
-      <Project>{5282f509-d758-4a42-994c-f71a4c631fda}</Project>
-      <Name>MUnique.OpenMU.DataModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj">
-      <Project>{7dec119d-79ef-4e43-9a72-db07a6cae73e}</Project>
-      <Name>MUnique.OpenMU.GameLogic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GameServer\MUnique.OpenMU.GameServer.csproj">
-      <Project>{8ec9ebee-56dd-4139-aa02-d154ca8536e6}</Project>
-      <Name>MUnique.OpenMU.GameServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MUnique.OpenMU.Persistence.csproj">
-      <Project>{6e809fa9-888c-474f-8a84-70eecbc7e42d}</Project>
-      <Name>MUnique.OpenMU.Persistence</Name>
-    </ProjectReference>
+    <PackageReference Include="BCrypt.Net-Next" Version="3.1.0" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
+    <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
+    <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+    <ProjectReference Include="..\..\GameServer\MUnique.OpenMU.GameServer.csproj" />
+    <ProjectReference Include="..\MUnique.OpenMU.Persistence.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Terrains.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Terrains.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="MasterSkillTree.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="ChaosMixes.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

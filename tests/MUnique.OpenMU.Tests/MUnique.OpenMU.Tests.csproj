@@ -1,165 +1,46 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B3737BB5-05AE-4AEE-8CE7-161B78B9F985}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MUnique.OpenMU.Tests</RootNamespace>
-    <AssemblyName>MUnique.OpenMU.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\MUnique.OpenMU.Tests.XML</DocumentationFile>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\MUnique.OpenMU.Tests.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Release\MUnique.OpenMU.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\MUnique.OpenMU.Tests.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Rhino.Mocks, Version=3.6.0.0, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\RhinoMocks.3.6.1\lib\net\Rhino.Mocks.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
+    <Compile Include="..\..\src\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
-      <Visible>False</Visible>
-    </CodeAnalysisDependentAssemblyPaths>
+    <AdditionalFiles Include="..\..\src\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\..\src\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="AppearanceSerializerTest.cs" />
-    <Compile Include="CharacterMoveTest.cs" />
-    <Compile Include="ConfigurablePacketHandlerTest.cs" />
-    <Compile Include="DropGeneratorTest.cs" />
-    <Compile Include="FriendServerTest.cs" />
-    <Compile Include="GameMapTest.cs" />
-    <Compile Include="GuildActionTest.cs" />
-    <Compile Include="GuildServerTest.cs" />
-    <Compile Include="GuildTestBase.cs" />
-    <Compile Include="ItemConsumptionTest.cs" />
-    <Compile Include="ItemPriceCalculatorTest.cs" />
-    <Compile Include="MasterSystemTest.cs" />
-    <Compile Include="ObserverToWorldAdapterTest.cs" />
-    <Compile Include="PartyTest.cs" />
-    <Compile Include="PowerUpFactoryTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SkillListTest.cs" />
-    <Compile Include="StateMachineTest.cs" />
-    <Compile Include="StorageTest.cs" />
-    <Compile Include="TestHelper.cs" />
-    <Compile Include="TestPacketHandler.cs" />
-    <Compile Include="TradeTest.cs" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="Moq" Version="4.9.0" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
   </ItemGroup>
+  
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj">
-      <Project>{3dd171e2-4f6e-486a-8420-f6935c4da03c}</Project>
-      <Name>MUnique.OpenMU.AttributeSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\DataModel\MUnique.OpenMU.DataModel.csproj">
-      <Project>{5282F509-D758-4A42-994C-F71A4C631FDA}</Project>
-      <Name>MUnique.OpenMU.DataModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\FriendServer\MUnique.OpenMU.FriendServer.csproj">
-      <Project>{6D4644A5-FEE4-4415-B254-38B196701292}</Project>
-      <Name>MUnique.OpenMU.FriendServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\GameLogic\MUnique.OpenMU.GameLogic.csproj">
-      <Project>{7DEC119D-79EF-4E43-9A72-DB07A6CAE73E}</Project>
-      <Name>MUnique.OpenMU.GameLogic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\GameServer\MUnique.OpenMU.GameServer.csproj">
-      <Project>{8EC9EBEE-56DD-4139-AA02-D154CA8536E6}</Project>
-      <Name>MUnique.OpenMU.GameServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\GuildServer\MUnique.OpenMU.GuildServer.csproj">
-      <Project>{D2BAED1F-EB47-4D42-9E8B-1FF7FC708CAD}</Project>
-      <Name>MUnique.OpenMU.GuildServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Interfaces\MUnique.OpenMU.Interfaces.csproj">
-      <Project>{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}</Project>
-      <Name>MUnique.OpenMU.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Pathfinding\MUnique.OpenMU.Pathfinding.csproj">
-      <Project>{44CD0416-61D6-4848-8864-5DE7B971604A}</Project>
-      <Name>MUnique.OpenMU.Pathfinding</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj">
-      <Project>{23b216a0-b407-4a76-a387-0b9e72b15363}</Project>
-      <Name>MUnique.OpenMU.Persistence.InMemory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Persistence\MUnique.OpenMU.Persistence.csproj">
-      <Project>{6E809FA9-888C-474F-8A84-70EECBC7E42D}</Project>
-      <Name>MUnique.OpenMU.Persistence</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\src\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
+    <ProjectReference Include="..\..\src\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\..\src\FriendServer\MUnique.OpenMU.FriendServer.csproj" />
+    <ProjectReference Include="..\..\src\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+    <ProjectReference Include="..\..\src\GameServer\MUnique.OpenMU.GameServer.csproj" />
+    <ProjectReference Include="..\..\src\GuildServer\MUnique.OpenMU.GuildServer.csproj" />
+    <ProjectReference Include="..\..\src\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\..\src\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />
+    <ProjectReference Include="..\..\src\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Persistence\MUnique.OpenMU.Persistence.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\src\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\src\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\..\src\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

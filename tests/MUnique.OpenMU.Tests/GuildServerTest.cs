@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.Tests
 {
     using System;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.Interfaces;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests for the guild server.
@@ -23,11 +23,10 @@ namespace MUnique.OpenMU.Tests
         {
             const string sender = "Sender";
             const string message = "The Message";
-            this.GameServer0.Expect(g => g.GuildChatMessage(1, sender, message));
-            this.GameServer1.Expect(g => g.GuildChatMessage(1, sender, message));
+
             this.GuildServer.GuildMessage(1, sender, message);
-            this.GameServer0.VerifyAllExpectations();
-            this.GameServer1.VerifyAllExpectations();
+            this.GameServer0.Verify(g => g.GuildChatMessage(1, sender, message), Times.Once);
+            this.GameServer1.Verify(g => g.GuildChatMessage(1, sender, message), Times.Once);
         }
 
         /// <summary>
@@ -80,9 +79,8 @@ namespace MUnique.OpenMU.Tests
         {
             const byte serverId = 1;
             var guildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-            this.GameServer1.Expect(g => g.GuildDeleted(guildStatus.GuildId));
             this.GuildServer.KickMember(guildStatus.GuildId, this.GuildMaster.Name);
-            this.GameServer1.VerifyAllExpectations();
+            this.GameServer1.Verify(g => g.GuildDeleted(guildStatus.GuildId), Times.Once);
         }
 
         /// <summary>
@@ -95,10 +93,8 @@ namespace MUnique.OpenMU.Tests
             const string testMemberName = "TestMember";
             var guildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
             this.GuildServer.CreateGuildMember(guildStatus.GuildId, Guid.Empty, testMemberName, GuildPosition.NormalMember, serverId);
-
-            this.GameServer1.Expect(g => g.GuildPlayerKicked(testMemberName));
             this.GuildServer.KickMember(guildStatus.GuildId, testMemberName);
-            this.GameServer1.VerifyAllExpectations();
+            this.GameServer1.Verify(g => g.GuildPlayerKicked(testMemberName), Times.Once);
         }
     }
 }

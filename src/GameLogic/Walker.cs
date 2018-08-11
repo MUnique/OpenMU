@@ -45,11 +45,11 @@ namespace MUnique.OpenMU.GameLogic
             this.walkLock.EnterWriteLock();
             try
             {
-                this.walkSupporter.NextDirections.Clear();
                 if (this.walkTimer != null)
                 {
                     this.walkTimer.Dispose(); // reuse timer?
                     this.walkTimer = null;
+                    this.walkSupporter.NextDirections.Clear();
                 }
             }
             finally

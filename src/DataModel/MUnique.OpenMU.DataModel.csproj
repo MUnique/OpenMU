@@ -1,158 +1,35 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5282F509-D758-4A42-994C-F71A4C631FDA}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MUnique.OpenMU.DataModel</RootNamespace>
-    <AssemblyName>MUnique.OpenMU.DataModel</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NoWin32Manifest>False</NoWin32Manifest>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <SignAssembly>False</SignAssembly>
-    <DelaySign>False</DelaySign>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.DataModel.XML</DocumentationFile>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.DataModel.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.DataModel.XML</DocumentationFile>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+	<DocumentationFile>..\..\bin\Release\MUnique.OpenMU.DataModel.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Attributes\PowerUpDefinition.cs" />
-    <Compile Include="Attributes\PowerUpDefinitionValue.cs" />
-    <Compile Include="Attributes\PowerUpDefinitionWithDuration.cs" />
-    <Compile Include="Configuration\Direction.cs" />
-    <Compile Include="Configuration\EnterGate.cs" />
-    <Compile Include="Configuration\ExitGate.cs" />
-    <Compile Include="Configuration\GameConfiguration.cs" />
-    <Compile Include="Configuration\GameServerDefinition.cs" />
-    <Compile Include="Configuration\GameServerConfiguration.cs" />
-    <Compile Include="Configuration\Gate.cs" />
-    <Compile Include="Configuration\DropItemGroup.cs" />
-    <Compile Include="Configuration\ItemCrafting\ItemCraftingRequiredItem.cs" />
-    <Compile Include="Configuration\ItemCrafting\ItemCraftingResultItem.cs" />
-    <Compile Include="Configuration\ItemCrafting\ItemCrafting.cs" />
-    <Compile Include="Configuration\ItemCrafting\SimpleCraftingSettings.cs" />
-    <Compile Include="Configuration\ItemCrafting\MixResult.cs" />
-    <Compile Include="Configuration\ItemCrafting\ResultItemSelection.cs" />
-    <Compile Include="Configuration\Items\AttributeRequirement.cs" />
-    <Compile Include="Configuration\Items\IncreasableItemOption.cs" />
-    <Compile Include="Configuration\Items\ItemBasePowerUpDefinition.cs" />
-    <Compile Include="Configuration\Items\ItemDefinition.cs" />
-    <Compile Include="Configuration\Items\ItemOfItemSet.cs" />
-    <Compile Include="Configuration\Items\ItemOption.cs" />
-    <Compile Include="Configuration\Items\ItemOptionDefinition.cs" />
-    <Compile Include="Entities\Guild.cs" />
-    <Compile Include="Entities\GuildMember.cs" />
-    <Compile Include="Entities\ItemOptionLink.cs" />
-    <Compile Include="Configuration\Items\ItemOptionOfLevel.cs" />
-    <Compile Include="Configuration\Items\ItemOptionType.cs" />
-    <Compile Include="Configuration\Items\ItemOptionTypes.cs" />
-    <Compile Include="Configuration\Items\ItemSetGroup.cs" />
-    <Compile Include="Configuration\Items\ItemSlotType.cs" />
-    <Compile Include="Configuration\Items\LevelBonus.cs" />
-    <Compile Include="Configuration\JewelMix.cs" />
-    <Compile Include="Configuration\LevelDependentDamage.cs" />
-    <Compile Include="Configuration\MainPacketHandlerConfiguration.cs" />
-    <Compile Include="Configuration\MasterSkillDefinition.cs" />
-    <Compile Include="Configuration\MasterSkillRoot.cs" />
-    <Compile Include="Configuration\MonsterAttribute.cs" />
-    <Compile Include="Configuration\MonsterSpawnArea.cs" />
-    <Compile Include="Configuration\MonsterDefinition.cs" />
-    <Compile Include="Configuration\PacketHandlerConfiguration.cs" />
-    <Compile Include="Configuration\StatAttributeDefinition.cs" />
-    <Compile Include="Configuration\WarpInfo.cs" />
-    <Compile Include="Entities\Account.cs" />
-    <Compile Include="Entities\Character.cs" />
-    <Compile Include="Configuration\CharacterClass.cs" />
-    <Compile Include="Configuration\GameMapDefinition.cs" />
-    <Compile Include="Configuration\MagicEffectDefinition.cs" />
-    <Compile Include="Configuration\Skill.cs" />
-    <Compile Include="Entities\AppearanceData.cs" />
-    <Compile Include="Entities\IAppearanceData.cs" />
-    <Compile Include="Entities\Item.cs" />
-    <Compile Include="Entities\ItemAppearance.cs" />
-    <Compile Include="Entities\ItemStorage.cs" />
-    <Compile Include="Entities\LetterBody.cs" />
-    <Compile Include="Entities\SkillEntry.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <AdditionalFiles Include="..\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj">
-      <Project>{3dd171e2-4f6e-486a-8420-f6935c4da03c}</Project>
-      <Name>MUnique.OpenMU.AttributeSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj">
-      <Project>{cb8a2c80-8ecd-44d6-98b7-ab35891b66fd}</Project>
-      <Name>MUnique.OpenMU.Interfaces</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
+    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

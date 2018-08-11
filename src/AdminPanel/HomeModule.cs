@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.AdminPanel
         public HomeModule()
             : base("/admin")
         {
-            this.Get["/"] = _ => this.View["index", this.model];
+            this.Get("/", _ => this.View["index", this.model]);
         }
     }
 }

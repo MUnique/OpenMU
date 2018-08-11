@@ -5,11 +5,9 @@
         <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
         <title>Live Map</title>
         <link rel="stylesheet" href="@Path['~/content/css/bootstrap.css']">
-        
-        <script src="@Path['~/content/js/jquery-2.2.0.min.js']"></script>
+        <script src="@Path['~/content/js/jquery-2.2.0.min.js']"></script><!-- unfortunately, bootstrap needs jquery -->
         <script src="@Path['~/content/js/bootstrap.min.js']"></script>
-        <script src="@Path['~/content/js/jquery.signalR-2.2.2.js']"></script>
-        <script src="@Path['~/signalr/hubs']"></script>
+        <script src="@Path['~/content/js/signalr.js']"></script>
         <script src="@Path['~/content/js/system-production.js']"></script>
         <script src="@Path['~/content/js/app.js']"></script>
         <script src="@Path['~/content/js/Stats.js']"></script>
@@ -60,7 +58,8 @@
         'react-chartjs': '@Path['~/content/js/react-chartjs.js']',
         'react-redux': '@Path['~/content/js/react-redux.js']',
         'redux': '@Path['~/content/js/redux.js']',
-        'redux-thunk': '@Path['~/content/js/redux-thunk.js']'
+        'redux-thunk': '@Path['~/content/js/redux-thunk.js']',
+        'signalr': '@Path['~/content/js/signalr.js']'
         }
     });
     var stats = new Stats();

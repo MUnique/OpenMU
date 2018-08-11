@@ -1,91 +1,30 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{44CD0416-61D6-4848-8864-5DE7B971604A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MUnique.OpenMU.Pathfinding</RootNamespace>
-    <AssemblyName>MUnique.OpenMU.Pathfinding</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.Pathfinding.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Pathfinding.xml</DocumentationFile>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+	<DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Pathfinding.xml</DocumentationFile>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
+    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="BinaryMinHeap{T}.cs" />
-    <Compile Include="EuclideanHeuristic.cs" />
-    <Compile Include="GridNetwork.cs" />
-    <Compile Include="IHeuristic.cs" />
-    <Compile Include="IIndexer{T}.cs" />
-    <Compile Include="IndexedLinkedList{T}.cs" />
-    <Compile Include="INetwork.cs" />
-    <Compile Include="IPathFinder.cs" />
-    <Compile Include="IPriorityQueue{T}.cs" />
-    <Compile Include="ManhattanHeuristic.cs" />
-    <Compile Include="MaximumDistanceOfXorYHeuristic.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="NodeComparer.cs" />
-    <Compile Include="NodeIndexer.cs" />
-    <Compile Include="NoHeuristic.cs" />
-    <Compile Include="PathFinder.cs" />
-    <Compile Include="PathResultNode.cs" />
-    <Compile Include="Point.cs" />
-    <Compile Include="PreCalculation\CompactPathsSerializer.cs" />
-    <Compile Include="PreCalculation\IPathsSerializer.cs" />
-    <Compile Include="PreCalculation\NormalPathsSerializer.cs" />
-    <Compile Include="PreCalculation\PathInfo.cs" />
-    <Compile Include="PreCalculation\PathsSerializeExtensions.cs" />
-    <Compile Include="PreCalculation\PointCombination.cs" />
-    <Compile Include="PreCalculation\PreCalculatedPathFinder.cs" />
-    <Compile Include="PreCalculation\PreCalculator.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Readme.md" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
   </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

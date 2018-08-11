@@ -7,11 +7,11 @@ namespace MUnique.OpenMU.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests for the friend server.
@@ -22,8 +22,8 @@ namespace MUnique.OpenMU.Tests
         private Character player1;
         private Character player2;
         private IDictionary<int, IGameServer> gameServers;
-        private IGameServer gameServer1;
-        private IGameServer gameServer2;
+        private Mock<IGameServer> gameServer1;
+        private Mock<IGameServer> gameServer2;
         private IFriendServer friendServer;
 
         private InMemoryPersistenceContextProvider persistenceContextProvider;
@@ -34,15 +34,15 @@ namespace MUnique.OpenMU.Tests
         [SetUp]
         public void SetUp()
         {
-            this.gameServer1 = MockRepository.GenerateMock<IGameServer>();
-            this.gameServer1.Stub(gs => gs.Id).Return(1);
-            this.gameServer2 = MockRepository.GenerateMock<IGameServer>();
-            this.gameServer2.Stub(gs => gs.Id).Return(2);
+            this.gameServer1 = new Mock<IGameServer>();
+            this.gameServer1.Setup(gs => gs.Id).Returns(1);
+            this.gameServer2 = new Mock<IGameServer>();
+            this.gameServer2.Setup(gs => gs.Id).Returns(2);
 
             this.gameServers = new Dictionary<int, IGameServer>
             {
-                { this.gameServer1.Id, this.gameServer1 },
-                { this.gameServer2.Id, this.gameServer2 }
+                { this.gameServer1.Object.Id, this.gameServer1.Object },
+                { this.gameServer2.Object.Id, this.gameServer2.Object }
             };
             this.persistenceContextProvider = new InMemoryPersistenceContextProvider();
             this.friendServer = new FriendServer.FriendServer(this.gameServers, null, this.persistenceContextProvider);
@@ -60,12 +60,10 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void FriendAddRequestOffline()
         {
-            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.gameServer2.Expect(g => g.FriendRequest(this.player1.Name, this.player2.Name)).Repeat.Never();
-
+            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
             var added = this.friendServer.FriendRequest(this.player1.Name, this.player2.Name);
             Assert.That(added, Is.True);
-            this.gameServer2.VerifyAllExpectations();
+            this.gameServer2.Verify(g => g.FriendRequest(this.player1.Name, this.player2.Name), Times.Never);
             this.CheckFriendItemsAfterRequest();
         }
 
@@ -76,13 +74,11 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void FriendAddRequestOnline()
         {
-            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Id);
-            this.gameServer2.Expect(g => g.FriendRequest(this.player1.Name, this.player2.Name)).Repeat.Once();
-
+            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
+            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Object.Id);
             var added = this.friendServer.FriendRequest(this.player1.Name, this.player2.Name);
             Assert.That(added, Is.True);
-            this.gameServer2.VerifyAllExpectations();
+            this.gameServer2.Verify(g => g.FriendRequest(this.player1.Name, this.player2.Name), Times.Once);
 
             this.CheckFriendItemsAfterRequest();
         }
@@ -93,15 +89,15 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void FriendAddRequestRepeated()
         {
-            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Id);
-            this.gameServer2.Expect(g => g.FriendRequest(this.player1.Name, this.player2.Name)).Repeat.Twice();
+            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
+            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Object.Id);
+
             var added = this.friendServer.FriendRequest(this.player1.Name, this.player2.Name);
             Assert.That(added, Is.True);
             var notAdded = this.friendServer.FriendRequest(this.player1.Name, this.player2.Name);
             Assert.That(notAdded, Is.False);
 
-            this.gameServer2.VerifyAllExpectations();
+            this.gameServer2.Verify(g => g.FriendRequest(this.player1.Name, this.player2.Name), Times.Exactly(2));
         }
 
         /// <summary>
@@ -110,16 +106,14 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void FriendAddRequestAccept()
         {
-            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Id);
+            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
+            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Object.Id);
 
             this.friendServer.FriendRequest(this.player1.Name, this.player2.Name);
 
-            this.gameServer1.Expect(g => g.FriendOnlineStateChanged(this.player1.Name, this.player2.Name, this.gameServer2.Id)).Repeat.AtLeastOnce();
-            this.gameServer2.Expect(g => g.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, this.gameServer1.Id)).Repeat.AtLeastOnce();
             this.friendServer.FriendResponse(this.player2.Name, this.player1.Name, true);
-            this.gameServer1.VerifyAllExpectations();
-            this.gameServer2.VerifyAllExpectations();
+            this.gameServer1.Verify(g => g.FriendOnlineStateChanged(this.player1.Name, this.player2.Name, this.gameServer2.Object.Id), Times.AtLeastOnce);
+            this.gameServer2.Verify(g => g.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, this.gameServer1.Object.Id), Times.AtLeastOnce);
 
             var context = this.persistenceContextProvider.CreateNewFriendServerContext();
             var friendItem1 = context.GetFriends(this.player1.Id).FirstOrDefault();
@@ -150,15 +144,13 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void FriendAddRequestDecline()
         {
-            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Id);
+            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
+            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Object.Id);
             this.friendServer.FriendRequest(this.player1.Name, this.player2.Name);
 
-            this.gameServer1.Expect(g => g.FriendOnlineStateChanged(this.player1.Name, this.player2.Name, this.gameServer2.Id)).Repeat.Never();
-            this.gameServer2.Expect(g => g.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, this.gameServer1.Id)).Repeat.Never();
             this.friendServer.FriendResponse(this.player2.Name, this.player1.Name, false);
-            this.gameServer1.VerifyAllExpectations();
-            this.gameServer2.VerifyAllExpectations();
+            this.gameServer1.Verify(g => g.FriendOnlineStateChanged(this.player1.Name, this.player2.Name, this.gameServer2.Object.Id), Times.Never);
+            this.gameServer2.Verify(g => g.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, this.gameServer1.Object.Id), Times.Never);
 
             var context = this.persistenceContextProvider.CreateNewFriendServerContext();
             var friendItem = context.GetFriends(this.player1.Id).FirstOrDefault();
@@ -177,14 +169,13 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void FriendResponseWithoutRequest()
         {
-            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Id);
-            this.gameServer1.Expect(g => g.FriendOnlineStateChanged(this.player1.Name, this.player2.Name, this.gameServer2.Id)).Repeat.Never();
-            this.gameServer2.Expect(g => g.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, this.gameServer1.Id)).Repeat.Never();
+            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
+            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Object.Id);
+
             this.friendServer.FriendResponse(this.player2.Name, this.player1.Name, true);
 
-            this.gameServer1.VerifyAllExpectations();
-            this.gameServer2.VerifyAllExpectations();
+            this.gameServer1.Verify(g => g.FriendOnlineStateChanged(this.player1.Name, this.player2.Name, this.gameServer2.Object.Id), Times.Never);
+            this.gameServer2.Verify(g => g.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, this.gameServer1.Object.Id), Times.Never);
 
             Assert.That(this.friendServer.GetFriendList(this.player1.Id), Is.Empty);
             Assert.That(this.friendServer.GetFriendList(this.player2.Id), Is.Empty);
@@ -196,16 +187,15 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void FriendDelete()
         {
-            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Id);
+            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
+            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Object.Id);
             this.friendServer.FriendRequest(this.player1.Name, this.player2.Name);
             this.friendServer.FriendResponse(this.player2.Name, this.player1.Name, true);
             Assert.That(this.friendServer.GetFriendList(this.player1.Id), Is.Not.Empty);
             Assert.That(this.friendServer.GetFriendList(this.player2.Id), Is.Not.Empty);
 
-            this.gameServer2.Expect(g => g.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, FriendServer.FriendServer.OfflineServerId)).Repeat.Once();
             this.friendServer.DeleteFriend(this.player1.Name, this.player2.Name);
-            this.gameServer2.VerifyAllExpectations();
+            this.gameServer2.Verify(g => g.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, FriendServer.FriendServer.OfflineServerId), Times.Once);
 
             Assert.That(this.friendServer.GetFriendList(this.player1.Id), Is.Empty);
             Assert.That(this.friendServer.GetFriendList(this.player2.Id), Is.Not.Empty);
@@ -220,21 +210,22 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TestOnlineList()
         {
-            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Id);
+            this.SetPlayerOnline(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
+            this.SetPlayerOnline(this.player2.Id, this.player2.Name, this.gameServer2.Object.Id);
             this.friendServer.FriendRequest(this.player1.Name, this.player2.Name);
             this.friendServer.FriendResponse(this.player2.Name, this.player1.Name, true);
             this.SetPlayerOnline(this.player1.Id, this.player1.Name, FriendServer.FriendServer.OfflineServerId);
             this.SetPlayerOnline(this.player2.Id, this.player2.Name, FriendServer.FriendServer.OfflineServerId);
 
-            this.friendServer.SetOnlineState(this.player1.Id, this.player1.Name, this.gameServer1.Id);
-            this.gameServer1.Expect(gs => gs.FriendOnlineStateChanged(this.player1.Name, this.player2.Name, this.gameServer2.Id));
-            this.friendServer.SetOnlineState(this.player2.Id, this.player2.Name, this.gameServer2.Id);
-            this.gameServer1.VerifyAllExpectations();
+            this.gameServer1.Invocations.Clear();
+            this.gameServer2.Invocations.Clear();
 
-            this.gameServer2.Expect(gs => gs.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, FriendServer.FriendServer.OfflineServerId));
+            this.friendServer.SetOnlineState(this.player1.Id, this.player1.Name, this.gameServer1.Object.Id);
+            this.friendServer.SetOnlineState(this.player2.Id, this.player2.Name, this.gameServer2.Object.Id);
+            this.gameServer1.Verify(gs => gs.FriendOnlineStateChanged(this.player1.Name, this.player2.Name, this.gameServer2.Object.Id), Times.Once);
+
             this.friendServer.SetOnlineState(this.player1.Id, this.player1.Name, FriendServer.FriendServer.OfflineServerId);
-            this.gameServer2.VerifyAllExpectations();
+            this.gameServer2.Verify(gs => gs.FriendOnlineStateChanged(this.player2.Name, this.player1.Name, FriendServer.FriendServer.OfflineServerId), Times.Once);
         }
 
         private void SetPlayerOnline(Guid playerId, string playerName, int serverId)
@@ -242,7 +233,7 @@ namespace MUnique.OpenMU.Tests
             this.friendServer.SetOnlineState(playerId, playerName, (byte)serverId);
             if (this.gameServers.TryGetValue((byte)serverId, out IGameServer gameServer))
             {
-                gameServer.Stub(g => g.IsPlayerOnline(playerName)).Return(serverId != FriendServer.FriendServer.OfflineServerId).Repeat.Any();
+                Mock.Get(gameServer).Setup(g => g.IsPlayerOnline(playerName)).Returns(serverId != FriendServer.FriendServer.OfflineServerId);
             }
         }
 

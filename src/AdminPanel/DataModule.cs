@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.AdminPanel
         {
             this.persistenceContextProvider = persistenceContextProvider;
             this.registeredRepositoryTypes = new List<string>();
-            this.Get["/registered"] = _ => this.Response.AsJson(this.registeredRepositoryTypes);
+            this.Get("/registered", _ => this.Response.AsJson(this.registeredRepositoryTypes));
 
             this.RegisterType<GameConfiguration>();
 
@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.AdminPanel
             where T : class
         {
             var className = typeof(T).Name;
-            this.Get[className] = _ =>
+            this.Get(className, _ =>
             {
                 var context = this.persistenceContextProvider.CreateNewContext();
                 var allData = context.Get<T>();
@@ -54,13 +54,13 @@ namespace MUnique.OpenMU.AdminPanel
                     new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
                 return list;
-            };
-            this.Get[className + "/{id:guid}"] = _ => FormatterExtensions.AsJson<T>(this.Response, this.GetById<T>((Guid)_.id));
-            this.Get[className + "/enums"] = _ => this.GetEnums<T>();
-            this.Post[className] = _ => this.Save<T>();
-            this.Post[className + "/all"] = _ => this.SaveAll<T>();
-            this.Delete[className] = _ => this.DeleteItem(this.Bind<T>());
-            this.Delete[className + "/{id:guid}"] = _ => this.DeleteItemById<T>((Guid)_.id);
+            });
+            this.Get(className + "/{id:guid}", _ => FormatterExtensions.AsJson<T>(this.Response, this.GetById<T>((Guid)_.id)));
+            this.Get(className + "/enums", _ => this.GetEnums<T>());
+            this.Post(className, _ => this.Save<T>());
+            this.Post(className + "/all", _ => this.SaveAll<T>());
+            this.Delete(className, _ => this.DeleteItem(this.Bind<T>()));
+            this.Delete(className + "/{id:guid}", _ => this.DeleteItemById<T>((Guid)_.id));
 
             this.registeredRepositoryTypes.Add(className);
         }

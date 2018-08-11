@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             Point currentTarget;
 
             Point previousTarget = start;
-            yield return new WalkingStep { Direction = directions.First(), To = start };
+            // yield return new WalkingStep { Direction = directions.First(), To = start };
 
             foreach (var direction in directions)
             {

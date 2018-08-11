@@ -6,10 +6,11 @@ That means, you should be a developer and know what you're doing if you want to 
 
 Requirements:
 * Windows OS
-  * It runs with Mono under Linux, probably MacOS, too.
-* .NET Framework 4.6.1
+  * It runs under Linux and MacOS, too. However, this guide describes it for windows.
 * PostgreSQL installed
 * Visual Studio 2017 installed
+* [TypeScript SDK 3.0.1](https://www.microsoft.com/en-US/download/details.aspx?id=55258)
+* [.NET Core SDK](https://www.microsoft.com/net/download/dotnet-core/2.0)
 * This repository cloned
 * Free TCP ports:
   * 1234 (admin panel)

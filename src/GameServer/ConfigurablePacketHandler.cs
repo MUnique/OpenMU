@@ -6,11 +6,11 @@ namespace MUnique.OpenMU.GameServer
 {
     using System;
     using log4net;
-    using Microsoft.Practices.Unity;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.Network;
+    using Unity;
 
     /// <summary>
     /// A configurable packet handler, which creates its sub packet handlers based on a configuration.

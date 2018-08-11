@@ -1,187 +1,42 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <ProjectGuid>{8EC9EBEE-56DD-4139-AA02-D154CA8536E6}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>Library</OutputType>
-    <RootNamespace>MUnique.OpenMU.GameServer</RootNamespace>
-    <AssemblyName>MUnique.OpenMU.GameServer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DebugType>Full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
-    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.GameServer.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.GameServer.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.GameServer.XML</DocumentationFile>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>None</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+	<DocumentationFile>..\..\bin\Release\MUnique.OpenMU.GameServer.xml</DocumentationFile>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
+    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="ConfigurableMainPacketHandler.cs" />
-    <Compile Include="ConfigurablePacketHandler.cs" />
-    <Compile Include="GameMapInfoAdapter.cs" />
-    <Compile Include="GameServer.cs" />
-    <Compile Include="GameServerContext.cs" />
-    <AdditionalFiles Include="..\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
-    <Compile Include="DefaultTcpGameServerListener.cs" />
-    <Compile Include="GameServerInfoAdapter.cs" />
-    <Compile Include="GameServerMapInitializer.cs" />
-    <Compile Include="IGameServerListener.cs" />
-    <Compile Include="MessageHandler\Friends\ChatRoomInvitationRequest.cs" />
-    <Compile Include="PacketType.cs" />
-    <Compile Include="PlayerConnectedEventArgs.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteView\AppearanceSerializer.cs" />
-    <Compile Include="RemoteView\CharacterStatTypeExtensions.cs" />
-    <Compile Include="RemoteView\ChatView.cs" />
-    <Compile Include="RemoteView\ConnectionExtensions.cs" />
-    <Compile Include="RemoteView\GuildInfoSerializer.cs" />
-    <Compile Include="RemoteView\GuildView.cs" />
-    <Compile Include="RemoteView\IItemSerializer.cs" />
-    <Compile Include="RemoteView\InventoryView.cs" />
-    <Compile Include="RemoteView\ISerializable.cs" />
-    <Compile Include="MessageHandler\AnimationHandler.cs" />
-    <Compile Include="MessageHandler\AreaSkillAttackHandler.cs" />
-    <Compile Include="MessageHandler\AreaSkillHitHandler.cs" />
-    <Compile Include="MessageHandler\BasePacketHandler.cs" />
-    <Compile Include="MessageHandler\CharacterGroupHandler.cs" />
-    <Compile Include="MessageHandler\CharacterMoveHandler.cs" />
-    <Compile Include="MessageHandler\ChatMessageHandler.cs" />
-    <Compile Include="MessageHandler\CloseNPCHandler.cs" />
-    <Compile Include="MessageHandler\Friends\ChatRequestHandler.cs" />
-    <Compile Include="MessageHandler\Friends\DeleteFriendHandler.cs" />
-    <Compile Include="MessageHandler\Friends\AddFriendHandler.cs" />
-    <Compile Include="MessageHandler\Friends\FriendAddResponseHandler.cs" />
-    <Compile Include="MessageHandler\Friends\ChangeOnlineStateHandler.cs" />
-    <Compile Include="MessageHandler\Guild\GuildCreateHandler.cs" />
-    <Compile Include="MessageHandler\Guild\GuildInfoRequestHandler.cs" />
-    <Compile Include="MessageHandler\Guild\GuildKickPlayerHandler.cs" />
-    <Compile Include="MessageHandler\Guild\GuildListRequestHandler.cs" />
-    <Compile Include="MessageHandler\Guild\GuildMasterAnswerHandler.cs" />
-    <Compile Include="MessageHandler\Guild\GuildRequestAnswerHandler.cs" />
-    <Compile Include="MessageHandler\Guild\GuildRequestHandler.cs" />
-    <Compile Include="MessageHandler\HitHandler.cs" />
-    <Compile Include="MessageHandler\IPacketHandler.cs" />
-    <Compile Include="MessageHandler\Items\BuyNPCItemHandler.cs" />
-    <Compile Include="MessageHandler\Items\ChaosMixHandler.cs" />
-    <Compile Include="MessageHandler\Items\ConsumeItemHandler.cs" />
-    <Compile Include="MessageHandler\Items\DropItemHandler.cs" />
-    <Compile Include="MessageHandler\Items\ItemMoveHandler.cs" />
-    <Compile Include="MessageHandler\Items\ItemRepairHandler.cs" />
-    <Compile Include="MessageHandler\Items\JewelMixHandler.cs" />
-    <Compile Include="MessageHandler\Items\PickupItemHandler.cs" />
-    <Compile Include="MessageHandler\Items\SellItemToNPCHandler.cs" />
-    <Compile Include="MessageHandler\LetterDeleteHandler.cs" />
-    <Compile Include="MessageHandler\LetterReadRequestHandler.cs" />
-    <Compile Include="MessageHandler\LetterSendHandler.cs" />
-    <Compile Include="MessageHandler\LoginHandler.cs" />
-    <Compile Include="MessageHandler\Party\PartyKickHandler.cs" />
-    <Compile Include="MessageHandler\Party\PartyListRequestHandler.cs" />
-    <Compile Include="MessageHandler\Party\PartyRequestHandler.cs" />
-    <Compile Include="MessageHandler\Party\PartyResponseHandler.cs" />
-    <Compile Include="MessageHandler\StoreHandler.cs" />
-    <Compile Include="MessageHandler\TalkNpcHandler.cs" />
-    <Compile Include="MessageHandler\TargettedSkillHandler.cs" />
-    <Compile Include="MessageHandler\Trade\TradeAcceptHandler.cs" />
-    <Compile Include="MessageHandler\Trade\TradeButtonHandler.cs" />
-    <Compile Include="MessageHandler\Trade\TradeCancelHandler.cs" />
-    <Compile Include="MessageHandler\Trade\TradeMoneyHandler.cs" />
-    <Compile Include="MessageHandler\Trade\TradeRequestHandler.cs" />
-    <Compile Include="MessageHandler\WarehouseCloseHandler.cs" />
-    <Compile Include="MessageHandler\WarpGateHandler.cs" />
-    <Compile Include="MessageHandler\WarpHandler.cs" />
-    <Compile Include="RequestPlayerIdEventArgs.cs" />
-    <None Include="packages.config" />
-    <Compile Include="RemoteView\MessengerView.cs" />
-    <Compile Include="RemoteView\PartyView.cs" />
-    <Compile Include="RemoteView\RemotePlayer.cs" />
-    <Compile Include="RemoteView\RemoteView.cs" />
-    <Compile Include="RemoteView\TradeView.cs" />
-    <Compile Include="RemoteView\WorldView.cs" />
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="app.config" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+    <PackageReference Include="Unity" Version="5.8.6" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj">
-      <Project>{3dd171e2-4f6e-486a-8420-f6935c4da03c}</Project>
-      <Name>MUnique.OpenMU.AttributeSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj">
-      <Project>{5282F509-D758-4A42-994C-F71A4C631FDA}</Project>
-      <Name>MUnique.OpenMU.DataModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GameLogic\MUnique.OpenMU.GameLogic.csproj">
-      <Project>{7DEC119D-79EF-4E43-9A72-DB07A6CAE73E}</Project>
-      <Name>MUnique.OpenMU.GameLogic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj">
-      <Project>{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}</Project>
-      <Name>MUnique.OpenMU.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Network\MUnique.OpenMU.Network.csproj">
-      <Project>{E3C36FF6-7205-4F9C-9242-A6B3441FF7F7}</Project>
-      <Name>MUnique.OpenMU.Network</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj">
-      <Project>{44CD0416-61D6-4848-8864-5DE7B971604A}</Project>
-      <Name>MUnique.OpenMU.Pathfinding</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj">
-      <Project>{6E809FA9-888C-474F-8A84-70EECBC7E42D}</Project>
-      <Name>MUnique.OpenMU.Persistence</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
+    <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\Network\MUnique.OpenMU.Network.csproj" />
+    <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />
+    <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

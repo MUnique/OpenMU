@@ -5,12 +5,12 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the <see cref="ItemPriceCalculator"/> with some exemplary data.
@@ -310,7 +310,12 @@ namespace MUnique.OpenMU.Tests
 
         private void CheckPrice(byte id, byte dropLevel, byte maxDurability, byte height, byte width, byte group, int value, byte level, long price, bool luck = false, bool option = false, bool skill = false)
         {
-            var itemDefinition = MockRepository.GenerateStub<ItemDefinition>();
+            var itemDefinitionMock = new Mock<ItemDefinition>();
+            itemDefinitionMock.SetupAllProperties();
+            itemDefinitionMock.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+
+            var itemDefinition = itemDefinitionMock.Object;
+
             itemDefinition.DropLevel = dropLevel;
             itemDefinition.Durability = maxDurability;
             itemDefinition.Height = height;
@@ -318,18 +323,20 @@ namespace MUnique.OpenMU.Tests
             itemDefinition.Group = group;
             itemDefinition.Value = value;
             itemDefinition.Number = id;
-            itemDefinition.Stub(d => d.BasePowerUpAttributes).Return(new List<ItemBasePowerUpDefinition>());
+
             if (group < 6)
             {
                 // weapons should have a min dmg attribute
                 itemDefinition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition { TargetAttribute = Stats.MinimumPhysBaseDmg });
             }
 
-            var item = MockRepository.GenerateStub<Item>();
+            var itemMock = new Mock<Item>();
+            itemMock.SetupAllProperties();
+            itemMock.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+            var item = itemMock.Object;
             item.Definition = itemDefinition;
             item.Durability = itemDefinition.Durability;
             item.Level = level;
-            item.Stub(i => i.ItemOptions).Return(new List<ItemOptionLink>());
 
             if (luck)
             {

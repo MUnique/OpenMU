@@ -7,11 +7,11 @@ namespace MUnique.OpenMU.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Character;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the master level system.
@@ -41,7 +41,6 @@ namespace MUnique.OpenMU.Tests
             this.skillRank0 = this.CreateSkill(1, 0, 1, null, this.player.SelectedCharacter.CharacterClass);
             this.skillRank1 = this.CreateSkill(2, 1, 1, null, this.player.SelectedCharacter.CharacterClass);
             this.skillRank2 = this.CreateSkill((short)this.skillIdRank2, 2, 1, null, this.player.SelectedCharacter.CharacterClass);
-            this.context.Configuration.Stub(c => c.Skills).Return(new List<Skill>());
             this.context.Configuration.Skills.Add(this.skillRank0);
             this.context.Configuration.Skills.Add(this.skillRank1);
             this.context.Configuration.Skills.Add(this.skillRank2);
@@ -202,24 +201,26 @@ namespace MUnique.OpenMU.Tests
 
         private Skill CreateSkill(short id, byte rank, byte rootId, Skill requiredSkill, CharacterClass charClass)
         {
-            var masterDef = MockRepository.GenerateStub<MasterSkillDefinition>();
-            masterDef.CharacterClass = charClass;
-            masterDef.Rank = rank;
-            masterDef.Root = new MasterSkillRoot { Id = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, rootId) };
-            masterDef.Stub(m => m.RequiredMasterSkills).Return(new List<Skill>());
+            var masterDef = new Mock<MasterSkillDefinition>();
+            masterDef.SetupAllProperties();
+            masterDef.Object.CharacterClass = charClass;
+            masterDef.Object.Rank = rank;
+            masterDef.Object.Root = new MasterSkillRoot { Id = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, rootId) };
+            masterDef.Setup(m => m.RequiredMasterSkills).Returns(new List<Skill>());
             if (requiredSkill != null)
             {
-                masterDef.RequiredMasterSkills.Add(requiredSkill);
+                masterDef.Object.RequiredMasterSkills.Add(requiredSkill);
             }
 
-            var skill = MockRepository.GenerateStub<Skill>();
-            skill.SkillID = id;
-            skill.Stub(s => s.QualifiedCharacters).Return(new List<CharacterClass>());
-            skill.Stub(s => s.MasterDefinitions).Return(new List<MasterSkillDefinition>());
-            skill.QualifiedCharacters.Add(charClass);
-            skill.MasterDefinitions.Add(masterDef);
+            var skill = new Mock<Skill>();
+            skill.SetupAllProperties();
+            skill.Object.SkillID = id;
+            skill.Setup(s => s.QualifiedCharacters).Returns(new List<CharacterClass>());
+            skill.Setup(s => s.MasterDefinitions).Returns(new List<MasterSkillDefinition>());
+            skill.Object.QualifiedCharacters.Add(charClass);
+            skill.Object.MasterDefinitions.Add(masterDef.Object);
 
-            return skill;
+            return skill.Object;
         }
     }
 }

@@ -4,16 +4,19 @@
 
 namespace MUnique.OpenMU.AdminPanel
 {
-    using Microsoft.AspNet.SignalR;
+    using System;
+    using Microsoft.AspNetCore.SignalR;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
-    /// A <see cref="IMapStateObserver"/> which notifies the <see cref="GlobalHost"/> of the <see cref="ServerListHub"/> about changes.
+    /// A <see cref="IMapStateObserver"/> which notifies the <see cref="ServerListHub"/> about changes.
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.Interfaces.IMapStateObserver" />
     public class SignalRMapStateObserver : IMapStateObserver
     {
         private readonly int serverId;
+
+        private IHubContext<ServerListHub> hubContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignalRMapStateObserver"/> class.
@@ -24,10 +27,21 @@ namespace MUnique.OpenMU.AdminPanel
             this.serverId = serverId;
         }
 
+        /// <summary>
+        /// Gets or sets the service provider.
+        /// </summary>
+        /// <remarks>
+        /// Unfortunately, this looks like an ugly hack :-(
+        /// </remarks>
+        internal static IServiceProvider Services { get; set; }
+
+        private IHubContext<ServerListHub> HubContext => this.hubContext ?? (this.hubContext = Services.GetService(typeof(IHubContext<ServerListHub>)) as IHubContext<ServerListHub>);
+
         /// <inheritdoc/>
         public void PlayerCountChanged(int mapId, int playerCount)
         {
-            GlobalHost.ConnectionManager.GetHubContext<ServerListHub, IServerListClient>().Clients.All.MapPlayerCountChanged(this.serverId, mapId, playerCount);
+
+            this.HubContext.Clients.All.SendAsync(nameof(IServerListClient.MapPlayerCountChanged), this.serverId, mapId, playerCount);
         }
     }
 }

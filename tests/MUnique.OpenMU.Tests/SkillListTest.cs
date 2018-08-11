@@ -5,11 +5,11 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests the skill list.
@@ -87,20 +87,21 @@ namespace MUnique.OpenMU.Tests
 
         private Item CreateItemWithSkill()
         {
-            var definition = MockRepository.GenerateStub<ItemDefinition>();
-            definition.Skill = new OpenMU.DataModel.Configuration.Skill
+            var definition = new Mock<ItemDefinition>();
+            definition.SetupAllProperties();
+            definition.Object.Skill = new OpenMU.DataModel.Configuration.Skill
             {
                 SkillID = ItemSkillId.ToSigned()
             };
 
-            definition.Height = 1;
-            definition.Width = 1;
-            definition.Stub(d => d.BasePowerUpAttributes).Return(new List<ItemBasePowerUpDefinition>());
+            definition.Object.Height = 1;
+            definition.Object.Width = 1;
+            definition.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
 
             var item = new Item
             {
                 HasSkill = true,
-                Definition = definition,
+                Definition = definition.Object,
             };
             return item;
         }
@@ -119,10 +120,11 @@ namespace MUnique.OpenMU.Tests
 
         private Character CreateCharacter()
         {
-            var result = MockRepository.GenerateStub<Character>();
-            result.Stub(c => c.LearnedSkills).Return(new List<SkillEntry>());
-            result.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
-            return result;
+            var result = new Mock<Character>();
+            result.SetupAllProperties();
+            result.Setup(c => c.LearnedSkills).Returns(new List<SkillEntry>());
+            result.Object.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
+            return result.Object;
         }
     }
 }

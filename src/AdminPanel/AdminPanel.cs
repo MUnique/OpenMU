@@ -6,13 +6,14 @@ namespace MUnique.OpenMU.AdminPanel
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.Owin.Extensions;
-    using Microsoft.Owin.Host.HttpListener;
-    using Microsoft.Owin.Hosting;
+    using System.IO;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.DependencyInjection;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using Nancy.Bootstrapper;
-    using Owin;
+    using Nancy.Owin;
 
     /// <summary>
     /// The admin panel host class which provides the web server over OWIN.
@@ -33,17 +34,48 @@ namespace MUnique.OpenMU.AdminPanel
         public AdminPanel(ushort port, IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider)
         {
             Startup.Bootstrapper = new MyBootstrapper(servers, persistenceContextProvider);
-            var startOptions = new StartOptions($"http://+:{port}")
-            {
-                ServerFactory = typeof(OwinHttpListener).Namespace,
-                AppStartup = typeof(Startup).AssemblyQualifiedName
-            };
             WorldObserverHub.Servers = servers;
             ServerListHub.Servers = servers;
 
             // you might need to allow it first with netsh:
             // netsh http add urlacl http://+:1234/ user=[Username]
-            this.webApp = WebApp.Start<Startup>(startOptions);
+            var host = new WebHostBuilder()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseKestrel(options =>
+                {
+                    // Default port
+                    options.ListenAnyIP(port);
+                })
+                .UseStartup<Startup>()
+                .Build();
+            
+            /*
+            var host = new WebHostBuilder()
+                .UseConfiguration(config)
+                .UseSetting(WebHostDefaults.PreventHostingStartupKey, "true")
+                .ConfigureLogging(factory =>
+                {
+                    factory.AddConsole();
+                })
+                .UseKestrel(options =>
+                {
+                    // Default port
+                    options.ListenLocalhost(5000);
+
+                    // Hub bound to TCP end point
+                    options.Listen(IPAddress.Any, 9001, builder =>
+                    {
+                        builder.UseHub<Chat>();
+                    });
+                })
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup<Startup>()
+                .Build();*/
+
+            host.Start();
+            SignalRGameServerStateObserver.Services = host.Services;
+            SignalRMapStateObserver.Services = host.Services;
         }
 
         /// <inheritdoc/>
@@ -66,15 +98,30 @@ namespace MUnique.OpenMU.AdminPanel
             /// </summary>
             public static INancyBootstrapper Bootstrapper { get; set; }
 
-            /// <summary>
-            /// Configurations the specified web application.
-            /// </summary>
-            /// <param name="app">The application.</param>
-            public void Configuration(IAppBuilder app)
+            // This method gets called by the runtime. Use this method to add services to the container.
+            public void ConfigureServices(IServiceCollection services)
             {
-                app.MapSignalR();
-                app.UseNancy(config => config.Bootstrapper = Bootstrapper);
-                app.UseStageMarker(PipelineStage.MapHandler);
+                
+                services.AddSignalR();
+            }
+
+            /// <summary>
+            /// Configures the specified web application.
+            /// </summary>
+            /// <param name="app">The application builder.</param>
+            /// <param name="env">The environment.</param>
+            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+            {
+                app.UseSignalR(opt =>
+                {
+                    opt.MapHub<ServerListHub>("/admin/signalr/hubs/serverListHub");
+                    opt.MapHub<WorldObserverHub>("/admin/signalr/hubs/worldObserverHub");
+                    opt.MapHub<SystemHub>("/admin/signalr/hubs/systemHub");
+                });
+                app.UseOwin(x => x.UseNancy(opt => opt.Bootstrapper = Bootstrapper));
+                // app.UseStageMarker(PipelineStage.MapHandler);
+
             }
         }
     }

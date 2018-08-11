@@ -1,276 +1,39 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <ProjectGuid>{7DEC119D-79EF-4E43-9A72-DB07A6CAE73E}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>Library</OutputType>
-    <RootNamespace>MUnique.OpenMU.GameLogic</RootNamespace>
-    <AssemblyName>MUnique.OpenMU.GameLogic</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <NoWin32Manifest>False</NoWin32Manifest>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <WarningLevel>4</WarningLevel>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <BaseAddress>4194304</BaseAddress>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <FileAlignment>512</FileAlignment>
-    <Prefer32Bit>False</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.GameLogic.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DebugType>Full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
-    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.GameLogic.XML</DocumentationFile>
-    <LangVersion>default</LangVersion>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+	<DocumentationFile>..\..\bin\Release\MUnique.OpenMU.GameLogic.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.GameLogic.XML</DocumentationFile>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>None</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
+    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="ArrayExtensions.cs" />
-    <Compile Include="AttackableExtensions.cs" />
-    <Compile Include="Attributes\ItemAwareAttributeSystem.cs" />
-    <Compile Include="Attributes\MonsterAttributeHolder.cs" />
-    <Compile Include="Attributes\PowerUpWrapper.cs" />
-    <Compile Include="Attributes\Stats.cs" />
-    <Compile Include="BackupItemStorage.cs" />
-    <AdditionalFiles Include="..\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
-    <Compile Include="MapInitializer.cs" />
-    <Compile Include="BucketAreaOfInterestManager.cs" />
-    <Compile Include="BucketItemEventArgs.cs" />
-    <Compile Include="BucketMap{T}.cs" />
-    <Compile Include="Bucket{T}.cs" />
-    <Compile Include="DirectionExtensions.cs" />
-    <Compile Include="DroppedItem.cs" />
-    <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="GameMapTerrain.cs" />
-    <Compile Include="HitInfo.cs" />
-    <Compile Include="IAreaOfInterestManager.cs" />
-    <Compile Include="IAttackable.cs" />
-    <Compile Include="IBucketMapObserver.cs" />
-    <Compile Include="IDropGenerator.cs" />
-    <Compile Include="IIdentifiable.cs" />
-    <Compile Include="ILocateable.cs" />
-    <Compile Include="IMapInitializer.cs" />
-    <Compile Include="InventoryConstants.cs" />
-    <Compile Include="InventoryStorage.cs" />
-    <Compile Include="IPartyMember.cs" />
-    <Compile Include="IRandomizer.cs" />
-    <Compile Include="IRotateable.cs" />
-    <Compile Include="ISkillList.cs" />
-    <Compile Include="ISupportWalk.cs" />
-    <Compile Include="ItemEventArgs.cs" />
-    <Compile Include="ItemExtensions.cs" />
-    <Compile Include="ItemStorageAdapter.cs" />
-    <Compile Include="ITrader.cs" />
-    <Compile Include="IWorldObserver.cs" />
-    <Compile Include="LocateableExtensions.cs" />
-    <Compile Include="NPC\BasicMonsterIntelligence.cs" />
-    <Compile Include="NPC\Monster.cs" />
-    <Compile Include="NPC\NonPlayerCharacter.cs" />
-    <Compile Include="Views\ViewExtensions.cs" />
-    <Compile Include="Walker.cs" />
-    <Compile Include="ObjectExtensions.cs" />
-    <Compile Include="ObservableExtensions.cs" />
-    <Compile Include="ObserverToWorldViewAdapter.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\AppleConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\BaseConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\BigHealthPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\BigManaPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\BigShieldPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\HigherRefineStoneConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\ItemUpgradeConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\LowerRefineStoneConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\MiddleHealthPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\MiddleManaPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\MiddleShieldPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\SmallHealthPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\SmallManaPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\SmallShieldPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\Items\CraftingRequiredItemLink.cs" />
-    <Compile Include="PlayerActions\Items\IItemCraftingHandler.cs" />
-    <Compile Include="PlayerActions\Items\ItemCraftAction.cs" />
-    <Compile Include="PlayerActions\Items\ItemStackAction.cs" />
-    <Compile Include="PlayerActions\Items\SimpleItemCraftingHandler.cs" />
-    <Compile Include="PlayerActions\Party\PartyKickAction.cs" />
-    <Compile Include="PlayerActions\Party\PartyListRequestAction.cs" />
-    <Compile Include="PlayerActions\Party\PartyRequestAction.cs" />
-    <Compile Include="PlayerActions\Party\PartyResponseAction.cs" />
-    <Compile Include="PlayerActions\TargettedSkillAction.cs" />
-    <Compile Include="ShopStorage.cs" />
-    <Compile Include="ShortDictionary{T}.cs" />
-    <Compile Include="ShortExtensions.cs" />
-    <Compile Include="TemporaryItem.cs" />
-    <Compile Include="Views\IChatView.cs" />
-    <Compile Include="Views\IGuildView.cs" />
-    <Compile Include="IAppearanceSerializer.cs" />
-    <Compile Include="IItemPowerUpFactory.cs" />
-    <Compile Include="ItemPowerUpFactory.cs" />
-    <Compile Include="PlayerActions\Character\AddMasterPointAction.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\RecoverConsumeHandler.cs" />
-    <Compile Include="PlayerState.cs" />
-    <Compile Include="State.cs" />
-    <Compile Include="StateMachine.cs" />
-    <Compile Include="Storage.cs" />
-    <Compile Include="GameContext.cs" />
-    <Compile Include="GameMap.cs" />
-    <Compile Include="GuildCache.cs" />
-    <Compile Include="IGameServerContext.cs" />
-    <Compile Include="Views\IInventoryView.cs" />
-    <Compile Include="Views\IPartyView.cs" />
-    <Compile Include="IStorage.cs" />
-    <Compile Include="Views\ITradeView.cs" />
-    <Compile Include="Views\IWorldView.cs" />
-    <Compile Include="MagicEffect.cs" />
-    <Compile Include="Views\IMessengerView.cs" />
-    <Compile Include="PlayerActions\AreaSkillAttackAction.cs" />
-    <Compile Include="PlayerActions\AreaSkillHitAction.cs" />
-    <Compile Include="PlayerActions\Character\SaveKeyConfigurationAction.cs" />
-    <Compile Include="PlayerActions\Character\SelectCharacterAction.cs" />
-    <Compile Include="PlayerActions\Character\CreateCharacterAction.cs" />
-    <Compile Include="PlayerActions\Character\DeleteCharacterAction.cs" />
-    <Compile Include="PlayerActions\Character\FocusCharacterAction.cs" />
-    <Compile Include="PlayerActions\Character\IncreaseStatsAction.cs" />
-    <Compile Include="PlayerActions\Character\RequestCharacterListAction.cs" />
-    <Compile Include="PlayerActions\ChatMessageAction.cs" />
-    <Compile Include="PlayerActions\CloseNpcAction.cs" />
-    <Compile Include="PlayerActions\Guild\GuildCreateAction.cs" />
-    <Compile Include="PlayerActions\Guild\GuildInfoRequestAction.cs" />
-    <Compile Include="PlayerActions\Guild\GuildKickPlayerAction.cs" />
-    <Compile Include="PlayerActions\Guild\GuildListRequestAction.cs" />
-    <Compile Include="PlayerActions\Guild\GuildMasterAnswerAction.cs" />
-    <Compile Include="PlayerActions\Guild\GuildRequestAction.cs" />
-    <Compile Include="PlayerActions\Guild\GuildRequestAnswerAction.cs" />
-    <Compile Include="PlayerActions\HitAction.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\HarmonyJewelConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\ItemConsumeAction.cs" />
-    <Compile Include="PlayerActions\Items\BuyNpcItemAction.cs" />
-    <Compile Include="PlayerActions\Items\DropItemAction.cs" />
-    <Compile Include="PlayerActions\Items\ItemRepairAction.cs" />
-    <Compile Include="PlayerActions\Items\MoveItemAction.cs" />
-    <Compile Include="PlayerActions\Items\PickupItemAction.cs" />
-    <Compile Include="PlayerActions\Items\SellItemToNpcAction.cs" />
-    <Compile Include="PlayerActions\LoginAction.cs" />
-    <Compile Include="PlayerActions\LogoutAction.cs" />
-    <Compile Include="PlayerActions\Messenger\AddFriendAction.cs" />
-    <Compile Include="PlayerActions\Messenger\AddResponseAction.cs" />
-    <Compile Include="PlayerActions\Messenger\ChangeOnlineStateAction.cs" />
-    <Compile Include="PlayerActions\Messenger\ChatRequestAction.cs" />
-    <Compile Include="PlayerActions\Messenger\DeleteFriendAction.cs" />
-    <Compile Include="PlayerActions\Messenger\LetterDeleteAction.cs" />
-    <Compile Include="PlayerActions\Messenger\LetterReadRequestAction.cs" />
-    <Compile Include="PlayerActions\Messenger\LetterSendAction.cs" />
-    <Compile Include="PlayerActions\PlayerStore\BuyRequestAction.cs" />
-    <Compile Include="PlayerActions\PlayerStore\CloseStoreAction.cs" />
-    <Compile Include="PlayerActions\PlayerStore\OpenStoreAction.cs" />
-    <Compile Include="PlayerActions\PlayerStore\SetItemPriceAction.cs" />
-    <Compile Include="PlayerActions\PlayerStore\StoreItemListRequestAction.cs" />
-    <Compile Include="PlayerActions\TalkNpcAction.cs" />
-    <Compile Include="PlayerActions\Trade\BaseTradeAction.cs" />
-    <Compile Include="PlayerActions\Trade\TradeAcceptAction.cs" />
-    <Compile Include="PlayerActions\Trade\TradeButtonAction.cs" />
-    <Compile Include="PlayerActions\Trade\TradeCancelAction.cs" />
-    <Compile Include="PlayerActions\Trade\TradeMoneyAction.cs" />
-    <Compile Include="PlayerActions\Trade\TradeRequestAction.cs" />
-    <Compile Include="PlayerActions\WarpGateAction.cs" />
-    <Compile Include="PlayerActions\WarpAction.cs" />
-    <Compile Include="Views\IPlayerView.cs" />
-    <Compile Include="IGameContext.cs" />
-    <Compile Include="IMonsterIntelligence.cs" />
-    <Compile Include="IObservable.cs" />
-    <Compile Include="ItemPriceCalculator.cs" />
-    <Compile Include="MagicEffectsList.cs" />
-    <Compile Include="Party.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\AlcoholConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\BlessJewelConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\HealthPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\IItemConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\ItemModifyConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\LearnablesConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\LifeJewelConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\ManaPotionConsumehandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\NotImplementedItemConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\ShieldPotionConsumeHandler.cs" />
-    <Compile Include="PlayerActions\ItemConsumeActions\SoulJewelConsumeHandler.cs" />
-    <Compile Include="Player.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rand.cs" />
-    <Compile Include="SkillList.cs" />
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj">
-      <Project>{3dd171e2-4f6e-486a-8420-f6935c4da03c}</Project>
-      <Name>MUnique.OpenMU.AttributeSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj">
-      <Project>{5282F509-D758-4A42-994C-F71A4C631FDA}</Project>
-      <Name>MUnique.OpenMU.DataModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj">
-      <Project>{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}</Project>
-      <Name>MUnique.OpenMU.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj">
-      <Project>{44CD0416-61D6-4848-8864-5DE7B971604A}</Project>
-      <Name>MUnique.OpenMU.Pathfinding</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj">
-      <Project>{6E809FA9-888C-474F-8A84-70EECBC7E42D}</Project>
-      <Name>MUnique.OpenMU.Persistence</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
+    <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />
+    <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

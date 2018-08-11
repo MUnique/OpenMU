@@ -6,8 +6,9 @@ namespace MUnique.OpenMU.AdminPanel
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using log4net;
-    using Microsoft.AspNet.SignalR;
+    using Microsoft.AspNetCore.SignalR;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -55,9 +56,10 @@ namespace MUnique.OpenMU.AdminPanel
         /// <summary>
         /// Subscribes to this hub.
         /// </summary>
-        public void Subscribe()
+        /// <returns>The task.</returns>
+        public async Task Subscribe()
         {
-            this.Groups.Add(this.Context.ConnectionId, SubscriberGroup);
+            await this.Groups.AddToGroupAsync(this.Context.ConnectionId, SubscriberGroup);
             var currentServerInfos = this.ServerInfos;
             if (currentServerInfos == null)
             {
@@ -65,16 +67,17 @@ namespace MUnique.OpenMU.AdminPanel
             }
             else
             {
-                this.Clients.Caller.Initialize(currentServerInfos);
+                await this.Clients.Caller.Initialize(currentServerInfos);
             }
         }
 
         /// <summary>
         /// Unsubscribes from this hub.
         /// </summary>
-        public void Unsubscribe()
+        /// <returns>The task.</returns>
+        public async Task Unsubscribe()
         {
-            this.Groups.Remove(this.Context.ConnectionId, SubscriberGroup);
+            await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, SubscriberGroup);
         }
 
         /// <summary>

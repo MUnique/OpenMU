@@ -4,10 +4,9 @@
 
 namespace MUnique.OpenMU.AdminPanel
 {
-    using System.Diagnostics;
     using System.Timers;
     using log4net;
-    using Microsoft.AspNet.SignalR;
+    using Microsoft.AspNetCore.SignalR;
     using Timer = System.Timers.Timer;
 
     /// <summary>
@@ -17,21 +16,21 @@ namespace MUnique.OpenMU.AdminPanel
     {
         private const string SubscriberGroup = "Subscribers";
         private static readonly ILog Log = LogManager.GetLogger(typeof(SystemHub));
-        private static readonly PerformanceCounter CpuCounterTotal;
-        private static readonly PerformanceCounter CpuCounterInstance;
+        // private static readonly PerformanceCounter CpuCounterTotal;
+        // private static readonly PerformanceCounter CpuCounterInstance;
         //// private static readonly PerformanceCounter BytesSentCounter;
         //// private static readonly PerformanceCounter BytesReceivedCounter;
         private static readonly Timer Timer;
 
         static SystemHub()
         {
-            CpuCounterInstance = new PerformanceCounter("Process", "% Processor Time", Process.GetCurrentProcess().ProcessName); // TODO: What if there are multiple processes?
-            CpuCounterTotal = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            // CpuCounterInstance = new PerformanceCounter("Process", "% Processor Time", Process.GetCurrentProcess().ProcessName); // TODO: What if there are multiple processes?
+            // CpuCounterTotal = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             //// BytesSentCounter = new PerformanceCounter(".Net CLR Networking", "Bytes Sent"); // Does always return 0 :-(
             //// BytesReceivedCounter = new PerformanceCounter(".Net CLR Networking", "Bytes Received"); // Does always return 0 :-(
 
-            CpuCounterTotal.NextValue();
-            CpuCounterInstance.NextValue();
+            // CpuCounterTotal.NextValue();
+            // CpuCounterInstance.NextValue();
             //// BytesSentCounter.NextValue();
             //// BytesReceivedCounter.NextValue();
 
@@ -45,7 +44,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// </summary>
         public void Subscribe()
         {
-            this.Groups.Add(this.Context.ConnectionId, SubscriberGroup);
+            this.Groups.AddToGroupAsync(this.Context.ConnectionId, SubscriberGroup);
         }
 
         /// <summary>
@@ -53,13 +52,13 @@ namespace MUnique.OpenMU.AdminPanel
         /// </summary>
         public void Unsubscribe()
         {
-            this.Groups.Remove(this.Context.ConnectionId, SubscriberGroup);
+            this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, SubscriberGroup);
         }
 
         private static void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            var hubContext = GlobalHost.ConnectionManager.GetHubContext<SystemHub, ISystemHubClient>();
-            hubContext.Clients.Group(SubscriberGroup).Update(CpuCounterTotal.NextValue(), CpuCounterInstance.NextValue(), 0, 0); ////BytesReceivedCounter.NextValue(), BytesSentCounter.NextValue());
+            // var hubContext = GlobalHost.ConnectionManager.GetHubContext<SystemHub, ISystemHubClient>();
+            // hubContext.Clients.Group(SubscriberGroup).Update(CpuCounterTotal.NextValue(), CpuCounterInstance.NextValue(), 0, 0); ////BytesReceivedCounter.NextValue(), BytesSentCounter.NextValue());
         }
     }
 }

@@ -5,13 +5,13 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Interfaces;
     using NUnit.Framework;
     using NUnit.Framework.Constraints;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests for the <see cref="ConfigurableMainPacketHandler"/>.
@@ -80,37 +80,38 @@ namespace MUnique.OpenMU.Tests
 
         private ConfigurableMainPacketHandler CreateMainPacketHandlerWithSubPacketHandler()
         {
-            var mainConfiguration = MockRepository.GenerateStub<MainPacketHandlerConfiguration>();
-            mainConfiguration.Stub(c => c.PacketHandlers).Return(new List<PacketHandlerConfiguration>());
+            var mainConfiguration = new Mock<MainPacketHandlerConfiguration>();
+            mainConfiguration.Setup(c => c.PacketHandlers).Returns(new List<PacketHandlerConfiguration>());
 
-            var packetHandler = MockRepository.GenerateStub<PacketHandlerConfiguration>();
-            packetHandler.Stub(p => p.SubPacketHandlers).Return(new List<PacketHandlerConfiguration>());
-            packetHandler.PacketIdentifier = PacketType;
-            packetHandler.SubPacketHandlers.Add(new PacketHandlerConfiguration
+            var packetHandler = new Mock<PacketHandlerConfiguration>();
+            packetHandler.SetupAllProperties();
+            packetHandler.Setup(p => p.SubPacketHandlers).Returns(new List<PacketHandlerConfiguration>());
+            packetHandler.Object.PacketIdentifier = PacketType;
+            packetHandler.Object.SubPacketHandlers.Add(new PacketHandlerConfiguration
             {
                 PacketIdentifier = PacketType,
                 PacketHandlerClassName = typeof(TestPacketHandler).AssemblyQualifiedName
             });
-            mainConfiguration.PacketHandlers.Add(packetHandler);
-            var gameServerContext = MockRepository.GenerateStub<IGameServerContext>();
-            gameServerContext.Stub(g => g.FriendServer).Return(MockRepository.GenerateStub<IFriendServer>());
-            return new ConfigurableMainPacketHandler(mainConfiguration, gameServerContext);
+            mainConfiguration.Object.PacketHandlers.Add(packetHandler.Object);
+            var gameServerContext = new Mock<IGameServerContext>();
+            gameServerContext.Setup(g => g.FriendServer).Returns(new Mock<IFriendServer>().Object);
+            return new ConfigurableMainPacketHandler(mainConfiguration.Object, gameServerContext.Object);
         }
 
         private ConfigurableMainPacketHandler CreateMainPacketHandler(bool encryptionNeeded)
         {
-            var mainConfiguration = MockRepository.GenerateStub<MainPacketHandlerConfiguration>();
-            mainConfiguration.Stub(c => c.PacketHandlers).Return(new List<PacketHandlerConfiguration>());
-            mainConfiguration.PacketHandlers.Add(
+            var mainConfiguration = new Mock<MainPacketHandlerConfiguration>();
+            mainConfiguration.Setup(c => c.PacketHandlers).Returns(new List<PacketHandlerConfiguration>());
+            mainConfiguration.Object.PacketHandlers.Add(
                 new PacketHandlerConfiguration
                 {
                     NeedsToBeEncrypted = encryptionNeeded,
                     PacketIdentifier = PacketType,
                     PacketHandlerClassName = typeof(TestPacketHandler).AssemblyQualifiedName
                 });
-            var gameServerContext = MockRepository.GenerateStub<IGameServerContext>();
-            gameServerContext.Stub(g => g.FriendServer).Return(MockRepository.GenerateStub<IFriendServer>());
-            return new ConfigurableMainPacketHandler(mainConfiguration, gameServerContext);
+            var gameServerContext = new Mock<IGameServerContext>();
+            gameServerContext.Setup(g => g.FriendServer).Returns(new Mock<IFriendServer>().Object);
+            return new ConfigurableMainPacketHandler(mainConfiguration.Object, gameServerContext.Object);
         }
     }
 }

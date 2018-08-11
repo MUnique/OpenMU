@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Tests
 {
+    using System.Linq;
+    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.Pathfinding;
@@ -15,20 +17,53 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class CharacterMoveTest
     {
+        private static readonly Point StartPoint = new Point(147, 120);
+        private static readonly Point EndPoint = new Point(151, 122);
+
         /// <summary>
         /// Tests if handling a walk packet results in the correct target coordinates.
-        /// By example: walking from 147, 120 to 151, 122: C1 08 D4 93 78 44 33 44
-        /// The packet contains the starting coordinates and the target is determined by the given path
         /// </summary>
         [Test]
         public void TestWalkTargetIsCorrect()
+        {
+            var player = this.DoTheWalk();
+            Assert.That(player.WalkTarget, Is.EqualTo(EndPoint));
+        }
+
+        /// <summary>
+        /// Tests if handling a walk packet results in the correct walk directions.
+        /// </summary>
+        [Test]
+        public void TestWalkStepsAreCorrect()
+        {
+            var player = this.DoTheWalk();
+
+            // the next check is questionable - there is a timer which is removing a direction every 500ms. If the test runs "too slot", the count is 3 ;-)
+            Assert.That(player.NextDirections.Count, Is.EqualTo(4));
+
+            var directions = player.NextDirections.ToArray();
+            Assert.That(directions.First().From, Is.EqualTo(StartPoint));
+            Assert.That(directions.Last().To, Is.EqualTo(EndPoint));
+            foreach (var direction in directions)
+            {
+                Assert.That(direction.From, Is.Not.EqualTo(direction.To));
+            }
+        }
+
+        /// <summary>
+        /// Creates the player and performs the example walk.
+        /// By example: walking from 147, 120 to 151, 122: C1 08 D4 93 78 44 33 44
+        /// The packet contains the starting coordinates and the target is determined by the given path
+        /// </summary>
+        /// <returns>The player which walked.</returns>
+        private Player DoTheWalk()
         {
             var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, 147, 120, 0x44, 0x33, 0x44 };
             var player = TestHelper.GetPlayer();
             var moveHandler = new CharacterMoveHandler();
             moveHandler.HandlePacket(player, packet);
-            Assert.That(player.WalkTarget, Is.EqualTo(new Point(151, 122)));
-            Assert.That(player.NextDirections.Count, Is.EqualTo(4));
+
+            return player;
         }
     }
 }

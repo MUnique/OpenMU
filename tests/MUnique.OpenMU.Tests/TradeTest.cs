@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Moq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
@@ -14,7 +15,6 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
-    using Rhino.Mocks;
 
     /// <summary>
     /// Tests for the trade actions.
@@ -31,7 +31,6 @@ namespace MUnique.OpenMU.Tests
             var player = this.CreateTrader(PlayerState.EnteredWorld); // The player which will send the trade request
             var tradePartner = this.CreateTrader(PlayerState.EnteredWorld); // The player which will receive the trade request
 
-            tradePartner.TradeView.Expect(view => view.ShowTradeRequest(player)).Repeat.Once();
             var packetHandler = new TradeRequestAction();
             var success = packetHandler.RequestTrade(player, tradePartner);
             Assert.AreEqual(true, success);
@@ -39,7 +38,7 @@ namespace MUnique.OpenMU.Tests
             Assert.AreSame(player, tradePartner.TradingPartner);
             Assert.AreEqual(PlayerState.TradeRequested, player.PlayerState.CurrentState);
             Assert.AreEqual(PlayerState.TradeRequested, tradePartner.PlayerState.CurrentState);
-            tradePartner.TradeView.VerifyAllExpectations();
+            Mock.Get(tradePartner.TradeView).Verify(view => view.ShowTradeRequest(player), Times.Once);
         }
 
         /// <summary>
@@ -52,12 +51,11 @@ namespace MUnique.OpenMU.Tests
             var responder = this.CreateTrader(PlayerState.TradeRequested);
             requester.TradingPartner = responder;
             responder.TradingPartner = requester;
-            requester.TradeView.Expect(view => view.ShowTradeRequestAnswer(true));
             var responseHandler = new TradeAcceptAction();
             responseHandler.HandleTradeAccept(responder, true);
             Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
             Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
-            requester.TradeView.VerifyAllExpectations();
+            Mock.Get(requester.TradeView).Verify(view => view.ShowTradeRequestAnswer(true), Times.Once);
         }
 
         /// <summary>
@@ -70,14 +68,13 @@ namespace MUnique.OpenMU.Tests
             var trader2 = this.CreateTrader(PlayerState.TradeOpened);
             trader1.TradingPartner = trader2;
             trader2.TradingPartner = trader1;
-            trader1.TradeView.Expect(view => view.TradeFinished(TradeResult.Cancelled));
-            trader2.TradeView.Expect(view => view.TradeFinished(TradeResult.Cancelled));
             var cancelTrader = new TradeCancelAction();
             cancelTrader.CancelTrade(trader1);
             Assert.AreEqual(PlayerState.EnteredWorld, trader1.PlayerState.CurrentState);
             Assert.AreEqual(PlayerState.EnteredWorld, trader2.PlayerState.CurrentState);
-            trader1.TradeView.VerifyAllExpectations();
-            trader2.TradeView.VerifyAllExpectations();
+
+            Mock.Get(trader1.TradeView).Verify(view => view.TradeFinished(TradeResult.Cancelled), Times.Once);
+            Mock.Get(trader2.TradeView).Verify(view => view.TradeFinished(TradeResult.Cancelled), Times.Once);
         }
 
         /// <summary>
@@ -90,12 +87,10 @@ namespace MUnique.OpenMU.Tests
             var trader2 = this.CreateTrader(PlayerState.TradeOpened);
             trader1.TradingPartner = trader2;
             trader2.TradingPartner = trader1;
-            trader1.TradeView.Expect(view => view.TradeFinished(TradeResult.Success));
-            trader2.TradeView.Expect(view => view.TradeFinished(TradeResult.Success));
 
-            var gameContext = MockRepository.GenerateStub<IGameContext>();
-            gameContext.Stub(c => c.PersistenceContextProvider).Return(new InMemoryPersistenceContextProvider());
-            var tradeButtonHandler = new TradeButtonAction(gameContext);
+            var gameContext = new Mock<IGameContext>();
+            gameContext.Setup(c => c.PersistenceContextProvider).Returns(new InMemoryPersistenceContextProvider());
+            var tradeButtonHandler = new TradeButtonAction(gameContext.Object);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Unchecked);
             Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.TradeOpened);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
@@ -104,8 +99,8 @@ namespace MUnique.OpenMU.Tests
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.EnteredWorld);
             Assert.AreEqual(trader2.PlayerState.CurrentState, PlayerState.EnteredWorld);
-            trader1.TradeView.VerifyAllExpectations();
-            trader2.TradeView.VerifyAllExpectations();
+            Mock.Get(trader1.TradeView).Verify(view => view.TradeFinished(TradeResult.Success), Times.Once);
+            Mock.Get(trader2.TradeView).Verify(view => view.TradeFinished(TradeResult.Success), Times.Once);
         }
 
         /// <summary>
@@ -130,9 +125,9 @@ namespace MUnique.OpenMU.Tests
             itemMoveAction.MoveItem(trader1, 21, Storages.Inventory, 2, Storages.Trade);
             Assert.That(trader1.TemporaryStorage.Items.First(), Is.SameAs(item1));
 
-            var gameContext = MockRepository.GenerateStub<IGameContext>();
-            gameContext.Stub(c => c.PersistenceContextProvider).Return(new InMemoryPersistenceContextProvider());
-            var tradeButtonHandler = new TradeButtonAction(gameContext);
+            var gameContext = new Mock<IGameContext>();
+            gameContext.Setup(c => c.PersistenceContextProvider).Returns(new InMemoryPersistenceContextProvider());
+            var tradeButtonHandler = new TradeButtonAction(gameContext.Object);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.That(trader1.Inventory.ItemStorage.Items, Is.Empty);
@@ -141,25 +136,29 @@ namespace MUnique.OpenMU.Tests
 
         private Item GetItem()
         {
-            var item = MockRepository.GenerateStub<Item>();
-            item.Definition = new ItemDefinition { Width = 1, Height = 1 };
-            item.Stub(i => i.ItemOptions).Return(new List<ItemOptionLink>());
-            return item;
+            var item = new Mock<Item>();
+            item.SetupAllProperties();
+            item.Object.Definition = new ItemDefinition { Width = 1, Height = 1 };
+            item.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+            return item.Object;
         }
 
         private ITrader CreateTrader(State playerState)
         {
-            var trader = MockRepository.GenerateStub<ITrader>();
-            trader.Stub(t => t.PlayerState).Return(new StateMachine(playerState));
-            var inventory = MockRepository.GenerateStub<IStorage>();
-            trader.Stub(t => t.Inventory).Return(inventory);
-            inventory.Stub(i => i.ItemStorage).Return(MockRepository.GenerateStub<ItemStorage>());
-            inventory.ItemStorage.Stub(i => i.Items).Return(new List<Item>());
-            trader.BackupInventory = new BackupItemStorage(inventory.ItemStorage) { Items = new List<Item>() };
-            trader.Stub(t => t.TemporaryStorage).Return(MockRepository.GenerateStub<IStorage>());
-            trader.TemporaryStorage.Stub(t => t.Items).Return(new List<Item>());
-            trader.Stub(t => t.TradeView).Return(MockRepository.GenerateMock<ITradeView>());
-            return trader;
+            var trader = new Mock<ITrader>();
+            trader.SetupAllProperties();
+            trader.Setup(t => t.PlayerState).Returns(new StateMachine(playerState));
+            var inventory = new Mock<IStorage>();
+            var itemStorage = new Mock<ItemStorage>();
+            itemStorage.Setup(i => i.Items).Returns(new List<Item>());
+            inventory.Setup(i => i.ItemStorage).Returns(itemStorage.Object);
+            trader.Setup(t => t.Inventory).Returns(inventory.Object);
+            trader.Object.BackupInventory = new BackupItemStorage(itemStorage.Object) { Items = new List<Item>() };
+            var temporaryStorage = new Mock<IStorage>();
+            temporaryStorage.Setup(t => t.Items).Returns(new List<Item>());
+            trader.Setup(t => t.TemporaryStorage).Returns(temporaryStorage.Object);
+            trader.Setup(t => t.TradeView).Returns(new Mock<ITradeView>().Object);
+            return trader.Object;
         }
 
         //// TODO: Test fail scenarios
