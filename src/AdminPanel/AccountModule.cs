@@ -75,9 +75,9 @@ namespace MUnique.OpenMU.AdminPanel
             account.EMail = dto.EMail;
             account.State = dto.State;
             account.LoginName = dto.LoginName;
-            if (!string.IsNullOrEmpty(dto.NewPassword))
+            if (!string.IsNullOrEmpty(dto.Password))
             {
-                account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+                account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             }
         }
 
@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.AdminPanel
             /// <summary>
             /// Gets or sets the new password of a changed account.
             /// </summary>
-            public string NewPassword { get; set; }
+            public string Password { get; set; }
 
             /// <summary>
             /// Gets or sets the state of the account.
