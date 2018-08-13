@@ -141,7 +141,13 @@ namespace MUnique.OpenMU.Network
         {
             if (this.socket != null)
             {
-                this.socket.ReceiveAsync(this.receiveEventArgs);
+                var pending = this.socket.ReceiveAsync(this.receiveEventArgs);
+                if (!pending)
+                {
+                    // The I/O operation completed synchronously.
+                    // In this case, The Completed event on the event args will not be raised, so we call it manually.
+                    this.EndReceive(this.receiveEventArgs);
+                }
             }
             else
             {
