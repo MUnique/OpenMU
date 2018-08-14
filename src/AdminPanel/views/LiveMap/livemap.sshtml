@@ -77,10 +77,10 @@
             // TODO: Make React component
             let onPickObject = function(obj) {
                 if (obj !== undefined && obj !== null) {
-                    document.getElementById("objectData_name").textContent = obj.Name;
-                    document.getElementById("objectData_id").textContent = obj.Id;
-                    document.getElementById("objectData_x").textContent = obj.X;
-                    document.getElementById("objectData_y").textContent = obj.Y;
+                    document.getElementById("objectData_name").textContent = obj.name;
+                    document.getElementById("objectData_id").textContent = obj.id;
+                    document.getElementById("objectData_x").textContent = obj.x;
+                    document.getElementById("objectData_y").textContent = obj.y;
                 }
             }
 
