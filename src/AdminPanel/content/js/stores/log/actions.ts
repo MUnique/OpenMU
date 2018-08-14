@@ -1,7 +1,7 @@
 ﻿import Redux from "redux";
 import Action = Redux.Action;
 import ActionCreator = Redux.ActionCreator;
-import { LogEntryData } from "./types";
+import { LogEventData, LogEventArgs } from "./types";
 
 export enum Constants {
     LOG_SUBSCRIBE = "LOG_SUBSCRIBE",
@@ -43,24 +43,26 @@ export interface LogSetAutoRefreshAction extends Action {
 export interface LogInitializeAction extends Action {
     type: Constants.LOG_INITIALIZE,
     loggers: string[],
-    cachedEvents: LogEntryData[],
+    cachedEvents: LogEventData[],
 }
 
 export interface LogEventAction extends Action {
     type: Constants.LOG_LOGEVENT,
-    event: LogEntryData,
+    event: LogEventData,
+    id: number,
 }
 
 
-export const logInitialize: ActionCreator<LogInitializeAction> = (loggers: string[], cachedEvents: LogEntryData[]) => ({
+export const logInitialize: ActionCreator<LogInitializeAction> = (loggers: string[], cachedEvents: LogEventData[]) => ({
     type: Constants.LOG_INITIALIZE,
     loggers,
     cachedEvents,
 });
 
-export const logEvent: ActionCreator<LogEventAction> = (event: LogEntryData) => ({
+export const logEvent: ActionCreator<LogEventAction> = (event: LogEventData, id: number) => ({
     type: Constants.LOG_LOGEVENT,
-    event
+    event,
+    id
 });
 
 export const logSubscribe: ActionCreator<LogSubscribeAction> = (subscriber: any) => ({

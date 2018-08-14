@@ -5,38 +5,6 @@ import { ApplicationState } from "../index";
 import { SignalRConnector } from "../signalr";
 import { Constants, serverListInit, serverUpdateState, serverUpdateMapPlayerCount, serverUpdatePlayerCount, serverAddMap, serverRemoveMap, ServerListSubscribeAction, ServerListUnsubscribeAction} from "./actions";
 
-/*
-declare var $: { connection: { serverListHub: ServerHubProxy } };
-
-interface ServerHubClient {
-    initialize: (servers: Server[]) => void;
-
-    // Is called when a server got added to the list;
-    // Currently probably never called, because there are no servers dynamically added or removed.
-    addedServer: (server: Server) => void;
-
-    // Is called when a server got removed from the list;
-    // Currently probably never called, because there are no servers dynamically added or removed.
-    removedServer: (serverId: number) => void;
-
-    playerCountChanged: (serverId: number, playerCount: number) => void;
-
-    mapPlayerCountChanged: (serverId: number, mapId: number, playerCount: number) => void;
-
-    serverStateChanged: (serverId: number, newState: number) => void;
-
-    mapAdded: (mapInfo: Map) => void;
-
-    mapRemoved: (serverId: number, mapId: number) => void;
-}
-
-interface ServerHubProxy extends HubProxy {
-    client: ServerHubClient;
-}
-
-interface ServerHub {
-}*/
-
 export var serverListConnector: ServerListSignalRConnector;
 
 class ServerListSignalRConnector extends SignalRConnector {
@@ -45,22 +13,20 @@ class ServerListSignalRConnector extends SignalRConnector {
         super(store);
     }
 
-    onFirstSubscription(): void {
+    protected onBeforeConnect(): void {
         
-        this.connection.on("initialize", (servers: Server[]) => this.initialize(servers));
-        this.connection.on("serverStateChanged", (serverId: number, newState: number) => this.store.dispatch(serverUpdateState(serverId, newState)));
-        this.connection.on("playerCountChanged", (serverId: number, playerCount: number) => this.store.dispatch(serverUpdatePlayerCount(serverId, playerCount)));
-        this.connection.on("mapPlayerCountChanged", (serverId: number, mapId: number, playerCount: number) => this.store.dispatch(serverUpdateMapPlayerCount(serverId, mapId, playerCount)));
-        this.connection.on("addedServer", (server: Server) => this.addServer(server));
-        this.connection.on("removedServer", (serverId: number) => this.removeServer(serverId));
-        this.connection.on("mapAdded", (map: Map) => this.store.dispatch(serverAddMap(map)));
-        this.connection.on("mapRemoved", (serverId: number, mapId: number) => this.store.dispatch(serverRemoveMap(serverId, mapId)));
-
-        super.onFirstSubscription();
+        this.connection.on("Initialize", (servers: Server[]) => this.initialize(servers));
+        this.connection.on("ServerStateChanged", (serverId: number, newState: number) => this.store.dispatch(serverUpdateState(serverId, newState)));
+        this.connection.on("PlayerCountChanged", (serverId: number, playerCount: number) => this.store.dispatch(serverUpdatePlayerCount(serverId, playerCount)));
+        this.connection.on("MapPlayerCountChanged", (serverId: number, mapId: number, playerCount: number) => this.store.dispatch(serverUpdateMapPlayerCount(serverId, mapId, playerCount)));
+        this.connection.on("AddedServer", (server: Server) => this.addServer(server));
+        this.connection.on("RemovedServer", (serverId: number) => this.removeServer(serverId));
+        this.connection.on("MapAdded", (map: Map) => this.store.dispatch(serverAddMap(map)));
+        this.connection.on("MapRemoved", (serverId: number, mapId: number) => this.store.dispatch(serverRemoveMap(serverId, mapId)));
     }
 
-    getHubPath(): string {
-        return "signalr/hubs/serverListHub";
+    protected getHubPath(): string {
+        return "/signalr/hubs/serverListHub";
     }
 
     private initialize(servers: Server[]) {

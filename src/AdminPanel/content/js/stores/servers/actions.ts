@@ -13,8 +13,6 @@ export enum Constants {
     SERVER_MAP_REMOVE = "SERVER_MAP_REMOVE",
 }
 
-
-
 export interface ServerListSubscribeAction extends Redux.Action {
     type: Constants.SERVERLIST_SUBSCRIBE,
     subscriber: any,
@@ -119,10 +117,6 @@ export function shutdownServer(serverId: number) {
 function serverAction(serverId: number, actionName: string) {
     return (dispatch: Redux.Dispatch) => {
         return fetch("/admin/server/" + actionName + "/" + serverId)
-            .then(
-                error => {
-                    console.error("something went wrong during " + actionName + " of server " + serverId, error);
-                });
-
+            .catch(error => { console.error("something went wrong during " + actionName + " of server " + serverId, error) });
     }
 }

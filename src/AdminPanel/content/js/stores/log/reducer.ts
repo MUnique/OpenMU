@@ -1,5 +1,5 @@
 ﻿import Redux from "redux";
-import { LogEntryData } from "./types";
+import { LogEventData } from "./types";
 import {
     Constants,
     LogSetAutoRefreshAction,
@@ -11,7 +11,7 @@ import {
 } from "./actions";
 
 export interface LogTableState {
-    readonly entries: LogEntryData[];
+    readonly entries: LogEventData[];
     readonly idOfLastReceivedEntry: number;
     readonly loggers: string[];
     readonly autoRefresh: boolean; // unused?
@@ -56,7 +56,7 @@ export const logTableStateReducer: Redux.Reducer<LogTableState> =
             return {
                 ...state,
                 entries,
-                idOfLastReceivedEntry: Math.max(logAction.event.Id, state.idOfLastReceivedEntry)
+                idOfLastReceivedEntry: Math.max(logAction.id, state.idOfLastReceivedEntry)
             };
         }
         case Constants.LOG_INITIALIZE:

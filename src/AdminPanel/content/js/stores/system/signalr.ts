@@ -26,14 +26,13 @@ class SystemHubSignalRConnector extends SignalRConnector {
     }
 
     protected getHubPath(): string {
-        return "signalr/hubs/systemHub";
+        return "/signalr/hubs/systemHub";
     }
 
-    onFirstSubscription(): void {
-        this.connection.on("update",
+    protected onBeforeConnect(): void {
+        this.connection.on("Update",
             (cpuPercentTotal: number, cpuPercentInstance: number, bytesSent: number, bytesReceived: number) =>
             this.store.dispatch(systemUpdate(cpuPercentTotal, cpuPercentInstance, bytesSent, bytesReceived)));
-        super.onFirstSubscription();
     }
 }
 

@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { LogEntryData } from "../stores/log/types";
+import { LogEventData } from "../stores/log/types";
 import { LogTableState } from "../stores/log/reducer";
 import { connect } from "react-redux";
 
@@ -58,19 +58,19 @@ export default connect(mapStateToProps, mapDispatchToProps)(LogNotifier);
 const anyEntry = (state: LogTableState, logLevel: string): boolean => {
     for (var i = state.entries.length - 1; i >= 0; i--) {
         var entry = state.entries[i];
-        if (state.loggerFilter && state.loggerFilter !== entry.LoggerName) {
+        if (state.loggerFilter && state.loggerFilter !== entry.loggerName) {
             continue;
         }
 
-        if (state.characterFilter && state.characterFilter !== entry.Properties["character"]) {
+        if (state.characterFilter && state.characterFilter !== entry.properties["character"]) {
             continue;
         }
 
-        if (state.serverFilter && state.serverFilter !== entry.Properties["gameserver"]) {
+        if (state.serverFilter && state.serverFilter !== entry.properties["gameserver"]) {
             continue;
         }
 
-        if (logLevel.localeCompare(entry.Level.Name) === 0) {
+        if (logLevel.localeCompare(entry.level.name) === 0) {
             return true;
         }
     }

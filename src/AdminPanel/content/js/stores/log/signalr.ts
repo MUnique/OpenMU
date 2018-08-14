@@ -1,50 +1,34 @@
 ﻿import Redux, { MiddlewareAPI, Middleware, Dispatch, Action } from "redux";
 import Store = Redux.Store;
-import { LogEntryData } from "./types";
+import { LogEventData, LogEventArgs } from "./types";
 import { ApplicationState } from "../index";
 import { SignalRConnector } from "../signalr";
 import { Constants, logInitialize, logEvent, LogSubscribeAction, LogUnsubscribeAction } from "./actions";
 
 
-interface LogEventArgs {
-    Id: number;
-    FormattedEvent: string;
-    LoggingEvent: LogEntryData;
-}
-
-/*
-interface LogHubClient {
-    initialize: (loggers: string[], cachedEvents: LogEventArgs[]) => void;
-    onLoggedEvent: (formattedEvent: any, logEvent: LogEntryData) => void;
-}
-
-interface LogHubProxy extends HubProxy {
-    client: LogHubClient;
-    server: LogHubServer;
-}*
-
-interface LogHubServer extends HubServer {
-    subscribe(): void;
-    subscribe(group: string, idOfLastReceivedEntry: number): void;
-}
-*/
 export var logTableConnector: LogTableSignalRConnector;
 
 class LogTableSignalRConnector extends SignalRConnector {
     
-
     constructor(store: Store<ApplicationState>) {
         super(store);
     }
 
-    onFirstSubscription(): void {
-        this.connection.on("initialize", this.initialize);
-        this.connection.on("onLoggedEvent", this.onLoggedEvent);
-        this.connection.send("subscribe", "MyGroup", this.store.getState().logTableState.idOfLastReceivedEntry);
+    protected onBeforeConnect(): void {
+        this.connection.on("Initialize", (loggers: string[], cachedEvents: LogEventArgs[]) => this.initialize(loggers, cachedEvents));
+        this.connection.on("OnLoggedEvent", (formattedEvent: any, loggedEvent: LogEventData, id: number) => this.onLoggedEvent(formattedEvent, loggedEvent, id));
+    }
+
+    protected onConnected(): void {
+        this.connection.send("SubscribeToGroupWithMessageOffset", "MyGroup", this.store.getState().logTableState.idOfLastReceivedEntry);
+    }
+
+    protected onBeforeDisconnect(): void {
+        this.connection.send("UnsubscribeFromGroup", "MyGroup");
     }
 
     protected getHubPath(): string {
-        return "signalr/hubs/fooBarHub";
+        return "/signalr/hubs/logHub";
     }
 
 
@@ -53,10 +37,10 @@ class LogTableSignalRConnector extends SignalRConnector {
             console.log("log hub: init");
         }
 
-        this.store.dispatch(logInitialize(loggers, cachedEvents.map(event => { return event.LoggingEvent })));
+        this.store.dispatch(logInitialize(loggers, cachedEvents.map(event => { return event.loggingEvent })));
     }
 
-    private onLoggedEvent(formattedEvent: any, loggedEvent: LogEntryData) {
+    private onLoggedEvent(formattedEvent: any, loggedEvent: LogEventData, id: number) {
         if (console && console.log) {
             console.log("onLoggedEvent", formattedEvent, loggedEvent);
         }
