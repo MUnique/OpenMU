@@ -20,7 +20,9 @@ const store = configureStore(
             idOfLastReceivedEntry: 0,
         },
         serverListState: { servers: [] },
-        mapState: { players: [] },
+        mapState: {
+            players: {}
+        },
         systemState: { snapshots: [] }
     }
 );
