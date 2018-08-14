@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.AdminPanel
             : base("/admin/account")
         {
             this.persistenceContextProvider = persistenceContextProvider;
-            
+
             this.Post("save", args => this.SaveAccount(args));
             this.Post("delete/{accountId:string}", args => this.DeleteAccount(args));
             this.Get("list/{offset:int}/{count:int}", args => this.GetAccounts(args));

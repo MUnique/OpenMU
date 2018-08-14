@@ -1,28 +1,34 @@
-﻿// ReSharper disable InconsistentNaming naming is caused by C# classes which are serialized like that.
-
-export interface LogEntryData {
-    readonly Id: number;
-    readonly TimeStamp: string;
-    readonly LoggerName: string;
-    readonly Message: string;
-    readonly ExceptionString: string;
-    readonly ThreadName: string;
-    readonly Level: LogLevel;
-    readonly Properties: { [key: string]: string };
-    readonly LocationInfo: LogLocation;
+﻿
+export interface LogEventData {
+    readonly domain: string;
+    readonly exceptionString: string;
+    readonly identity: string;
+    readonly level: LogLevel;
+    readonly logLocation: LogLocation;
+    readonly loggerName: string;
+    readonly message: string;
+    readonly properties: { [key: string]: string };
+    readonly threadName: string;
+    readonly timeStamp: string;
+    readonly userName: string;
 }
+
 export interface LogLevel {
-    readonly Name: string;
+    readonly name: string;
+    readonly displayName: string;
+    readonly value: number;
 }
 
-export interface LogLocation extends StackLocation {
-    readonly MethodName: string;
-    readonly StackFrames: StackLocation[];
+export interface LogLocation {
+    readonly methodName: string;
+    readonly className: string;
+    readonly fileName: string;
+    readonly lineNumber: number;
+    readonly fullInfo: string;
 }
 
-export interface StackLocation {
-    readonly ClassName: string;
-    readonly FileName: string;
-    readonly LineNumber: number;
-    readonly FullInfo: string;
+export interface LogEventArgs {
+    formattedEvent: string;
+    loggingEvent: LogEventData;
+    id: number;
 }

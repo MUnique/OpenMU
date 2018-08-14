@@ -8,11 +8,9 @@ namespace MUnique.OpenMU.AdminPanel
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.SignalR;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -63,7 +61,9 @@ namespace MUnique.OpenMU.AdminPanel
                 throw new Exception("no free observer keys available");
             }
 
-            WorldObserverToHubAdapter observer = new WorldObserverToHubAdapter(observerKey, serverId, mapId, this, this.Context.ConnectionId);
+            var clientProxy = this.Clients.Client(this.Context.ConnectionId);
+
+            WorldObserverToHubAdapter observer = new WorldObserverToHubAdapter(observerKey, serverId, mapId, clientProxy);
             Observers.Add(this.Context.ConnectionId, observer);
 
             try
@@ -93,148 +93,11 @@ namespace MUnique.OpenMU.AdminPanel
             }
         }
 
-        /// <summary>
-        /// The item drops disappeared from the ground.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="disappearedItemIds">The ids of the disappeared items.</param>
-        public void DroppedItemsDisappeared(WorldObserverToHubAdapter sender, IEnumerable<ushort> disappearedItemIds)
+        /// <inheritdoc />
+        public override Task OnDisconnectedAsync(Exception exception)
         {
-            this.Clients.Client(sender.ConnectionId).SendAsync("DroppedItemsDisappeared", disappearedItemIds);
-        }
-
-        /// <summary>
-        /// Shows the new npcs in scope.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="newObjects">The new objects.</param>
-        public void NewNpcsInScope(WorldObserverToHubAdapter sender, IEnumerable<NonPlayerCharacter> newObjects)
-        {
-            this.Clients.Client(sender.ConnectionId).SendAsync("NewNPCsInScope",newObjects.Select(o => new { id = o.Id, name = o.Definition.Designation, x = o.X, y = o.Y, rotation = o.Rotation, serverId = sender.ServerId, mapId = sender.MapId, isMonster = o is Monster }));
-        }
-
-        /// <summary>
-        /// Shows the new players in scope.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="newObjects">The new objects.</param>
-        public void NewPlayersInScope(WorldObserverToHubAdapter sender, IEnumerable<Player> newObjects)
-        {
-            this.Clients.Client(sender.ConnectionId).SendAsync("NewPlayersInScope", newObjects.Select(o => new
-            {
-                id = o.Id, name = o.Name, x = o.X, y = o.Y, rotation = o.Rotation, serverId = sender.ServerId, mapId = sender.MapId
-            }));
-        }
-
-        /// <summary>
-        /// An object got killed by another object.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="killedObject">The killed object.</param>
-        /// <param name="killerObject">The object which killed the object.</param>
-        public void ObjectGotKilled(WorldObserverToHubAdapter sender, IAttackable killedObject, IAttackable killerObject)
-        {
-            this.Clients.Client(sender.ConnectionId).SendAsync("ObjectGotKilled", killedObject.Id, killerObject.Id);
-        }
-
-        /// <summary>
-        /// An object moved on the map.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="movedObject">The moved object.</param>
-        /// <param name="moveType">Type of the move.</param>
-        public void ObjectMoved(WorldObserverToHubAdapter sender, ILocateable movedObject, MoveType moveType)
-        {
-            byte x, y;
-            object steps = null;
-            int walkDelay = 0;
-            if (movedObject is ISupportWalk walkable && moveType == MoveType.Walk)
-            {
-                x = walkable.WalkTarget.X;
-                y = walkable.WalkTarget.Y;
-                walkDelay = (int)walkable.StepDelay.TotalMilliseconds;
-                var walkSteps = walkable.NextDirections.Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
-
-                // TODO: Can errors happen here when NextDirection changes in the meantime?
-                var lastStep = walkable.NextDirections.LastOrDefault();
-                if (!Equals(lastStep, default(WalkingStep)))
-                {
-                    var lastDirection = lastStep.To.GetDirectionTo(walkable.WalkTarget);
-                    if (lastDirection != Direction.Undefined)
-                    {
-                        walkSteps.Add(new { x, y, direction = lastDirection });
-                    }
-                }
-
-                steps = walkSteps;
-            }
-            else
-            {
-                x = movedObject.X;
-                y = movedObject.Y;
-            }
-
-            this.Clients.Client(sender.ConnectionId).SendAsync("ObjectMoved", movedObject.Id, x, y, moveType, walkDelay, steps);
-        }
-
-        /// <summary>
-        /// Objects are out of scope.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="objects">The objects.</param>
-        public void ObjectsOutOfScope(WorldObserverToHubAdapter sender, IEnumerable<IIdentifiable> objects)
-        {
-            this.Clients.Client(sender.ConnectionId).SendAsync("ObjectsOutOfScope",objects.Select(o => o.Id));
-        }
-
-        /// <summary>
-        /// Shows the animation.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="animatingObj">The animating object.</param>
-        /// <param name="animation">The animation.</param>
-        /// <param name="targetObj">The target object.</param>
-        /// <param name="direction">The direction.</param>
-        public void ShowAnimation(WorldObserverToHubAdapter sender, IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, byte direction)
-        {
-            this.Clients.Client(sender.ConnectionId).SendAsync("ShowAnimation", animatingObj.Id, animation, targetObj?.Id, direction);
-        }
-
-        /// <summary>
-        /// Shows the area skill animation.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="player">The player.</param>
-        /// <param name="skill">The skill.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="rotation">The rotation.</param>
-        public void ShowAreaSkillAnimation(WorldObserverToHubAdapter sender, Player player, Skill skill, byte x, byte y, byte rotation)
-        {
-            this.Clients.Client(sender.ConnectionId).SendAsync("ShowAreaSkillAnimation", player.Id, skill.SkillID, x, y, rotation);
-        }
-
-        /// <summary>
-        /// Shows the dropped items.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="droppedItems">The dropped items.</param>
-        /// <param name="freshDrops">if set to <c>true</c> this items are fresh drops; Otherwise they are already laying on the ground when reaching a newly discovered part of the map.</param>
-        public void ShowDroppedItems(WorldObserverToHubAdapter sender, IEnumerable<DroppedItem> droppedItems, bool freshDrops)
-        {
-            this.Clients.Client(sender.ConnectionId).SendAsync("ShowDroppedItems", droppedItems.Select(drop => new { id = drop.Id, x = drop.X, y = drop.Y, itemName = drop.Item.ToString() }), freshDrops);
-        }
-
-        /// <summary>
-        /// Shows the skill animation.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="attackingPlayer">The attacking player.</param>
-        /// <param name="target">The target.</param>
-        /// <param name="skill">The skill.</param>
-        public void ShowSkillAnimation(WorldObserverToHubAdapter sender, Player attackingPlayer, IAttackable target, Skill skill)
-        {
-            this.Clients.Client(sender.ConnectionId).SendAsync("ShowSkillAnimation", attackingPlayer, target, skill);
+            this.Unsubscribe();
+            return base.OnDisconnectedAsync(exception);
         }
     }
 }

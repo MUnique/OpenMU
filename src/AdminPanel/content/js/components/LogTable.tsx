@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { LogEntryData } from "../stores/log/types";
+import { LogEventData } from "../stores/log/types";
 import { LogTableState } from "../stores/log/reducer";
 import { connect } from "react-redux";
 
@@ -13,7 +13,7 @@ import {
 
 
 interface LogTableProps {
-    entries: LogEntryData[];
+    entries: LogEventData[];
     subscribe: (subscriber: any) => void;
     unsubscribe: (subscriber: any) => void;
 }
@@ -32,7 +32,7 @@ class LogTable extends React.Component<LogTableProps, {}> {
 
     public render() {
         var entryList =
-            this.props.entries.map(entry => <LogEntry entry={entry} key={entry.TimeStamp + "_" + entry.ThreadName}/>);
+            this.props.entries.map(entry => <LogEntry entry={entry} key={entry.timeStamp + "_" + entry.threadName}/>);
 
         return (
             <div className="log">
@@ -55,17 +55,17 @@ class LogTable extends React.Component<LogTableProps, {}> {
 }
 
 
-class LogEntry extends React.Component<{entry: LogEntryData}, {}> {
+class LogEntry extends React.Component<{ entry: LogEventData }, {}> {
 
     render() {
-        let dateTime = new Date(Date.parse(this.props.entry.TimeStamp));
+        let dateTime = new Date(Date.parse(this.props.entry.timeStamp));
         let dateStr = dateTime.toISOString();
-        let className = "log " + this.props.entry.Level.Name;
+        let className = "log " + this.props.entry.level.name;
         return (
             <tr className={className}>
                 <td>{dateStr}</td>
-                <td>{this.props.entry.LoggerName}</td>
-                <td title={this.props.entry.ExceptionString}>{this.props.entry.Message}</td>
+                <td>{this.props.entry.loggerName}</td>
+                <td title={this.props.entry.exceptionString}>{this.props.entry.message}</td>
             </tr>
         );
     }
@@ -84,19 +84,19 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 
 
-const determineFilteredEntries = (state: LogTableState): LogEntryData[] => {
-    let filteredEntries: LogEntryData[] = [];
+const determineFilteredEntries = (state: LogTableState): LogEventData[] => {
+    let filteredEntries: LogEventData[] = [];
     for (var i = state.entries.length - 1; i >= 0; i--) {
         var entry = state.entries[i];
-        if (state.loggerFilter && state.loggerFilter !== entry.LoggerName) {
+        if (state.loggerFilter && state.loggerFilter !== entry.loggerName) {
             continue;
         }
 
-        if (state.characterFilter && state.characterFilter !== entry.Properties["character"]) {
+        if (state.characterFilter && state.characterFilter !== entry.properties["character"]) {
             continue;
         }
 
-        if (state.serverFilter && state.serverFilter !== entry.Properties["gameserver"]) {
+        if (state.serverFilter && state.serverFilter !== entry.properties["gameserver"]) {
             continue;
         }
 

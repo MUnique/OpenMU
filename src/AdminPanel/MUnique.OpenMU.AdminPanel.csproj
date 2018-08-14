@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -14,10 +14,6 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
     <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.AdminPanel.xml</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="FooBarHub.cs" />
-    <Compile Remove="ILogHubClient.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
@@ -33,17 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="FooBarHub.cs" />
-    <None Include="ILogHubClient.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="3.1.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Owin" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.2" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.0.0" />
+    <PackageReference Include="munique.log4net.coresignalr" Version="1.0.0-beta3" />
     <PackageReference Include="Nancy" Version="2.0.0-clinteastwood" />
     <PackageReference Include="SkiaSharp" Version="1.60.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />

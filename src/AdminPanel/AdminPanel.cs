@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.AdminPanel
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using MUnique.Log4Net.CoreSignalR;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using Nancy.Bootstrapper;
@@ -74,7 +75,10 @@ namespace MUnique.OpenMU.AdminPanel
             /// </summary>
             public static INancyBootstrapper Bootstrapper { get; set; }
 
-            // This method gets called by the runtime. Use this method to add services to the container.
+            /// <summary>
+            /// This method gets called by the runtime. Use this method to add services to the container.
+            /// </summary>
+            /// <param name="services">The services.</param>
             public void ConfigureServices(IServiceCollection services)
             {
                 services.AddSignalR();
@@ -90,9 +94,10 @@ namespace MUnique.OpenMU.AdminPanel
             {
                 app.UseSignalR(opt =>
                 {
-                    opt.MapHub<ServerListHub>("/admin/signalr/hubs/serverListHub");
-                    opt.MapHub<WorldObserverHub>("/admin/signalr/hubs/worldObserverHub");
-                    opt.MapHub<SystemHub>("/admin/signalr/hubs/systemHub");
+                    opt.MapHub<ServerListHub>("/signalr/hubs/serverListHub");
+                    opt.MapHub<WorldObserverHub>("/signalr/hubs/worldObserverHub");
+                    opt.MapHub<SystemHub>("/signalr/hubs/systemHub");
+                    opt.MapHub<LogHub>("/signalr/hubs/logHub");
                 });
                 app.UseOwin(x => x.UseNancy(opt => opt.Bootstrapper = Bootstrapper));
             }

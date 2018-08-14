@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.AdminPanel
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.AspNetCore.SignalR;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
@@ -16,8 +18,7 @@ namespace MUnique.OpenMU.AdminPanel
     /// </summary>
     public sealed class WorldObserverToHubAdapter : IWorldObserver, IWorldView, ILocateable, IBucketMapObserver, IDisposable
     {
-        private readonly WorldObserverHub hub;
-
+        private readonly IClientProxy clientProxy;
         private readonly ObserverToWorldViewAdapter adapterToWorldView;
 
         /// <summary>
@@ -26,24 +27,14 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="observerId">The observer identifier.</param>
         /// <param name="serverId">The server identifier.</param>
         /// <param name="mapId">The map identifier.</param>
-        /// <param name="hub">The hub.</param>
-        /// <param name="connectionId">The connection identifier.</param>
-        public WorldObserverToHubAdapter(ushort observerId, byte serverId, ushort mapId, WorldObserverHub hub, string connectionId)
+        /// <param name="clientProxy">The client proxy.</param>
+        public WorldObserverToHubAdapter(ushort observerId, byte serverId, ushort mapId, IClientProxy clientProxy)
         {
+            this.clientProxy = clientProxy;
             this.Id = observerId;
             this.ServerId = serverId;
-            this.hub = hub;
             this.MapId = mapId;
-            this.ConnectionId = connectionId;
             this.adapterToWorldView = new ObserverToWorldViewAdapter(this, byte.MaxValue);
-        }
-
-        /// <summary>
-        /// Gets the connection id.
-        /// </summary>
-        public string ConnectionId
-        {
-            get;
         }
 
         /// <inheritdoc/>
@@ -80,31 +71,60 @@ namespace MUnique.OpenMU.AdminPanel
         /// <inheritdoc/>
         public void ObjectGotKilled(IAttackable killedObject, IAttackable killerObject)
         {
-            this.hub.ObjectGotKilled(this, killedObject, killerObject);
+            this.clientProxy.SendAsync("ObjectGotKilled", killedObject, killerObject);
         }
 
         /// <inheritdoc/>
         public void ObjectMoved(ILocateable movedObject, MoveType moveType)
         {
-            this.hub.ObjectMoved(this, movedObject, moveType);
+            byte x, y;
+            object steps = null;
+            int walkDelay = 0;
+            if (movedObject is ISupportWalk walkable && moveType == MoveType.Walk)
+            {
+                x = walkable.WalkTarget.X;
+                y = walkable.WalkTarget.Y;
+                walkDelay = (int)walkable.StepDelay.TotalMilliseconds;
+                var walkSteps = walkable.NextDirections.Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
+
+                // TODO: Can errors happen here when NextDirection changes in the meantime?
+                var lastStep = walkable.NextDirections.LastOrDefault();
+                if (!Equals(lastStep, default(WalkingStep)))
+                {
+                    var lastDirection = lastStep.To.GetDirectionTo(walkable.WalkTarget);
+                    if (lastDirection != Direction.Undefined)
+                    {
+                        walkSteps.Add(new { x, y, direction = lastDirection });
+                    }
+                }
+
+                steps = walkSteps;
+            }
+            else
+            {
+                x = movedObject.X;
+                y = movedObject.Y;
+            }
+
+            this.clientProxy.SendAsync("ObjectMoved", movedObject.Id, x, y, moveType, walkDelay, steps);
         }
 
         /// <inheritdoc/>
         public void ShowDroppedItems(IEnumerable<DroppedItem> droppedItems, bool freshDrops)
         {
-            this.hub.ShowDroppedItems(this, droppedItems, freshDrops);
+            this.clientProxy.SendAsync("ShowDroppedItems", droppedItems.Select(drop => new { id = drop.Id, x = drop.X, y = drop.Y, itemName = drop.Item.ToString() }), freshDrops);
         }
 
         /// <inheritdoc/>
         public void DroppedItemsDisappeared(IEnumerable<ushort> disappearedItemIds)
         {
-            this.hub.DroppedItemsDisappeared(this, disappearedItemIds);
+            this.clientProxy.SendAsync("DroppedItemsDisappeared", disappearedItemIds);
         }
 
         /// <inheritdoc/>
         public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, byte direction)
         {
-            this.hub.ShowAnimation(this, animatingObj, animation, targetObj, direction);
+            this.clientProxy.SendAsync("ShowAnimation", animatingObj.Id, animation, targetObj?.Id, direction);
         }
 
         /// <inheritdoc/>
@@ -116,19 +136,28 @@ namespace MUnique.OpenMU.AdminPanel
         /// <inheritdoc/>
         public void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
         {
-            this.hub.ObjectsOutOfScope(this, objects);
+            this.clientProxy.SendAsync("ObjectsOutOfScope", objects.Select(o => o.Id));
         }
 
         /// <inheritdoc/>
         public void NewPlayersInScope(IEnumerable<Player> newObjects)
         {
-            this.hub.NewPlayersInScope(this, newObjects);
+            this.clientProxy.SendAsync("NewPlayersInScope", newObjects.Select(o => new
+            {
+                id = o.Id,
+                name = o.Name,
+                x = o.X,
+                y = o.Y,
+                rotation = o.Rotation,
+                serverId = this.ServerId,
+                mapId = this.MapId
+            }));
         }
 
         /// <inheritdoc/>
         public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
         {
-            this.hub.NewNpcsInScope(this, newObjects);
+            this.clientProxy.SendAsync("NewNPCsInScope", newObjects.Select(o => new { id = o.Id, name = o.Definition.Designation, x = o.X, y = o.Y, rotation = o.Rotation, serverId = this.ServerId, mapId = this.MapId, isMonster = o is Monster }));
         }
 
         /// <inheritdoc/>
@@ -140,13 +169,13 @@ namespace MUnique.OpenMU.AdminPanel
         /// <inheritdoc/>
         public void ShowSkillAnimation(Player attackingPlayer, IAttackable target, Skill skill)
         {
-            this.hub.ShowSkillAnimation(this, attackingPlayer, target, skill);
+            this.clientProxy.SendAsync("ShowSkillAnimation", attackingPlayer, target, skill);
         }
 
         /// <inheritdoc/>
         public void ShowAreaSkillAnimation(Player player, Skill skill, byte x, byte y, byte rotation)
         {
-            this.hub.ShowAreaSkillAnimation(this, player, skill, x, y, rotation);
+            this.clientProxy.SendAsync("ShowAreaSkillAnimation", player.Id, skill.SkillID, x, y, rotation);
         }
 
         /// <inheritdoc/>

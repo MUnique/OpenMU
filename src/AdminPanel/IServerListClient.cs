@@ -14,16 +14,20 @@ namespace MUnique.OpenMU.AdminPanel
     public interface IServerListClient
     {
         /// <summary>
-        /// Is called when a server got added to the <see cref="ServerListHub"/>.
+        /// Is called when a server got added to the <see cref="ServerListHub" />.
         /// </summary>
         /// <param name="server">The server.</param>
-        /// <remarks>Currently probably never called, because there are no servers dynamically added or removed.</remarks>
+        /// <returns>The task.</returns>
+        /// <remarks>
+        /// Currently probably never called, because there are no servers dynamically added or removed.
+        /// </remarks>
         Task AddedServer(ServerInfo server);
 
         /// <summary>
         /// Is called when a server got removed from the <see cref="ServerListHub"/>.
         /// </summary>
         /// <param name="serverId">The indentifier of the removed server.</param>
+        /// <returns>The task.</returns>
         /// <remarks>Currently probably never called, because there are no servers dynamically added or removed.</remarks>
         Task RemovedServer(int serverId);
 
@@ -32,6 +36,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// </summary>
         /// <param name="serverId">The server identifier.</param>
         /// <param name="playerCount">The player count.</param>
+        /// <returns>The task.</returns>
         Task PlayerCountChanged(int serverId, int playerCount);
 
         /// <summary>
@@ -39,6 +44,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// </summary>
         /// <param name="serverId">The server identifier.</param>
         /// <param name="newState">The new state.</param>
+        /// <returns>The task.</returns>
         Task ServerStateChanged(int serverId, ServerState newState);
 
         /// <summary>
@@ -47,6 +53,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="serverId">The server identifier.</param>
         /// <param name="mapId">The map identifier.</param>
         /// <param name="playerCount">The player count.</param>
+        /// <returns>The task.</returns>
         Task MapPlayerCountChanged(int serverId, int mapId, int playerCount);
 
         /// <summary>
@@ -54,18 +61,21 @@ namespace MUnique.OpenMU.AdminPanel
         /// </summary>
         /// <param name="serverId">The server identifier.</param>
         /// <param name="mapId">The map identifier.</param>
+        /// <returns>The task.</returns>
         Task MapRemoved(int serverId, int mapId);
 
         /// <summary>
         /// Is called when a map has been added. The server id is specified in the game map info.
         /// </summary>
         /// <param name="gameMapInfo">The game map information.</param>
+        /// <returns>The task.</returns>
         Task MapAdded(GameServerInfo.GameMapInfo gameMapInfo);
 
         /// <summary>
         /// Initializes the client with the specified servers.
         /// </summary>
         /// <param name="servers">The servers.</param>
+        /// <returns>The task.</returns>
         Task Initialize(IList<ServerInfo> servers);
     }
 }
