@@ -77,7 +77,8 @@ namespace MUnique.OpenMU.AdminPanel
         /// <inheritdoc/>
         public void ObjectMoved(ILocateable movedObject, MoveType moveType)
         {
-            byte x, y;
+            byte x;
+            byte y;
             object steps = null;
             int walkDelay = 0;
             if (movedObject is ISupportWalk walkable && moveType == MoveType.Walk)
