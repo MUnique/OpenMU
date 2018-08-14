@@ -40,7 +40,6 @@ namespace MUnique.OpenMU.AdminPanel
         /// <inheritdoc/>
         public void PlayerCountChanged(int mapId, int playerCount)
         {
-
             this.HubContext.Clients.All.SendAsync(nameof(IServerListClient.MapPlayerCountChanged), this.serverId, mapId, playerCount);
         }
     }
