@@ -145,7 +145,7 @@ namespace MUnique.OpenMU.GameLogic
                 return Rand.NextUInt(min, max);
             }
 
-            public double NextDouble()
+            double IRandomizer.NextDouble()
             {
                 return Rand.NextDouble();
             }
