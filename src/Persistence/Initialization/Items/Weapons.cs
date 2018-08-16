@@ -207,7 +207,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(5, 36, 0, 0, 1, 4, true, "Divine Stick of Archangel", 104, 153, 165, 30, 0, 146, 0, 55, 13, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         }
 
-
         /// <summary>
         /// Gets the luck item option definition.
         /// </summary>
