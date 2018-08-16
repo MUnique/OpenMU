@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.AdminPanel
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// An observer which can observe a whole map.
@@ -77,37 +78,30 @@ namespace MUnique.OpenMU.AdminPanel
         /// <inheritdoc/>
         public void ObjectMoved(ILocateable movedObject, MoveType moveType)
         {
-            byte x;
-            byte y;
+            Point targetPoint = new Point(movedObject.X, movedObject.Y);
             object steps = null;
             int walkDelay = 0;
             if (movedObject is ISupportWalk walkable && moveType == MoveType.Walk)
             {
-                x = walkable.WalkTarget.X;
-                y = walkable.WalkTarget.Y;
+                targetPoint = walkable.WalkTarget;
                 walkDelay = (int)walkable.StepDelay.TotalMilliseconds;
                 var walkSteps = walkable.NextDirections.Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
 
-                // TODO: Can errors happen here when NextDirection changes in the meantime?
-                var lastStep = walkable.NextDirections.LastOrDefault();
-                if (!Equals(lastStep, default(WalkingStep)))
+                var lastStep = walkSteps.LastOrDefault();
+                if (lastStep != null)
                 {
-                    var lastDirection = lastStep.To.GetDirectionTo(walkable.WalkTarget);
+                    var lastPoint = new Point(lastStep.x, lastStep.y);
+                    var lastDirection = lastPoint.GetDirectionTo(targetPoint);
                     if (lastDirection != Direction.Undefined)
                     {
-                        walkSteps.Add(new { x, y, direction = lastDirection });
+                        walkSteps.Add(new { x = targetPoint.X, y = targetPoint.Y, direction = lastDirection });
                     }
                 }
 
                 steps = walkSteps;
             }
-            else
-            {
-                x = movedObject.X;
-                y = movedObject.Y;
-            }
 
-            this.clientProxy.SendAsync("ObjectMoved", movedObject.Id, x, y, moveType, walkDelay, steps);
+            this.clientProxy.SendAsync("ObjectMoved", movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps);
         }
 
         /// <inheritdoc/>
