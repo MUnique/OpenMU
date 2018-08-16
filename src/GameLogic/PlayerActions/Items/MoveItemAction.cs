@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     {
                         Rows = StoreRows,
                         StartIndex = FirstStoreItemSlotIndex,
-                        EndIndex = FirstStoreItemSlotIndex + StoreSize,
+                        EndIndex = (byte)(FirstStoreItemSlotIndex + StoreSize),
                         Storage = player.ShopStorage
                     };
                     break;

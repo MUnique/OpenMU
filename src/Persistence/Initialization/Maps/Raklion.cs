@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the raklion map.
         /// </summary>
-        public const byte Number = 57;
+        public static readonly byte Number = 57;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

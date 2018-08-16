@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the Chaos Castle 1 map.
         /// </summary>
-        public const byte Number = 18;
+        public static readonly byte Number = 18;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

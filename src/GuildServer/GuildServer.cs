@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GuildServer
         /// <summary>
         /// The offline server identifier.
         /// </summary>
-        public const byte OfflineServerId = 0xFF;
+        public static readonly byte OfflineServerId = 0xFF;
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(GuildServer));
 

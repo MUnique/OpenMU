@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the kalima 6 map.
         /// </summary>
-        public const byte Number = 29;
+        public static readonly byte Number = 29;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

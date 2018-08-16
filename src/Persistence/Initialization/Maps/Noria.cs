@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the noria map.
         /// </summary>
-        public const byte Number = 3;
+        public static readonly byte Number = 3;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the Illusion Temple 3 map.
         /// </summary>
-        public const byte Number = 47;
+        public static readonly byte Number = 47;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

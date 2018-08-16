@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the Silent map.
         /// </summary>
-        public const byte Number = 40;
+        public static readonly byte Number = 40;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

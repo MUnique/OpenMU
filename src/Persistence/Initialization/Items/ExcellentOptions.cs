@@ -20,22 +20,22 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <summary>
         /// The name of the <see cref="ItemOptionDefinition"/> of excellent defense options.
         /// </summary>
-        public const string DefenseOptionsName = "Excellent Defense Options";
+        public static readonly string DefenseOptionsName = "Excellent Defense Options";
 
         /// <summary>
         /// The name of the <see cref="ItemOptionDefinition"/> of excellent physical attack options.
         /// </summary>
-        public const string PhysicalAttackOptionsName = "Excellent Physical Attack Options";
+        public static readonly string PhysicalAttackOptionsName = "Excellent Physical Attack Options";
 
         /// <summary>
         /// The name of the <see cref="ItemOptionDefinition"/> of excellent wizardry attack options.
         /// </summary>
-        public const string WizardryAttackOptionsName = "Excellent Wizardry Attack Options";
+        public static readonly string WizardryAttackOptionsName = "Excellent Wizardry Attack Options";
 
         /// <summary>
         /// The name of the <see cref="ItemOptionDefinition"/> of excellent curse attack options.
         /// </summary>
-        public const string CurseAttackOptionsName = "Excellent Curse Attack Options";
+        public static readonly string CurseAttackOptionsName = "Excellent Curse Attack Options";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExcellentOptions"/> class.

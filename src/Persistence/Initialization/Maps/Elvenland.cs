@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the elvenland map.
         /// </summary>
-        public const byte Number = 51;
+        public static readonly byte Number = 51;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

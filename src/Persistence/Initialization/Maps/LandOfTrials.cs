@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the Land of Trials map.
         /// </summary>
-        public const byte Number = 31;
+        public static readonly byte Number = 31;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

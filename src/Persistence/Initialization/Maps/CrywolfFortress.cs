@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the Crywolf Fortress map.
         /// </summary>
-        public const byte Number = 34;
+        public static readonly byte Number = 34;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

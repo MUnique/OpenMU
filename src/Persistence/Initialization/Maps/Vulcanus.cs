@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the vulcanus map.
         /// </summary>
-        public const byte Number = 63;
+        public static readonly byte Number = 63;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the karutan 2 map.
         /// </summary>
-        public const byte Number = 81;
+        public static readonly byte Number = 81;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the aida map.
         /// </summary>
-        public const byte Number = 33;
+        public static readonly byte Number = 33;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

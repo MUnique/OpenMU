@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the Valley of Loren map.
         /// </summary>
-        public const byte Number = 30;
+        public static readonly byte Number = 30;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

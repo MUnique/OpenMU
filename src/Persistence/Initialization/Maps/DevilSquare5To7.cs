@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the devil square 5 to 7 map.
         /// </summary>
-        public const byte Number = 32;
+        public static readonly byte Number = 32;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

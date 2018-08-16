@@ -13,11 +13,11 @@ namespace MUnique.OpenMU.Interfaces
         /// <summary>
         /// The connect server special server id.
         /// </summary>
-        public const int ConnectServer = 0x10000;
+        public static readonly int ConnectServer = 0x10000;
 
         /// <summary>
         /// The chat server special server id.
         /// </summary>
-        public const int ChatServer = 0x20000;
+        public static readonly int ChatServer = 0x20000;
     }
 }

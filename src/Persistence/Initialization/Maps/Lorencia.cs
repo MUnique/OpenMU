@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the lorencia map.
         /// </summary>
-        public const byte Number = 0;
+        public static readonly byte Number = 0;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

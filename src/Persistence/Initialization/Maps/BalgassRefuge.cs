@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the barracks of balgass map.
         /// </summary>
-        public const byte Number = 42;
+        public static readonly byte Number = 42;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

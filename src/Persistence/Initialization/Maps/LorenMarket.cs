@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the LorenMarket map.
         /// </summary>
-        public const byte Number = 79;
+        public static readonly byte Number = 79;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

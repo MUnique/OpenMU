@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// The amoun of money which is dropped at least, and added to the gained experience.
         /// </summary>
-        public const int BaseMoneyDrop = 7;
+        public static readonly int BaseMoneyDrop = 7;
 
         private readonly IEnumerable<DropItemGroup> baseGroups;
 

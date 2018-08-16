@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the santa village map.
         /// </summary>
-        public const byte Number = 62;
+        public static readonly byte Number = 62;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;

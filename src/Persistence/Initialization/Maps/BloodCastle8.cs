@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// The default number of the Blood Castle 8 map.
         /// </summary>
-        public const byte Number = 52;
+        public static readonly byte Number = 52;
 
         /// <inheritdoc/>
         protected override byte MapNumber => Number;
