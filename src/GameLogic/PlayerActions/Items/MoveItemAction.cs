@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
+    using System;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
     using static OpenMU.GameLogic.InventoryConstants;
@@ -96,7 +97,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private StorageInfo GetStorageInfo(Player player, Storages storageType)
         {
-            StorageInfo result = null;
+            StorageInfo result;
             switch (storageType)
             {
                 case Storages.Inventory:
@@ -127,6 +128,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     };
                     break;
                 case Storages.Trade:
+                case Storages.ChaosMachine:
                     result = new StorageInfo
                     {
                         Storage = player.TemporaryStorage,
@@ -135,15 +137,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                         StartIndex = 0
                     };
                     break;
-                default: // CM
-                    result = new StorageInfo
-                    {
-                        Storage = player.TemporaryStorage,
-                        Rows = TemporaryStorageRows,
-                        EndIndex = TemporaryStorageSize,
-                        StartIndex = 0
-                    };
-                    break;
+                default:
+                    throw new NotImplementedException($"Moving to {storageType} is not implemented.");
             }
 
             return result;
