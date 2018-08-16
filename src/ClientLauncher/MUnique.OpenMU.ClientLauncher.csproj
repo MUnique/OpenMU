@@ -8,11 +8,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>bin\Debug\MUnique.OpenMU.ChatServer.ExDbConnector.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\MUnique.OpenMU.ClientLauncher.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>bin\Release\MUnique.OpenMU.ChatServer.ExDbConnector.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\MUnique.OpenMU.ClientLauncher.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
@@ -34,12 +34,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="ChatServer.cfg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ChatServer.exe.log4net.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="MUnique.OpenMU.ClientLauncher.exe.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
    </None>
