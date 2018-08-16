@@ -241,56 +241,34 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             switch ((WingIndex)wing.Definition.Number)
             {
                 case WingIndex.WingsOfElf:
-                    preview[9] |= 0x01;
-                    break;
-                case WingIndex.WingsOfHeaven:
-                    preview[9] |= 0x02;
-                    break;
-                case WingIndex.WingsOfSatan:
-                    preview[9] |= 0x03;
-                    break;
-                case WingIndex.WingsOfMistery:
-                    preview[9] |= 0x04;
-                    break;
                 case WingIndex.WingsOfSpirit:
-                    preview[9] |= 0x01;
-                    break;
-                case WingIndex.WingsOfSoul:
-                    preview[9] |= 0x02;
-                    break;
-                case WingIndex.WingsOfDragon:
-                    preview[9] |= 0x03;
-                    break;
-                case WingIndex.WingsOfDarkness:
-                    preview[9] |= 0x04;
-                    break;
-                case WingIndex.CapeOfLord:
-                    preview[9] |= 0x05;
-                    break;
-                case WingIndex.WingsOfDespair:
-                    preview[9] |= 0x06;
-                    break;
-                case WingIndex.CapeOfFighter:
-                    preview[9] |= 0x07;
-                    break;
                 case WingIndex.WingOfStorm:
                     preview[9] |= 0x01;
                     break;
+                case WingIndex.WingsOfHeaven:
+                case WingIndex.WingsOfSoul:
                 case WingIndex.WingOfEternal:
                     preview[9] |= 0x02;
                     break;
+                case WingIndex.WingsOfSatan:
+                case WingIndex.WingsOfDragon:
                 case WingIndex.WingOfIllusion:
                     preview[9] |= 0x03;
                     break;
+                case WingIndex.WingsOfMistery:
+                case WingIndex.WingsOfDarkness:
                 case WingIndex.WingOfRuin:
                     preview[9] |= 0x04;
                     break;
+                case WingIndex.CapeOfLord:
                 case WingIndex.CapeOfEmperor:
                     preview[9] |= 0x05;
                     break;
+                case WingIndex.WingsOfDespair:
                 case WingIndex.WingOfDimension:
                     preview[9] |= 0x06;
                     break;
+                case WingIndex.CapeOfFighter:
                 case WingIndex.CapeOfOverrule:
                     preview[9] |= 0x07;
                     break;
