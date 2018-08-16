@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// Initializes a new instance of the <see cref="BasePacketHandler"/> class.
         /// </summary>
         /// <param name="gameContext">The game context.</param>
-        public BasePacketHandler(IGameContext gameContext)
+        protected BasePacketHandler(IGameContext gameContext)
         {
             this.GameContext = gameContext;
         }
