@@ -43,11 +43,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <returns>The task.</returns>
         public async Task Subscribe()
         {
-            if (subscribers == null)
-            {
-                subscribers = this.Clients.Groups(SubscriberGroup);
-            }
-
+            AssignSubscribersIfRequired(this.Clients.Groups(SubscriberGroup));
             await this.Groups.AddToGroupAsync(this.Context.ConnectionId, SubscriberGroup).ConfigureAwait(false);
         }
 
@@ -58,6 +54,14 @@ namespace MUnique.OpenMU.AdminPanel
         public async Task Unsubscribe()
         {
             await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, SubscriberGroup).ConfigureAwait(false);
+        }
+
+        private static void AssignSubscribersIfRequired(ISystemHubClient subscriberGroupProxy)
+        {
+            if (subscribers == null)
+            {
+                subscribers = subscriberGroupProxy;
+            }
         }
 
         private static void TimerElapsed(object sender, ElapsedEventArgs e)
