@@ -13,7 +13,9 @@ export const store = configureStore(
         accountListState: { accounts: [], page: 1, pageSize: 20, createDialogVisible: false },
         logTableState: { entries: [], characterFilter: null, serverFilter: null, autoRefresh: true, loggerFilter: null, loggers: [], idOfLastReceivedEntry: 0 },
         serverListState: { servers: [] },
-        mapState: { players: [] },
+        mapState: {
+            players: { }
+        },
         systemState: { snapshots: [] },
     }
 );
