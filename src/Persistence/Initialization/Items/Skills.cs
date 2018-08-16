@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateSkill(74, "Fire Blast", 0, 150, 30, 10, 6, 0, 0, -1, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
             this.CreateSkill(76, "Plasma Storm", 110, 60, 50, 20, 6, 0, 0, -1, 0, 0, 0, 2, 2, 2, 1, 1, 2, 1, 0, 0, 0);
             this.CreateSkill(77, "Infinity Arrow", 220, 0, 50, 10, 6, 0, 0, -1, -1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
-            this.CreateSkill(78, "Fire Scream", 102, 130, 45, 10, 6, 32, 70, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,SkillType.AreaSkillAutomaticHits);
+            this.CreateSkill(78, "Fire Scream", 102, 130, 45, 10, 6, 32, 70, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(79, "Explosion", 0, 0, 0, 0, 2, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
             this.CreateSkill(200, "Summon Monster", 0, 0, 40, 0, 0, 90, 0, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(201, "Magic Attack Immunity", 0, 0, 40, 0, 0, 90, 0, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
