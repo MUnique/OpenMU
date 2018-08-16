@@ -22,20 +22,11 @@ namespace MUnique.OpenMU.AdminPanel
         private static readonly ILog Log = LogManager.GetLogger(typeof(SystemHub));
 
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable we want to keep it from getting garbage collected
-        private static readonly Timer Timer;
+        private static readonly Timer Timer = CreateTimer();
 
-        private static readonly Process ThisProcess;
-        private static TimeSpan lastProcessorTime;
+        private static readonly Process ThisProcess = Process.GetCurrentProcess();
+        private static TimeSpan lastProcessorTime = ThisProcess.TotalProcessorTime;
         private static ISystemHubClient subscribers;
-
-        static SystemHub()
-        {
-            ThisProcess = Process.GetCurrentProcess();
-            lastProcessorTime = ThisProcess.TotalProcessorTime;
-            Timer = new Timer(TimerInterval);
-            Timer.Elapsed += TimerElapsed;
-            Timer.Start();
-        }
 
         /// <summary>
         /// Subscribes to this hub.
@@ -73,6 +64,14 @@ namespace MUnique.OpenMU.AdminPanel
             // There is currently no easy way to get a total cpu percentage. Iterating through all processes would be a way, but it's slow and limited.
             // So, we just transmit the instance percentage also as total percentage.
             subscribers?.Update(cpuPercentInstance, cpuPercentInstance, 0, 0);
+        }
+
+        private static Timer CreateTimer()
+        {
+            var timer = new Timer(TimerInterval);
+            timer.Elapsed += TimerElapsed;
+            timer.Start();
+            return timer;
         }
     }
 }
