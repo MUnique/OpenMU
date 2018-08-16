@@ -143,6 +143,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <summary>
         /// Creates a ring.
         /// </summary>
+        /// <param name="number">The number.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="level">The level.</param>
+        /// <param name="durability">The durability.</param>
+        /// <param name="optionTargetAttribute">The option target attribute.</param>
+        /// <param name="resistanceAttribute">The resistance attribute.</param>
         /// <remarks>
         /// Rings always have defensive excellent options.
         /// </remarks>
@@ -154,6 +160,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <summary>
         /// Creates a pendant.
         /// </summary>
+        /// <param name="number">The number.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="level">The level.</param>
+        /// <param name="durability">The durability.</param>
+        /// <param name="excellentOptionDamageType">Type of the excellent option damage.</param>
+        /// <param name="optionTargetAttribute">The option target attribute.</param>
+        /// <param name="resistanceAttribute">The resistance attribute.</param>
         /// <remarks>
         /// Pendants always have offensive excellent options. If it's wizardry or physical depends on the specific item. I didn't find a pattern yet.
         /// </remarks>
