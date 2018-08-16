@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 return false;
             }
 
-            if (this.rawCollection.Remove((TEfCore) item))
+            if (this.rawCollection.Remove((TEfCore)item))
             {
                 this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new List<TEfCore> { (TEfCore)item }));
                 return true;

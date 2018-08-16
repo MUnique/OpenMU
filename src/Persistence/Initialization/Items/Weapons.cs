@@ -403,7 +403,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                     //// TODO: staffRisePowerUpMaxDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
                     item.BasePowerUpAttributes.Add(staffRisePowerUpMaxDmg);
                 }
-
             }
         }
 

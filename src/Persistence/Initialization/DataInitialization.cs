@@ -500,8 +500,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return jewel;
         }
 
-
-
         private Item CreateSmallAxe(byte itemSlot)
         {
             var smallAxe = this.context.CreateNew<Item>();
@@ -951,4 +949,3 @@ namespace MUnique.OpenMU.Persistence.Initialization
         }
     }
 }
-
