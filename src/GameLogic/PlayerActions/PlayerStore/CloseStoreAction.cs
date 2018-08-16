@@ -10,13 +10,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
     public class CloseStoreAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloseStoreAction"/> class.
-        /// </summary>
-        public CloseStoreAction()
-        {
-        }
-
-        /// <summary>
         /// Closes the store of the player.
         /// </summary>
         /// <param name="player">The player.</param>

@@ -10,13 +10,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     public class SaveKeyConfigurationAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SaveKeyConfigurationAction"/> class.
-        /// </summary>
-        public SaveKeyConfigurationAction()
-        {
-        }
-
-        /// <summary>
         /// Saves the key configuration.
         /// </summary>
         /// <param name="player">The player.</param>

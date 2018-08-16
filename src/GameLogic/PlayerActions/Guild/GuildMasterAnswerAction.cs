@@ -12,13 +12,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     public class GuildMasterAnswerAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuildMasterAnswerAction"/> class.
-        /// </summary>
-        public GuildMasterAnswerAction()
-        {
-        }
-
-        /// <summary>
         /// Type of the answer.
         /// </summary>
         public enum Answer

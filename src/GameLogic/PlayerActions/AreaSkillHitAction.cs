@@ -15,13 +15,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     public class AreaSkillHitAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AreaSkillHitAction"/> class.
-        /// </summary>
-        public AreaSkillHitAction()
-        {
-        }
-
-        /// <summary>
         /// Attacks the target by the player with the specified skill.
         /// </summary>
         /// <param name="player">The player who is performing the skill.</param>

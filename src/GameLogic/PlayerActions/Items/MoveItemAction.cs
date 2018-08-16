@@ -15,13 +15,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     public class MoveItemAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MoveItemAction"/> class.
-        /// </summary>
-        public MoveItemAction()
-        {
-        }
-
-        /// <summary>
         /// Moves the item.
         /// </summary>
         /// <param name="player">The player.</param>

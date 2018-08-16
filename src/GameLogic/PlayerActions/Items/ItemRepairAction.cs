@@ -16,13 +16,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(ItemRepairAction));
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ItemRepairAction"/> class.
-        /// </summary>
-        public ItemRepairAction()
-        {
-        }
-
-        /// <summary>
         /// Repairs the item of the specified inventory slot.
         /// </summary>
         /// <param name="player">The player.</param>

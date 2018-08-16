@@ -13,13 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
     public class TradeMoneyAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TradeMoneyAction"/> class.
-        /// </summary>
-        public TradeMoneyAction()
-        {
-        }
-
-        /// <summary>
         /// Sets the money which should be traded to the other player.
         /// </summary>
         /// <param name="player">The player.</param>

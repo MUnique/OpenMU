@@ -12,13 +12,6 @@ namespace MUnique.OpenMU.DataModel.Entities
     public class ItemStorage
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ItemStorage"/> class.
-        /// </summary>
-        public ItemStorage()
-        {
-        }
-
-        /// <summary>
         /// Gets or sets the items which are stored.
         /// </summary>
         public virtual ICollection<Item> Items { get; protected set; }

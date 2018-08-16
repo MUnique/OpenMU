@@ -10,13 +10,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     public class RequestCharacterListAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RequestCharacterListAction"/> class.
-        /// </summary>
-        public RequestCharacterListAction()
-        {
-        }
-
-        /// <summary>
         /// Requests the character list and advances the player state to <see cref="PlayerState.CharacterSelection"/>.
         /// </summary>
         /// <param name="player">The player who requests the character list.</param>

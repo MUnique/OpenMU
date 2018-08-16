@@ -13,13 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     public class IncreaseStatsAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="IncreaseStatsAction"/> class.
-        /// </summary>
-        public IncreaseStatsAction()
-        {
-        }
-
-        /// <summary>
         /// Increases the specified stat attribute by one point, if enough points are available.
         /// </summary>
         /// <param name="player">The player.</param>

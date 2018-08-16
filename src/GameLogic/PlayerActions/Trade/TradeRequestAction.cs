@@ -10,13 +10,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
     public class TradeRequestAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TradeRequestAction"/> class.
-        /// </summary>
-        public TradeRequestAction()
-        {
-        }
-
-        /// <summary>
         /// Requests the trade from the other player.
         /// </summary>
         /// <param name="player">The player who requests the trade.</param>

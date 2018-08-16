@@ -12,13 +12,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     public class FocusCharacterAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FocusCharacterAction"/> class.
-        /// </summary>
-        public FocusCharacterAction()
-        {
-        }
-
-        /// <summary>
         /// Focuses the character.
         /// </summary>
         /// <param name="player">The player.</param>

@@ -15,13 +15,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         private const byte INACCURACY = 2;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WarpGateAction"/> class.
-        /// </summary>
-        public WarpGateAction()
-        {
-        }
-
-        /// <summary>
         /// Enters the gate.
         /// </summary>
         /// <param name="player">The player.</param>
