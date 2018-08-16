@@ -21,14 +21,14 @@ export class WorldUpdater extends SignalRConnector {
     }
 
     protected onBeforeConnect(): void {
-        this.connection.on("NewNPCsInScope", (newObjects : NpcData[]) => this.newNpcsInScope(newObjects));
-        this.connection.on("NewPlayersInScope", (newObjects : PlayerData[]) => this.newPlayersInScope(newObjects));
-        this.connection.on("ObjectsOutOfScope", (oldObjectIds : number[]) => this.objectsOutOfScope(oldObjectIds));
-        this.connection.on("ObjectGotKilled", (killedObjectId : number, killerObjectId : number) => this.objectGotKilled(killedObjectId, killerObjectId));
-        this.connection.on("ObjectMoved", (id: number, newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]) => this.objectMoved(id, newX, newY, moveType, walkDelay, steps));
-        this.connection.on("ShowSkillAnimation", (playerId: number, targetId: number, skill: number) => this.showSkillAnimation(playerId, targetId, skill));
-        this.connection.on("ShowAreaSkillAnimation", (playerId: number, skill: number, x: number, y: number, rotation: number)  => this.showAreaSkillAnimation(playerId, skill, x, y, rotation));
-        this.connection.on("ShowAnimation", (animatingId: number, animation: number, targetId: number, direction: number) => this.showAnimation(animatingId, animation, targetId, direction));
+        this.connection.on("NewNPCsInScope", this.newNpcsInScope.bind(this));
+        this.connection.on("NewPlayersInScope", this.newPlayersInScope.bind(this));
+        this.connection.on("ObjectsOutOfScope", this.objectsOutOfScope.bind(this));
+        this.connection.on("ObjectGotKilled", this.objectGotKilled.bind(this));
+        this.connection.on("ObjectMoved", this.objectMoved.bind(this));
+        this.connection.on("ShowSkillAnimation", this.showSkillAnimation.bind(this));
+        this.connection.on("ShowAreaSkillAnimation", this.showAreaSkillAnimation.bind(this));
+        this.connection.on("ShowAnimation", this.showAnimation.bind(this));
     }
 
     protected onConnected(): void {

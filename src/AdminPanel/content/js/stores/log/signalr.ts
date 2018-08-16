@@ -15,8 +15,8 @@ class LogTableSignalRConnector extends SignalRConnector {
     }
 
     protected onBeforeConnect(): void {
-        this.connection.on("Initialize", (loggers: string[], cachedEvents: LogEventArgs[]) => this.initialize(loggers, cachedEvents));
-        this.connection.on("OnLoggedEvent", (formattedEvent: any, loggedEvent: LogEventData, id: number) => this.onLoggedEvent(formattedEvent, loggedEvent, id));
+        this.connection.on("Initialize", this.initialize.bind(this));
+        this.connection.on("OnLoggedEvent", this.onLoggedEvent.bind(this));
     }
 
     protected onConnected(): void {
