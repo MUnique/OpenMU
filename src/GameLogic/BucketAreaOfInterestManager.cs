@@ -143,6 +143,8 @@ namespace MUnique.OpenMU.GameLogic
                 i.ItemRemoved += player.LocateableRemoved;
             });
 
+            oldbuckets.ForEach(b => player.ObservingBuckets.Remove(b));
+            newbuckets.ForEach(player.ObservingBuckets.Add);
             if (oldbuckets.Any(b => b.Count > 0))
             {
                 player.LocateablesOutOfScope(oldbuckets.SelectMany(o => o));
@@ -152,9 +154,6 @@ namespace MUnique.OpenMU.GameLogic
             {
                 player.NewLocateablesInScope(newbuckets.SelectMany(o => o));
             }
-
-            newbuckets.ForEach(player.ObservingBuckets.Add);
-            oldbuckets.ForEach(b => player.ObservingBuckets.Remove(b));
         }
 
         private bool MoveObjectOnMap(ILocateable obj, byte newX, byte newY, object moveLock, MoveType moveType)

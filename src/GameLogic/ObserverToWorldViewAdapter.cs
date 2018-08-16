@@ -159,10 +159,7 @@ namespace MUnique.OpenMU.GameLogic
             this.observingLock.EnterWriteLock();
             try
             {
-                oldItems = oldObjects.OfType<IObservable>().Where(item =>
-                    this.observingObjects.Contains(item)
-                    && ((this.adaptee as IHasBucketInformation)?.NewBucket == null
-                        || (!(item is IHasBucketInformation) || !this.ObservingBuckets.Contains(((IHasBucketInformation)item).NewBucket)))).ToList();
+                oldItems = oldObjects.OfType<IObservable>().Where(item => this.observingObjects.Contains(item) && this.ObjectWillBeOutOfScope(item)).ToList();
                 oldItems.ForEach(item => this.observingObjects.Remove(item));
             }
             finally
@@ -270,6 +267,37 @@ namespace MUnique.OpenMU.GameLogic
             {
                 this.observingLock.ExitWriteLock();
             }
+        }
+
+        private bool ObjectWillBeOutOfScope(IObservable observable)
+        {
+            var myBucketInformations = this.adaptee as IHasBucketInformation;
+            if (myBucketInformations == null)
+            {
+                return true;
+            }
+
+            if (myBucketInformations.NewBucket == null)
+            {
+                // I'll leave, so will be out of scope
+                return true;
+            }
+
+            var locateableBucketInformations = observable as IHasBucketInformation;
+            if (locateableBucketInformations == null)
+            {
+                // We have to assume that this observable will be out of scope since it can't tell us where it goes
+                return true;
+            }
+
+            if (locateableBucketInformations.NewBucket == null)
+            {
+                // It's leaving the map, so will be out of scope
+                return true;
+            }
+
+            // If we observe the target bucket of the observable, it will be in our range
+            return !this.ObservingBuckets.Contains(locateableBucketInformations.NewBucket);
         }
     }
 }
