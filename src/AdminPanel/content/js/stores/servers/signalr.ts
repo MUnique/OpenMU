@@ -15,7 +15,7 @@ class ServerListSignalRConnector extends SignalRConnector {
 
     protected onBeforeConnect(): void {
         
-        this.connection.on("Initialize", (servers: Server[]) => this.initialize(servers));
+        this.connection.on("Initialize", this.initialize.bind(this));
         this.connection.on("ServerStateChanged", (serverId: number, newState: number) => this.store.dispatch(serverUpdateState(serverId, newState)));
         this.connection.on("PlayerCountChanged", (serverId: number, playerCount: number) => this.store.dispatch(serverUpdatePlayerCount(serverId, playerCount)));
         this.connection.on("MapPlayerCountChanged", (serverId: number, mapId: number, playerCount: number) => this.store.dispatch(serverUpdateMapPlayerCount(serverId, mapId, playerCount)));
