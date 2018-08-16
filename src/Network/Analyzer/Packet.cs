@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                 case FieldType.Long:
                     return this.innerData.MakeQword(field.Index).ToString();
                 case FieldType.LongBigEndian:
-                    return this.innerData.MakeDwordBigEndian(field.Index).ToString();
+                    return this.innerData.MakeQwordBigEndian(field.Index).ToString();
             }
 
             return string.Empty;

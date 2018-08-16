@@ -104,6 +104,25 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
+        /// Converting bytes of an array to an 64bit unsigned Integer, big endian.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns>The qword.</returns>
+        public static ulong MakeQwordBigEndian(this byte[] array, int startIndex)
+        {
+            ulong result = 0;
+            ulong multiplier = 0x100000000000000;
+            for (int i = 7; i >= 0; i--)
+            {
+                result += array[startIndex + i] * multiplier; // byte shifting is not possible here, because a byte shift operation always returns an integer.
+                multiplier /= 0x100;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Converts bytes of an array to an 32bit unsigned Integer, big endian.
         /// </summary>
         /// <param name="array">Byte array.</param>
