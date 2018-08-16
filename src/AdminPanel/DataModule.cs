@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.AdminPanel
                 var list = JsonConvert.SerializeObject(
                     allData,
                     Formatting.None,
-                    new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                    new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
                 return list;
             });

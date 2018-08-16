@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.GameLogic
     {
         private const short ForceWaveSkillId = 66;
         private const long MaximumPrice = 3000000000;
-        private static readonly HashSet<short> WingIds = new HashSet<short>()
+        private static readonly HashSet<short> WingIds = new HashSet<short>
         {
             0, 1, 2, 3, 4, 5, 6,
             36, 37, 38, 39, 40,
@@ -33,8 +33,8 @@ namespace MUnique.OpenMU.GameLogic
         };
 
         private static readonly IDictionary<int, Func<Item, long>> SpecialItemDictionary
-            = new Dictionary<int, Func<Item, long>>()
-        {
+            = new Dictionary<int, Func<Item, long>>
+            {
             {
                 (int)SpecialItems.Arrow, item =>
                 {
