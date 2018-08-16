@@ -23,8 +23,7 @@ This project is currently under development without any release.
 This project is released under the MIT license (see LICENSE file).
 
 ## Used technologies ##
-The project is mainly written in C# with the help of Visual Studio 2017 and targets .NET 4.6.1. In the long term the goal
-is to be able to run it on .NET Core.
+The project is mainly written in C# and targets .NET Standard/Core 2, except for some little tools which still require the full .NET Framework 4.6.1.
 
 The servers admin panel is an embedded webserver, which is using the [React](https://reactjs.org) framework on top
 of the [Nancy](http://nancyfx.org) framework.
