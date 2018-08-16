@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
-    /// Initializer for jewellery (rings & pendants).
+    /// Initializer for jewellery (rings and pendants).
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.Persistence.Initialization.InitializerBase" />
     internal class Jewellery : InitializerBase
