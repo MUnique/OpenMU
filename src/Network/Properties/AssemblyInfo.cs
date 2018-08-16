@@ -9,5 +9,5 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MUnique.OpenMU.Network")]
-
+[assembly: AssemblyDescription("MUnique.OpenMU.Network contains all what's required to connect from and to a game server, using the MU Online network protocol. It also contains the encryption algorithms and keys which were used a few years ago at Season 6 Episode 3.")]
 [assembly: InternalsVisibleTo("MUnique.OpenMU.Network.Tests")]
