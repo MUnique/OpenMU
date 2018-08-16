@@ -28,6 +28,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             this.TestDataInitialization(new PersistenceContextProvider());
         }
 
+        /// <summary>
+        /// Tests the data initialization using the in-memory persistence.
+        /// </summary>
         [Test]
         public void TestDataInitializationInMemory()
         {
