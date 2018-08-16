@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     {
         private const byte InvisibleState = 0xFE;
 
-        private IGameServerContext gameContext;
+        private readonly IGameServerContext gameContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChangeOnlineStateAction"/> class.

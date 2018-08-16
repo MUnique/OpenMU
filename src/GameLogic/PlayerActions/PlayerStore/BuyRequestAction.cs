@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
     /// </summary>
     public class BuyRequestAction
     {
-        private static ILog log = LogManager.GetLogger(typeof(BuyRequestAction));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(BuyRequestAction));
 
         /// <summary>
         /// Buys the item from another player shop.
@@ -24,21 +24,21 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         {
             if (!requestedPlayer.ShopStorage.StoreOpen)
             {
-                log.DebugFormat("Store not open, Character {0}", requestedPlayer.SelectedCharacter.Name);
+                Log.DebugFormat("Store not open, Character {0}", requestedPlayer.SelectedCharacter.Name);
                 player.PlayerView.ShowMessage("Player's Store not open.", MessageType.BlueNormal);
                 return;
             }
 
             if (slot < InventoryConstants.FirstStoreItemSlotIndex)
             {
-                log.WarnFormat("Store Slot too low: {0}, possible hacker", slot);
+                Log.WarnFormat("Store Slot too low: {0}, possible hacker", slot);
                 return;
             }
 
             var item = requestedPlayer.ShopStorage.GetItem(slot);
             if (item == null || !item.StorePrice.HasValue)
             {
-                log.DebugFormat("Item unavailable, Slot {0}", slot);
+                Log.DebugFormat("Item unavailable, Slot {0}", slot);
                 player.PlayerView.ShowMessage("Item unavailable.", MessageType.BlueNormal);
                 return;
             }
@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                     return;
                 }
 
-                log.DebugFormat("BuyRequest, Item Price: {0}", itemPrice);
+                Log.DebugFormat("BuyRequest, Item Price: {0}", itemPrice);
                 if (player.TryRemoveMoney(itemPrice))
                 {
                     if (requestedPlayer.TryAddMoney(itemPrice))

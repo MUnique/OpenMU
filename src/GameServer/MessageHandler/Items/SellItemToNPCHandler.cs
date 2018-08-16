@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     /// </summary>
     internal class SellItemToNPCHandler : IPacketHandler
     {
-        private SellItemToNpcAction sellAction = new SellItemToNpcAction();
+        private readonly SellItemToNpcAction sellAction = new SellItemToNpcAction();
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, byte[] packet)

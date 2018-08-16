@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     /// </summary>
     internal class TradeAcceptHandler : IPacketHandler
     {
-        private TradeAcceptAction acceptAction;
+        private readonly TradeAcceptAction acceptAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TradeAcceptHandler"/> class.

@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// </summary>
     public class ChatMessageAction
     {
-        private static ILog log = LogManager.GetLogger(typeof(ChatMessageAction));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ChatMessageAction));
 
         private readonly IGameContext gameContext;
 
@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             ChatMessageType messageType = this.GetMessageType(message, whisper);
             if (messageType != ChatMessageType.Whisper && playerName != sender.SelectedCharacter.Name)
             {
-                log.WarnFormat("Maybe Hacker, Charname in chat packet != charname\t [{0}] <> [{1}]", sender.SelectedCharacter.Name, playerName);
+                Log.WarnFormat("Maybe Hacker, Charname in chat packet != charname\t [{0}] <> [{1}]", sender.SelectedCharacter.Name, playerName);
             }
 
             if (messageType == ChatMessageType.Command)
@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (messageType == ChatMessageType.Whisper)
             {
-                log.DebugFormat("Whisper Message Received From [{0}] to [{1}]:[{1}]", sender.SelectedCharacter.Name, playerName, message);
+                Log.DebugFormat("Whisper Message Received From [{0}] to [{1}]:[{1}]", sender.SelectedCharacter.Name, playerName, message);
                 var whisperReceiver = this.gameContext.GetPlayerByCharacterName(playerName);
                 if (whisperReceiver != null)
                 {
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             }
             else
             {
-                log.DebugFormat("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter.Name, message);
+                Log.DebugFormat("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter.Name, message);
                 if (messageType == ChatMessageType.Party)
                 {
                     if (sender.Party != null)
@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 }
                 else
                 {
-                    log.DebugFormat("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
+                    Log.DebugFormat("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
                     sender.ForEachObservingPlayer(p => p.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true);
                 }
             }

@@ -5,21 +5,21 @@
 namespace MUnique.OpenMU.GameLogic
 {
     /// <summary>
-    /// A static class to provide random functions by encapsulating the default randomizer <see cref="System.Random"/>.
+    /// A static class to provide random functions by encapsulating the default Randomizer <see cref="System.Random"/>.
     /// </summary>
     public static class Rand
     {
-        private static System.Random random = new System.Random();
+        private static readonly System.Random RandomInstance = new System.Random();
 
-        private static IRandomizer randomizer = new SimpleRandomizer();
+        private static readonly IRandomizer Randomizer = new SimpleRandomizer();
 
         /// <summary>
-        /// Gets the default randomizer which is implementing the interface <see cref="IRandomizer"/>.
+        /// Gets the default Randomizer which is implementing the interface <see cref="IRandomizer"/>.
         /// </summary>
-        /// <returns>The default randomizer which is implementing the interface <see cref="IRandomizer"/>.</returns>
+        /// <returns>The default Randomizer which is implementing the interface <see cref="IRandomizer"/>.</returns>
         public static IRandomizer GetRandomizer()
         {
-            return randomizer;
+            return Randomizer;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>Random boolean value.</returns>
         public static bool NextRandomBool()
         {
-            int a = random.Next(0, 1);
+            int a = RandomInstance.Next(0, 1);
             return a == 1;
         }
 
@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>Random boolean value.</returns>
         public static bool NextRandomBool(int percent)
         {
-            int a = random.Next(0, 100);
+            int a = RandomInstance.Next(0, 100);
             return a <= percent;
         }
 
@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>Random boolean value.</returns>
         public static bool NextRandomBool(double chance)
         {
-            var lot = random.NextDouble();
+            var lot = RandomInstance.NextDouble();
             return lot <= chance;
         }
 
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>Random boolean value.</returns>
         public static bool NextRandomBool(int chance, int basis)
         {
-            int a = random.Next(0, basis);
+            int a = RandomInstance.Next(0, basis);
             return a <= chance;
         }
 
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>A random number.</returns>
         public static int NextInt(int min, int max)
         {
-            return random.Next(min, max);
+            return RandomInstance.Next(min, max);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>A random number.</returns>
         public static int NextInt(uint min, uint max)
         {
-            return random.Next((int)min, (int)max);
+            return RandomInstance.Next((int)min, (int)max);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>A random number.</returns>
         public static uint NextUInt(uint min, uint max)
         {
-            return (uint)random.Next((int)System.Math.Max(min, 0), (int)max);
+            return (uint)RandomInstance.Next((int)System.Math.Max(min, 0), (int)max);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>A random double between 0 and 1.</returns>
         public static double NextDouble()
         {
-            return random.NextDouble();
+            return RandomInstance.NextDouble();
         }
 
         private class SimpleRandomizer : IRandomizer

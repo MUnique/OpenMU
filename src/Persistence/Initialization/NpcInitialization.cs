@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private readonly GameConfiguration gameConfiguration;
 
-        private ItemHelper itemHelper;
+        private readonly ItemHelper itemHelper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcInitialization" /> class.
