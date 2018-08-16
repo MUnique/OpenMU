@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.AdminPanel
 {
+    using System;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
     using System.Timers;
     using log4net;
     using Microsoft.AspNetCore.SignalR;
@@ -15,14 +18,21 @@ namespace MUnique.OpenMU.AdminPanel
     public class SystemHub : Hub<ISystemHubClient>
     {
         private const string SubscriberGroup = "Subscribers";
+        private const int TimerInterval = 1000;
         private static readonly ILog Log = LogManager.GetLogger(typeof(SystemHub));
 
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable we want to keep it from getting garbage collected
         private static readonly Timer Timer;
 
+        private static readonly Process ThisProcess;
+        private static TimeSpan lastProcessorTime;
+        private static ISystemHubClient subscribers;
+
         static SystemHub()
         {
-            Timer = new Timer(1000);
+            ThisProcess = Process.GetCurrentProcess();
+            lastProcessorTime = ThisProcess.TotalProcessorTime;
+            Timer = new Timer(TimerInterval);
             Timer.Elapsed += TimerElapsed;
             Timer.Start();
         }
@@ -30,22 +40,35 @@ namespace MUnique.OpenMU.AdminPanel
         /// <summary>
         /// Subscribes to this hub.
         /// </summary>
-        public void Subscribe()
+        /// <returns>The task.</returns>
+        public async Task Subscribe()
         {
-            this.Groups.AddToGroupAsync(this.Context.ConnectionId, SubscriberGroup);
+            if (subscribers == null)
+            {
+                subscribers = this.Clients.Groups(SubscriberGroup);
+            }
+
+            await this.Groups.AddToGroupAsync(this.Context.ConnectionId, SubscriberGroup).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Unsubscribes from this hub.
         /// </summary>
-        public void Unsubscribe()
+        /// <returns>The task.</returns>
+        public async Task Unsubscribe()
         {
-            this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, SubscriberGroup);
+            await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, SubscriberGroup).ConfigureAwait(false);
         }
 
         private static void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            // to be implemented
+            var usedTimeInInterval = ThisProcess.TotalProcessorTime.Subtract(lastProcessorTime);
+            lastProcessorTime = ThisProcess.TotalProcessorTime;
+            var cpuPercentInstance = (float)usedTimeInInterval.TotalMilliseconds / TimerInterval * 100;
+
+            // There is currently no easy way to get a total cpu percentage. Iterating through all processes would be a way, but it's slow and limited.
+            // So, we just transmit the instance percentage also as total percentage.
+            subscribers?.Update(cpuPercentInstance, cpuPercentInstance, 0, 0);
         }
     }
 }

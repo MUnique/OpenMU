@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.AdminPanel
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// A client interface of the <see cref="SystemHub"/>.
     /// </summary>
@@ -16,6 +18,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="cpuPercentInstance">The cpu percent of this process instance.</param>
         /// <param name="bytesSent">The bytes sent.</param>
         /// <param name="bytesReceived">The bytes received.</param>
-        void Update(float cpuPercentTotal, float cpuPercentInstance, float bytesSent, float bytesReceived);
+        /// <returns>The task.</returns>
+        Task Update(float cpuPercentTotal, float cpuPercentInstance, float bytesSent, float bytesReceived);
     }
 }
