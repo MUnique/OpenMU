@@ -62,6 +62,50 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         }
 
         /// <summary>
+        /// Gets the luck item option definition.
+        /// </summary>
+        protected ItemOptionDefinition Luck
+        {
+            get
+            {
+                return this.GameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck));
+            }
+        }
+
+        /// <summary>
+        /// Gets the physical damage option definition.
+        /// </summary>
+        protected ItemOptionDefinition PhysicalDamageOption
+        {
+            get
+            {
+                return this.GameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumPhysBaseDmg));
+            }
+        }
+
+        /// <summary>
+        /// Gets the wizardry damage option definition.
+        /// </summary>
+        protected ItemOptionDefinition WizardryDamageOption
+        {
+            get
+            {
+                return this.GameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumWizBaseDmg));
+            }
+        }
+
+        /// <summary>
+        /// Gets the curse damage option definition.
+        /// </summary>
+        protected ItemOptionDefinition CurseDamageOption
+        {
+            get
+            {
+                return this.GameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumCurseBaseDmg));
+            }
+        }
+
+        /// <summary>
         /// Initializes the weapons.
         /// </summary>
         /// <remarks>
@@ -205,50 +249,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(5, 33, 0, 0, 1, 4, false, "Chroma ticks staff", 147, 55, 57, 30, 0, 124, 0, 50, 12, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(5, 34, 0, 0, 1, 4, false, "Raven Stick", 147, 70, 78, 30, 0, 130, 0, 50, 14, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
             this.CreateWeapon(5, 36, 0, 0, 1, 4, true, "Divine Stick of Archangel", 104, 153, 165, 30, 0, 146, 0, 55, 13, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-        }
-
-        /// <summary>
-        /// Gets the luck item option definition.
-        /// </summary>
-        protected ItemOptionDefinition Luck
-        {
-            get
-            {
-                return this.GameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck));
-            }
-        }
-
-        /// <summary>
-        /// Gets the physical damage option definition.
-        /// </summary>
-        protected ItemOptionDefinition PhysicalDamageOption
-        {
-            get
-            {
-                return this.GameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumPhysBaseDmg));
-            }
-        }
-
-        /// <summary>
-        /// Gets the wizardry damage option definition.
-        /// </summary>
-        protected ItemOptionDefinition WizardryDamageOption
-        {
-            get
-            {
-                return this.GameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumWizBaseDmg));
-            }
-        }
-
-        /// <summary>
-        /// Gets the curse damage option definition.
-        /// </summary>
-        protected ItemOptionDefinition CurseDamageOption
-        {
-            get
-            {
-                return this.GameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumCurseBaseDmg));
-            }
         }
 
         /// <summary>
