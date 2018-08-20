@@ -125,12 +125,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             item.Level = level;
             item.Durability = item.Definition.Durability;
             item.ItemSlot = itemSlot;
-            if (targetExcellentOption != null)
+            var excellentOption = this.GetExcellentOption(targetExcellentOption, item);
+            if (excellentOption != null)
             {
                 var optionLink = this.context.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                    .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                    .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+                optionLink.ItemOption = excellentOption;
                 item.ItemOptions.Add(optionLink);
             }
 
@@ -173,9 +172,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             item.HasSkill = skill;
             item.Durability = item.Definition.Durability;
             item.ItemSlot = itemSlot;
-            var excellentOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+            var excellentOption = this.GetExcellentOption(targetExcellentOption, item);
             if (excellentOption != null)
             {
                 var optionLink = this.context.CreateNew<ItemOptionLink>();
@@ -223,9 +220,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             weapon.ItemSlot = itemSlot;
             weapon.Level = level;
             weapon.HasSkill = skill;
-            var excellentOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+            var excellentOption = this.GetExcellentOption(targetExcellentOption, weapon);
             if (excellentOption != null)
             {
                 var optionLink = this.context.CreateNew<ItemOptionLink>();
@@ -251,6 +246,18 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             return weapon;
+        }
+
+        private IncreasableItemOption GetExcellentOption(AttributeDefinition targetExcellentOption, Item item)
+        {
+            if (targetExcellentOption == null)
+            {
+                return null;
+            }
+
+            return item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                .Where(o => o.OptionType == ItemOptionTypes.Excellent)
+                .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
         }
     }
 }
