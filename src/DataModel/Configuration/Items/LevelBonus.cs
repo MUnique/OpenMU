@@ -49,10 +49,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
                 return this.AdditionalValueElement?.Value ?? 0;
             }
 
-            set
-            {
-                this.AdditionalValueElement = new ConstantElement(value);
-            }
+            set { this.AdditionalValueElement = Equals(value, 0f) ? null : new ConstantElement(value); }
         }
     }
 }
