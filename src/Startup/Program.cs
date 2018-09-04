@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.Startup
             Log.Info("Start initializing game servers");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var gameServerDefinition in persistenceContext.Get<GameServerDefinition>())
+            foreach (var gameServerDefinition in persistenceContext.Get<DataModel.Configuration.GameServerDefinition>())
             {
                 using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
                 {

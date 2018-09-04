@@ -6,6 +6,8 @@
 // </auto-generated>
 
 using System.Collections.Specialized;
+using Mapster;
+using MUnique.OpenMU.Persistence.Json;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
@@ -201,5 +203,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         [ForeignKey(nameof(Id))]
         public Character Character { get; set; }
+    }
+
+    internal partial class GameConfiguration : IConvertibleTo<BasicModel.GameConfiguration>
+    {
+        public BasicModel.GameConfiguration Convert()
+        {
+            MapsterConfigurator.EnsureConfigured();
+
+            return this.Adapt<BasicModel.GameConfiguration>();
+        }
     }
 }

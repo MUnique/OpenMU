@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public T CreateNew<T>(params object[] args)
             where T : class
         {
-            var instance = TypeHelper.CreateNew<T>(args);
+            var instance = typeof(EntityFrameworkContext).Assembly.CreateNew<T>(args);
             if (instance != null)
             {
                 this.Context.Add(instance);

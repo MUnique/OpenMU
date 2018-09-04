@@ -4,8 +4,6 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory
 {
-    using MUnique.OpenMU.DataModel.Configuration;
-
     /// <summary>
     /// A context provider which uses in-memory repositories to hold its data, e.g. for testing or demo purposes.
     /// Changes in one context directly have effect in other contexts! Calling SaveChanges or not doesn't matter.
@@ -21,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public IContext CreateNewContext(GameConfiguration gameConfiguration)
+        public IContext CreateNewContext(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
         {
             return new InMemoryContext(this.repositoryManager);
         }
@@ -33,7 +31,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public IPlayerContext CreateNewPlayerContext(GameConfiguration gameConfiguration)
+        public IPlayerContext CreateNewPlayerContext(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
         {
             return new PlayerInMemoryContext(this.repositoryManager);
         }

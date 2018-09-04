@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Json
+namespace MUnique.OpenMU.Persistence.Json
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
     /// <summary>
     /// A reference resolver which can resolve references by using multiple reference resolvers itself.
     /// </summary>
-    internal class MultipleSourceReferenceResolver : IReferenceResolver
+    public class MultipleSourceReferenceResolver : IReferenceResolver
     {
         private readonly IList<IReferenceResolver> resolvers;
 

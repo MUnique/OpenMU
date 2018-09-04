@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework
+namespace MUnique.OpenMU.Persistence
 {
     using System;
     using System.Collections;
@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <typeparam name="TClass">The type of the class.</typeparam>
     /// <typeparam name="TEfCore">The type of the ef core.</typeparam>
     /// <seealso cref="System.Collections.Generic.ICollection{TClass}" />
-    internal class CollectionAdapter<TClass, TEfCore> : ICollection<TClass>, INotifyCollectionChanged
+    public class CollectionAdapter<TClass, TEfCore> : ICollection<TClass>, INotifyCollectionChanged
         where TEfCore : TClass
     {
         /// <summary>

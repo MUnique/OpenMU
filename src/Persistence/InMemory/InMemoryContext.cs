@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
 {
     using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    using MUnique.OpenMU.Persistence.BasicModel;
 
     /// <summary>
     /// An in-memory context which get it's data from the repositories of the <see cref="InMemoryPersistenceContextProvider"/>.
@@ -15,17 +15,12 @@ namespace MUnique.OpenMU.Persistence.InMemory
     public class InMemoryContext : IContext
     {
         /// <summary>
-        /// The manager which holds the memory repositories.
-        /// </summary>
-        private readonly InMemoryRepositoryManager manager;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryContext"/> class.
         /// </summary>
         /// <param name="manager">The manager which holds the memory repositories.</param>
         public InMemoryContext(InMemoryRepositoryManager manager)
         {
-            this.manager = manager;
+            this.Manager = manager;
         }
 
         /// <summary>
@@ -34,7 +29,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         /// <value>
         /// The manager.
         /// </value>
-        protected InMemoryRepositoryManager Manager => this.manager;
+        protected InMemoryRepositoryManager Manager { get; }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -53,7 +48,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         {
             if (item is IIdentifiable identifiable)
             {
-                var repository = this.manager.GetRepository(item.GetType()) as IMemoryRepository;
+                var repository = this.Manager.GetRepository(item.GetType()) as IMemoryRepository;
                 repository?.Remove(identifiable.Id);
             }
         }
@@ -63,7 +58,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         {
             if (item is IIdentifiable identifiable)
             {
-                var repository = this.manager.GetRepository(item.GetType()) as IMemoryRepository;
+                var repository = this.Manager.GetRepository(item.GetType()) as IMemoryRepository;
                 repository?.Add(identifiable.Id, item);
             }
         }
@@ -72,7 +67,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         public T CreateNew<T>(params object[] args)
             where T : class
         {
-            var newObject = TypeHelper.CreateNew<T>(args);
+            var newObject = typeof(Persistence.BasicModel.GameConfiguration).Assembly.CreateNew<T>(args);
             if (newObject is IIdentifiable identifiable)
             {
                 if (identifiable.Id == Guid.Empty)
@@ -80,7 +75,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
                     identifiable.Id = Guid.NewGuid();
                 }
 
-                var repository = this.manager.GetRepository<T>();
+                var repository = this.Manager.GetRepository<T>() as IMemoryRepository;
                 repository?.Add(identifiable.Id, newObject);
             }
 
@@ -91,21 +86,21 @@ namespace MUnique.OpenMU.Persistence.InMemory
         public bool Delete<T>(T obj)
             where T : class
         {
-            return this.manager.GetRepository<T>()?.Delete(obj) ?? false;
+            return this.Manager.GetRepository<T>()?.Delete(obj) ?? false;
         }
 
         /// <inheritdoc/>
         public T GetById<T>(Guid id)
             where T : class
         {
-            return this.manager.GetRepository<T>().GetById(id);
+            return this.Manager.GetRepository<T>().GetById(id);
         }
 
         /// <inheritdoc/>
         public IEnumerable<T> Get<T>()
             where T : class
         {
-            return this.manager.GetRepository<T>().GetAll();
+            return this.Manager.GetRepository<T>().GetAll();
         }
     }
 }

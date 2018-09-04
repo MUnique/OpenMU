@@ -1,15 +1,16 @@
-// <copyright file="IdReferenceResolver.cs" company="MUnique">
+﻿// <copyright file="IdReferenceResolver{TIdentity}.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Json
+namespace MUnique.OpenMU.Persistence.Json
 {
     using System;
     using System.Collections.Generic;
+    using MUnique.OpenMU.Interfaces;
     using Newtonsoft.Json.Serialization;
 
     /// <summary>
-    /// A reference resolver, which resolves based on $id references which are values of <see cref="IIdentifiable.Id"/>.
+    /// A reference resolver, which resolves based on $id references which are values of <see cref="IIdentifiable{T}.Id" />.
     /// </summary>
     public class IdReferenceResolver : IReferenceResolver
     {
@@ -18,9 +19,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <inheritdoc />
         public object ResolveReference(object context, string reference)
         {
-            Guid id = new Guid(reference);
-
-            var success = this.objects.TryGetValue(id, out IIdentifiable obj);
+            var identity = new Guid(reference);
+            var success = this.objects.TryGetValue(identity, out IIdentifiable obj);
             if (!success)
             {
                 return null;
@@ -32,24 +32,29 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <inheritdoc/>
         public string GetReference(object context, object value)
         {
-            var p = (IIdentifiable)value;
-            this.objects[p.Id] = p;
+            if (value is IIdentifiable identifiable)
+            {
+                this.objects[identifiable.Id] = identifiable;
+                return identifiable.Id.ToString();
+            }
 
-            return p.Id.ToString();
+            return null;
         }
 
         /// <inheritdoc/>
         public bool IsReferenced(object context, object value)
         {
-            var p = (IIdentifiable)value;
-            return this.objects.ContainsKey(p.Id);
+            return value is IIdentifiable identifiable && this.objects.ContainsKey(identifiable.Id);
         }
 
         /// <inheritdoc/>
         public void AddReference(object context, string reference, object value)
         {
-            Guid id = new Guid(reference);
-            this.objects[id] = (IIdentifiable)value;
+            if (value is IIdentifiable identifiable)
+            {
+                var identity = new Guid(reference);
+                this.objects[identity] = identifiable;
+            }
         }
     }
 }

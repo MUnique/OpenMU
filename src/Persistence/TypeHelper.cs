@@ -1,0 +1,67 @@
+﻿// <copyright file="TypeHelper.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence
+{
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+
+    /// <summary>
+    /// Helper class which offers functions related to the extended data model types.
+    /// </summary>
+    public static class TypeHelper
+    {
+        /// <summary>
+        /// A cache which holds extended types (Value) for their corresponding base type (Key).
+        /// </summary>
+        private static readonly IDictionary<Type, Type> BaseToPersistentTypes = new ConcurrentDictionary<Type, Type>();
+
+        /// <summary>
+        /// Gets the ef core type of <typeparamref name="TBase"/>.
+        /// </summary>
+        /// <typeparam name="TBase">Base type of the data model.</typeparam>
+        /// <returns>Extended ef core type of <typeparamref name="TBase"/>.</returns>
+        public static Type GetPersistentTypeOf<TBase>(this Assembly origin)
+        {
+            var baseType = typeof(TBase);
+            if (baseType.Assembly == origin)
+            {
+                // TBase is already the persistent type
+                return baseType;
+            }
+
+            if (!BaseToPersistentTypes.TryGetValue(baseType, out Type persistentType))
+            {
+                persistentType = origin.GetTypes().First(t => t.BaseType == baseType);
+                BaseToPersistentTypes.Add(baseType, persistentType);
+            }
+
+            return persistentType;
+        }
+
+        /// <summary>
+        /// Creates a new object of the extended ef core type of the <typeparamref name="TBase" />.
+        /// </summary>
+        /// <typeparam name="TBase">The base type of the data model.</typeparam>
+        /// <param name="origin">The originating assembly of the persistent type of <typeparamref name="TBase"/>.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>
+        /// A new object of the extended ef core type of the <typeparamref name="TBase" />.
+        /// </returns>
+        public static TBase CreateNew<TBase>(this Assembly origin, params object[] args)
+            where TBase : class
+        {
+            var persistentType = origin.GetPersistentTypeOf<TBase>();
+            if (args.Length == 0)
+            {
+                return Activator.CreateInstance(persistentType) as TBase;
+            }
+
+            return Activator.CreateInstance(persistentType, args) as TBase;
+        }
+    }
+}

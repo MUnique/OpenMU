@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Json
+namespace MUnique.OpenMU.Persistence.Json
 {
     using System;
     using Newtonsoft.Json;
@@ -91,7 +91,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 
         private object CreateObject(Type objectType, JsonSerializer serializer, JObject jsonObject)
         {
-            // var createdObject = jsonObject.ToObject(objectType);
             var createdObject = Activator.CreateInstance(objectType);
 
             // We need to remember the currently populating object for the next properties on the same hierarchy.

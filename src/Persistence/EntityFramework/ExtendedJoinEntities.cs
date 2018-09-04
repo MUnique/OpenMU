@@ -85,21 +85,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public ICollection<ItemAppearanceItemOptionType> JoinedVisibleOptions { get; } = new List<ItemAppearanceItemOptionType>();
     }
 
-    [Table("GameServerConfigurationGameMapDefinition", Schema = "config")]
-    internal partial class GameServerConfigurationGameMapDefinition 
-    {
-        public Guid GameServerConfigurationId { get; set; }
-        public GameServerConfiguration GameServerConfiguration { get; set; }
-
-        public Guid GameMapDefinitionId { get; set; }
-        public GameMapDefinition GameMapDefinition { get; set; }
-    }
-
-    internal partial class GameServerConfiguration
-    {
-        public ICollection<GameServerConfigurationGameMapDefinition> JoinedMaps { get; } = new List<GameServerConfigurationGameMapDefinition>();
-    }
-
     [Table("DropItemGroupItemDefinition", Schema = "config")]
     internal partial class DropItemGroupItemDefinition 
     {
@@ -113,6 +98,36 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     internal partial class DropItemGroup
     {
         public ICollection<DropItemGroupItemDefinition> JoinedPossibleItems { get; } = new List<DropItemGroupItemDefinition>();
+    }
+
+    [Table("GameMapDefinitionDropItemGroup", Schema = "config")]
+    internal partial class GameMapDefinitionDropItemGroup 
+    {
+        public Guid GameMapDefinitionId { get; set; }
+        public GameMapDefinition GameMapDefinition { get; set; }
+
+        public Guid DropItemGroupId { get; set; }
+        public DropItemGroup DropItemGroup { get; set; }
+    }
+
+    internal partial class GameMapDefinition
+    {
+        public ICollection<GameMapDefinitionDropItemGroup> JoinedDropItemGroups { get; } = new List<GameMapDefinitionDropItemGroup>();
+    }
+
+    [Table("GameServerConfigurationGameMapDefinition", Schema = "config")]
+    internal partial class GameServerConfigurationGameMapDefinition 
+    {
+        public Guid GameServerConfigurationId { get; set; }
+        public GameServerConfiguration GameServerConfiguration { get; set; }
+
+        public Guid GameMapDefinitionId { get; set; }
+        public GameMapDefinition GameMapDefinition { get; set; }
+    }
+
+    internal partial class GameServerConfiguration
+    {
+        public ICollection<GameServerConfigurationGameMapDefinition> JoinedMaps { get; } = new List<GameServerConfigurationGameMapDefinition>();
     }
 
     [Table("MasterSkillDefinitionSkill", Schema = "config")]
@@ -143,21 +158,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     internal partial class MonsterDefinition
     {
         public ICollection<MonsterDefinitionDropItemGroup> JoinedDropItemGroups { get; } = new List<MonsterDefinitionDropItemGroup>();
-    }
-
-    [Table("GameMapDefinitionDropItemGroup", Schema = "config")]
-    internal partial class GameMapDefinitionDropItemGroup 
-    {
-        public Guid GameMapDefinitionId { get; set; }
-        public GameMapDefinition GameMapDefinition { get; set; }
-
-        public Guid DropItemGroupId { get; set; }
-        public DropItemGroup DropItemGroup { get; set; }
-    }
-
-    internal partial class GameMapDefinition
-    {
-        public ICollection<GameMapDefinitionDropItemGroup> JoinedDropItemGroups { get; } = new List<GameMapDefinitionDropItemGroup>();
     }
 
     [Table("SkillCharacterClass", Schema = "config")]

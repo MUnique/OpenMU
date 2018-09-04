@@ -7,8 +7,9 @@ namespace MUnique.OpenMU.Persistence.InMemory
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Persistence.BasicModel;
+    using Friend = MUnique.OpenMU.Interfaces.Friend;
 
     /// <summary>
     /// In-memory context implementation for <see cref="IFriendServerContext"/>.
@@ -27,7 +28,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         /// <inheritdoc/>
         public Friend CreateNewFriend(string characterName, string friendName)
         {
-            var friend = this.CreateNew<Friend>();
+            var friend = this.CreateNew<MUnique.OpenMU.Interfaces.Friend>();
             friend.FriendId = this.Manager.GetRepository<Character>().GetAll().FirstOrDefault(character => character.Name == friendName)?.Id ?? Guid.Empty;
             friend.CharacterId = this.Manager.GetRepository<Character>().GetAll().FirstOrDefault(character => character.Name == characterName)?.Id ?? Guid.Empty;
             return friend;

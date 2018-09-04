@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework
+namespace MUnique.OpenMU.Persistence
 {
     using System;
 
@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    internal interface IDictionaryEntity<TKey, TValue>
+    public interface IDictionaryEntity<TKey, TValue>
     {
         /// <summary>
         /// Gets or sets the key.

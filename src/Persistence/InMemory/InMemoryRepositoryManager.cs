@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory
 {
+    using System;
+    using MUnique.OpenMU.Persistence.BasicModel;
+
     /// <summary>
     /// A repository manager which creates new in-memory repositories on-demand.
     /// </summary>
@@ -14,16 +17,20 @@ namespace MUnique.OpenMU.Persistence.InMemory
         /// </summary>
         /// <typeparam name="T">The type of the business object.</typeparam>
         /// <returns>The memory repository.</returns>
-        public new MemoryRepository<T> GetRepository<T>()
+        public new IRepository<T> GetRepository<T>()
         {
-            return this.InternalGetRepository(typeof(T)) as MemoryRepository<T>
-                   ?? this.CreateAndRegisterMemoryRepository<T>();
+            var repository = this.InternalGetRepository(typeof(T)) ?? this.CreateAndRegisterMemoryRepository<T>();
+            return repository as IRepository<T>;
         }
 
-        private MemoryRepository<T> CreateAndRegisterMemoryRepository<T>()
+        private IRepository CreateAndRegisterMemoryRepository<T>()
         {
-            var repository = new MemoryRepository<T>();
-            this.RegisterRepository(repository);
+            var baseModelAssembly = typeof(GameConfiguration).Assembly;
+            var persistentType = baseModelAssembly.GetPersistentTypeOf<T>() ?? typeof(T);
+            var repositoryType = typeof(MemoryRepository<>).MakeGenericType(persistentType);
+            var repository = Activator.CreateInstance(repositoryType) as IRepository;
+            var baseType = typeof(T).Assembly == baseModelAssembly ? typeof(T).BaseType : typeof(T);
+            this.RegisterRepository(baseType, repository);
             return repository;
         }
     }

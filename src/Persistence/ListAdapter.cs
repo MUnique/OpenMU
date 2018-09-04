@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework
+namespace MUnique.OpenMU.Persistence
 {
     using System.Collections.Generic;
 
@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <typeparam name="TClass">The type of the class.</typeparam>
     /// <typeparam name="TEfCore">The type of the ef core.</typeparam>
     /// <seealso cref="System.Collections.Generic.ICollection{TClass}" />
-    internal class ListAdapter<TClass, TEfCore> : CollectionAdapter<TClass, TEfCore>, IList<TClass>
+    public class ListAdapter<TClass, TEfCore> : CollectionAdapter<TClass, TEfCore>, IList<TClass>
         where TEfCore : TClass
     {
         private readonly IList<TEfCore> rawList;

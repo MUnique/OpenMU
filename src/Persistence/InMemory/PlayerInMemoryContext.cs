@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence.BasicModel;
 
     /// <summary>
     /// In-memory context implementation for <see cref="IPlayerContext"/>.
@@ -24,19 +24,19 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public LetterBody GetLetterBodyByHeaderId(Guid headerId)
+        public MUnique.OpenMU.DataModel.Entities.LetterBody GetLetterBodyByHeaderId(Guid headerId)
         {
             return this.Manager.GetRepository<LetterBody>().GetAll().FirstOrDefault(body => body.Header.Id == headerId);
         }
 
         /// <inheritdoc/>
-        public Account GetAccountByLoginName(string loginName, string password)
+        public MUnique.OpenMU.DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
         {
             return this.Manager.GetRepository<Account>().GetAll().FirstOrDefault(account => account.LoginName == loginName && BCrypt.Net.BCrypt.Verify(password, account.PasswordHash));
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Account> GetAccountsOrderedByLoginName(int skip, int count)
+        public IEnumerable<MUnique.OpenMU.DataModel.Entities.Account> GetAccountsOrderedByLoginName(int skip, int count)
         {
             return this.Manager.GetRepository<Account>().GetAll().OrderBy(a => a.LoginName).Skip(skip).Take(count);
         }

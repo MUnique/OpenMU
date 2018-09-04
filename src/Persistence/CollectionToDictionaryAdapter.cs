@@ -1,8 +1,8 @@
-﻿// <copyright file="DictionaryAdapter.cs" company="MUnique">
+﻿// <copyright file="CollectionToDictionaryAdapter.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework
+namespace MUnique.OpenMU.Persistence
 {
     using System.Collections;
     using System.Collections.Generic;
@@ -13,21 +13,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TClass">The type of the class.</typeparam>
-    /// <typeparam name="TEfCore">The type of the ef core.</typeparam>
+    /// <typeparam name="TPersistent">The persistent type of <typeparamref name="TClass"/>.</typeparam>
     /// <typeparam name="TJoin">The type of the join.</typeparam>
     /// <seealso cref="System.Collections.Generic.IDictionary{TKey, TClass}" />
-    internal class DictionaryAdapter<TKey, TClass, TEfCore, TJoin> : IDictionary<TKey, TClass>
-        where TJoin : IDictionaryEntity<TKey, TEfCore>, new()
-        where TEfCore : class, TClass, IIdentifiable
+    public class CollectionToDictionaryAdapter<TKey, TClass, TPersistent, TJoin> : IDictionary<TKey, TClass>
+        where TJoin : IDictionaryEntity<TKey, TPersistent>, new()
+        where TPersistent : class, TClass, IIdentifiable
         where TClass : class
     {
         private readonly ICollection<TJoin> rawCollection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DictionaryAdapter{TKey, TClass, TEfCore, TJoin}"/> class.
+        /// Initializes a new instance of the <see cref="CollectionToDictionaryAdapter{TKey, TClass, TEfCore, TJoin}"/> class.
         /// </summary>
         /// <param name="rawCollection">The raw collection.</param>
-        public DictionaryAdapter(ICollection<TJoin> rawCollection)
+        public CollectionToDictionaryAdapter(ICollection<TJoin> rawCollection)
         {
             this.rawCollection = rawCollection;
         }
@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public void Add(TKey key, TClass value)
         {
-            this.rawCollection.Add(new TJoin { Key = key, Value = (TEfCore)value, ValueId = ((TEfCore)value).Id });
+            this.rawCollection.Add(new TJoin { Key = key, Value = (TPersistent)value, ValueId = ((TPersistent)value).Id });
         }
 
         /// <inheritdoc/>

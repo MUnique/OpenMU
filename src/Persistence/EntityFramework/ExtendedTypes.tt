@@ -5,6 +5,7 @@
 #>
 <#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
+<#@ assembly Name="C:\Program Files\dotnet\sdk\2.1.4\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.DataModel.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.AttributeSystem.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.Interfaces.dll" #>
@@ -34,6 +35,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using Newtonsoft.Json;
+    using Mapster;
+    using MUnique.OpenMU.Persistence;
 
 <#
 Assembly assembly = typeof(Account).Assembly;
@@ -41,10 +44,7 @@ var customTypes = assembly.GetTypes().Where(type => type.IsClass && type.IsPubli
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeDefinition));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.StatAttribute));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstValueAttribute));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstantElement));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationship));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.SimpleElement));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationshipElement));
 customTypes.Add(typeof(MUnique.OpenMU.Interfaces.LetterHeader));
 customTypes.Add(typeof(MUnique.OpenMU.Interfaces.Friend));
 
@@ -219,7 +219,7 @@ foreach (Type type in customTypes)
   }
   else if (propertyType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
   {
-      adapterClass = "DictionaryAdapter";
+      adapterClass = "CollectionToDictionaryAdapter";
   }
 
   string returnStatement = null;
@@ -232,7 +232,7 @@ foreach (Type type in customTypes)
       var genericArgumentName = propertyType.GetGenericArguments()[0].FullName;
       returnStatement = string.Format("base.{0} ?? (base.{0} = new {1}<{2}>(this.Raw{0}, newString => this.Raw{0} = newString))", property.Name, adapterClass, genericArgumentName);
   }
-  else if (adapterClass != "DictionaryAdapter")
+  else if (adapterClass != "CollectionToDictionaryAdapter")
   {
       var efCoreClassName = propertyType.GetGenericArguments()[0].Name + customTypeSuffix;
       var originalClassName = propertyType.GetGenericArguments()[0].FullName;
@@ -324,6 +324,47 @@ foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
 }
 
 #>
+        }
+    }
+        
+    /// <summary>
+    /// Configures Mapster to properly map these classes to the Persistence.BasicModel.
+    /// </summary>
+    public static class MapsterConfigurator
+    {
+        private static bool isConfigured;
+
+        /// <summary>
+        /// Ensures that Mapster is configured to properly map these EF-Core persistence classes to the Persistence.BasicModel.
+        /// </summary>
+        public static void EnsureConfigured()
+        {
+            if (isConfigured)
+            {
+                return;
+            }
+
+            Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
+            Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith("Raw"));
+<#foreach (Type type in customTypes)
+{#>
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<<#=type.FullName#>, <#=type.FullName#>>()
+                            .Include<<#=type.Name#>, BasicModel.<#=type.Name#>>();
+<#
+    foreach (var property in type
+                        .GetProperties()
+                        .Where(p => p.GetGetMethod().IsVirtual && !p.GetGetMethod().IsFinal && !p.PropertyType.IsValueType && !p.PropertyType.IsArray)
+                        .Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(IDictionary<,>)))
+{
+    var keyType = property.PropertyType.GetGenericArguments()[0];
+    var valueType = property.PropertyType.GetGenericArguments()[1];
+#>
+            Mapster.TypeAdapterConfig.GlobalSettings.ForDestinationType<IDictionary<<#=keyType.FullName#>, <#=valueType.FullName#>>>()
+                .ConstructUsing(() => new Dictionary<<#=keyType.FullName#>, <#=valueType.FullName#>>());
+<#}#>
+
+<#}#>
+            isConfigured = true;
         }
     }
 }

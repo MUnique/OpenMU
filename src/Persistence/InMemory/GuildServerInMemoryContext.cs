@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence.BasicModel;
 
     /// <summary>
     /// In-memory context implementation for <see cref="IGuildServerContext"/>.
