@@ -1,4 +1,4 @@
-﻿// <copyright file="IdReferenceResolver{TIdentity}.cs" company="MUnique">
+﻿// <copyright file="IdReferenceResolver.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,11 +6,10 @@ namespace MUnique.OpenMU.Persistence.Json
 {
     using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.Interfaces;
     using Newtonsoft.Json.Serialization;
 
     /// <summary>
-    /// A reference resolver, which resolves based on $id references which are values of <see cref="IIdentifiable{T}.Id" />.
+    /// A reference resolver, which resolves based on $id references which are values of <see cref="IIdentifiable.Id" />.
     /// </summary>
     public class IdReferenceResolver : IReferenceResolver
     {

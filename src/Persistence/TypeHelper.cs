@@ -24,6 +24,7 @@ namespace MUnique.OpenMU.Persistence
         /// Gets the ef core type of <typeparamref name="TBase"/>.
         /// </summary>
         /// <typeparam name="TBase">Base type of the data model.</typeparam>
+        /// <param name="origin">The originating assembly of the persistent type of <typeparamref name="TBase"/>.</param>
         /// <returns>Extended ef core type of <typeparamref name="TBase"/>.</returns>
         public static Type GetPersistentTypeOf<TBase>(this Assembly origin)
         {
