@@ -3835,15 +3835,15 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// Gets the raw collection of <see cref="Options" />.
         /// </summary>
         [JsonProperty("Options")]
-        public ICollection<ItemOption> RawOptions { get; } = new List<ItemOption>();
+        public ICollection<IncreasableItemOption> RawOptions { get; } = new List<IncreasableItemOption>();
         
         /// <inheritdoc/>
         [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption> Options
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> Options
         {
             get
             {
-                return base.Options ?? (base.Options = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption, ItemOption>(this.RawOptions)); 
+                return base.Options ?? (base.Options = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawOptions)); 
             }
             protected set
             {

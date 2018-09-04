@@ -3297,16 +3297,10 @@ public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new List
     /// </summary>
     [Table("ItemSetGroup", Schema = "config")]
     internal partial class ItemSetGroup : MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, IIdentifiable
-    {
-        public ItemSetGroup()
-        {
-            this.InitJoinCollections();
-        }         
+    {        
 
         protected void InitJoinCollections()
         {
-          
-            this.Options = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption, ItemSetGroupItemOption>(this.JoinedOptions, joinEntity => joinEntity.ItemOption, entity => new ItemSetGroupItemOption { ItemSetGroup = this, ItemSetGroupId = this.Id, ItemOption = (ItemOption)entity, ItemOptionId = ((ItemOption)entity).Id});
         }
 
         /// <summary>
@@ -3314,7 +3308,18 @@ public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new List
         /// </summary>
         public Guid Id { get; set; }
 
-public ICollection<ItemOfItemSet> RawItems { get; } = new List<ItemOfItemSet>();        
+public ICollection<IncreasableItemOption> RawOptions { get; } = new List<IncreasableItemOption>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> Options
+        {
+            get
+            {
+                return base.Options ?? (base.Options = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawOptions)); 
+            }
+        }
+
+        public ICollection<ItemOfItemSet> RawItems { get; } = new List<ItemOfItemSet>();        
         /// <inheritdoc/>
         [NotMapped]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet> Items
@@ -4405,8 +4410,6 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Entity<ItemDefinitionItemSetGroup>().HasKey(join => new { join.ItemDefinitionId, join.ItemSetGroupId });
             modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedPossibleItemOptions).WithOne(join => join.ItemDefinition);
             modelBuilder.Entity<ItemDefinitionItemOptionDefinition>().HasKey(join => new { join.ItemDefinitionId, join.ItemOptionDefinitionId });
-            modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.JoinedOptions).WithOne(join => join.ItemSetGroup);
-            modelBuilder.Entity<ItemSetGroupItemOption>().HasKey(join => new { join.ItemSetGroupId, join.ItemOptionId });
             modelBuilder.Entity<ItemCraftingRequiredItem>().HasMany(entity => entity.JoinedRequiredItemOptions).WithOne(join => join.ItemCraftingRequiredItem);
             modelBuilder.Entity<ItemCraftingRequiredItemItemOptionType>().HasKey(join => new { join.ItemCraftingRequiredItemId, join.ItemOptionTypeId });
         }

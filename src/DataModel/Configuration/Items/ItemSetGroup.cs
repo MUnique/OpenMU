@@ -52,8 +52,9 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
 
         /// <summary>
         /// Gets or sets the options. If the options depend on the item count, this options need to be ordered correctly.
+        /// TODO: An ICollection doesn't have an order.
         /// </summary>
-        public virtual ICollection<ItemOption> Options { get; protected set; }
+        public virtual ICollection<IncreasableItemOption> Options { get; protected set; }
 
         /// <summary>
         /// Gets or sets the items of this set.

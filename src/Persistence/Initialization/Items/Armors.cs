@@ -354,9 +354,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.BuildSets();
         }
 
-        private ItemOption BuildDefenseBonusOption(float bonus)
+        private IncreasableItemOption BuildDefenseBonusOption(float bonus)
         {
-            var defenseBonus = this.Context.CreateNew<ItemOption>();
+            var defenseBonus = this.Context.CreateNew<IncreasableItemOption>();
             defenseBonus.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
             defenseBonus.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             defenseBonus.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
@@ -365,7 +365,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             return defenseBonus;
         }
 
-        private void CreateSetGroup(int setLevel, ItemOption option, ICollection<ItemDefinition> group)
+        private void CreateSetGroup(int setLevel, IncreasableItemOption option, ICollection<ItemDefinition> group)
         {
             var setForDefense = this.Context.CreateNew<ItemSetGroup>();
             setForDefense.Name = $"{group.First().Name.Split(' ')[0]} Defense Bonus (Level {setLevel})";
@@ -385,14 +385,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         {
             var sets = this.GameConfiguration.Items.Where(item => item.Group >= 7 && item.Group <= 11).GroupBy(item => item.Number);
 
-            var defenseRateBonus = this.Context.CreateNew<ItemOption>();
+            var defenseRateBonus = this.Context.CreateNew<IncreasableItemOption>();
             defenseRateBonus.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
             defenseRateBonus.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             defenseRateBonus.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
             defenseRateBonus.PowerUpDefinition.Boost.ConstantValue.Value = 1.1f;
             defenseRateBonus.PowerUpDefinition.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
 
-            var defenseBonus = new Dictionary<int, ItemOption>
+            var defenseBonus = new Dictionary<int, IncreasableItemOption>
             {
                 { 10, this.BuildDefenseBonusOption(1.05f) },
                 { 11, this.BuildDefenseBonusOption(1.10f) },
