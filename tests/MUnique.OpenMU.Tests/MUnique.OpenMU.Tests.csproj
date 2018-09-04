@@ -40,6 +40,7 @@
     <ProjectReference Include="..\..\src\GuildServer\MUnique.OpenMU.GuildServer.csproj" />
     <ProjectReference Include="..\..\src\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\..\src\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />
+    <ProjectReference Include="..\..\src\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\..\src\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Persistence\MUnique.OpenMU.Persistence.csproj" />
   </ItemGroup>

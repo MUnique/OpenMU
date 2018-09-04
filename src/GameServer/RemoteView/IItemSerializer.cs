@@ -4,9 +4,13 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Serializes the items into a byte array.
@@ -25,18 +29,30 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <param name="startIndex">The start index.</param>
         /// <param name="item">The item.</param>
         void SerializeItem(byte[] array, int startIndex, Item item);
+
+        /// <summary>
+        /// Deserializes the byte array into a new item instance.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="gameConfiguration">The game configuration. Required to determine the item definition.</param>
+        /// <param name="persistenceContext">The persistence context. Required to create new objects.</param>
+        /// <returns>The created item instance.</returns>
+        Item DeserializeItem(byte[] array, int startIndex, GameConfiguration gameConfiguration, IContext persistenceContext);
     }
 
     /// <summary>
     /// This item serializer is used to serialize the item data to the data packets.
     /// At the moment, each item is serialized into a 12-byte long part of an array:
-    /// Byte Order: ItemCode Options Dura Exe Ancient Kind 00 Socket1 Socket2 Socket3 Socket4 Socket5
+    /// Byte Order: ItemCode Options Dura Exe Ancient Kind/380Opt HarmonyOpt Socket1 Socket2 Socket3 Socket4 Socket5
     /// </summary>
     public class ItemSerializer : IItemSerializer
     {
         private const byte LuckFlag = 4;
 
         private const byte SkillFlag = 128;
+
+        private const byte LevelMask = 0x78;
 
         private const byte Option380Flag = 0x08;
 
@@ -58,7 +74,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void SerializeItem(byte[] array, int startIndex, Item item)
         {
             array[startIndex] = (byte)item.Definition.Number;
-            array[startIndex + 1] = (byte)((item.Level << 3) & 0x78);
+            array[startIndex + 1] = (byte)((item.Level << 3) & LevelMask);
 
             var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.Option);
             if (itemOption != null)
@@ -109,6 +125,221 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             array[startIndex + 6] = GetHarmonyByte(item);
             SetSocketBytes(array, startIndex + 7, item);
+        }
+
+        /// <inheritdoc />
+        public Item DeserializeItem(byte[] array, int startIndex, GameConfiguration gameConfiguration, IContext persistenceContext)
+        {
+            var itemNumber = array[startIndex] + ((array[startIndex] & 0x80) << 1);
+            var itemGroup = (array[startIndex + 5] & 0xF0) >> 4;
+            var definition = gameConfiguration.Items.FirstOrDefault(def => def.Number == itemNumber && def.Group == itemGroup)
+                ?? throw new ArgumentException($"Couldn't find the item definition for the given byte array. Extracted item number and group: {itemNumber}, {itemGroup}");
+
+            var item = persistenceContext.CreateNew<Item>();
+            item.Definition = definition;
+            item.Level = (byte)((array[startIndex + 1] & LevelMask) >> 3);
+            item.Durability = array[startIndex + 2];
+
+            if (item.Definition.PossibleItemOptions.Any(o =>
+                o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Excellent)))
+            {
+                ReadExcellentOption(array[startIndex + 3], persistenceContext, item);
+            }
+            else if (item.Definition.PossibleItemOptions.Any(o =>
+                o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing)))
+            {
+                ReadWingOption(array[startIndex + 3], persistenceContext, item);
+            }
+
+            ReadSkillFlag(array[startIndex + 1], item);
+            ReadLuckOption(array[startIndex + 1], persistenceContext, item);
+            ReadNormalOption(array, startIndex, persistenceContext, item);
+            ReadAncientOption(array[startIndex + 4], persistenceContext, item);
+            ReadLevel380Option(array[startIndex + 5], persistenceContext, item);
+            ReadHarmonyOption(array[startIndex + 6], persistenceContext, item);
+            ReadSockets(array.Skip(startIndex + 7), persistenceContext, item);
+            return item;
+        }
+
+        private static void ReadSkillFlag(byte optionByte, Item item)
+        {
+            if ((optionByte & SkillFlag) == 0)
+            {
+                return;
+            }
+
+            if (item.Definition.Skill == null)
+            {
+                throw new ArgumentException($"The skill flag was set, but a skill is not defined for the specified item ({item.Definition.Number}, {item.Definition.Group})");
+            }
+
+            item.HasSkill = true;
+        }
+
+        private static void ReadLuckOption(byte optionByte, IContext persistenceContext, Item item)
+        {
+            if ((optionByte & LuckFlag) == 0)
+            {
+                return;
+            }
+
+            var luckOption = item.Definition.PossibleItemOptions
+                                 .SelectMany(o => o.PossibleOptions.Where(i => i.OptionType == ItemOptionTypes.Luck))
+                                 .FirstOrDefault()
+                             ?? throw new ArgumentException($"The luck flag was set, but luck option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = luckOption;
+            item.ItemOptions.Add(optionLink);
+        }
+
+        private static void ReadWingOption(byte wingbyte, IContext persistenceContext, Item item)
+        {
+            var wingBits = wingbyte & 0x0F;
+            var wingOptionDefinition = item.Definition.PossibleItemOptions.First(o =>
+                o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing));
+            foreach (var wingOption in wingOptionDefinition.PossibleOptions)
+            {
+                var optionMask = (byte)(1 << (wingOption.Number - 1));
+                if ((wingBits & optionMask) == optionMask)
+                {
+                    var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+                    optionLink.ItemOption = wingOption;
+                    item.ItemOptions.Add(optionLink);
+                }
+            }
+        }
+
+        private static void ReadExcellentOption(byte excByte, IContext persistenceContext, Item item)
+        {
+            var excellentBits = excByte & 0x3F;
+            var excellentOptionDefinition = item.Definition.PossibleItemOptions.First(o =>
+                o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Excellent));
+            foreach (var excellentOption in excellentOptionDefinition.PossibleOptions)
+            {
+                var optionMask = (byte)(1 << (excellentOption.Number - 1));
+                if ((excellentBits & optionMask) == optionMask)
+                {
+                    var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+                    optionLink.ItemOption = excellentOption;
+                    item.ItemOptions.Add(optionLink);
+                }
+            }
+        }
+
+        private static void ReadNormalOption(byte[] array, int startIndex, IContext persistenceContext, Item item)
+        {
+            var optionLevel = (array[startIndex + 1] & 3) + ((array[startIndex + 3] >> 4) & 4);
+            if (optionLevel == 0)
+            {
+                return;
+            }
+
+            var itemIsWing = item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing));
+            var optionNumber = itemIsWing ? (array[startIndex + 3] >> 4) & 0b11 : 0;
+            var option = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions.Where(i => i.OptionType == ItemOptionTypes.Option && i.Number == optionNumber))
+                .FirstOrDefault()
+                ?? throw new ArgumentException($"The option with level {optionLevel} and number {optionNumber} is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = option;
+            optionLink.Level = optionLevel;
+            item.ItemOptions.Add(optionLink);
+        }
+
+        private static void ReadAncientOption(byte ancientByte, IContext persistenceContext, Item item)
+        {
+            if (ancientByte == 0)
+            {
+                return;
+            }
+
+            var bonusLevel = (ancientByte & 0b1100) >> 2;
+            var setDiscriminator = ancientByte & 0b11;  // TODO: we have no discriminator value yet for different kind of possible ancient sets on the same items.
+                                                        // E.g. a Warrior Leather set would be 1, the Anonymous Leather set would be 2.
+                                                        // this also means that one item can't be included in more than 2 ancient sets.
+            var ancientSets = item.Definition.PossibleItemSetGroups
+                .Where(set => set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientBonus)).ToList();
+            if (ancientSets.Count > 1)
+            {
+                throw new ArgumentException($"No ancient set with number {setDiscriminator} found for item definition ({item.Definition.Number}, {item.Definition.Group}).");
+            }
+
+            var ancientSet = ancientSets.FirstOrDefault()
+                             ?? throw new ArgumentException($"The ancient option was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+            item.ItemSetGroups.Add(ancientSet);
+            var ancientBonus = ancientSet.Options.First(o => o.OptionType == ItemOptionTypes.AncientBonus);
+            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = ancientBonus;
+            optionLink.Level = bonusLevel;
+        }
+
+        private static void ReadLevel380Option(byte option380Byte, IContext persistenceContext, Item item)
+        {
+            if ((option380Byte & Option380Flag) == 0)
+            {
+                return;
+            }
+
+            var option380 = item.Definition.PossibleItemOptions
+                                .SelectMany(o => o.PossibleOptions.Where(i => i.OptionType == ItemOptionTypes.Level380Option))
+                                .FirstOrDefault()
+                            ?? throw new ArgumentException($"The lvl380 option flag was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = option380;
+            item.ItemOptions.Add(optionLink);
+        }
+
+        private static void ReadSockets(IEnumerable<byte> socketBytes, IContext persistenceContext, Item item)
+        {
+            if (item.Definition.MaximumSockets == 0)
+            {
+                return;
+            }
+
+            var numberOfSockets = 0;
+            foreach (var socketByte in socketBytes.Take(item.Definition.MaximumSockets))
+            {
+                if (socketByte == NoSocket)
+                {
+                    continue;
+                }
+
+                numberOfSockets++;
+                if (socketByte == EmptySocket)
+                {
+                    continue;
+                }
+
+                var socketOption = item.Definition.PossibleItemOptions
+                                       .SelectMany(o => o.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.SocketOption && p.Number == socketByte))
+                                       .FirstOrDefault()
+                                   ?? throw new ArgumentException($"The socket option {socketByte} was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+                var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = socketOption;
+                item.ItemOptions.Add(optionLink);
+            }
+
+            item.SocketCount = numberOfSockets;
+        }
+
+        private static void ReadHarmonyOption(byte harmonyByte, IContext persistenceContext, Item item)
+        {
+            if (harmonyByte == 0)
+            {
+                return;
+            }
+
+            var level = harmonyByte & 0x0F;
+            var optionNumber = (harmonyByte & 0xF0) >> 4;
+            var harmonyOption = item.Definition.PossibleItemOptions
+                                    .SelectMany(o => o.PossibleOptions.Where(p =>
+                                        p.OptionType == ItemOptionTypes.HarmonyOption && p.Number == optionNumber))
+                                    .FirstOrDefault()
+                                ?? throw new ArgumentException(
+                                    $"The harmony option {optionNumber} was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = harmonyOption;
+            optionLink.Level = level;
+            item.ItemOptions.Add(optionLink);
         }
 
         private static void SetSocketBytes(byte[] array, int startIndex, Item item)
