@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.AdminPanel
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.Persistence.Json;
     using Nancy;
     using Nancy.ModelBinding;
     using Newtonsoft.Json;
@@ -34,10 +35,35 @@ namespace MUnique.OpenMU.AdminPanel
             this.persistenceContextProvider = persistenceContextProvider;
             this.registeredRepositoryTypes = new List<string>();
             this.Get("/registered", _ => this.Response.AsJson(this.registeredRepositoryTypes));
+            this.Get("/gameconfiguration.json", _ =>
+            {
+                using (var context = this.persistenceContextProvider.CreateNewContext())
+                {
+                    var firstConfiguration = context.Get<GameConfiguration>().First();
+                    if (firstConfiguration is IConvertibleTo<Persistence.BasicModel.GameConfiguration> convertibleTo)
+                    {
+                        return convertibleTo.Convert().ToJson();
+                    }
 
-            this.RegisterType<GameConfiguration>();
+                    return null;
+                }
+            });
+            this.Get("/{id:guid}/gameconfiguration.json", parameters =>
+            {
+                using (var context = this.persistenceContextProvider.CreateNewContext())
+                {
+                    var configuration = context.GetById<GameConfiguration>((Guid)parameters.id);
+                    if (configuration is IConvertibleTo<Persistence.BasicModel.GameConfiguration> convertibleTo)
+                    {
+                        return convertibleTo.Convert().ToJson();
+                    }
 
-            // TODO: add authentification
+                    return null;
+                }
+            });
+
+            this.RegisterType<GameMapDefinition>();
+            //// TODO: add authentification
         }
 
         private void RegisterType<T>()
