@@ -235,21 +235,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public ICollection<ItemDefinitionItemOptionDefinition> JoinedPossibleItemOptions { get; } = new List<ItemDefinitionItemOptionDefinition>();
     }
 
-    [Table("ItemSetGroupItemOption", Schema = "config")]
-    internal partial class ItemSetGroupItemOption 
-    {
-        public Guid ItemSetGroupId { get; set; }
-        public ItemSetGroup ItemSetGroup { get; set; }
-
-        public Guid ItemOptionId { get; set; }
-        public ItemOption ItemOption { get; set; }
-    }
-
-    internal partial class ItemSetGroup
-    {
-        public ICollection<ItemSetGroupItemOption> JoinedOptions { get; } = new List<ItemSetGroupItemOption>();
-    }
-
     [Table("ItemCraftingRequiredItemItemOptionType", Schema = "config")]
     internal partial class ItemCraftingRequiredItemItemOptionType 
     {

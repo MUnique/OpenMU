@@ -7,15 +7,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
     using System;
     using Microsoft.EntityFrameworkCore.Migrations;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// The initial schema migration.
+    /// </summary>
     public partial class Initial : Migration
     {
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "data");
-
-            migrationBuilder.EnsureSchema(
+                        migrationBuilder.EnsureSchema(
                 name: "config");
 
             migrationBuilder.EnsureSchema(
@@ -29,17 +31,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    AreaSkillHitsPlayer = table.Column<bool>(nullable: false),
-                    CharacterNameRegex = table.Column<string>(nullable: true),
-                    InfoRange = table.Column<byte>(nullable: false),
-                    MaximumCharactersPerAccount = table.Column<byte>(nullable: false),
-                    MaximumInventoryMoney = table.Column<int>(nullable: false),
-                    MaximumLetters = table.Column<int>(nullable: false),
                     MaximumLevel = table.Column<short>(nullable: false),
-                    MaximumPartySize = table.Column<byte>(nullable: false),
+                    InfoRange = table.Column<byte>(nullable: false),
+                    AreaSkillHitsPlayer = table.Column<bool>(nullable: false),
+                    MaximumInventoryMoney = table.Column<int>(nullable: false),
+                    RecoveryInterval = table.Column<int>(nullable: false),
+                    MaximumLetters = table.Column<int>(nullable: false),
+                    MaximumCharactersPerAccount = table.Column<byte>(nullable: false),
+                    CharacterNameRegex = table.Column<string>(nullable: true),
                     MaximumPasswordLength = table.Column<int>(nullable: false),
-                    RecoveryInterval = table.Column<int>(nullable: false)
+                    MaximumPartySize = table.Column<byte>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,9 +53,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     MaximumNPCs = table.Column<short>(nullable: false),
-                    MaximumPlayers = table.Column<short>(nullable: false)
+                    MaximumPlayers = table.Column<short>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,10 +68,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
+                    Value = table.Column<float>(nullable: false),
                     AggregateType = table.Column<int>(nullable: false),
                     ParentAsBoostId = table.Column<Guid>(nullable: true),
-                    ParentAsDurationId = table.Column<Guid>(nullable: true),
-                    Value = table.Column<float>(nullable: false)
+                    ParentAsDurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -81,7 +83,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     ExcOptionChance = table.Column<byte>(nullable: false),
                     LuckOptionChance = table.Column<byte>(nullable: false),
                     MaxExcOptions = table.Column<byte>(nullable: false),
@@ -89,7 +90,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MultipleAllowed = table.Column<bool>(nullable: false),
                     ResultItemSelect = table.Column<int>(nullable: false),
                     SkillOptionChance = table.Column<byte>(nullable: false),
-                    SuccessPercent = table.Column<byte>(nullable: false)
+                    SuccessPercent = table.Column<byte>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,8 +103,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Money = table.Column<int>(nullable: false)
+                    Money = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -115,9 +117,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Accepted = table.Column<bool>(nullable: false),
                     CharacterId = table.Column<Guid>(nullable: false),
                     FriendId = table.Column<Guid>(nullable: false),
+                    Accepted = table.Column<bool>(nullable: false),
                     RequestOpen = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -131,13 +133,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "guild",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    AllianceGuildId = table.Column<Guid>(nullable: true),
-                    HostilityId = table.Column<Guid>(nullable: true),
-                    Logo = table.Column<byte[]>(nullable: true),
                     Name = table.Column<string>(maxLength: 8, nullable: false),
+                    Logo = table.Column<byte[]>(nullable: true),
+                    Score = table.Column<int>(nullable: false),
                     Notice = table.Column<string>(nullable: true),
-                    Score = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    HostilityId = table.Column<Guid>(nullable: true),
+                    AllianceGuildId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -164,8 +166,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
                     Designation = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
                     GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -185,10 +187,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     Chance = table.Column<double>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    ItemType = table.Column<int>(nullable: false)
+                    ItemType = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -207,13 +209,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     ExpMultiplier = table.Column<double>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
                     Number = table.Column<short>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    TerrainData = table.Column<byte[]>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
                     SafezoneMapId = table.Column<Guid>(nullable: true),
-                    TerrainData = table.Column<byte[]>(nullable: true)
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -239,12 +241,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     AddChance = table.Column<float>(nullable: false),
                     AddsRandomly = table.Column<bool>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
                     MaximumOptionsPerItem = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -264,10 +266,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
                     IsVisible = table.Column<bool>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -286,13 +288,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     AlwaysApplies = table.Column<bool>(nullable: false),
+                    AncientSetDiscriminator = table.Column<int>(nullable: false),
                     CountDistinct = table.Column<bool>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
                     MinimumItemCount = table.Column<int>(nullable: false),
+                    SetLevel = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    SetLevel = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -311,10 +314,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    ItemSlots = table.Column<string>(nullable: true)
+                    Id = table.Column<Guid>(nullable: false),
+                    ItemSlots = table.Column<string>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -334,8 +337,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -354,12 +357,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    ServerID = table.Column<byte>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
                     NetworkPort = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     ServerConfigurationId = table.Column<Guid>(nullable: true),
-                    ServerID = table.Column<byte>(nullable: false)
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -372,7 +375,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GameServerDefinition_GameServerConfiguration_ServerConfigurationId",
+                        name: "FK_GameServerDefinition_GameServerConfiguration_ServerConfigur~",
                         column: x => x.ServerConfigurationId,
                         principalSchema: "config",
                         principalTable: "GameServerConfiguration",
@@ -385,17 +388,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    AppearanceSerializerClassName = table.Column<string>(nullable: true),
-                    ClientSerial = table.Column<byte[]>(nullable: true),
                     ClientVersion = table.Column<byte[]>(nullable: true),
+                    ClientSerial = table.Column<byte[]>(nullable: true),
+                    AppearanceSerializerClassName = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
                     GameServerConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MainPacketHandlerConfiguration", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MainPacketHandlerConfiguration_GameServerConfiguration_GameServerConfigurationId",
+                        name: "FK_MainPacketHandlerConfiguration_GameServerConfiguration_Game~",
                         column: x => x.GameServerConfigurationId,
                         principalSchema: "config",
                         principalTable: "GameServerConfiguration",
@@ -408,17 +411,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    EMail = table.Column<string>(nullable: true),
-                    IsVaultExtended = table.Column<bool>(nullable: false),
                     LoginName = table.Column<string>(maxLength: 10, nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
-                    RegistrationDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     SecurityCode = table.Column<string>(nullable: true),
+                    EMail = table.Column<string>(nullable: true),
+                    RegistrationDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     State = table.Column<int>(nullable: false),
                     TimeZone = table.Column<short>(nullable: false),
-                    VaultId = table.Column<Guid>(nullable: true),
-                    VaultPassword = table.Column<string>(nullable: true)
+                    VaultPassword = table.Column<string>(nullable: true),
+                    IsVaultExtended = table.Column<bool>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    VaultId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -438,8 +441,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    BoostId = table.Column<Guid>(nullable: true),
-                    TargetAttributeId = table.Column<Guid>(nullable: true)
+                    TargetAttributeId = table.Column<Guid>(nullable: true),
+                    BoostId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -466,9 +469,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    BoostId = table.Column<Guid>(nullable: true),
                     DurationId = table.Column<Guid>(nullable: true),
-                    TargetAttributeId = table.Column<Guid>(nullable: true)
+                    TargetAttributeId = table.Column<Guid>(nullable: true),
+                    BoostId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -488,7 +491,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PowerUpDefinitionWithDuration_AttributeDefinition_TargetAttributeId",
+                        name: "FK_PowerUpDefinitionWithDuration_AttributeDefinition_TargetAtt~",
                         column: x => x.TargetAttributeId,
                         principalSchema: "config",
                         principalTable: "AttributeDefinition",
@@ -501,18 +504,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     CanGetCreated = table.Column<bool>(nullable: false),
                     CreationAllowedFlag = table.Column<byte>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    HomeMapId = table.Column<Guid>(nullable: true),
                     IsMasterClass = table.Column<bool>(nullable: false),
                     LevelRequirementByCreation = table.Column<short>(nullable: false),
                     LevelWarpRequirementReductionPercent = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    NextGenerationClassId = table.Column<Guid>(nullable: true),
                     Number = table.Column<byte>(nullable: false),
-                    PointsPerLevelUp = table.Column<short>(nullable: false)
+                    PointsPerLevelUp = table.Column<short>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    NextGenerationClassId = table.Column<Guid>(nullable: true),
+                    HomeMapId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -545,14 +548,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Direction = table.Column<int>(nullable: false),
-                    IsSpawnGate = table.Column<bool>(nullable: false),
-                    MapId = table.Column<Guid>(nullable: true),
                     X1 = table.Column<byte>(nullable: false),
                     X2 = table.Column<byte>(nullable: false),
                     Y1 = table.Column<byte>(nullable: false),
-                    Y2 = table.Column<byte>(nullable: false)
+                    Y2 = table.Column<byte>(nullable: false),
+                    Direction = table.Column<int>(nullable: false),
+                    IsSpawnGate = table.Column<bool>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    MapId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -585,7 +588,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GameMapDefinitionDropItemGroup_GameMapDefinition_GameMapDefinitionId",
+                        name: "FK_GameMapDefinitionDropItemGroup_GameMapDefinition_GameMapDef~",
                         column: x => x.GameMapDefinitionId,
                         principalSchema: "config",
                         principalTable: "GameMapDefinition",
@@ -605,14 +608,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_GameServerConfigurationGameMapDefinition", x => new { x.GameServerConfigurationId, x.GameMapDefinitionId });
                     table.ForeignKey(
-                        name: "FK_GameServerConfigurationGameMapDefinition_GameMapDefinition_GameMapDefinitionId",
+                        name: "FK_GameServerConfigurationGameMapDefinition_GameMapDefinition_~",
                         column: x => x.GameMapDefinitionId,
                         principalSchema: "config",
                         principalTable: "GameMapDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GameServerConfigurationGameMapDefinition_GameServerConfiguration_GameServerConfigurationId",
+                        name: "FK_GameServerConfigurationGameMapDefinition_GameServerConfigur~",
                         column: x => x.GameServerConfigurationId,
                         principalSchema: "config",
                         principalTable: "GameServerConfiguration",
@@ -625,25 +628,25 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
+                    NeedsToBeEncrypted = table.Column<bool>(nullable: false),
+                    PacketIdentifier = table.Column<byte>(nullable: false),
+                    PacketHandlerClassName = table.Column<string>(nullable: true),
                     Id = table.Column<Guid>(nullable: false),
                     MainPacketHandlerConfigurationId = table.Column<Guid>(nullable: true),
-                    NeedsToBeEncrypted = table.Column<bool>(nullable: false),
-                    PacketHandlerClassName = table.Column<string>(nullable: true),
-                    PacketHandlerConfigurationId = table.Column<Guid>(nullable: true),
-                    PacketIdentifier = table.Column<byte>(nullable: false)
+                    PacketHandlerConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PacketHandlerConfiguration", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PacketHandlerConfiguration_MainPacketHandlerConfiguration_MainPacketHandlerConfigurationId",
+                        name: "FK_PacketHandlerConfiguration_MainPacketHandlerConfiguration_M~",
                         column: x => x.MainPacketHandlerConfigurationId,
                         principalSchema: "config",
                         principalTable: "MainPacketHandlerConfiguration",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PacketHandlerConfiguration_PacketHandlerConfiguration_PacketHandlerConfigurationId",
+                        name: "FK_PacketHandlerConfiguration_PacketHandlerConfiguration_Packe~",
                         column: x => x.PacketHandlerConfigurationId,
                         principalSchema: "config",
                         principalTable: "PacketHandlerConfiguration",
@@ -656,21 +659,29 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    ItemOptionDefinitionId = table.Column<Guid>(nullable: true),
-                    LevelType = table.Column<int>(nullable: false),
                     Number = table.Column<int>(nullable: false),
+                    LevelType = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     OptionTypeId = table.Column<Guid>(nullable: true),
-                    PowerUpDefinitionId = table.Column<Guid>(nullable: true)
+                    PowerUpDefinitionId = table.Column<Guid>(nullable: true),
+                    ItemOptionDefinitionId = table.Column<Guid>(nullable: true),
+                    ItemSetGroupId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IncreasableItemOption", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_IncreasableItemOption_ItemOptionDefinition_ItemOptionDefinitionId",
+                        name: "FK_IncreasableItemOption_ItemOptionDefinition_ItemOptionDefini~",
                         column: x => x.ItemOptionDefinitionId,
                         principalSchema: "config",
                         principalTable: "ItemOptionDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_IncreasableItemOption_ItemSetGroup_ItemSetGroupId",
+                        column: x => x.ItemSetGroupId,
+                        principalSchema: "config",
+                        principalTable: "ItemSetGroup",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -690,48 +701,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemOption",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Number = table.Column<int>(nullable: false),
-                    OptionTypeId = table.Column<Guid>(nullable: true),
-                    PowerUpDefinitionId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemOption", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemOption_ItemOptionType_OptionTypeId",
-                        column: x => x.OptionTypeId,
-                        principalSchema: "config",
-                        principalTable: "ItemOptionType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ItemOption_PowerUpDefinition_PowerUpDefinitionId",
-                        column: x => x.PowerUpDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "PowerUpDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MagicEffectDefinition",
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
                     InformObservers = table.Column<bool>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
                     Number = table.Column<byte>(nullable: false),
-                    PowerUpDefinitionId = table.Column<Guid>(nullable: true),
                     SendDuration = table.Column<bool>(nullable: false),
                     StopByDeath = table.Column<bool>(nullable: false),
-                    SubType = table.Column<byte>(nullable: false)
+                    SubType = table.Column<byte>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    PowerUpDefinitionId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -744,7 +726,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_MagicEffectDefinition_PowerUpDefinitionWithDuration_PowerUpDefinitionId",
+                        name: "FK_MagicEffectDefinition_PowerUpDefinitionWithDuration_PowerUp~",
                         column: x => x.PowerUpDefinitionId,
                         principalSchema: "config",
                         principalTable: "PowerUpDefinitionWithDuration",
@@ -757,13 +739,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: true),
-                    InputAttributeId = table.Column<Guid>(nullable: true),
                     InputOperand = table.Column<float>(nullable: false),
                     InputOperator = table.Column<int>(nullable: false),
-                    PowerUpDefinitionValueId = table.Column<Guid>(nullable: true),
-                    TargetAttributeId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(nullable: false),
+                    TargetAttributeId = table.Column<Guid>(nullable: true),
+                    InputAttributeId = table.Column<Guid>(nullable: true),
+                    CharacterClassId = table.Column<Guid>(nullable: true),
+                    PowerUpDefinitionValueId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -783,7 +765,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AttributeRelationship_PowerUpDefinitionValue_PowerUpDefinitionValueId",
+                        name: "FK_AttributeRelationship_PowerUpDefinitionValue_PowerUpDefinit~",
                         column: x => x.PowerUpDefinitionValueId,
                         principalSchema: "config",
                         principalTable: "PowerUpDefinitionValue",
@@ -804,8 +786,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: false),
                     DefinitionId = table.Column<Guid>(nullable: true),
+                    CharacterClassId = table.Column<Guid>(nullable: false),
                     Value = table.Column<float>(nullable: false)
                 },
                 constraints: table =>
@@ -832,10 +814,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: true),
                     Rank = table.Column<byte>(nullable: false),
-                    RootId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(nullable: false),
+                    RootId = table.Column<Guid>(nullable: true),
+                    CharacterClassId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -861,11 +843,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
+                    BaseValue = table.Column<float>(nullable: false),
+                    IncreasableByPlayer = table.Column<bool>(nullable: false),
                     Id = table.Column<Guid>(nullable: false),
                     AttributeId = table.Column<Guid>(nullable: true),
-                    BaseValue = table.Column<float>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: true),
-                    IncreasableByPlayer = table.Column<bool>(nullable: false)
+                    CharacterClassId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -938,28 +920,28 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    AccountId = table.Column<Guid>(nullable: true),
-                    CharacterClassId = table.Column<Guid>(nullable: false),
                     CharacterSlot = table.Column<byte>(nullable: false),
                     CreateDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    CurrentMapId = table.Column<Guid>(nullable: true),
                     Experience = table.Column<long>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     InventoryExtensions = table.Column<int>(nullable: false),
-                    InventoryId = table.Column<Guid>(nullable: true),
-                    KeyConfiguration = table.Column<byte[]>(nullable: true),
                     LevelUpPoints = table.Column<int>(nullable: false),
                     MasterExperience = table.Column<long>(nullable: false),
                     MasterLevelUpPoints = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(maxLength: 10, nullable: false),
                     PlayerKillCount = table.Column<int>(nullable: false),
                     PositionX = table.Column<byte>(nullable: false),
                     PositionY = table.Column<byte>(nullable: false),
-                    QuestInfo = table.Column<byte[]>(nullable: true),
                     State = table.Column<int>(nullable: false),
                     StateRemainingSeconds = table.Column<int>(nullable: false),
                     UsedFruitPoints = table.Column<int>(nullable: false),
-                    UsedNegFruitPoints = table.Column<int>(nullable: false)
+                    UsedNegFruitPoints = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(maxLength: 10, nullable: false),
+                    QuestInfo = table.Column<byte[]>(nullable: true),
+                    KeyConfiguration = table.Column<byte[]>(nullable: true),
+                    CharacterClassId = table.Column<Guid>(nullable: false),
+                    CurrentMapId = table.Column<Guid>(nullable: true),
+                    InventoryId = table.Column<Guid>(nullable: true),
+                    AccountId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -999,15 +981,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    GameMapDefinitionId = table.Column<Guid>(nullable: true),
-                    LevelRequirement = table.Column<short>(nullable: false),
-                    Number = table.Column<short>(nullable: false),
-                    TargetGateId = table.Column<Guid>(nullable: true),
                     X1 = table.Column<byte>(nullable: false),
                     X2 = table.Column<byte>(nullable: false),
                     Y1 = table.Column<byte>(nullable: false),
-                    Y2 = table.Column<byte>(nullable: false)
+                    Y2 = table.Column<byte>(nullable: false),
+                    LevelRequirement = table.Column<short>(nullable: false),
+                    Number = table.Column<short>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    TargetGateId = table.Column<Guid>(nullable: true),
+                    GameMapDefinitionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1033,13 +1015,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Costs = table.Column<int>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    GateId = table.Column<Guid>(nullable: true),
                     Index = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Costs = table.Column<int>(nullable: false),
                     LevelRequirement = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Id = table.Column<Guid>(nullable: false),
+                    GateId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1065,17 +1047,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    IncreasableItemOptionId = table.Column<Guid>(nullable: true),
                     Level = table.Column<int>(nullable: false),
+                    RequiredItemLevel = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     PowerUpDefinitionId = table.Column<Guid>(nullable: true),
-                    RequiredItemLevel = table.Column<int>(nullable: false)
+                    IncreasableItemOptionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ItemOptionOfLevel", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ItemOptionOfLevel_IncreasableItemOption_IncreasableItemOptionId",
+                        name: "FK_ItemOptionOfLevel_IncreasableItemOption_IncreasableItemOpti~",
                         column: x => x.IncreasableItemOptionId,
                         principalSchema: "config",
                         principalTable: "IncreasableItemOption",
@@ -1091,45 +1073,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemSetGroupItemOption",
-                schema: "config",
-                columns: table => new
-                {
-                    ItemSetGroupId = table.Column<Guid>(nullable: false),
-                    ItemOptionId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemSetGroupItemOption", x => new { x.ItemSetGroupId, x.ItemOptionId });
-                    table.ForeignKey(
-                        name: "FK_ItemSetGroupItemOption_ItemOption_ItemOptionId",
-                        column: x => x.ItemOptionId,
-                        principalSchema: "config",
-                        principalTable: "ItemOption",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ItemSetGroupItemOption_ItemSetGroup_ItemSetGroupId",
-                        column: x => x.ItemSetGroupId,
-                        principalSchema: "config",
-                        principalTable: "ItemSetGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Skill",
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     DamageType = table.Column<int>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    MagicEffectDefId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
                     Range = table.Column<short>(nullable: false),
                     SkillID = table.Column<short>(nullable: false),
-                    SkillType = table.Column<int>(nullable: false)
+                    SkillType = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    MagicEffectDefId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1183,12 +1138,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    CharacterId = table.Column<Guid>(nullable: true),
                     LetterDate = table.Column<DateTime>(nullable: false),
                     ReadFlag = table.Column<bool>(nullable: false),
-                    Receiver = table.Column<string>(nullable: true),
                     Sender = table.Column<string>(nullable: true),
-                    Subject = table.Column<string>(nullable: true)
+                    Receiver = table.Column<string>(nullable: true),
+                    Subject = table.Column<string>(nullable: true),
+                    CharacterId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1207,10 +1162,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
+                    Value = table.Column<float>(nullable: false),
                     Id = table.Column<Guid>(nullable: false),
-                    CharacterId = table.Column<Guid>(nullable: true),
                     DefinitionId = table.Column<Guid>(nullable: true),
-                    Value = table.Column<float>(nullable: false)
+                    CharacterId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1264,21 +1219,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    ConsumeHandlerClass = table.Column<string>(nullable: true),
                     DropLevel = table.Column<byte>(nullable: false),
                     DropsFromMonsters = table.Column<bool>(nullable: false),
                     Durability = table.Column<byte>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
                     Group = table.Column<byte>(nullable: false),
                     Height = table.Column<byte>(nullable: false),
-                    ItemSlotId = table.Column<Guid>(nullable: true),
                     MaximumSockets = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
                     Number = table.Column<short>(nullable: false),
-                    SkillId = table.Column<Guid>(nullable: true),
                     Value = table.Column<int>(nullable: false),
-                    Width = table.Column<byte>(nullable: false)
+                    Width = table.Column<byte>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    ConsumeHandlerClass = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    ItemSlotId = table.Column<Guid>(nullable: true),
+                    SkillId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1311,9 +1266,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     Damage = table.Column<int>(nullable: false),
                     Level = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     SkillId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -1340,7 +1295,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_MasterSkillDefinitionSkill", x => new { x.MasterSkillDefinitionId, x.SkillId });
                     table.ForeignKey(
-                        name: "FK_MasterSkillDefinitionSkill_MasterSkillDefinition_MasterSkillDefinitionId",
+                        name: "FK_MasterSkillDefinitionSkill_MasterSkillDefinition_MasterSkil~",
                         column: x => x.MasterSkillDefinitionId,
                         principalSchema: "config",
                         principalTable: "MasterSkillDefinition",
@@ -1360,14 +1315,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     AttackDelay = table.Column<TimeSpan>(nullable: false),
                     AttackRange = table.Column<byte>(nullable: false),
-                    AttackSkillId = table.Column<Guid>(nullable: true),
                     Attribute = table.Column<byte>(nullable: false),
-                    Designation = table.Column<string>(nullable: true),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    MerchantStoreId = table.Column<Guid>(nullable: true),
                     MoveDelay = table.Column<TimeSpan>(nullable: false),
                     MoveRange = table.Column<byte>(nullable: false),
                     NpcWindow = table.Column<int>(nullable: false),
@@ -1375,7 +1325,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     NumberOfMaximumItemDrops = table.Column<int>(nullable: false),
                     RespawnDelay = table.Column<TimeSpan>(nullable: false),
                     Skill = table.Column<short>(nullable: false),
-                    ViewRange = table.Column<short>(nullable: false)
+                    ViewRange = table.Column<short>(nullable: false),
+                    Designation = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    AttackSkillId = table.Column<Guid>(nullable: true),
+                    MerchantStoreId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1442,7 +1397,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_SkillMasterSkillDefinition", x => new { x.SkillId, x.MasterSkillDefinitionId });
                     table.ForeignKey(
-                        name: "FK_SkillMasterSkillDefinition_MasterSkillDefinition_MasterSkillDefinitionId",
+                        name: "FK_SkillMasterSkillDefinition_MasterSkillDefinition_MasterSkil~",
                         column: x => x.MasterSkillDefinitionId,
                         principalSchema: "config",
                         principalTable: "MasterSkillDefinition",
@@ -1490,10 +1445,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    CharacterId = table.Column<Guid>(nullable: true),
                     Level = table.Column<int>(nullable: false),
-                    SkillId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(nullable: false),
+                    SkillId = table.Column<Guid>(nullable: true),
+                    CharacterId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1520,10 +1475,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Animation = table.Column<byte>(nullable: false),
-                    HeaderId = table.Column<Guid>(nullable: true),
                     Message = table.Column<string>(nullable: true),
                     Rotation = table.Column<byte>(nullable: false),
+                    Animation = table.Column<byte>(nullable: false),
+                    HeaderId = table.Column<Guid>(nullable: true),
                     SenderAppearanceId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -1550,10 +1505,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
+                    MinimumValue = table.Column<int>(nullable: false),
                     Id = table.Column<Guid>(nullable: false),
                     AttributeId = table.Column<Guid>(nullable: true),
                     ItemDefinitionId = table.Column<Guid>(nullable: true),
-                    MinimumValue = table.Column<int>(nullable: false),
                     SkillId = table.Column<Guid>(nullable: true),
                     SkillId1 = table.Column<Guid>(nullable: true)
                 },
@@ -1622,10 +1577,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     BaseValue = table.Column<float>(nullable: false),
-                    ItemDefinitionId = table.Column<Guid>(nullable: true),
-                    TargetAttributeId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(nullable: false),
+                    TargetAttributeId = table.Column<Guid>(nullable: true),
+                    ItemDefinitionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1638,7 +1593,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ItemBasePowerUpDefinition_AttributeDefinition_TargetAttributeId",
+                        name: "FK_ItemBasePowerUpDefinition_AttributeDefinition_TargetAttribu~",
                         column: x => x.TargetAttributeId,
                         principalSchema: "config",
                         principalTable: "AttributeDefinition",
@@ -1651,16 +1606,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     AddPercentage = table.Column<byte>(nullable: false),
                     FailResult = table.Column<int>(nullable: false),
-                    ItemDefinitionId = table.Column<Guid>(nullable: true),
                     MinAmount = table.Column<byte>(nullable: false),
                     MinLvl = table.Column<byte>(nullable: false),
                     NPCPriceDiv = table.Column<int>(nullable: false),
                     RefID = table.Column<byte>(nullable: false),
-                    SimpleCraftingSettingsId = table.Column<Guid>(nullable: true),
-                    SuccessResult = table.Column<int>(nullable: false)
+                    SuccessResult = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    ItemDefinitionId = table.Column<Guid>(nullable: true),
+                    SimpleCraftingSettingsId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1673,7 +1628,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ItemCraftingRequiredItem_SimpleCraftingSettings_SimpleCraftingSettingsId",
+                        name: "FK_ItemCraftingRequiredItem_SimpleCraftingSettings_SimpleCraft~",
                         column: x => x.SimpleCraftingSettingsId,
                         principalSchema: "config",
                         principalTable: "SimpleCraftingSettings",
@@ -1686,12 +1641,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     AddLevel = table.Column<byte>(nullable: false),
-                    ItemDefinitionId = table.Column<Guid>(nullable: true),
                     RandLvlMax = table.Column<byte>(nullable: false),
                     RandLvlMin = table.Column<byte>(nullable: false),
                     RefID = table.Column<byte>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    ItemDefinitionId = table.Column<Guid>(nullable: true),
                     SimpleCraftingSettingsId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -1705,7 +1660,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ItemCraftingResultItem_SimpleCraftingSettings_SimpleCraftingSettingsId",
+                        name: "FK_ItemCraftingResultItem_SimpleCraftingSettings_SimpleCraftin~",
                         column: x => x.SimpleCraftingSettingsId,
                         principalSchema: "config",
                         principalTable: "SimpleCraftingSettings",
@@ -1752,14 +1707,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_ItemDefinitionItemOptionDefinition", x => new { x.ItemDefinitionId, x.ItemOptionDefinitionId });
                     table.ForeignKey(
-                        name: "FK_ItemDefinitionItemOptionDefinition_ItemDefinition_ItemDefinitionId",
+                        name: "FK_ItemDefinitionItemOptionDefinition_ItemDefinition_ItemDefin~",
                         column: x => x.ItemDefinitionId,
                         principalSchema: "config",
                         principalTable: "ItemDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemDefinitionItemOptionDefinition_ItemOptionDefinition_ItemOptionDefinitionId",
+                        name: "FK_ItemDefinitionItemOptionDefinition_ItemOptionDefinition_Ite~",
                         column: x => x.ItemOptionDefinitionId,
                         principalSchema: "config",
                         principalTable: "ItemOptionDefinition",
@@ -1800,8 +1755,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    BonusOptionId = table.Column<Guid>(nullable: true),
                     ItemDefinitionId = table.Column<Guid>(nullable: true),
+                    BonusOptionId = table.Column<Guid>(nullable: true),
                     ItemSetGroupId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -1835,11 +1790,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true),
-                    MixedJewelId = table.Column<Guid>(nullable: true),
                     Number = table.Column<byte>(nullable: false),
-                    SingleJewelId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(nullable: false),
+                    SingleJewelId = table.Column<Guid>(nullable: true),
+                    MixedJewelId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1872,15 +1827,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    DefinitionId = table.Column<Guid>(nullable: true),
                     Durability = table.Column<byte>(nullable: false),
                     HasSkill = table.Column<bool>(nullable: false),
                     ItemSlot = table.Column<byte>(nullable: false),
-                    ItemStorageId = table.Column<Guid>(nullable: true),
                     Level = table.Column<byte>(nullable: false),
                     SocketCount = table.Column<int>(nullable: false),
-                    StorePrice = table.Column<int>(nullable: true)
+                    StorePrice = table.Column<int>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    DefinitionId = table.Column<Guid>(nullable: true),
+                    ItemStorageId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1906,11 +1861,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    AppearanceDataId = table.Column<Guid>(nullable: true),
-                    DefinitionId = table.Column<Guid>(nullable: true),
                     ItemSlot = table.Column<byte>(nullable: false),
-                    Level = table.Column<byte>(nullable: false)
+                    Level = table.Column<byte>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    DefinitionId = table.Column<Guid>(nullable: true),
+                    AppearanceDataId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1936,12 +1891,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    ItemCraftingHandlerClassName = table.Column<string>(nullable: true),
-                    MonsterDefinitionId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
                     Number = table.Column<byte>(nullable: false),
-                    SimpleCraftingSettingsId = table.Column<Guid>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    ItemCraftingHandlerClassName = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    SimpleCraftingSettingsId = table.Column<Guid>(nullable: true),
+                    MonsterDefinitionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1967,10 +1922,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
+                    Value = table.Column<float>(nullable: false),
                     Id = table.Column<Guid>(nullable: false),
                     AttributeDefinitionId = table.Column<Guid>(nullable: true),
-                    MonsterDefinitionId = table.Column<Guid>(nullable: true),
-                    Value = table.Column<float>(nullable: false)
+                    MonsterDefinitionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -2010,7 +1965,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MonsterDefinitionDropItemGroup_MonsterDefinition_MonsterDefinitionId",
+                        name: "FK_MonsterDefinitionDropItemGroup_MonsterDefinition_MonsterDef~",
                         column: x => x.MonsterDefinitionId,
                         principalSchema: "config",
                         principalTable: "MonsterDefinition",
@@ -2023,16 +1978,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     Direction = table.Column<int>(nullable: false),
-                    GameMapId = table.Column<Guid>(nullable: true),
-                    MonsterDefinitionId = table.Column<Guid>(nullable: true),
                     Quantity = table.Column<short>(nullable: false),
                     SpawnTrigger = table.Column<int>(nullable: false),
                     X1 = table.Column<byte>(nullable: false),
                     X2 = table.Column<byte>(nullable: false),
                     Y1 = table.Column<byte>(nullable: false),
-                    Y2 = table.Column<byte>(nullable: false)
+                    Y2 = table.Column<byte>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    MonsterDefinitionId = table.Column<Guid>(nullable: true),
+                    GameMapId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -2058,16 +2013,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     AdditionalValue = table.Column<float>(nullable: false),
-                    ItemBasePowerUpDefinitionId = table.Column<Guid>(nullable: true),
-                    Level = table.Column<int>(nullable: false)
+                    Level = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    ItemBasePowerUpDefinitionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LevelBonus", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LevelBonus_ItemBasePowerUpDefinition_ItemBasePowerUpDefinitionId",
+                        name: "FK_LevelBonus_ItemBasePowerUpDefinition_ItemBasePowerUpDefinit~",
                         column: x => x.ItemBasePowerUpDefinitionId,
                         principalSchema: "config",
                         principalTable: "ItemBasePowerUpDefinition",
@@ -2087,14 +2042,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_ItemCraftingRequiredItemItemOptionType", x => new { x.ItemCraftingRequiredItemId, x.ItemOptionTypeId });
                     table.ForeignKey(
-                        name: "FK_ItemCraftingRequiredItemItemOptionType_ItemCraftingRequiredItem_ItemCraftingRequiredItemId",
+                        name: "FK_ItemCraftingRequiredItemItemOptionType_ItemCraftingRequired~",
                         column: x => x.ItemCraftingRequiredItemId,
                         principalSchema: "config",
                         principalTable: "ItemCraftingRequiredItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemCraftingRequiredItemItemOptionType_ItemOptionType_ItemOptionTypeId",
+                        name: "FK_ItemCraftingRequiredItemItemOptionType_ItemOptionType_ItemO~",
                         column: x => x.ItemOptionTypeId,
                         principalSchema: "config",
                         principalTable: "ItemOptionType",
@@ -2134,10 +2089,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
+                    Level = table.Column<int>(nullable: false),
                     Id = table.Column<Guid>(nullable: false),
-                    ItemId = table.Column<Guid>(nullable: true),
                     ItemOptionId = table.Column<Guid>(nullable: true),
-                    Level = table.Column<int>(nullable: false)
+                    ItemId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -2342,6 +2297,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ItemOptionDefinitionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IncreasableItemOption_ItemSetGroupId",
+                schema: "config",
+                table: "IncreasableItemOption",
+                column: "ItemSetGroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IncreasableItemOption_OptionTypeId",
                 schema: "config",
                 table: "IncreasableItemOption",
@@ -2462,18 +2423,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ItemSetGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemOption_OptionTypeId",
-                schema: "config",
-                table: "ItemOption",
-                column: "OptionTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemOption_PowerUpDefinitionId",
-                schema: "config",
-                table: "ItemOption",
-                column: "PowerUpDefinitionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ItemOptionDefinition_GameConfigurationId",
                 schema: "config",
                 table: "ItemOptionDefinition",
@@ -2502,12 +2451,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "ItemSetGroup",
                 column: "GameConfigurationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemSetGroupItemOption_ItemOptionId",
-                schema: "config",
-                table: "ItemSetGroupItemOption",
-                column: "ItemOptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemSlotType_GameConfigurationId",
@@ -2917,7 +2860,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "GuildId");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -2982,10 +2925,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemOptionOfLevel",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "ItemSetGroupItemOption",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -3085,10 +3024,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "ItemOption",
-                schema: "config");
-
-            migrationBuilder.DropTable(
                 name: "ItemBasePowerUpDefinition",
                 schema: "config");
 
@@ -3115,10 +3050,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.DropTable(
                 name: "ItemAppearance",
                 schema: "data");
-
-            migrationBuilder.DropTable(
-                name: "ItemSetGroup",
-                schema: "config");
 
             migrationBuilder.DropTable(
                 name: "Item",
@@ -3158,6 +3089,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemOptionDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ItemSetGroup",
                 schema: "config");
 
             migrationBuilder.DropTable(

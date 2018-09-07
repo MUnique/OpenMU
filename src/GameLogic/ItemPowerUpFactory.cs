@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.GameLogic
                 var itemCount = group.CountDistinct ? itemsOfGroup.Distinct().Count() : itemsOfGroup.Count();
                 if (itemCount >= group.MinimumItemCount)
                 {
-                    result = result.Concat(group.Options.Take(itemCount - 1).Select(o => o.PowerUpDefinition));
+                    result = result.Concat(group.Options.OrderBy(o => o.Number).Take(itemCount - 1).Select(o => o.PowerUpDefinition));
                 }
             }
 

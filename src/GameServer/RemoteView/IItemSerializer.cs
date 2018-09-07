@@ -62,6 +62,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private const int MaximumSockets = 5;
 
+        private const byte AncientBonusLevelMask = 0b1100;
+        private const byte AncientDiscriminatorMask = 0b0011;
+        private const byte AncientMask = AncientBonusLevelMask | AncientDiscriminatorMask;
+
         private const byte MaximumSocketOptions = 50;
 
         /// <inheritdoc/>
@@ -111,10 +115,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 array[startIndex + 1] |= SkillFlag;
             }
 
-            var ancientBonus = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus);
-            if (ancientBonus != null)
+            var ancientSet = item.ItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator != 0);
+            if (ancientSet != null)
             {
-                array[startIndex + 4] = ancientBonus.Level == 1 ? (byte)5 : ancientBonus.Level == 2 ? (byte)9 : (byte)0; // TODO: Check if this is right
+                array[startIndex + 4] |= (byte)(ancientSet.AncientSetDiscriminator & AncientDiscriminatorMask);
+
+                // an ancient item always has an ancient bonus option (e.g. 5 Vitality). If that's not the case, we should throw an exception.
+                var ancientBonus =
+                    item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus)
+                    ?? throw new ArgumentException($"Item '{item}' belongs to an ancient set but doesn't have an ancient bonus option");
+
+                array[startIndex + 4] |= (byte) ((ancientBonus.Level << 2) & AncientBonusLevelMask);
             }
 
             array[startIndex + 5] = (byte)(item.Definition.Group << 4);
@@ -247,24 +258,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private static void ReadAncientOption(byte ancientByte, IContext persistenceContext, Item item)
         {
-            if (ancientByte == 0)
+            
+            if ((ancientByte & AncientMask) == 0)
             {
                 return;
             }
 
-            var bonusLevel = (ancientByte & 0b1100) >> 2;
-            var setDiscriminator = ancientByte & 0b11;  // TODO: we have no discriminator value yet for different kind of possible ancient sets on the same items.
-                                                        // E.g. a Warrior Leather set would be 1, the Anonymous Leather set would be 2.
-                                                        // this also means that one item can't be included in more than 2 ancient sets.
+            var bonusLevel = (ancientByte & AncientBonusLevelMask) >> 2;
+            var setDiscriminator = ancientByte & AncientDiscriminatorMask;
             var ancientSets = item.Definition.PossibleItemSetGroups
-                .Where(set => set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientBonus)).ToList();
+                .Where(set => set.AncientSetDiscriminator == setDiscriminator && set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientBonus)).ToList();
             if (ancientSets.Count > 1)
             {
-                throw new ArgumentException($"No ancient set with number {setDiscriminator} found for item definition ({item.Definition.Number}, {item.Definition.Group}).");
+                throw new ArgumentException($"Ambigious ancient set discriminator: {ancientSets.Count} sets with discriminator {setDiscriminator} found for item definition ({item.Definition.Number}, {item.Definition.Group}).");
             }
 
             var ancientSet = ancientSets.FirstOrDefault()
-                             ?? throw new ArgumentException($"The ancient option was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+                             ?? throw new ArgumentException($"Couldn't find ancient set (discriminator {setDiscriminator}) for item ({item.Definition.Number}, {item.Definition.Group}).");
             item.ItemSetGroups.Add(ancientSet);
             var ancientBonus = ancientSet.Options.First(o => o.OptionType == ItemOptionTypes.AncientBonus);
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();

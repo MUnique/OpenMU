@@ -51,9 +51,21 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         public int SetLevel { get; set; }
 
         /// <summary>
-        /// Gets or sets the options. If the options depend on the item count, this options need to be ordered correctly.
-        /// TODO: An ICollection doesn't have an order.
+        /// Gets or sets the ancient set discriminator.
         /// </summary>
+        /// <remarks>
+        /// Only relevant to ancient sets. One item can only be in one ancient set with the same discriminator.
+        /// The original mu online protocol supports up to two different ancient sets per item - with discriminator values 1 and 2.
+        /// E.g. a 'Warrior Leather' set would have a discriminator value of 1, the 'Anonymous Leather' set would have 2.
+        /// </remarks>
+        public int AncientSetDiscriminator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the options. If the options depend on the item count, this options need to be ordered correctly.
+        /// </summary>
+        /// <remarks>
+        /// The order is defined by <see cref="ItemOption.Number"/>.
+        /// </remarks>
         public virtual ICollection<IncreasableItemOption> Options { get; protected set; }
 
         /// <summary>
