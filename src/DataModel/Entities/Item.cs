@@ -92,13 +92,25 @@ namespace MUnique.OpenMU.DataModel.Entities
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
+
+            if (this.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent))
+            {
+                stringBuilder.Append("Excellent ");
+            }
+
+            var ancientSet = this.ItemSetGroups.FirstOrDefault(s => s.AncientSetDiscriminator != 0);
+            if (ancientSet != null)
+            {
+                stringBuilder.Append(ancientSet.Name).Append(" ");
+            }
+
             stringBuilder.Append(this.Definition.Name);
             if (this.Level > 0)
             {
                 stringBuilder.Append("+").Append(this.Level);
             }
 
-            foreach (var option in this.ItemOptions.Where(o => o.ItemOption.OptionType == ItemOptionTypes.Option))
+            foreach (var option in this.ItemOptions.OrderBy(o => o.ItemOption.OptionType == ItemOptionTypes.Option))
             {
                 stringBuilder.Append("+").Append(option.ItemOption.PowerUpDefinition.ToString());
             }
