@@ -17,8 +17,8 @@ namespace MUnique.OpenMU.Network
     public class PipelinedEncryptor : PacketPipeReaderBase, IPipelinedEncryptor
     {
         private readonly PipeWriter target; // pipewriter of the SocketConnection
-        private Pipe readPipe = new Pipe();
-        private Encryptor encryptor;
+        private readonly Pipe readPipe = new Pipe();
+        private readonly Encryptor encryptor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PipelinedEncryptor"/> class.

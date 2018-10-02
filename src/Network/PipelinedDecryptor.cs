@@ -16,8 +16,8 @@ namespace MUnique.OpenMU.Network
     /// </remarks>
     public class PipelinedDecryptor : PacketPipeReaderBase, IPipelinedDecryptor
     {
-        private Pipe pipe = new Pipe();
-        private Decryptor decryptor;
+        private readonly Pipe pipe = new Pipe();
+        private readonly Decryptor decryptor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PipelinedDecryptor"/> class.
