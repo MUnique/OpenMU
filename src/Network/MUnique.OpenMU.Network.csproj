@@ -11,6 +11,7 @@
     <PackageLicenseUrl>http://opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <PackageTags>MUnique OpenMU tcp</PackageTags>
     <PackageId>munique.openmu.network</PackageId>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -37,7 +38,10 @@
 
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Pipelines.Sockets.Unofficial" Version="1.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+    <PackageReference Include="System.IO.Pipelines" Version="4.5.0" />
+    <PackageReference Include="System.Net.Sockets" Version="4.3.0" />
   </ItemGroup>
 
 </Project>
