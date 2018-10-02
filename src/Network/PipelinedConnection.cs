@@ -127,11 +127,6 @@ namespace MUnique.OpenMU.Network
                         this.log.Debug($"Send (before encryption): {packet.ToArray().AsString()}");
                     }
 
-                    if (this.log.IsDebugEnabled)
-                    {
-                        this.log.Debug($"Send (after encryption): {packet.ToArray().AsString()}");
-                    }
-
                     var currentOutput = this.Output;
                     if (currentOutput != null && this.Connected)
                     {
