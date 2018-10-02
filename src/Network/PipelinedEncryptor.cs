@@ -42,7 +42,6 @@ namespace MUnique.OpenMU.Network
         /// <param name="packet">The mu online packet</param>
         protected override void ReadPacket(ReadOnlySequence<byte> packet)
         {
-            // TODO: Optimize, refactor encryption to use pooled memory, too.
             var decrypted = packet.ToArray();
             var encrypted = this.encryptor.Encrypt(decrypted);
             this.target.Write(decrypted);
