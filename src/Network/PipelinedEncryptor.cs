@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.Network
         {
             var decrypted = packet.ToArray();
             var encrypted = this.encryptor.Encrypt(decrypted);
-            this.target.Write(decrypted);
+            this.target.Write(encrypted);
         }
     }
 }
