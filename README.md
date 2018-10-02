@@ -42,7 +42,7 @@ Contributions are welcome if they meet the following criteria:
 If you want to contribute, please create a new issue for the feature or bug (if the issue doesn't exist yet) so we
 can see who is working on something and can discuss possible solutions.
 
-Apart of that, contribtions from non-developers are welcome as well. You can test the server, submit issues or
+Apart of that, contributions from non-developers are welcome as well. You can test the server, submit issues or
 suggestions, packet descriptions or documentations about the concepts and mechanics of the game itself. Please use markdown files/syntax for this purpose.
 
 If you have questions about that, don't hesitate to ask by submitting an issue.
