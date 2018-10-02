@@ -21,8 +21,8 @@ namespace MUnique.OpenMU.Network
         private readonly ILog log = LogManager.GetLogger(typeof(PipelinedConnection));
         private readonly IPipelinedDecryptor decryptionPipe;
         private readonly IPipelinedEncryptor encryptionPipe;
+        private readonly EndPoint remoteEndPoint;
         private SocketConnection socketConnection;
-        private EndPoint remoteEndPoint;
         private bool disconnected;
 
         /// <summary>
