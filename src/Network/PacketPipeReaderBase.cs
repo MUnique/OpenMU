@@ -37,6 +37,7 @@ namespace MUnique.OpenMU.Network
         /// <returns>The task.</returns>
         protected async Task ReadSource()
         {
+            var header = new byte[3];
             while (true)
             {
                 ReadResult result = await this.Source.ReadAsync(this.ReadCancellationTokenSource.Token).ConfigureAwait(false);
@@ -44,7 +45,6 @@ namespace MUnique.OpenMU.Network
                 ReadOnlySequence<byte> buffer = result.Buffer;
 
                 int? length = null;
-                var header = new byte[3];
                 do
                 {
                     if (length == null && buffer.Length > 2)
