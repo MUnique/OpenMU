@@ -321,7 +321,27 @@ namespace MUnique.OpenMU.Network
         /// <returns>The size of the header.</returns>
         public static int GetPacketHeaderSize(this byte[] packet)
         {
-            switch (packet[0])
+            return GetPacketHeaderSize(packet[0]);
+        }
+
+        /// <summary>
+        /// Gets the size of the packet header.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        /// <returns>The size of the header.</returns>
+        public static int GetPacketHeaderSize(this Span<byte> packet)
+        {
+            return GetPacketHeaderSize(packet[0]);
+        }
+
+        /// <summary>
+        /// Gets the size of the packet header.
+        /// </summary>
+        /// <param name="packetPrefix">The packet prefix.</param>
+        /// <returns>The size of the header.</returns>
+        public static int GetPacketHeaderSize(byte packetPrefix)
+        {
+            switch (packetPrefix)
             {
                 case 0xC1:
                 case 0xC3:
