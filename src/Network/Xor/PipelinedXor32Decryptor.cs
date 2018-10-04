@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.Xor
 {
+    using System;
     using System.Buffers;
     using System.IO.Pipelines;
 
@@ -33,6 +34,11 @@ namespace MUnique.OpenMU.Network.Xor
         /// /// <param name="xor32Key">The xor32 key.</param>
         public PipelinedXor32Decryptor(PipeReader source, byte[] xor32Key)
         {
+            if (xor32Key.Length != 32)
+            {
+                throw new ArgumentException($"Xor32key must have a size of 32 bytes, but is {xor32Key.Length} bytes long.");
+            }
+
             this.Source = source;
             this.xor32Key = xor32Key;
             this.ReadSource().ConfigureAwait(false);
