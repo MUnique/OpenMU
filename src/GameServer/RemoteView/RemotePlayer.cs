@@ -70,11 +70,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     {
                         this.MainPacketHandler.HandlePacket(this, buffer);
                     }
-
-                    if (buffer[0] == 0xC1 && buffer[1] == 0xB8 && buffer[2] == 1) ////Experimental
-                    {
-                        this.ClientReadyAfterMapChange();
-                    }
                 }
                 catch (Exception ex)
                 {
