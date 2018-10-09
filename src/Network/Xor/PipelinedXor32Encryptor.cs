@@ -41,6 +41,7 @@ namespace MUnique.OpenMU.Network.Xor
             }
 
             this.Source = this.pipe.Reader;
+            this.target = target;
             this.xor32Key = xor32Key;
             this.ReadSource().ConfigureAwait(false);
         }
