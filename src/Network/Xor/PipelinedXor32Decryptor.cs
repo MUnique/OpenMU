@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.Network.Xor
         /// Initializes a new instance of the <see cref="PipelinedXor32Decryptor"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// /// <param name="xor32Key">The xor32 key.</param>
+        /// <param name="xor32Key">The xor32 key.</param>
         public PipelinedXor32Decryptor(PipeReader source, byte[] xor32Key)
         {
             if (xor32Key.Length != 32)
