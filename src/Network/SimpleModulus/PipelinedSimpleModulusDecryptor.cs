@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             var contentSize = this.GetContentSize(this.headerBuffer, false);
             if ((contentSize % EncryptedBlockSize) != 0)
             {
-                throw new ArgumentException("The packet has an unexpected content size. It must be a multiple of ${EncryptedBlockSize}", nameof(packet));
+                throw new ArgumentException($"The packet has an unexpected content size. It must be a multiple of ${EncryptedBlockSize}", nameof(packet));
             }
 
             var maximumDecryptedSize = this.GetMaximumDecryptedSize(this.headerBuffer);
