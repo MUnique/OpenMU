@@ -381,7 +381,7 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="packet">The packet.</param>
         /// <returns>The size of a packet.</returns>
-        public static int GetPacketSize(this byte[] packet)
+        public static int GetPacketSize(this Span<byte> packet)
         {
             switch (packet[0])
             {
@@ -397,10 +397,22 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
+        /// Gets the size of a packet from its header.
+        /// C1 and C3 packets have a maximum length of 255, and the length defined in the second byte.
+        /// C2 and C4 packets have a maximum length of 65535, and the length defined in the second and third byte.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        /// <returns>The size of a packet.</returns>
+        public static int GetPacketSize(this byte[] packet)
+        {
+            return packet.AsSpan().GetPacketSize();
+        }
+
+        /// <summary>
         /// Sets the size of the byte array as packet length in the corresponding indexes of the byte array.
         /// </summary>
         /// <param name="packet">The packet.</param>
-        public static void SetPacketSize(this byte[] packet)
+        public static void SetPacketSize(this Span<byte> packet)
         {
             var size = packet.Length;
             switch (packet[0])
@@ -415,6 +427,15 @@ namespace MUnique.OpenMU.Network
                     packet[2] = (byte)(size & 0x00FF);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Sets the size of the byte array as packet length in the corresponding indexes of the byte array.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        public static void SetPacketSize(this byte[] packet)
+        {
+            packet.AsSpan().SetPacketSize();
         }
     }
 }

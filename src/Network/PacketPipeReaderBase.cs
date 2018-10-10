@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.Network
                     {
                         // peek the length of the next packet
                         buffer.Slice(0, 3).CopyTo(header);
-                        length = header.GetPacketSize();
+                        length = header.AsSpan().GetPacketSize();
                     }
 
                     if (length != null && length > 0 && buffer.Length >= length)
