@@ -182,14 +182,13 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         {
             var keys = this.encryptionKeys;
             Array.Clear(this.CryptBuffer, blockSize / 2, this.CryptBuffer.Length - (blockSize / 2)); // we don't need to clear the whole array since parts are getting overriden by the input buffer
-            // Buffer.BlockCopy(inputBuffer, 0, this.CryptBuffer, 0, blockSize);
             MemoryMarshal.Cast<byte, ushort>(this.inputBuffer.AsSpan(0, blockSize)).CopyTo(this.CryptBuffer);
 
             this.RingBuffer[0] = ((keys.XorKey[0] ^ this.CryptBuffer[0]) * keys.EncryptKey[0]) % keys.ModulusKey[0];
             this.RingBuffer[1] = ((keys.XorKey[1] ^ (this.CryptBuffer[1] ^ (this.RingBuffer[0] & 0xFFFF))) * keys.EncryptKey[1]) % keys.ModulusKey[1];
             this.RingBuffer[2] = ((keys.XorKey[2] ^ (this.CryptBuffer[2] ^ (this.RingBuffer[1] & 0xFFFF))) * keys.EncryptKey[2]) % keys.ModulusKey[2];
             this.RingBuffer[3] = ((keys.XorKey[3] ^ (this.CryptBuffer[3] ^ (this.RingBuffer[2] & 0xFFFF))) * keys.EncryptKey[3]) % keys.ModulusKey[3];
-            // Buffer.BlockCopy(this.CryptBuffer, 0, inputBuffer, 0, blockSize);
+
             MemoryMarshal.Cast<ushort, byte>(this.CryptBuffer.AsSpan(0, blockSize / 2)).CopyTo(this.inputBuffer.AsSpan(0, blockSize));
 
             this.RingBuffer[0] = this.RingBuffer[0] ^ keys.XorKey[0] ^ (this.RingBuffer[1] & 0xFFFF);
