@@ -56,17 +56,17 @@ namespace MUnique.OpenMU.Network.Xor
         /// <param name="packet">The mu online packet</param>
         protected override void ReadPacket(ReadOnlySequence<byte> packet)
         {
-            var span = this.pipe.Writer.GetSpan((int)packet.Length);
-            var target = span.Slice(0, (int)packet.Length);
-            packet.CopyTo(target);
+            var span = this.target.GetSpan((int)packet.Length);
+            var result = span.Slice(0, (int)packet.Length);
+            packet.CopyTo(result);
 
-            var headerSize = target.GetPacketHeaderSize();
+            var headerSize = result.GetPacketHeaderSize();
             for (int i = headerSize + 1; i < packet.Length; i++)
             {
-                target[i] = (byte)(target[i] ^ target[i - 1] ^ this.xor32Key[i % 32]);
+                result[i] = (byte)(result[i] ^ result[i - 1] ^ this.xor32Key[i % 32]);
             }
 
-            this.target.Write(target);
+            this.target.Advance(result.Length);
             this.target.FlushAsync();
         }
     }

@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.Network.Xor
                 target[i] = (byte)(target[i] ^ target[i - 1] ^ this.xor32Key[i % 32]);
             }
 
-            this.pipe.Writer.Write(target);
+            this.pipe.Writer.Advance(target.Length);
             this.pipe.Writer.FlushAsync();
         }
     }
