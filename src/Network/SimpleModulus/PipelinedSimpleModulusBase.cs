@@ -70,10 +70,9 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <param name="size">The size of the input data.</param>
         protected void InternalShiftBytes(Span<byte> outputBuffer, int outputOffset, Span<byte> shiftArray, int shiftOffset, int size)
         {
-            shiftOffset &= 0x7;
-            ShiftRight(shiftArray, size, shiftOffset);
+            ShiftRight(shiftArray, size, shiftOffset & 0x7);
             ShiftLeft(shiftArray, size + 1, outputOffset & 0x7);
-            if ((outputOffset & 0x7) > shiftOffset)
+            if ((outputOffset & 0x7) > (shiftOffset & 0x7))
             {
                 size++;
             }
