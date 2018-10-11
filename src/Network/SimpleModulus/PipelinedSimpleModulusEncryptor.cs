@@ -174,8 +174,8 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             }
 
             size ^= checksum;
-
-            this.ShiftBytes(outputBuffer, 0x48, (uint)(checksum << 8 | size), 0x00, 0x10);
+            outputBuffer[outputBuffer.Length - 2] = size;
+            outputBuffer[outputBuffer.Length - 1] = checksum;
         }
 
         private void SetRingBuffer(int blockSize)
