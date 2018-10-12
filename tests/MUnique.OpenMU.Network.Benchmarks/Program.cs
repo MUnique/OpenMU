@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.Network.Benchmarks
     /// <summary>
     /// The class of the entry point of the benchmark.
     /// </summary>
-    public class Program
+    public static class Program
     {
         /// <summary>
         /// The entry point of the benchmark.
