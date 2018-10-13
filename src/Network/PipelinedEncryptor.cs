@@ -4,48 +4,42 @@
 
 namespace MUnique.OpenMU.Network
 {
-    using System.Buffers;
     using System.IO.Pipelines;
-    using System.Linq;
+    using MUnique.OpenMU.Network.SimpleModulus;
 
     /// <summary>
-    /// Basic implementation of a <see cref="IPipelinedEncryptor"/> which uses the default <see cref="Encryptor"/>.
+    /// Default server implementation of a <see cref="IPipelinedEncryptor"/>.
+    /// It encrypts 0xC3 and 0xC4-packets with the "simple modulus" algorithm and writes through every other packet types.
     /// </summary>
-    /// <remarks>
-    /// This is not yet optimized as the <see cref="Encryptor"/> isn't working on pipes but on manually created byte arrays.
-    /// </remarks>
-    public class PipelinedEncryptor : PacketPipeReaderBase, IPipelinedEncryptor
+    public class PipelinedEncryptor : PipelinedSimpleModulusEncryptor
     {
-        private readonly PipeWriter target; // pipewriter of the SocketConnection
-        private readonly Pipe readPipe = new Pipe();
-        private readonly Encryptor encryptor;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PipelinedEncryptor"/> class.
+        /// </summary>
+        /// <param name="target">The target pipe writer.</param>
+        public PipelinedEncryptor(PipeWriter target)
+            : base(target)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PipelinedEncryptor"/> class.
         /// </summary>
-        /// <param name="target">The target.</param>
-        public PipelinedEncryptor(PipeWriter target)
+        /// <param name="target">The target pipe writer.</param>
+        /// <param name="encryptionKeys">The encryption keys.</param>
+        public PipelinedEncryptor(PipeWriter target, uint[] encryptionKeys)
+            : base(target, encryptionKeys)
         {
-            this.target = target;
-            this.encryptor = new Encryptor();
-            this.Source = this.readPipe.Reader;
-            this.ReadSource().ConfigureAwait(false);
         }
 
-        /// <inheritdoc/>
-        public PipeWriter Writer => this.readPipe.Writer;
-
         /// <summary>
-        /// Reads the mu online packet.
-        /// Encrypts the data and writes it to the target.
+        /// Initializes a new instance of the <see cref="PipelinedEncryptor"/> class.
         /// </summary>
-        /// <param name="packet">The mu online packet</param>
-        protected override void ReadPacket(ReadOnlySequence<byte> packet)
+        /// <param name="target">The target pipe writer.</param>
+        /// <param name="encryptionKeys">The encryption keys.</param>
+        public PipelinedEncryptor(PipeWriter target, SimpleModulusKeys encryptionKeys)
+            : base(target, encryptionKeys)
         {
-            var decrypted = packet.ToArray();
-            var encrypted = this.encryptor.Encrypt(decrypted);
-            this.target.Write(encrypted);
-            this.target.FlushAsync();
         }
     }
 }
