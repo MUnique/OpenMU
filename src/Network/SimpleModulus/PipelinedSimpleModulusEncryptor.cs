@@ -67,6 +67,12 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         public PipeWriter Writer => this.pipe.Writer;
 
         /// <inheritdoc />
+        protected override void OnComplete()
+        {
+            this.target.Complete();
+        }
+
+        /// <inheritdoc />
         protected override void ReadPacket(ReadOnlySequence<byte> packet)
         {
             packet.Slice(0, this.headerBuffer.Length).CopyTo(this.headerBuffer);

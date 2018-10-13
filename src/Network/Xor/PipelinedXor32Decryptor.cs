@@ -47,6 +47,12 @@ namespace MUnique.OpenMU.Network.Xor
         /// <inheritdoc/>
         public PipeReader Reader => this.pipe.Reader;
 
+        /// <inheritdoc />
+        protected override void OnComplete()
+        {
+            this.pipe.Writer.Complete();
+        }
+
         /// <summary>
         /// Reads the mu online packet.
         /// Decrypts the packet and writes it into our pipe.

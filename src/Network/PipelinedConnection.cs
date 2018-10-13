@@ -67,13 +67,17 @@ namespace MUnique.OpenMU.Network
 
         private PipeWriter Output => this.encryptionPipe?.Writer ?? this.socketConnection.Output;
 
+        /// <inheritdoc/>
+        public override string ToString() => this.remoteEndPoint.ToString();
+
         /// <summary>
         /// Begins receiving from the client.
         /// </summary>
         /// <returns>The task.</returns>
         public async Task BeginReceive()
         {
-            await this.ReadSource();
+            await this.ReadSource().ConfigureAwait(false);
+            this.Disconnect();
         }
 
         /// <summary>
@@ -133,6 +137,7 @@ namespace MUnique.OpenMU.Network
                         try
                         {
                             currentOutput.Write(packet);
+                            currentOutput.FlushAsync();
                         }
                         catch (Exception ex)
                         {
@@ -141,6 +146,12 @@ namespace MUnique.OpenMU.Network
                     }
                 }
             }
+        }
+
+        /// <inheritdoc />
+        protected override void OnComplete()
+        {
+            this.Disconnect();
         }
 
         /// <summary>

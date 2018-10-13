@@ -73,6 +73,12 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// </summary>
         public bool AcceptWrongBlockChecksum { get; set; }
 
+        /// <inheritdoc />
+        protected override void OnComplete()
+        {
+            this.pipe.Writer.Complete();
+        }
+
         /// <summary>
         /// Reads the mu online packet.
         /// Decrypts the packet and writes it into our pipe.

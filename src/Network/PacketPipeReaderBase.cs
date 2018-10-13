@@ -32,6 +32,11 @@ namespace MUnique.OpenMU.Network
         protected abstract void ReadPacket(ReadOnlySequence<byte> packet);
 
         /// <summary>
+        /// Called when the <see cref="Source"/> completed.
+        /// </summary>
+        protected abstract void OnComplete();
+
+        /// <summary>
         /// Reads from the <see cref="Source"/> until it's completed or cancelled.
         /// </summary>
         /// <returns>The task.</returns>
@@ -81,6 +86,7 @@ namespace MUnique.OpenMU.Network
 
             // Mark the PipeReader as complete
             this.Source.Complete();
+            this.OnComplete();
         }
     }
 }
