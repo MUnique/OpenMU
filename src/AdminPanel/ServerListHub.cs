@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.AdminPanel
 
             var result = new List<ServerInfo>();
 
-            foreach (var gameServer in Servers.OfType<IGameServer>())
+            foreach (var gameServer in Servers.OfType<IGameServer>().OrderBy(s => s.Id))
             {
                 var serverInfo = new GameServerInfo(gameServer);
                 result.Add(serverInfo);
