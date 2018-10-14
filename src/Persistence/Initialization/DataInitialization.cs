@@ -504,11 +504,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private Item CreateSkullStaff(byte itemSlot)
         {
-            var shortBow = this.context.CreateNew<Item>();
-            shortBow.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == 5 && def.Number == 0); // skull staff
-            shortBow.Durability = shortBow.Definition?.Durability ?? 0;
-            shortBow.ItemSlot = itemSlot;
-            return shortBow;
+            var skullStaff = this.context.CreateNew<Item>();
+            skullStaff.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == 5 && def.Number == 0); // skull staff
+            skullStaff.Durability = skullStaff.Definition?.Durability ?? 0;
+            skullStaff.ItemSlot = itemSlot;
+            return skullStaff;
         }
 
         private void CreateNpcs()
