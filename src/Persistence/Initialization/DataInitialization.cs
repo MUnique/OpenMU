@@ -145,7 +145,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.Inventory.Items.Add(this.CreateSetItem(49, 10, 9)); // Vine Pants
             character.Inventory.Items.Add(this.CreateSetItem(63, 10, 10)); // Vine Gloves
             character.Inventory.Items.Add(this.CreateSetItem(65, 10, 11)); // Vine Boots
-
+            character.Inventory.Items.Add(this.CreateOrb(67, 8)); // Healing Orb
+            character.Inventory.Items.Add(this.CreateOrb(75, 9)); // Defense Orb
+            character.Inventory.Items.Add(this.CreateOrb(68, 10)); // Damage Orb
             return character;
         }
 
