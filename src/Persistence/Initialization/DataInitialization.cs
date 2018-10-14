@@ -139,6 +139,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
             this.AddTestJewelsAndPotions(character.Inventory);
             character.Inventory.Items.Add(this.CreateShortBow(0));
+            character.Inventory.Items.Add(this.CreateArrows(1));
             character.Inventory.Items.Add(this.CreateSetItem(52, 10, 8)); // Vine Armor
             character.Inventory.Items.Add(this.CreateSetItem(47, 10, 7)); // Vine Helm
             character.Inventory.Items.Add(this.CreateSetItem(49, 10, 9)); // Vine Pants
@@ -490,6 +491,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
             shortBow.Durability = shortBow.Definition?.Durability ?? 0;
             shortBow.ItemSlot = itemSlot;
             return shortBow;
+        }
+
+        private Item CreateArrows(byte itemSlot)
+        {
+            var arrows = this.context.CreateNew<Item>();
+            arrows.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == 4 && def.Number == 15); // short bow
+            arrows.Durability = 255;
+            arrows.ItemSlot = itemSlot;
+            return arrows;
         }
 
         private Item CreateSkullStaff(byte itemSlot)
