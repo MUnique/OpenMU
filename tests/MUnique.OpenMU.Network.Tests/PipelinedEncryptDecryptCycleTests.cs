@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.Network.Tests
         public async Task ClientToServerC3()
         {
             var packet = Convert.FromBase64String("w7kxFgK8hYpGGLgdXe7ZpTZViB+r3sRI3YSqZs7/Mh5Vmh2mXqs+3dqkvURmXrL57ASs+FkJz/236Tl9ER67R+WZyMLRMkeLF6tEBiB/4X7SsXrKUznES8of73RxwMy76HZezJbvJ7m9IOGuxcjcNwe6q1+k8fOs1Hz3sULSGlbfiB6qIBXo4onADTNYFoYCQrdtthVsF/aDsvcZ93V36gaKzzyqMhby0sjV4+TAU7719W6LZWNAcnA=");
-            await this.EncryptDecryptFromClientToServer(packet);
+            await this.EncryptDecryptFromClientToServer(packet).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.Network.Tests
         public async Task ClientToServerC1()
         {
             var packet = new byte[] { 0xC1, 0x06, 0x11, 0x01, 0x02, 0x03 };
-            await this.EncryptDecryptFromClientToServer(packet);
+            await this.EncryptDecryptFromClientToServer(packet).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.Network.Tests
         public async Task ServerToClientC3()
         {
             var packet = Convert.FromBase64String("w7kxFgK8hYpGGLgdXe7ZpTZViB+r3sRI3YSqZs7/Mh5Vmh2mXqs+3dqkvURmXrL57ASs+FkJz/236Tl9ER67R+WZyMLRMkeLF6tEBiB/4X7SsXrKUznES8of73RxwMy76HZezJbvJ7m9IOGuxcjcNwe6q1+k8fOs1Hz3sULSGlbfiB6qIBXo4onADTNYFoYCQrdtthVsF/aDsvcZ93V36gaKzzyqMhby0sjV4+TAU7719W6LZWNAcnA=");
-            await this.EncryptDecryptFromServerToClient(packet);
+            await this.EncryptDecryptFromServerToClient(packet).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.Network.Tests
         public async Task ServerToClientC1()
         {
             var packet = new byte[] { 0xC1, 0x06, 0x11, 0x01, 0x02, 0x03 };
-            await this.EncryptDecryptFromServerToClient(packet);
+            await this.EncryptDecryptFromServerToClient(packet).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace MUnique.OpenMU.Network.Tests
             var encryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer);
             var decryptor = new PipelinedSimpleModulusDecryptor(pipe.Reader, PipelinedSimpleModulusDecryptor.DefaultClientKey);
             encryptor.Writer.Write(packet);
-            await encryptor.Writer.FlushAsync();
-            var readResult = await decryptor.Reader.ReadAsync();
+            await encryptor.Writer.FlushAsync().ConfigureAwait(false);
+            var readResult = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
 
             var result = readResult.Buffer.ToArray();
             Assert.That(result, Is.EquivalentTo(packet));
@@ -103,7 +103,7 @@ namespace MUnique.OpenMU.Network.Tests
             var decryptor = new PipelinedXor32Decryptor(new PipelinedSimpleModulusDecryptor(pipe.Reader).Reader);
             encryptor.Writer.Write(packet);
             await encryptor.Writer.FlushAsync();
-            var readResult = await decryptor.Reader.ReadAsync();
+            var readResult = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
 
             var result = readResult.Buffer.ToArray();
             Assert.That(result, Is.EquivalentTo(packet));
