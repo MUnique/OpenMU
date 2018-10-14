@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private Character CreateWizard(string name, int level)
         {
-            var character = this.CreateCharacter(name, CharacterClassNumber.DarkWizard, level);
+            var character = this.CreateCharacter(name, CharacterClassNumber.DarkWizard, level, 1);
             this.AddTestJewelsAndPotions(character.Inventory);
             character.Inventory.Items.Add(this.CreateSkullStaff(0));
             character.Inventory.Items.Add(this.CreateSetItem(52, 2, 8)); // Pad Armor
@@ -136,7 +136,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private Character CreateElf(string name, int level)
         {
-            var character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level);
+            var character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
             this.AddTestJewelsAndPotions(character.Inventory);
             character.Inventory.Items.Add(this.CreateShortBow(0));
             character.Inventory.Items.Add(this.CreateSetItem(52, 10, 8)); // Vine Armor
@@ -150,7 +150,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private Character CreateDarkKnight(string name, int level)
         {
-            var character = this.CreateCharacter(name, CharacterClassNumber.DarkKnight, level);
+            var character = this.CreateCharacter(name, CharacterClassNumber.DarkKnight, level, 0);
             this.AddTestJewelsAndPotions(character.Inventory);
             character.Inventory.Items.Add(this.CreateSmallAxe(0));
             character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather Armor
@@ -162,12 +162,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return character;
         }
 
-        private Character CreateCharacter(string name, CharacterClassNumber characterClass, int level)
+        private Character CreateCharacter(string name, CharacterClassNumber characterClass, int level, byte slot)
         {
             var character = this.context.CreateNew<Character>();
             character.CharacterClass = this.gameConfiguration.CharacterClasses.First(c => c.Number == (byte)characterClass);
             character.Name = name;
-            character.CharacterSlot = 0;
+            character.CharacterSlot = slot;
             character.CreateDate = DateTime.Now;
             character.KeyConfiguration = new byte[30];
             foreach (
@@ -238,7 +238,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
             account.Vault = this.context.CreateNew<ItemStorage>();
 
-            var character = this.CreateCharacter(loginName, CharacterClassNumber.BattleMaster, 400);
+            var character = this.CreateCharacter(loginName, CharacterClassNumber.BattleMaster, 400, 0);
             account.Characters.Add(character);
             character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
             character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
@@ -310,7 +310,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
             account.Vault = this.context.CreateNew<ItemStorage>();
 
-            var character = this.CreateCharacter(loginName, CharacterClassNumber.BladeKnight, 300);
+            var character = this.CreateCharacter(loginName, CharacterClassNumber.BladeKnight, 300, 0);
             account.Characters.Add(character);
 
             character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
