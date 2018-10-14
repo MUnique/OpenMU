@@ -115,50 +115,51 @@ namespace MUnique.OpenMU.Persistence.Initialization
             account.Vault = this.context.CreateNew<ItemStorage>();
 
             var level = (index * 10) + 1;
-            var character = this.CreateCharacter(loginName, CharacterClassNumber.DarkKnight, level);
-            account.Characters.Add(character);
+            account.Characters.Add(this.CreateDarkKnight(loginName + "Dk", level));
+            account.Characters.Add(this.CreateElf(loginName + "Elf", level));
+            account.Characters.Add(this.CreateWizard(loginName + "Wiz", level));
+        }
 
+        private Character CreateWizard(string name, int level)
+        {
+            var character = this.CreateCharacter(name, CharacterClassNumber.DarkWizard, level);
+            this.AddTestJewelsAndPotions(character.Inventory);
+            character.Inventory.Items.Add(this.CreateSkullStaff(0));
+            character.Inventory.Items.Add(this.CreateSetItem(52, 2, 8)); // Pad Armor
+            character.Inventory.Items.Add(this.CreateSetItem(47, 2, 7)); // Pad Helm
+            character.Inventory.Items.Add(this.CreateSetItem(49, 2, 9)); // Pad Pants
+            character.Inventory.Items.Add(this.CreateSetItem(63, 2, 10)); // Pad Gloves
+            character.Inventory.Items.Add(this.CreateSetItem(65, 2, 11)); // Pad Boots
+
+            return character;
+        }
+
+        private Character CreateElf(string name, int level)
+        {
+            var character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level);
+            this.AddTestJewelsAndPotions(character.Inventory);
+            character.Inventory.Items.Add(this.CreateShortBow(0));
+            character.Inventory.Items.Add(this.CreateSetItem(52, 10, 8)); // Vine Armor
+            character.Inventory.Items.Add(this.CreateSetItem(47, 10, 7)); // Vine Helm
+            character.Inventory.Items.Add(this.CreateSetItem(49, 10, 9)); // Vine Pants
+            character.Inventory.Items.Add(this.CreateSetItem(63, 10, 10)); // Vine Gloves
+            character.Inventory.Items.Add(this.CreateSetItem(65, 10, 11)); // Vine Boots
+
+            return character;
+        }
+
+        private Character CreateDarkKnight(string name, int level)
+        {
+            var character = this.CreateCharacter(name, CharacterClassNumber.DarkKnight, level);
+            this.AddTestJewelsAndPotions(character.Inventory);
             character.Inventory.Items.Add(this.CreateSmallAxe(0));
-            character.Inventory.Items.Add(this.CreateJewelOfBless(12));
-            character.Inventory.Items.Add(this.CreateJewelOfBless(13));
-            character.Inventory.Items.Add(this.CreateJewelOfBless(14));
-            character.Inventory.Items.Add(this.CreateJewelOfBless(15));
-            character.Inventory.Items.Add(this.CreateJewelOfBless(16));
-            character.Inventory.Items.Add(this.CreateJewelOfBless(17));
-            character.Inventory.Items.Add(this.CreateJewelOfBless(18));
-            character.Inventory.Items.Add(this.CreateJewelOfBless(19));
-            character.Inventory.Items.Add(this.CreateJewelOfSoul(20));
-            character.Inventory.Items.Add(this.CreateJewelOfSoul(21));
-            character.Inventory.Items.Add(this.CreateJewelOfSoul(22));
-            character.Inventory.Items.Add(this.CreateJewelOfSoul(23));
-            character.Inventory.Items.Add(this.CreateJewelOfSoul(24));
-            character.Inventory.Items.Add(this.CreateJewelOfSoul(25));
-            character.Inventory.Items.Add(this.CreateJewelOfSoul(26));
-            character.Inventory.Items.Add(this.CreateJewelOfSoul(27));
-            character.Inventory.Items.Add(this.CreateJewelOfLife(28));
-            character.Inventory.Items.Add(this.CreateJewelOfLife(29));
-            character.Inventory.Items.Add(this.CreateJewelOfLife(30));
-            character.Inventory.Items.Add(this.CreateJewelOfLife(31));
-            character.Inventory.Items.Add(this.CreateJewelOfLife(32));
-            character.Inventory.Items.Add(this.CreateJewelOfLife(33));
-            character.Inventory.Items.Add(this.CreateJewelOfLife(34));
-            character.Inventory.Items.Add(this.CreateJewelOfLife(35));
-            character.Inventory.Items.Add(this.CreateHealthPotion(36, 0));
-            character.Inventory.Items.Add(this.CreateHealthPotion(37, 1));
-            character.Inventory.Items.Add(this.CreateHealthPotion(38, 2));
-            character.Inventory.Items.Add(this.CreateHealthPotion(39, 3));
-            character.Inventory.Items.Add(this.CreateManaPotion(40, 0));
-            character.Inventory.Items.Add(this.CreateManaPotion(41, 1));
-            character.Inventory.Items.Add(this.CreateManaPotion(42, 2));
-            character.Inventory.Items.Add(this.CreateAlcohol(43));
-            character.Inventory.Items.Add(this.CreateShieldPotion(44, 0));
-            character.Inventory.Items.Add(this.CreateShieldPotion(45, 1));
-            character.Inventory.Items.Add(this.CreateShieldPotion(46, 2));
-            character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather armor
-            character.Inventory.Items.Add(this.CreateSetItem(47, 5, 7)); // Leather helm
-            character.Inventory.Items.Add(this.CreateSetItem(49, 5, 9)); // Leather pants
-            character.Inventory.Items.Add(this.CreateSetItem(63, 5, 10, Stats.DamageReflection)); // Leather gloves
-            character.Inventory.Items.Add(this.CreateSetItem(65, 5, 11, Stats.DamageReflection)); // Leather boots
+            character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather Armor
+            character.Inventory.Items.Add(this.CreateSetItem(47, 5, 7)); // Leather Helm
+            character.Inventory.Items.Add(this.CreateSetItem(49, 5, 9)); // Leather Pants
+            character.Inventory.Items.Add(this.CreateSetItem(63, 5, 10, Stats.DamageReflection)); // Leather Gloves
+            character.Inventory.Items.Add(this.CreateSetItem(65, 5, 11, Stats.DamageReflection)); // Leather Boots
+
+            return character;
         }
 
         private Character CreateCharacter(string name, CharacterClassNumber characterClass, int level)
@@ -187,6 +188,45 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.Inventory = this.context.CreateNew<ItemStorage>();
             character.Inventory.Money = 1000000;
             return character;
+        }
+
+        private void AddTestJewelsAndPotions(ItemStorage inventory)
+        {
+            inventory.Items.Add(this.CreateJewelOfBless(12));
+            inventory.Items.Add(this.CreateJewelOfBless(13));
+            inventory.Items.Add(this.CreateJewelOfBless(14));
+            inventory.Items.Add(this.CreateJewelOfBless(15));
+            inventory.Items.Add(this.CreateJewelOfBless(16));
+            inventory.Items.Add(this.CreateJewelOfBless(17));
+            inventory.Items.Add(this.CreateJewelOfBless(18));
+            inventory.Items.Add(this.CreateJewelOfBless(19));
+            inventory.Items.Add(this.CreateJewelOfSoul(20));
+            inventory.Items.Add(this.CreateJewelOfSoul(21));
+            inventory.Items.Add(this.CreateJewelOfSoul(22));
+            inventory.Items.Add(this.CreateJewelOfSoul(23));
+            inventory.Items.Add(this.CreateJewelOfSoul(24));
+            inventory.Items.Add(this.CreateJewelOfSoul(25));
+            inventory.Items.Add(this.CreateJewelOfSoul(26));
+            inventory.Items.Add(this.CreateJewelOfSoul(27));
+            inventory.Items.Add(this.CreateJewelOfLife(28));
+            inventory.Items.Add(this.CreateJewelOfLife(29));
+            inventory.Items.Add(this.CreateJewelOfLife(30));
+            inventory.Items.Add(this.CreateJewelOfLife(31));
+            inventory.Items.Add(this.CreateJewelOfLife(32));
+            inventory.Items.Add(this.CreateJewelOfLife(33));
+            inventory.Items.Add(this.CreateJewelOfLife(34));
+            inventory.Items.Add(this.CreateJewelOfLife(35));
+            inventory.Items.Add(this.CreateHealthPotion(36, 0));
+            inventory.Items.Add(this.CreateHealthPotion(37, 1));
+            inventory.Items.Add(this.CreateHealthPotion(38, 2));
+            inventory.Items.Add(this.CreateHealthPotion(39, 3));
+            inventory.Items.Add(this.CreateManaPotion(40, 0));
+            inventory.Items.Add(this.CreateManaPotion(41, 1));
+            inventory.Items.Add(this.CreateManaPotion(42, 2));
+            inventory.Items.Add(this.CreateAlcohol(43));
+            inventory.Items.Add(this.CreateShieldPotion(44, 0));
+            inventory.Items.Add(this.CreateShieldPotion(45, 1));
+            inventory.Items.Add(this.CreateShieldPotion(46, 2));
         }
 
         private void CreateTest400()
@@ -507,6 +547,24 @@ namespace MUnique.OpenMU.Persistence.Initialization
             smallAxe.Durability = smallAxe.Definition?.Durability ?? 0;
             smallAxe.ItemSlot = itemSlot;
             return smallAxe;
+        }
+
+        private Item CreateShortBow(byte itemSlot)
+        {
+            var shortBow = this.context.CreateNew<Item>();
+            shortBow.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == 4 && def.Number == 0); // short bow
+            shortBow.Durability = shortBow.Definition?.Durability ?? 0;
+            shortBow.ItemSlot = itemSlot;
+            return shortBow;
+        }
+
+        private Item CreateSkullStaff(byte itemSlot)
+        {
+            var shortBow = this.context.CreateNew<Item>();
+            shortBow.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == 5 && def.Number == 0); // skull staff
+            shortBow.Durability = shortBow.Definition?.Durability ?? 0;
+            shortBow.ItemSlot = itemSlot;
+            return shortBow;
         }
 
         private void CreateNpcs()
