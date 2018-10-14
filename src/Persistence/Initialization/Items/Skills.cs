@@ -48,6 +48,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateSkill(14, "Inferno", 88, 100, 200, 0, 0, 200, 0, 3, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillExplicitHits);
             this.CreateSkill(15, "Teleport Ally", 83, 0, 90, 25, 6, 188, 0, -1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Other);
             this.CreateSkill(16, "Soul Barrier", 77, 0, 70, 22, 6, 126, 0, -1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
+            var soulBarrierSkill = this.CreateSkill(16, "Soul Barrier", 77, 0, 70, 22, 6, 126, 0, -1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
             this.CreateSkill(17, "Energy Ball", 2, 3, 1, 0, 6, 0, 0, -1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(18, "Defense", 0, 0, 30, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, SkillType.Buff);
             this.CreateSkill(19, "Falling Slash", 0, 0, 9, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0);
