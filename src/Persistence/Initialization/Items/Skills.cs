@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
+    using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -47,10 +49,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateSkill(13, "Cometfall", 80, 70, 150, 0, 3, 150, 0, 2, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(14, "Inferno", 88, 100, 200, 0, 0, 200, 0, 3, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillExplicitHits);
             this.CreateSkill(15, "Teleport Ally", 83, 0, 90, 25, 6, 188, 0, -1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Other);
-            this.CreateSkill(16, "Soul Barrier", 77, 0, 70, 22, 6, 126, 0, -1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
             var soulBarrierSkill = this.CreateSkill(16, "Soul Barrier", 77, 0, 70, 22, 6, 126, 0, -1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
+            this.AddSoulBarrierEffect(soulBarrierSkill);
             this.CreateSkill(17, "Energy Ball", 2, 3, 1, 0, 6, 0, 0, -1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0);
-            this.CreateSkill(18, "Defense", 0, 0, 30, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, SkillType.Buff);
+            var defenseSkill = this.CreateSkill(18, "Defense", 0, 0, 30, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, SkillType.Buff);
+            this.AddDefenseEffect(defenseSkill);
             this.CreateSkill(19, "Falling Slash", 0, 0, 9, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0);
             this.CreateSkill(20, "Lunge", 0, 0, 9, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0);
             this.CreateSkill(21, "Uppercut", 0, 0, 8, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0);
@@ -77,7 +80,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateSkill(45, "Lance", 0, 90, 150, 10, 6, 0, 0, -1, -1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0);
             this.CreateSkill(46, "Starfall", 0, 120, 20, 15, 8, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(47, "Impale", 28, 15, 8, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0);
-            this.CreateSkill(48, "Swell Life", 120, 0, 22, 24, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
+            var lifeSwellSkill = this.CreateSkill(48, "Swell Life", 120, 0, 22, 24, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
+            this.AddLifeSwellEffect(lifeSwellSkill);
             this.CreateSkill(49, "Fire Breath", 110, 30, 9, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(50, "Flame of Evil (Monster)", 60, 120, 160, 0, 0, 100, 0, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(51, "Ice Arrow", 0, 105, 10, 12, 8, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0);
@@ -416,7 +420,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateSkill(617, "Increase Triple Damage Chance", 0, 38, 0, 0, 0, 0, 0, -1, -1, 3, 0, 0, 0, 0, 0, 0, 0, 3, 9, 253, 1);
         }
 
-        private void CreateSkill(short skillId, string name, int levelRequirement, int damage, int manaConsumption, int abilityConsumption, short distance, int energyRequirement, int leadershipRequirement, int elementalModifier, int attackType, int useType, int count, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int rank, int group, int masterp, SkillType skillType = SkillType.DirectHit)
+        private Skill CreateSkill(short skillId, string name, int levelRequirement, int damage, int manaConsumption, int abilityConsumption, short distance, int energyRequirement, int leadershipRequirement, int elementalModifier, int attackType, int useType, int count, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int rank, int group, int masterp, SkillType skillType = SkillType.DirectHit)
         {
             var skill = this.Context.CreateNew<Skill>();
             this.GameConfiguration.Skills.Add(skill);
@@ -480,6 +484,101 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             // TODO: Master skill related stuff?
+
+            return skill;
+        }
+
+        private void AddLifeSwellEffect(Skill lifeSwellSkill)
+        {
+            var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
+            lifeSwellSkill.MagicEffectDef = magicEffect;
+            magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitude;
+            magicEffect.Name = "Life Swell Skill Effect";
+            magicEffect.InformObservers = true;
+            magicEffect.SendDuration = false;
+            magicEffect.StopByDeath = true;
+            magicEffect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
+            magicEffect.PowerUpDefinition.TargetAttribute = Stats.TotalVitality;
+            var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
+            durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+            durationPerEnergy.InputOperator = InputOperator.Multiply;
+            durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
+            magicEffect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+            magicEffect.PowerUpDefinition.Duration.RelatedValues.Add(durationPerEnergy);
+
+            // one percent per 20 energy
+            var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
+            boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+            boostPerEnergy.InputOperator = InputOperator.Multiply;
+            boostPerEnergy.InputOperand = 1.01f / 20f;
+
+            // one percent per 100 vitality
+            var boostPerVitality = this.Context.CreateNew<AttributeRelationship>();
+            boostPerVitality.InputAttribute = Stats.TotalAgility.GetPersistent(this.GameConfiguration);
+            boostPerVitality.InputOperator = InputOperator.Multiply;
+            boostPerVitality.InputOperand = 1.01f / 100f;
+
+            magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = 1.12f;
+            magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
+            magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerVitality);
+        }
+
+        private void AddDefenseEffect(Skill defenseSkill)
+        {
+            var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
+            defenseSkill.MagicEffectDef = magicEffect;
+            magicEffect.Number = 0;
+            magicEffect.Name = "Shield Defense Skill Effect";
+            magicEffect.InformObservers = false;
+            magicEffect.SendDuration = false;
+            magicEffect.StopByDeath = true;
+            magicEffect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
+            magicEffect.PowerUpDefinition.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
+            magicEffect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+            magicEffect.PowerUpDefinition.Duration.ConstantValue.Value = 1; // 1 Second
+            // Always a 50 % damage reduction
+            magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = 0.50f;
+            magicEffect.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        }
+
+        private void AddSoulBarrierEffect(Skill soulBarrier)
+        {
+            var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
+            soulBarrier.MagicEffectDef = magicEffect;
+            magicEffect.Number = (byte)MagicEffectNumber.SoulBarrier;
+            magicEffect.Name = "Soul Barrier";
+            magicEffect.InformObservers = true;
+            magicEffect.SendDuration = false;
+            magicEffect.StopByDeath = true;
+            magicEffect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
+            magicEffect.PowerUpDefinition.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
+            magicEffect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+            magicEffect.PowerUpDefinition.Duration.ConstantValue.Value = 60;
+            var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
+            durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+            durationPerEnergy.InputOperator = InputOperator.Multiply;
+            durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
+            magicEffect.PowerUpDefinition.Duration.RelatedValues.Add(durationPerEnergy);
+
+            // one percent per 200 energy
+            var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
+            boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+            boostPerEnergy.InputOperator = InputOperator.Multiply;
+            boostPerEnergy.InputOperand = -0.01f / 200f;
+
+            // one percent per 50 agility
+            var boostPerAgility = this.Context.CreateNew<AttributeRelationship>();
+            boostPerAgility.InputAttribute = Stats.TotalAgility.GetPersistent(this.GameConfiguration);
+            boostPerAgility.InputOperator = InputOperator.Multiply;
+            boostPerAgility.InputOperand = -0.01f / 50f;
+
+            // Soul barrier % = 10 + (Agility/50) + (Energy/200)
+            magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = -0.10f;
+            magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
+            magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerAgility);
         }
     }
 }
