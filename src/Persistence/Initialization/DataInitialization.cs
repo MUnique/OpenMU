@@ -138,8 +138,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             var character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
             this.AddTestJewelsAndPotions(character.Inventory);
-            character.Inventory.Items.Add(this.CreateShortBow(0));
-            character.Inventory.Items.Add(this.CreateArrows(1));
+            character.Inventory.Items.Add(this.CreateShortBow(1));
+            character.Inventory.Items.Add(this.CreateArrows(0));
             character.Inventory.Items.Add(this.CreateSetItem(52, 10, 8)); // Vine Armor
             character.Inventory.Items.Add(this.CreateSetItem(47, 10, 7)); // Vine Helm
             character.Inventory.Items.Add(this.CreateSetItem(49, 10, 9)); // Vine Pants
