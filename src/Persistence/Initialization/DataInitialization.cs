@@ -260,11 +260,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 29, 11, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 36, 15)); // Wing of Storm +15
             this.AddTestJewelsAndPotions(character.Inventory);
-            character.Inventory.Items.Add(this.CreateOrb(46, 7));
             character.Inventory.Items.Add(this.CreateOrb(47, 12));
             character.Inventory.Items.Add(this.CreateOrb(48, 14));
             character.Inventory.Items.Add(this.CreateOrb(49, 19));
             character.Inventory.Items.Add(this.CreateOrb(50, 44));
+            character.Inventory.Items.Add(this.CreateOrb(56, 7));
             character.Inventory.Items.Add(this.CreateFullOptionJewellery(52, 20)); // Wizards Ring
             character.Inventory.Items.Add(this.CreateFullOptionJewellery(53, 8)); // Ring of Ice
             character.Inventory.Items.Add(this.CreateFullOptionJewellery(54, 9)); // Ring of Poison
@@ -297,12 +297,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 6, 11, Stats.DamageReflection, 13, 4, true)); // Exc Scale Boots+13+16+L
             character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 5, 13)); // Dragon Wings +13
             this.AddTestJewelsAndPotions(character.Inventory);
-            character.Inventory.Items.Add(this.CreateOrb(46, 7));
             character.Inventory.Items.Add(this.CreateOrb(47, 12));
             character.Inventory.Items.Add(this.CreateOrb(48, 14));
             character.Inventory.Items.Add(this.CreateOrb(49, 19));
             character.Inventory.Items.Add(this.CreateOrb(50, 44));
-
+            character.Inventory.Items.Add(this.CreateOrb(56, 7));
             character.Inventory.Items.Add(this.CreateFullOptionJewellery(52, 20)); // Wizards Ring
             character.Inventory.Items.Add(this.CreateFullOptionJewellery(53, 8)); // Ring of Ice
             character.Inventory.Items.Add(this.CreateFullOptionJewellery(54, 9)); // Ring of Poison
