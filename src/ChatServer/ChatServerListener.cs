@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.ChatServer
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Timers;
@@ -128,7 +127,7 @@ namespace MUnique.OpenMU.ChatServer
             this.ServerState = OpenMU.Interfaces.ServerState.Starting;
             try
             {
-                this.chatClientListener = new Listener(this.port, () => new Decryptor(SimpleModulusDecryptor.DefaultServerKey, this.Xor32Key), () => null);
+                this.chatClientListener = new Listener(this.port, reader => new PipelinedDecryptor(reader, SimpleModulusDecryptor.DefaultServerKey, this.Xor32Key), writer => null);
                 this.chatClientListener.ClientAccepted += this.ChatClientAccepted;
                 this.chatClientListener.Start();
                 Log.Info($"Chat client listener ready on port {this.port}.");

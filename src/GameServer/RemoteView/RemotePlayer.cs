@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
+    using System.Buffers;
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.MessageHandler;
@@ -16,6 +17,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     public class RemotePlayer : Player
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RemotePlayer));
+
+        private readonly byte[] packetBuffer = new byte[0xFF];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RemotePlayer"/> class.
@@ -48,41 +51,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// </summary>
         internal IPacketHandler MainPacketHandler { get; set; }
 
-        /// <summary>
-        /// Is getting called when a packet got received from the connection of the player.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        public void PacketReceived(byte[] buffer)
-        {
-            using (this.PushServerLogContext())
-            using (log4net.ThreadContext.Stacks["connection"].Push(this.Connection.ToString()))
-            using (log4net.ThreadContext.Stacks["account"].Push(this.GetAccountName()))
-            using (log4net.ThreadContext.Stacks["character"].Push(this.GetSelectedCharacterName()))
-            {
-                try
-                {
-                    if (Logger.IsDebugEnabled)
-                    {
-                       Logger.DebugFormat("[C->S] {0}", buffer.AsString());
-                    }
-
-                    if (this.MainPacketHandler != null)
-                    {
-                        this.MainPacketHandler.HandlePacket(this, buffer);
-                    }
-
-                    if (buffer[0] == 0xC1 && buffer[1] == 0xB8 && buffer[2] == 1) ////Experimental
-                    {
-                        this.ClientReadyAfterMapChange();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-            }
-        }
-
         /// <inheritdoc/>
         protected override void InternalDisconnect()
         {
@@ -92,6 +60,53 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 this.Connection.Disconnect();
                 this.Connection.Dispose();
                 this.Connection = null;
+            }
+        }
+
+        /// <summary>
+        /// Is getting called when a packet got received from the connection of the player.
+        /// </summary>
+        /// <param name="sequence">The packet.</param>
+        private void PacketReceived(ReadOnlySequence<byte> sequence)
+        {
+            using (this.PushServerLogContext())
+            using (log4net.ThreadContext.Stacks["connection"].Push(this.Connection.ToString()))
+            using (log4net.ThreadContext.Stacks["account"].Push(this.GetAccountName()))
+            using (log4net.ThreadContext.Stacks["character"].Push(this.GetSelectedCharacterName()))
+            {
+                try
+                {
+                    Span<byte> buffer;
+                    IMemoryOwner<byte> owner = null;
+                    if (sequence.Length <= this.packetBuffer.Length)
+                    {
+                        sequence.CopyTo(this.packetBuffer);
+                        buffer = this.packetBuffer;
+                    }
+                    else
+                    {
+                        owner = MemoryPool<byte>.Shared.Rent((int)sequence.Length);
+                        buffer = owner.Memory.Slice(0, (int)sequence.Length).Span;
+                    }
+
+                    try
+                    {
+                        if (Logger.IsDebugEnabled)
+                        {
+                            Logger.DebugFormat("[C->S] {0}", buffer.ToArray().AsString());
+                        }
+
+                        this.MainPacketHandler?.HandlePacket(this, buffer);
+                    }
+                    finally
+                    {
+                        owner?.Dispose();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
             }
         }
 

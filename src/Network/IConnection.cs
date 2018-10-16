@@ -5,13 +5,16 @@
 namespace MUnique.OpenMU.Network
 {
     using System;
+    using System.Buffers;
+    using System.IO.Pipelines;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// A delegate which is executed when a packet gets received from a connection.
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="packet">The packet.</param>
-    public delegate void PacketReceivedHandler(object sender, byte[] packet);
+    public delegate void PipedPacketReceivedHandler(object sender, ReadOnlySequence<byte> packet);
 
     /// <summary>
     /// A delegate which is executed when the connection got disconnected.
@@ -21,15 +24,18 @@ namespace MUnique.OpenMU.Network
     public delegate void DisconnectedHandler(object sender, EventArgs e);
 
     /// <summary>
-    /// A connection from the client to the server.
+    /// Interface for a connection.
     /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public interface IConnection : IDisposable
     {
         /// <summary>
-        /// Occurs when a new packet is received.
+        /// Occurs when a new packet got received.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly", Justification = "Reducing needless EventArgs heap allocations.")]
-        event PacketReceivedHandler PacketReceived;
+        /// <remarks>
+        /// Remove and implement <see cref="IDuplexPipe"/> instead?
+        /// </remarks>
+        event PipedPacketReceivedHandler PacketReceived;
 
         /// <summary>
         /// Occurs when the client disconnected.
@@ -45,24 +51,22 @@ namespace MUnique.OpenMU.Network
         bool Connected { get; }
 
         /// <summary>
-        /// Sends the specified packet.
+        /// Gets the pipe writer to send data.
         /// </summary>
-        /// <param name="packet">The packet.</param>
-        void Send(byte[] packet);
+        /// <value>
+        /// The pipe writer.
+        /// </value>
+        PipeWriter Output { get; }
+
+        /// <summary>
+        /// Begins receiving from the client.
+        /// </summary>
+        /// <returns>The async task.</returns>
+        Task BeginReceive();
 
         /// <summary>
         /// Disconnects this instance.
         /// </summary>
         void Disconnect();
-
-        /// <summary>
-        /// Begins receiving from the client.
-        /// </summary>
-        void BeginReceive();
-
-        /// <summary>
-        /// Resets this instance.
-        /// </summary>
-        void Reset();
     }
 }

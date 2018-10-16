@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using System.Linq;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -32,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public override void HandlePacket(Player player, byte[] packet)
+        public override void HandlePacket(Player player, Span<byte> packet)
         {
             if (packet.Length < 8)
             {

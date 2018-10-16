@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
 
@@ -13,7 +14,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     internal class AnimationHandler : IPacketHandler
     {
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             if (packet.Length < 5)
             {

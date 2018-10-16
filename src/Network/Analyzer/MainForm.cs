@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System.Windows.Forms;
     using MUnique.OpenMU.Network.SimpleModulus;
     using MUnique.OpenMU.Network.Xor;
+    using Pipelines.Sockets.Unofficial;
 
     /// <summary>
     /// The main form of the analyzer.
@@ -98,8 +99,8 @@ namespace MUnique.OpenMU.Network.Analyzer
 
             this.clientListener = new Listener(
                 (int)this.numGSPort.Value,
-                () => new Decryptor(),
-                () => new Encryptor());
+                reader => new PipelinedDecryptor(reader),
+                writer => new PipelinedEncryptor(writer));
             this.clientListener.ClientAccepted += this.ClientConnected;
             this.clientListener.Start();
             this.btnStartProxy.Text = "Stop Proxy";
@@ -110,9 +111,10 @@ namespace MUnique.OpenMU.Network.Analyzer
             var clientConnection = e.AcceptedConnection;
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             serverSocket.Connect(this.txtOtherServer.Text, (int)this.numRealGSPort.Value);
-            var encryptor = new ComposableEncryptor().AddEncryptor(new Xor32Encryptor()).AddEncryptor(new SimpleModulusEncryptor(SimpleModulusEncryptor.DefaultClientKey));
-            var decryptor = new ComposableDecryptor().AddDecryptor(new SimpleModulusDecryptor(SimpleModulusDecryptor.DefaultClientKey) { AcceptWrongBlockChecksum = true });
-            var serverConnection = new Connection(serverSocket, encryptor, decryptor);
+            var socketConnection = SocketConnection.Create(serverSocket);
+            var encryptor = new PipelinedXor32Encryptor(new PipelinedSimpleModulusEncryptor(socketConnection.Output, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer);
+            var decryptor = new PipelinedSimpleModulusDecryptor(socketConnection.Input, PipelinedSimpleModulusDecryptor.DefaultClientKey) { AcceptWrongBlockChecksum = true };
+            var serverConnection = new Connection(socketConnection, decryptor, encryptor);
             var proxy = new Proxy(clientConnection, serverConnection, this.InvokeByProxy);
             this.InvokeByProxy(new Action(() =>
             {

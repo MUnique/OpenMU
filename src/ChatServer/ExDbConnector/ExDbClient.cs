@@ -5,12 +5,14 @@
 namespace MUnique.OpenMU.ChatServer.ExDbConnector
 {
     using System;
+    using System.Buffers;
     using System.Net.Sockets;
     using System.Text;
     using System.Threading.Tasks;
     using log4net;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using Pipelines.Sockets.Unofficial;
 
     /// <summary>
     /// The connected exDB server. This class includes the communication implementation between chat server and exDB server.
@@ -24,6 +26,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         private readonly int port;
         private readonly IChatServer chatServer;
         private readonly ushort chatServerPort;
+        private readonly byte[] packetBuffer = new byte[0xFF];
 
         private IConnection connection;
 
@@ -70,11 +73,11 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
 
             Log.Info("Connection to ExDB-Server established");
 
-            this.connection = new Connection(socket, null, null);
+            this.connection = new Connection(SocketConnection.Create(socket), null, null);
             this.connection.PacketReceived += this.ExDbPacketReceived;
             this.connection.Disconnected += (sender, e) => Task.Run(async () => await this.Connect());
-            this.connection.BeginReceive();
             this.SendHello();
+            await this.connection.BeginReceive();
         }
 
         private void SendHello()
@@ -88,7 +91,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             packet[5] = this.chatServerPort.GetHighByte();
             var chatServerString = "ChatServer";
             Encoding.UTF8.GetBytes(chatServerString, 0, chatServerString.Length, packet, 6);
-            this.connection.Send(packet);
+            this.connection.Output.Write(packet);
             Log.Info("Sent registration packet to ExDB-Server");
         }
 
@@ -96,11 +99,13 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// Is called when a packet is received from the exDB-Server.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="packet">The packet.</param>
-        private void ExDbPacketReceived(object sender, byte[] packet)
+        /// <param name="sequence">The packet.</param>
+        private void ExDbPacketReceived(object sender, ReadOnlySequence<byte> sequence)
         {
             try
             {
+                sequence.CopyTo(this.packetBuffer);
+                var packet = this.packetBuffer;
                 if (packet[0] != 0xC1)
                 {
                     Log.Warn($"Unknown packet received from ExDB-Server, type: {packet[0]}");
@@ -119,7 +124,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             }
             catch (Exception exception)
             {
-                Log.Error($"An error occured while processing an incoming packet from ExDB: {packet.AsString()}", exception);
+                Log.Error($"An error occured while processing an incoming packet from ExDB: {this.packetBuffer.AsString()}", exception);
             }
         }
 
@@ -216,7 +221,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                 Encoding.UTF8.GetBytes(friendAuthenticationInfo.ClientName, 0, friendAuthenticationInfo.ClientName.Length, packet, 16);
             }
 
-            this.connection.Send(packet);
+            this.connection.Output.Write(packet);
         }
     }
 }

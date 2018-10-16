@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.ChatServer
 {
     using System;
+    using System.Buffers;
     using System.Collections.Generic;
-    using System.Net.Sockets;
     using System.Text;
     using log4net;
     using MUnique.OpenMU.Network;
@@ -37,18 +37,9 @@ namespace MUnique.OpenMU.ChatServer
         private static readonly IEncryptor MessageEncryptor = new Xor3Encryptor(MessageOffset);
 
         private readonly ChatRoomManager manager;
+        private readonly byte[] packetBuffer = new byte[0xFF];
         private IConnection connection;
         private ChatRoom room;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatClient"/> class.
-        /// </summary>
-        /// <param name="socket">The socket.</param>
-        /// <param name="manager">The chat room manager.</param>
-        public ChatClient(Socket socket, ChatRoomManager manager)
-            : this(new Connection(socket, null, new Decryptor()), manager)
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatClient"/> class.
@@ -57,12 +48,13 @@ namespace MUnique.OpenMU.ChatServer
         /// <param name="manager">The manager.</param>
         public ChatClient(IConnection connection, ChatRoomManager manager)
         {
-            this.connection = connection;
             this.manager = manager;
+            this.connection = connection;
+            this.connection.PacketReceived += this.ReadPacket;
             this.connection.Disconnected += (sender, e) => this.LogOff();
-            this.connection.PacketReceived += (sender, packet) => this.PacketReceived(packet);
-            this.connection.BeginReceive();
+
             this.LastActivity = DateTime.Now;
+            this.connection.BeginReceive();
         }
 
         /// <summary>
@@ -102,7 +94,8 @@ namespace MUnique.OpenMU.ChatServer
             packet[4] = (byte)messageByteLength;
             Encoding.UTF8.GetBytes(message, 0, message.Length, packet, 5);
             MessageEncryptor.Encrypt(packet);
-            this.connection.Send(packet);
+            this.connection.Output.Write(packet);
+            this.connection.Output.FlushAsync();
         }
 
         /// <inheritdoc/>
@@ -123,7 +116,8 @@ namespace MUnique.OpenMU.ChatServer
                 i++;
             }
 
-            this.connection.Send(packet);
+            this.connection.Output.Write(packet);
+            this.connection.Output.FlushAsync();
         }
 
         /// <inheritdoc/>
@@ -136,7 +130,8 @@ namespace MUnique.OpenMU.ChatServer
             packet[3] = (byte)updateType;
             packet[4] = updatedClientId;
             Encoding.UTF8.GetBytes(updatedClientName, 0, updatedClientName.Length, packet, 5);
-            this.connection.Send(packet);
+            this.connection.Output.Write(packet);
+            this.connection.Output.FlushAsync();
         }
 
         /// <inheritdoc/>
@@ -175,9 +170,16 @@ namespace MUnique.OpenMU.ChatServer
             return $"Connection:{this.connection}, Client name:{this.Nickname}, Room-ID:{this.room?.RoomId}, Index: {this.Index}";
         }
 
-        private void PacketReceived(byte[] packet)
+        private void ReadPacket(object sender, ReadOnlySequence<byte> sequence)
         {
-            if (packet.Length < 3 || packet[0] != 0xC1)
+            if (sequence.Length < 3)
+            {
+                return;
+            }
+
+            sequence.CopyTo(this.packetBuffer);
+            var packet = this.packetBuffer;
+            if (packet[0] != 0xC1)
             {
                 return;
             }

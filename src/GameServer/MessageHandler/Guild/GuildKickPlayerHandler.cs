@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
 {
+    using System;
     using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
@@ -26,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player guildMaster, byte[] packet)
+        public void HandlePacket(Player guildMaster, Span<byte> packet)
         {
             var nickname = packet.ExtractString(3, 10, Encoding.UTF8);
             var securityCode = packet.ExtractString(13, packet.Length - 13, Encoding.UTF8);

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
+    using System;
     using System.Collections.Generic;
     using log4net;
 
@@ -28,7 +29,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Client client, byte[] packet)
+        public void HandlePacket(Client client, Span<byte> packet)
         {
             var packetSubType = packet[3];
             if (this.packetHandlers.TryGetValue(packetSubType, out IPacketHandler<Client> packetHandler))
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
             }
             else if (this.settings.DcOnUnknownPacket)
             {
-                Log.InfoFormat("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToHexString());
+                Log.InfoFormat("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
                 client.Connection.Disconnect();
             }
         }

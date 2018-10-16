@@ -10,13 +10,14 @@ namespace MUnique.OpenMU.Network.Benchmarks
     using System.Threading.Tasks;
     using BenchmarkDotNet.Attributes;
     using MUnique.OpenMU.Network.SimpleModulus;
+    using MUnique.OpenMU.Network.Xor;
 
     /// <summary>
-    /// Benchmarks for the simple modulus encryptors.
+    /// Benchmarks for the simple modulus encryption.
     /// </summary>
     [CoreJob]
     [MemoryDiagnoser]
-    [InvocationCount(10)]
+    [InvocationCount(100)]
     public class EncryptionBenchmarks
     {
         /// <summary>
@@ -29,12 +30,14 @@ namespace MUnique.OpenMU.Network.Benchmarks
         /// </summary>
         private readonly byte[] c3Packet = Convert.FromBase64String("w7kxFgK8hYpGGLgdXe7ZpTZViB+r3sRI3YSqZs7/Mh5Vmh2mXqs+3dqkvURmXrL57ASs+FkJz/236Tl9ER67R+WZyMLRMkeLF6tEBiB/4X7SsXrKUznES8of73RxwMy76HZezJbvJ7m9IOGuxcjcNwe6q1+k8fOs1Hz3sULSGlbfiB6qIBXo4onADTNYFoYCQrdtthVsF/aDsvcZ93V36gaKzzyqMhby0sjV4+TAU7719W6LZWNAcnA=");
 
+        private readonly byte[] c1Packet = Convert.FromBase64String("wf8AudHEjjSP53H6Rkp3oXj7B9z+rVDR2f0Is4bvsIsUL3RM/aTDB2FX9YG3Hkboy1Z1JThot558MeDTvNuunzfl5RbWK6TTOP97prjPGbq3IOcweopTq3fVz8vD8EuFqVVJ0jgvEZ+xoe047RHmrRgmG5zzfSWtkTmeAVzZD0i09f1jhUeBiA5HfticGr5m7iGzndSvkSwvm0D/kRBD15GlhPgTgyfQpJONrP5NEHd7NxI6JnJzBWPQM+kHgvb+BKdH95bFUmv54vlBIeUt4ovIg1r9CLEfMX+UQk89yCKcj6dXBRjgteSmQUN5MuN9o1FePv6cAPv2KMUXMBAc");
+
         /// <summary>
-        /// Benchmarks the performance of the <see cref="PipelinedSimpleModulusEncryptor"/>.
+        /// Benchmarks the performance of the <see cref="SimpleModulusEncryption"/>.
         /// </summary>
         /// <returns>The value task.</returns>
         [Benchmark]
-        public async ValueTask PipelinedSimpleModulusEncryptor()
+        public async ValueTask SimpleModulusEncryption()
         {
             var pipe = new Pipe();
             var pipelinedEncryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer);
@@ -53,17 +56,26 @@ namespace MUnique.OpenMU.Network.Benchmarks
         }
 
         /// <summary>
-        /// Benchmarks the performance of the <see cref="SimpleModulusEncryptor"/>.
+        /// Benchmarks the performance of the <see cref="MUnique.OpenMU.Network.Xor.PipelinedXor32Encryptor"/>.
         /// </summary>
+        /// <returns>The value task.</returns>
         [Benchmark]
-        public void SimpleModulusEncryptor()
+        public async ValueTask Xor32Encryption()
         {
-            var encryptor = new SimpleModulusEncryptor();
+            var pipe = new Pipe();
+            var pipelinedEncryptor = new PipelinedXor32Encryptor(pipe.Writer);
+            var readBuffer = new byte[256];
             for (int i = 0; i < PacketCount; i++)
             {
-                var result = encryptor.Encrypt(this.c3Packet);
-                //// In the server, I would process the result here
+                await pipelinedEncryptor.Writer.WriteAsync(this.c1Packet);
+                await pipelinedEncryptor.Writer.FlushAsync();
+                var readResult = await pipe.Reader.ReadAsync();
+                readResult.Buffer.CopyTo(readBuffer);
+                //// In the client/server, I would process the readBuffer here
+                pipe.Reader.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
             }
+
+            pipelinedEncryptor.Writer.Complete();
         }
     }
 }

@@ -4,10 +4,11 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
-    using System.Linq;
+    using System;
     using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
+    using MUnique.OpenMU.Network;
 
     /// <summary>
     /// Packet handler for chat messages.
@@ -26,12 +27,12 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             ////byte 3-12 char name
-            string characterName = Encoding.UTF8.GetString(packet, 3, packet.Skip(3).TakeWhile(b => b != 0).Count());
+            string characterName = packet.ExtractString(3, 10, Encoding.UTF8);
             ////byte 13-n message
-            string message = Encoding.UTF8.GetString(packet, 13, packet.Skip(13).TakeWhile(b => b != 0).Count());
+            string message = packet.ExtractString(13, packet.Length - 13, Encoding.UTF8);
 
             this.messageAction.ChatMessage(player, characterName, message, packet[2] == 0x02);
         }

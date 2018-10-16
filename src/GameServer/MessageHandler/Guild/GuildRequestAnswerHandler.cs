@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
 
@@ -24,7 +25,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             bool accept = packet[3] == 1;
             this.answerAction.AnswerRequest(player, accept);

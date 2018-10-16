@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             if (packet[3] == 1)
             {
@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
         }
 
-        private void ReadLogoutPacket(Player player, byte[] buffer)
+        private void ReadLogoutPacket(Player player, Span<byte> buffer)
         {
             if (buffer.Length < 5)
             {
@@ -64,12 +64,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             this.logoutAction.Logout(player, (LogoutType)logoutType);
         }
 
-        private void ReadLoginPacket(Player player, byte[] packet)
+        private void ReadLoginPacket(Player player, Span<byte> packet)
         {
-            byte[] userbytes = new byte[10];
-            byte[] pass = new byte[this.gameContext.Configuration.MaximumPasswordLength];
-            Array.Copy(packet, 4, userbytes, 0, 10);
-            Array.Copy(packet, 14, pass, 0, this.gameContext.Configuration.MaximumPasswordLength);
+            byte[] userbytes = packet.Slice(4, 10).ToArray();
+            byte[] pass = packet.Slice(14, this.gameContext.Configuration.MaximumPasswordLength).ToArray();
 
             this.decryptor.Decrypt(ref userbytes);
             this.decryptor.Decrypt(ref pass);
@@ -84,9 +82,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             if (this.gameContext is GameServerContext gameServerContext && player is RemotePlayer remotePlayer)
             {
                 var versionStartIndex = startTickCountIndex + 4;
-                byte[] version = new byte[5];
-                Array.Copy(packet, versionStartIndex, version, 0, 5);
-                var mainPacketHandler = gameServerContext.PacketHandlers.FirstOrDefault(ph => ph.ClientVersion.IsEqual(version));
+                var version = packet.Slice(versionStartIndex, 5).ToArray();
+
+                var mainPacketHandler = gameServerContext.PacketHandlers.FirstOrDefault(ph => ph.ClientVersion.AsSpan().IsEqual(version));
                 if (mainPacketHandler != null)
                 {
                     remotePlayer.MainPacketHandler = mainPacketHandler;

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
 
@@ -15,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         private readonly CloseNpcAction closeNpcAction = new CloseNpcAction();
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             this.closeNpcAction.CloseNpcDialog(player);
         }

@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using Pipelines.Sockets.Unofficial;
 
     /// <summary>
     /// A game server listener that listens on a TCP port which uses the default packet handlers (<see cref="GameServerContext.PacketHandlers"/>).
@@ -135,7 +136,8 @@ namespace MUnique.OpenMU.GameServer
             else
             {
                 socket.NoDelay = true;
-                var connection = new Connection(socket, new Encryptor(), new Decryptor());
+                var socketConnection = SocketConnection.Create(socket);
+                var connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
                 var remotePlayer = new RemotePlayer(this.gameContext, this.mainPacketHandler, connection);
                 this.OnPlayerConnected(remotePlayer);
                 connection.Disconnected += (sender, e) => remotePlayer.Disconnect();

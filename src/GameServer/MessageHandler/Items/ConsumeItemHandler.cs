@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Items
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
@@ -24,7 +25,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             byte invPos = packet[3];
             byte invTarget = packet[4];

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Party
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 
@@ -15,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Party
         private readonly PartyKickAction action = new PartyKickAction();
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             byte index = packet[3];
             this.action.KickPlayer(player, index);

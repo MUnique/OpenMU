@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
 
     /// <summary>
@@ -29,6 +30,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public abstract void HandlePacket(Player player, byte[] packet);
+        public abstract void HandlePacket(Player player, Span<byte> packet);
     }
 }

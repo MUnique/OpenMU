@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.Network;
@@ -26,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public override void HandlePacket(Player player, byte[] packet)
+        public override void HandlePacket(Player player, Span<byte> packet)
         {
             ushort skillId = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
             if (!player.SkillList.ContainsSkill(skillId))

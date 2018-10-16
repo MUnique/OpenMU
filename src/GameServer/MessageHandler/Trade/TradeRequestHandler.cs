@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
     using MUnique.OpenMU.Interfaces;
@@ -17,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
         private readonly TradeRequestAction requestAction = new TradeRequestAction();
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             ////0xC3, 0x05, 0x36, idtotrade[0], idtotrade[1]
             ushort pid = NumberConversionExtensions.MakeWord(packet[4], packet[3]);

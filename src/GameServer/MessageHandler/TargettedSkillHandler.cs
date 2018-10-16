@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
@@ -27,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public override void HandlePacket(Player player, byte[] packet)
+        public override void HandlePacket(Player player, Span<byte> packet)
         {
             ////          skill targt
             ////C3 len 19 XX XX TT TT

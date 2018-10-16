@@ -5,9 +5,11 @@
 namespace MUnique.OpenMU.Network
 {
     using System;
+    using System.IO.Pipelines;
     using System.Net;
     using System.Net.Sockets;
     using log4net;
+    using Pipelines.Sockets.Unofficial;
 
     /// <summary>
     /// A tcp listener which automatically creates instances of <see cref="Connection"/>s for accepted clients.
@@ -15,18 +17,18 @@ namespace MUnique.OpenMU.Network
     public class Listener
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Listener));
-        private readonly Func<IDecryptor> decryptorCreator;
-        private readonly Func<IEncryptor> encryptorCreator;
         private readonly int port;
+        private readonly Func<PipeReader, IPipelinedDecryptor> decryptorCreator;
+        private readonly Func<PipeWriter, IPipelinedEncryptor> encryptorCreator;
         private TcpListener clientListener;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Listener"/> class.
+        /// Initializes a new instance of the <see cref="Listener" /> class.
         /// </summary>
         /// <param name="port">The port on which the tcp listener should listen to.</param>
-        /// <param name="decryptorCreator">The decryptor creator, which should be used for incoming data.</param>
-        /// <param name="encryptorCreator">The encryptor creator, which should be used for outgoing data.</param>
-        public Listener(int port, Func<IDecryptor> decryptorCreator, Func<IEncryptor> encryptorCreator)
+        /// <param name="decryptorCreator">The decryptor creator function.</param>
+        /// <param name="encryptorCreator">The encryptor creator function.</param>
+        public Listener(int port, Func<PipeReader, IPipelinedDecryptor> decryptorCreator, Func<PipeWriter, IPipelinedEncryptor> encryptorCreator)
         {
             this.port = port;
             this.decryptorCreator = decryptorCreator;
@@ -56,6 +58,12 @@ namespace MUnique.OpenMU.Network
             this.clientListener?.Stop();
         }
 
+        private IConnection CreateConnection(Socket clientSocket)
+        {
+            var socketConnection = SocketConnection.Create(clientSocket);
+            return new Connection(socketConnection, this.decryptorCreator(socketConnection.Input), this.encryptorCreator(socketConnection.Output));
+        }
+
         private void OnAccept(IAsyncResult result)
         {
             Socket socket;
@@ -80,7 +88,7 @@ namespace MUnique.OpenMU.Network
                 this.clientListener.BeginAcceptSocket(this.OnAccept, null);
             }
 
-            var connection = new Connection(socket, this.encryptorCreator(), this.decryptorCreator());
+            var connection = this.CreateConnection(socket);
             this.ClientAccepted?.Invoke(this, new ClientAcceptEventArgs(connection));
         }
     }

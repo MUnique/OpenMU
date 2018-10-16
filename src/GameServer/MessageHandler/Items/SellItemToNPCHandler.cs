@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Items
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
@@ -15,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         private readonly SellItemToNpcAction sellAction = new SellItemToNpcAction();
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             byte slot = packet[3];
             this.sellAction.SellItem(player, slot);

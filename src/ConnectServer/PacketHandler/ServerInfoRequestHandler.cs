@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
+    using System;
+    using System.Buffers;
     using log4net;
 
     /// <summary>
@@ -26,7 +28,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Client client, byte[] packet)
+        public void HandlePacket(Client client, Span<byte> packet)
         {
             var serverId = (ushort)(packet[4] | packet[5] << 8);
             Log.DebugFormat("Client {0}:{1} requested Connection Info of ServerId {2}", client.Address, client.Port, serverId);
@@ -38,12 +40,12 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
 
             if (this.connectServer.ConnectInfos.TryGetValue(serverId, out byte[] connectInfo))
             {
-                client.Connection.Send(connectInfo);
+                client.Connection.Output.Write(connectInfo);
             }
             else
             {
                 Log.Debug($"Client {client.Address}:{client.Port}: Connection Info not found, sending Server List instead.");
-                client.Connection.Send(this.connectServer.ServerList.Serialize());
+                client.Connection.Output.Write(this.connectServer.ServerList.Serialize());
             }
 
             client.SendHello();

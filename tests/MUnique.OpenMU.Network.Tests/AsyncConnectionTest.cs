@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.Network.Tests
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
-    using System.Threading.Tasks;
     using NUnit.Framework;
     using Pipelines.Sockets.Unofficial;
 
@@ -20,30 +19,12 @@ namespace MUnique.OpenMU.Network.Tests
     public class AsyncConnectionTest
     {
         /// <summary>
-        /// Tests the receive function with a connection object.
-        /// </summary>
-        [Test]
-        public void TestReceive()
-        {
-            this.TestReceive(socket => new Connection(socket, null, null));
-        }
-
-        /// <summary>
-        /// Tests the receive function with a connection object with encryptor/decryptor.
-        /// </summary>
-        [Test]
-        public void TestReceiveWithEncryption()
-        {
-            this.TestReceive(socket => new Connection(socket, new Encryptor(), new Decryptor()));
-        }
-
-        /// <summary>
         /// Tests the receive function with a pipelined connection object.
         /// </summary>
         [Test]
         public void TestReceivePipelined()
         {
-            this.TestReceivePipelined(socket => new PipelinedConnection(SocketConnection.Create(socket), null, null));
+            this.TestReceivePipelined(socket => new Connection(SocketConnection.Create(socket), null, null));
         }
 
         /// <summary>
@@ -55,7 +36,7 @@ namespace MUnique.OpenMU.Network.Tests
             this.TestReceivePipelined(socket =>
             {
                 var socketConnection = SocketConnection.Create(socket);
-                return new PipelinedConnection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
+                return new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
             });
         }
 
@@ -63,50 +44,7 @@ namespace MUnique.OpenMU.Network.Tests
         /// Tests the receiving of data with any <see cref="IConnection"/> implementation.
         /// </summary>
         /// <param name="connectionCreator">The connection creator.</param>
-        private void TestReceivePipelined(Func<Socket, PipelinedConnection> connectionCreator)
-        {
-            const int maximumPacketCount = 1000;
-
-            PipelinedConnection connection = null;
-            var server = new TcpListener(IPAddress.Any, 5000);
-            server.Start();
-            server.BeginAcceptSocket(
-                asyncResult =>
-                {
-                    var clientSocket = server.EndAcceptSocket(asyncResult);
-                    connection = connectionCreator(clientSocket);
-                }, null);
-            using (var client = new TcpClient("127.0.0.1", 5000))
-            {
-                while (connection == null)
-                {
-                    Thread.Sleep(10);
-                }
-
-                int packetCount = 0;
-                connection.PacketReceived += (sender, p) => Interlocked.Increment(ref packetCount);
-                connection.BeginReceive();
-
-                var packet = new byte[] { 0xC1, 10, 0, 0, 0, 0, 0, 0, 0, 0 };
-                for (int i = 0; i < maximumPacketCount; i++)
-                {
-                    client.Client.BeginSend(packet, 0, packet.Length, SocketFlags.None, null, null);
-                }
-
-                while (packetCount < maximumPacketCount)
-                {
-                    Thread.Sleep(1);
-                }
-            }
-
-            server.Stop();
-        }
-
-        /// <summary>
-        /// Tests the receiving of data with any <see cref="IConnection"/> implementation.
-        /// </summary>
-        /// <param name="connectionCreator">The connection creator.</param>
-        private void TestReceive(Func<Socket, IConnection> connectionCreator)
+        private void TestReceivePipelined(Func<Socket, IConnection> connectionCreator)
         {
             const int maximumPacketCount = 1000;
 
@@ -115,10 +53,10 @@ namespace MUnique.OpenMU.Network.Tests
             server.Start();
             server.BeginAcceptSocket(
                 asyncResult =>
-                                     {
-                                         var clientSocket = server.EndAcceptSocket(asyncResult);
-                                         connection = connectionCreator(clientSocket);
-                                     }, null);
+                {
+                    var clientSocket = server.EndAcceptSocket(asyncResult);
+                    connection = connectionCreator(clientSocket);
+                }, null);
             using (var client = new TcpClient("127.0.0.1", 5000))
             {
                 while (connection == null)

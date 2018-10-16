@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
     using System;
+    using System.Buffers;
     using System.Text;
     using log4net;
 
@@ -44,7 +45,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Client client, byte[] packet)
+        public void HandlePacket(Client client, Span<byte> packet)
         {
             if (packet.Length < 6)
             {
@@ -61,11 +62,11 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
 
             if (VersionCompare(this.settings.CurrentPatchVersion, 0, packet, 3, this.settings.CurrentPatchVersion.Length) == VersionCompareResult.VersionTooLow)
             {
-                client.Connection.Send(this.GetPatchPacket());
+                client.Connection.Output.Write(this.GetPatchPacket());
             }
             else
             {
-                client.Connection.Send(PatchOk);
+                client.Connection.Output.Write(PatchOk);
             }
 
             client.FtpRequestCount++;
@@ -80,7 +81,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         /// <param name="actualIndex">The actual index.</param>
         /// <param name="count">The count.</param>
         /// <returns>The compare result.</returns>
-        private static VersionCompareResult VersionCompare(byte[] expectedVersion, int expectedIndex, byte[] actualVersion, int actualIndex, int count)
+        private static VersionCompareResult VersionCompare(byte[] expectedVersion, int expectedIndex, Span<byte> actualVersion, int actualIndex, int count)
         {
             for (int i = 0; i < count; ++i)
             {

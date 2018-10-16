@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network
 {
     using System;
+    using System.Buffers;
     using System.Linq;
     using System.Text;
 
@@ -51,12 +52,28 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
+        /// Extracts a string of a byte span with the specified encoding.
+        /// </summary>
+        /// <param name="span">The byte span.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="maximumBytes">The maximum length.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <returns>The resulting string.</returns>
+        /// <remarks>This is not optimal yet, since it creates a new byte array. We might wait until encoding works on spans.</remarks>
+        public static string ExtractString(this Span<byte> span, int startIndex, int maximumBytes, Encoding encoding)
+        {
+            var content = span.Slice(startIndex, maximumBytes).ToArray();
+            int count = content.TakeWhile(b => b != 0).Count();
+            return encoding.GetString(content, 0, count);
+        }
+
+        /// <summary>
         /// Determines whether the specified other array is equal.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="otherArray">The other array.</param>
         /// <returns>True, if all elements of the other array match with this array.</returns>
-        public static bool IsEqual(this byte[] array, byte[] otherArray)
+        public static bool IsEqual(this Span<byte> array, Span<byte> otherArray)
         {
             if (array.Length != otherArray.Length)
             {
@@ -75,6 +92,16 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
+        /// Converts the byte span into a readable HEX string.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns>The HEX string.</returns>
+        public static string AsString(this Span<byte> bytes)
+        {
+            return bytes.ToArray().AsString();
+        }
+
+        /// <summary>
         /// Converts the byte array into a readable HEX string.
         /// </summary>
         /// <param name="bytes">The bytes.</param>
@@ -82,6 +109,27 @@ namespace MUnique.OpenMU.Network
         public static string AsString(this byte[] bytes)
         {
             return BitConverter.ToString(bytes).Replace('-', ' ');
+        }
+
+        /// <summary>
+        /// Writes the string into the given span.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="encoding">The encoding.</param>
+        public static void WriteString(this Span<byte> target, string text, Encoding encoding)
+        {
+            target.Clear();
+            var array = ArrayPool<byte>.Shared.Rent(encoding.GetByteCount(text));
+            try
+            {
+                var size = encoding.GetBytes(text, 0, text.Length, array, 0);
+                array.AsSpan(0, size).CopyTo(target);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(array, true);
+            }
         }
 
         /// <summary>
@@ -128,9 +176,31 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">Byte array.</param>
         /// <param name="startIndex">Starting index. The array needs 3 more elements.</param>
         /// <returns>An unsigned integer.</returns>
-        public static uint MakeDwordBigEndian(this byte[] array, int startIndex)
+        public static uint MakeDwordBigEndian(this Span<byte> array, int startIndex)
         {
-            return unchecked(((uint)array[startIndex + 3] << 24) | (uint)(array[startIndex + 2] << 16) | (uint)(array[startIndex + 1] << 8) | array[startIndex]);
+            var source = array.Slice(startIndex, 4);
+            return unchecked(((uint)source[3] << 24) | (uint)(source[2] << 16) | (uint)(source[1] << 8) | source[0]);
+        }
+
+        /// <summary>
+        /// Converts bytes of an array to an 32bit unsigned Integer, big endian.
+        /// </summary>
+        /// <param name="array">Byte array.</param>
+        /// <param name="startIndex">Starting index. The array needs 3 more elements.</param>
+        /// <returns>An unsigned integer.</returns>
+        public static uint MakeDwordBigEndian(this byte[] array, int startIndex) =>
+            MakeDwordBigEndian(array.AsSpan(), startIndex);
+
+        /// <summary>
+        /// Converts bytes of an array to an 32bit unsigned Integer, small endian.
+        /// </summary>
+        /// <param name="array">Byte array.</param>
+        /// <param name="startIndex">Starting index. The array needs 3 more elements.</param>
+        /// <returns>An unsigned integer.</returns>
+        public static uint MakeDwordSmallEndian(this Span<byte> array, int startIndex)
+        {
+            var source = array.Slice(startIndex, 4);
+            return unchecked(((uint)source[0] << 24) | (uint)(source[1] << 16) | (uint)(source[2] << 8) | source[3]);
         }
 
         /// <summary>
@@ -139,9 +209,18 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">Byte array.</param>
         /// <param name="startIndex">Starting index. The array needs 3 more elements.</param>
         /// <returns>An unsigned integer.</returns>
-        public static uint MakeDwordSmallEndian(this byte[] array, int startIndex)
+        public static uint MakeDwordSmallEndian(this byte[] array, int startIndex) =>
+            MakeDwordSmallEndian(array.AsSpan(), startIndex);
+
+        /// <summary>
+        /// Converts bytes of an array to an unsigned short, small endian.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns>An unsigned short.</returns>
+        public static ushort MakeWordSmallEndian(this Span<byte> array, int startIndex)
         {
-            return unchecked(((uint)array[startIndex] << 24) | (uint)(array[startIndex + 1] << 16) | (uint)(array[startIndex + 2] << 8) | array[startIndex + 3]);
+            return (ushort)((array[startIndex] << 8) | array[startIndex + 1]);
         }
 
         /// <summary>
@@ -150,10 +229,8 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The array.</param>
         /// <param name="startIndex">The start index.</param>
         /// <returns>An unsigned short.</returns>
-        public static ushort MakeWordSmallEndian(this byte[] array, int startIndex)
-        {
-            return (ushort)((array[startIndex] << 8) | array[startIndex + 1]);
-        }
+        public static ushort MakeWordSmallEndian(this byte[] array, int startIndex) =>
+            MakeWordSmallEndian(array.AsSpan(), startIndex);
 
         /// <summary>
         /// Converts bytes of an array to an unsigned short, small endian.

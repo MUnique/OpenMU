@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Party
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Party;
     using MUnique.OpenMU.Network;
@@ -16,7 +17,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Party
         private readonly PartyRequestAction action = new PartyRequestAction();
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             ushort toRequestId = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
             var toRequest = player.GetObservingPlayerWithId(toRequestId);

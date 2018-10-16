@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using System.Linq;
     using System.Text;
     using MUnique.OpenMU.GameLogic;
@@ -52,7 +53,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public override void HandlePacket(Player player, byte[] packet)
+        public override void HandlePacket(Player player, Span<byte> packet)
         {
             switch (packet[3])
             {
@@ -78,7 +79,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                     player.ClientReadyAfterMapChange();
                     break;
                 case 0x30: ////GCSkillKeyRecv
-                    this.saveKeyConfigurationAction.SaveKeyConfiguration(player, packet.Skip(4).ToArray());
+                    this.saveKeyConfigurationAction.SaveKeyConfiguration(player, packet.Slice(4).ToArray());
                     break;
                 case 0x52:
                     this.AddMasterSkillPoint(player, packet);
@@ -86,7 +87,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
         }
 
-        private void AddMasterSkillPoint(Player player, byte[] packet)
+        private void AddMasterSkillPoint(Player player, Span<byte> packet)
         {
             // LO HI
             // C1 08 F3 52 A6 01 00 00
@@ -94,32 +95,32 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             this.addMasterPointAction.AddMasterPoint(player, skillId);
         }
 
-        private void ReadIncreaseStats(Player player, byte[] buffer)
+        private void ReadIncreaseStats(Player player, Span<byte> buffer)
         {
             var statType = (CharacterStatType)buffer[4];
             this.increaseStatsAction.IncreaseStats(player, statType.GetAttributeDefinition());
         }
 
-        private void ReadFocusCharacter(Player player, byte[] packet)
+        private void ReadFocusCharacter(Player player, Span<byte> packet)
         {
             string characterName = packet.ExtractString(4, 10, Encoding.UTF8);
             this.focusCharacterAction.FocusCharacter(player, characterName);
         }
 
-        private void ReadSelectCharacter(Player player, byte[] packet)
+        private void ReadSelectCharacter(Player player, Span<byte> packet)
         {
             string characterName = packet.ExtractString(4, 10, Encoding.UTF8);
             this.characterSelectAction.SelectCharacter(player, characterName);
         }
 
-        private void ReadDeleteCharacter(Player player, byte[] packet)
+        private void ReadDeleteCharacter(Player player, Span<byte> packet)
         {
             string characterName = packet.ExtractString(4, 10, Encoding.UTF8);
             string securityCode = packet.ExtractString(14, 7, Encoding.UTF8);
             this.deleteCharacterAction.DeleteCharacter(player, characterName, securityCode);
         }
 
-        private void ReadCreateCharacter(Player player, byte[] packet)
+        private void ReadCreateCharacter(Player player, Span<byte> packet)
         {
             var characterName = packet.ExtractString(4, 10, Encoding.UTF8);
             int classNumber = packet[14] >> 2;

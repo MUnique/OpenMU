@@ -5,116 +5,72 @@
 namespace MUnique.OpenMU.Network
 {
     using System;
-    using System.Linq;
+    using System.Buffers;
+    using System.IO.Pipelines;
     using System.Net;
-    using System.Net.Sockets;
+    using System.Threading.Tasks;
     using log4net;
+    using Pipelines.Sockets.Unofficial;
 
     /// <summary>
-    /// The standard connection which uses a tcp socket.
+    /// A connection which works on <see cref="IDuplexPipe"/>.
     /// </summary>
-    public sealed class Connection : IConnection
+    /// <seealso cref="MUnique.OpenMU.Network.PacketPipeReaderBase" />
+    public sealed class Connection : PacketPipeReaderBase, IConnection
     {
-        private const int BufferSize = 100;
         private readonly ILog log = LogManager.GetLogger(typeof(Connection));
-        private readonly byte[] buffer = new byte[BufferSize];
-        private readonly ListPacketQueue packetBuffer = new ListPacketQueue();
-        private readonly IEncryptor encryptor;
-        private readonly IDecryptor decryptor;
-        private readonly SocketAsyncEventArgs receiveEventArgs;
+        private readonly IPipelinedDecryptor decryptionPipe;
+        private readonly IPipelinedEncryptor encryptionPipe;
         private readonly EndPoint remoteEndPoint;
-        private Socket socket;
-
+        private IDuplexPipe duplexPipe;
         private bool disconnected;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Connection"/> class.
         /// </summary>
-        /// <param name="socket">The socket.</param>
-        /// <param name="encryptor">The encryptor.</param>
-        /// <param name="decryptor">The decryptor.</param>
-        public Connection(Socket socket, IEncryptor encryptor, IDecryptor decryptor)
+        /// <param name="duplexPipe">The duplex pipe of the (socket) connection.</param>
+        /// <param name="decryptionPipe">The decryption pipe.</param>
+        /// <param name="encryptionPipe">The encryption pipe.</param>
+        public Connection(IDuplexPipe duplexPipe, IPipelinedDecryptor decryptionPipe, IPipelinedEncryptor encryptionPipe)
         {
-            this.socket = socket;
-            this.remoteEndPoint = socket.RemoteEndPoint;
-            this.encryptor = encryptor;
-            this.decryptor = decryptor;
-            encryptor?.Reset();
-            decryptor?.Reset();
-
-            this.receiveEventArgs = new SocketAsyncEventArgs();
-            this.receiveEventArgs.SetBuffer(this.buffer, 0, this.buffer.Length);
-            this.receiveEventArgs.Completed += (sender, args) => this.EndReceive(args);
+            this.duplexPipe = duplexPipe;
+            this.decryptionPipe = decryptionPipe;
+            this.encryptionPipe = encryptionPipe;
+            this.Source = this.decryptionPipe?.Reader ?? this.duplexPipe.Input;
+            this.remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
         }
 
-        /// <inheritdoc/>
-        public event PacketReceivedHandler PacketReceived;
+        /// <inheritdoc />
+        public event PipedPacketReceivedHandler PacketReceived;
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public event DisconnectedHandler Disconnected;
 
+        /// <inheritdoc />
+        public bool Connected => this.SocketConnection?.Socket != null && !this.disconnected && this.SocketConnection.Socket.Connected;
+
+        /// <inheritdoc />
+        public PipeWriter Output => this.encryptionPipe?.Writer ?? this.duplexPipe.Output;
+
         /// <summary>
-        /// Gets or sets the socket.
+        /// Gets the socket connection, if the <see cref="duplexPipe"/> is an instance of <see cref="SocketConnection"/>. Otherwise, it returns null.
         /// </summary>
-        /// <value>
-        /// The socket.
-        /// </value>
-        public Socket Socket
-        {
-            get => this.socket;
+        private SocketConnection SocketConnection => this.duplexPipe as SocketConnection;
 
-            set
-            {
-                this.socket = value;
-                this.disconnected = false;
-            }
+        /// <inheritdoc/>
+        public override string ToString() => this.remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
+
+        /// <inheritdoc/>
+        public async Task BeginReceive()
+        {
+            await this.ReadSource().ConfigureAwait(false);
+            this.Disconnect();
         }
 
-        /// <inheritdoc/>
-        public bool Connected => this.socket != null && !this.disconnected && this.socket.Connected;
-
-        /// <inheritdoc/>
-        public void Send(byte[] packet)
-        {
-            if (this.Connected)
-            {
-                using (ThreadContext.Stacks["RemoteEndPoint"].Push(this.remoteEndPoint.ToString()))
-                {
-                    if (this.log.IsDebugEnabled)
-                    {
-                        this.log.Debug($"Send (before encryption): {packet.AsString()}");
-                    }
-
-                    if (this.encryptor != null)
-                    {
-                        packet = this.encryptor.Encrypt(packet);
-                    }
-
-                    if (this.log.IsDebugEnabled)
-                    {
-                        this.log.Debug($"Send (after encryption): {packet.AsString()}");
-                    }
-
-                    var currentSocket = this.socket;
-                    if (currentSocket != null && this.Connected)
-                    {
-                        try
-                        {
-                            currentSocket.Send(packet, SocketFlags.None);
-                        }
-                        catch (Exception ex)
-                        {
-                            this.log.Debug($"Error while sending packet {packet.AsString()}", ex);
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void Disconnect()
         {
-            using (ThreadContext.Stacks["RemoteEndPoint"].Push(this.remoteEndPoint.ToString()))
+            using (ThreadContext.Stacks["Connection"].Push(this.ToString()))
             {
                 if (this.disconnected)
                 {
@@ -123,10 +79,11 @@ namespace MUnique.OpenMU.Network
                 }
 
                 this.log.Debug("Disconnecting...");
-                if (this.socket != null)
+                if (this.duplexPipe != null)
                 {
-                    this.socket.Dispose();
-                    this.socket = null;
+                    this.ReadCancellationTokenSource.Cancel();
+                    (this.duplexPipe as IDisposable)?.Dispose();
+                    this.duplexPipe = null;
                 }
 
                 this.log.Debug("Disconnected");
@@ -137,123 +94,58 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <inheritdoc/>
-        public void BeginReceive()
-        {
-            if (this.socket != null)
-            {
-                var pending = this.socket.ReceiveAsync(this.receiveEventArgs);
-                if (!pending)
-                {
-                    // The I/O operation completed synchronously.
-                    // In this case, The Completed event on the event args will not be raised, so we call it manually.
-                    this.EndReceive(this.receiveEventArgs);
-                }
-            }
-            else
-            {
-                this.Disconnect();
-            }
-        }
-
-        /// <inheritdoc/>
-        public void Reset()
-        {
-            this.log.Debug("Reseting connection object.");
-            this.packetBuffer.Reset();
-            this.encryptor?.Reset();
-            this.decryptor?.Reset();
-
-            this.Disconnected = null;
-        }
-
-        /// <inheritdoc/>
         public void Dispose()
         {
-            this.log.Debug("Disposing connection");
             this.Disconnect();
             this.PacketReceived = null;
             this.Disconnected = null;
-            this.receiveEventArgs.Dispose();
         }
 
-        /// <inheritdoc/>
-        public override string ToString()
+        /// <summary>
+        /// Sends the specified packet.
+        /// </summary>
+        /// <param name="packet">The packet.</param>
+        public void Send(ReadOnlySpan<byte> packet)
         {
-            var currentSocket = this.Socket;
-            if (currentSocket == null)
+            if (this.Connected)
             {
-                return string.Empty;
-            }
-
-            return currentSocket.RemoteEndPoint.ToString();
-        }
-
-        private void EndReceive(SocketAsyncEventArgs args)
-        {
-            using (ThreadContext.Stacks["RemoteEndPoint"].Push(this.remoteEndPoint.ToString()))
-            {
-                int length = args.BytesTransferred;
-                if (length == 0)
-                {
-                    this.log.Debug("client disconnected");
-                    this.Disconnect();
-                    return;
-                }
-
-                if (this.log.IsDebugEnabled)
-                {
-                    this.log.Debug($"Data received, length: {length}");
-                }
-
-                this.packetBuffer.AddRange(args.Buffer.Take(length));
-                this.RaisePacketReceivedEvents();
-                if (args.LastOperation == SocketAsyncOperation.Disconnect)
-                {
-                    this.Disconnect();
-                }
-                else
-                {
-                    this.BeginReceive();
-                }
-            }
-        }
-
-        private void RaisePacketReceivedEvents()
-        {
-            var packet = this.packetBuffer.DequeueNextPacket();
-            while (packet != null)
-            {
-                if (this.log.IsDebugEnabled)
-                {
-                    this.log.Debug($"Packet received (before decryption): {packet.AsString()}");
-                }
-
-                if (this.decryptor != null && !this.decryptor.Decrypt(ref packet))
-                {
-                    this.log.Error("packet is malformed or can't be decrypted -> disconnect");
-                    this.Disconnect();
-                }
-
-                var packetReceivedHandler = this.PacketReceived;
-                if (packetReceivedHandler != null)
+                using (ThreadContext.Stacks["RemoteEndPoint"].Push(this.remoteEndPoint.ToString()))
                 {
                     if (this.log.IsDebugEnabled)
                     {
-                        this.log.Debug($"Packet received (after decryption): {packet.AsString()}");
+                        this.log.Debug($"Send (before encryption): {packet.ToArray().AsString()}");
                     }
 
-                    try
+                    var currentOutput = this.Output;
+                    if (currentOutput != null && this.Connected)
                     {
-                        packetReceivedHandler(this, packet);
-                    }
-                    catch (Exception exception)
-                    {
-                        this.log.Error($"An error occured while processing an incoming packet: {packet.AsString()}", exception);
+                        try
+                        {
+                            currentOutput.Write(packet);
+                            currentOutput.FlushAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            this.log.Debug($"Error while sending packet {packet.ToArray().AsString()}", ex);
+                        }
                     }
                 }
-
-                packet = this.packetBuffer.DequeueNextPacket();
             }
+        }
+
+        /// <inheritdoc />
+        protected override void OnComplete()
+        {
+            this.Disconnect();
+        }
+
+        /// <summary>
+        /// Reads the mu online packet by raising <see cref="PacketReceived"/>.
+        /// </summary>
+        /// <param name="packet">The mu online packet.</param>
+        protected override void ReadPacket(ReadOnlySequence<byte> packet)
+        {
+            this.PacketReceived?.Invoke(this, packet);
         }
     }
 }
