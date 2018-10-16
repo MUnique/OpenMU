@@ -18,6 +18,7 @@ namespace MUnique.OpenMU.Network.Benchmarks
         public static void Main(string[] args)
         {
             BenchmarkRunner.Run<EncryptionBenchmarks>();
+            BenchmarkRunner.Run<PacketSending>();
         }
     }
 }
