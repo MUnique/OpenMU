@@ -125,7 +125,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus)
                     ?? throw new ArgumentException($"Item '{item}' belongs to an ancient set but doesn't have an ancient bonus option");
 
-                array[startIndex + 4] |= (byte) ((ancientBonus.Level << 2) & AncientBonusLevelMask);
+                array[startIndex + 4] |= (byte)((ancientBonus.Level << 2) & AncientBonusLevelMask);
             }
 
             array[startIndex + 5] = (byte)(item.Definition.Group << 4);
@@ -258,7 +258,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private static void ReadAncientOption(byte ancientByte, IContext persistenceContext, Item item)
         {
-            
             if ((ancientByte & AncientMask) == 0)
             {
                 return;
