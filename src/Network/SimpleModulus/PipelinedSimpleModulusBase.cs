@@ -141,7 +141,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
             for (var i = 1; i < size; i++)
             {
-                data[i - 1] = (byte) ((data[i - 1] << shift) | (data[i] >> (8 - shift)));
+                data[i - 1] = (byte)((data[i - 1] << shift) | (data[i] >> (8 - shift)));
             }
 
             data[size - 1] <<= shift;

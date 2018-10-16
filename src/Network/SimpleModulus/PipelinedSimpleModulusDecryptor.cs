@@ -139,7 +139,8 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                 }
 
                 rest = rest.Slice(EncryptedBlockSize);
-            } while (rest.Length > 0);
+            }
+            while (rest.Length > 0);
 
             return sizeCounter;
         }

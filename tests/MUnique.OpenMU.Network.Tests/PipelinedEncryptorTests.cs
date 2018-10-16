@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.Network.Tests
         {
             var pipe = new Pipe();
             var encryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer);
-            encryptor.Writer.Write(new byte[]{0xC1, 0x03, 0x01});
+            encryptor.Writer.Write(new byte[] { 0xC1, 0x03, 0x01 });
             encryptor.Writer.Complete();
             var result = await pipe.Reader.ReadAsync().ConfigureAwait(false);
             Assert.That(result.IsCompleted, Is.True);

@@ -94,6 +94,7 @@ namespace MUnique.OpenMU.Network.Tests
         /// Tests the encryption-decryption cycle for the packet. The specified packet must be the same after the packet has passed this cycle.
         /// </summary>
         /// <param name="packet">The packet.</param>
+        /// <returns>The async task.</returns>
         private async Task EncryptDecryptFromClientToServer(byte[] packet)
         {
             // this pipe connects the encryptor with the decryptor. You can imagine this as the client-to-server pipe of a network socket, for example.
