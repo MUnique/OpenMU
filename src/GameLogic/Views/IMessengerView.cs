@@ -85,8 +85,8 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// <summary>
         /// A friend has been added to the friendlist.
         /// </summary>
-        /// <param name="friendname">The character name of the friend.</param>
-        void FriendAdded(string friendname);
+        /// <param name="friendName">The character name of the friend.</param>
+        void FriendAdded(string friendName);
 
         /// <summary>
         /// A friend has been deleted from the friendlist.
