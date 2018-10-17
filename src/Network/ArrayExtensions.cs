@@ -275,16 +275,25 @@ namespace MUnique.OpenMU.Network
         /// <param name="startIndex">The start index.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
         public static void SetIntegerSmallEndian(this byte[] array, uint value, int startIndex)
+        => array.AsSpan(startIndex, 4).SetIntegerSmallEndian(value);
+
+        /// <summary>
+        /// Sets the bytes of an integer (small endian) to an byte array at the specified start index.
+        /// </summary>
+        /// <param name="span">The span.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="ArgumentOutOfRangeException">span - The span is too short.</exception>
+        public static void SetIntegerSmallEndian(this Span<byte> span, uint value)
         {
-            if (array.Length < startIndex + 4)
+            if (span.Length < 4)
             {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+                throw new ArgumentOutOfRangeException(nameof(span), "The span is too short.");
             }
 
-            array[startIndex] = (byte)((value >> 24) & 0xFF);
-            array[startIndex + 1] = (byte)((value >> 16) & 0xFF);
-            array[startIndex + 2] = (byte)((value >> 8) & 0xFF);
-            array[startIndex + 3] = (byte)(value & 0xFF);
+            span[0] = (byte)((value >> 24) & 0xFF);
+            span[1] = (byte)((value >> 16) & 0xFF);
+            span[2] = (byte)((value >> 8) & 0xFF);
+            span[3] = (byte)(value & 0xFF);
         }
 
         /// <summary>
@@ -294,17 +303,26 @@ namespace MUnique.OpenMU.Network
         /// <param name="value">The integer value.</param>
         /// <param name="startIndex">The start index.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
-        public static void SetIntegerBigEndian(this byte[] array, uint value, int startIndex)
+        public static void SetIntegerBigEndian(this byte[] array, uint value, int startIndex) =>
+            array.AsSpan(startIndex, 4).SetIntegerBigEndian(value);
+
+        /// <summary>
+        /// Sets the bytes of an integer (big endian) to an byte array at the specified start index.
+        /// </summary>
+        /// <param name="span">The target span.</param>
+        /// <param name="value">The integer value.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
+        public static void SetIntegerBigEndian(this Span<byte> span, uint value)
         {
-            if (array.Length < startIndex + 4)
+            if (span.Length < 4)
             {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+                throw new ArgumentOutOfRangeException(nameof(span), "The span is too short.");
             }
 
-            array[startIndex + 3] = (byte)((value >> 24) & 0xFF);
-            array[startIndex + 2] = (byte)((value >> 16) & 0xFF);
-            array[startIndex + 1] = (byte)((value >> 8) & 0xFF);
-            array[startIndex] = (byte)(value & 0xFF);
+            span[3] = (byte)((value >> 24) & 0xFF);
+            span[2] = (byte)((value >> 16) & 0xFF);
+            span[1] = (byte)((value >> 8) & 0xFF);
+            span[0] = (byte)(value & 0xFF);
         }
 
         /// <summary>
@@ -315,20 +333,28 @@ namespace MUnique.OpenMU.Network
         /// <param name="startIndex">The start index.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
         public static void SetLongBigEndian(this byte[] array, long value, int startIndex)
+            => SetLongBigEndian(array.AsSpan(startIndex), value);
+
+        /// <summary>
+        /// Sets the bytes of a long (big endian) to a byte span.
+        /// </summary>
+        /// <param name="array">The target array.</param>
+        /// <param name="value">The long value.</param>
+        public static void SetLongBigEndian(this Span<byte> array, long value)
         {
-            if (array.Length < startIndex + 8)
+            if (array.Length < 8)
             {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+                throw new ArgumentException("span is too small.", nameof(array));
             }
 
-            array[startIndex + 7] = (byte)((value / 0x100000000000000) & 0xFF);
-            array[startIndex + 6] = (byte)((value / 0x1000000000000) & 0xFF);
-            array[startIndex + 5] = (byte)((value / 0x10000000000) & 0xFF);
-            array[startIndex + 4] = (byte)((value / 0x100000000) & 0xFF);
-            array[startIndex + 3] = (byte)((value >> 24) & 0xFF);
-            array[startIndex + 2] = (byte)((value >> 16) & 0xFF);
-            array[startIndex + 1] = (byte)((value >> 8) & 0xFF);
-            array[startIndex] = (byte)(value & 0xFF);
+            array[7] = (byte)((value / 0x100000000000000) & 0xFF);
+            array[6] = (byte)((value / 0x1000000000000) & 0xFF);
+            array[5] = (byte)((value / 0x10000000000) & 0xFF);
+            array[4] = (byte)((value / 0x100000000) & 0xFF);
+            array[3] = (byte)((value >> 24) & 0xFF);
+            array[2] = (byte)((value >> 16) & 0xFF);
+            array[1] = (byte)((value >> 8) & 0xFF);
+            array[0] = (byte)(value & 0xFF);
         }
 
         /// <summary>
@@ -337,22 +363,61 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The target array.</param>
         /// <param name="value">The long value.</param>
         /// <param name="startIndex">The start index.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
         public static void SetLongSmallEndian(this byte[] array, long value, int startIndex)
+            => SetLongSmallEndian(array.AsSpan(startIndex), value);
+
+        /// <summary>
+        /// Sets the bytes of a long (small endian) to an byte array at the specified start index.
+        /// </summary>
+        /// <param name="array">The target array.</param>
+        /// <param name="value">The long value.</param>
+        public static void SetLongSmallEndian(this Span<byte> array, long value)
         {
-            if (array.Length < startIndex + 8)
+            if (array.Length < 8)
             {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+                throw new ArgumentException("span is too small.", nameof(array));
             }
 
-            array[startIndex] = (byte)((value / 0x100000000000000) & 0xFF);
-            array[startIndex + 1] = (byte)((value / 0x1000000000000) & 0xFF);
-            array[startIndex + 2] = (byte)((value / 0x10000000000) & 0xFF);
-            array[startIndex + 3] = (byte)((value / 0x100000000) & 0xFF);
-            array[startIndex + 4] = (byte)((value >> 24) & 0xFF);
-            array[startIndex + 5] = (byte)((value >> 16) & 0xFF);
-            array[startIndex + 6] = (byte)((value >> 8) & 0xFF);
-            array[startIndex + 7] = (byte)(value & 0xFF);
+            array[0] = (byte)((value / 0x100000000000000) & 0xFF);
+            array[1] = (byte)((value / 0x1000000000000) & 0xFF);
+            array[2] = (byte)((value / 0x10000000000) & 0xFF);
+            array[3] = (byte)((value / 0x100000000) & 0xFF);
+            array[4] = (byte)((value >> 24) & 0xFF);
+            array[5] = (byte)((value >> 16) & 0xFF);
+            array[6] = (byte)((value >> 8) & 0xFF);
+            array[7] = (byte)(value & 0xFF);
+        }
+
+        /// <summary>
+        /// Sets the bytes of a short (small endian) at a byte span.
+        /// </summary>
+        /// <param name="array">The target array.</param>
+        /// <param name="value">The short value.</param>
+        public static void SetShortSmallEndian(this Span<byte> array, ushort value)
+        {
+            if (array.Length < 2)
+            {
+                throw new ArgumentException("span is too small.", nameof(array));
+            }
+
+            array[0] = value.GetHighByte();
+            array[1] = value.GetLowByte();
+        }
+
+        /// <summary>
+        /// Sets the bytes of a short (big endian) at a byte span.
+        /// </summary>
+        /// <param name="array">The target span.</param>
+        /// <param name="value">The short value.</param>
+        public static void SetShortBigEndian(this Span<byte> array, ushort value)
+        {
+            if (array.Length < 2)
+            {
+                throw new ArgumentException("span is too small.", nameof(array));
+            }
+
+            array[1] = value.GetHighByte();
+            array[0] = value.GetLowByte();
         }
 
         /// <summary>
@@ -361,17 +426,8 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The target array.</param>
         /// <param name="value">The short value.</param>
         /// <param name="startIndex">The start index.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
         public static void SetShortSmallEndian(this byte[] array, ushort value, int startIndex)
-        {
-            if (array.Length < startIndex + 2)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            }
-
-            array[startIndex] = value.GetHighByte();
-            array[startIndex + 1] = value.GetLowByte();
-        }
+            => array.AsSpan(startIndex).SetShortSmallEndian(value);
 
         /// <summary>
         /// Sets the bytes of a short (big endian) to an byte array at the specified start index.
@@ -379,17 +435,8 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The target array.</param>
         /// <param name="value">The short value.</param>
         /// <param name="startIndex">The start index.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
         public static void SetShortBigEndian(this byte[] array, ushort value, int startIndex)
-        {
-            if (array.Length < startIndex + 2)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            }
-
-            array[startIndex + 1] = value.GetHighByte();
-            array[startIndex] = value.GetLowByte();
-        }
+            => array.AsSpan(startIndex).SetShortBigEndian(value);
 
         /// <summary>
         /// Gets the size of the packet header.
