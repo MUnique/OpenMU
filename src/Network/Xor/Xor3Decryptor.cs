@@ -4,10 +4,12 @@
 
 namespace MUnique.OpenMU.Network.Xor
 {
+    using System;
+
     /// <summary>
     /// A decryptor which XOR-decrypts data using a 3-byte key.
     /// </summary>
-    public class Xor3Decryptor : Xor3Encryptor, IDecryptor
+    public class Xor3Decryptor : Xor3Encryptor, IDecryptor, ISpanDecryptor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Xor3Decryptor"/> class.
@@ -21,7 +23,14 @@ namespace MUnique.OpenMU.Network.Xor
         /// <inheritdoc/>
         public bool Decrypt(ref byte[] packet)
         {
-            packet = this.InternalEncrypt(packet);
+            this.Encrypt(packet);
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public bool Decrypt(Span<byte> packet)
+        {
+            this.Encrypt(packet);
             return true;
         }
     }
