@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
     using System;
-    using System.Buffers;
     using log4net;
+    using MUnique.OpenMU.Network;
 
     /// <summary>
     /// Handles the server info request of a client, which means the client wants to know the connect data of the server it just clicked on.
@@ -40,12 +40,21 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
 
             if (this.connectServer.ConnectInfos.TryGetValue(serverId, out byte[] connectInfo))
             {
-                client.Connection.Output.Write(connectInfo);
+                using (var writer = client.Connection.StartSafeWrite(connectInfo[0], connectInfo.Length))
+                {
+                    connectInfo.CopyTo(writer.Span);
+                    writer.Commit();
+                }
             }
             else
             {
                 Log.Debug($"Client {client.Address}:{client.Port}: Connection Info not found, sending Server List instead.");
-                client.Connection.Output.Write(this.connectServer.ServerList.Serialize());
+                var serverList = this.connectServer.ServerList.Serialize();
+                using (var writer = client.Connection.StartSafeWrite(serverList[0], serverList.Length))
+                {
+                    serverList.CopyTo(writer.Span);
+                    writer.Commit();
+                }
             }
 
             client.SendHello();

@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
     using System;
-    using System.Buffers;
     using System.Text;
     using log4net;
+    using MUnique.OpenMU.Network;
 
     /// <summary>
     /// Handles the ftp related request. The client is sending its version, and the server answers
@@ -60,13 +60,20 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
                 return;
             }
 
+            byte[] response;
             if (VersionCompare(this.settings.CurrentPatchVersion, 0, packet, 3, this.settings.CurrentPatchVersion.Length) == VersionCompareResult.VersionTooLow)
             {
-                client.Connection.Output.Write(this.GetPatchPacket());
+                response = this.GetPatchPacket();
             }
             else
             {
-                client.Connection.Output.Write(PatchOk);
+                response = PatchOk;
+            }
+
+            using (var writer = client.Connection.StartSafeWrite(response[0], response.Length))
+            {
+                response.CopyTo(writer.Span);
+                writer.Commit();
             }
 
             client.FtpRequestCount++;

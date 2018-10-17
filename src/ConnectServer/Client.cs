@@ -109,7 +109,11 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         internal void SendHello()
         {
-            this.Connection.Output.Write(HelloPacket);
+            using (var writer = this.Connection.StartSafeWrite(HelloPacket[0], HelloPacket.Length))
+            {
+                HelloPacket.CopyTo(writer.Span);
+                writer.Commit();
+            }
         }
 
         private void OnlineTimer_Elapsed(object state)
