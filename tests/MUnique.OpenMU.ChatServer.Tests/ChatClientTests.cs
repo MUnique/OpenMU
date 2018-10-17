@@ -186,6 +186,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         /// <summary>
         /// Tests if the room client list is sent to the client which joins as second. It should contain both clients.
         /// </summary>
+        /// <returns>The async task.</returns>
         [Test]
         public async Task RoomClientListSentForSecondClient()
         {
@@ -226,6 +227,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         /// <summary>
         /// Tests if the first client gets notified correctly when the second client joins the chat room.
         /// </summary>
+        /// <returns>The async task.</returns>
         [Test]
         public async Task ClientJoinedPacketSent()
         {

@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.ChatServer
                 var packet = writer.Span;
                 packet[2] = 0x04;
                 packet[3] = senderId;
-                packet[4] = (byte) messageByteLength;
+                packet[4] = (byte)messageByteLength;
                 packet.Slice(5).WriteString(message, Encoding.UTF8);
                 MessageEncryptor.Encrypt(packet);
                 writer.Commit();
@@ -106,7 +106,7 @@ namespace MUnique.OpenMU.ChatServer
             {
                 var packet = writer.Span;
                 packet[3] = 2; // packet type
-                packet[6] = (byte) clients.Count;
+                packet[6] = (byte)clients.Count;
                 int i = 0;
                 foreach (var client in clients)
                 {
