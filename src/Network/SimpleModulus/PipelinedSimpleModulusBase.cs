@@ -48,11 +48,6 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         protected byte[] ShiftBuffer { get; } = new byte[4];
 
         /// <summary>
-        /// Gets the crypt buffer.
-        /// </summary>
-        protected ushort[] CryptBuffer { get; } = new ushort[4];
-
-        /// <summary>
         /// Resets this instance.
         /// </summary>
         public void Reset()

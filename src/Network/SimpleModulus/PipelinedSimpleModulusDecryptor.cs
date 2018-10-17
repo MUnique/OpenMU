@@ -28,7 +28,6 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(PipelinedSimpleModulusDecryptor));
         private readonly SimpleModulusKeys decryptionKeys;
-        private readonly byte[] shiftArray = new byte[4];
         private readonly byte[] headerBuffer = new byte[3];
         private readonly byte[] inputBuffer = new byte[EncryptedBlockSize];
 
@@ -152,31 +151,27 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <returns>The decrypted length of the block.</returns>
         private int BlockDecode(Span<byte> outputBuffer)
         {
-            this.ClearShiftBuffer();
-            this.ShiftBytes(this.ShiftBuffer, 0x00, this.inputBuffer, 0x00, 0x10);
-            this.ShiftBytes(this.ShiftBuffer, 0x16, this.inputBuffer, 0x10, 0x02);
-            Buffer.BlockCopy(this.ShiftBuffer, 0, this.RingBuffer, 0, 4);
-            this.ClearShiftBuffer();
-            this.ShiftBytes(this.ShiftBuffer, 0x00, this.inputBuffer, 0x12, 0x10);
-            this.ShiftBytes(this.ShiftBuffer, 0x16, this.inputBuffer, 0x22, 0x02);
-            Buffer.BlockCopy(this.ShiftBuffer, 0, this.RingBuffer, 4, 4);
-            this.ClearShiftBuffer();
-            this.ShiftBytes(this.ShiftBuffer, 0x00, this.inputBuffer, 0x24, 0x10);
-            this.ShiftBytes(this.ShiftBuffer, 0x16, this.inputBuffer, 0x34, 0x02);
-            Buffer.BlockCopy(this.ShiftBuffer, 0, this.RingBuffer, 8, 4);
-            this.ClearShiftBuffer();
-            this.ShiftBytes(this.ShiftBuffer, 0x00, this.inputBuffer, 0x36, 0x10);
-            this.ShiftBytes(this.ShiftBuffer, 0x16, this.inputBuffer, 0x46, 0x02);
-            Buffer.BlockCopy(this.ShiftBuffer, 0, this.RingBuffer, 12, 4);
+            this.RingBuffer.AsSpan().Clear();
+            var shiftResult = MemoryMarshal.Cast<uint, byte>(this.RingBuffer);
+            this.ShiftBytes(shiftResult.Slice(0, 4), 0x00, 0x00, 0x10);
+            this.ShiftBytes(shiftResult.Slice(0, 4), 0x16, 0x10, 0x02);
+            this.ShiftBytes(shiftResult.Slice(4, 4), 0x00, 0x12, 0x10);
+            this.ShiftBytes(shiftResult.Slice(4, 4), 0x16, 0x22, 0x02);
+            this.ShiftBytes(shiftResult.Slice(8, 4), 0x00, 0x24, 0x10);
+            this.ShiftBytes(shiftResult.Slice(8, 4), 0x16, 0x34, 0x02);
+            this.ShiftBytes(shiftResult.Slice(12, 4), 0x00, 0x36, 0x10);
+            this.ShiftBytes(shiftResult.Slice(12, 4), 0x16, 0x46, 0x02);
+
             var keys = this.decryptionKeys;
             this.RingBuffer[2] = this.RingBuffer[2] ^ keys.XorKey[2] ^ (this.RingBuffer[3] & 0xFFFF);
             this.RingBuffer[1] = this.RingBuffer[1] ^ keys.XorKey[1] ^ (this.RingBuffer[2] & 0xFFFF);
             this.RingBuffer[0] = this.RingBuffer[0] ^ keys.XorKey[0] ^ (this.RingBuffer[1] & 0xFFFF);
 
-            this.CryptBuffer[0] = (ushort)(keys.XorKey[0] ^ ((this.RingBuffer[0] * keys.DecryptKey[0]) % keys.ModulusKey[0]));
-            this.CryptBuffer[1] = (ushort)(keys.XorKey[1] ^ ((this.RingBuffer[1] * keys.DecryptKey[1]) % keys.ModulusKey[1]) ^ (this.RingBuffer[0] & 0xFFFF));
-            this.CryptBuffer[2] = (ushort)(keys.XorKey[2] ^ ((this.RingBuffer[2] * keys.DecryptKey[2]) % keys.ModulusKey[2]) ^ (this.RingBuffer[1] & 0xFFFF));
-            this.CryptBuffer[3] = (ushort)(keys.XorKey[3] ^ ((this.RingBuffer[3] * keys.DecryptKey[3]) % keys.ModulusKey[3]) ^ (this.RingBuffer[2] & 0xFFFF));
+            var output = MemoryMarshal.Cast<byte, ushort>(outputBuffer);
+            output[0] = (ushort)(keys.XorKey[0] ^ ((this.RingBuffer[0] * keys.DecryptKey[0]) % keys.ModulusKey[0]));
+            output[1] = (ushort)(keys.XorKey[1] ^ ((this.RingBuffer[1] * keys.DecryptKey[1]) % keys.ModulusKey[1]) ^ (this.RingBuffer[0] & 0xFFFF));
+            output[2] = (ushort)(keys.XorKey[2] ^ ((this.RingBuffer[2] * keys.DecryptKey[2]) % keys.ModulusKey[2]) ^ (this.RingBuffer[1] & 0xFFFF));
+            output[3] = (ushort)(keys.XorKey[3] ^ ((this.RingBuffer[3] * keys.DecryptKey[3]) % keys.ModulusKey[3]) ^ (this.RingBuffer[2] & 0xFFFF));
 
             return this.DecodeFinal(outputBuffer);
         }
@@ -188,29 +183,27 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <returns>The decrypted length of the block.</returns>
         private int DecodeFinal(Span<byte> outputBuffer)
         {
-            this.ClearShiftBuffer();
-            this.ShiftBytes(this.ShiftBuffer, 0x00, this.inputBuffer, 0x48, 0x10);
+            var blockSuffix = this.inputBuffer.AsSpan(EncryptedBlockSize - 2, 2);
+            // blockSuffix[0] -> block size (encrypted)
+            // blockSuffix[1] -> checksum
 
-            // ShiftBuffer[0] -> block size (decrypted)
-            // ShiftBuffer[1] -> checksum
-            byte blockSize = (byte)(this.ShiftBuffer[0] ^ this.ShiftBuffer[1] ^ BlockSizeXorKey);
-            MemoryMarshal.Cast<ushort, byte>(this.CryptBuffer).CopyTo(outputBuffer);
+            byte blockSize = (byte)(blockSuffix[0] ^ blockSuffix[1] ^ BlockSizeXorKey);
             byte checksum = BlockCheckSumXorKey;
             for (int i = 0; i < blockSize; i++)
             {
                 checksum ^= outputBuffer[i];
             }
 
-            if (this.ShiftBuffer[1] != checksum)
+            if (blockSuffix[1] != checksum)
             {
                 if (!this.AcceptWrongBlockChecksum)
                 {
-                    throw new InvalidBlockChecksumException(this.ShiftBuffer[1], checksum);
+                    throw new InvalidBlockChecksumException(blockSuffix[1], checksum);
                 }
 
                 if (Log.IsDebugEnabled)
                 {
-                    var message = $"Block checksum invalid. Expected: {checksum}. Actual: {this.ShiftBuffer[1]}.";
+                    var message = $"Block checksum invalid. Expected: {checksum}. Actual: {blockSuffix[1]}.";
                     Log.Debug(message);
                 }
             }
@@ -218,21 +211,21 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             return blockSize;
         }
 
-        private void ShiftBytes(Span<byte> outputBuffer, int outputOffset, Span<byte> inputBuffer, int shiftOffset, int length)
+        private void ShiftBytes(Span<byte> outputBuffer, int outputOffset, int shiftOffset, int length)
         {
             int size = this.GetShiftSize(length, shiftOffset);
-            this.shiftArray[1] = 0;
-            this.shiftArray[2] = 0;
-            this.shiftArray[3] = 0;
-            inputBuffer.Slice(shiftOffset / DecryptedBlockSize, size).CopyTo(this.shiftArray);
+            this.ShiftBuffer[1] = 0;
+            this.ShiftBuffer[2] = 0;
+            this.ShiftBuffer[3] = 0;
+            this.inputBuffer.AsSpan(shiftOffset / DecryptedBlockSize, size).CopyTo(this.ShiftBuffer);
 
             var tempShift = (length + shiftOffset) & 0x7;
             if (tempShift != 0)
             {
-                this.shiftArray[size - 1] = (byte)(this.shiftArray[size - 1] & 0xFF << (8 - tempShift));
+                this.ShiftBuffer[size - 1] = (byte)(this.ShiftBuffer[size - 1] & 0xFF << (8 - tempShift));
             }
 
-            this.InternalShiftBytes(outputBuffer, outputOffset, this.shiftArray, shiftOffset, size);
+            this.InternalShiftBytes(outputBuffer, outputOffset, this.ShiftBuffer, shiftOffset, size);
         }
 
         /// <summary>

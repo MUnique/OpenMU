@@ -104,7 +104,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             this.target.FlushAsync();
         }
 
-        private static void CopyIntToArray(byte[] targetArray, uint value, int valueOffset, int size)
+        private static void CopyIntToArray(Span<byte> targetArray, uint value, int valueOffset, int size)
         {
             var targetIndex = 0;
             for (int i = valueOffset; i < valueOffset + size; i++)
@@ -141,6 +141,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             {
                 var contentOfBlockLength = Math.Min(DecryptedBlockSize, size - i);
                 input.Slice(i - 1, contentOfBlockLength).CopyTo(this.inputBuffer);
+                this.inputBuffer.AsSpan(contentOfBlockLength).Clear();
                 var resultBlock = result.Slice(sizeCounter, EncryptedBlockSize);
                 this.BlockEncode(resultBlock, contentOfBlockLength);
                 i += DecryptedBlockSize;
@@ -153,7 +154,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         private void BlockEncode(Span<byte> outputBuffer, int blockSize)
         {
             outputBuffer.Clear(); // since the memory comes from the shared memory pool, it might not be initialized yet
-            this.SetRingBuffer(blockSize);
+            this.SetRingBuffer();
             this.ShiftBytes(outputBuffer, 0x00, this.RingBuffer[0], 0x00, 0x10);
             this.ShiftBytes(outputBuffer, 0x10, this.RingBuffer[0], 0x16, 0x02);
             this.ShiftBytes(outputBuffer, 0x12, this.RingBuffer[1], 0x00, 0x10);
@@ -184,29 +185,27 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             outputBuffer[outputBuffer.Length - 1] = checksum;
         }
 
-        private void SetRingBuffer(int blockSize)
+        private void SetRingBuffer()
         {
             var keys = this.encryptionKeys;
-            Array.Clear(this.CryptBuffer, blockSize / 2, this.CryptBuffer.Length - (blockSize / 2)); // we don't need to clear the whole array since parts are getting overriden by the input buffer
-            MemoryMarshal.Cast<byte, ushort>(this.inputBuffer.AsSpan(0, blockSize)).CopyTo(this.CryptBuffer);
+            var input = MemoryMarshal.Cast<byte, ushort>(this.inputBuffer);
 
-            this.RingBuffer[0] = ((keys.XorKey[0] ^ this.CryptBuffer[0]) * keys.EncryptKey[0]) % keys.ModulusKey[0];
-            this.RingBuffer[1] = ((keys.XorKey[1] ^ (this.CryptBuffer[1] ^ (this.RingBuffer[0] & 0xFFFF))) * keys.EncryptKey[1]) % keys.ModulusKey[1];
-            this.RingBuffer[2] = ((keys.XorKey[2] ^ (this.CryptBuffer[2] ^ (this.RingBuffer[1] & 0xFFFF))) * keys.EncryptKey[2]) % keys.ModulusKey[2];
-            this.RingBuffer[3] = ((keys.XorKey[3] ^ (this.CryptBuffer[3] ^ (this.RingBuffer[2] & 0xFFFF))) * keys.EncryptKey[3]) % keys.ModulusKey[3];
-
-            MemoryMarshal.Cast<ushort, byte>(this.CryptBuffer.AsSpan(0, blockSize / 2)).CopyTo(this.inputBuffer.AsSpan(0, blockSize));
+            this.RingBuffer[0] = ((keys.XorKey[0] ^ input[0]) * keys.EncryptKey[0]) % keys.ModulusKey[0];
+            this.RingBuffer[1] = ((keys.XorKey[1] ^ (input[1] ^ (this.RingBuffer[0] & 0xFFFF))) * keys.EncryptKey[1]) % keys.ModulusKey[1];
+            this.RingBuffer[2] = ((keys.XorKey[2] ^ (input[2] ^ (this.RingBuffer[1] & 0xFFFF))) * keys.EncryptKey[2]) % keys.ModulusKey[2];
+            this.RingBuffer[3] = ((keys.XorKey[3] ^ (input[3] ^ (this.RingBuffer[2] & 0xFFFF))) * keys.EncryptKey[3]) % keys.ModulusKey[3];
 
             this.RingBuffer[0] = this.RingBuffer[0] ^ keys.XorKey[0] ^ (this.RingBuffer[1] & 0xFFFF);
             this.RingBuffer[1] = this.RingBuffer[1] ^ keys.XorKey[1] ^ (this.RingBuffer[2] & 0xFFFF);
             this.RingBuffer[2] = this.RingBuffer[2] ^ keys.XorKey[2] ^ (this.RingBuffer[3] & 0xFFFF);
         }
 
-        private void ShiftBytes(Span<byte> outputBuffer, int outputOffset, uint shift, int shiftOffset, int length)
+        private void ShiftBytes(Span<byte> outputBuffer, int outputOffset, uint valueBytes, int shiftOffset, int length)
         {
             int size = this.GetShiftSize(length, shiftOffset);
-            this.ShiftBuffer[2] = 0; // the first two bytes will be set at the next statement
-            CopyIntToArray(this.ShiftBuffer, shift, shiftOffset / DecryptedBlockSize, size);
+            this.ShiftBuffer[2] = 0;
+            CopyIntToArray(this.ShiftBuffer, valueBytes, shiftOffset / DecryptedBlockSize, size);
+
             this.InternalShiftBytes(outputBuffer, outputOffset, this.ShiftBuffer, shiftOffset, size);
         }
     }
