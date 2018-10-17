@@ -263,9 +263,10 @@ namespace MUnique.OpenMU.ChatServer.Tests
         }
 
         /// <summary>
-        /// Tests if a call to <see cref="ChatClient.LogOff"/> removes it from the chatroom,
+        /// Tests if a call to <see cref="ChatClient.LogOff" /> removes it from the chatroom,
         /// and the other remaining client gets notified about it.
         /// </summary>
+        /// <returns>The async task.</returns>
         [Test]
         public async Task ClientLoggedOff()
         {
