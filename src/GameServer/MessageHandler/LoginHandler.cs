@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     internal class LoginHandler : IPacketHandler
     {
-        private readonly IDecryptor decryptor;
+        private readonly ISpanDecryptor decryptor;
 
         private readonly LoginAction loginAction;
 
@@ -66,13 +66,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
         private void ReadLoginPacket(Player player, Span<byte> packet)
         {
-            byte[] userbytes = packet.Slice(4, 10).ToArray();
-            byte[] pass = packet.Slice(14, this.gameContext.Configuration.MaximumPasswordLength).ToArray();
+            var usernameBytes = packet.Slice(4, 10);
+            var passwordBytes = packet.Slice(14, this.gameContext.Configuration.MaximumPasswordLength);
 
-            this.decryptor.Decrypt(ref userbytes);
-            this.decryptor.Decrypt(ref pass);
-            string username = userbytes.ExtractString(0, 10, Encoding.UTF8);
-            string password = pass.ExtractString(0, this.gameContext.Configuration.MaximumPasswordLength, Encoding.UTF8);
+            this.decryptor.Decrypt(usernameBytes);
+            this.decryptor.Decrypt(passwordBytes);
+            var username = usernameBytes.ExtractString(0, 10, Encoding.UTF8);
+            var password = passwordBytes.ExtractString(0, this.gameContext.Configuration.MaximumPasswordLength, Encoding.UTF8);
 
             int startTickCountIndex = 14 + this.gameContext.Configuration.MaximumPasswordLength;
             ////Player.StartTickCount = Utils.MakeDword(buffer[sti], buffer[sti + 1], buffer[sti + 2], buffer[sti + 3]);
