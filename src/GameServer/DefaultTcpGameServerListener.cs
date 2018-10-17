@@ -141,6 +141,8 @@ namespace MUnique.OpenMU.GameServer
                 var remotePlayer = new RemotePlayer(this.gameContext, this.mainPacketHandler, connection);
                 this.OnPlayerConnected(remotePlayer);
                 connection.Disconnected += (sender, e) => remotePlayer.Disconnect();
+
+                // we don't want to await the call.
                 connection.BeginReceive();
             }
         }
