@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -42,19 +43,39 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 playerId |= 0x80;
             }
 
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0x5D, playerId.GetHighByte(), playerId.GetLowByte() });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x5D;
+                packet[3] = playerId.GetHighByte();
+                packet[4] = playerId.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void GuildJoinResponse(GuildRequestAnswerResult result)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x04, 0x51, (byte)result });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x51;
+                packet[3] = (byte)result;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowGuildCreateResult(GuildCreateErrorDetail errorDetail)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0x56, (byte)(errorDetail == GuildCreateErrorDetail.None ? 1 : 0), (byte)errorDetail });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x56;
+                packet[3] = (byte)(errorDetail == GuildCreateErrorDetail.None ? 1 : 0);
+                packet[4] = (byte)errorDetail;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -64,7 +85,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// </remarks>
         public void ShowGuildInfo(byte[] guildInfo)
         {
-            this.connection.Send(guildInfo); // guildInfo is the cached, serialized result of the GuildInformation-Class.
+            // guildInfo is the cached, serialized result of the GuildInformation-Class.
+            using (var writer = this.connection.StartSafeWrite(guildInfo[0], guildInfo.Length))
+            {
+                guildInfo.CopyTo(writer.Span);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc />
@@ -75,76 +101,118 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // 01
             // 34 4B 00 00 80 00 00
             // A4 F2 00 00 00
-            var array = new byte[(guildPlayers.Count * 12) + 5];
-            array[0] = 0xC2;
-            array[1] = ((ushort)array.Length).GetHighByte();
-            array[2] = ((ushort)array.Length).GetLowByte();
-            array[3] = 0x65;
-            array[4] = (byte)guildPlayers.Count;
-            int i = 0;
-            foreach (var guildPlayer in guildPlayers)
+            const int sizePerPlayer = 12;
+            using (var writer = this.connection.StartSafeWrite(0xC2, (guildPlayers.Count * sizePerPlayer) + 5))
             {
-                var offset = 5 + (i * 12);
-                var playerId = guildPlayer.GetId(this.player);
+                var packet = writer.Span;
+                packet[3] = 0x65;
+                packet[4] = (byte)guildPlayers.Count;
+                int i = 0;
+                foreach (var guildPlayer in guildPlayers)
+                {
+                    var playerBlock = packet.Slice(5 + (i * sizePerPlayer));
 
-                array.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId, offset);
-                array[offset + 4] = (byte)guildPlayer.GuildStatus.Position;
-                array[offset + 7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
-                array[offset + 8] = playerId.GetLowByte();
-                ////todo: for alliances there is an extra packet, code 0x67
+                    playerBlock.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId);
+                    playerBlock[4] = (byte)guildPlayer.GuildStatus.Position;
 
-                i++;
+                    var playerId = guildPlayer.GetId(this.player);
+                    playerBlock[7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
+                    playerBlock[8] = playerId.GetLowByte();
+                    ////todo: for alliances there is an extra packet, code 0x67
+
+                    i++;
+                }
+
+                writer.Commit();
             }
         }
 
         /// <inheritdoc/>
         public void GuildKickResult(GuildKickSuccess successCode)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x04, 0x53, (byte)successCode });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            {
+                var packet = writer.Span;
+
+                packet[1] = 0x04;
+                packet[2] = 0x53;
+                packet[3] = (byte)successCode;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowGuildList(IEnumerable<OpenMU.Interfaces.GuildListEntry> players)
         {
             var playerCount = players.Count();
-            byte[] packet = new byte[6 + 18 + (playerCount * PlayerEntryLength)];
-            packet[0] = 0xC2;
-            packet[1] = ((ushort)packet.Length).GetHighByte();
-            packet[2] = ((ushort)packet.Length).GetLowByte();
-            packet[3] = 0x52;
-            packet[4] = playerCount > 0 ? (byte)1 : (byte)0;
-            packet[5] = (byte)playerCount;
-
-            uint totalScore = 0; // TODO
-            byte score = 0; // TODO
-            string rivalGuildName = "TODO"; // TODO
-            packet.SetIntegerBigEndian(totalScore, 8); // 2 bytes are padding (6+7)
-            packet[12] = score;
-            Encoding.UTF8.GetBytes(rivalGuildName, 0, rivalGuildName.Length, packet, 13);
-            //// next 2 bytes are padding (22+23)
-            int i = 0;
-            foreach (var player in players)
+            using (var writer = this.connection.StartSafeWrite(0xC2, 6 + 18 + (playerCount * PlayerEntryLength)))
             {
-                var offset = 24 + (i * PlayerEntryLength);
-                Encoding.ASCII.GetBytes(player.PlayerName, 0, player.PlayerName.Length, packet, offset);
-                packet[34 + (i * PlayerEntryLength)] = player.ServerId;
-                packet[35 + (i * PlayerEntryLength)] = (byte)player.PlayerPosition;
-                i++;
-            }
+                var packet = writer.Span;
+                packet[3] = 0x52;
+                packet[4] = playerCount > 0 ? (byte)1 : (byte)0;
+                packet[5] = (byte)playerCount;
 
-            this.connection.Send(packet);
+                uint totalScore = 0; // TODO
+                byte score = 0; // TODO
+                string rivalGuildName = "TODO"; // TODO
+                packet.Slice(8).SetIntegerBigEndian(totalScore); // 2 bytes are padding (6+7)
+                packet[12] = score;
+                packet.Slice(13).WriteString(rivalGuildName, Encoding.UTF8);
+                //// next 2 bytes are padding (22+23)
+                int i = 0;
+                foreach (var player in players)
+                {
+                    var playerBlock = packet.Slice(24 + (i * PlayerEntryLength), PlayerEntryLength);
+                    playerBlock.WriteString(player.PlayerName, Encoding.UTF8);
+
+                    playerBlock[10] = player.ServerId;
+                    playerBlock[11] = (byte)(player.ServerId == 0xFF ? 0x7F : 0x80 + player.ServerId);
+                    playerBlock[12] = this.PlayerPositionValue(player.PlayerPosition);
+
+                    i++;
+                }
+
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowGuildJoinRequest(Player requester)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0x50, requester.Id.GetHighByte(), requester.Id.GetLowByte() });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x50;
+                packet[3] = requester.Id.GetHighByte();
+                packet[4] = requester.Id.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowGuildCreationDialog()
         {
-            this.connection.Send(new byte[] { 0xC1, 3, 0x55 });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 3))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x55;
+                writer.Commit();
+            }
+        }
+
+        private byte PlayerPositionValue(GuildPosition playerPosition)
+        {
+            switch (playerPosition)
+            {
+                case GuildPosition.GuildMaster:
+                    return 0x80;
+                case GuildPosition.NormalMember:
+                    return 0x00;
+                case GuildPosition.BattleMaster:
+                    return 0x20;
+                default:
+                    throw new ArgumentException(nameof(playerPosition));
+            }
         }
     }
 }

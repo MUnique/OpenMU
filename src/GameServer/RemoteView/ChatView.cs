@@ -27,13 +27,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ChatMessage(string message, string sender, ChatMessageType type)
         {
-            var packet = new byte[Encoding.UTF8.GetByteCount(message) + 14];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[2] = this.GetChatMessageTypeByte(type);
-            Encoding.UTF8.GetBytes(sender, 0, sender.Length, packet, 3);
-            Encoding.UTF8.GetBytes(message, 0, message.Length, packet, 13);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, Encoding.UTF8.GetByteCount(message) + 14))
+            {
+                var packet = writer.Span;
+                packet[2] = this.GetChatMessageTypeByte(type);
+                packet.Slice(3, 10).WriteString(sender, Encoding.UTF8);
+                packet.Slice(13).WriteString(message, Encoding.UTF8);
+                writer.Commit();
+            }
         }
 
         private byte GetChatMessageTypeByte(ChatMessageType type)

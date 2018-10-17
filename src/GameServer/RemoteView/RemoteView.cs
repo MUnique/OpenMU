@@ -172,64 +172,74 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ShowCharacterList()
         {
             const int characterSize = 34;
-            var packet = new byte[(this.player.Account.Characters.Count * characterSize) + 8];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[2] = 0xF3;
-            packet[3] = 0;
-            byte maxClass = 0;
-            packet[4] = this.player.Account.UnlockedCharacterClasses?.Select(c => c.CreationAllowedFlag).Aggregate(maxClass, (current, flag) => (byte)(current | flag)) ?? 0;
-            packet[5] = 0; // MoveCnt
-            packet[6] = (byte)this.player.Account.Characters.Count;
-
-            // packet[7] ??? new in season 6 - probably vault extension
-            int i = 0;
-            foreach (var character in this.player.Account.Characters.OrderBy(c => c.CharacterSlot))
+            using (var writer = this.connection.StartSafeWrite(0xC1, (this.player.Account.Characters.Count * characterSize) + 8))
             {
-                var offset = (i * characterSize) + 8;
-                packet[offset + 0] = character.CharacterSlot;
-                Encoding.UTF8.GetBytes(character.Name, 0, character.Name.Length, packet, offset + 1);
-                packet[offset + 11] = 1; // unknown
-                var level = (ushort)character.Attributes.First(s => s.Definition == Stats.Level).Value;
-                packet[offset + 12] = level.GetLowByte();
-                packet[offset + 13] = level.GetHighByte();
-                packet[offset + 14] = (byte)character.State; // | 0x10 for item block?
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0;
+                byte maxClass = 0;
+                packet[4] = this.player.Account.UnlockedCharacterClasses?.Select(c => c.CreationAllowedFlag)
+                                .Aggregate(maxClass, (current, flag) => (byte)(current | flag)) ?? 0;
+                packet[5] = 0; // MoveCnt
+                packet[6] = (byte)this.player.Account.Characters.Count;
 
-                var preview = this.appearanceSerializer.GetAppearanceData(new CharacterAppearanceDataAdapter(character));
-                Buffer.BlockCopy(preview, 0, packet, offset + 15, preview.Length);
+                // packet[7] ??? new in season 6 - probably vault extension
+                int i = 0;
+                foreach (var character in this.player.Account.Characters.OrderBy(c => c.CharacterSlot))
+                {
+                    var characterBlock = packet.Slice((i * characterSize) + 8, characterSize);
+                    characterBlock[0] = character.CharacterSlot;
+                    characterBlock.Slice(1, 10).WriteString(character.Name, Encoding.UTF8);
+                    characterBlock[11] = 1; // unknown
+                    var level = (ushort)character.Attributes.First(s => s.Definition == Stats.Level).Value;
+                    characterBlock[12] = level.GetLowByte();
+                    characterBlock[13] = level.GetHighByte();
+                    characterBlock[14] = (byte)character.State; // | 0x10 for item block?
 
-                //// var guildStatusIndex = offset + 15 + 18;
-                //// TODO: packet[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
+                    var preview = this.appearanceSerializer.GetAppearanceData(new CharacterAppearanceDataAdapter(character));
+                    preview.CopyTo(characterBlock.Slice(15));
 
-                i++;
+                    //// var guildStatusIndex = offset + 15 + 18;
+                    //// TODO: characterBLock[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
+
+                    i++;
+                }
+
+                writer.Commit();
             }
-
-            this.connection.Send(packet);
         }
 
         /// <inheritdoc/>
         public void ShowCharacterCreationFailed()
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0xF3, 0x01, 0x00 });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x01;
+                packet[4] = 0x00;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowCreatedCharacter(Character character)
         {
-            byte[] packet =
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x2A))
             {
-                0xC1, 0x2A, 0xF3, 0x01,
-                0x01, // success
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // name
-                character.CharacterSlot,
-                1, 0,
-                (byte)(character.CharacterClass.Number << 3),
-                this.GetPlayerStateCode(character.State),
-                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF // preview data?
-            };
-
-            Encoding.UTF8.GetBytes(character.Name, 0, character.Name.Length, packet, 5);
-            this.connection.Send(packet);
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x01;
+                packet[4] = 0x01; // success
+                packet.Slice(5).WriteString(character.Name, Encoding.UTF8);
+                packet[15] = character.CharacterSlot;
+                packet[16] = 0x01;
+                packet[17] = 0x00;
+                packet[18] = (byte)(character.CharacterClass.Number << 3);
+                packet[19] = this.GetPlayerStateCode(character.State);
+                packet.Slice(20, 22).Fill(0xFF); // preview data?
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -243,50 +253,78 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void AddSkill(Skill skill)
         {
-            byte[] packet = { 0xC1, 0x0A, 0xF3, 0x11, 0xFE, 0, 0, 0, 0, 0 };
-            byte? skillIndex = null;
-            for (byte i = 0; i < this.SkillList.Count; i++)
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
             {
-                if (this.SkillList[i] == null)
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x11;
+                packet[4] = 0xFE;
+
+                byte? skillIndex = null;
+                for (byte i = 0; i < this.SkillList.Count; i++)
                 {
-                    skillIndex = i;
+                    if (this.SkillList[i] == null)
+                    {
+                        skillIndex = i;
+                    }
                 }
-            }
 
-            if (skillIndex == null)
-            {
-                this.SkillList.Add(skill);
-                skillIndex = (byte)(this.SkillList.Count - 1);
-            }
+                if (skillIndex == null)
+                {
+                    this.SkillList.Add(skill);
+                    skillIndex = (byte)(this.SkillList.Count - 1);
+                }
 
-            packet[6] = skillIndex.Value;
-            var unsignedSkillId = ShortExtensions.ToUnsigned(skill.SkillID);
-            packet[7] = unsignedSkillId.GetLowByte();
-            packet[8] = unsignedSkillId.GetHighByte();
-            this.connection.Send(packet);
+                packet[6] = skillIndex.Value;
+                var unsignedSkillId = ShortExtensions.ToUnsigned(skill.SkillID);
+                packet[7] = unsignedSkillId.GetLowByte();
+                packet[8] = unsignedSkillId.GetHighByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void RemoveSkill(Skill skill)
         {
-            byte[] packet = { 0xC1, 0x0A, 0xF3, 0x11, 0xFF, 0, 0, 0, 0, 0 };
-            packet[6] = (byte)this.SkillList.IndexOf(skill);
-            var unsignedSkillId = ShortExtensions.ToUnsigned(skill.SkillID);
-            packet[7] = unsignedSkillId.GetLowByte();
-            packet[8] = unsignedSkillId.GetHighByte();
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x11;
+                packet[4] = 0xFF;
+                packet[6] = (byte)this.SkillList.IndexOf(skill);
+                var unsignedSkillId = ShortExtensions.ToUnsigned(skill.SkillID);
+                packet[7] = unsignedSkillId.GetLowByte();
+                packet[8] = unsignedSkillId.GetHighByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void DrinkAlcohol()
         {
-            this.connection.Send(new byte[] { 0xC3, 6, 0x29, 0, 0x50, 0 });
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x06))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x29;
+                packet[3] = 0;
+                packet[4] = 0x50;
+                packet[5] = 0;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowCharacterDeleteResponse(CharacterDeleteResult result)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0xF3, 0x02, (byte)result });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x02;
+                packet[4] = (byte)result;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -302,12 +340,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // C1 08 27 FE 00 16 00 21
             var mana = (ushort)this.player.Attributes[Stats.CurrentMana];
             var ag = (ushort)this.player.Attributes[Stats.CurrentAbility];
-            this.connection.Send(new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x08))
             {
-                0xC1, 0x08, 0x27, (byte)UpdateType.Current,
-                                mana.GetHighByte(), mana.GetLowByte(),
-                                ag.GetHighByte(), ag.GetLowByte()
-            });
+                var packet = writer.Span;
+                packet[2] = 0x27;
+                packet[3] = (byte)UpdateType.Current;
+                packet[4] = mana.GetHighByte();
+                packet[5] = mana.GetLowByte();
+                packet[6] = ag.GetHighByte();
+                packet[7] = ag.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -316,13 +359,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // C1 09 26 FE 00 C3 00 00 85
             var hp = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f);
             var sd = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f);
-            this.connection.Send(new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x09))
             {
-                0xC1, 0x09, 0x26, (byte)UpdateType.Current,
-                                hp.GetHighByte(), hp.GetLowByte(),
-                                0x00,
-                                sd.GetHighByte(), sd.GetLowByte()
-            });
+                var packet = writer.Span;
+                packet[2] = 0x26;
+                packet[3] = (byte)UpdateType.Current;
+                packet[4] = hp.GetHighByte();
+                packet[5] = hp.GetLowByte();
+                packet[7] = sd.GetHighByte();
+                packet[8] = sd.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc />
@@ -331,13 +378,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var hp = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f);
             var sd = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f);
-            this.connection.Send(new byte[]
+
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x09))
             {
-                0xC1, 0x09, 0x26, (byte)UpdateType.Failed,
-                hp.GetHighByte(), hp.GetLowByte(),
-                0x00,
-                sd.GetHighByte(), sd.GetLowByte()
-            });
+                var packet = writer.Span;
+                packet[2] = 0x26;
+                packet[3] = (byte)UpdateType.Failed;
+                packet[4] = hp.GetHighByte();
+                packet[5] = hp.GetLowByte();
+                packet[7] = sd.GetHighByte();
+                packet[8] = sd.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -345,12 +397,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var mana = (ushort)this.player.Attributes[Stats.MaximumMana];
             var ag = (ushort)this.player.Attributes[Stats.MaximumAbility];
-            this.connection.Send(new byte[]
+
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x08))
             {
-                0xC1, 0x08, 0x27, (byte)UpdateType.Maximum,
-                                mana.GetHighByte(), mana.GetLowByte(),
-                                ag.GetHighByte(), ag.GetLowByte()
-            });
+                var packet = writer.Span;
+                packet[2] = 0x27;
+                packet[3] = (byte)UpdateType.Maximum;
+                packet[4] = mana.GetHighByte();
+                packet[5] = mana.GetLowByte();
+                packet[6] = ag.GetHighByte();
+                packet[7] = ag.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -358,45 +416,53 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var hp = (ushort)this.player.Attributes[Stats.MaximumHealth];
             var sd = (ushort)this.player.Attributes[Stats.MaximumShield];
-            this.connection.Send(new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x09))
             {
-                0xC1, 0x09, 0x26, (byte)UpdateType.Maximum,
-                                hp.GetHighByte(), hp.GetLowByte(),
-                                0x00,
-                                sd.GetHighByte(), sd.GetLowByte()
-            });
+                var packet = writer.Span;
+                packet[2] = 0x26;
+                packet[3] = (byte)UpdateType.Maximum;
+                packet[4] = hp.GetHighByte();
+                packet[5] = hp.GetLowByte();
+                packet[7] = sd.GetHighByte();
+                packet[8] = sd.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void UpdateLevel()
         {
             var selectedCharacter = this.player.SelectedCharacter;
-            if (selectedCharacter != null)
+            if (selectedCharacter == null)
             {
-                var charStats = this.player.Attributes;
-                var level = (ushort)charStats[Stats.Level];
-                var leveluppoints = (ushort)selectedCharacter.LevelUpPoints;
-                var maximumHealth = (ushort)charStats[Stats.MaximumHealth];
-                var maximumMana = (ushort)charStats[Stats.MaximumMana];
-                var maximumShield = (ushort)charStats[Stats.MaximumShield];
-                var maximumAbility = (ushort)charStats[Stats.MaximumAbility];
-                var fruitPoints = (ushort)selectedCharacter.UsedFruitPoints; // TODO: is this right or is this the new MaxFruitPoints?
-
-                var packet = new byte[]
-                {
-                    0xC1, 0x12, 0xF3, 5,
-                    level.GetLowByte(), level.GetHighByte(),
-                    leveluppoints.GetLowByte(), leveluppoints.GetHighByte(),
-                    maximumHealth.GetLowByte(), maximumHealth.GetHighByte(),
-                    maximumMana.GetLowByte(), maximumMana.GetHighByte(),
-                    maximumShield.GetLowByte(), maximumShield.GetHighByte(),
-                    maximumAbility.GetLowByte(), maximumAbility.GetHighByte(),
-                    fruitPoints.GetLowByte(), fruitPoints.GetHighByte()
-                };
-
-                this.connection.Send(packet);
-                this.player.PlayerView.ShowMessage($"Congratuations, you are Level {this.player.Attributes[Stats.Level]} now.", MessageType.BlueNormal);
+                return;
             }
+
+            var charStats = this.player.Attributes;
+            var level = (ushort)charStats[Stats.Level];
+            var levelUpPoints = (ushort)selectedCharacter.LevelUpPoints;
+            var maximumHealth = (ushort)charStats[Stats.MaximumHealth];
+            var maximumMana = (ushort)charStats[Stats.MaximumMana];
+            var maximumShield = (ushort)charStats[Stats.MaximumShield];
+            var maximumAbility = (ushort)charStats[Stats.MaximumAbility];
+            var fruitPoints = (ushort)selectedCharacter.UsedFruitPoints; // TODO: is this right or is this the new MaxFruitPoints?
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x12))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x05;
+                packet.Slice(4).SetShortBigEndian(level);
+                packet.Slice(6).SetShortBigEndian(levelUpPoints);
+                packet.Slice(8).SetShortBigEndian(maximumHealth);
+                packet.Slice(10).SetShortBigEndian(maximumMana);
+                packet.Slice(12).SetShortBigEndian(maximumShield);
+                packet.Slice(14).SetShortBigEndian(maximumAbility);
+                packet.Slice(16).SetShortBigEndian(fruitPoints);
+
+                writer.Commit();
+            }
+
+            this.player.PlayerView.ShowMessage($"Congratulations, you are Level {this.player.Attributes[Stats.Level]} now.", MessageType.BlueNormal);
         }
 
         /// <inheritdoc/>
@@ -418,8 +484,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     sendExp = (ushort)exp;
                 }
 
-                byte[] packet = { 0xC3, 0x09, 0x16, id.GetHighByte(), id.GetLowByte(), sendExp.GetHighByte(), sendExp.GetLowByte(), 0, 0 }; // last 2 bytes = last hit dmg
-                this.connection.Send(packet);
+                using (var writer = this.connection.StartSafeWrite(0xC3, 0x09))
+                {
+                    var packet = writer.Span;
+                    packet[2] = 0x16;
+                    packet.Slice(3).SetShortSmallEndian(id);
+                    packet.Slice(5).SetShortSmallEndian(sendExp);
+
+                    // last 2 bytes = last hit dmg
+                    writer.Commit();
+                }
+
                 exp -= sendExp;
             }
         }
@@ -428,91 +503,115 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void PlayerShopClosed(Player playerWithClosedShop)
         {
             var playerId = playerWithClosedShop.GetId(this.player);
-            this.connection.Send(new byte[] { 0xC1, 7, 0x3F, 3, 1, playerId.GetHighByte(), playerId.GetLowByte() });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x07))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x3F;
+                packet[3] = 3;
+                packet[4] = 1;
+                packet.Slice(5).SetShortSmallEndian(playerId);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void CloseVault()
         {
-            this.connection.Send(new byte[] { 0xC1, 3, 0x82 });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x03))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x82;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowVault()
         {
             (this as IPlayerView).OpenNpcWindow(NpcWindow.VaultStorage);
-            var itemcount = this.player.Vault.ItemStorage.Items.Count;
+            var itemsCount = this.player.Vault.ItemStorage.Items.Count;
             var spacePerItem = this.itemSerializer.NeededSpace + 1;
-            var packet = new byte[6 + (itemcount * spacePerItem)];
-            packet[0] = 0xC2;
-            packet[1] = (byte)((packet.Length >> 8) & 0xFF);
-            packet[2] = (byte)(packet.Length & 0xFF);
-            packet[3] = 0x31;
-            packet[4] = 0;
-            packet[5] = (byte)itemcount;
-            int i = 0;
-            foreach (var item in this.player.Vault.Items)
+            using (var writer = this.connection.StartSafeWrite(0xC2, 6 + (itemsCount * spacePerItem)))
             {
-                packet[6 + (i * 13)] = item.ItemSlot;
-                this.itemSerializer.SerializeItem(packet, 7 + (i * spacePerItem), item);
-                i++;
+                var packet = writer.Span;
+                packet[3] = 0x31;
+                packet[4] = 0;
+                packet[5] = (byte)itemsCount;
+                int i = 0;
+                foreach (var item in this.player.Vault.Items)
+                {
+                    var itemBlock = packet.Slice(6 + (i * spacePerItem), spacePerItem);
+                    itemBlock[0] = item.ItemSlot;
+                    this.itemSerializer.SerializeItem(itemBlock.Slice(1), item);
+                    i++;
+                }
+
+                writer.Commit();
             }
 
-            this.connection.Send(packet); // item list
-            uint zen = (uint)this.player.Account.Vault.Money;
-            var zenpacket = new byte[0x0C];
-            zenpacket[0] = 0xC1;
-            zenpacket[1] = 0x0C;
-            zenpacket[2] = 0x81;
-            zenpacket[3] = 0x01;
-            zenpacket[4] = (byte)(zen & 0xFF);
-            zenpacket[5] = (byte)((zen >> 8) & 0xFF);
-            zenpacket[6] = (byte)((zen >> 16) & 0xFF);
-            zenpacket[7] = (byte)((zen >> 24) & 0xFF);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
+            {
+                uint zen = (uint)this.player.Account.Vault.Money;
+                var zenPacket = writer.Span;
+                zenPacket[2] = 0x81;
+                zenPacket[3] = 0x01;
+                zenPacket.Slice(4).SetIntegerBigEndian(zen);
+                writer.Commit();
+            }
 
-            this.connection.Send(zenpacket); // zen amount
-            this.connection.Send(new byte[] { 0xC1, 4, 0x83, 0 }); // ??
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            {
+                // vault password protection info
+                var packet = writer.Span;
+                packet[2] = 0x83;
+                packet[3] = 0; // if protected, it's 1
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void UpdateCharacterStats()
         {
-            var packet = new byte[0x48];
-            packet.SetValues<byte>(0xC3, (byte)packet.Length, 0xF3, 0x03);
-            packet[4] = this.player.X;
-            packet[5] = this.player.Y;
-            var unsignedMapNumber = ShortExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number);
-            packet[6] = unsignedMapNumber.GetLowByte();
-            packet[7] = unsignedMapNumber.GetHighByte();
-            packet.SetLongSmallEndian(this.player.SelectedCharacter.Experience, 8);
-            packet.SetLongSmallEndian(this.context.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1], 16);
-            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.LevelUpPoints, 24);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseStrength], 26);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseAgility], 28);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseVitality], 30);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseEnergy], 32);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentHealth], 34);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth], 36);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentMana], 38);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana], 40);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentShield], 42);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield], 44);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentAbility], 46);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility], 48);
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x48))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x03;
+                packet[4] = this.player.X;
+                packet[5] = this.player.Y;
+                var unsignedMapNumber = ShortExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number);
+                packet[6] = unsignedMapNumber.GetLowByte();
+                packet[7] = unsignedMapNumber.GetHighByte();
+                packet.Slice(8).SetLongSmallEndian(this.player.SelectedCharacter.Experience);
+                packet.Slice(16).SetLongSmallEndian(this.context.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1]);
+                packet.Slice(24).SetShortBigEndian((ushort)this.player.SelectedCharacter.LevelUpPoints);
+                packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseStrength]);
+                packet.Slice(28).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseAgility]);
+                packet.Slice(30).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseVitality]);
+                packet.Slice(32).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseEnergy]);
+                packet.Slice(34).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentHealth]);
+                packet.Slice(36).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth]);
+                packet.Slice(38).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentMana]);
+                packet.Slice(40).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
+                packet.Slice(42).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentShield]);
+                packet.Slice(44).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield]);
+                packet.Slice(46).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentAbility]);
+                packet.Slice(48).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility]);
 
-            //// 2 missing bytes here are padding
-            packet.SetIntegerBigEndian((uint)this.player.Money, 52);
-            packet[56] = (byte)this.player.SelectedCharacter.PlayerKillCount;
-            packet[57] = (byte)this.player.SelectedCharacter.State;
-            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedFruitPoints, 58);
-            packet.SetShortBigEndian(127, 60); // TODO: MaxFruits, calculate the right value
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseLeadership], 62);
-            packet.SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedNegFruitPoints, 64);
-            packet.SetShortBigEndian(127, 66); // TODO: MaxNegFruits, calculate the right value
-            packet[68] = this.player.Account.IsVaultExtended ? (byte)1 : (byte)0;
-            //// 3 additional bytes are padding
+                //// 2 missing bytes here are padding
+                packet.Slice(52).SetIntegerBigEndian((uint)this.player.Money);
+                packet[56] = (byte)this.player.SelectedCharacter.PlayerKillCount;
+                packet[57] = (byte)this.player.SelectedCharacter.State;
+                packet.Slice(58).SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedFruitPoints);
+                packet.Slice(60).SetShortBigEndian(127); // TODO: MaxFruits, calculate the right value
+                packet.Slice(62).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseLeadership]);
+                packet.Slice(64).SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedNegFruitPoints);
+                packet.Slice(66).SetShortBigEndian(127); // TODO: MaxNegFruits, calculate the right value
+                packet[68] = this.player.Account.IsVaultExtended ? (byte)1 : (byte)0;
+                //// 3 additional bytes are padding
 
-            this.connection.Send(packet);
+                writer.Commit();
+            }
 
             if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
             {
@@ -531,13 +630,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var healthDamage = (ushort)(hitInfo.HealthDamage & 0xFFFF);
             var shieldDamage = (ushort)(hitInfo.ShieldDamage & 0xFFFF);
             var targetId = target.GetId(this.player);
-            this.connection.Send(new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
             {
-                0xC1, 0x0A, (byte)PacketType.Hit, targetId.GetHighByte(), targetId.GetLowByte(),
-                                    healthDamage.GetHighByte(), healthDamage.GetLowByte(),
-                                    this.GetDamageColor(hitInfo.Attributes),
-                                    shieldDamage.GetHighByte(), shieldDamage.GetLowByte()
-            });
+                var packet = writer.Span;
+                packet[2] = (byte)PacketType.Hit;
+                packet.Slice(3).SetShortSmallEndian(targetId);
+                packet.Slice(5).SetShortSmallEndian(healthDamage);
+                packet[7] = this.GetDamageColor(hitInfo.Attributes);
+                packet.Slice(8).SetShortSmallEndian(shieldDamage);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -556,27 +658,28 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void UpdateSkillList()
         {
             this.SkillList.Clear();
-            byte[] packet = new byte[6 + (4 * this.player.SkillList.SkillCount)];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[2] = 0xF3;
-            packet[3] = 0x11;
-            packet[4] = this.player.SkillList.SkillCount;
-
-            byte i = 0;
-            foreach (var skillEntry in this.player.SkillList.Skills)
+            using (var writer = this.connection.StartSafeWrite(0xC1, 6 + (4 * this.player.SkillList.SkillCount)))
             {
-                int offset = i * 4;
-                packet[6 + offset] = i;
-                this.SkillList.Add(skillEntry.Skill);
-                var unsignedSkillId = ShortExtensions.ToUnsigned(skillEntry.Skill.SkillID);
-                packet[7 + offset] = unsignedSkillId.GetLowByte();
-                packet[8 + offset] = unsignedSkillId.GetHighByte();
-                packet[9 + offset] = (byte)skillEntry.Level;
-                i++;
-            }
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x11;
+                packet[4] = this.player.SkillList.SkillCount;
 
-            this.connection.Send(packet);
+                byte i = 0;
+                foreach (var skillEntry in this.player.SkillList.Skills)
+                {
+                    int offset = i * 4;
+                    packet[6 + offset] = i;
+                    this.SkillList.Add(skillEntry.Skill);
+                    var unsignedSkillId = ShortExtensions.ToUnsigned(skillEntry.Skill.SkillID);
+                    packet[7 + offset] = unsignedSkillId.GetLowByte();
+                    packet[8 + offset] = unsignedSkillId.GetHighByte();
+                    packet[9 + offset] = (byte)skillEntry.Level;
+                    i++;
+                }
+
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -584,13 +687,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             const string messagePrefix = "000000000";
             string content = messagePrefix + message;
-            byte[] packet = new byte[content.Length + 5];
-            packet[0] = 0xc1;
-            packet[1] = (byte)(content.Length + 5);
-            packet[2] = 13;
-            packet[3] = (byte)messageType;
-            Encoding.UTF8.GetBytes(content, 0, content.Length, packet, 4);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5 + content.Length))
+            {
+                var packet = writer.Span;
+                packet[2] = 13;
+                packet[3] = (byte)messageType;
+                packet.Slice(4).WriteString(content, Encoding.UTF8);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -605,31 +709,31 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var playerId = requestedPlayer.GetId(this.player);
             var itemlist = requestedPlayer.ShopStorage.Items.ToList();
             var itemcount = itemlist.Count;
-            var packet = new byte[11 + maxCharacterNameLength + maxStoreNameLength + (itemcount * sizePerItem)];
-            packet[0] = 0xC2;
-            packet[1] = (byte)((packet.Length >> 8) & 0xFF);
-            packet[2] = (byte)(packet.Length & 0xFF);
-            packet[3] = 0x3F;
-            packet[4] = 0x05;
-            packet[5] = 1;
-            packet[6] = playerId.GetHighByte();
-            packet[7] = playerId.GetLowByte();
-
-            Encoding.UTF8.GetBytes(this.player.SelectedCharacter.Name, 0, Math.Min(maxCharacterNameLength, this.player.SelectedCharacter.Name.Length), packet, 8);
-            var storeName = requestedPlayer.ShopStorage.StoreName;
-            Encoding.UTF8.GetBytes(storeName, 0, Math.Min(storeName.Length, maxStoreNameLength), packet, 18);
-            packet[8 + maxCharacterNameLength + maxStoreNameLength] = (byte)itemcount;
-            int i = 0;
-
-            foreach (var item in itemlist)
+            using (var writer = this.connection.StartSafeWrite(0xC2, 11 + maxCharacterNameLength + maxStoreNameLength + (itemcount * sizePerItem)))
             {
-                var offset = 9 + maxCharacterNameLength + maxStoreNameLength + (i * sizePerItem);
-                packet[offset + 0] = item.ItemSlot;
-                this.itemSerializer.SerializeItem(packet, offset + 1, item);
-                packet.SetIntegerBigEndian((uint)(item.StorePrice ?? 0), offset + 4 + this.itemSerializer.NeededSpace);
-            }
+                var packet = writer.Span;
+                packet[3] = 0x3F;
+                packet[4] = 0x05;
+                packet[5] = 1;
+                packet[6] = playerId.GetHighByte();
+                packet[7] = playerId.GetLowByte();
+                packet.Slice(8, maxCharacterNameLength).WriteString(this.player.SelectedCharacter.Name, Encoding.UTF8);
+                var storeName = requestedPlayer.ShopStorage.StoreName;
+                packet.Slice(18, maxStoreNameLength).WriteString(storeName, Encoding.UTF8);
 
-            this.connection.Send(packet);
+                packet[8 + maxCharacterNameLength + maxStoreNameLength] = (byte)itemcount;
+                int i = 0;
+
+                foreach (var item in itemlist)
+                {
+                    var itemBlock = packet.Slice(9 + maxCharacterNameLength + maxStoreNameLength + (i * sizePerItem), sizePerItem);
+                    itemBlock[0] = item.ItemSlot;
+                    this.itemSerializer.SerializeItem(itemBlock.Slice(1), item);
+                    itemBlock.Slice(1 + this.itemSerializer.NeededSpace).SetIntegerBigEndian((uint)(item.StorePrice ?? 0));
+                }
+
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -638,31 +742,41 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.ShowShopsOfPlayers(new List<Player>(1) { playerWithShop });
             if (this.player == playerWithShop)
             {
-                this.connection.Send(new byte[] { 0xC1, 0x05, 0x3F, 0x02, 0x01 }); // Success of opening the own shop
+                // Success of opening the own shop
+                using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+                {
+                    var packet = writer.Span;
+                    packet[2] = 0x3F;
+                    packet[3] = 0x02;
+                    packet[4] = 0x01;
+                    writer.Commit();
+                }
             }
         }
 
         /// <inheritdoc />
         public void ShowShopsOfPlayers(ICollection<Player> playersWithShop)
         {
+            const int sizePerShop = 38;
+            const int headerSize = 6;
             var shopCount = playersWithShop.Count;
-            var packet = new byte[6 + (38 * shopCount)];
-            packet[0] = 0xC2;
-            packet[1] = (byte)((packet.Length >> 8) & 0xFF);
-            packet[2] = (byte)(packet.Length & 0xFF);
-            packet[3] = 0x3F;
-            packet[5] = (byte)shopCount;
-            int offset = 6;
-            foreach (var shopPlayer in playersWithShop)
+            using (var writer = this.connection.StartSafeWrite(0xC2, headerSize + (sizePerShop * shopCount)))
             {
-                var shopPlayerId = shopPlayer.GetId(this.player);
-                packet[offset] = shopPlayerId.GetHighByte();
-                packet[offset + 1] = shopPlayerId.GetLowByte();
-                System.Text.Encoding.UTF8.GetBytes(shopPlayer.ShopStorage.StoreName, 0, shopPlayer.ShopStorage.StoreName.Length, packet, offset + 2);
-                offset += 38;
-            }
+                var packet = writer.Span;
+                packet[3] = 0x3F;
+                packet[5] = (byte)shopCount;
+                int offset = headerSize;
+                foreach (var shopPlayer in playersWithShop)
+                {
+                    var shopPlayerId = shopPlayer.GetId(this.player);
+                    var shopBlock = packet.Slice(offset, sizePerShop);
+                    shopBlock.SetShortBigEndian(shopPlayerId);
+                    shopBlock.Slice(2).WriteString(shopPlayer.ShopStorage.StoreName, Encoding.UTF8);
+                    offset += sizePerShop;
+                }
 
-            this.connection.Send(packet);
+                writer.Commit();
+            }
         }
 
         /// <remarks>
@@ -672,37 +786,58 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc />
         public void Logout(LogoutType logoutType)
         {
-            this.connection.Send(new byte[] { 0xC3, 0x05, 0xF1, 0x02, (byte)logoutType });
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x05))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF1;
+                packet[3] = 0x02;
+                packet[4] = (byte)logoutType;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void CharacterFocused(Character character)
         {
-            var packet = new byte[0x0F];
-            packet[0] = 0xC1;
-            packet[1] = 0x0F;
-            packet[2] = 0xF3;
-            packet[3] = 0x15;
-            Encoding.UTF8.GetBytes(character.Name, 0, character.Name.Length, packet, 4);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0F))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x15;
+                packet.Slice(4).WriteString(character.Name, Encoding.UTF8);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void StatIncreaseResult(AttributeDefinition attribute, bool success)
         {
-            byte successstat = (byte)attribute.GetStatType();
+            byte successAndStatType = (byte)attribute.GetStatType();
             if (success)
             {
-                successstat += 1 << 4;
+                successAndStatType += 1 << 4;
             }
 
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0xF3, 0x06, successstat });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x06;
+                packet[4] = successAndStatType;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void OpenNpcWindow(NpcWindow window)
         {
-            this.connection.Send(new byte[] { 0xC3, 0x0B, 0x30, this.GetWindowIdOf(window), 0, 0, 0, 0, 0, 0, 0 });
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x0B))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x30;
+                packet[3] = this.GetWindowIdOf(window);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -713,63 +848,74 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const int slotNumberSize = 1;
             const int headerSize = 6;
             int sizePerItem = this.itemSerializer.NeededSpace + slotNumberSize;
-            var packet = new byte[headerSize + (storeItems.Count * sizePerItem)];
-            packet[0] = 0xC2;
-            packet[1] = ((ushort)packet.Length).GetHighByte();
-            packet[2] = ((ushort)packet.Length).GetLowByte();
-            packet[3] = 0x31;
-            packet[4] = ((ushort)storeItems.Count).GetHighByte();
-            packet[5] = ((ushort)storeItems.Count).GetLowByte();
-
-            int i = 0;
-            foreach (var item in storeItems)
+            using (var writer = this.connection.StartSafeWrite(0xC2, headerSize + (storeItems.Count * sizePerItem)))
             {
-                var offset = headerSize + (i * sizePerItem);
-                packet[offset] = item.ItemSlot;
-                this.itemSerializer.SerializeItem(packet, offset + slotNumberSize, item);
-                i++;
-            }
+                var packet = writer.Span;
+                packet[3] = 0x31;
+                packet.Slice(4).SetShortSmallEndian((ushort)storeItems.Count);
 
-            this.connection.Send(packet);
+                int i = 0;
+                foreach (var item in storeItems)
+                {
+                    var offset = headerSize + (i * sizePerItem);
+                    var itemBlock = packet.Slice(offset, sizePerItem);
+                    itemBlock[0] = item.ItemSlot;
+                    this.itemSerializer.SerializeItem(packet.Slice(slotNumberSize), item);
+                    i++;
+                }
+
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowLoginResult(LoginResult loginResult)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0xF1, 0x01, (byte)loginResult });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF1;
+                packet[3] = 0x01;
+                packet[4] = (byte)loginResult;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowLoginWindow()
         {
-            var message = new byte[0x0C];
-            message[0] = 0xC1;
-            message[1] = 0x0C;
-            message[2] = 0xF1;
-            message[3] = 0x00;
-            message[4] = 0x01; // Success
-            message[5] = ViewExtensions.ConstantPlayerId.GetHighByte();
-            message[6] = ViewExtensions.ConstantPlayerId.GetLowByte();
-            Buffer.BlockCopy(this.lowestClientVersion, 0, message, 7, 5);
-            this.connection.Send(message);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
+            {
+                var message = writer.Span;
+                message[2] = 0xF1;
+                message[3] = 0x00;
+                message[4] = 0x01; // Success
+                message[5] = ViewExtensions.ConstantPlayerId.GetHighByte();
+                message[6] = ViewExtensions.ConstantPlayerId.GetLowByte();
+                this.lowestClientVersion.CopyTo(message.Slice(7, 5));
+                writer.Commit();
+            }
         }
 
         private void SendMasterStats()
         {
             var character = this.player.SelectedCharacter;
-            var packet = new byte[0x20];
-            packet.SetValues<byte>(0xC1, 0x20, 0xF3, 0x50);
-            var masterLevel = (ushort)this.player.Attributes[Stats.MasterLevel];
-            packet.SetShortBigEndian(masterLevel, 4);
-            packet.SetLongSmallEndian(character.MasterExperience, 6);
-            packet.SetLongSmallEndian(this.context.Configuration.MasterExperienceTable[masterLevel + 1], 14);
-            packet.SetShortBigEndian((ushort)character.MasterLevelUpPoints, 22);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth], 24);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana], 26);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield], 28);
-            packet.SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility], 30);
-
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x20))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x50;
+                var masterLevel = (ushort)this.player.Attributes[Stats.MasterLevel];
+                packet.Slice(4).SetShortBigEndian(masterLevel);
+                packet.Slice(6).SetLongSmallEndian(character.MasterExperience);
+                packet.Slice(14).SetLongSmallEndian(this.context.Configuration.MasterExperienceTable[masterLevel + 1]);
+                packet.Slice(22).SetShortBigEndian((ushort)character.MasterLevelUpPoints);
+                packet.Slice(24).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth]);
+                packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
+                packet.Slice(28).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield]);
+                packet.Slice(30).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility]);
+                writer.Commit();
+            }
         }
 
         private byte GetDamageColor(DamageAttributes attributes)
@@ -808,10 +954,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SendMagicEffectStatus(MagicEffect effect, Player affectedPlayer, bool isActive, uint duration)
         {
-            var playerId = affectedPlayer.GetId(this.player);
-            this.connection.Send(new byte[] { 0xC1, 7, 7, isActive ? (byte)1 : (byte)0, playerId.GetHighByte(), playerId.GetLowByte(), effect.Id });
-
             // TODO: Duration
+            var playerId = affectedPlayer.GetId(this.player);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x07))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x07;
+                packet[3] = isActive ? (byte)1 : (byte)0;
+                packet.Slice(4).SetShortSmallEndian(playerId);
+                packet[6] = effect.Id;
+                writer.Commit();
+            }
         }
 
         private byte GetGuildMemberStatusCode(GuildPosition? position)

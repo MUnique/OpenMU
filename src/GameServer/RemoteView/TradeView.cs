@@ -36,51 +36,63 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void TradeItemDisappear(byte slot, Item mi)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x04, 0x38, slot });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x38;
+                packet[3] = slot;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void TradeItemAppear(byte toSlot, Item item)
         {
-            var packet = new byte[this.itemSerializer.NeededSpace + 5];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[2] = 0x39;
-            packet[3] = toSlot;
-            this.itemSerializer.SerializeItem(packet, 4, item);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, this.itemSerializer.NeededSpace + 5))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x39;
+                packet[3] = toSlot;
+                this.itemSerializer.SerializeItem(packet.Slice(4), item);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowTradeRequest(ITrader requester)
         {
-            var packet = new byte[] { 0xC3, 13, 0x36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            Encoding.ASCII.GetBytes(requester.Name, 0, requester.Name.Length, packet, 3);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC3, 13))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x36;
+                packet.Slice(3).WriteString(requester.Name, Encoding.UTF8);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowTradeRequestAnswer(bool tradeAccepted)
         {
-            var packet = new byte[0x14];
-            packet[0] = 0xC1;
-            packet[1] = 0x14;
-            packet[2] = 0x37;
-            Encoding.UTF8.GetBytes(this.trader.TradingPartner.Name, 0, this.trader.TradingPartner.Name.Length, packet, 4);
-
-            if (tradeAccepted)
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x14))
             {
-                packet[3] = 1; // accepted
+                var packet = writer.Span;
+                packet[2] = 0x37;
+                packet.Slice(4).WriteString(this.trader.TradingPartner.Name, Encoding.UTF8);
 
-                var tradePartnerLevel = (ushort)this.trader.TradingPartner.Level;
-                packet[14] = tradePartnerLevel.GetHighByte();
-                packet[15] = tradePartnerLevel.GetLowByte();
+                if (tradeAccepted)
+                {
+                    packet[3] = 1; // accepted
 
-                var guildId = this.trader.TradingPartner.GuildStatus?.GuildId ?? 0;
-                packet.SetIntegerBigEndian(guildId, 16);
+                    var tradePartnerLevel = (ushort)this.trader.TradingPartner.Level;
+                    packet[14] = tradePartnerLevel.GetHighByte();
+                    packet[15] = tradePartnerLevel.GetLowByte();
+
+                    var guildId = this.trader.TradingPartner.GuildStatus?.GuildId ?? 0;
+                    packet.Slice(16).SetIntegerBigEndian(guildId);
+                }
+
+                writer.Commit();
             }
-
-            this.connection.Send(packet);
         }
 
         /// <inheritdoc/>
@@ -93,28 +105,51 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// </remarks>
         public void ChangeTradeButtonState(TradeButtonState state)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x04, 0x3C, (byte)state });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x3C;
+                packet[3] = (byte)state;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void SetTradeMoney(uint moneyAmount)
         {
-            byte[] packet = { 0xC1, 8, 0x3B, 0x15, 0, 0, 0, 0 }; // todo: check if 0x15 correct
-            packet.SetIntegerBigEndian(moneyAmount, 4);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 8))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x3B;
+                packet[3] = 0x15;
+                packet.Slice(4).SetIntegerBigEndian(moneyAmount);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc />
         public void RequestedTradeMoneyHasBeenSet()
         {
-            this.connection.Send(new byte[] { 0xC1, 4, 0x3A, 0x01 });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x3A;
+                packet[3] = 0x01;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc />
         public void TradeFinished(TradeResult tradeResult)
         {
-            var packet = new byte[] { 0xC1, 4, 0x3D, this.GetTradeResultByte(tradeResult) };
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x3D;
+                packet[3] = this.GetTradeResultByte(tradeResult);
+                writer.Commit();
+            }
+
             if (tradeResult != TradeResult.TimedOut && this.trader is Player player)
             {
                 player.PlayerView.InventoryView.UpdateInventoryList();

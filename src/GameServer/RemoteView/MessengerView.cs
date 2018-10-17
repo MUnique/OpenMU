@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using MUnique.OpenMU.Network;
 
     /// <summary>
-    /// The default implementation of the mesenger view which is forwarding everything to the game client which specific data packets.
+    /// The default implementation of the messenger view which is forwarding everything to the game client which specific data packets.
     /// </summary>
     public class MessengerView : IMessengerView
     {
@@ -53,7 +53,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var letterCount = (byte)letters.Count;
             if (friendList.Count == 0)
             {
-                this.connection.Send(new byte[] { 0xC2, 0, 7, 0xC0, letterCount, (byte)maxLetters, 0 });
+                using (var writer = this.connection.StartSafeWrite(0xC2, 7))
+                {
+                    var packet = writer.Span;
+                    packet[3] = 0xC0;
+                    packet[4] = letterCount;
+                    packet[5] = (byte)maxLetters;
+                    packet[6] = 0;
+                    writer.Commit();
+                }
             }
             else
             {
@@ -61,25 +69,25 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 const byte sizePerFriend = 11;
                 ////C2 00 06 C0 06 32
                 var packetLength = (ushort)(7 + (sizePerFriend * friendListCount));
-                var packet = new byte[packetLength];
-                packet[0] = 0xC2;
-                packet[1] = packetLength.GetHighByte();
-                packet[2] = packetLength.GetLowByte();
-                packet[3] = 0xC0;
-                packet[4] = letterCount;
-                packet[5] = (byte)maxLetters;
-                packet[6] = friendListCount;
-
-                int i = 0;
-                foreach (var friend in friendList)
+                using (var writer = this.connection.StartSafeWrite(0xC2, packetLength))
                 {
-                    var offset = 7 + (i * sizePerFriend);
-                    Encoding.ASCII.GetBytes(friend, 0, friend.Length, packet, offset);
-                    packet[offset + sizePerFriend - 1] = 0xFF;
-                    i++;
-                }
+                    var packet = writer.Span;
+                    packet[3] = 0xC0;
+                    packet[4] = letterCount;
+                    packet[5] = (byte)maxLetters;
+                    packet[6] = friendListCount;
 
-                this.connection.Send(packet);
+                    int i = 0;
+                    foreach (var friend in friendList)
+                    {
+                        var friendBlock = packet.Slice(7 + (i * sizePerFriend), sizePerFriend);
+                        friendBlock.WriteString(friend, Encoding.UTF8);
+                        friendBlock[friendBlock.Length - 1] = 0xFF;
+                        i++;
+                    }
+
+                    writer.Commit();
+                }
             }
 
             foreach (var requesterName in this.friendServer.GetOpenFriendRequests(this.player.SelectedCharacter.Id))
@@ -96,92 +104,110 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void AddToLetterList(LetterHeader letter, ushort newLetterIndex, bool newLetter)
         {
-            var result = new byte[0x6C];
-            result[0] = 0xC3;
-            result[1] = (byte)result.Length;
-            result[2] = 0xC6;
-            ////4 + 5 == Id
-            result[4] = (byte)(newLetterIndex & 0xFF);
-            result[5] = (byte)((newLetterIndex >> 8) & 0xFF);
-            Buffer.BlockCopy(Encoding.UTF8.GetBytes(letter.Sender.ToCharArray(), 0, letter.Sender.Length), 0, result, 6, Encoding.UTF8.GetByteCount(letter.Sender));
-            var date = letter.LetterDate.ToUniversalTime().AddHours(this.player.Account.TimeZone).ToString(CultureInfo.InvariantCulture.DateTimeFormat);
-            Buffer.BlockCopy(Encoding.UTF8.GetBytes(date.ToCharArray(), 0, date.Length), 0, result, 16, Encoding.UTF8.GetByteCount(date));
-            Buffer.BlockCopy(Encoding.UTF8.GetBytes(letter.Subject.ToCharArray(), 0, letter.Subject.Length), 0, result, 46, Encoding.UTF8.GetByteCount(letter.Subject));
-            result[78] = (byte)(letter.ReadFlag ? 1 : 0);
-            if (result[78] == 1)
+            using (var writer = this.connection.StartSafeWrite(0xC3, 79))
             {
-                result[78] += (byte)(newLetter ? 1 : 0);
-            }
+                var result = writer.Span;
+                result[2] = 0xC6;
+                result[4] = newLetterIndex.GetLowByte();
+                result[5] = newLetterIndex.GetHighByte();
+                result.Slice(6, 10).WriteString(letter.Sender, Encoding.UTF8);
+                var date = letter.LetterDate.ToUniversalTime().AddHours(this.player.Account.TimeZone).ToString(CultureInfo.InvariantCulture.DateTimeFormat);
+                result.Slice(16, 30).WriteString(date, Encoding.UTF8);
+                result.Slice(46, 32).WriteString(letter.Subject, Encoding.UTF8);
+                result[78] = (byte)(letter.ReadFlag ? 1 : 0);
+                if (result[78] == 1)
+                {
+                    result[78] += (byte)(newLetter ? 1 : 0);
+                }
 
-            this.connection.Send(result);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowFriendRequest(string requester)
         {
-            var packet = new byte[] { 0xC1, 0x0D, 0xC2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            Encoding.UTF8.GetBytes(requester, 0, requester.Length, packet, 3);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0D))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xC2;
+                packet.Slice(3).WriteString(requester, Encoding.UTF8);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void FriendStateUpdate(string friend, int serverId)
         {
-            var packet = new byte[] { 0xC1, 0x0E, 0xC4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (byte)serverId };
-            Encoding.UTF8.GetBytes(friend, 0, friend.Length, packet, 3);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0E))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xC4;
+                packet.Slice(3).WriteString(friend, Encoding.UTF8);
+                packet[packet.Length - 1] = (byte)serverId;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
-        public void FriendAdded(string friendname)
+        public void FriendAdded(string friendName)
         {
-            var packet = new byte[] { 0xC1, 0x0F, 0xC1, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (byte)SpecialServerId.Offline };
-            Encoding.UTF8.GetBytes(friendname, 0, friendname.Length, packet, 4);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0F))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xC1;
+                packet[3] = 0x01;
+                packet.Slice(4).WriteString(friendName, Encoding.UTF8);
+                packet[packet.Length - 1] = (byte)SpecialServerId.Offline;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void FriendDeleted(string deletingFriend)
         {
-            var packet = new byte[] { 0xC1, 0x0E, 0xC3, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            Encoding.UTF8.GetBytes(deletingFriend, 0, deletingFriend.Length, packet, 4);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0E))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xC3;
+                packet[3] = 0x01;
+                packet.Slice(4).WriteString(deletingFriend, Encoding.UTF8);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
-        public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendname, bool success)
+        public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
         {
-            var authenticationTokenArray = uint.Parse(authenticationInfo.AuthenticationToken).ToBytesSmallEndian();
-            var chatRoomId = authenticationInfo.RoomId;
-            var packet = new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x24))
             {
-                0xC3, 0x24, 0xCA,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // chat server ip (without port)
-                chatRoomId.GetLowByte(), chatRoomId.GetHighByte(),
-                authenticationTokenArray[3], authenticationTokenArray[2], authenticationTokenArray[1], authenticationTokenArray[0],
-                0x01, // type
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // friendname
-                success ? (byte)1 : (byte)0
-            };
+                var chatServerIp = this.friendServer.GetChatserverIP();
+                var packet = writer.Span;
+                packet[2] = 0xCA;
+                packet.Slice(3, 15).WriteString(chatServerIp, Encoding.UTF8);
+                var chatRoomId = authenticationInfo.RoomId;
+                packet[18] = chatRoomId.GetLowByte();
+                packet[19] = chatRoomId.GetHighByte();
+                packet.Slice(20, 4).SetIntegerBigEndian(uint.Parse(authenticationInfo.AuthenticationToken));
 
-            // chatserver unavailable would have success = 2, type = 0xAF
-            var chatServerIp = this.friendServer.GetChatserverIP();
-            Encoding.ASCII.GetBytes(chatServerIp, 0, chatServerIp.Length, packet, 3);
-            Encoding.UTF8.GetBytes(friendname, 0, friendname.Length, packet, 25);
-            this.connection.Send(packet);
+                packet[24] = 0x01; // type
+                packet.Slice(25, 10).WriteString(friendName, Encoding.UTF8);
+                packet[35] = success ? (byte)1 : (byte)0;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ShowFriendInvitationResult(bool success, uint requestId)
         {
-            var packet = new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC3, 8))
             {
-                0xC3, 8, 0xCB,
-                success ? (byte)1 : (byte)0,
-                0, 0, 0, 0
-            };
-            packet.SetIntegerSmallEndian(requestId, 4);
-            this.connection.Send(packet);
+                var packet = writer.Span;
+                packet[2] = 0xCB;
+                packet[3] = success ? (byte)1 : (byte)0;
+                packet.Slice(4, 4).SetIntegerSmallEndian(requestId);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -189,36 +215,48 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var letterIndex = this.player.SelectedCharacter.Letters.IndexOf(letter.Header);
             var len = (ushort)(Encoding.UTF8.GetByteCount(letter.Message) + 28);
-            var result = new byte[len];
-            result[0] = 0xC4;
-            result[1] = len.GetHighByte();
-            result[2] = len.GetLowByte();
-            result[3] = 0xC7;
-            result[4] = ((ushort)letterIndex).GetLowByte();
-            result[5] = ((ushort)letterIndex).GetHighByte();
-            result[6] = ((ushort)(len - 28)).GetLowByte();
-            result[7] = ((ushort)(len - 28)).GetHighByte();
-            var appearanceBytes = this.appearanceSerializer.GetAppearanceData(letter.SenderAppearance);
-            Buffer.BlockCopy(appearanceBytes, 0, result, 8, appearanceBytes.Length);
-            result[8 + appearanceBytes.Length] = letter.Rotation; // TODO: check if the index is correct
-            result[9 + appearanceBytes.Length] = letter.Animation;
-            Buffer.BlockCopy(Encoding.UTF8.GetBytes(letter.Message), 0, result, 28, Encoding.UTF8.GetByteCount(letter.Message));
-
-            this.connection.Send(result);
+            using (var writer = this.connection.StartSafeWrite(0xC4, len))
+            {
+                var result = writer.Span;
+                result[3] = 0xC7;
+                result[4] = ((ushort)letterIndex).GetLowByte();
+                result[5] = ((ushort)letterIndex).GetHighByte();
+                result[6] = ((ushort)(len - 28)).GetLowByte();
+                result[7] = ((ushort)(len - 28)).GetHighByte();
+                var appearanceBytes = this.appearanceSerializer.GetAppearanceData(letter.SenderAppearance);
+                appearanceBytes.CopyTo(result.Slice(8));
+                result[8 + appearanceBytes.Length] = letter.Rotation; // TODO: check if the index is correct
+                result[9 + appearanceBytes.Length] = letter.Animation;
+                result.Slice(28).WriteString(letter.Message, Encoding.UTF8);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void LetterDeleted(ushort letterIndex)
         {
-            this.connection.Send(new byte[] { 0xC1, 6, 0xC8, 1, letterIndex.GetLowByte(), letterIndex.GetHighByte() });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 6))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xC8;
+                packet[3] = 1;
+                packet[4] = letterIndex.GetLowByte();
+                packet[5] = letterIndex.GetHighByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void LetterSendResult(LetterSendSuccess success, uint letterId)
         {
-            var packet = new byte[] { 0xC1, 8, 0xC5, (byte)success, 0, 0, 0, 0 };
-            packet.SetIntegerBigEndian(letterId, 4);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 8))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xC5;
+                packet[3] = (byte)success;
+                packet.Slice(4, 4).SetIntegerBigEndian(letterId);
+                writer.Commit();
+            }
         }
     }
 }

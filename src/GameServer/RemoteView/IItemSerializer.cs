@@ -25,20 +25,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <summary>
         /// Serializes the item into a byte array at the specified index.
         /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="startIndex">The start index.</param>
+        /// <param name="target">The target span.</param>
         /// <param name="item">The item.</param>
-        void SerializeItem(byte[] array, int startIndex, Item item);
+        void SerializeItem(Span<byte> target, Item item);
 
         /// <summary>
         /// Deserializes the byte array into a new item instance.
         /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="startIndex">The start index.</param>
+        /// <param name="source">The source span.</param>
         /// <param name="gameConfiguration">The game configuration. Required to determine the item definition.</param>
         /// <param name="persistenceContext">The persistence context. Required to create new objects.</param>
         /// <returns>The created item instance.</returns>
-        Item DeserializeItem(byte[] array, int startIndex, GameConfiguration gameConfiguration, IContext persistenceContext);
+        Item DeserializeItem(Span<byte> source, GameConfiguration gameConfiguration, IContext persistenceContext);
     }
 
     /// <summary>
@@ -75,100 +73,100 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
-        public void SerializeItem(byte[] array, int startIndex, Item item)
+        public void SerializeItem(Span<byte> target, Item item)
         {
-            array[startIndex] = (byte)item.Definition.Number;
-            array[startIndex + 1] = (byte)((item.Level << 3) & LevelMask);
+            target[0] = (byte)item.Definition.Number;
+            target[1] = (byte)((item.Level << 3) & LevelMask);
 
             var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.Option);
             if (itemOption != null)
             {
                 // The item option level is splitted into 2 parts. Webzen... :-/
-                array[startIndex + 1] += (byte)(itemOption.Level & 3); // setting the first 2 bits
-                array[startIndex + 3] = (byte)((itemOption.Level & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte (0x40).
+                target[1] += (byte)(itemOption.Level & 3); // setting the first 2 bits
+                target[3] = (byte)((itemOption.Level & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte (0x40).
 
                 // Some items (wings) can have different options (3rd wings up to 3!)
                 // Alternate options are set at array[startIndex + 3] |= 0x20 and 0x10
                 if (itemOption.ItemOption.Number != 0)
                 {
-                    array[startIndex + 3] |= (byte)((itemOption.ItemOption.Number & 0b11) << 4);
+                    target[3] |= (byte)((itemOption.ItemOption.Number & 0b11) << 4);
                 }
             }
 
-            array[startIndex + 2] = item.Durability;
+            target[2] = item.Durability;
 
-            array[startIndex + 3] |= GetExcellentByte(item);
+            target[3] |= GetExcellentByte(item);
 
             if ((item.Definition.Number & 0x100) == 0x100)
             {
                 // Support for 512 items per Group
-                array[startIndex + 3] |= 0x80;
+                target[3] |= 0x80;
             }
 
             if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck))
             {
-                array[startIndex + 1] |= LuckFlag;
+                target[1] |= LuckFlag;
             }
 
             if (item.HasSkill)
             {
-                array[startIndex + 1] |= SkillFlag;
+                target[1] |= SkillFlag;
             }
 
             var ancientSet = item.ItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator != 0);
             if (ancientSet != null)
             {
-                array[startIndex + 4] |= (byte)(ancientSet.AncientSetDiscriminator & AncientDiscriminatorMask);
+                target[4] |= (byte)(ancientSet.AncientSetDiscriminator & AncientDiscriminatorMask);
 
                 // an ancient item always has an ancient bonus option (e.g. 5 Vitality). If that's not the case, we should throw an exception.
                 var ancientBonus =
                     item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus)
                     ?? throw new ArgumentException($"Item '{item}' belongs to an ancient set but doesn't have an ancient bonus option");
 
-                array[startIndex + 4] |= (byte)((ancientBonus.Level << 2) & AncientBonusLevelMask);
+                target[4] |= (byte)((ancientBonus.Level << 2) & AncientBonusLevelMask);
             }
 
-            array[startIndex + 5] = (byte)(item.Definition.Group << 4);
+            target[5] = (byte)(item.Definition.Group << 4);
             if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Level380Option))
             {
-                array[startIndex + 5] |= Option380Flag;
+                target[5] |= Option380Flag;
             }
 
-            array[startIndex + 6] = GetHarmonyByte(item);
-            SetSocketBytes(array, startIndex + 7, item);
+            target[6] = GetHarmonyByte(item);
+            SetSocketBytes(target.Slice(7), item);
         }
 
         /// <inheritdoc />
-        public Item DeserializeItem(byte[] array, int startIndex, GameConfiguration gameConfiguration, IContext persistenceContext)
+        public Item DeserializeItem(Span<byte> array, GameConfiguration gameConfiguration, IContext persistenceContext)
         {
-            var itemNumber = array[startIndex] + ((array[startIndex] & 0x80) << 1);
-            var itemGroup = (array[startIndex + 5] & 0xF0) >> 4;
+            var itemNumber = array[0] + ((array[0] & 0x80) << 1);
+            var itemGroup = (array[5] & 0xF0) >> 4;
             var definition = gameConfiguration.Items.FirstOrDefault(def => def.Number == itemNumber && def.Group == itemGroup)
                 ?? throw new ArgumentException($"Couldn't find the item definition for the given byte array. Extracted item number and group: {itemNumber}, {itemGroup}");
 
             var item = persistenceContext.CreateNew<Item>();
             item.Definition = definition;
-            item.Level = (byte)((array[startIndex + 1] & LevelMask) >> 3);
-            item.Durability = array[startIndex + 2];
+            item.Level = (byte)((array[1] & LevelMask) >> 3);
+            item.Durability = array[2];
 
             if (item.Definition.PossibleItemOptions.Any(o =>
                 o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Excellent)))
             {
-                ReadExcellentOption(array[startIndex + 3], persistenceContext, item);
+                ReadExcellentOption(array[3], persistenceContext, item);
             }
             else if (item.Definition.PossibleItemOptions.Any(o =>
                 o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing)))
             {
-                ReadWingOption(array[startIndex + 3], persistenceContext, item);
+                ReadWingOption(array[3], persistenceContext, item);
             }
 
-            ReadSkillFlag(array[startIndex + 1], item);
-            ReadLuckOption(array[startIndex + 1], persistenceContext, item);
-            ReadNormalOption(array, startIndex, persistenceContext, item);
-            ReadAncientOption(array[startIndex + 4], persistenceContext, item);
-            ReadLevel380Option(array[startIndex + 5], persistenceContext, item);
-            ReadHarmonyOption(array[startIndex + 6], persistenceContext, item);
-            ReadSockets(array.Skip(startIndex + 7), persistenceContext, item);
+            ReadSkillFlag(array[1], item);
+            ReadLuckOption(array[1], persistenceContext, item);
+            ReadNormalOption(array, persistenceContext, item);
+            ReadAncientOption(array[4], persistenceContext, item);
+            ReadLevel380Option(array[5], persistenceContext, item);
+            ReadHarmonyOption(array[6], persistenceContext, item);
+            ReadSockets(array.Slice(7), persistenceContext, item);
             return item;
         }
 
@@ -237,16 +235,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private static void ReadNormalOption(byte[] array, int startIndex, IContext persistenceContext, Item item)
+        private static void ReadNormalOption(Span<byte> array, IContext persistenceContext, Item item)
         {
-            var optionLevel = (array[startIndex + 1] & 3) + ((array[startIndex + 3] >> 4) & 4);
+            var optionLevel = (array[1] & 3) + ((array[3] >> 4) & 4);
             if (optionLevel == 0)
             {
                 return;
             }
 
             var itemIsWing = item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing));
-            var optionNumber = itemIsWing ? (array[startIndex + 3] >> 4) & 0b11 : 0;
+            var optionNumber = itemIsWing ? (array[3] >> 4) & 0b11 : 0;
             var option = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions.Where(i => i.OptionType == ItemOptionTypes.Option && i.Number == optionNumber))
                 .FirstOrDefault()
                 ?? throw new ArgumentException($"The option with level {optionLevel} and number {optionNumber} is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
@@ -297,7 +295,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             item.ItemOptions.Add(optionLink);
         }
 
-        private static void ReadSockets(IEnumerable<byte> socketBytes, IContext persistenceContext, Item item)
+        private static void ReadSockets(Span<byte> socketBytes, IContext persistenceContext, Item item)
         {
             if (item.Definition.MaximumSockets == 0)
             {
@@ -305,8 +303,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
 
             var numberOfSockets = 0;
-            foreach (var socketByte in socketBytes.Take(item.Definition.MaximumSockets))
+            for (int i = 0; i < item.Definition.MaximumSockets; i++)
             {
+                var socketByte = socketBytes[i];
                 if (socketByte == NoSocket)
                 {
                     continue;
@@ -351,18 +350,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             item.ItemOptions.Add(optionLink);
         }
 
-        private static void SetSocketBytes(byte[] array, int startIndex, Item item)
+        private static void SetSocketBytes(Span<byte> target, Item item)
         {
             for (int i = 0; i < MaximumSockets; i++)
             {
-                array[startIndex + i] = i < item.SocketCount ? EmptySocket : NoSocket;
+                target[i] = i < item.SocketCount ? EmptySocket : NoSocket;
             }
 
             var socketOptions = item.ItemOptions.Where(o => o.ItemOption.OptionType == ItemOptionTypes.SocketOption).Select(o => o.ItemOption.Number);
             int j = 0;
             foreach (int number in socketOptions)
             {
-                array[startIndex + j] = (byte)number;
+                target[j] = (byte)number;
             }
         }
 

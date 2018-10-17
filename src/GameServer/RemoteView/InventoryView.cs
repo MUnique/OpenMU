@@ -38,53 +38,60 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ItemMoved(Item item, byte toSlot, Storages storage)
         {
-            var itemMoved = new byte[0x11];
-            itemMoved[0] = 0xC3;
-            itemMoved[1] = 0x11;
-            itemMoved[2] = 0x24;
-            itemMoved[3] = storage == Storages.PersonalStore ? (byte)0 : (byte)storage;
-            itemMoved[4] = toSlot;
-            this.itemSerializer.SerializeItem(itemMoved, 5, item);
-
-            this.connection.Send(itemMoved);
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x11))
+            {
+                var itemMoved = writer.Span;
+                itemMoved[2] = 0x24;
+                itemMoved[3] = storage == Storages.PersonalStore ? (byte)0 : (byte)storage;
+                itemMoved[4] = toSlot;
+                this.itemSerializer.SerializeItem(itemMoved.Slice(5), item);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemMoveFailed(Item item)
         {
-            var itemMoveFailed = new byte[0x11];
-            itemMoveFailed[0] = 0xC3;
-            itemMoveFailed[1] = 0x11;
-            itemMoveFailed[2] = 0x24;
-            itemMoveFailed[3] = 0xFF;
-            itemMoveFailed[4] = 0;
-            if (item != null)
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x11))
             {
-                this.itemSerializer.SerializeItem(itemMoveFailed, 5, item);
-            }
+                var itemMoveFailed = writer.Span;
+                itemMoveFailed[2] = 0x24;
+                itemMoveFailed[3] = 0xFF;
+                itemMoveFailed[4] = 0;
+                if (item != null)
+                {
+                    this.itemSerializer.SerializeItem(itemMoveFailed.Slice(5), item);
+                }
 
-            this.connection.Send(itemMoveFailed);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void UpdateMoney()
         {
-            var message = new byte[] { 0xC3, 0x08, 0x22, 0xFE, 0, 0, 0, 0 };
-            message.SetIntegerSmallEndian((uint)this.player.Money, 4);
-            this.connection.Send(message);
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x08))
+            {
+                var message = writer.Span;
+                message[2] = 0x22;
+                message[3] = 0xFE;
+                message.Slice(4, 4).SetIntegerSmallEndian((uint)this.player.Money);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemUpgraded(Item item)
         {
-            var message = new byte[0x11];
-            message[0] = 0xC1;
-            message[1] = 0x11;
-            message[2] = 0xF3;
-            message[3] = 0x14;
-            message[4] = item.ItemSlot;
-            this.itemSerializer.SerializeItem(message, 5, item);
-            this.connection.Send(message);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x11))
+            {
+                var message = writer.Span;
+                message[2] = 0xF3;
+                message[3] = 0x14;
+                message[4] = item.ItemSlot;
+                this.itemSerializer.SerializeItem(message.Slice(5), item);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -95,107 +102,155 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var lengthPerItem = this.itemSerializer.NeededSpace + slotNumberSize;
             const int headerLength = 6;
             var itemCount = this.player.SelectedCharacter.Inventory.Items.Count();
-            ushort len = (ushort)((itemCount * lengthPerItem) + headerLength);
-            byte[] packet = new byte[len];
-            packet[0] = 0xC4;
-            packet[1] = len.GetHighByte();
-            packet[2] = len.GetLowByte();
-            packet[3] = 0xF3;
-            packet[4] = 0x10;
-            packet[5] = (byte)itemCount;
-            int i = 0;
-            foreach (var item in this.player.SelectedCharacter.Inventory.Items)
+            ushort length = (ushort)((itemCount * lengthPerItem) + headerLength);
+            using (var writer = this.connection.StartSafeWrite(0xC4, length))
             {
-                var offset = headerLength + (i * lengthPerItem);
-                packet[offset] = item.ItemSlot;
-                this.itemSerializer.SerializeItem(packet, offset + 1, item);
-                i++;
-            }
+                var packet = writer.Span;
+                packet[3] = 0xF3;
+                packet[4] = 0x10;
+                packet[5] = (byte)itemCount;
+                int i = 0;
+                foreach (var item in this.player.SelectedCharacter.Inventory.Items)
+                {
+                    var offset = headerLength + (i * lengthPerItem);
+                    packet[offset] = item.ItemSlot;
+                    this.itemSerializer.SerializeItem(packet.Slice(offset + 1), item);
+                    i++;
+                }
 
-            this.connection.Send(packet);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemConsumed(byte inventorySlot, bool success)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0x28, (byte)(success ? inventorySlot : 0xFF), 1 });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x28;
+                packet[3] = (byte)(success ? inventorySlot : 0xFF);
+                packet[4] = 1;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemDurabilityChanged(Item item, bool afterConsumption)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x06, 0x2A, item.ItemSlot, item.Durability, afterConsumption ? (byte)0x01 : (byte)0x00 });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 6))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x2A;
+                packet[3] = item.ItemSlot;
+                packet[4] = item.Durability;
+                packet[5] = afterConsumption ? (byte)0x01 : (byte)0x00;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemAppear(Item newItem)
         {
-            var message = new byte[5 + this.itemSerializer.NeededSpace];
-            message[0] = 0xC3;
-            message[1] = (byte)message.Length;
-            message[2] = 0x22;
-            message[3] = newItem.ItemSlot;
-            this.itemSerializer.SerializeItem(message, 4, newItem);
-            this.connection.Send(message);
+            using (var writer = this.connection.StartSafeWrite(0xC3, 5 + this.itemSerializer.NeededSpace))
+            {
+                var message = writer.Span;
+                message[2] = 0x22;
+                message[3] = newItem.ItemSlot;
+                this.itemSerializer.SerializeItem(message.Slice(4), newItem);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void BuyNpcItemFailed()
         {
-            this.connection.Send(new byte[] { 0xC1, 0x10, 0x32, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4 + this.itemSerializer.NeededSpace))
+            {
+                var message = writer.Span;
+                message[2] = 0x32;
+                message[3] = 0xFF;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void NpcItemBought(Item newItem)
         {
-            byte[] newPacket = new byte[] { 0xC1, 0x10, 0x32, newItem.ItemSlot, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            this.itemSerializer.SerializeItem(newPacket, 4, newItem);
-            this.connection.Send(newPacket);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4 + this.itemSerializer.NeededSpace))
+            {
+                var message = writer.Span;
+                message[2] = 0x32;
+                message[3] = newItem.ItemSlot;
+                this.itemSerializer.SerializeItem(message.Slice(4), newItem);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemSoldToNpc(bool success)
         {
-            var message = new byte[] { 0xC3, 0x08, 0x33, success ? (byte)1 : (byte)0, 0, 0, 0, 0 };
-            message.SetIntegerBigEndian((uint)this.player.Money, 4);
-            this.connection.Send(message);
+            using (var writer = this.connection.StartSafeWrite(0xC3, 8))
+            {
+                var message = writer.Span;
+                message[2] = 0x33;
+                message[3] = success ? (byte)1 : (byte)0;
+                message.Slice(4).SetIntegerBigEndian((uint)this.player.Money);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemDropResult(byte slot, bool success)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0x23, success ? (byte)1 : (byte)0, slot });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            {
+                var message = writer.Span;
+                message[2] = 0x23;
+                message[3] = success ? (byte)1 : (byte)0;
+                message[4] = slot;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemSoldByPlayerShop(byte slot, Player buyer)
         {
-            var packet = new byte[] { 0xC1, 0x0F, 0x3F, 8, slot, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            Encoding.UTF8.GetBytes(buyer.SelectedCharacter.Name, 0, buyer.SelectedCharacter.Name.Length, packet, 5);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0F))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x3F;
+                packet[3] = 0x08;
+                packet[4] = slot;
+                packet.Slice(5).WriteString(buyer.SelectedCharacter.Name, Encoding.UTF8);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ItemBoughtFromPlayerShop(Item item)
         {
-            var message = new byte[0x10];
-            message[0] = 0xC1;
-            message[1] = 0x10;
-            message[2] = 0x32;
-            message[3] = item.ItemSlot;
-            this.itemSerializer.SerializeItem(message, 4, item);
-            this.connection.Send(message);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4 + this.itemSerializer.NeededSpace))
+            {
+                var message = writer.Span;
+                message[2] = 0x32;
+                message[3] = item.ItemSlot;
+                this.itemSerializer.SerializeItem(message.Slice(4), item);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc />
         public void ItemPriceSetResponse(byte itemSlot, ItemPriceResult result)
         {
-            var packet = new byte[5];
-            packet[0] = 0xC3;
-            packet[1] = (byte)packet.Length;
-            packet[2] = 0x3F;
-            packet[3] = (byte)result;
-            packet[4] = itemSlot;
+            using (var writer = this.connection.StartSafeWrite(0xC3, 5))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x3F;
+                packet[3] = (byte)result;
+                packet[4] = itemSlot;
+                writer.Commit();
+            }
         }
     }
 }
