@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.Network.Benchmarks
     using BenchmarkDotNet.Attributes;
 
     /// <summary>
-    /// A benchmark to compare <see cref="ConnectionExtensions.SafeWrite"/> with doing the same manually.
+    /// A benchmark to compare <see cref="ConnectionExtensions.StartSafeWrite"/> with doing the same manually.
     /// The memory allocation should be the same.
     /// </summary>
     [CoreJob]
@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.Network.Benchmarks
         }
 
         /// <summary>
-        /// Sends packets with using <see cref="ConnectionExtensions.SafeWrite"/>.
+        /// Sends packets with using <see cref="ConnectionExtensions.StartSafeWrite"/>.
         /// </summary>
         [Benchmark]
         public void SafeWrite()
@@ -55,10 +55,11 @@ namespace MUnique.OpenMU.Network.Benchmarks
             var connection = new Connection(duplexPipe, null, null);
             for (int i = 0; i < this.PacketCount; i++)
             {
-                using (var output = connection.SafeWrite(this.c1Packet.Length))
+                using (var output = connection.StartSafeWrite(0xC1, this.c1Packet.Length))
                 {
                     var span = output.Span;
                     this.c1Packet.CopyTo(span);
+                    output.Commit();
                 }
             }
         }
