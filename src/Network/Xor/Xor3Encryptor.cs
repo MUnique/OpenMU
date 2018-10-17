@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.Network.Xor
     /// <summary>
     /// An encryptor which XOR-encrypts data using a 3-byte key.
     /// </summary>
-    public class Xor3Encryptor : IEncryptor, ISpanEncryptor
+    public class Xor3Encryptor : ISpanEncryptor
     {
         private readonly byte[] xor3Keys;
 
@@ -29,23 +29,6 @@ namespace MUnique.OpenMU.Network.Xor
         public void Encrypt(Span<byte> data)
         {
             this.InternalEncrypt(data.Slice(this.startOffset));
-        }
-
-        /// <inheritdoc/>
-        public void Reset()
-        {
-            // nothing needed
-        }
-
-        /// <summary>
-        /// Internal encrypt function. XORs each byte with one byte of the 3-byte key.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <returns>The encrypted data.</returns>
-        public byte[] Encrypt(byte[] data)
-        {
-            this.InternalEncrypt(data.AsSpan(this.startOffset));
-            return data;
         }
 
         /// <summary>

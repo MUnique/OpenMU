@@ -12,10 +12,9 @@ namespace MUnique.OpenMU.Network
     public interface ISpanDecryptor
     {
         /// <summary>
-        /// Decrypts the packet, and checks if the packet was valid.
+        /// Decrypts the packet.
         /// </summary>
         /// <param name="packet">The encrypted data packet. The decrypted result will be written back to the same span.</param>
-        /// <returns>True, if successful; False, otherwise.</returns>
-        bool Decrypt(Span<byte> packet);
+        void Decrypt(Span<byte> packet);
     }
 }

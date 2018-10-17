@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.ChatServer
             this.ServerState = OpenMU.Interfaces.ServerState.Starting;
             try
             {
-                this.chatClientListener = new Listener(this.port, reader => new PipelinedDecryptor(reader, SimpleModulusDecryptor.DefaultServerKey, this.Xor32Key), writer => null);
+                this.chatClientListener = new Listener(this.port, reader => new PipelinedDecryptor(reader, PipelinedSimpleModulusDecryptor.DefaultServerKey, this.Xor32Key), writer => null);
                 this.chatClientListener.ClientAccepted += this.ChatClientAccepted;
                 this.chatClientListener.Start();
                 Log.Info($"Chat client listener ready on port {this.port}.");

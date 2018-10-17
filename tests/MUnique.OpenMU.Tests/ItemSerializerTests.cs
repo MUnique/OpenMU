@@ -140,9 +140,9 @@ namespace MUnique.OpenMU.Tests
                 item.ItemOptions.Add(excellent2);
 
                 var array = new byte[this.itemSerializer.NeededSpace];
-                this.itemSerializer.SerializeItem(array, 0, item);
+                this.itemSerializer.SerializeItem(array, item);
 
-                var deserializedItem = this.itemSerializer.DeserializeItem(array, 0, this.gameConfiguration, context);
+                var deserializedItem = this.itemSerializer.DeserializeItem(array, this.gameConfiguration, context);
                 return new Tuple<Item, Item>(item, deserializedItem);
             }
         }

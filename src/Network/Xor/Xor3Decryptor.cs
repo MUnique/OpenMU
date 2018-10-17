@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.Network.Xor
     /// <summary>
     /// A decryptor which XOR-decrypts data using a 3-byte key.
     /// </summary>
-    public class Xor3Decryptor : Xor3Encryptor, IDecryptor, ISpanDecryptor
+    public class Xor3Decryptor : Xor3Encryptor, ISpanDecryptor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Xor3Decryptor"/> class.
@@ -21,17 +21,9 @@ namespace MUnique.OpenMU.Network.Xor
         }
 
         /// <inheritdoc/>
-        public bool Decrypt(ref byte[] packet)
+        public void Decrypt(Span<byte> packet)
         {
             this.Encrypt(packet);
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public bool Decrypt(Span<byte> packet)
-        {
-            this.Encrypt(packet);
-            return true;
         }
     }
 }

@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Network.PacketTwister
 {
-    using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// PacketTwister implementation for packets of 'GuildMasterResponse' type.
@@ -13,15 +13,15 @@ namespace MUnique.OpenMU.Network.PacketTwister
     internal class PacketTwisterOfGuildMasterResponse : IPacketTwister
     {
         /// <inheritdoc/>
-        public void Twist(IList<byte> data)
+        public void Twist(Span<byte> data)
         {
-            if (data.Count >= 4)
+            if (data.Length >= 4)
             {
-                if (data.Count >= 8)
+                if (data.Length >= 8)
                 {
-                    if (data.Count >= 16)
+                    if (data.Length >= 16)
                     {
-                        if (data.Count >= 32)
+                        if (data.Length >= 32)
                         {
                             var v11 = (byte)(data[17] >> 6);
                             data[17] *= 4;
@@ -224,15 +224,15 @@ namespace MUnique.OpenMU.Network.PacketTwister
         }
 
         /// <inheritdoc/>
-        public void Correct(IList<byte> data)
+        public void Correct(Span<byte> data)
         {
-            if (data.Count >= 4)
+            if (data.Length >= 4)
             {
-                if (data.Count >= 8)
+                if (data.Length >= 8)
                 {
-                    if (data.Count >= 16)
+                    if (data.Length >= 16)
                     {
-                        if (data.Count >= 32)
+                        if (data.Length >= 32)
                         {
                             var v11 = (byte)(data[17] >> 6);
                             data[17] *= 4;

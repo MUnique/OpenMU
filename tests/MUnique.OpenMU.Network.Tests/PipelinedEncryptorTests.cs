@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.Network.Tests
         }
 
         /// <summary>
-        /// Tests the encryption of C3-packets with the <see cref="Encryptor" />.
+        /// Tests the encryption of C3-packets with the <see cref="PipelinedEncryptor" />.
         /// </summary>
         /// <returns>The task.</returns>
         [Test]
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.Network.Tests
         }
 
         /// <summary>
-        /// Tests the encryption of C4-packets with the <see cref="Encryptor"/>.
+        /// Tests the encryption of C4-packets with the <see cref="PipelinedEncryptor"/>.
         /// </summary>
         /// <returns>The task.</returns>
         [Test]

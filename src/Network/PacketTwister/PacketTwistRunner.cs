@@ -5,14 +5,12 @@
 namespace MUnique.OpenMU.Network.PacketTwister
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
 
     /// <summary>
     /// The main entry point to decrypt packets with the packet twisting algorithm.
     /// </summary>
-    public class PacketTwistRunner : IEncryptor, IDecryptor
+    public class PacketTwistRunner : ISpanDecryptor, ISpanEncryptor
     {
         private readonly IDictionary<byte, IPacketTwister> twisters = new Dictionary<byte, IPacketTwister>();
 
@@ -105,106 +103,24 @@ namespace MUnique.OpenMU.Network.PacketTwister
         }
 
         /// <inheritdoc/>
-        public byte[] Encrypt(byte[] packet)
+        public void Encrypt(Span<byte> packet)
         {
             var packetType = packet.GetPacketType();
-            var data = new ArraySegment<byte>(packet, packet.GetPacketHeaderSize() + 1);
+            var data = packet.Slice(packet.GetPacketHeaderSize() + 1);
             if (this.twisters.TryGetValue(packetType, out IPacketTwister twister))
             {
                 twister.Twist(data);
             }
-
-            return packet;
         }
 
         /// <inheritdoc/>
-        public bool Decrypt(ref byte[] packet)
+        public void Decrypt(Span<byte> packet)
         {
             var packetType = packet.GetPacketType();
-            var data = new ArraySegment<byte>(packet, packet.GetPacketHeaderSize() + 1);
+            var data = packet.Slice(packet.GetPacketHeaderSize() + 1);
             if (this.twisters.TryGetValue(packetType, out IPacketTwister twister))
             {
                 twister.Correct(data);
-            }
-
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public void Reset()
-        {
-            // not required
-        }
-
-        private struct ArraySegment<T> : IList<T>
-        {
-            private readonly IList<T> innerArray;
-            private readonly int startIndex;
-
-            public ArraySegment(IList<T> array, int startIndex)
-            {
-                this.innerArray = array;
-                this.startIndex = startIndex;
-            }
-
-            public int Count => this.innerArray.Count - this.startIndex;
-
-            public bool IsReadOnly => true;
-
-            public T this[int index]
-            {
-                get => this.innerArray[index + this.startIndex];
-                set => this.innerArray[index + this.startIndex] = value;
-            }
-
-            public IEnumerator<T> GetEnumerator()
-            {
-                return this.innerArray.Skip(this.startIndex).GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return this.GetEnumerator();
-            }
-
-            public void Add(T item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Clear()
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool Contains(T item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void CopyTo(T[] array, int arrayIndex)
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool Remove(T item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public int IndexOf(T item)
-            {
-                return this.innerArray.IndexOf(item) - this.startIndex;
-            }
-
-            public void Insert(int index, T item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void RemoveAt(int index)
-            {
-                throw new NotImplementedException();
             }
         }
     }

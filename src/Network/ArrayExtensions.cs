@@ -483,7 +483,7 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="packet">The packet.</param>
         /// <returns>The type of the packet.</returns>
-        public static byte GetPacketType(this byte[] packet)
+        public static byte GetPacketType(this Span<byte> packet)
         {
             return packet[packet.GetPacketHeaderSize()];
         }
@@ -493,7 +493,7 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="packet">The packet.</param>
         /// <returns>The sub type of the packet.</returns>
-        public static byte GetPacketSubType(this byte[] packet)
+        public static byte GetPacketSubType(this Span<byte> packet)
         {
             return packet[packet.GetPacketHeaderSize() + 1];
         }

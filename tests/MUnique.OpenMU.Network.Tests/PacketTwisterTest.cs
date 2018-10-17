@@ -26,8 +26,9 @@ namespace MUnique.OpenMU.Network.Tests
             for (byte packetType = 0; packetType < byte.MaxValue; packetType++)
             {
                 decrypted[2] = packetType;
-                var result = packetTwister.Encrypt(decrypted.ToArray());
-                packetTwister.Decrypt(ref result);
+                var result = decrypted.ToArray();
+                packetTwister.Encrypt(result);
+                packetTwister.Decrypt(result);
                 CompareArrays(decrypted, result);
             }
         }
