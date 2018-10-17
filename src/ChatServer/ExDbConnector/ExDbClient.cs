@@ -83,15 +83,16 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         private void SendHello()
         {
             // C1 3A 00 02 AC DA 43 68 61 74 53 65 72 76 65 72 00 ...
-            var packet = new byte[0x3A];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[3] = 0x02;
-            packet[4] = this.chatServerPort.GetLowByte();
-            packet[5] = this.chatServerPort.GetHighByte();
-            var chatServerString = "ChatServer";
-            Encoding.UTF8.GetBytes(chatServerString, 0, chatServerString.Length, packet, 6);
-            this.connection.Output.Write(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x3A))
+            {
+                var packet = writer.Span;
+                packet[3] = 0x02;
+                packet[4] = this.chatServerPort.GetLowByte();
+                packet[5] = this.chatServerPort.GetHighByte();
+                packet.Slice(6).WriteString("ChatServer", Encoding.UTF8);
+                writer.Commit();
+            }
+
             Log.Info("Sent registration packet to ExDB-Server");
         }
 
@@ -198,30 +199,26 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             }
 
             var roomId = authenticationInfo.RoomId;
-            var packet = new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x2C))
             {
-                0xC1, 0x2C, 0xA0, 0x01, (byte)roomId, (byte)(roomId >> 8),
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                clientId.GetLowByte(), clientId.GetHighByte(), // user client id
-                serverId.GetLowByte(), serverId.GetHighByte(), // server id
-                0, 0, // 30+31, padding for the alignment of the following token
-                0, 0, 0, 0, // token
-                0, 0, 0, 0, // friend token
-                type,
-                0, 0, 0 // padding?
-            };
+                var packet = writer.Span;
+                packet[2] = 0xA0;
+                packet[3] = 0x01;
+                packet.Slice(4).SetShortBigEndian(roomId);
+                packet.Slice(6).WriteString(authenticationInfo.ClientName, Encoding.UTF8);
+                if (friendAuthenticationInfo != null)
+                {
+                    packet.Slice(16).WriteString(friendAuthenticationInfo.ClientName, Encoding.UTF8);
+                }
 
-            packet.SetIntegerBigEndian(token, 32);
-            packet.SetIntegerBigEndian(friendToken, 36);
+                packet.Slice(26).SetShortBigEndian(clientId);
+                packet.Slice(28).SetShortBigEndian(serverId);
+                packet.Slice(32).SetIntegerBigEndian(token);
+                packet.Slice(36).SetIntegerBigEndian(friendToken);
+                packet[40] = type;
 
-            Encoding.UTF8.GetBytes(authenticationInfo.ClientName, 0, authenticationInfo.ClientName.Length, packet, 6);
-            if (friendAuthenticationInfo != null)
-            {
-                Encoding.UTF8.GetBytes(friendAuthenticationInfo.ClientName, 0, friendAuthenticationInfo.ClientName.Length, packet, 16);
+                writer.Commit();
             }
-
-            this.connection.Output.Write(packet);
         }
     }
 }
