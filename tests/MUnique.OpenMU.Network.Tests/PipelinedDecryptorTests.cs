@@ -76,7 +76,7 @@ namespace MUnique.OpenMU.Network.Tests
         {
             var decrypted = new byte[] { 195, 12, 14, 0, 1, 51, 254, 39, 0, 0, 0, 0 };
             var encrypted = new byte[] { 0xC3, 0x18, 0xBC, 0x9D, 0x35, 0xE2, 0xA2, 0x21, 0x22, 0x91, 0x5C, 0x2B, 0x1E, 0x18, 0x63, 0x47, 0x28, 0xC3, 0x10, 0x20, 0xF1, 0xC4, 0x2A, 0x14 };
-            await this.Decrypt(encrypted, decrypted);
+            await this.Decrypt(encrypted, decrypted).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.Network.Tests
             var pipe = new Pipe();
             var decryptor = new PipelinedDecryptor(pipe.Reader);
             pipe.Writer.Write(encryptedPacket);
-            await pipe.Writer.FlushAsync();
+            await pipe.Writer.FlushAsync().ConfigureAwait(false);
             var readResult = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
             var result = readResult.Buffer.ToArray();
             Assert.That(result, Is.EquivalentTo(decryptedPacket));
