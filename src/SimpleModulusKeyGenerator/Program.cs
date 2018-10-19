@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
             }
             else
             {
-                await GenerateNewKeyPair();
+                await GenerateNewKeyPair().ConfigureAwait(false);
             }
         }
 
@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
         private static async Task GenerateNewKeyPair()
         {
             var generator = new SimpleModulusKeyGenerator();
-            var result = await generator.GenerateKeys();
+            var result = await generator.GenerateKeys().ConfigureAwait(false);
 
             Console.WriteLine("Generated key pair:");
             Console.WriteLine(result);
