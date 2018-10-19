@@ -302,7 +302,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[4] = (byte)newPlayerList.Count;
                 var actualSize = 5;
 
-                // var nameArray = new byte[10];
                 foreach (var newPlayer in newPlayerList)
                 {
                     var playerId = newPlayer.GetId(this.player);
