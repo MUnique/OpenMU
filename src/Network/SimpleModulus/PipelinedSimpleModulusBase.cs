@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Network.SimpleModulus
 {
     using System;
+    using System.Buffers;
+    using System.IO.Pipelines;
 
     /// <summary>
     /// The base class for the "simple modulus" encryption.
@@ -48,11 +50,34 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         protected byte[] ShiftBuffer { get; } = new byte[4];
 
         /// <summary>
+        /// Gets the header buffer of the currently read packet.
+        /// </summary>
+        protected byte[] HeaderBuffer { get; } = new byte[3];
+
+        /// <summary>
+        /// Gets the pipe which is either the target (for the encryptor) or source (for the decryptor) for or of the encrypted packets.
+        /// </summary>
+        protected Pipe Pipe { get; } = new Pipe();
+
+        /// <summary>
         /// Resets this instance.
         /// </summary>
         public void Reset()
         {
             this.Counter.Reset();
+        }
+
+        /// <summary>
+        /// Copies the data of the packet into the target writer, without flushing it yet.
+        /// </summary>
+        /// <param name="target">The target writer.</param>
+        /// <param name="packet">The packet.</param>
+        protected void CopyDataIntoWriter(PipeWriter target, ReadOnlySequence<byte> packet)
+        {
+            var packetSize = this.HeaderBuffer.GetPacketSize();
+            var data = target.GetSpan(packetSize).Slice(0, packetSize);
+            packet.CopyTo(data);
+            target.Advance(packetSize);
         }
 
         /// <summary>
@@ -99,17 +124,6 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         protected int GetShiftSize(int length, int shiftOffset)
         {
             return ((length + shiftOffset - 1) / DecryptedBlockSize) + (1 - (shiftOffset / DecryptedBlockSize));
-        }
-
-        /// <summary>
-        /// Clears the shift buffer.
-        /// </summary>
-        protected void ClearShiftBuffer()
-        {
-            this.ShiftBuffer[0] = 0;
-            this.ShiftBuffer[1] = 0;
-            this.ShiftBuffer[2] = 0;
-            this.ShiftBuffer[3] = 0;
         }
 
         private static void ShiftLeft(Span<byte> data, int size, int shift)

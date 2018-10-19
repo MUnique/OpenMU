@@ -7,11 +7,11 @@ namespace MUnique.OpenMU.Network.Xor
     using System;
     using System.Buffers;
     using System.IO.Pipelines;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Pipelined encryptor which uses a 32 byte key for a xor encryption.
     /// It's typically used to encrypt packet sent by the client to the server.
-    /// <seealso cref="Xor32Decryptor"/> for the non-pipelined version.
     /// </summary>
     public class PipelinedXor32Encryptor : PacketPipeReaderBase, IPipelinedEncryptor
     {
@@ -50,9 +50,9 @@ namespace MUnique.OpenMU.Network.Xor
         public PipeWriter Writer => this.pipe.Writer;
 
         /// <inheritdoc />
-        protected override void OnComplete()
+        protected override void OnComplete(Exception exception)
         {
-            this.target.Complete();
+            this.target.Complete(exception);
         }
 
         /// <summary>
@@ -60,7 +60,14 @@ namespace MUnique.OpenMU.Network.Xor
         /// Encrypts the packet and writes it into the target.
         /// </summary>
         /// <param name="packet">The mu online packet</param>
-        protected override void ReadPacket(ReadOnlySequence<byte> packet)
+        /// <returns>The async task.</returns>
+        protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
+        {
+            this.EncryptAndWrite(packet);
+            await this.target.FlushAsync().ConfigureAwait(false);
+        }
+
+        private void EncryptAndWrite(ReadOnlySequence<byte> packet)
         {
             var span = this.target.GetSpan((int)packet.Length);
             var result = span.Slice(0, (int)packet.Length);
@@ -73,7 +80,6 @@ namespace MUnique.OpenMU.Network.Xor
             }
 
             this.target.Advance(result.Length);
-            this.target.FlushAsync();
         }
     }
 }

@@ -4,6 +4,7 @@
 
 using System.Buffers;
 using System.IO.Pipelines;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MUnique.OpenMU.Network.SimpleModulus
@@ -130,14 +131,13 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             var pipe = new Pipe();
             var encryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer, encryptionKeys);
             var decryptor = new PipelinedSimpleModulusDecryptor(pipe.Reader, decryptionKeys);
-            await encryptor.Writer.WriteAsync(packet).ConfigureAwait(false);
-            await pipe.Writer.FlushAsync().ConfigureAwait(false);
-            
-            
             try
             {
+                await encryptor.Writer.WriteAsync(packet).ConfigureAwait(false);
+                await pipe.Writer.FlushAsync().ConfigureAwait(false);
                 var result = await decryptor.Reader.ReadAsync();
-                return result.IsCompleted && result.Buffer.Length == packet.Length;
+
+                return result.Buffer.Length == packet.Length;
             }
             catch (InvalidBlockChecksumException)
             {

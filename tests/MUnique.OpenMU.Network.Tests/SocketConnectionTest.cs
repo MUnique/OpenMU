@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Network.Tests
     /// </summary>
     [TestFixture]
     [Ignore("It's using real sockets")]
-    public class AsyncConnectionTest
+    public class SocketConnectionTest
     {
         /// <summary>
         /// Tests the receive function with a pipelined connection object.

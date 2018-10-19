@@ -38,6 +38,8 @@ namespace MUnique.OpenMU.Network
             this.encryptionPipe = encryptionPipe;
             this.Source = this.decryptionPipe?.Reader ?? this.duplexPipe.Input;
             this.remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
+            this.Source.OnWriterCompleted((e, state) => this.OnComplete(e), null);
+            this.Output.OnReaderCompleted((e, state) => this.OnComplete(e), null);
         }
 
         /// <inheritdoc />
@@ -47,7 +49,7 @@ namespace MUnique.OpenMU.Network
         public event DisconnectedHandler Disconnected;
 
         /// <inheritdoc />
-        public bool Connected => this.SocketConnection?.Socket != null && !this.disconnected && this.SocketConnection.Socket.Connected;
+        public bool Connected => !this.disconnected || (this.SocketConnection?.Socket.Connected ?? false);
 
         /// <inheritdoc />
         public PipeWriter Output => this.encryptionPipe?.Writer ?? this.duplexPipe.Output;
@@ -63,8 +65,14 @@ namespace MUnique.OpenMU.Network
         /// <inheritdoc/>
         public async Task BeginReceive()
         {
-            await this.ReadSource().ConfigureAwait(false);
-            this.Disconnect();
+            try
+            {
+                await this.ReadSource().ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                this.OnComplete(e);
+            }
         }
 
         /// <inheritdoc />
@@ -81,7 +89,7 @@ namespace MUnique.OpenMU.Network
                 this.log.Debug("Disconnecting...");
                 if (this.duplexPipe != null)
                 {
-                    this.ReadCancellationTokenSource.Cancel();
+                    this.Source.Complete();
                     (this.duplexPipe as IDisposable)?.Dispose();
                     this.duplexPipe = null;
                 }
@@ -101,51 +109,28 @@ namespace MUnique.OpenMU.Network
             this.Disconnected = null;
         }
 
-        /// <summary>
-        /// Sends the specified packet.
-        /// </summary>
-        /// <param name="packet">The packet.</param>
-        public void Send(ReadOnlySpan<byte> packet)
-        {
-            if (this.Connected)
-            {
-                using (ThreadContext.Stacks["RemoteEndPoint"].Push(this.remoteEndPoint.ToString()))
-                {
-                    if (this.log.IsDebugEnabled)
-                    {
-                        this.log.Debug($"Send (before encryption): {packet.ToArray().AsString()}");
-                    }
-
-                    var currentOutput = this.Output;
-                    if (currentOutput != null && this.Connected)
-                    {
-                        try
-                        {
-                            currentOutput.Write(packet);
-                            currentOutput.FlushAsync();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.log.Debug($"Error while sending packet {packet.ToArray().AsString()}", ex);
-                        }
-                    }
-                }
-            }
-        }
-
         /// <inheritdoc />
-        protected override void OnComplete()
+        protected override void OnComplete(Exception exception)
         {
-            this.Disconnect();
+            using (ThreadContext.Stacks["Connection"].Push(this.ToString()))
+            {
+                if (exception != null)
+                {
+                    this.log.Error("Connection will be disconnected, because of an exception", exception);
+                }
+
+                this.Disconnect();
+            }
         }
 
         /// <summary>
         /// Reads the mu online packet by raising <see cref="PacketReceived"/>.
         /// </summary>
         /// <param name="packet">The mu online packet.</param>
-        protected override void ReadPacket(ReadOnlySequence<byte> packet)
+        protected override Task ReadPacket(ReadOnlySequence<byte> packet)
         {
             this.PacketReceived?.Invoke(this, packet);
+            return Task.CompletedTask;
         }
     }
 }

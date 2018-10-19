@@ -8,26 +8,25 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     using System.Buffers;
     using System.IO.Pipelines;
     using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// A pipelined implementation of a <see cref="SimpleModulusEncryptor"/>.
+    /// The standard encryptor (server-side) which encrypts 0xC3 and 0xC4-packets with the "simple modulus" algorithm.
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.Network.SimpleModulus.PipelinedSimpleModulusBase" />
     public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipelinedEncryptor
     {
         /// <summary>
-        /// The default server side encryption key. The corresponding encryption key is <see cref="SimpleModulusDecryptor.DefaultClientKey"/>.
+        /// The default server side encryption key. The corresponding encryption key is <see cref="PipelinedSimpleModulusDecryptor.DefaultClientKey"/>.
         /// </summary>
         public static readonly SimpleModulusKeys DefaultServerKey = SimpleModulusKeys.CreateEncryptionKeys(new uint[] { 73326, 109989, 98843, 171058, 13169, 19036, 35482, 29587, 62004, 64409, 35374, 64599 });
 
         /// <summary>
-        /// The default client side decryption key. The corresponding encryption key is <see cref="SimpleModulusDecryptor.DefaultServerKey"/>.
+        /// The default client side decryption key. The corresponding encryption key is <see cref="PipelinedSimpleModulusDecryptor.DefaultServerKey"/>.
         /// </summary>
         public static readonly SimpleModulusKeys DefaultClientKey = SimpleModulusKeys.CreateEncryptionKeys(new uint[] { 128079, 164742, 70235, 106898, 23489, 11911, 19816, 13647, 48413, 46165, 15171, 37433 });
 
-        private readonly Pipe pipe = new Pipe();
         private readonly PipeWriter target;
-        private readonly byte[] headerBuffer = new byte[3];
         private readonly byte[] inputBuffer = new byte[DecryptedBlockSize];
         private readonly SimpleModulusKeys encryptionKeys;
 
@@ -59,49 +58,34 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         {
             this.target = target;
             this.encryptionKeys = encryptionKeys;
-            this.Source = this.pipe.Reader;
+            this.Source = this.Pipe.Reader;
             this.ReadSource().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public PipeWriter Writer => this.pipe.Writer;
+        public PipeWriter Writer => this.Pipe.Writer;
 
         /// <inheritdoc />
-        protected override void OnComplete()
+        protected override void OnComplete(Exception exception)
         {
-            this.target.Complete();
+            this.target.Complete(exception);
         }
 
         /// <inheritdoc />
-        protected override void ReadPacket(ReadOnlySequence<byte> packet)
+        protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
         {
-            packet.Slice(0, this.headerBuffer.Length).CopyTo(this.headerBuffer);
+            packet.Slice(0, this.HeaderBuffer.Length).CopyTo(this.HeaderBuffer);
 
-            if (this.headerBuffer[0] < 0xC3)
+            if (this.HeaderBuffer[0] < 0xC3)
             {
                 // we just have to write-through
-                var packetSize = this.headerBuffer.GetPacketSize();
-                var data = this.target.GetSpan(packetSize).Slice(0, packetSize);
-                packet.CopyTo(data);
-                this.target.Advance(packetSize);
-                this.target.FlushAsync();
+                this.CopyDataIntoWriter(this.target, packet);
+                await this.target.FlushAsync().ConfigureAwait(false);
                 return;
             }
 
-            var encryptedSize = this.GetEncryptedSize(this.headerBuffer);
-            var result = this.target.GetSpan(encryptedSize).Slice(0, encryptedSize);
-
-            // setting up the header (packet type and size) in the result:
-            result[0] = this.headerBuffer[0];
-            result.SetPacketSize();
-
-            // encrypting the content:
-            var headerSize = this.headerBuffer.GetPacketHeaderSize();
-            var input = packet.Slice(headerSize);
-            this.EncryptPacketContent(input, result.Slice(headerSize));
-
-            this.target.Advance(result.Length);
-            this.target.FlushAsync();
+            this.EncryptAndWrite(packet);
+            await this.target.FlushAsync();
         }
 
         private static void CopyIntToArray(Span<byte> targetArray, uint value, int valueOffset, int size)
@@ -112,6 +96,23 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                 targetArray[targetIndex] = (byte)((value >> (8 * i)) & 0xFF);
                 targetIndex++;
             }
+        }
+
+        private void EncryptAndWrite(ReadOnlySequence<byte> packet)
+        {
+            var encryptedSize = this.GetEncryptedSize(this.HeaderBuffer);
+            var result = this.target.GetSpan(encryptedSize).Slice(0, encryptedSize);
+
+            // setting up the header (packet type and size) in the result:
+            result[0] = this.HeaderBuffer[0];
+            result.SetPacketSize();
+
+            // encrypting the content:
+            var headerSize = this.HeaderBuffer.GetPacketHeaderSize();
+            var input = packet.Slice(headerSize);
+            this.EncryptPacketContent(input, result.Slice(headerSize));
+
+            this.target.Advance(result.Length);
         }
 
         private int GetEncryptedSize(Span<byte> data)

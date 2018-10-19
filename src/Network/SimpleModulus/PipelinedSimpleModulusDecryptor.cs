@@ -8,30 +8,27 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     using System.Buffers;
     using System.IO.Pipelines;
     using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
     using log4net;
 
     /// <summary>
-    /// A pipelined implementation of a <see cref="SimpleModulusDecryptor"/>.
+    /// A decryptor which decrypts 0xC3 and 0xC4-packets with the "simple modulus" algorithm.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.Network.SimpleModulus.PipelinedSimpleModulusBase" />
     public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipelinedDecryptor
     {
         /// <summary>
-        /// The default server side decryption key. The corresponding encryption key is <see cref="SimpleModulusEncryptor.DefaultClientKey"/>.
+        /// The default server side decryption key. The corresponding encryption key is <see cref="PipelinedSimpleModulusEncryptor.DefaultClientKey"/>.
         /// </summary>
         public static readonly SimpleModulusKeys DefaultServerKey = SimpleModulusKeys.CreateDecryptionKeys(new uint[] { 128079, 164742, 70235, 106898, 31544, 2047, 57011, 10183, 48413, 46165, 15171, 37433 });
 
         /// <summary>
-        /// The default client side decryption key. The corresponding encryption key is <see cref="SimpleModulusEncryptor.DefaultServerKey"/>.
+        /// The default client side decryption key. The corresponding encryption key is <see cref="PipelinedSimpleModulusEncryptor.DefaultServerKey"/>.
         /// </summary>
         public static readonly SimpleModulusKeys DefaultClientKey = SimpleModulusKeys.CreateDecryptionKeys(new uint[] { 73326, 109989, 98843, 171058, 18035, 30340, 24701, 11141, 62004, 64409, 35374, 64599 });
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(PipelinedSimpleModulusDecryptor));
         private readonly SimpleModulusKeys decryptionKeys;
-        private readonly byte[] headerBuffer = new byte[3];
         private readonly byte[] inputBuffer = new byte[EncryptedBlockSize];
-
-        private readonly Pipe pipe = new Pipe();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PipelinedSimpleModulusDecryptor"/> class with standard keys.
@@ -65,7 +62,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         }
 
         /// <inheritdoc/>
-        public PipeReader Reader => this.pipe.Reader;
+        public PipeReader Reader => this.Pipe.Reader;
 
         /// <summary>
         /// Gets or sets a value indicating whether this decryptor instance accepts wrong block checksum, or throws an exception in this case.
@@ -73,9 +70,9 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         public bool AcceptWrongBlockChecksum { get; set; }
 
         /// <inheritdoc />
-        protected override void OnComplete()
+        protected override void OnComplete(Exception exception)
         {
-            this.pipe.Writer.Complete();
+            this.Pipe.Writer.Complete(exception);
         }
 
         /// <summary>
@@ -83,44 +80,50 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// Decrypts the packet and writes it into our pipe.
         /// </summary>
         /// <param name="packet">The mu online packet</param>
-        protected override void ReadPacket(ReadOnlySequence<byte> packet)
+        /// <returns>The async task.</returns>
+        protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
         {
             // The next line is getting a span from the writer which is at least as big as the packet.
             // As I found out, it's initially about 2 kb in size and gets smaller within further
             // usage. If the previous span was used up, a new piece of memory is getting provided for us.
-            packet.Slice(0, 3).CopyTo(this.headerBuffer);
+            packet.Slice(0, 3).CopyTo(this.HeaderBuffer);
 
-            if (this.headerBuffer[0] < 0xC3)
+            if (this.HeaderBuffer[0] < 0xC3)
             {
                 // we just have to write-through
-                var packetSize = this.headerBuffer.GetPacketSize();
-                var data = this.pipe.Writer.GetSpan(packetSize).Slice(0, packetSize);
-                packet.CopyTo(data);
-                this.pipe.Writer.Advance(packetSize);
-                this.pipe.Writer.FlushAsync();
-                return;
+                this.CopyDataIntoWriter(this.Pipe.Writer, packet);
+                await this.Pipe.Writer.FlushAsync().ConfigureAwait(false);
             }
-
-            var contentSize = this.GetContentSize(this.headerBuffer, false);
-            if ((contentSize % EncryptedBlockSize) != 0)
+            else
             {
-                throw new ArgumentException($"The packet has an unexpected content size. It must be a multiple of ${EncryptedBlockSize}", nameof(packet));
-            }
+                var contentSize = this.GetContentSize(this.HeaderBuffer, false);
+                if ((contentSize % EncryptedBlockSize) != 0)
+                {
+                    throw new ArgumentException(
+                        $"The packet has an unexpected content size. It must be a multiple of ${EncryptedBlockSize}",
+                        nameof(packet));
+                }
 
-            var maximumDecryptedSize = this.GetMaximumDecryptedSize(this.headerBuffer);
-            var encryptedHeaderSize = this.headerBuffer.GetPacketHeaderSize();
+                this.DecryptAndWrite(packet);
+                await this.Pipe.Writer.FlushAsync().ConfigureAwait(false);
+            }
+        }
+
+        private void DecryptAndWrite(ReadOnlySequence<byte> packet)
+        {
+            var maximumDecryptedSize = this.GetMaximumDecryptedSize(this.HeaderBuffer);
+            var encryptedHeaderSize = this.HeaderBuffer.GetPacketHeaderSize();
             var decryptedHeaderSize = encryptedHeaderSize - 1;
-            var span = this.pipe.Writer.GetSpan(maximumDecryptedSize);
+            var span = this.Pipe.Writer.GetSpan(maximumDecryptedSize);
 
             // we just want to work on a span with the exact size of the packet.
             var decrypted = span.Slice(0, maximumDecryptedSize);
             var decryptedContentSize = this.DecryptPacketContent(packet.Slice(encryptedHeaderSize), decrypted.Slice(decryptedHeaderSize));
-            decrypted[0] = this.headerBuffer[0];
+            decrypted[0] = this.HeaderBuffer[0];
             decrypted = decrypted.Slice(0, decryptedContentSize + decryptedHeaderSize);
             decrypted.SetPacketSize();
 
-            this.pipe.Writer.Advance(decrypted.Length);
-            this.pipe.Writer.FlushAsync();
+            this.Pipe.Writer.Advance(decrypted.Length);
         }
 
         private int DecryptPacketContent(ReadOnlySequence<byte> input, Span<byte> output)

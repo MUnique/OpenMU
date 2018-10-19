@@ -7,11 +7,11 @@ namespace MUnique.OpenMU.Network.Xor
     using System;
     using System.Buffers;
     using System.IO.Pipelines;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Pipelined decryptor which uses a 32 byte key for a xor encryption.
     /// It's typically used to decrypt packets sent by the client to the server.
-    /// <seealso cref="Xor32Decryptor"/> for the non-pipelined version.
     /// </summary>
     public class PipelinedXor32Decryptor : PacketPipeReaderBase, IPipelinedDecryptor
     {
@@ -48,9 +48,9 @@ namespace MUnique.OpenMU.Network.Xor
         public PipeReader Reader => this.pipe.Reader;
 
         /// <inheritdoc />
-        protected override void OnComplete()
+        protected override void OnComplete(Exception exception)
         {
-            this.pipe.Writer.Complete();
+            this.pipe.Writer.Complete(exception);
         }
 
         /// <summary>
@@ -58,7 +58,14 @@ namespace MUnique.OpenMU.Network.Xor
         /// Decrypts the packet and writes it into our pipe.
         /// </summary>
         /// <param name="packet">The mu online packet</param>
-        protected override void ReadPacket(ReadOnlySequence<byte> packet)
+        /// <returns>The async task.</returns>
+        protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
+        {
+            this.DecryptAndWrite(packet);
+            await this.pipe.Writer.FlushAsync().ConfigureAwait(false);
+        }
+
+        private void DecryptAndWrite(ReadOnlySequence<byte> packet)
         {
             // The next line is getting a span from the writer which is at least as big as the packet.
             // As I found out, it's initially about 2 kb in size and gets smaller within further
@@ -76,7 +83,6 @@ namespace MUnique.OpenMU.Network.Xor
             }
 
             this.pipe.Writer.Advance(target.Length);
-            this.pipe.Writer.FlushAsync();
         }
     }
 }
