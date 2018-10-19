@@ -57,8 +57,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
         }
 
-        private Point ApplySteps(Player player, Span<WalkingStep> steps, Point target)
+        private Point ApplySteps(Player player, Span<WalkingStep> steps, Point source)
         {
+            var target = source;
+
             // we need to reverse the steps, because we put it on a stack - where the top element is the next step.
             for (int i = steps.Length - 1; i >= 0; i--)
             {
