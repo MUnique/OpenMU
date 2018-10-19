@@ -51,8 +51,8 @@ namespace MUnique.OpenMU.Network
         /// <param name="packetSize">Size of the packet.</param>
         public void Commit(int packetSize)
         {
-            this.connection.Output.Advance(this.expectedPacketSize);
-            this.connection.Output.FlushAsync();
+            this.connection.Output.Advance(packetSize);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
         /// <summary>
