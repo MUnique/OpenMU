@@ -18,49 +18,57 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length > 4)
+            if (packet.Length <= 4) return;
+            var moveType = this.GetMoveType(packet[2]);
+
+            var x = packet[3];
+            var y = packet[4];
+            player.NextDirections.Clear();
+            if (moveType == MoveType.Walk)
             {
-                var moveType = this.GetMoveType(packet[2]);
-
-                var x = packet[3];
-                var y = packet[4];
-                player.NextDirections.Clear();
-                if (moveType == MoveType.Walk)
-                {
-                    if (packet.Length > 6)
-                    {
-                        // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
-                        var sourcePoint = new Point(x, y);
-                        var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
-                        Point target = sourcePoint;
-
-                        // we need to reverse the steps, because we put it on a stack - where the top element is the next step.
-                        for (int i = steps.Length - 1; i >= 0; i--)
-                        {
-                            var step = steps[i];
-                            if (player.NextDirections.Count == 0)
-                            {
-                                // the first direction (which will end up at the bottom of the stack) is our target
-                                target = step.To;
-                            }
-
-                            player.NextDirections.Push(step);
-                        }
-
-                        player.WalkTarget = target;
-
-                        player.Move(player.WalkTarget.X, player.WalkTarget.Y, MoveType.Walk);
-                    }
-                    else
-                    {
-                        player.Rotation = (Direction)((packet[5] >> 4) & 0x0F);
-                    }
-                }
-                else
-                {
-                    player.Move(x, y, MoveType.Instant);
-                }
+                Walk(player, packet, x, y);
             }
+            else
+            {
+                player.Move(x, y, MoveType.Instant);
+            }
+        }
+
+        private void Walk(Player player, Span<byte> packet, byte x, byte y)
+        {
+            if (packet.Length > 6)
+            {
+                // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
+                var sourcePoint = new Point(x, y);
+                var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
+                Point target = this.ApplySteps(player, steps, sourcePoint);
+
+                player.WalkTarget = target;
+
+                player.Move(player.WalkTarget.X, player.WalkTarget.Y, MoveType.Walk);
+            }
+            else
+            {
+                player.Rotation = (Direction)((packet[5] >> 4) & 0x0F);
+            }
+        }
+
+        private Point ApplySteps(Player player, Span<WalkingStep> steps, Point target)
+        {
+            // we need to reverse the steps, because we put it on a stack - where the top element is the next step.
+            for (int i = steps.Length - 1; i >= 0; i--)
+            {
+                var step = steps[i];
+                if (player.NextDirections.Count == 0)
+                {
+                    // the first direction (which will end up at the bottom of the stack) is our target
+                    target = step.To;
+                }
+
+                player.NextDirections.Push(step);
+            }
+
+            return target;
         }
 
         private Span<WalkingStep> GetSteps(Point start, Span<Direction> directions)
