@@ -135,6 +135,11 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                 rest.Slice(0, EncryptedBlockSize).CopyTo(this.inputBuffer);
                 var outputBlock = output.Slice(sizeCounter, DecryptedBlockSize);
                 var blockSize = this.BlockDecode(outputBlock);
+                if (sizeCounter == 0 && outputBlock[0] != this.Counter.Count)
+                {
+                    throw new Exception("Invalid counter value");
+                }
+
                 if (blockSize != -1)
                 {
                     sizeCounter += blockSize;
@@ -144,6 +149,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             }
             while (rest.Length > 0);
 
+            this.Counter.Increase();
             return sizeCounter;
         }
 
