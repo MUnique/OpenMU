@@ -192,7 +192,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
             byte blockSize = (byte)(blockSuffix[0] ^ blockSuffix[1] ^ BlockSizeXorKey);
             byte checksum = BlockCheckSumXorKey;
-            for (int i = 0; i < blockSize; i++)
+            for (int i = 0; i < DecryptedBlockSize; i++)
             {
                 checksum ^= outputBuffer[i];
             }

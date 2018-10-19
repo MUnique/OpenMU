@@ -65,6 +65,21 @@ namespace MUnique.OpenMU.Network.Tests
         }
 
         /// <summary>
+        /// Tests that the decryption of a packet where the final block doesn't have maximum size.
+        /// </summary>
+        /// <remarks>
+        /// The test uses a real ping packet which was captured from a real game client.
+        /// </remarks>
+        /// <returns>The async task.</returns>
+        [Test]
+        public async Task C3DecryptWithNonMaximalFinalBlockSize()
+        {
+            var decrypted = new byte[] { 195, 12, 14, 0, 1, 51, 254, 39, 0, 0, 0, 0 };
+            var encrypted = new byte[] { 0xC3, 0x18, 0xBC, 0x9D, 0x35, 0xE2, 0xA2, 0x21, 0x22, 0x91, 0x5C, 0x2B, 0x1E, 0x18, 0x63, 0x47, 0x28, 0xC3, 0x10, 0x20, 0xF1, 0xC4, 0x2A, 0x14 };
+            await this.Decrypt(encrypted, decrypted);
+        }
+
+        /// <summary>
         /// Tests if the reader of the decryptor gets the information that the writer of the pipe completed with the last read when the complete was called before.
         /// </summary>
         /// <returns>The task.</returns>
