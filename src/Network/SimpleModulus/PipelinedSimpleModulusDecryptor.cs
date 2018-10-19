@@ -217,18 +217,16 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         private void ShiftBytes(Span<byte> outputBuffer, int outputOffset, int shiftOffset, int length)
         {
             int size = this.GetShiftSize(length, shiftOffset);
-            this.ShiftBuffer[1] = 0;
-            this.ShiftBuffer[2] = 0;
-            this.ShiftBuffer[3] = 0;
-            this.inputBuffer.AsSpan(shiftOffset / DecryptedBlockSize, size).CopyTo(this.ShiftBuffer);
+            Span<byte> shiftBuffer = stackalloc byte[4];
+            this.inputBuffer.AsSpan(shiftOffset / DecryptedBlockSize, size).CopyTo(shiftBuffer);
 
             var tempShift = (length + shiftOffset) & 0x7;
             if (tempShift != 0)
             {
-                this.ShiftBuffer[size - 1] = (byte)(this.ShiftBuffer[size - 1] & 0xFF << (8 - tempShift));
+                shiftBuffer[size - 1] = (byte)(shiftBuffer[size - 1] & 0xFF << (8 - tempShift));
             }
 
-            this.InternalShiftBytes(outputBuffer, outputOffset, this.ShiftBuffer, shiftOffset, size);
+            this.InternalShiftBytes(outputBuffer, outputOffset, shiftBuffer, shiftOffset, size);
         }
 
         /// <summary>

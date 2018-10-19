@@ -45,11 +45,6 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         protected uint[] RingBuffer { get; } = new uint[4];
 
         /// <summary>
-        /// Gets the shift buffer.
-        /// </summary>
-        protected byte[] ShiftBuffer { get; } = new byte[4];
-
-        /// <summary>
         /// Gets the header buffer of the currently read packet.
         /// </summary>
         protected byte[] HeaderBuffer { get; } = new byte[3];

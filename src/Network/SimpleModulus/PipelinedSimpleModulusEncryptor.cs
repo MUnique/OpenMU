@@ -88,12 +88,12 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             await this.target.FlushAsync();
         }
 
-        private static void CopyIntToArray(Span<byte> targetArray, uint value, int valueOffset, int size)
+        private static void CopyIntToBuffer(Span<byte> targetBuffer, uint value, int valueOffset, int size)
         {
             var targetIndex = 0;
             for (int i = valueOffset; i < valueOffset + size; i++)
             {
-                targetArray[targetIndex] = (byte)((value >> (8 * i)) & 0xFF);
+                targetBuffer[targetIndex] = (byte)((value >> (8 * i)) & 0xFF);
                 targetIndex++;
             }
         }
@@ -204,10 +204,10 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         private void ShiftBytes(Span<byte> outputBuffer, int outputOffset, uint valueBytes, int shiftOffset, int length)
         {
             int size = this.GetShiftSize(length, shiftOffset);
-            this.ShiftBuffer[2] = 0;
-            CopyIntToArray(this.ShiftBuffer, valueBytes, shiftOffset / DecryptedBlockSize, size);
+            Span<byte> shiftBuffer = stackalloc byte[4];
+            CopyIntToBuffer(shiftBuffer, valueBytes, shiftOffset / DecryptedBlockSize, size);
 
-            this.InternalShiftBytes(outputBuffer, outputOffset, this.ShiftBuffer, shiftOffset, size);
+            this.InternalShiftBytes(outputBuffer, outputOffset, shiftBuffer, shiftOffset, size);
         }
     }
 }
