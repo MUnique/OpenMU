@@ -14,6 +14,8 @@ namespace MUnique.OpenMU.Network
     /// </summary>
     public abstract class PacketPipeReaderBase
     {
+        private readonly byte[] headerBuffer = new byte[3];
+
         /// <summary>
         /// Gets or sets the <see cref="PipeReader"/> from which the packets can be read from at <see cref="ReadSource"/>.
         /// </summary>
@@ -40,48 +42,12 @@ namespace MUnique.OpenMU.Network
             Exception error = null;
             try
             {
-                var header = new byte[3];
                 while (true)
                 {
-                    ReadResult result = await this.Source.ReadAsync().ConfigureAwait(false);
-
-                    ReadOnlySequence<byte> buffer = result.Buffer;
-
-                    int? length = null;
-                    do
-                    {
-                        if (buffer.Length > 2)
-                        {
-                            // peek the length of the next packet
-                            buffer.Slice(0, 3).CopyTo(header);
-                            length = header.AsSpan().GetPacketSize();
-                            if (length == 0)
-                            {
-                                throw new InvalidPacketHeaderException(header, result.Buffer, buffer.Start);
-                            }
-                        }
-
-                        if (length != null && length > 0 && buffer.Length >= length)
-                        {
-                            var packet = buffer.Slice(0, length.Value);
-                            await this.ReadPacket(packet);
-
-                            buffer = buffer.Slice(buffer.GetPosition(length.Value), buffer.End);
-                            length = null;
-                        }
-                        else
-                        {
-                            // read more
-                            break;
-                        }
-                    }
-                    while (buffer.Length > 2);
-
-                    // Tell the PipeReader how much of the buffer we have consumed
-                    this.Source.AdvanceTo(buffer.Start);
+                    var completed = await this.ReadBuffer();
 
                     // Stop reading if there's no more data coming
-                    if (result.IsCompleted)
+                    if (completed)
                     {
                         break;
                     }
@@ -95,6 +61,46 @@ namespace MUnique.OpenMU.Network
             // Mark the PipeReader as complete
             this.Source.Complete(error);
             this.OnComplete(error);
+        }
+
+        private async Task<bool> ReadBuffer()
+        {
+            ReadResult result = await this.Source.ReadAsync().ConfigureAwait(false);
+            ReadOnlySequence<byte> buffer = result.Buffer;
+            int? length = null;
+            do
+            {
+                if (buffer.Length > 2)
+                {
+                    // peek the length of the next packet
+                    buffer.Slice(0, 3).CopyTo(this.headerBuffer);
+                    length = this.headerBuffer.AsSpan().GetPacketSize();
+                    if (length == 0)
+                    {
+                        throw new InvalidPacketHeaderException(this.headerBuffer, result.Buffer, buffer.Start);
+                    }
+                }
+
+                if (length != null && length > 0 && buffer.Length >= length)
+                {
+                    var packet = buffer.Slice(0, length.Value);
+                    await this.ReadPacket(packet);
+
+                    buffer = buffer.Slice(buffer.GetPosition(length.Value), buffer.End);
+                    length = null;
+                }
+                else
+                {
+                    // read more
+                    break;
+                }
+            }
+            while (buffer.Length > 2);
+
+            // Tell the PipeReader how much of the buffer we have consumed
+            this.Source.AdvanceTo(buffer.Start);
+
+            return result.IsCompleted;
         }
     }
 }
