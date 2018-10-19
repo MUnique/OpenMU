@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                 var blockSize = this.BlockDecode(outputBlock);
                 if (sizeCounter == 0 && outputBlock[0] != this.Counter.Count)
                 {
-                    throw new Exception("Invalid counter value");
+                    throw new InvalidPacketCounterException(outputBlock[0], (byte)this.Counter.Count);
                 }
 
                 if (blockSize != -1)
