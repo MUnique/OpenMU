@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                     result.XorKey[i] = xorKey;
                 }
             }
-            while (!await this.ValidateResult(result));
+            while (!await this.ValidateResult(result).ConfigureAwait(false));
 
             return result;
         }
@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
         private async Task<bool> ValidateResult(SimpleModulusKeys result)
         {
-            return await this.ValidateKeys(result.GetEncryptionKeys(), result.GetDecryptionKeys());
+            return await this.ValidateKeys(result.GetEncryptionKeys(), result.GetDecryptionKeys()).ConfigureAwait(false);
         }
 
         private async Task<bool> ValidateKeys(uint[] encryptionKeys, uint[] decryptionKeys)
@@ -135,7 +135,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             {
                 await encryptor.Writer.WriteAsync(packet).ConfigureAwait(false);
                 await pipe.Writer.FlushAsync().ConfigureAwait(false);
-                var result = await decryptor.Reader.ReadAsync();
+                var result = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
 
                 return result.Buffer.Length == packet.Length;
             }
