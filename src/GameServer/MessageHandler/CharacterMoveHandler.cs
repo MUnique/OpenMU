@@ -18,7 +18,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length <= 4) return;
+            if (packet.Length <= 4)
+            {
+                return;
+            }
+
             var moveType = this.GetMoveType(packet[2]);
 
             var x = packet[3];
@@ -26,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             player.NextDirections.Clear();
             if (moveType == MoveType.Walk)
             {
-                Walk(player, packet, x, y);
+                this.Walk(player, packet, x, y);
             }
             else
             {
