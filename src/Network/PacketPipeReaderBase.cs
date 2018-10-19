@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.Network
             {
                 while (true)
                 {
-                    var completed = await this.ReadBuffer();
+                    var completed = await this.ReadBuffer().ConfigureAwait(false);
 
                     // Stop reading if there's no more data coming
                     if (completed)
@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.Network
                 if (length != null && length > 0 && buffer.Length >= length)
                 {
                     var packet = buffer.Slice(0, length.Value);
-                    await this.ReadPacket(packet);
+                    await this.ReadPacket(packet).ConfigureAwait(false);
 
                     buffer = buffer.Slice(buffer.GetPosition(length.Value), buffer.End);
                     length = null;
