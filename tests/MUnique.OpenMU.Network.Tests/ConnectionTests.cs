@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.Network.Tests
                 {
                     await connection.Output.WriteAsync(malformedData);
                     await connection.Output.FlushAsync();
-                    var readResult1 = await duplexPipe.SendPipe.Reader.ReadAsync();
+                    await duplexPipe.SendPipe.Reader.ReadAsync();
                 }
                 catch
                 {
