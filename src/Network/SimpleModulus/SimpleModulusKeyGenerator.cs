@@ -2,16 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Buffers;
-using System.IO.Pipelines;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace MUnique.OpenMU.Network.SimpleModulus
 {
     using System;
     using System.Collections.Generic;
+    using System.IO.Pipelines;
     using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// A key generator which is able to generate a new pair of encryption/decryption keys.
