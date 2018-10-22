@@ -4,9 +4,10 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
+    using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -17,6 +18,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// </summary>
     public class AppearanceSerializer : IAppearanceSerializer
     {
+        /// <summary>
+        /// A cache which holds the results of the serializer.
+        /// </summary>
+        private static readonly ConcurrentDictionary<IAppearanceData, byte[]> Cache = new ConcurrentDictionary<IAppearanceData, byte[]>();
+
         private enum PetIndex
         {
             Angel = 0,
@@ -63,47 +69,76 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
-        public byte[] GetAppearanceData(IAppearanceData appearance)
+        public int NeededSpace => 18;
+
+        /// <inheritdoc/>
+        public void InvalidateCache(IAppearanceData appearance)
         {
-            return this.GetPreviewCharSet(appearance.CharacterClass, appearance.EquippedItems);
+            Cache.TryRemove(appearance, out _);
+            appearance.AppearanceChanged -= this.OnAppearanceOfAppearanceChanged;
         }
 
-        private byte[] GetPreviewCharSet(CharacterClass characterClass, IEnumerable<ItemAppearance> equippedItems)
+        /// <inheritdoc/>
+        public void WriteAppearanceData(Span<byte> target, IAppearanceData appearance, bool useCache)
         {
-            byte[] preview = new byte[18];
-            ItemAppearance[] itemArray = new ItemAppearance[12];
+            if (target.Length < this.NeededSpace)
+            {
+                throw new ArgumentException("Target span too small. Actual size: {target.Length}; Required: {this.NeededSpace}.", nameof(target));
+            }
+
+            if (useCache && Cache.TryGetValue(appearance, out var cached))
+            {
+                cached.CopyTo(target);
+            }
+            else
+            {
+                this.WritePreviewCharSet(target, appearance.CharacterClass, appearance.EquippedItems);
+                if (useCache)
+                {
+                    var cacheEntry = target.Slice(0, this.NeededSpace).ToArray();
+                    if (Cache.TryAdd(appearance, cacheEntry))
+                    {
+                        appearance.AppearanceChanged += this.OnAppearanceOfAppearanceChanged;
+                    }
+                }
+            }
+        }
+
+        private void OnAppearanceOfAppearanceChanged(object sender, EventArgs args) => this.InvalidateCache(sender as IAppearanceData);
+
+        private void WritePreviewCharSet(Span<byte> target, CharacterClass characterClass, IEnumerable<ItemAppearance> equippedItems)
+        {
+            ItemAppearance[] itemArray = new ItemAppearance[InventoryConstants.EquippableSlotsCount];
             for (byte i = 0; i < itemArray.Length; i++)
             {
                 itemArray[i] = equippedItems.FirstOrDefault(item => item.ItemSlot == i);
             }
 
-            preview[0] = (byte)(characterClass.Number << 3 & 0xF8);
-            this.SetHand(preview, itemArray[InventoryConstants.LeftHandSlot], 1, 12);
+            target[0] = (byte)(characterClass.Number << 3 & 0xF8);
+            this.SetHand(target, itemArray[InventoryConstants.LeftHandSlot], 1, 12);
 
-            this.SetHand(preview, itemArray[InventoryConstants.RightHandSlot], 2, 13);
+            this.SetHand(target, itemArray[InventoryConstants.RightHandSlot], 2, 13);
 
-            this.SetArmorPiece(preview, itemArray[InventoryConstants.HelmSlot], 3, true, 0x80, 13, false);
+            this.SetArmorPiece(target, itemArray[InventoryConstants.HelmSlot], 3, true, 0x80, 13, false);
 
-            this.SetArmorPiece(preview, itemArray[InventoryConstants.ArmorSlot], 3, false, 0x40, 14, true);
+            this.SetArmorPiece(target, itemArray[InventoryConstants.ArmorSlot], 3, false, 0x40, 14, true);
 
-            this.SetArmorPiece(preview, itemArray[InventoryConstants.PantsSlot], 4, true, 0x20, 14, false);
+            this.SetArmorPiece(target, itemArray[InventoryConstants.PantsSlot], 4, true, 0x20, 14, false);
 
-            this.SetArmorPiece(preview, itemArray[InventoryConstants.GlovesSlot], 4, false, 0x10, 15, true);
+            this.SetArmorPiece(target, itemArray[InventoryConstants.GlovesSlot], 4, false, 0x10, 15, true);
 
-            this.SetArmorPiece(preview, itemArray[InventoryConstants.BootsSlot], 5, true, 0x08, 15, false);
+            this.SetArmorPiece(target, itemArray[InventoryConstants.BootsSlot], 5, true, 0x08, 15, false);
 
-            this.SetItemLevels(preview, itemArray);
+            this.SetItemLevels(target, itemArray);
 
-            this.SetAncientSetCompleteness(preview, itemArray);
+            this.SetAncientSetCompleteness(target, itemArray);
 
-            this.AddWing(preview, itemArray[InventoryConstants.WingsSlot]);
+            this.AddWing(target, itemArray[InventoryConstants.WingsSlot]);
 
-            this.AddPet(preview, itemArray[InventoryConstants.PetSlot]);
-
-            return preview;
+            this.AddPet(target, itemArray[InventoryConstants.PetSlot]);
         }
 
-        private void SetAncientSetCompleteness(byte[] preview, ItemAppearance[] itemArray)
+        private void SetAncientSetCompleteness(Span<byte> preview, ItemAppearance[] itemArray)
         {
             var isAncientSetComplete = false;
 
@@ -114,7 +149,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private void SetHand(byte[] preview, ItemAppearance item, int indexIndex, int groupIndex)
+        private void SetHand(Span<byte> preview, ItemAppearance item, int indexIndex, int groupIndex)
         {
             if (item == null)
             {
@@ -138,7 +173,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             return (byte)(value & 0x0F);
         }
 
-        private void SetArmorPiece(byte[] preview, ItemAppearance item, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
+        private void SetArmorPiece(Span<byte> preview, ItemAppearance item, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
         {
             if (item == null)
             {
@@ -181,7 +216,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private void SetItemLevels(byte[] preview, ItemAppearance[] itemArray)
+        private void SetItemLevels(Span<byte> preview, ItemAppearance[] itemArray)
         {
             int levelindex = 0;
             for (int i = 0; i < 7; i++)
@@ -197,7 +232,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             preview[8] = (byte)(levelindex & 255);
         }
 
-        private void AddWing(byte[] preview, ItemAppearance wing)
+        private void AddWing(Span<byte> preview, ItemAppearance wing)
         {
             if (wing == null)
             {
@@ -293,7 +328,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private void AddPet(byte[] preview, ItemAppearance pet)
+        private void AddPet(Span<byte> preview, ItemAppearance pet)
         {
             if (pet == null)
             {

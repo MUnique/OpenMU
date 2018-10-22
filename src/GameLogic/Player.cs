@@ -59,9 +59,9 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly object moveLock = new object();
 
-        private readonly IDictionary<IAppearanceSerializer, byte[]> appearanceCache = new Dictionary<IAppearanceSerializer, byte[]>();
-
         private readonly Walker walker;
+
+        private readonly AppearanceDataAdapter appearanceData;
 
         private ObserverToWorldViewAdapter observerToWorldViewAdapter;
 
@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.GameLogic
         protected Player()
         {
             this.MagicEffectList = new MagicEffectsList(this);
-            this.AppearanceData = new AppearanceDataAdapter(this);
+            this.appearanceData = new AppearanceDataAdapter(this);
             this.PlayerEnteredWorld += this.OnPlayerEnteredWorld;
         }
 
@@ -181,6 +181,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 if (value == null)
                 {
+                    this.appearanceData.RaiseAppearanceChanged();
                     this.PlayerLeftWorld?.Invoke(this, null);
                     this.selectedCharacter = null;
                 }
@@ -188,6 +189,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     this.selectedCharacter = value;
                     this.PlayerEnteredWorld?.Invoke(this, null);
+                    this.appearanceData.RaiseAppearanceChanged();
                 }
             }
         }
@@ -316,7 +318,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the appearance data.
         /// </summary>
-        public IAppearanceData AppearanceData { get; }
+        public IAppearanceData AppearanceData => this.appearanceData;
 
         /// <summary>
         /// Gets the game context.
@@ -347,23 +349,6 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <inheritdoc/>
         public Bucket<ILocateable> OldBucket { get; set; }
-
-        /// <summary>
-        /// Gets the appearance data of the player with the specified serializer.
-        /// </summary>
-        /// <param name="appearanceSerializer">The appearance serializer.</param>
-        /// <returns>The appearance data.</returns>
-        public byte[] GetAppearanceData(IAppearanceSerializer appearanceSerializer)
-        {
-            if (this.appearanceCache.TryGetValue(appearanceSerializer, out byte[] data))
-            {
-                return data;
-            }
-
-            data = appearanceSerializer.GetAppearanceData(this.AppearanceData);
-            this.appearanceCache.Add(appearanceSerializer, data);
-            return data;
-        }
 
         /// <inheritdoc/>
         public void AttackBy(IAttackable attacker, SkillEntry skill)
@@ -426,13 +411,10 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Resets the appearance cache.
         /// </summary>
-        public void ResetAppearanceCache()
-        {
-            this.appearanceCache.Clear();
-        }
+        public void OnAppearanceChanged() => this.appearanceData.RaiseAppearanceChanged();
 
         /// <summary>
-        /// Determines wether the player complies with the requirements of the specified item.
+        /// Determines whether the player complies with the requirements of the specified item.
         /// </summary>
         /// <param name="item">The definition of the item.</param>
         /// <returns><c>True</c>, if the player complies with the requirements of the specified item; Otherwise, <c>false</c>.</returns>
@@ -887,6 +869,8 @@ namespace MUnique.OpenMU.GameLogic
                 this.player = player;
             }
 
+            public event EventHandler AppearanceChanged;
+
             public CharacterClass CharacterClass => this.player.SelectedCharacter?.CharacterClass;
 
             public IEnumerable<ItemAppearance> EquippedItems
@@ -901,6 +885,11 @@ namespace MUnique.OpenMU.GameLogic
                     return Enumerable.Empty<ItemAppearance>();
                 }
             }
+
+            /// <summary>
+            /// Raises the <see cref="AppearanceChanged"/> event.
+            /// </summary>
+            public void RaiseAppearanceChanged() => this.AppearanceChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

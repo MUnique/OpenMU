@@ -311,7 +311,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     playerBlock[2] = newPlayer.X;
                     playerBlock[3] = newPlayer.Y;
                     playerBlock.Slice(4, 21);
-                    newPlayer.GetAppearanceData(this.appearanceSerializer).AsSpan().CopyTo(playerBlock.Slice(4, 21)); // 4 ... 21
+                    this.appearanceSerializer.WriteAppearanceData(playerBlock.Slice(4, this.appearanceSerializer.NeededSpace), newPlayer.AppearanceData, true); // 4 ... 21
                     playerBlock.Slice(22, 10).WriteString(newPlayer.SelectedCharacter.Name, Encoding.UTF8); // 22 ... 31
                     if (newPlayer.IsWalking)
                     {

@@ -223,10 +223,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 result[5] = ((ushort)letterIndex).GetHighByte();
                 result[6] = ((ushort)(len - 28)).GetLowByte();
                 result[7] = ((ushort)(len - 28)).GetHighByte();
-                var appearanceBytes = this.appearanceSerializer.GetAppearanceData(letter.SenderAppearance);
-                appearanceBytes.CopyTo(result.Slice(8));
-                result[8 + appearanceBytes.Length] = letter.Rotation; // TODO: check if the index is correct
-                result[9 + appearanceBytes.Length] = letter.Animation;
+                this.appearanceSerializer.WriteAppearanceData(result.Slice(8, this.appearanceSerializer.NeededSpace), letter.SenderAppearance, false);
+                result[8 + this.appearanceSerializer.NeededSpace] = letter.Rotation; // TODO: check if the index is correct
+                result[9 + this.appearanceSerializer.NeededSpace] = letter.Animation;
                 result.Slice(28).WriteString(letter.Message, Encoding.UTF8);
                 writer.Commit();
             }

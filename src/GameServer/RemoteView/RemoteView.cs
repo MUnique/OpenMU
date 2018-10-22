@@ -196,8 +196,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     characterBlock[13] = level.GetHighByte();
                     characterBlock[14] = (byte)character.State; // | 0x10 for item block?
 
-                    var preview = this.appearanceSerializer.GetAppearanceData(new CharacterAppearanceDataAdapter(character));
-                    preview.CopyTo(characterBlock.Slice(15));
+                    this.appearanceSerializer.WriteAppearanceData(characterBlock.Slice(15), new CharacterAppearanceDataAdapter(character), false);
 
                     //// var guildStatusIndex = offset + 15 + 18;
                     //// TODO: characterBLock[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
@@ -1037,6 +1036,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 this.character = character;
             }
+
+            /// <summary>
+            /// Occurs when the appearance of the player changed.
+            /// </summary>
+            /// <remarks>This never happens in this implementation.</remarks>
+            public event EventHandler AppearanceChanged;
 
             public CharacterClass CharacterClass => this.character?.CharacterClass;
 

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Entities
 {
+    using System;
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
 
@@ -12,6 +13,11 @@ namespace MUnique.OpenMU.DataModel.Entities
     /// </summary>
     public interface IAppearanceData
     {
+        /// <summary>
+        /// Occurs when the appearance of the player changed.
+        /// </summary>
+        event EventHandler AppearanceChanged;
+
         /// <summary>
         /// Gets the character class.
         /// </summary>
