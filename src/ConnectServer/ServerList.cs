@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.ConnectServer
         public IDictionary<ushort, byte[]> ConnectInfos { get; set; }
 
         /// <summary>
-        /// Gets the cache of the complete connection infos.
+        /// Gets the cache of the available servers.
         /// </summary>
         public byte[] Cache { get; private set; }
 
