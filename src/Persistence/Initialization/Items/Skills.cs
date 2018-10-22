@@ -491,6 +491,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private void AddLifeSwellEffect(Skill lifeSwellSkill)
         {
             var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
+            this.GameConfiguration.MagicEffects.Add(magicEffect);
             lifeSwellSkill.MagicEffectDef = magicEffect;
             magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitude;
             magicEffect.Name = "Life Swell Skill Effect";
@@ -527,6 +528,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private void AddDefenseEffect(Skill defenseSkill)
         {
             var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
+            this.GameConfiguration.MagicEffects.Add(magicEffect);
             defenseSkill.MagicEffectDef = magicEffect;
             magicEffect.Number = 0;
             magicEffect.Name = "Shield Defense Skill Effect";
@@ -546,6 +548,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private void AddSoulBarrierEffect(Skill soulBarrier)
         {
             var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
+            this.GameConfiguration.MagicEffects.Add(magicEffect);
             soulBarrier.MagicEffectDef = magicEffect;
             magicEffect.Number = (byte)MagicEffectNumber.SoulBarrier;
             magicEffect.Name = "Soul Barrier";
