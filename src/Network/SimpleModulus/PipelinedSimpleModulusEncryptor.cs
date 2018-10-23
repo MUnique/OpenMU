@@ -129,8 +129,16 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
             // we process the first input block out of the loop, because we need to add the counter as prefix
             this.inputBuffer[0] = (byte)this.Counter.Count;
+            if (size >= DecryptedBlockSize)
+            {
+                input.Slice(0, DecryptedBlockSize - 1).CopyTo(this.inputBuffer.AsSpan(1));
+            }
+            else
+            {
+                input.Slice(0, input.Length).CopyTo(this.inputBuffer.AsSpan(1));
+                this.inputBuffer.AsSpan(size).Clear();
+            }
 
-            input.Slice(0, DecryptedBlockSize - 1).CopyTo(this.inputBuffer.AsSpan(1));
             var firstResultBlock = result.Slice(sizeCounter, EncryptedBlockSize);
             var contentOfFirstBlockLength = Math.Min(DecryptedBlockSize, size + 1);
             this.BlockEncode(firstResultBlock, contentOfFirstBlockLength);
