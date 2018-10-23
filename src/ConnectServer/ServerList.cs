@@ -17,14 +17,14 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         public ServerList()
         {
-            this.Servers = new List<ServerListItem>();
+            this.Servers = new SortedSet<ServerListItem>(new ServerListItemComparer());
             this.ConnectInfos = new Dictionary<ushort, byte[]>();
         }
 
         /// <summary>
         /// Gets or sets the currently available servers.
         /// </summary>
-        public IList<ServerListItem> Servers { get; set; }
+        public ICollection<ServerListItem> Servers { get; set; }
 
         /// <summary>
         /// Gets or sets the cached connection infos.
@@ -56,10 +56,12 @@ namespace MUnique.OpenMU.ConnectServer
             packet[4] = 0x06;
             packet[5] = (byte)((this.Servers.Count >> 8) & 0xFF);
             packet[6] = (byte)(this.Servers.Count & 0xFF);
-            for (int i = 0; i < this.Servers.Count; ++i)
+            var i = 0;
+            foreach (var server in this.Servers)
             {
-                Buffer.BlockCopy(this.Servers[i].Data, 0, packet, 7 + (i * 4), 4);
-                this.Servers[i].LoadIndex = 7 + 2 + (i * 4);
+                Buffer.BlockCopy(server.Data, 0, packet, 7 + (i * 4), 4);
+                server.LoadIndex = 7 + 2 + (i * 4);
+                i++;
             }
 
             this.Cache = packet;
@@ -72,6 +74,21 @@ namespace MUnique.OpenMU.ConnectServer
         public void InvalidateCache()
         {
             this.Cache = null;
+        }
+
+        /// <summary>
+        /// Comparer for <see cref="ServerListItem"/>s.
+        /// </summary>
+        private class ServerListItemComparer : IComparer<ServerListItem>
+        {
+            /// <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
+            /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.</returns>
+            /// <param name="x">The first object to compare.</param>
+            /// <param name="y">The second object to compare.</param>
+            public int Compare(ServerListItem x, ServerListItem y)
+            {
+                return x.ServerId.CompareTo(y.ServerId);
+            }
         }
     }
 }
