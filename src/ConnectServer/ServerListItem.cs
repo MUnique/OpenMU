@@ -43,9 +43,9 @@ namespace MUnique.OpenMU.ConnectServer
         /// </value>
         public ushort ServerId
         {
-            get => this.data.MakeWordSmallEndian(0);
+            get => this.data.MakeWordBigEndian(0);
 
-            set => this.data.SetShortSmallEndian(value, 0);
+            set => this.data.SetShortBigEndian(value, 0);
         }
 
         /// <summary>
