@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
 {
     using System;
     using System.IO;
+    using System.Threading.Tasks;
     using MUnique.OpenMU.Network.SimpleModulus;
 
     /// <summary>
@@ -17,7 +18,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
         /// Main entry point of the program.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             if (args.Length == 1)
             {
@@ -25,7 +26,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
             }
             else
             {
-                GenerateNewKeyPair();
+                await GenerateNewKeyPair().ConfigureAwait(false);
             }
         }
 
@@ -61,10 +62,10 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
             throw new Exception("File name does not begin with 'Enc' or 'Dec'.");
         }
 
-        private static void GenerateNewKeyPair()
+        private static async Task GenerateNewKeyPair()
         {
             var generator = new SimpleModulusKeyGenerator();
-            var result = generator.GenerateKeys();
+            var result = await generator.GenerateKeys().ConfigureAwait(false);
 
             Console.WriteLine("Generated key pair:");
             Console.WriteLine(result);

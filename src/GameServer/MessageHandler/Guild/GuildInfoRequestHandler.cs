@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
     using MUnique.OpenMU.Network;
@@ -25,7 +26,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             var guildId = packet.MakeDwordBigEndian(4);
             this.requestAction.RequestGuildInfo(player, guildId);

@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
-    using System.Linq;
+    using System;
     using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             var letterId = packet.MakeDwordBigEndian(4);
             if (packet.Length < 83)
@@ -40,9 +40,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            var receiverName = Encoding.UTF8.GetString(packet, 8, packet.Skip(8).Take(10).TakeWhile(b => b != 0).Count());
-            var title = Encoding.UTF8.GetString(packet, 18, packet.Skip(18).Take(60).TakeWhile(b => b != 0).Count());
-            var message = Encoding.UTF8.GetString(packet, 0x52, packet.Skip(0x52).TakeWhile(b => b != 0).Count());
+            var receiverName = packet.ExtractString(8, 10, Encoding.UTF8);
+            var title = packet.ExtractString(18, 60, Encoding.UTF8);
+            var message = packet.ExtractString(0x52, packet.Length - 0x52, Encoding.UTF8);
             var rotation = packet[0x4E];
             var animation = packet[0x4F];
             this.sendAction.SendLetter(player, receiverName, message, title, rotation, animation, letterId);

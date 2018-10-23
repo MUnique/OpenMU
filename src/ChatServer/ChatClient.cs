@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.ChatServer
 {
     using System;
+    using System.Buffers;
     using System.Collections.Generic;
-    using System.Net.Sockets;
     using System.Text;
     using log4net;
     using MUnique.OpenMU.Network;
@@ -24,31 +24,22 @@ namespace MUnique.OpenMU.ChatServer
         private const int TokenOffset = 6;
         private const int MessageOffset = 5;
         private static readonly ILog Log = LogManager.GetLogger(typeof(ChatClient));
-        private static readonly IDecryptor TokenDecryptor = new Xor3Decryptor(TokenOffset);
+        private static readonly ISpanDecryptor TokenDecryptor = new Xor3Decryptor(TokenOffset);
 
         /// <summary>
-        /// Decryptor for chat messages. The incoming chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;)
+        /// <see cref="ISpanDecryptor"/> for chat messages. The incoming chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;)
         /// </summary>
-        private static readonly IDecryptor MessageDecryptor = new Xor3Decryptor(MessageOffset);
+        private static readonly ISpanDecryptor MessageDecryptor = new Xor3Decryptor(MessageOffset);
 
         /// <summary>
-        /// Encryptor for chat messages. The outgoing chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;)
+        /// <see cref="ISpanEncryptor"/> for chat messages. The outgoing chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;)
         /// </summary>
-        private static readonly IEncryptor MessageEncryptor = new Xor3Encryptor(MessageOffset);
+        private static readonly ISpanEncryptor MessageEncryptor = new Xor3Encryptor(MessageOffset);
 
         private readonly ChatRoomManager manager;
+        private readonly byte[] packetBuffer = new byte[0xFF];
         private IConnection connection;
         private ChatRoom room;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatClient"/> class.
-        /// </summary>
-        /// <param name="socket">The socket.</param>
-        /// <param name="manager">The chat room manager.</param>
-        public ChatClient(Socket socket, ChatRoomManager manager)
-            : this(new Connection(socket, null, new Decryptor()), manager)
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatClient"/> class.
@@ -57,12 +48,13 @@ namespace MUnique.OpenMU.ChatServer
         /// <param name="manager">The manager.</param>
         public ChatClient(IConnection connection, ChatRoomManager manager)
         {
-            this.connection = connection;
             this.manager = manager;
+            this.connection = connection;
+            this.connection.PacketReceived += this.ReadPacket;
             this.connection.Disconnected += (sender, e) => this.LogOff();
-            this.connection.PacketReceived += (sender, packet) => this.PacketReceived(packet);
-            this.connection.BeginReceive();
+
             this.LastActivity = DateTime.Now;
+            this.connection.BeginReceive();
         }
 
         /// <summary>
@@ -94,49 +86,53 @@ namespace MUnique.OpenMU.ChatServer
         public void SendMessage(byte senderId, string message)
         {
             var messageByteLength = Encoding.UTF8.GetByteCount(message);
-            var packet = new byte[5 + messageByteLength];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[2] = 0x04;
-            packet[3] = senderId;
-            packet[4] = (byte)messageByteLength;
-            Encoding.UTF8.GetBytes(message, 0, message.Length, packet, 5);
-            MessageEncryptor.Encrypt(packet);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5 + messageByteLength))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x04;
+                packet[3] = senderId;
+                packet[4] = (byte)messageByteLength;
+                packet.Slice(5).WriteString(message, Encoding.UTF8);
+                MessageEncryptor.Encrypt(packet);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void SendChatRoomClientList(IReadOnlyCollection<IChatClient> clients)
         {
-            var packet = new byte[8 + (11 * clients.Count)];
-            packet[0] = 0xC2;
-            packet[1] = ((ushort)packet.Length).GetHighByte();
-            packet[2] = ((ushort)packet.Length).GetLowByte();
-            packet[3] = 2; // packet type
-            packet[6] = (byte)clients.Count;
-            int i = 0;
-            foreach (var client in clients)
+            const int sizePerClient = 11;
+            using (var writer = this.connection.StartSafeWrite(0xC2, 8 + (sizePerClient * clients.Count)))
             {
-                var offset = 8 + (i * 11);
-                packet[offset] = client.Index;
-                Encoding.UTF8.GetBytes(client.Nickname, 0, client.Nickname.Length, packet, offset + 1);
-                i++;
-            }
+                var packet = writer.Span;
+                packet[3] = 2; // packet type
+                packet[6] = (byte)clients.Count;
+                int i = 0;
+                foreach (var client in clients)
+                {
+                    var clientBlock = packet.Slice(8 + (i * sizePerClient), sizePerClient);
+                    clientBlock[0] = client.Index;
+                    clientBlock.Slice(1).WriteString(client.Nickname, Encoding.UTF8);
+                    i++;
+                }
 
-            this.connection.Send(packet);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void SendChatRoomClientUpdate(byte updatedClientId, string updatedClientName, ChatRoomClientUpdateType updateType)
         {
-            var packet = new byte[0x0F];
-            packet[0] = 0xC1;
-            packet[1] = 0x0F;
-            packet[2] = 0x01;
-            packet[3] = (byte)updateType;
-            packet[4] = updatedClientId;
-            Encoding.UTF8.GetBytes(updatedClientName, 0, updatedClientName.Length, packet, 5);
-            this.connection.Send(packet);
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0F))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x01;
+                packet[3] = (byte)updateType;
+                packet[4] = updatedClientId;
+                packet.Slice(5).WriteString(updatedClientName, Encoding.UTF8);
+
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -175,9 +171,16 @@ namespace MUnique.OpenMU.ChatServer
             return $"Connection:{this.connection}, Client name:{this.Nickname}, Room-ID:{this.room?.RoomId}, Index: {this.Index}";
         }
 
-        private void PacketReceived(byte[] packet)
+        private void ReadPacket(object sender, ReadOnlySequence<byte> sequence)
         {
-            if (packet.Length < 3 || packet[0] != 0xC1)
+            if (sequence.Length < 3)
+            {
+                return;
+            }
+
+            sequence.CopyTo(this.packetBuffer);
+            var packet = this.packetBuffer;
+            if (packet[0] != 0xC1)
             {
                 return;
             }
@@ -196,7 +199,7 @@ namespace MUnique.OpenMU.ChatServer
                 case 4:
                     if (this.room != null && this.CheckMessage(packet))
                     {
-                        MessageDecryptor.Decrypt(ref packet);
+                        MessageDecryptor.Decrypt(packet.AsSpan());
                         var message = packet.ExtractString(5, int.MaxValue, Encoding.UTF8);
                         if (Log.IsDebugEnabled)
                         {
@@ -237,7 +240,7 @@ namespace MUnique.OpenMU.ChatServer
                 return;
             }
 
-            TokenDecryptor.Decrypt(ref packet);
+            TokenDecryptor.Decrypt(packet);
             var tokenAsString = packet.ExtractString(TokenOffset, 10, Encoding.UTF8);
             if (!uint.TryParse(tokenAsString, out uint _))
             {

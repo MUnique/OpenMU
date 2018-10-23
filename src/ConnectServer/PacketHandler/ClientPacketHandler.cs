@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Client client, byte[] packet)
+        public void HandlePacket(Client client, Span<byte> packet)
         {
             try
             {
@@ -57,18 +57,18 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
             {
                 if (Log.IsDebugEnabled)
                 {
-                    Log.DebugFormat("SocketException occured in Client.ReceivePacket, Client Address: {0}:{1}, Packet: [{2}], Exception: {3}", client.Address, client.Port, packet.ToHexString(), ex);
+                    Log.DebugFormat("SocketException occured in Client.ReceivePacket, Client Address: {0}:{1}, Packet: [{2}], Exception: {3}", client.Address, client.Port, packet.ToArray().ToHexString(), ex);
                 }
             }
             catch (Exception ex)
             {
-                Log.WarnFormat("Exception occured in Client.ReceivePacket, Client Address: {0}:{1}, Packet: [{2}], Exception: {3}", client.Address, client.Port, packet.ToHexString(), ex);
+                Log.WarnFormat("Exception occured in Client.ReceivePacket, Client Address: {0}:{1}, Packet: [{2}], Exception: {3}", client.Address, client.Port, packet.ToArray().ToHexString(), ex);
             }
         }
 
-        private void DisconnectClientUnknownPacket(Client client, byte[] packet)
+        private void DisconnectClientUnknownPacket(Client client, Span<byte> packet)
         {
-            Log.InfoFormat("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToHexString());
+            Log.InfoFormat("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
             client.Connection.Disconnect();
         }
     }

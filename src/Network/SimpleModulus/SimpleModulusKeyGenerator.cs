@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 {
     using System;
     using System.Collections.Generic;
+    using System.IO.Pipelines;
     using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// A key generator which is able to generate a new pair of encryption/decryption keys.
@@ -19,7 +21,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// Generates a new pair of keys.
         /// </summary>
         /// <returns>The generated pair of new keys.</returns>
-        public SimpleModulusKeys GenerateKeys()
+        public async Task<SimpleModulusKeys> GenerateKeys()
         {
             var result = new SimpleModulusKeys();
             do
@@ -33,7 +35,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                     result.XorKey[i] = xorKey;
                 }
             }
-            while (!this.ValidateResult(result));
+            while (!await this.ValidateResult(result).ConfigureAwait(false));
 
             return result;
         }
@@ -115,20 +117,24 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             return !GetFactors(b).Any(primeFactorsOfA.Contains);
         }
 
-        private bool ValidateResult(SimpleModulusKeys result)
+        private async Task<bool> ValidateResult(SimpleModulusKeys result)
         {
-            return this.ValidateKeys(result.GetEncryptionKeys(), result.GetDecryptionKeys());
+            return await this.ValidateKeys(result.GetEncryptionKeys(), result.GetDecryptionKeys()).ConfigureAwait(false);
         }
 
-        private bool ValidateKeys(uint[] encryptionKeys, uint[] decryptionKeys)
+        private async Task<bool> ValidateKeys(uint[] encryptionKeys, uint[] decryptionKeys)
         {
             var packet = Convert.FromBase64String("w7kxFgK8hYpGGLgdXe7ZpTZViB+r3sRI3YSqZs7/Mh5Vmh2mXqs+3dqkvURmXrL57ASs+FkJz/236Tl9ER67R+WZyMLRMkeLF6tEBiB/4X7SsXrKUznES8of73RxwMy76HZezJbvJ7m9IOGuxcjcNwe6q1+k8fOs1Hz3sULSGlbfiB6qIBXo4onADTNYFoYCQrdtthVsF/aDsvcZ93V36gaKzzyqMhby0sjV4+TAU7719W6LZWNAcnA=");
-            var encryptor = new SimpleModulusEncryptor(encryptionKeys);
-            var encrypted = encryptor.Encrypt(packet);
+            var pipe = new Pipe();
+            var encryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer, encryptionKeys);
+            var decryptor = new PipelinedSimpleModulusDecryptor(pipe.Reader, decryptionKeys);
             try
             {
-                var decryptor = new SimpleModulusDecryptor(decryptionKeys);
-                return decryptor.Decrypt(ref encrypted);
+                await encryptor.Writer.WriteAsync(packet).ConfigureAwait(false);
+                await pipe.Writer.FlushAsync().ConfigureAwait(false);
+                var result = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
+
+                return result.Buffer.Length == packet.Length;
             }
             catch (InvalidBlockChecksumException)
             {

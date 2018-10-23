@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameServer
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             var index = packet[0] % 2 == 1 ? 2 : 3;
             var packetType = packet[index];

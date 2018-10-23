@@ -5,11 +5,10 @@
 namespace MUnique.OpenMU.Network.Analyzer
 {
     using System;
+    using System.Buffers;
     using System.ComponentModel;
-    using System.Linq;
     using System.Runtime.CompilerServices;
     using log4net;
-    using MUnique.OpenMU.Network.Analyzer.Properties;
 
     /// <summary>
     /// A proxy which is a man-in-the-middle between a client and server connection.
@@ -121,19 +120,21 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.Name = this.clientName + " [Disconnected]";
         }
 
-        private void ServerPacketReceived(object sender, byte[] data)
+        private void ServerPacketReceived(object sender, ReadOnlySequence<byte> data)
         {
-            this.clientConnection.Send(data);
-            var packet = new Packet(data.ToArray(), false);
+            var dataAsArray = data.ToArray();
+            this.clientConnection.Output.Write(dataAsArray);
+            var packet = new Packet(dataAsArray, false);
             this.log.Info(packet.ToString());
             this.invokeAction((Action)(() => this.PacketList.Add(packet)));
         }
 
-        private void ClientPacketReceived(object sender, byte[] data)
+        private void ClientPacketReceived(object sender, ReadOnlySequence<byte> data)
         {
-            var packet = new Packet(data.ToArray(), true);
+            var dataAsArray = data.ToArray();
+            var packet = new Packet(dataAsArray, true);
             this.log.Info(packet.ToString());
-            this.serverConnection.Send(data);
+            this.serverConnection.Output.Write(dataAsArray);
             this.invokeAction((Action)(() => this.PacketList.Add(packet)));
         }
     }

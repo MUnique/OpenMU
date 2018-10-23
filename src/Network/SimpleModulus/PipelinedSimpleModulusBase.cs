@@ -1,13 +1,17 @@
-﻿// <copyright file="SimpleModulusBase.cs" company="MUnique">
+﻿// <copyright file="PipelinedSimpleModulusBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Network.SimpleModulus
 {
+    using System;
+    using System.Buffers;
+    using System.IO.Pipelines;
+
     /// <summary>
     /// The base class for the "simple modulus" encryption.
     /// </summary>
-    public abstract class SimpleModulusBase
+    public abstract class PipelinedSimpleModulusBase : PacketPipeReaderBase
     {
         /// <summary>
         /// The decrypted block size.
@@ -36,29 +40,19 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         protected Counter Counter { get; } = new Counter();
 
         /// <summary>
-        /// Gets the decrypted block buffer.
-        /// </summary>
-        protected byte[] DecryptedBlockBuffer { get; } = new byte[DecryptedBlockSize];
-
-        /// <summary>
-        /// Gets the encrypted block buffer.
-        /// </summary>
-        protected byte[] EncryptedBlockBuffer { get; } = new byte[EncryptedBlockSize];
-
-        /// <summary>
         /// Gets the ring buffer.
         /// </summary>
         protected uint[] RingBuffer { get; } = new uint[4];
 
         /// <summary>
-        /// Gets the shift buffer.
+        /// Gets the header buffer of the currently read packet.
         /// </summary>
-        protected byte[] ShiftBuffer { get; } = new byte[4];
+        protected byte[] HeaderBuffer { get; } = new byte[3];
 
         /// <summary>
-        /// Gets the crypt buffer.
+        /// Gets the pipe which is either the target (for the encryptor) or source (for the decryptor) for or of the encrypted packets.
         /// </summary>
-        protected ushort[] CryptBuffer { get; } = new ushort[4];
+        protected Pipe Pipe { get; } = new Pipe();
 
         /// <summary>
         /// Resets this instance.
@@ -69,6 +63,19 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         }
 
         /// <summary>
+        /// Copies the data of the packet into the target writer, without flushing it yet.
+        /// </summary>
+        /// <param name="target">The target writer.</param>
+        /// <param name="packet">The packet.</param>
+        protected void CopyDataIntoWriter(PipeWriter target, ReadOnlySequence<byte> packet)
+        {
+            var packetSize = this.HeaderBuffer.GetPacketSize();
+            var data = target.GetSpan(packetSize).Slice(0, packetSize);
+            packet.CopyTo(data);
+            target.Advance(packetSize);
+        }
+
+        /// <summary>
         /// Does some shifting.
         /// </summary>
         /// <param name="outputBuffer">The output buffer.</param>
@@ -76,12 +83,11 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <param name="shiftArray">The shift array with the input data.</param>
         /// <param name="shiftOffset">The shift offset.</param>
         /// <param name="size">The size of the input data.</param>
-        protected void InternalShiftBytes(byte[] outputBuffer, int outputOffset, byte[] shiftArray, int shiftOffset, int size)
+        protected void InternalShiftBytes(Span<byte> outputBuffer, int outputOffset, Span<byte> shiftArray, int shiftOffset, int size)
         {
-            shiftOffset &= 0x7;
-            ShiftRight(shiftArray, size, shiftOffset);
+            ShiftRight(shiftArray, size, shiftOffset & 0x7);
             ShiftLeft(shiftArray, size + 1, outputOffset & 0x7);
-            if ((outputOffset & 0x7) > shiftOffset)
+            if ((outputOffset & 0x7) > (shiftOffset & 0x7))
             {
                 size++;
             }
@@ -99,7 +105,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <param name="packet">The packet.</param>
         /// <param name="decrypted">if set to <c>true</c> it is decrypted. Encrypted packets additionally contain a counter.</param>
         /// <returns>The size of the actual content.</returns>
-        protected int GetContentSize(byte[] packet, bool decrypted)
+        protected int GetContentSize(Span<byte> packet, bool decrypted)
         {
             return packet.GetPacketSize() - packet.GetPacketHeaderSize() + (decrypted ? 1 : 0);
         }
@@ -115,18 +121,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             return ((length + shiftOffset - 1) / DecryptedBlockSize) + (1 - (shiftOffset / DecryptedBlockSize));
         }
 
-        /// <summary>
-        /// Clears the shift buffer.
-        /// </summary>
-        protected void ClearShiftBuffer()
-        {
-            this.ShiftBuffer[0] = 0;
-            this.ShiftBuffer[1] = 0;
-            this.ShiftBuffer[2] = 0;
-            this.ShiftBuffer[3] = 0;
-        }
-
-        private static void ShiftLeft(byte[] data, int size, int shift)
+        private static void ShiftLeft(Span<byte> data, int size, int shift)
         {
             if (shift == 0)
             {
@@ -141,7 +136,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             data[0] >>= shift;
         }
 
-        private static void ShiftRight(byte[] data, int size, int shift)
+        private static void ShiftRight(Span<byte> data, int size, int shift)
         {
             if (shift == 0)
             {

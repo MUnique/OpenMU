@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Network.PacketTwister
 {
-    using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// PacketTwister implementation for packets of 'FriendAddRequest' type.
@@ -12,15 +12,15 @@ namespace MUnique.OpenMU.Network.PacketTwister
     internal class PacketTwisterOfFriendAddRequest : IPacketTwister
     {
         /// <inheritdoc/>
-        public void Twist(IList<byte> data)
+        public void Twist(Span<byte> data)
         {
-            if (data.Count >= 4)
+            if (data.Length >= 4)
             {
-                if (data.Count >= 8)
+                if (data.Length >= 8)
                 {
-                    if (data.Count >= 16)
+                    if (data.Length >= 16)
                     {
-                        if (data.Count >= 32)
+                        if (data.Length >= 32)
                         {
                             var v15 = (byte)(data[23] >> 1);
                             data[23] <<= 7;
@@ -262,15 +262,15 @@ namespace MUnique.OpenMU.Network.PacketTwister
         }
 
         /// <inheritdoc/>
-        public void Correct(IList<byte> data)
+        public void Correct(Span<byte> data)
         {
-            if (data.Count >= 4)
+            if (data.Length >= 4)
             {
-                if (data.Count >= 8)
+                if (data.Length >= 8)
                 {
-                    if (data.Count >= 16)
+                    if (data.Length >= 16)
                     {
-                        if (data.Count >= 32)
+                        if (data.Length >= 32)
                         {
                             data[1] ^= 0x14;
                             data[25] ^= 0x9F;

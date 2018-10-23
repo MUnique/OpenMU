@@ -76,10 +76,5 @@ namespace MUnique.OpenMU.ConnectServer
         /// Gets or sets the maximum server list requests per connection.
         /// </summary>
         public int MaxServerListRequests { get; set; } = 20;
-
-        /// <summary>
-        /// Gets or sets the size of the client pool.
-        /// </summary>
-        public int ClientPoolSize { get; set; } = 10;
     }
 }

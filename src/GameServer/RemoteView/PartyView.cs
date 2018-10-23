@@ -35,13 +35,26 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowPartyRequest(IPartyMember requester)
         {
-            this.connection.Send(new byte[] { 0xC1, 0x05, 0x40, requester.Id.GetHighByte(), requester.Id.GetLowByte() });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x40;
+                packet[3] = requester.Id.GetHighByte();
+                packet[4] = requester.Id.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void PartyClosed()
         {
-            this.connection.Send(new byte[] { 0xC1, 4, 0x42, 0 });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x42;
+                packet[3] = 0x00;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -56,28 +69,29 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const int serializedSizePerPlayer = 24;
             var partyList = party.PartyList;
             var partyListCount = party.PartyList?.Count ?? 0;
-            var packet = new byte[5 + (serializedSizePerPlayer * partyListCount)];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[2] = 0x42;
-            packet[3] = 0x01;
-            packet[4] = (byte)partyListCount;
-            var offset = 5;
-            for (int i = 0; i < partyListCount; i++)
+            using (var writer = this.connection.StartSafeWrite(0xC1, 5 + (serializedSizePerPlayer * partyListCount)))
             {
-                var partyMember = partyList[i];
-                Encoding.UTF8.GetBytes(partyMember.Name, 0, partyMember.Name.Length, packet, offset);
-                packet[offset + 10] = (byte)i;
-                packet[offset + 11] = (byte)partyMember.CurrentMap.MapId;
-                packet[offset + 12] = partyMember.X;
-                packet[offset + 13] = partyMember.Y;
-                ////14 + 15 are unknown
-                packet.SetIntegerBigEndian(partyMember.CurrentHealth, offset + 16);
-                packet.SetIntegerBigEndian(partyMember.MaximumHealth, offset + 20);
-                offset += serializedSizePerPlayer;
-            }
+                var packet = writer.Span;
+                packet[2] = 0x42;
+                packet[3] = 0x01;
+                packet[4] = (byte)partyListCount;
+                var offset = 5;
+                for (int i = 0; i < partyListCount; i++)
+                {
+                    var partyMember = partyList[i];
+                    packet.Slice(offset, 10).WriteString(partyMember.Name, Encoding.UTF8);
+                    packet[offset + 10] = (byte)i;
+                    packet[offset + 11] = (byte)partyMember.CurrentMap.MapId;
+                    packet[offset + 12] = partyMember.X;
+                    packet[offset + 13] = partyMember.Y;
+                    ////14 + 15 are unknown
+                    packet.Slice(offset + 16).SetIntegerBigEndian(partyMember.CurrentHealth);
+                    packet.Slice(offset + 20).SetIntegerBigEndian(partyMember.MaximumHealth);
+                    offset += serializedSizePerPlayer;
+                }
 
-            this.connection.Send(packet);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -90,17 +104,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void UpdatePartyHealth()
         {
             var partyListCount = this.player.Party.PartyList.Count;
-            var packet = new byte[partyListCount + 4];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[2] = 0x44;
-            packet[3] = (byte)partyListCount;
-            for (int i = 0; i < partyListCount; i++)
+            using (var writer = this.connection.StartSafeWrite(0xC1, partyListCount + 4))
             {
-               packet[4 + i] = (byte)((i << 4) + this.HealthValues[i]);
-            }
+                var packet = writer.Span;
+                packet[2] = 0x44;
+                packet[3] = (byte)partyListCount;
+                for (int i = 0; i < partyListCount; i++)
+                {
+                    packet[4 + i] = (byte)((i << 4) + this.HealthValues[i]);
+                }
 
-            this.connection.Send(packet);
+                writer.Commit();
+            }
         }
 
         private bool UpdateHealthValues()

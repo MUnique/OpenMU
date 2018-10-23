@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
 
@@ -15,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         private readonly GuildMasterAnswerAction answerAction = new GuildMasterAnswerAction();
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             var answer = (GuildMasterAnswerAction.Answer)packet[3];
             this.answerAction.ProcessAnswer(player, answer);

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -54,7 +55,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var killedId = killed.GetId(this.player);
             var killerId = killer.GetId(this.player);
-            this.connection.Send(new byte[] { 0xC1, 9, 0x17, killedId.GetHighByte(), killedId.GetLowByte(), 0, 0, killerId.GetHighByte(), killerId.GetLowByte() });
+            using (var writer = this.connection.StartSafeWrite(0xC1, 9))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x17;
+                packet[3] = killedId.GetHighByte();
+                packet[4] = killedId.GetLowByte();
+                packet[7] = killerId.GetHighByte();
+                packet[8] = killerId.GetLowByte();
+                writer.Commit();
+            }
+
             if (this.player == killed && killer is Player killerPlayer)
             {
                 this.player.PlayerView.ShowMessage($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal);
@@ -67,7 +78,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var objectId = obj.GetId(this.player);
             if (type == MoveType.Instant)
             {
-                this.connection.Send(new byte[] { 0xC1, 0x08, (byte)PacketType.Teleport, objectId.GetHighByte(), objectId.GetLowByte(), obj.X, obj.Y, 0 });
+                using (var writer = this.connection.StartSafeWrite(0xC1, 0x08))
+                {
+                    var packet = writer.Span;
+                    packet[2] = (byte)PacketType.Teleport;
+                    packet[3] = objectId.GetHighByte();
+                    packet[4] = objectId.GetLowByte();
+                    packet[5] = obj.X;
+                    packet[6] = obj.Y;
+                    writer.Commit();
+                }
             }
             else
             {
@@ -96,21 +116,29 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 }
 
                 var stepsSize = (steps?.Count / 2) + 2 ?? 1;
-                byte[] walkPacket = new byte[7 + stepsSize];
-                walkPacket.SetValues<byte>(0xC1, (byte)walkPacket.Length, (byte)PacketType.Walk, objectId.GetHighByte(), objectId.GetLowByte(), x, y, (byte)((steps?.Count ?? 0) | ((byte)rotation) << 4));
-                if (steps != null)
+                using (var writer = this.connection.StartSafeWrite(0xC1, 7 + stepsSize))
                 {
-                    walkPacket[7] = (byte)((int)steps.First() << 4 | (int)steps.Count);
-                    for (int i = 0; i < steps.Count; i += 2)
+                    var walkPacket = writer.Span;
+                    walkPacket[2] = (byte)PacketType.Walk;
+                    walkPacket[3] = objectId.GetHighByte();
+                    walkPacket[4] = objectId.GetLowByte();
+                    walkPacket[5] = x;
+                    walkPacket[6] = y;
+                    walkPacket[7] = (byte)((steps?.Count ?? 0) | ((byte)rotation) << 4);
+                    if (steps != null)
                     {
-                        var index = 8 + (i / 2);
-                        var firstStep = steps[i];
-                        var secondStep = steps.Count > i + 2 ? steps[i + 2] : Direction.Undefined;
-                        walkPacket[index] = (byte)((int)firstStep << 4 | (int)secondStep);
+                        walkPacket[7] = (byte)((int)steps.First() << 4 | (int)steps.Count);
+                        for (int i = 0; i < steps.Count; i += 2)
+                        {
+                            var index = 8 + (i / 2);
+                            var firstStep = steps[i];
+                            var secondStep = steps.Count > i + 2 ? steps[i + 2] : Direction.Undefined;
+                            walkPacket[index] = (byte)((int)firstStep << 4 | (int)secondStep);
+                        }
                     }
-                }
 
-                this.connection.Send(walkPacket);
+                    writer.Commit();
+                }
             }
         }
 
@@ -121,30 +149,34 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const byte freshDropFlag = 0x80;
 
             int itemCount = droppedItems.Count();
-            byte[] data = new byte[9 + (this.itemSerializer.NeededSpace * itemCount)];
-            ushort length = (ushort)data.Length;
-            data.SetValues<byte>(0xC2, length.GetHighByte(), length.GetLowByte(), 0x20, (byte)itemCount);
-            int i = 0;
-            int startOffset = 5;
-            foreach (var item in droppedItems)
+            using (var writer = this.connection.StartSafeWrite(0xC2, 9 + (this.itemSerializer.NeededSpace * itemCount)))
             {
-                var startIndex = startOffset + ((this.itemSerializer.NeededSpace + itemHeaderSize) * i);
+                var data = writer.Span;
+                data[3] = 0x20;
+                data[4] = (byte)itemCount;
 
-                data[startIndex] = item.Id.GetHighByte();
-                if (freshDrops)
+                int i = 0;
+                int startOffset = 5;
+                foreach (var item in droppedItems)
                 {
-                    data[startIndex] |= freshDropFlag;
+                    var startIndex = startOffset + ((this.itemSerializer.NeededSpace + itemHeaderSize) * i);
+                    var itemBlock = data.Slice(startIndex, this.itemSerializer.NeededSpace + itemHeaderSize);
+                    itemBlock[0] = item.Id.GetHighByte();
+                    if (freshDrops)
+                    {
+                        data[0] |= freshDropFlag;
+                    }
+
+                    itemBlock[1] = item.Id.GetLowByte();
+                    itemBlock[2] = item.X;
+                    itemBlock[3] = item.Y;
+                    this.itemSerializer.SerializeItem(data.Slice(startIndex + 4), item.Item);
+
+                    i++;
                 }
 
-                data[startIndex + 1] = item.Id.GetLowByte();
-                data[startIndex + 2] = item.X;
-                data[startIndex + 3] = item.Y;
-                this.itemSerializer.SerializeItem(data, startIndex + 4, item.Item);
-
-                i++;
+                writer.Commit();
             }
-
-            this.connection.Send(data);
         }
 
         /// <inheritdoc/>
@@ -152,21 +184,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             ////C2 00 07 21 01 00 0C
             int count = disappearedItemIds.Count();
-            var data = new byte[5 + (2 * count)];
-            data[0] = 0xC2;
-            data[1] = (byte)((data.Length >> 8) & 0xFF);
-            data[2] = (byte)(data.Length & 0xFF);
-            data[3] = 0x21;
-            data[4] = (byte)count;
-            int i = 0;
-            foreach (var dropId in disappearedItemIds)
+            using (var writer = this.connection.StartSafeWrite(0xC2, 5 + (2 * count)))
             {
-                data[5 + (i * 2)] = (byte)((dropId >> 8) & 0xFF);
-                data[6 + (i * 2)] = (byte)(dropId & 0xFF);
-                i++;
-            }
+                var data = writer.Span;
+                data[3] = 0x21;
+                data[4] = (byte)count;
+                int i = 0;
+                foreach (var dropId in disappearedItemIds)
+                {
+                    data[5 + (i * 2)] = (byte)((dropId >> 8) & 0xFF);
+                    data[6 + (i * 2)] = (byte)(dropId & 0xFF);
+                    i++;
+                }
 
-            this.connection.Send(data);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -179,41 +211,73 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var animatingId = animatingObj.GetId(this.player);
             if (targetObj == null)
             {
-                this.connection.Send(new byte[] { 0xC1, 0x07, 0x18, animatingId.GetHighByte(), animatingId.GetLowByte(), direction, animation });
+                using (var writer = this.connection.StartSafeWrite(0xC1, 7))
+                {
+                    var packet = writer.Span;
+                    packet[2] = 0x18;
+                    packet[3] = animatingId.GetHighByte();
+                    packet[4] = animatingId.GetLowByte();
+                    packet[5] = direction;
+                    packet[6] = animation;
+                    writer.Commit();
+                }
             }
             else
             {
                 var targetId = targetObj.GetId(this.player);
-                this.connection.Send(new byte[] { 0xC1, 0x09, 0x18, animatingId.GetHighByte(), animatingId.GetLowByte(), direction, animation, targetId.GetHighByte(), targetId.GetLowByte() });
+                using (var writer = this.connection.StartSafeWrite(0xC1, 9))
+                {
+                    var packet = writer.Span;
+                    packet[2] = 0x18;
+                    packet[3] = animatingId.GetHighByte();
+                    packet[4] = animatingId.GetLowByte();
+                    packet[5] = direction;
+                    packet[6] = animation;
+                    packet[7] = targetId.GetHighByte();
+                    packet[8] = targetId.GetLowByte();
+                    writer.Commit();
+                }
             }
         }
 
         /// <inheritdoc/>
         public void MapChange()
         {
-            var map = this.player.SelectedCharacter.CurrentMap.Number;
-            this.connection.Send(new byte[] { 0xC3, 0x09, 0x1C, 0x0F, 1, NumberConversionExtensions.ToUnsigned(map).GetHighByte(), NumberConversionExtensions.ToUnsigned(map).GetLowByte(), this.player.SelectedCharacter.PositionX, this.player.SelectedCharacter.PositionY });
+            var mapNumber = NumberConversionExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number);
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x09))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x1C;
+                packet[3] = 0x0F;
+                packet[4] = 1;
+                packet[5] = mapNumber.GetHighByte();
+                packet[6] = mapNumber.GetLowByte();
+                packet[7] = this.player.SelectedCharacter.PositionX;
+                packet[8] = this.player.SelectedCharacter.PositionY;
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
         public void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
         {
             var count = objects.Count();
-            var packet = new byte[4 + (count * 2)];
-            packet[0] = 0xC1;
-            packet[1] = (byte)packet.Length;
-            packet[2] = 20;
-            packet[3] = (byte)count;
-            int i = 4;
-            foreach (var m in objects)
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4 + (count * 2)))
             {
-                var objectId = m.GetId(this.player);
-                packet[i] = objectId.GetHighByte();
-                packet[i + 1] = objectId.GetLowByte();
-                i += 2;
-            }
+                var packet = writer.Span;
+                packet[2] = 20;
+                packet[3] = (byte)count;
+                int i = 4;
+                foreach (var m in objects)
+                {
+                    var objectId = m.GetId(this.player);
+                    packet[i] = objectId.GetHighByte();
+                    packet[i + 1] = objectId.GetLowByte();
+                    i += 2;
+                }
 
-            this.connection.Send(packet);
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -229,61 +293,63 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             IList<Player> shopPlayers = null;
             IList<Player> guildPlayers = null;
             var newPlayerList = newPlayers.ToList();
-            var estimatedEffectsPerPlayer = 3;
+            const int estimatedEffectsPerPlayer = 5;
             var estimatedSize = 5 + (newPlayerList.Count * (playerDataSize + estimatedEffectsPerPlayer)); // this should just be a rough number to optimize the capacity of the list
-            var packetList = new List<byte>(estimatedSize) { 0xC2, 0, 0, 0x12, (byte)newPlayerList.Count };
-
-            var nameArray = new byte[10];
-            foreach (var newPlayer in newPlayerList)
+            using (var writer = this.connection.StartSafeWrite(0xC2, estimatedSize))
             {
-                var playerId = newPlayer.GetId(this.player);
-                packetList.Add(playerId.GetHighByte());
-                packetList.Add(playerId.GetLowByte());
-                packetList.Add(newPlayer.X); // 7
-                packetList.Add(newPlayer.Y); // 8
-                packetList.AddRange(newPlayer.GetAppearanceData(this.appearanceSerializer)); // 9 ... 26
-                Encoding.ASCII.GetBytes(newPlayer.SelectedCharacter.Name, 0, newPlayer.SelectedCharacter.Name.Length, nameArray, 0);
-                packetList.AddRange(nameArray); // 27 ... 36
+                var packet = writer.Span;
+                packet[3] = 0x12;
+                packet[4] = (byte)newPlayerList.Count;
+                var actualSize = 5;
 
-                if (newPlayer.IsWalking)
+                foreach (var newPlayer in newPlayerList)
                 {
-                    packetList.Add(newPlayer.WalkTarget.X); // 37
-                    packetList.Add(newPlayer.WalkTarget.Y); // 38
-                }
-                else
-                {
-                    packetList.Add(newPlayer.X); // 37
-                    packetList.Add(newPlayer.Y); // 38
+                    var playerId = newPlayer.GetId(this.player);
+                    var playerBlock = packet.Slice(actualSize);
+                    playerBlock[0] = playerId.GetHighByte();
+                    playerBlock[1] = playerId.GetLowByte();
+                    playerBlock[2] = newPlayer.X;
+                    playerBlock[3] = newPlayer.Y;
+                    playerBlock.Slice(4, 21);
+                    this.appearanceSerializer.WriteAppearanceData(playerBlock.Slice(4, this.appearanceSerializer.NeededSpace), newPlayer.AppearanceData, true); // 4 ... 21
+                    playerBlock.Slice(22, 10).WriteString(newPlayer.SelectedCharacter.Name, Encoding.UTF8); // 22 ... 31
+                    if (newPlayer.IsWalking)
+                    {
+                        playerBlock[32] = newPlayer.WalkTarget.X;
+                        playerBlock[33] = newPlayer.WalkTarget.Y;
+                    }
+                    else
+                    {
+                        playerBlock[32] = newPlayer.X;
+                        playerBlock[33] = newPlayer.Y;
+                    }
+
+                    playerBlock[34] = (byte)(((int)newPlayer.Rotation * 0x10) + GetStateValue(newPlayer.SelectedCharacter.State));
+                    var activeEffects = newPlayer.MagicEffectList.GetVisibleEffects();
+                    var effectCount = 0;
+                    for (int e = activeEffects.Count - 1; e >= 0; e--)
+                    {
+                        playerBlock[36 + e] = activeEffects[e].Id;
+                        effectCount++;
+                    }
+
+                    playerBlock[35] = (byte)effectCount;
+                    actualSize += playerDataSize + effectCount;
+
+                    if (newPlayer.ShopStorage.StoreOpen)
+                    {
+                        (shopPlayers ?? (shopPlayers = new List<Player>())).Add(newPlayer);
+                    }
+
+                    if (newPlayer.GuildStatus != null)
+                    {
+                        (guildPlayers ?? (guildPlayers = new List<Player>())).Add(newPlayer);
+                    }
                 }
 
-                packetList.Add((byte)(((int)newPlayer.Rotation * 0x10) + GetStateValue(newPlayer.SelectedCharacter.State))); // 39
-
-                var activeEffects = newPlayer.MagicEffectList.GetVisibleEffects();
-                var effectCountIndex = packetList.Count;
-                var effectCount = 0;
-                packetList.Add(0); // 40
-                for (int e = activeEffects.Count - 1; e >= 0; e--)
-                {
-                    packetList.Add(activeEffects[e].Id);
-                    effectCount++;
-                }
-
-                packetList[effectCountIndex] = (byte)effectCount;
-
-                if (newPlayer.ShopStorage.StoreOpen)
-                {
-                    (shopPlayers ?? (shopPlayers = new List<Player>())).Add(newPlayer);
-                }
-
-                if (newPlayer.GuildStatus != null)
-                {
-                    (guildPlayers ?? (guildPlayers = new List<Player>())).Add(newPlayer);
-                }
+                packet.Slice(0, actualSize).SetPacketSize();
+                writer.Commit(actualSize);
             }
-
-            packetList[1] = (byte)(packetList.Count >> 8 & 0xFF);
-            packetList[2] = (byte)(packetList.Count & 0xFF);
-            this.connection.Send(packetList.ToArray());
 
             if (shopPlayers != null)
             {
@@ -307,55 +373,55 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
 
             var newObjectList = newObjects.ToList();
-            var packet = new byte[(newObjectList.Count * NpcDataSize) + 5];
-            packet[0] = 0xC2;
-            packet[1] = (byte)(packet.Length >> 8 & 0xFF);
-            packet[2] = (byte)(packet.Length & 0xFF);
-            packet[3] = 0x13; ////Packet Id
-            packet[4] = (byte)newObjectList.Count;
-            int i = 0;
-            foreach (var npc in newObjectList)
+            using (var writer = this.connection.StartSafeWrite(0xC2, (newObjectList.Count * NpcDataSize) + 5))
             {
-                var monsterOffset = i * NpcDataSize;
-                ////Mob Id:
-                packet[5 + monsterOffset] = npc.Id.GetHighByte();
-                packet[6 + monsterOffset] = npc.Id.GetLowByte();
-
-                ////Mob Type:
-                var npcStats = npc.Definition;
-                if (npcStats != null)
+                var packet = writer.Span;
+                packet[3] = 0x13; ////Packet Id
+                packet[4] = (byte)newObjectList.Count;
+                int i = 0;
+                foreach (var npc in newObjectList)
                 {
-                    packet[7 + monsterOffset] = (byte)((npcStats.Number >> 8) & 0xFF);
-                    packet[8 + monsterOffset] = (byte)(npcStats.Number & 0xFF);
+                    var npcBlock = packet.Slice(5 + (i * NpcDataSize));
+                    ////Npc Id:
+                    npcBlock[0] = npc.Id.GetHighByte();
+                    npcBlock[1] = npc.Id.GetLowByte();
+
+                    ////Npc Type:
+                    var npcStats = npc.Definition;
+                    if (npcStats != null)
+                    {
+                        npcBlock[2] = (byte)((npcStats.Number >> 8) & 0xFF);
+                        npcBlock[3] = (byte)(npcStats.Number & 0xFF);
+                    }
+
+                    ////Coords:
+                    npcBlock[4] = npc.X;
+                    npcBlock[5] = npc.Y;
+                    var supportWalk = npc as ISupportWalk;
+                    if (supportWalk?.IsWalking ?? false)
+                    {
+                        npcBlock[6] = supportWalk.WalkTarget.X;
+                        npcBlock[7] = supportWalk.WalkTarget.Y;
+                    }
+                    else
+                    {
+                        npcBlock[6] = npc.X;
+                        npcBlock[7] = npc.Y;
+                    }
+
+                    npcBlock[8] = (byte)((int)npc.Rotation << 4);
+                    ////9 = offset byte for magic effects - currently we don't show them for NPCs
+                    i++;
                 }
 
-                ////Coords:
-                packet[9 + monsterOffset] = npc.X;
-                packet[10 + monsterOffset] = npc.Y;
-                var supportWalk = npc as ISupportWalk;
-                if (supportWalk?.IsWalking ?? false)
-                {
-                    packet[11 + monsterOffset] = supportWalk.WalkTarget.X;
-                    packet[12 + monsterOffset] = supportWalk.WalkTarget.Y;
-                }
-                else
-                {
-                    packet[11 + monsterOffset] = npc.X;
-                    packet[12 + monsterOffset] = npc.Y;
-                }
-
-                packet[13 + monsterOffset] = (byte)((int)npc.Rotation << 4);
-                ////14 = offset byte for magic effects - currently we don't show them for NPCs
-                i++;
+                writer.Commit();
             }
-
-            this.connection.Send(packet);
         }
 
         /// <inheritdoc/>
         public void UpdateRotation()
         {
-            //// TODO: Implement Rotation, packet: new byte[] { 0xc1, 0x04, 0x0F, 0x12 }
+            //// TODO: Implement Rotation, packet: { 0xc1, 0x04, 0x0F, 0x12 }
         }
 
         /// <inheritdoc/>
@@ -364,13 +430,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var playerId = attackingPlayer.GetId(this.player);
             var targetId = target.GetId(this.player);
             var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
-            this.connection.Send(new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x09))
             {
-                0xC3, 9, 0x19,
-                skillId.GetHighByte(), skillId.GetLowByte(),
-                playerId.GetHighByte(), playerId.GetLowByte(),
-                targetId.GetHighByte(), targetId.GetLowByte()
-            });
+                var packet = writer.Span;
+                packet[2] = 0x19;
+                packet[3] = skillId.GetHighByte();
+                packet[4] = skillId.GetLowByte();
+                packet[5] = playerId.GetHighByte();
+                packet[6] = playerId.GetLowByte();
+                packet[7] = targetId.GetHighByte();
+                packet[8] = targetId.GetLowByte();
+                writer.Commit();
+            }
         }
 
         /// <inheritdoc/>
@@ -378,13 +449,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
             var playerId = playerWhichPerformsSkill.GetId(this.player);
-
-            // Example: C3 0A 1E 00 09 23 47 3D 62 3A
-            this.connection.Send(new byte[]
+            using (var writer = this.connection.StartSafeWrite(0xC3, 0x0A))
             {
-                0xC3, 0x0A, 0x1E, skillId.GetHighByte(), skillId.GetLowByte(),
-                playerId.GetHighByte(), playerId.GetLowByte(), x, y, rotation
-            });
+                // Example: C3 0A 1E 00 09 23 47 3D 62 3A
+                var packet = writer.Span;
+                packet[2] = 0x1E;
+                packet[3] = skillId.GetHighByte();
+                packet[4] = skillId.GetLowByte();
+                packet[5] = playerId.GetHighByte();
+                packet[6] = playerId.GetLowByte();
+                packet[7] = x;
+                packet[8] = y;
+                packet[9] = rotation;
+                writer.Commit();
+            }
         }
 
         private static byte GetStateValue(HeroState state)

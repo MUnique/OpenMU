@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Items
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
     using MUnique.OpenMU.Network;
@@ -25,7 +26,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             // 0xc3, 5, 0x22, id1, id2
             ushort dropid = NumberConversionExtensions.MakeWord(packet[4], packet[3]);

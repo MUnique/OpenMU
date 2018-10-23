@@ -8,30 +8,43 @@ namespace MUnique.OpenMU.Network.Tests
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
-
     using NUnit.Framework;
+    using Pipelines.Sockets.Unofficial;
 
     /// <summary>
     /// Test of the async connection implementation.
     /// </summary>
     [TestFixture]
     [Ignore("It's using real sockets")]
-    public class AsyncConnectionTest
+    public class SocketConnectionTest
     {
         /// <summary>
-        /// Tests the receive function with an async connection object.
+        /// Tests the receive function with a pipelined connection object.
         /// </summary>
         [Test]
-        public void TestReceive()
+        public void TestReceivePipelined()
         {
-            this.TestReceive(socket => new Connection(socket, null, null));
+            this.TestReceivePipelined(socket => new Connection(SocketConnection.Create(socket), null, null));
+        }
+
+        /// <summary>
+        /// Tests the receive function with a pipelined connection object with encryptor/decryptor.
+        /// </summary>
+        [Test]
+        public void TestReceivePipelinedWithEncryption()
+        {
+            this.TestReceivePipelined(socket =>
+            {
+                var socketConnection = SocketConnection.Create(socket);
+                return new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
+            });
         }
 
         /// <summary>
         /// Tests the receiving of data with any <see cref="IConnection"/> implementation.
         /// </summary>
         /// <param name="connectionCreator">The connection creator.</param>
-        private void TestReceive(Func<Socket, IConnection> connectionCreator)
+        private void TestReceivePipelined(Func<Socket, IConnection> connectionCreator)
         {
             const int maximumPacketCount = 1000;
 
@@ -40,10 +53,10 @@ namespace MUnique.OpenMU.Network.Tests
             server.Start();
             server.BeginAcceptSocket(
                 asyncResult =>
-                                     {
-                                         var clientSocket = server.EndAcceptSocket(asyncResult);
-                                         connection = connectionCreator(clientSocket);
-                                     }, null);
+                {
+                    var clientSocket = server.EndAcceptSocket(asyncResult);
+                    connection = connectionCreator(clientSocket);
+                }, null);
             using (var client = new TcpClient("127.0.0.1", 5000))
             {
                 while (connection == null)

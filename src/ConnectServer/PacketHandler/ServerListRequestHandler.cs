@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
+    using System;
     using log4net;
+    using MUnique.OpenMU.Network;
 
     /// <summary>
     /// Handles the request of the server list.
@@ -24,7 +26,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Client client, byte[] packet)
+        public void HandlePacket(Client client, Span<byte> packet)
         {
             Log.DebugFormat("Client {0}:{1} requested Server List", client.Address, client.Port);
             if (client.ServerListRequestCount >= this.connectServer.Settings.MaxServerListRequests)
@@ -33,7 +35,13 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
                 client.Connection.Disconnect();
             }
 
-            client.Connection.Send(this.connectServer.ServerList.Serialize());
+            var serverList = this.connectServer.ServerList.Serialize();
+            using (var writer = client.Connection.StartSafeWrite(serverList[0], serverList.Length))
+            {
+                serverList.CopyTo(writer.Span);
+                writer.Commit();
+            }
+
             client.ServerListRequestCount++;
         }
     }

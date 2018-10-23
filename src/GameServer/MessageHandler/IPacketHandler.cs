@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
 
     /// <summary>
@@ -16,7 +17,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// </summary>
         /// <param name="player">The player for which the packet should be handled.</param>
         /// <param name="packet">The packet which should be handled.</param>
-        void HandlePacket(Player player, byte[] packet);
+        void HandlePacket(Player player, Span<byte> packet);
     }
 
     /// <summary>

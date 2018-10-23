@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using System.Linq;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
@@ -29,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public override void HandlePacket(Player player, byte[] packet)
+        public override void HandlePacket(Player player, Span<byte> packet)
         {
             if (packet[3] != 2) ////is always 2 i guess?
             {

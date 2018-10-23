@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
 
@@ -23,7 +24,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             this.closeAction.CloseNpcDialog(player);
         }

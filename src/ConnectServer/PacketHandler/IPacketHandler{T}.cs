@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
+    using System;
+
     /// <summary>
     /// The interface for a packet handler with a type which is passed as context argument.
     /// </summary>
@@ -15,6 +17,6 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <param name="packet">The packet.</param>
-        void HandlePacket(T obj, byte[] packet);
+        void HandlePacket(T obj, Span<byte> packet);
     }
 }

@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Network.PacketTwister
 {
-    using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Interface for a packet twister of a specific packet type.
@@ -15,12 +15,12 @@ namespace MUnique.OpenMU.Network.PacketTwister
         /// Twists (encrypts) the specified data.
         /// </summary>
         /// <param name="data">The data.</param>
-        void Twist(IList<byte> data);
+        void Twist(Span<byte> data);
 
         /// <summary>
         /// Corrects (decrypts) the specified data.
         /// </summary>
         /// <param name="data">The data.</param>
-        void Correct(IList<byte> data);
+        void Correct(Span<byte> data);
     }
 }

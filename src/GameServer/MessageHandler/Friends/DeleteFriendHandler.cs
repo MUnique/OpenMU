@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Friends
 {
+    using System;
     using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
@@ -27,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Friends
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             // C1 0D C3 //10 bytes following
             if (packet.Length < 0x0D)

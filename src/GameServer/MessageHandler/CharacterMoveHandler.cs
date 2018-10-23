@@ -4,8 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    using System;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
@@ -17,61 +16,81 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     internal class CharacterMoveHandler : IPacketHandler
     {
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length > 4)
+            if (packet.Length <= 4)
             {
-                var moveType = this.GetMoveType(packet[2]);
+                return;
+            }
 
-                var x = packet[3];
-                var y = packet[4];
-                player.NextDirections.Clear();
-                if (moveType == MoveType.Walk)
-                {
-                    if (packet.Length > 6)
-                    {
-                        // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
-                        var sourcePoint = new Point(x, y);
-                        var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
-                        Point target = sourcePoint;
+            var moveType = this.GetMoveType(packet[2]);
 
-                        // we need to reverse the steps, because we put it on a stack - where the top element is the next step.
-                        foreach (var step in steps.Reverse())
-                        {
-                            if (player.NextDirections.Count == 0)
-                            {
-                                // the first direction (which will end up at the bottom of the stack) is our target
-                                target = step.To;
-                            }
-
-                            player.NextDirections.Push(step);
-                        }
-
-                        player.WalkTarget = target;
-
-                        player.Move(player.WalkTarget.X, player.WalkTarget.Y, MoveType.Walk);
-                    }
-                    else
-                    {
-                        player.Rotation = (Direction)((packet[5] >> 4) & 0x0F);
-                    }
-                }
-                else
-                {
-                    player.Move(x, y, MoveType.Instant);
-                }
+            var x = packet[3];
+            var y = packet[4];
+            player.NextDirections.Clear();
+            if (moveType == MoveType.Walk)
+            {
+                this.Walk(player, packet, x, y);
+            }
+            else
+            {
+                player.Move(x, y, MoveType.Instant);
             }
         }
 
-        private IEnumerable<WalkingStep> GetSteps(Point start, IEnumerable<Direction> directions)
+        private void Walk(Player player, Span<byte> packet, byte x, byte y)
         {
+            if (packet.Length > 6)
+            {
+                // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
+                var sourcePoint = new Point(x, y);
+                var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
+                Point target = this.ApplySteps(player, steps, sourcePoint);
+
+                player.WalkTarget = target;
+
+                player.Move(player.WalkTarget.X, player.WalkTarget.Y, MoveType.Walk);
+            }
+            else
+            {
+                player.Rotation = (Direction)((packet[5] >> 4) & 0x0F);
+            }
+        }
+
+        private Point ApplySteps(Player player, Span<WalkingStep> steps, Point source)
+        {
+            var target = source;
+
+            // we need to reverse the steps, because we put it on a stack - where the top element is the next step.
+            for (int i = steps.Length - 1; i >= 0; i--)
+            {
+                var step = steps[i];
+                if (player.NextDirections.Count == 0)
+                {
+                    // the first direction (which will end up at the bottom of the stack) is our target
+                    target = step.To;
+                }
+
+                player.NextDirections.Push(step);
+            }
+
+            return target;
+        }
+
+        private Span<WalkingStep> GetSteps(Point start, Span<Direction> directions)
+        {
+            var result = new WalkingStep[directions.Length];
             Point previousTarget = start;
+            int i = 0;
             foreach (var direction in directions)
             {
                 var currentTarget = previousTarget.CalculateTargetPoint(direction);
-                yield return new WalkingStep { Direction = direction, To = currentTarget, From = previousTarget };
+                result[i] = new WalkingStep { Direction = direction, To = currentTarget, From = previousTarget };
+                i++;
                 previousTarget = currentTarget;
             }
+
+            return result;
         }
 
         /// <summary>
@@ -83,23 +102,28 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// We return here the directions left-rotated; I don't know yet if that's an error in our Direction-enum
         /// or just the client uses another enumeration for it.
         /// </remarks>
-        private IEnumerable<Direction> GetDirections(byte[] packet)
+        private Span<Direction> GetDirections(Span<byte> packet)
         {
             // the first 4 bits of the first path byte contains the number of steps
             var count = packet[5] & 0x0F;
+            var result = new Direction[count];
             var firstDirection = (Direction)((packet[5] >> 4) & 0x0F);
-            yield return firstDirection.RotateLeft();
-            for (int i = 1; i < count; i++)
+            result[0] = firstDirection.RotateLeft();
+
+            int i;
+            for (i = 1; i < count; i++)
             {
                 var index = 5 + (i / 2);
                 var direction = (Direction)((packet[index] >> ((i % 2) == 0 ? 0 : 4)) & 0x0F);
                 if (direction == Direction.Undefined)
                 {
-                    yield break;
+                    break;
                 }
 
-                yield return direction.RotateLeft();
+                result[i] = direction.RotateLeft();
             }
+
+            return result.AsSpan(0, i);
         }
 
         private MoveType GetMoveType(byte value)

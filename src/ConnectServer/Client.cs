@@ -5,10 +5,11 @@
 namespace MUnique.OpenMU.ConnectServer
 {
     using System;
+    using System.Buffers;
     using System.Net;
     using System.Threading;
-
     using log4net;
+    using MUnique.OpenMU.ConnectServer.PacketHandler;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -21,26 +22,31 @@ namespace MUnique.OpenMU.ConnectServer
         private static readonly ILog Log = LogManager.GetLogger(typeof(Client));
 
         private readonly object disposeLock = new object();
+        private readonly byte[] receiveBuffer;
 
         private readonly Timer onlineTimer;
-
+        private readonly IPacketHandler<Client> packetHandler;
         private bool disposed;
 
         private DateTime lastReceive;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Client"/> class.
+        /// Initializes a new instance of the <see cref="Client" /> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="timeout">The timeout.</param>
-        public Client(IConnection connection, TimeSpan timeout)
+        /// <param name="packetHandler">The packet handler.</param>
+        /// <param name="maxPacketSize">Maximum size of the packet. This value is also used to initialize the receive buffer.</param>
+        public Client(IConnection connection, TimeSpan timeout, IPacketHandler<Client> packetHandler, byte maxPacketSize)
         {
             this.Connection = connection;
             this.Connection.PacketReceived += this.OnPacketReceived;
             this.Timeout = timeout;
+            this.packetHandler = packetHandler;
             this.lastReceive = DateTime.Now;
             var checkInterval = new TimeSpan(0, 0, 20);
             this.onlineTimer = new Timer(this.OnlineTimer_Elapsed, null, checkInterval, checkInterval);
+            this.receiveBuffer = new byte[maxPacketSize];
         }
 
         /// <summary>
@@ -103,19 +109,11 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         internal void SendHello()
         {
-            this.Connection.Send(HelloPacket);
-        }
-
-        /// <summary>
-        /// Resets this instance, so it can be reused.
-        /// </summary>
-        internal void Reset()
-        {
-            this.Connection.Reset();
-            this.FtpRequestCount = 0;
-            this.ServerInfoRequestCount = 0;
-            this.ServerListRequestCount = 0;
-            this.lastReceive = DateTime.Now;
+            using (var writer = this.Connection.StartSafeWrite(HelloPacket[0], HelloPacket.Length))
+            {
+                HelloPacket.CopyTo(writer.Span);
+                writer.Commit();
+            }
         }
 
         private void OnlineTimer_Elapsed(object state)
@@ -127,9 +125,17 @@ namespace MUnique.OpenMU.ConnectServer
             }
         }
 
-        private void OnPacketReceived(object sender, byte[] packet)
+        private void OnPacketReceived(object sender, ReadOnlySequence<byte> sequence)
         {
             this.lastReceive = DateTime.Now;
+            if (sequence.Length > this.receiveBuffer.Length)
+            {
+                Log.InfoFormat($"Client {this.Address}:{this.Port} will be disconnected because it sent a packet which was too big (size of {sequence.Length}");
+                this.Connection.Disconnect();
+            }
+
+            sequence.CopyTo(this.receiveBuffer);
+            this.packetHandler.HandlePacket(this, this.receiveBuffer);
         }
     }
 }

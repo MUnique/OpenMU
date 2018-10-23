@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
 {
-    using System.Linq;
+    using System;
     using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
@@ -27,10 +27,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             var guildName = packet.ExtractString(4, 9, Encoding.UTF8);
-            var guildEmblem = packet.Skip(12).Take(32).ToArray();
+            var guildEmblem = packet.Slice(12, 32).ToArray();
             this.createAction.CreateGuild(player, guildName, guildEmblem);
         }
     }

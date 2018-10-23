@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
-    using System.Linq;
+    using System;
     using System.Text;
     using log4net;
     using MUnique.OpenMU.GameLogic;
@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc/>
-        public override void HandlePacket(Player player, byte[] packet)
+        public override void HandlePacket(Player player, Span<byte> packet)
         {
             switch (packet[3])
             {
@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
         }
 
-        private void ReadBuyRequest(Player player, byte[] buffer)
+        private void ReadBuyRequest(Player player, Span<byte> buffer)
         {
             if (Logger.IsDebugEnabled)
             {
@@ -83,7 +83,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            string pname = Encoding.UTF8.GetString(buffer.Skip(5).Take(10).TakeWhile(b => b != 0).ToArray());
+            string pname = buffer.ExtractString(5, 10, Encoding.UTF8);
             if (pname != requestedPlayer.SelectedCharacter.Name)
             {
                 Logger.DebugFormat("Player Names dont match: {0} != {1}", pname, requestedPlayer.SelectedCharacter.Name);
@@ -96,7 +96,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             this.buyAction.BuyItem(player, requestedPlayer, slot);
         }
 
-        private void ReadShopItemListRequest(Player player, byte[] buffer)
+        private void ReadShopItemListRequest(Player player, Span<byte> buffer)
         {
             ushort reqPid = NumberConversionExtensions.MakeWord(buffer[5], buffer[4]);
             var requestedPlayer = player.CurrentMap.GetObject(reqPid) as Player;
@@ -117,14 +117,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             this.requestListAction.RequestStoreItemList(player, requestedPlayer);
         }
 
-        private void OpenStore(Player player, byte[] buffer)
+        private void OpenStore(Player player, Span<byte> buffer)
         {
             ////storename length 26
-            var storeName = Encoding.UTF8.GetString(buffer.Skip(4).Take(26).TakeWhile(b => b != 0).ToArray());
+            var storeName = buffer.ExtractString(4, 26, Encoding.UTF8);
             this.openStoreAction.OpenStore(player, storeName);
         }
 
-        private void ReadItemPrice(Player player, byte[] buffer)
+        private void ReadItemPrice(Player player, Span<byte> buffer)
         {
             var itemSlot = buffer[4];
             var price = (int)buffer.MakeDwordBigEndian(5);

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests
 {
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.MessageHandler;
 
@@ -26,12 +27,12 @@ namespace MUnique.OpenMU.Tests
         public bool ConstructorCalled { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the method <see cref="HandlePacket(Player, byte[])"/> has been called.
+        /// Gets a value indicating whether the method <see cref="HandlePacket"/> has been called.
         /// </summary>
         public bool HandlePacketCalled { get; private set; }
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, byte[] packet)
+        public void HandlePacket(Player player, Span<byte> packet)
         {
             this.HandlePacketCalled = true;
         }

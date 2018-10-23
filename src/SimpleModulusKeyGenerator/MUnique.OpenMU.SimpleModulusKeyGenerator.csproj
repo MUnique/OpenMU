@@ -7,6 +7,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <StartupObject>MUnique.OpenMU.SimpleModulusKeyGenerator.Program</StartupObject>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
 

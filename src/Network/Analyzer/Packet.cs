@@ -42,12 +42,12 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Gets the code of the packet, which specifies the kind of the message.
         /// </summary>
-        public byte Code => this.innerData.GetPacketType();
+        public byte Code => this.innerData.AsSpan().GetPacketType();
 
         /// <summary>
         /// Gets the sub code of the packet, which further specifies the kind of the message, if specified.
         /// </summary>
-        public byte SubCode => this.innerData.GetPacketSubType();
+        public byte SubCode => this.innerData.AsSpan().GetPacketSubType();
 
         /// <summary>
         /// Gets the direction as string.
