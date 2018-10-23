@@ -36,10 +36,14 @@ namespace MUnique.OpenMU.ClientLauncher
         /// </summary>
         public void LaunchClient()
         {
-            var key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\WebZen\Mu\Connection");
-            key.SetValue("Key", Environment.TickCount, RegistryValueKind.DWord);
-            key.SetValue("ParameterA", this.HostEncode(), RegistryValueKind.String);
-            key.SetValue("ParameterB", this.PortEncode(), RegistryValueKind.DWord);
+            using (var localMachineKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
+            using (var key = localMachineKey.CreateSubKey(@"SOFTWARE\WebZen\Mu\Connection"))
+            {
+                key.SetValue("Key", Environment.TickCount, RegistryValueKind.DWord);
+                key.SetValue("ParameterA", this.HostEncode(), RegistryValueKind.String);
+                key.SetValue("ParameterB", this.PortEncode(), RegistryValueKind.DWord);
+            }
+
             var info = new DirectoryInfo(this.MainExePath);
             var startInfo = new ProcessStartInfo(this.MainExePath, "connect")
             {
