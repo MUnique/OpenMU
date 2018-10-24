@@ -841,15 +841,45 @@ namespace MUnique.OpenMU.GameLogic
             this.TemporaryStorage = new Storage(0, 0, InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
             this.Vault = null; // vault storage is getting set when vault npc is opened.
             this.SkillList = new SkillList(this);
+            this.SetMaximumStatAttributes();
             this.PlayerView.UpdateSkillList();
             this.PlayerView.UpdateCharacterStats();
             this.PlayerView.InventoryView.UpdateInventoryList();
+
+            this.Attributes.GetOrCreateAttribute(Stats.MaximumMana).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
+            this.Attributes.GetOrCreateAttribute(Stats.MaximumAbility).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
+            this.Attributes.GetOrCreateAttribute(Stats.MaximumHealth).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
+            this.Attributes.GetOrCreateAttribute(Stats.MaximumShield).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
 
             // TODO: bind own player to guild
             this.ClientReadyAfterMapChange();
 
             this.PlayerView.WorldView.UpdateRotation();
             this.PlayerView.MessengerView.InitializeMessenger(this.gameContext.Configuration.MaximumLetters);
+        }
+
+        private void SetMaximumStatAttributes()
+        {
+            foreach (var regeneration in Stats.IntervalRegenerationAttributes)
+            {
+                this.Attributes[regeneration.CurrentAttribute] = Math.Min(this.Attributes[regeneration.CurrentAttribute], this.Attributes[regeneration.MaximumAttribute]);
+            }
+        }
+
+        private void OnMaximumHealthOrShieldChanged()
+        {
+            this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
+            this.Attributes[Stats.CurrentShield] = Math.Min(this.Attributes[Stats.CurrentShield], this.Attributes[Stats.MaximumShield]);
+            this.PlayerView.UpdateMaximumHealth();
+            this.PlayerView.UpdateCurrentHealth();
+        }
+
+        private void OnMaximumManaOrAbilityChanged()
+        {
+            this.Attributes[Stats.CurrentMana] = Math.Min(this.Attributes[Stats.CurrentMana], this.Attributes[Stats.MaximumMana]);
+            this.Attributes[Stats.CurrentAbility] = Math.Min(this.Attributes[Stats.CurrentAbility], this.Attributes[Stats.MaximumAbility]);
+            this.PlayerView.UpdateMaximumMana();
+            this.PlayerView.UpdateCurrentMana();
         }
 
         private sealed class TemporaryItemStorage : ItemStorage
