@@ -859,7 +859,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     var offset = headerSize + (i * sizePerItem);
                     var itemBlock = packet.Slice(offset, sizePerItem);
                     itemBlock[0] = item.ItemSlot;
-                    this.itemSerializer.SerializeItem(packet.Slice(slotNumberSize), item);
+                    this.itemSerializer.SerializeItem(itemBlock.Slice(slotNumberSize), item);
                     i++;
                 }
 
