@@ -516,7 +516,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             // one percent per 100 vitality
             var boostPerVitality = this.Context.CreateNew<AttributeRelationship>();
-            boostPerVitality.InputAttribute = Stats.TotalAgility.GetPersistent(this.GameConfiguration);
+            boostPerVitality.InputAttribute = Stats.TotalVitality.GetPersistent(this.GameConfiguration);
             boostPerVitality.InputOperator = InputOperator.Multiply;
             boostPerVitality.InputOperand = 1.01f / 100f;
 
