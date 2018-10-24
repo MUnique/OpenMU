@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     if (sequence.Length <= this.packetBuffer.Length)
                     {
                         sequence.CopyTo(this.packetBuffer);
-                        buffer = this.packetBuffer;
+                        buffer = this.packetBuffer.AsSpan(0, this.packetBuffer.GetPacketSize());
                     }
                     else
                     {
