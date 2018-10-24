@@ -512,13 +512,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
             boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
             boostPerEnergy.InputOperator = InputOperator.Multiply;
-            boostPerEnergy.InputOperand = 1.01f / 20f;
+            boostPerEnergy.InputOperand = 1f + (0.01f / 20f);
 
             // one percent per 100 vitality
             var boostPerVitality = this.Context.CreateNew<AttributeRelationship>();
             boostPerVitality.InputAttribute = Stats.TotalVitality.GetPersistent(this.GameConfiguration);
             boostPerVitality.InputOperator = InputOperator.Multiply;
-            boostPerVitality.InputOperand = 1.01f / 100f;
+            boostPerVitality.InputOperand = 1f + (0.01f / 100f);
 
             magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = 1.12f;
