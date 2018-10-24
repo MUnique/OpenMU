@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     this.CreateBuffPowerUp(player, skillEntry);
                 }
 
-                var magicEffect = new MagicEffect(skillEntry.BuffPowerUp, skill.MagicEffectDef, new TimeSpan(0, 0, 0, 0, (int)skillEntry.PowerUpDuration.Value));
+                var magicEffect = new MagicEffect(skillEntry.BuffPowerUp, skill.MagicEffectDef, TimeSpan.FromSeconds(skillEntry.PowerUpDuration.Value));
                 targetPlayer.MagicEffectList.AddEffect(magicEffect);
             }
         }
