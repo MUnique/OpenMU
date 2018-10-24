@@ -499,7 +499,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             magicEffect.SendDuration = false;
             magicEffect.StopByDeath = true;
             magicEffect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
-            magicEffect.PowerUpDefinition.TargetAttribute = Stats.TotalVitality;
+            magicEffect.PowerUpDefinition.TargetAttribute = Stats.MaximumHealth.GetPersistent(this.GameConfiguration);
             var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
             durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
             durationPerEnergy.InputOperator = InputOperator.Multiply;
