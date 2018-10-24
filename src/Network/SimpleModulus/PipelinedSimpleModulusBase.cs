@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     using System;
     using System.Buffers;
     using System.IO.Pipelines;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// The base class for the "simple modulus" encryption.
@@ -34,6 +35,10 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// </summary>
         protected const byte BlockCheckSumXorKey = 0xF8;
 
+        private const int BitsPerByte = 8;
+
+        private const int BitsPerValue = (BitsPerByte * 2) + 2;
+
         /// <summary>
         /// Gets the counter.
         /// </summary>
@@ -42,7 +47,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <summary>
         /// Gets the ring buffer.
         /// </summary>
-        protected uint[] RingBuffer { get; } = new uint[4];
+        protected uint[] EncryptionResult { get; } = new uint[4];
 
         /// <summary>
         /// Gets the header buffer of the currently read packet.
@@ -63,6 +68,39 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         }
 
         /// <summary>
+        /// Gets the byte offset in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.
+        /// </summary>
+        /// <param name="resultIndex">Index of the <see cref="EncryptionResult"/>.</param>
+        /// <returns>The byte offset in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static int GetByteOffset(int resultIndex) => GetBitIndex(resultIndex) / BitsPerByte;
+
+        /// <summary>
+        /// Gets the bit offset in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.
+        /// </summary>
+        /// <param name="resultIndex">Index of the <see cref="EncryptionResult"/>.</param>
+        /// <returns>The bit offset in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static int GetBitOffset(int resultIndex) => GetBitIndex(resultIndex) % BitsPerByte;
+
+        /// <summary>
+        /// Gets the bit mask of the first byte (at the index of <see cref="GetByteOffset(int)"/>) in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.
+        /// </summary>
+        /// <param name="resultIndex">Index of the <see cref="EncryptionResult"/>.</param>
+        /// <returns>The the bit mask of the first byte (at the index of <see cref="GetByteOffset(int)"/>) in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static int GetFirstBitMask(int resultIndex) => 0xFF >> GetBitOffset(resultIndex);
+
+        /// <summary>
+        /// Gets the bit mask of the last byte (at the index of <see cref="GetByteOffset(int)"/>) in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>,
+        /// just for the last remainder of the encryption result value. The remainder is basically the first 2 bits, e.g. when the value is <c>0x2FFFF</c>, the remainder is the 2 in front.
+        /// </summary>
+        /// <param name="resultIndex">Index of the <see cref="EncryptionResult"/>.</param>
+        /// <returns>The the bit mask of the first byte (at the index of <see cref="GetByteOffset(int)"/>) in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static int GetRemainderBitMask(int resultIndex) => (0xFF << (6 - GetBitOffset(resultIndex)) & 0xFF) - ((0xFF << (8 - GetBitOffset(resultIndex))) & 0xFF);
+
+        /// <summary>
         /// Copies the data of the packet into the target writer, without flushing it yet.
         /// </summary>
         /// <param name="target">The target writer.</param>
@@ -76,30 +114,6 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         }
 
         /// <summary>
-        /// Does some shifting.
-        /// </summary>
-        /// <param name="outputBuffer">The output buffer.</param>
-        /// <param name="outputOffset">The output offset.</param>
-        /// <param name="shiftArray">The shift array with the input data.</param>
-        /// <param name="shiftOffset">The shift offset.</param>
-        /// <param name="size">The size of the input data.</param>
-        protected void InternalShiftBytes(Span<byte> outputBuffer, int outputOffset, Span<byte> shiftArray, int shiftOffset, int size)
-        {
-            ShiftRight(shiftArray, size, shiftOffset & 0x7);
-            ShiftLeft(shiftArray, size + 1, outputOffset & 0x7);
-            if ((outputOffset & 0x7) > (shiftOffset & 0x7))
-            {
-                size++;
-            }
-
-            var offset = outputOffset / DecryptedBlockSize;
-            for (var i = 0; i < size; i++)
-            {
-                outputBuffer[i + offset] |= shiftArray[i];
-            }
-        }
-
-        /// <summary>
         /// Gets the size of the content.
         /// </summary>
         /// <param name="packet">The packet.</param>
@@ -110,45 +124,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             return packet.GetPacketSize() - packet.GetPacketHeaderSize() + (decrypted ? 1 : 0);
         }
 
-        /// <summary>
-        /// Gets the number of bytes to shift.
-        /// </summary>
-        /// <param name="length">The length.</param>
-        /// <param name="shiftOffset">The shift offset.</param>
-        /// <returns>The number of bytes to shift</returns>
-        protected int GetShiftSize(int length, int shiftOffset)
-        {
-            return ((length + shiftOffset - 1) / DecryptedBlockSize) + (1 - (shiftOffset / DecryptedBlockSize));
-        }
-
-        private static void ShiftLeft(Span<byte> data, int size, int shift)
-        {
-            if (shift == 0)
-            {
-                return;
-            }
-
-            for (var i = 1; i < size; i++)
-            {
-                data[size - i] = (byte)((data[size - i] >> shift) | (data[size - i - 1] << (8 - shift)));
-            }
-
-            data[0] >>= shift;
-        }
-
-        private static void ShiftRight(Span<byte> data, int size, int shift)
-        {
-            if (shift == 0)
-            {
-                return;
-            }
-
-            for (var i = 1; i < size; i++)
-            {
-                data[i - 1] = (byte)((data[i - 1] << shift) | (data[i] >> (8 - shift)));
-            }
-
-            data[size - 1] <<= shift;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int GetBitIndex(int resultIndex) => resultIndex * BitsPerValue;
     }
 }
