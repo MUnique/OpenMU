@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.Tests
         {
             var player = this.DoTheWalk();
 
-            // the next check is questionable - there is a timer which is removing a direction every 500ms. If the test runs "too slot", the count is 3 ;-)
+            // the next check is questionable - there is a timer which is removing a direction every 500ms. If the test runs "too slow", the count is 3 ;-)
             Assert.That(player.NextDirections.Count, Is.EqualTo(4));
 
             var directions = player.NextDirections.ToArray();
