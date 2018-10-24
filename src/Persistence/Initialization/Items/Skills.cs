@@ -522,6 +522,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = 1.12f;
+            magicEffect.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
             magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
             magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerVitality);
         }
