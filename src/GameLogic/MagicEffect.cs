@@ -85,6 +85,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 this.finishTimer.Dispose();
                 this.finishTimer = null;
+                this.OnEffectTimeOut();
             }
         }
 
