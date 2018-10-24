@@ -505,6 +505,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             durationPerEnergy.InputOperator = InputOperator.Multiply;
             durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
             magicEffect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+            magicEffect.PowerUpDefinition.Duration.ConstantValue.Value = 60f;
             magicEffect.PowerUpDefinition.Duration.RelatedValues.Add(durationPerEnergy);
 
             // one percent per 20 energy
