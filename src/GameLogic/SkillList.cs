@@ -130,7 +130,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             if (skillEntry.Skill.PassivePowerUps.TryGetValue(skillEntry.Level, out PowerUpDefinition powerUp))
             {
-                this.passiveSkillPowerUps.Add(skillEntry, PowerUpWrapper.CreateByPowerUpDefintion(powerUp, this.player.Attributes).ToList());
+                this.passiveSkillPowerUps.Add(skillEntry, PowerUpWrapper.CreateByPowerUpDefinition(powerUp, this.player.Attributes).ToList());
             }
         }
 

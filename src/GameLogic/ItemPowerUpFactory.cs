@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
             }
 
-            return result.SelectMany(p => PowerUpWrapper.CreateByPowerUpDefintion(p, attributeHolder));
+            return result.SelectMany(p => PowerUpWrapper.CreateByPowerUpDefinition(p, attributeHolder));
         }
 
         private IEnumerable<PowerUpWrapper> GetBasePowerUpWrappers(Item item, AttributeSystem attributeHolder, ItemBasePowerUpDefinition attribute)
@@ -141,7 +141,7 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefintion(powerUp, attributeHolder))
+                foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefinition(powerUp, attributeHolder))
                 {
                     yield return wrapper;
                 }
