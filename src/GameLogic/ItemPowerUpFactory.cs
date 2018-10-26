@@ -51,15 +51,6 @@ namespace MUnique.OpenMU.GameLogic
             {
                 yield return powerUp;
             }
-
-            ////// TODO: Sockets...
-            ////if (item.AppliedSockets != null)
-            ////{
-            ////    foreach (var socket in item.AppliedSockets)
-            ////    {
-            ////        yield return socket.Definition.PowerUp;
-            ////    }
-            ////}
         }
 
         /// <inheritdoc/>
