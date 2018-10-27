@@ -15,6 +15,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class SimpleItemCraftingHandler : IItemCraftingHandler
     {
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(SimpleItemCraftingHandler));
+
         private readonly SimpleCraftingSettings settings;
 
         private readonly IGameContext gameContext;
@@ -47,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
                 if (foundItems.Count < requiredItems.MinAmount)
                 {
-                    // TODO: Logging... possible hacker action
+                    Log.WarnFormat("Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
                     return false;
                 }
 

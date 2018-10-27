@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (guildMaster.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                // todo: log possible hacker action
+                Log.WarnFormat("Suspicious request for player with name: {0} (player is not a guild master), could be hack attempt.", guildMaster.Name);
                 guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.Failed);
                 return;
             }

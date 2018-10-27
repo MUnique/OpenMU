@@ -17,6 +17,8 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class Party : IDisposable
     {
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(Party));
+
         private readonly Timer healthUpdate;
 
         private readonly byte maxPartySize;
@@ -73,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic
             if (!Equals(sender, this.PartyList[0]) &&
                 !Equals(sender, this.PartyList[index]))
             {
-                // todo: maybe log wrong request as hack attempt
+                Log.WarnFormat("Suspicious request for sender with name: {0}, could be hack attempt.", sender.Name);
                 return;
             }
 
