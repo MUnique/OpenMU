@@ -13,6 +13,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     /// </summary>
     public class GuildRequestAnswerAction
     {
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(GuildRequestAnswerAction));
+
         private readonly IGameServerContext gameContext;
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (player.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                // todo log possible hacker action?
+                Log.WarnFormat("Suspicious request for player with name: {0} (player is not a guild master), could be hack attempt.", player.Name);
                 return;
             }
 
