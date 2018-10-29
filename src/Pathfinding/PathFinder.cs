@@ -124,6 +124,16 @@ namespace MUnique.OpenMU.Pathfinding
             this.stop = true;
         }
 
+        /// <summary>
+        /// Resets the pathfinder.
+        /// </summary>
+        public void ResetPathFinder()
+        {
+            this.openList.Clear();
+            this.resultList.Clear();
+            this.stop = false;
+        }
+
         private void ExpandNodes(Node node, Point start, Point end)
         {
             foreach (var newNode in this.network.GetPossibleNextNodes(node))

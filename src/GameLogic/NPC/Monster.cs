@@ -29,6 +29,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private Timer respawnTimer;
         private int health;
         private bool isCalculatingPath;
+        private PathFinder pathFinder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Monster"/> class.
@@ -115,8 +116,16 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.isCalculatingPath = true;
             try
             {
-                var pathFinder = new PathFinder(new GridNetwork(this.CurrentMap.Terrain.AIgrid, true)); // TODO: Reuse PathFinder?
-                calculatedPath = pathFinder.FindPath(new Point(this.X, this.Y), new Point(target.X, target.Y));
+                if (this.pathFinder == null)
+                {
+                    this.pathFinder = new PathFinder(new GridNetwork(this.CurrentMap.Terrain.AIgrid, true));
+                }
+                else
+                {
+                    this.pathFinder.ResetPathFinder();
+                }
+
+                calculatedPath = this.pathFinder.FindPath(new Point(this.X, this.Y), new Point(target.X, target.Y));
                 if (calculatedPath == null)
                 {
                     return;
