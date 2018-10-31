@@ -44,12 +44,8 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// </summary>
         public float AdditionalValue
         {
-            get
-            {
-                return this.AdditionalValueElement?.Value ?? 0;
-            }
-
-            set { this.AdditionalValueElement = Equals(value, 0f) ? null : new ConstantElement(value); }
+            get => this.AdditionalValueElement?.Value ?? 0;
+            set => this.AdditionalValueElement = Equals(value, 0f) ? null : new ConstantElement(value);
         }
     }
 }
