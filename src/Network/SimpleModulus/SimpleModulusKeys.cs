@@ -85,18 +85,18 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         }
 
         /// <summary>
-        /// Gets the encryption key values for the <see cref="SimpleModulusEncryptor"/>.
+        /// Gets the encryption key values for the <see cref="PipelinedSimpleModulusEncryptor"/>.
         /// </summary>
-        /// <returns>The encryption key values for the <see cref="SimpleModulusEncryptor"/>.</returns>
+        /// <returns>The encryption key values for the <see cref="PipelinedSimpleModulusEncryptor"/>.</returns>
         public uint[] GetEncryptionKeys()
         {
             return this.ModulusKey.Concat(this.EncryptKey).Concat(this.XorKey).ToArray();
         }
 
         /// <summary>
-        /// Gets the decryption key values for the <see cref="SimpleModulusDecryptor"/>.
+        /// Gets the decryption key values for the <see cref="PipelinedSimpleModulusDecryptor"/>.
         /// </summary>
-        /// <returns>The decryption key values for the <see cref="SimpleModulusDecryptor"/>.</returns>
+        /// <returns>The decryption key values for the <see cref="PipelinedSimpleModulusDecryptor"/>.</returns>
         public uint[] GetDecryptionKeys()
         {
             return this.ModulusKey.Concat(this.DecryptKey).Concat(this.XorKey).ToArray();
