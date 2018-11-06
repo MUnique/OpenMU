@@ -329,7 +329,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     var effectCount = 0;
                     for (int e = activeEffects.Count - 1; e >= 0; e--)
                     {
-                        playerBlock[36 + e] = activeEffects[e].Id;
+                        playerBlock[36 + e] = (byte)activeEffects[e].Id;
                         effectCount++;
                     }
 

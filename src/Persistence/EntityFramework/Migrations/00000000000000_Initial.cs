@@ -706,7 +706,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     InformObservers = table.Column<bool>(nullable: false),
-                    Number = table.Column<byte>(nullable: false),
+                    Number = table.Column<short>(nullable: false),
                     SendDuration = table.Column<bool>(nullable: false),
                     StopByDeath = table.Column<bool>(nullable: false),
                     SubType = table.Column<byte>(nullable: false),

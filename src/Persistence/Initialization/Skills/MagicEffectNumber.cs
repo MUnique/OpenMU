@@ -7,9 +7,22 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
     /// <summary>
     /// This contains all magic effect numbers.
     /// </summary>
-    /// <remarks>Might not be complete.</remarks>
-    public enum MagicEffectNumber
+    /// <remarks>Might not be complete. Negative numbers are for internal usage and their effects are not exposed to the game client.</remarks>
+    public enum MagicEffectNumber : short
     {
+        /// <summary>
+        /// The shield skill effect number.
+        /// </summary>
+        /// <remarks>
+        /// Internal.
+        /// </remarks>
+        ShieldSkill = -1,
+
+        /// <summary>
+        /// Undefined effect number.
+        /// </summary>
+        Undefined = 0,
+
         /// <summary>
         /// The damage buff effect.
         /// </summary>

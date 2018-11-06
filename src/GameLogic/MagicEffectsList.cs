@@ -25,13 +25,13 @@ namespace MUnique.OpenMU.GameLogic
         public MagicEffectsList(Player player)
         {
             this.owner = player;
-            this.ActiveEffects = new Dictionary<byte, MagicEffect>(6);
+            this.ActiveEffects = new SortedList<short, MagicEffect>(6);
         }
 
         /// <summary>
         /// Gets the active effects.
         /// </summary>
-        public IDictionary<byte, MagicEffect> ActiveEffects { get; }
+        public IDictionary<short, MagicEffect> ActiveEffects { get; }
 
         /// <summary>
         /// Adds the effect and applies the power ups.

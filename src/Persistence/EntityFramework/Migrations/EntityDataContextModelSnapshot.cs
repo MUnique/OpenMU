@@ -1159,7 +1159,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<byte>("Number");
+                    b.Property<short>("Number");
 
                     b.Property<Guid?>("PowerUpDefinitionId");
 

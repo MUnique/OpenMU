@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the identifier of the effect.
         /// </summary>
-        public byte Id => this.Definition.Number;
+        public short Id => this.Definition.Number;
 
         /// <summary>
         /// Gets or sets the duration of the effect.

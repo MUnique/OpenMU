@@ -16,8 +16,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </summary>
         /// <remarks>
         /// This number is a reference for the game client.
+        /// Negative numbers are for internal usage and their effects are not meant to be exposed to the game client.
         /// </remarks>
-        public byte Number { get; set; }
+        public short Number { get; set; }
 
         /// <summary>
         /// Gets or sets the name.

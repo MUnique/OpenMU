@@ -953,6 +953,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SendMagicEffectStatus(MagicEffect effect, Player affectedPlayer, bool isActive, uint duration)
         {
+            if (effect.Definition.Number <= 0)
+            {
+                return;
+            }
+
             // TODO: Duration
             var playerId = affectedPlayer.GetId(this.player);
             using (var writer = this.connection.StartSafeWrite(0xC1, 0x07))
@@ -961,7 +966,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[2] = 0x07;
                 packet[3] = isActive ? (byte)1 : (byte)0;
                 packet.Slice(4).SetShortSmallEndian(playerId);
-                packet[6] = effect.Id;
+                packet[6] = (byte)effect.Id;
                 writer.Commit();
             }
         }
