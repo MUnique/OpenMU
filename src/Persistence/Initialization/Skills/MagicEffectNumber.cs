@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization.Items
+namespace MUnique.OpenMU.Persistence.Initialization.Skills
 {
     /// <summary>
     /// This contains all magic effect numbers.

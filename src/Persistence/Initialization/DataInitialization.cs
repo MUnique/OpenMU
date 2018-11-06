@@ -25,6 +25,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using MUnique.OpenMU.GameServer.MessageHandler.Trade;
     using MUnique.OpenMU.Persistence.Initialization.Items;
     using MUnique.OpenMU.Persistence.Initialization.Maps;
+    using MUnique.OpenMU.Persistence.Initialization.Skills;
 
     /// <summary>
     /// Class to manage data initialization.
@@ -907,7 +908,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumCurseBaseDmg));
 
             new CharacterClassInitialization(this.context, this.gameConfiguration).CreateCharacterClasses();
-            new Skills(this.context, this.gameConfiguration).Initialize();
+            new SkillsInitializer(this.context, this.gameConfiguration).Initialize();
             new Orbs(this.context, this.gameConfiguration).Initialize();
             new Scrolls(this.context, this.gameConfiguration).Initialize();
             new Wings(this.context, this.gameConfiguration).Initialize();

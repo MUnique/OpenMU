@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization.Items
+namespace MUnique.OpenMU.Persistence.Initialization.Skills
 {
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
@@ -13,14 +13,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     /// <summary>
     /// Initialization logic for <see cref="Skill"/>s.
     /// </summary>
-    internal class Skills : InitializerBase
+    internal class SkillsInitializer : InitializerBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Skills"/> class.
+        /// Initializes a new instance of the <see cref="SkillsInitializer"/> class.
         /// </summary>
         /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
-        public Skills(IContext context, GameConfiguration gameConfiguration)
+        public SkillsInitializer(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration)
         {
         }
@@ -484,7 +484,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             // TODO: Master skill related stuff?
-
             return skill;
         }
 
