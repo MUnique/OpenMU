@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
     /// This contains all magic effect numbers.
     /// </summary>
     /// <remarks>Might not be complete. Negative numbers are for internal usage and their effects are not exposed to the game client.</remarks>
-    public enum MagicEffectNumber : short
+    internal enum MagicEffectNumber : short
     {
         /// <summary>
         /// The shield skill effect number.

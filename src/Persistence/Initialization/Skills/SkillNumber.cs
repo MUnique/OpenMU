@@ -10,7 +10,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Skills
 {
-    public enum SkillNumber
+    internal enum SkillNumber
     {
         Undefined = 0,
         Poison = 1,
