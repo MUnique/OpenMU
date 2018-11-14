@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
-    /// Interface for a rotateable class. An instance implementing this interface can be rotated on its game map.
+    /// Interface for a rotatable class. An instance implementing this interface can be rotated on its game map.
     /// </summary>
-    public interface IRotateable
+    public interface IRotatable
     {
         /// <summary>
         /// Gets or sets the rotation.

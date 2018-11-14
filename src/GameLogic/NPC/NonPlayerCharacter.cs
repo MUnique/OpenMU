@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// <summary>
     /// The implementation of a non-player-character (Monster) which can not be attacked or attack.
     /// </summary>
-    public class NonPlayerCharacter : IObservable, IRotateable, ILocateable, IHasBucketInformation, IDisposable
+    public class NonPlayerCharacter : IObservable, IRotatable, ILocateable, IHasBucketInformation, IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NonPlayerCharacter"/> class.

@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                         }
                     }
 
-                    if (obj is IRotateable rotatable)
+                    if (obj is IRotatable rotatable)
                     {
                         rotation = rotatable.Rotation.RotateLeft();
                     }

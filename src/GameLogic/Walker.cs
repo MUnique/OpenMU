@@ -192,7 +192,7 @@ namespace MUnique.OpenMU.GameLogic
                     this.walkSupporter.X = nextStep.To.X;
                     this.walkSupporter.Y = nextStep.To.Y;
 
-                    if (this.walkSupporter is IRotateable rotateable)
+                    if (this.walkSupporter is IRotatable rotateable)
                     {
                         rotateable.Rotation = nextStep.Direction;
                     }
