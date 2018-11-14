@@ -59,7 +59,10 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="id">The identifier.</param>
         public void GiveBack(int id)
         {
-            this.givenBack.Add(id);
+            if (id <= this.maxValue)
+            {
+                this.givenBack.Add(id);
+            }
         }
     }
 }
