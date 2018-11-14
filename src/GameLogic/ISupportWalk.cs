@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
-    using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Pathfinding;
 
@@ -25,14 +24,23 @@ namespace MUnique.OpenMU.GameLogic
         TimeSpan StepDelay { get; }
 
         /// <summary>
-        /// Gets the next walking steps.
-        /// </summary>
-        Stack<WalkingStep> NextDirections { get; }
-
-        /// <summary>
         /// Gets or sets the walk target coordinate.
         /// </summary>
-        Point WalkTarget { get; set; }
+        Point WalkTarget { get; }
+
+        /// <summary>
+        /// Gets the steps which are about to happen next by writing them into the given span.
+        /// </summary>
+        /// <param name="steps">The steps.</param>
+        /// <returns>The number of written steps.</returns>
+        int GetSteps(Span<WalkingStep> steps);
+
+        /// <summary>
+        /// Gets the directions of the steps which are about to happen next by writing them into the given span.
+        /// </summary>
+        /// <param name="directions">The directions.</param>
+        /// <returns>The number of written directions.</returns>
+        int GetDirections(Span<Direction> directions);
     }
 
     /// <summary>

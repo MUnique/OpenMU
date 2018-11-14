@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The base implementation of a player.
     /// </summary>
-    public class Player : IBucketMapObserver, IAttackable, ITrader, IPartyMember, IRotateable, IHasBucketInformation, IDisposable, ISupportWalk
+    public class Player : IBucketMapObserver, IAttackable, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Player));
 
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.GameLogic
             this.gameContext = gameContext;
             this.PlayerView = playerView;
             this.PersistenceContext = this.gameContext.PersistenceContextProvider.CreateNewPlayerContext(gameContext.Configuration);
-            this.walker = new Walker(this);
+            this.walker = new Walker(this, this.GetStepDelay);
         }
 
         /// <summary>
@@ -111,29 +111,12 @@ namespace MUnique.OpenMU.GameLogic
         public event EventHandler PlayerLeftWorld;
 
         /// <inheritdoc />
-        public bool IsWalking { get; set; }
+        public bool IsWalking => this.walker.CurrentTarget != default;
+
+        public TimeSpan StepDelay => this.GetStepDelay();
 
         /// <inheritdoc />
-        public TimeSpan StepDelay
-        {
-            get
-            {
-                if (this.Inventory.EquippedItems.Any(item => item.Definition.ItemSlot.ItemSlots.Contains(7)))
-                {
-                    // Wings
-                    return TimeSpan.FromMilliseconds(300);
-                }
-
-                // TODO: Consider pets etc.
-                return TimeSpan.FromMilliseconds(500);
-            }
-        }
-
-        /// <inheritdoc />
-        public Stack<WalkingStep> NextDirections { get; } = new Stack<WalkingStep>(10);
-
-        /// <inheritdoc />
-        public Point WalkTarget { get; set; }
+        public Point WalkTarget => this.walker.CurrentTarget;
 
         /// <inheritdoc/>
         public int Money
@@ -577,19 +560,32 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="newx">The new x coordinate.</param>
         /// <param name="newy">The new y coordinate.</param>
-        /// <param name="moveType">Type of the move.</param>
-        public void Move(byte newx, byte newy, MoveType moveType)
+        public void Move(byte newx, byte newy)
         {
-            Logger.DebugFormat("Move: Player is moving to {0} {1}, Type {2}", newx, newy, moveType);
+            Logger.DebugFormat("Move: Player is moving to {0} {1}", newx, newy);
             this.walker.Stop();
-            this.CurrentMap.Move(this, newx, newy, this.moveLock, moveType);
-            if (moveType == MoveType.Walk)
-            {
-                this.walker.Start();
-            }
-
+            this.CurrentMap.Move(this, newx, newy, this.moveLock, MoveType.Instant);
             Logger.DebugFormat("Move: Observer Count: {0}", this.Observers.Count);
         }
+
+        /// <summary>
+        /// Walks to the specified target coordinates using the specified steps.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="steps">The steps.</param>
+        public void WalkTo(Point target, Span<WalkingStep> steps)
+        {
+            Logger.DebugFormat("WalkTo: Player is walking to {0}", target);
+            this.walker.WalkTo(target, steps);
+            this.CurrentMap.Move(this, target.X, target.Y, this.moveLock, MoveType.Walk);
+            Logger.DebugFormat("WalkTo: Observer Count: {0}", this.Observers.Count);
+        }
+
+        /// <inheritdoc />
+        public int GetDirections(Span<Direction> directions) => this.walker.GetDirections(directions);
+
+        /// <inheritdoc />
+        public int GetSteps(Span<WalkingStep> steps) => this.walker.GetSteps(steps);
 
         /// <summary>
         /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
@@ -763,6 +759,22 @@ namespace MUnique.OpenMU.GameLogic
                 this.respawnAfterDeathToken.ThrowIfCancellationRequested();
                 this.WarpTo(this.GetSpawnGateOfCurrentMap());
             }
+        }
+
+        /// <summary>
+        /// Gets the step delay depending on the equipped items.
+        /// </summary>
+        /// <returns></returns>
+        private TimeSpan GetStepDelay()
+        {
+            if (this.Inventory.EquippedItems.Any(item => item.Definition.ItemSlot.ItemSlots.Contains(7)))
+            {
+                // Wings
+                return TimeSpan.FromMilliseconds(300);
+            }
+
+            // TODO: Consider pets etc.
+            return TimeSpan.FromMilliseconds(500);
         }
 
         private ExitGate GetSpawnGateOfCurrentMap()

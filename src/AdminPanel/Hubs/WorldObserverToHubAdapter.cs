@@ -81,11 +81,13 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
             Point targetPoint = new Point(movedObject.X, movedObject.Y);
             object steps = null;
             int walkDelay = 0;
-            if (movedObject is ISupportWalk walkable && moveType == MoveType.Walk)
+            if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
             {
-                targetPoint = walkable.WalkTarget;
-                walkDelay = (int)walkable.StepDelay.TotalMilliseconds;
-                var walkSteps = walkable.NextDirections.Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
+                targetPoint = walker.WalkTarget;
+                walkDelay = (int)walker.StepDelay.TotalMilliseconds;
+                Span<WalkingStep> walkingSteps = new WalkingStep[16];
+                var stepCount = walker.GetSteps(walkingSteps);
+                var walkSteps = walkingSteps.Slice(0, stepCount).ToArray().Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
 
                 var lastStep = walkSteps.LastOrDefault();
                 if (lastStep != null)

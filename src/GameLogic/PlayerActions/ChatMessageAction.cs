@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 case "/teleport":
                     if (sa.Length > 2)
                     {
-                        player.Move(byte.Parse(sa[1]), byte.Parse(sa[2]), MoveType.Instant);
+                        player.Move(byte.Parse(sa[1]), byte.Parse(sa[2]));
                     }
 
                     break;

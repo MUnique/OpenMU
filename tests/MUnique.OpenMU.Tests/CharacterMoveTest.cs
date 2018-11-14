@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Tests
 {
-    using System.Linq;
+    using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.GameServer.MessageHandler;
@@ -39,12 +39,14 @@ namespace MUnique.OpenMU.Tests
             var player = this.DoTheWalk();
 
             // the next check is questionable - there is a timer which is removing a direction every 500ms. If the test runs "too slow", the count is 3 ;-)
-            Assert.That(player.NextDirections.Count, Is.EqualTo(4));
+            Span<WalkingStep> steps = new WalkingStep[16];
+            var count = player.GetSteps(steps);
+            Assert.That(count, Is.EqualTo(4));
 
-            var directions = player.NextDirections.ToArray();
-            Assert.That(directions.First().From, Is.EqualTo(StartPoint));
-            Assert.That(directions.Last().To, Is.EqualTo(EndPoint));
-            foreach (var direction in directions)
+            steps = steps.Slice(0, count);
+            Assert.That(steps[0].From, Is.EqualTo(StartPoint));
+            Assert.That(steps[steps.Length - 1].To, Is.EqualTo(EndPoint));
+            foreach (var direction in steps)
             {
                 Assert.That(direction.From, Is.Not.EqualTo(direction.To));
             }

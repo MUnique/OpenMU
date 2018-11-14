@@ -1,4 +1,4 @@
-﻿// <copyright file="IRotateable.cs" company="MUnique">
+﻿// <copyright file="IRotatable.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
-    /// Interface for a rotateable class. An instance implementing this interface can be rotated on its game map.
+    /// Interface for a rotatable class. An instance implementing this interface can be rotated on its game map.
     /// </summary>
-    public interface IRotateable
+    public interface IRotatable
     {
         /// <summary>
         /// Gets or sets the rotation.
