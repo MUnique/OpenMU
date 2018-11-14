@@ -1,0 +1,25 @@
+﻿@page
+@{
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Server Control Panel</title>
+    <link rel="stylesheet" href="@Url.Content("~/content/css/bootstrap.css")">
+    <script src="@Url.Content("~/content/js/signalr.js")"></script>
+    <script src="@Url.Content("~/content/js/system-production.js")"></script>
+    <script src="@Url.Content("~/content/js/app.js")"></script>
+    <link rel="stylesheet" href="@Url.Content("~/content/css/app.css")">
+
+    @await Html.PartialAsync("SystemConfig")
+
+    <script>
+        // First import the App module, then execute it.
+        System.import("components/App")
+            .then(m => console.log('App module resolved'))
+            .catch(err => console.error(err));
+    </script>
+</head>
+<body>
+    <div id="content"></div>
+</body>
+}

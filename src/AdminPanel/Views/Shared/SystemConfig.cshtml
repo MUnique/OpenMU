@@ -1,0 +1,20 @@
+﻿@{
+<script>
+
+        // To be able to resolve react etc. in the modules, SystemJS needs to be configured.
+        // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
+        System.config({
+            map: {
+                'three': '@Url.Content("~/content/js/three.min.js")',
+                'tween': '@Url.Content("~/content/js/tween.min.js")',
+                'react': '@Url.Content("~/content/js/react.js")',
+                'react-dom': '@Url.Content("~/content/js/react-dom.js")',
+                'react-redux': '@Url.Content("~/content/js/react-redux.js")',
+                'redux': '@Url.Content("~/content/js/redux.js")',
+                'redux-thunk': '@Url.Content("~/content/js/redux-thunk.js")',
+                'signalr': '@Url.Content("~/content/js/signalr.js")'
+            }
+        });
+
+</script>
+}

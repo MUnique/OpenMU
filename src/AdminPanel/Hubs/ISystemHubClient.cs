@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AdminPanel
+namespace MUnique.OpenMU.AdminPanel.Hubs
 {
     using System.Threading.Tasks;
 
@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.AdminPanel
     public interface ISystemHubClient
     {
         /// <summary>
-        /// Updates the specified system informations.
+        /// Updates the specified system information.
         /// </summary>
         /// <param name="cpuPercentTotal">The cpu percent of the total system.</param>
         /// <param name="cpuPercentInstance">The cpu percent of this process instance.</param>

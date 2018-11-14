@@ -8,7 +8,7 @@
     "preserveConstEnums": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "outFile": "content/bundles/app.js",
+    "outFile": "wwwroot/content/js/app.js",
     "sourceMap": true,
     "jsx": "react",
     "target": "es5",
