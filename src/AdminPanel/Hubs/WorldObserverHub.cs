@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AdminPanel
+namespace MUnique.OpenMU.AdminPanel.Hubs
 {
     using System;
     using System.Collections.Concurrent;
@@ -25,18 +25,13 @@ namespace MUnique.OpenMU.AdminPanel
         private readonly IList<IManageableServer> servers;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WorldObserverHub"/> class.
+        /// Initializes a new instance of the <see cref="WorldObserverHub" /> class.
         /// </summary>
-        public WorldObserverHub()
+        /// <param name="servers">The servers.</param>
+        public WorldObserverHub(IList<IManageableServer> servers)
         {
-            this.servers = Servers;
+            this.servers = servers;
         }
-
-        /// <summary>
-        /// Gets or sets the game servers which should be available to the hub.
-        /// </summary>
-        /// <remarks>Not nice, maybe think of another solution passing the game servers to the hub.</remarks>
-        public static IList<IManageableServer> Servers { get; set; }
 
         /// <summary>
         /// Registers the connected client to listen on the events on the specified map. Is called from the client.

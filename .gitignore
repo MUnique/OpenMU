@@ -303,3 +303,9 @@ doc/*.htm
 
 # text files; for documentation etc. use markdown
 *.txt
+
+# bundles
+src/AdminPanel/wwwroot/content/css/app.css
+src/AdminPanel/wwwroot/content/css/app.min.css
+src/AdminPanel/wwwroot/content/js/app.js
+src/AdminPanel/wwwroot/content/js/app.js.map

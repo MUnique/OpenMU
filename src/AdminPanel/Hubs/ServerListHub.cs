@@ -2,17 +2,18 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AdminPanel
+namespace MUnique.OpenMU.AdminPanel.Hubs
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using log4net;
     using Microsoft.AspNetCore.SignalR;
+    using MUnique.OpenMU.AdminPanel.Models;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
-    /// A signalR hub which offers data about the running subservers.
+    /// A signalR hub which offers data about the running sub-servers.
     /// </summary>
     public class ServerListHub : Hub<IServerListClient>
     {
@@ -24,34 +25,18 @@ namespace MUnique.OpenMU.AdminPanel
         private static readonly ILog Log = LogManager.GetLogger(typeof(ServerListHub));
 
         /// <summary>
-        /// The server infos instances which wrap the actual <see cref="servers"/>.
-        /// </summary>
-        private static IList<ServerInfo> serverInfos;
-
-        /// <summary>
         /// The servers which are available to the hub.
         /// </summary>
-        private static IList<IManageableServer> servers;
+        private readonly IList<IManageableServer> servers;
 
         /// <summary>
-        /// Gets or sets the game servers which should be available to the hub.
+        /// Initializes a new instance of the <see cref="ServerListHub"/> class.
         /// </summary>
-        /// <remarks>Not nice, maybe think of another solution passing the game servers to the hub.</remarks>
-        public static IList<IManageableServer> Servers
+        /// <param name="servers">The servers.</param>
+        public ServerListHub(IList<IManageableServer> servers)
         {
-            get
-            {
-                return servers;
-            }
-
-            set
-            {
-                servers = value;
-                serverInfos = null;
-            }
+            this.servers = servers;
         }
-
-        private IList<ServerInfo> ServerInfos => serverInfos ?? (serverInfos = this.CreateServerInfos());
 
         /// <summary>
         /// Subscribes to this hub.
@@ -60,7 +45,7 @@ namespace MUnique.OpenMU.AdminPanel
         public async Task Subscribe()
         {
             await this.Groups.AddToGroupAsync(this.Context.ConnectionId, SubscriberGroup);
-            var currentServerInfos = this.ServerInfos;
+            var currentServerInfos = this.CreateServerInfos();
             if (currentServerInfos == null)
             {
                 Log.Warn("Client connected too early. servers not available yet.");
@@ -87,7 +72,6 @@ namespace MUnique.OpenMU.AdminPanel
         /// <remarks>Usually just used internally. Currently, there are no servers dynamically added or removed.</remarks>
         public void AddServer(ServerInfo server)
         {
-            serverInfos.Add(server);
             this.Clients.Group(SubscriberGroup).AddedServer(server);
         }
 
@@ -98,29 +82,25 @@ namespace MUnique.OpenMU.AdminPanel
         /// <remarks>Usually just used internally. Currently, there are no servers dynamically added or removed.</remarks>
         public void RemoveServer(int serverId)
         {
-            var server = serverInfos.FirstOrDefault(s => s.Id == serverId);
-            if (server != null)
-            {
-                this.Clients.Group(SubscriberGroup).RemovedServer(server.Id);
-            }
+            this.Clients.Group(SubscriberGroup).RemovedServer(serverId);
         }
 
         private IList<ServerInfo> CreateServerInfos()
         {
-            if (servers == null)
+            if (this.servers == null)
             {
                 return null;
             }
 
             var result = new List<ServerInfo>();
 
-            foreach (var gameServer in Servers.OfType<IGameServer>().OrderBy(s => s.Id))
+            foreach (var gameServer in this.servers.OfType<IGameServer>().OrderBy(s => s.Id))
             {
                 var serverInfo = new GameServerInfo(gameServer);
                 result.Add(serverInfo);
             }
 
-            foreach (var server in Servers.Where(server => !(server is IGameServer)))
+            foreach (var server in this.servers.Where(server => !(server is IGameServer)))
             {
                 var serverInfo = new ServerInfo(server);
                 result.Add(serverInfo);

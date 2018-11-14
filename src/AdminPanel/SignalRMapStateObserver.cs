@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.AdminPanel
 {
     using System;
     using Microsoft.AspNetCore.SignalR;
+    using MUnique.OpenMU.AdminPanel.Hubs;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>

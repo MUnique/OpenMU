@@ -15,7 +15,6 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.AdminPanel;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.ConnectServer;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.FriendServer;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.GuildServer;
@@ -91,7 +90,7 @@ namespace MUnique.OpenMU.Startup
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
             Log.Info("Start initializing admin panel");
 
-            this.adminPanel = new AdminPanel(1234, this.servers, this.persistenceContextProvider);
+            this.adminPanel = new AdminPanel(1234, this.servers, this.persistenceContextProvider, Log4NetConfigFilePath);
             Log.Info("Admin panel initialized");
 
             if (args.Contains("-autostart"))
@@ -143,7 +142,6 @@ namespace MUnique.OpenMU.Startup
                 (server as IDisposable)?.Dispose();
             }
 
-            this.adminPanel.Dispose();
             (this.persistenceContextProvider as IDisposable)?.Dispose();
         }
 

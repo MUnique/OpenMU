@@ -1,6 +1,6 @@
 [
   {
-    "outputFileName": "content/bundles/app.css",
+    "outputFileName": "wwwroot/content/css/app.css",
     "inputFiles": [
       "content/css/*.css"
     ],
