@@ -10,7 +10,7 @@ Requirements:
 * PostgreSQL installed
 * Visual Studio 2017 installed
 * [TypeScript SDK 3.0.1](https://www.microsoft.com/en-US/download/details.aspx?id=55258)
-* [.NET Core SDK](https://www.microsoft.com/net/download/dotnet-core/2.1)
+* [.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-core/2.1)
 * This repository cloned
 * Free TCP ports:
   * 1234 (admin panel)
