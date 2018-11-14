@@ -25,8 +25,8 @@ This project is released under the MIT license (see LICENSE file).
 ## Used technologies ##
 The project is mainly written in C# and targets .NET Standard/Core 2, except for some little tools which still require the full .NET Framework 4.6.1.
 
-The servers admin panel is an embedded webserver, which is using the [React](https://reactjs.org) framework on top
-of the [Nancy](http://nancyfx.org) framework.
+The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel)
+and uses the [React](https://reactjs.org) framework for the user interface.
 
 At the moment the persistence layer uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 and [PostgreSQL](https://www.postgresql.org) as database.
