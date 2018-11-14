@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         /// <inheritdoc/>
         public bool GuildWithNameExists(string name)
         {
-            return this.Manager.GetRepository<Interfaces.Guild>().GetAll().Any(g => g.Name == name);
+            return this.Manager.GetRepository<DataModel.Entities.Guild>().GetAll().Any(g => g.Name == name);
         }
 
         /// <inheritdoc/>
