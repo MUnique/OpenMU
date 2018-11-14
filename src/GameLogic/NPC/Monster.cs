@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         {
             this.dropGenerator = dropGenerator;
             this.Attributes = new MonsterAttributeHolder(this);
-            this.walker = new Walker(this);
+            this.walker = new Walker(this, () => this.StepDelay);
             this.intelligence = monsterIntelligence;
             this.intelligence.Monster = this;
             this.intelligence.Start();
@@ -52,12 +52,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="Monster"/> is walking.
+        /// Gets a value indicating whether this <see cref="Monster"/> is walking.
         /// </summary>
         /// <value>
         ///   <c>true</c> if walking; otherwise, <c>false</c>.
         /// </value>
-        public bool IsWalking { get; set; }
+        public bool IsWalking => this.WalkTarget != default;
 
         /// <summary>
         /// Gets or sets the current health.
@@ -75,13 +75,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public IAttributeSystem Attributes { get; }
 
         /// <inheritdoc/>
-        public TimeSpan StepDelay => this.Definition.MoveDelay;
-
-        /// <inheritdoc />
-        public Stack<WalkingStep> NextDirections { get; } = new Stack<WalkingStep>(5);
+        public Point WalkTarget => this.walker.CurrentTarget;
 
         /// <inheritdoc/>
-        public Point WalkTarget { get; set; }
+        public TimeSpan StepDelay => this.Definition.MoveDelay;
 
         /// <inheritdoc/>
         public override void Initialize()
@@ -136,17 +133,37 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 this.isCalculatingPath = false;
             }
 
-            var targetNode = calculatedPath.Last();
-            this.WalkTarget = new Point(targetNode.X, targetNode.Y);
-            this.NextDirections.Clear();
-            foreach (var step in calculatedPath.Select(GetStep).Reverse())
+            var targetNode = calculatedPath.Last(); // that's one step before the target coordinates actually are reached.
+            Span<WalkingStep> steps = stackalloc WalkingStep[calculatedPath.Count];
+            var i = steps.Length;
+            foreach (var step in calculatedPath.Select(GetStep))
             {
-                this.NextDirections.Push(step);
+                i--;
+                steps[i] = step;
             }
 
-            this.Move(targetNode.X, targetNode.Y, MoveType.Walk);
-            this.walker.Start();
+            this.WalkTo(new Point(targetNode.X, targetNode.Y), steps);
         }
+
+        /// <summary>
+        /// Walks to the specified target coordinates using the specified steps.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="steps">The steps.</param>
+        public void WalkTo(Point target, Span<WalkingStep> steps)
+        {
+            this.walker.WalkTo(target, steps);
+            this.Move(target.X, target.Y, MoveType.Walk);
+        }
+
+        /// <inheritdoc/>
+        public int GetDirections(Span<Direction> directions)
+        {
+            return this.walker.GetDirections(directions);
+        }
+
+        /// <inheritdoc />
+        public int GetSteps(Span<WalkingStep> steps) => this.walker.GetSteps(steps);
 
         /// <inheritdoc />
         public void AttackBy(IAttackable attacker, SkillEntry skill)
@@ -167,15 +184,23 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         /// <summary>
         /// Moves this instance randomly.
-        /// </summary>
+        /// </summary> 
         internal void RandomMove()
         {
             byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.X - 1), Math.Min(0xFF, this.X + 2));
             byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Y - 1), Math.Min(0xFF, this.Y + 2));
             if (this.CurrentMap.Terrain.AIgrid[randx, randy] == 1)
             {
-                this.WalkTarget = new Point(randx, randy);
-                this.Move(randx, randy, MoveType.Walk);
+                var target = new Point(randx, randy);
+                var current = new Point(this.X, this.Y);
+                Span<WalkingStep> steps = stackalloc WalkingStep[1];
+                steps[0] = new WalkingStep
+                {
+                    From = current,
+                    To = target,
+                    Direction = current.GetDirectionTo(target)
+                };
+                this.WalkTo(target, steps);
             }
         }
 

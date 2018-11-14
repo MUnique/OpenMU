@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the <see cref="ISupportWalk.NextDirections"/> should be send when an object moved.
+        /// Gets or sets a value indicating whether the directions provided by <see cref="ISupportWalk.GetDirections"/> should be send when an object moved.
         /// This is usually not required, because the game client calculates a proper path anyway and doesn't use the suggested path.
         /// </summary>
         public bool SendWalkDirections { get; set; }
@@ -91,7 +91,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
             else
             {
-                IList<Direction> steps = null;
+                Span<Direction> steps = this.SendWalkDirections ? stackalloc Direction[16] : null;
+                var stepsLength = 0;
                 var x = obj.X;
                 var y = obj.Y;
                 Direction rotation = Direction.Undefined;
@@ -99,23 +100,26 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 {
                     if (this.SendWalkDirections)
                     {
-                        steps = supportWalk.NextDirections.Select(d => d.Direction).ToList();
-
-                        // The last one is the rotation
-                        rotation = steps.LastOrDefault();
-                        steps.RemoveAt(steps.Count - 1);
+                        stepsLength = supportWalk.GetDirections(steps);
+                        if (stepsLength > 0)
+                        {
+                            // The last one is the rotation
+                            rotation = steps[stepsLength - 1];
+                            steps = steps.Slice(0, stepsLength - 1);
+                            stepsLength--;
+                        }
                     }
 
-                    if (obj is IRotateable rotateable)
+                    if (obj is IRotateable rotatable)
                     {
-                        rotation = rotateable.Rotation.RotateLeft();
+                        rotation = rotatable.Rotation.RotateLeft();
                     }
 
                     x = supportWalk.WalkTarget.X;
                     y = supportWalk.WalkTarget.Y;
                 }
 
-                var stepsSize = (steps?.Count / 2) + 2 ?? 1;
+                var stepsSize = steps == null ? 1 : (steps.Length / 2) + 2;
                 using (var writer = this.connection.StartSafeWrite(0xC1, 7 + stepsSize))
                 {
                     var walkPacket = writer.Span;
@@ -124,15 +128,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     walkPacket[4] = objectId.GetLowByte();
                     walkPacket[5] = x;
                     walkPacket[6] = y;
-                    walkPacket[7] = (byte)((steps?.Count ?? 0) | ((byte)rotation) << 4);
+                    walkPacket[7] = (byte)(stepsLength | ((byte)rotation) << 4);
                     if (steps != null)
                     {
-                        walkPacket[7] = (byte)((int)steps.First() << 4 | (int)steps.Count);
-                        for (int i = 0; i < steps.Count; i += 2)
+                        walkPacket[7] = (byte)((int)steps[0] << 4 | stepsSize);
+                        for (int i = 0; i < stepsSize; i += 2)
                         {
                             var index = 8 + (i / 2);
                             var firstStep = steps[i];
-                            var secondStep = steps.Count > i + 2 ? steps[i + 2] : Direction.Undefined;
+                            var secondStep = stepsSize > i + 2 ? steps[i + 2] : Direction.Undefined;
                             walkPacket[index] = (byte)((int)firstStep << 4 | (int)secondStep);
                         }
                     }

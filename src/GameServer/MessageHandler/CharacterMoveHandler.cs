@@ -27,14 +27,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
             var x = packet[3];
             var y = packet[4];
-            player.NextDirections.Clear();
             if (moveType == MoveType.Walk)
             {
                 this.Walk(player, packet, x, y);
             }
             else
             {
-                player.Move(x, y, MoveType.Instant);
+                player.Move(x, y);
             }
         }
 
@@ -45,11 +44,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
                 var sourcePoint = new Point(x, y);
                 var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
-                Point target = this.ApplySteps(player, steps, sourcePoint);
+                Point target = this.GetTarget(steps, sourcePoint);
 
-                player.WalkTarget = target;
-
-                player.Move(player.WalkTarget.X, player.WalkTarget.Y, MoveType.Walk);
+                player.WalkTo(target, steps);
             }
             else
             {
@@ -57,24 +54,15 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
         }
 
-        private Point ApplySteps(Player player, Span<WalkingStep> steps, Point source)
+        private Point GetTarget(Span<WalkingStep> steps, Point source)
         {
-            var target = source;
-
-            // we need to reverse the steps, because we put it on a stack - where the top element is the next step.
-            for (int i = steps.Length - 1; i >= 0; i--)
+            if (steps.Length > 0)
             {
-                var step = steps[i];
-                if (player.NextDirections.Count == 0)
-                {
-                    // the first direction (which will end up at the bottom of the stack) is our target
-                    target = step.To;
-                }
-
-                player.NextDirections.Push(step);
+                var step = steps[steps.Length - 1];
+                return step.To;
             }
 
-            return target;
+            return source;
         }
 
         private Span<WalkingStep> GetSteps(Point start, Span<Direction> directions)
