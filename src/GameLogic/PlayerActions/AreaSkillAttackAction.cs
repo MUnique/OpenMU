@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Action to attack with a skill which inflicts damage to an area of the current map of the player.
