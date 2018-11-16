@@ -233,19 +233,15 @@ namespace MUnique.OpenMU.GameLogic
         public bool Alive { get; set; }
 
         /// <inheritdoc/>
-        public byte X
+        public Point Position
         {
-            get => this.SelectedCharacter?.PositionX ?? 0;
+            get => new Point(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
 
-            set => this.SelectedCharacter.PositionX = value;
-        }
-
-        /// <inheritdoc/>
-        public byte Y
-        {
-            get => this.SelectedCharacter?.PositionY ?? 0;
-
-            set => this.SelectedCharacter.PositionY = value;
+            set
+            {
+                this.SelectedCharacter.PositionX = value.X;
+                this.SelectedCharacter.PositionY = value.Y;
+            }
         }
 
         /// <inheritdoc/>
@@ -558,13 +554,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Moves the player to the specified coordinate.
         /// </summary>
-        /// <param name="newx">The new x coordinate.</param>
-        /// <param name="newy">The new y coordinate.</param>
-        public void Move(byte newx, byte newy)
+        /// <param name="target">The target.</param>
+        public void Move(Point target)
         {
-            Logger.DebugFormat("Move: Player is moving to {0} {1}", newx, newy);
+            Logger.DebugFormat("Move: Player is moving to {0}", target);
             this.walker.Stop();
-            this.CurrentMap.Move(this, newx, newy, this.moveLock, MoveType.Instant);
+            this.CurrentMap.Move(this, target, this.moveLock, MoveType.Instant);
             Logger.DebugFormat("Move: Observer Count: {0}", this.Observers.Count);
         }
 
@@ -577,7 +572,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             Logger.DebugFormat("WalkTo: Player is walking to {0}", target);
             this.walker.WalkTo(target, steps);
-            this.CurrentMap.Move(this, target.X, target.Y, this.moveLock, MoveType.Walk);
+            this.CurrentMap.Move(this, target, this.moveLock, MoveType.Walk);
             Logger.DebugFormat("WalkTo: Observer Count: {0}", this.Observers.Count);
         }
 

@@ -576,8 +576,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 var packet = writer.Span;
                 packet[2] = 0xF3;
                 packet[3] = 0x03;
-                packet[4] = this.player.X;
-                packet[5] = this.player.Y;
+                packet[4] = this.player.Position.X;
+                packet[5] = this.player.Position.Y;
                 var unsignedMapNumber = ShortExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number);
                 packet[6] = unsignedMapNumber.GetLowByte();
                 packet[7] = unsignedMapNumber.GetHighByte();

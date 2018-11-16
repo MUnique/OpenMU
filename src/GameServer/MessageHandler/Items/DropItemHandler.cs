@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Handler for drop item packets.
@@ -30,7 +31,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
             var slot = packet[5];
             var x = packet[3];
             var y = packet[4];
-            this.dropAction.DropItem(player, slot, x, y);
+            this.dropAction.DropItem(player, slot, new Point(x, y));
         }
     }
 }

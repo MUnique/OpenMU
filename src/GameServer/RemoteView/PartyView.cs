@@ -82,8 +82,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     packet.Slice(offset, 10).WriteString(partyMember.Name, Encoding.UTF8);
                     packet[offset + 10] = (byte)i;
                     packet[offset + 11] = (byte)partyMember.CurrentMap.MapId;
-                    packet[offset + 12] = partyMember.X;
-                    packet[offset + 13] = partyMember.Y;
+                    packet[offset + 12] = partyMember.Position.X;
+                    packet[offset + 13] = partyMember.Position.Y;
                     ////14 + 15 are unknown
                     packet.Slice(offset + 16).SetIntegerBigEndian(partyMember.CurrentHealth);
                     packet.Slice(offset + 20).SetIntegerBigEndian(partyMember.MaximumHealth);

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Threading;
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// An item which got dropped on the ground of a map.
@@ -31,16 +32,14 @@ namespace MUnique.OpenMU.GameLogic
         /// Initializes a new instance of the <see cref="DroppedItem" /> class.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
+        /// <param name="position">The position where the item was dropped on the map.</param>
         /// <param name="map">The map.</param>
         /// <param name="dropper">The dropper.</param>
-        public DroppedItem(Item item, byte x, byte y, GameMap map, Player dropper)
+        public DroppedItem(Item item, Point position, GameMap map, Player dropper)
         {
             this.Item = item;
             this.pickupLock = new object();
-            this.X = x;
-            this.Y = y;
+            this.Position = position;
             this.CurrentMap = map;
             this.dropper = dropper;
             this.removeTimer = new Timer(this.DisposeAndDelete, null, map.ItemDropDuration * 1000, Timeout.Infinite);
@@ -51,15 +50,8 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public Item Item { get; }
 
-        /// <summary>
-        /// Gets or sets the x coordinate on the map.
-        /// </summary>
-        public byte X { get; set; }
-
-        /// <summary>
-        /// Gets or sets the y coordinate on the map.
-        /// </summary>
-        public byte Y { get; set; }
+        /// <inheritdoc />
+        public Point Position { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier.

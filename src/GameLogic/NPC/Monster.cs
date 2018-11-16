@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                     this.pathFinder.ResetPathFinder();
                 }
 
-                calculatedPath = this.pathFinder.FindPath(new Point(this.X, this.Y), new Point(target.X, target.Y));
+                calculatedPath = this.pathFinder.FindPath(this.Position, target.Position);
                 if (calculatedPath == null)
                 {
                     return;
@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public void WalkTo(Point target, Span<WalkingStep> steps)
         {
             this.walker.WalkTo(target, steps);
-            this.Move(target.X, target.Y, MoveType.Walk);
+            this.Move(target, MoveType.Walk);
         }
 
         /// <inheritdoc/>
@@ -187,12 +187,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// </summary> 
         internal void RandomMove()
         {
-            byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.X - 1), Math.Min(0xFF, this.X + 2));
-            byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Y - 1), Math.Min(0xFF, this.Y + 2));
+            byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + 2));
+            byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - 1), Math.Min(0xFF, this.Position.Y + 2));
             if (this.CurrentMap.Terrain.AIgrid[randx, randy] == 1)
             {
                 var target = new Point(randx, randy);
-                var current = new Point(this.X, this.Y);
+                var current = this.Position;
                 Span<WalkingStep> steps = stackalloc WalkingStep[1];
                 steps[0] = new WalkingStep
                 {
@@ -213,19 +213,13 @@ namespace MUnique.OpenMU.GameLogic.NPC
             (this.intelligence as IDisposable)?.Dispose();
         }
 
-        /// <summary>
-        /// Moves the instance to the specified position.
-        /// </summary>
-        /// <param name="newx">The new x coordinate.</param>
-        /// <param name="newy">The new y coordinate.</param>
-        /// <param name="type">The type of moving.</param>
-        protected override void Move(byte newx, byte newy, MoveType type)
+        /// <inheritdoc />
+        protected override void Move(Point target, MoveType type)
         {
-            this.CurrentMap.Move(this, newx, newy, this.moveLock, type);
+            this.CurrentMap.Move(this, target, this.moveLock, type);
             if (type == MoveType.Instant)
             {
-                this.X = newx;
-                this.Y = newy;
+                this.Position = target;
             }
         }
 
@@ -250,18 +244,18 @@ namespace MUnique.OpenMU.GameLogic.NPC
             var firstItem = true;
             foreach (var item in generatedItems)
             {
-                Point dropCoord;
+                Point dropCoordinates;
                 if (firstItem)
                 {
-                    dropCoord = new Point(this.X, this.Y);
+                    dropCoordinates = this.Position;
                     firstItem = false;
                 }
                 else
                 {
-                    dropCoord = this.CurrentMap.Terrain.GetRandomDropCoordinate(this.X, this.Y, 4);
+                    dropCoordinates = this.CurrentMap.Terrain.GetRandomDropCoordinate(this.Position, 4);
                 }
 
-                var droppedItem = new DroppedItem(item, dropCoord.X, dropCoord.Y, this.CurrentMap, null);
+                var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null);
                 this.CurrentMap.Add(droppedItem);
             }
         }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Action to drop an item from the inventory to the floor.
@@ -16,15 +17,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="slot">The slot.</param>
-        /// <param name="x">The x coordinate of the point where the item should be dropped.</param>
-        /// <param name="y">The y coordinate of the point where the item should be dropped.</param>
-        public void DropItem(Player player, byte slot, byte x, byte y)
+        /// <param name="target">The target coordinates.</param>
+        public void DropItem(Player player, byte slot, Point target)
         {
             Item item = player.Inventory.GetItem(slot);
 
-            if (player.CurrentMap.Terrain.WalkMap[x, y] && item != null)
+            if (player.CurrentMap.Terrain.WalkMap[target.X, target.Y] && item != null)
             {
-                this.DropItem(player, item, x, y);
+                this.DropItem(player, item, target);
             }
             else
             {
@@ -32,9 +32,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
         }
 
-        private void DropItem(Player player, Item item, byte x, byte y)
+        private void DropItem(Player player, Item item, Point target)
         {
-            var droppedItem = new DroppedItem(item, x, y, player.CurrentMap, player);
+            var droppedItem = new DroppedItem(item, target, player.CurrentMap, player);
             player.CurrentMap.Add(droppedItem);
             player.Inventory.RemoveItem(item);
             player.PlayerView.InventoryView.ItemDropResult(item.ItemSlot, true);

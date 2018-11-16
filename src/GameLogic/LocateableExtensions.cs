@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Extensions for mu objects.
@@ -47,43 +48,49 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The distance between this and another object.</returns>
         public static double GetDistanceTo(this ILocateable objectFrom, ILocateable objectTo)
         {
-            return objectFrom.GetDistanceTo(objectTo.X, objectTo.Y);
+            return objectFrom.GetDistanceTo(objectTo.Position);
         }
 
         /// <summary>
-        /// Gets the distance to the specified coordinates.
+        /// Gets the distance to another point.
         /// </summary>
         /// <param name="objectFrom">The object from which the distance is calculated.</param>
-        /// <param name="x">The x coordinate of the point to which the distance is calculated.</param>
-        /// <param name="y">The y coordinate of the point to which the distance is calculated.</param>
-        /// <returns>The distance between this and the specified coordinates.</returns>
-        public static double GetDistanceTo(this ILocateable objectFrom, byte x, byte y)
+        /// <param name="objectToPosition">The point to which the distance is calculated.</param>
+        /// <returns>The distance between this and another object.</returns>
+        public static double GetDistanceTo(this ILocateable objectFrom, Point objectToPosition)
         {
-            return
-                    Math.Sqrt(
-                        Math.Pow(objectFrom.X - x, 2) +
-                        Math.Pow(objectFrom.Y - y, 2));
+            return objectFrom.Position.EuclideanDistanceTo(objectToPosition);
         }
+
+        /// <summary>
+        /// Determines whether the specified coordinates are in the specified range of the object.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <param name="point">The coordinates.</param>
+        /// <param name="range">The maximum range.</param>
+        /// <returns><c>True</c>, if the specified coordinate is in the specified range of the object; Otherwise, <c>false</c>.</returns>
+        public static bool IsInRange(this ILocateable obj, Point point, int range) => obj.IsInRange(point.X, point.Y, range);
 
         /// <summary>
         /// Determines whether the specified coordinate is in the specified range of the object.
         /// </summary>
-        /// <param name="obj">The object.</param>
+        /// <param name="locatable">The object.</param>
         /// <param name="x">The x coordinate.</param>
-        /// <param name="y">The y coorindate.</param>
+        /// <param name="y">The y coordinate.</param>
         /// <param name="range">The maximum range.</param>
-        /// <returns><c>True</c>, if rhe specified coordinate is in the specified range of the object; Otherwise, <c>false</c>.</returns>
-        public static bool IsInRange(this ILocateable obj, int x, int y, int range)
+        /// <returns><c>True</c>, if the specified coordinate is in the specified range of the object; Otherwise, <c>false</c>.</returns>
+        public static bool IsInRange(this ILocateable locatable, int x, int y, int range)
         {
             int xdiff;
             int ydiff;
-            if (x < obj.X)
+            var point = locatable.Position;
+            if (x < point.X)
             {
-                xdiff = obj.X - x;
+                xdiff = point.X - x;
             }
-            else if (x > obj.X)
+            else if (x > point.X)
             {
-                xdiff = x - obj.X;
+                xdiff = x - point.X;
             }
             else
             {
@@ -95,20 +102,20 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-            if (y < obj.Y)
+            if (y < point.Y)
             {
-                ydiff = obj.Y - y;
+                ydiff = point.Y - y;
             }
-            else if (y > obj.Y)
+            else if (y > point.Y)
             {
-                ydiff = y - obj.Y;
+                ydiff = y - point.Y;
             }
             else
             {
                 ydiff = 0;
             }
 
-            return (xdiff < range) && (ydiff < range);
+            return ydiff < range;
         }
 
         /// <summary>
@@ -117,38 +124,50 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="objectFrom">The object from which the direction is calculated.</param>
         /// <param name="objectTo">The object to which the direction is calculated.</param>
         /// <returns>The direction between this and another object.</returns>
-        public static byte GetDirectionTo(this ILocateable objectFrom, ILocateable objectTo)
+        /// <remarks>
+        /// TODO: Replace usages by <see cref="DirectionExtensions.GetDirectionTo"/>.
+        ///       The returned values differ a bit, so we first have to analyze which function is correct.
+        /// </remarks>
+        public static byte GetDirectionTo(this ILocateable objectFrom, ILocateable objectTo) => GetDirectionTo2(objectFrom.Position, objectTo.Position);
+
+        /// <summary>
+        /// Gets the direction to another object.
+        /// </summary>
+        /// <param name="from">The object from which the direction is calculated.</param>
+        /// <param name="to">The object to which the direction is calculated.</param>
+        /// <returns>The direction between this and another object.</returns>
+        public static byte GetDirectionTo2(this Point from, Point to)
         {
             byte dir = 0;
-            if ((objectFrom.X < objectTo.X) && (objectFrom.Y < objectTo.Y))
+            if ((from.X < to.X) && (from.Y < to.Y))
             {
                 dir = 0;
             }
-            else if ((objectFrom.X == objectTo.X) && (objectFrom.Y < objectTo.Y))
+            else if ((from.X == to.X) && (from.Y < to.Y))
             {
                 dir = 1;
             }
-            else if ((objectFrom.X > objectTo.X) && (objectFrom.Y < objectTo.Y))
+            else if ((from.X > to.X) && (from.Y < to.Y))
             {
                 dir = 2;
             }
-            else if ((objectFrom.X > objectTo.X) && (objectFrom.Y == objectTo.Y))
+            else if ((from.X > to.X) && (from.Y == to.Y))
             {
                 dir = 3;
             }
-            else if ((objectFrom.X > objectTo.X) && (objectFrom.Y > objectTo.Y))
+            else if ((from.X > to.X) && (from.Y > to.Y))
             {
                 dir = 4;
             }
-            else if ((objectFrom.X == objectTo.X) && (objectFrom.Y > objectTo.Y))
+            else if ((from.X == to.X) && (from.Y > to.Y))
             {
                 dir = 5;
             }
-            else if ((objectFrom.X < objectTo.X) && (objectFrom.Y > objectTo.Y))
+            else if ((from.X < to.X) && (from.Y > to.Y))
             {
                 dir = 6;
             }
-            else if ((objectFrom.X < objectTo.X) && (objectFrom.Y == objectTo.Y))
+            else if ((from.X < to.X) && (from.Y == to.Y))
             {
                 dir = 7;
             }
@@ -169,7 +188,7 @@ namespace MUnique.OpenMU.GameLogic
                 return true;
             }
 
-            return map.Terrain.SafezoneMap[obj.X, obj.Y];
+            return map.Terrain.SafezoneMap[obj.Position.X, obj.Position.Y];
         }
     }
 }

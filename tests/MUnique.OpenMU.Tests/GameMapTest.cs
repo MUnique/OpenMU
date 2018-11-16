@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Tests
     using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.Pathfinding;
     using NUnit.Framework;
 
     /// <summary>
@@ -36,13 +37,11 @@ namespace MUnique.OpenMU.Tests
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
-            player1.Object.X = 100;
-            player1.Object.Y = 100;
+            player1.Object.Position = new Point(100, 100);
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
             player2.Setup(p => p.Id).Returns(2);
-            player2.Object.X = 101;
-            player2.Object.Y = 100;
+            player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
             player1.Verify(p => p.NewLocateablesInScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
             player2.Verify(p => p.NewLocateablesInScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player1.Object))), Times.Once);
@@ -63,11 +62,10 @@ namespace MUnique.OpenMU.Tests
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
             player2.Setup(p => p.Id).Returns(2);
-            player2.Object.X = 101;
-            player2.Object.Y = 100;
+            player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
 
-            map.Move(player1.Object, 100, 100, new object(), 0);
+            map.Move(player1.Object, new Point(100, 100), new object(), 0);
 
             player1.Verify(p => p.NewLocateablesInScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
             player1.Verify(p => p.NewLocateablesInScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player1.Object))), Times.Once);
@@ -85,16 +83,14 @@ namespace MUnique.OpenMU.Tests
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
-            player1.Object.X = 101;
-            player1.Object.Y = 100;
+            player1.Object.Position = new Point(101, 100);
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
             player2.Setup(p => p.Id).Returns(2);
-            player2.Object.X = 101;
-            player2.Object.Y = 100;
+            player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
 
-            map.Move(player1.Object, 100, 130, new object(), 0);
+            map.Move(player1.Object, new Point(100, 130), new object(), 0);
             player1.Verify(p => p.LocateablesOutOfScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
             player2.Verify(p => p.LocateableRemoved(It.IsAny<object>(), It.IsAny<BucketItemEventArgs<ILocateable>>()), Times.Once);
         }
@@ -109,13 +105,11 @@ namespace MUnique.OpenMU.Tests
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
-            player1.Object.X = 101;
-            player1.Object.Y = 100;
+            player1.Object.Position = new Point(101, 100);
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
             player2.Setup(p => p.Id).Returns(2);
-            player2.Object.X = 101;
-            player2.Object.Y = 100;
+            player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
 
             player1.Verify(p => p.NewLocateablesInScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
@@ -124,13 +118,13 @@ namespace MUnique.OpenMU.Tests
             player1.Invocations.Clear();
             player2.Invocations.Clear();
 
-            map.Move(player1.Object, 100, 130, new object(), 0);
+            map.Move(player1.Object, new Point(100, 130), new object(), 0);
             player1.Verify(p => p.LocateablesOutOfScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
             player2.Verify(p => p.LocateableRemoved(It.IsAny<object>(), It.IsAny<BucketItemEventArgs<ILocateable>>()), Times.Once);
             player1.Invocations.Clear();
             player2.Invocations.Clear();
 
-            map.Move(player2.Object, 101, 130, new object(), 0);
+            map.Move(player2.Object, new Point(101, 130), new object(), 0);
             player2.Verify(p => p.NewLocateablesInScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player1.Object))), Times.Once);
             player1.Verify(p => p.LocateableAdded(It.IsAny<object>(), It.IsAny<BucketItemEventArgs<ILocateable>>()), Times.Once);
         }
@@ -148,8 +142,7 @@ namespace MUnique.OpenMU.Tests
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
             player2.Setup(p => p.Id).Returns(2);
-            player2.Object.X = 101;
-            player2.Object.Y = 100;
+            player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
 
             var sw = new System.Diagnostics.Stopwatch();
@@ -157,7 +150,7 @@ namespace MUnique.OpenMU.Tests
             var moveLock = new object();
             for (int i = 0; i < 1000; i++)
             {
-                map.Move(player1.Object, (byte)(100 + (i % 30)), (byte)(100 + (i % 30)), moveLock, 0);
+                map.Move(player1.Object, new Point((byte)(100 + (i % 30)), (byte)(100 + (i % 30))), moveLock, 0);
             }
 
             sw.Stop();
@@ -173,13 +166,11 @@ namespace MUnique.OpenMU.Tests
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
-            player1.Object.X = 100;
-            player1.Object.Y = 100;
+            player1.Object.Position = new Point(100, 100);
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
             player2.Setup(p => p.Id).Returns(2);
-            player2.Object.X = 101;
-            player2.Object.Y = 100;
+            player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
             map.Remove(player2.Object);
             Assert.AreEqual(player2.Object.ObservingBuckets.Count, 0);

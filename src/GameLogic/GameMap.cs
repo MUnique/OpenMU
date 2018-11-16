@@ -13,6 +13,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -83,15 +84,14 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
-        /// Gets the attackables in range of the specified coordinate.
+        /// Gets the attackables in range of the specified coordinates.
         /// </summary>
-        /// <param name="x">The x coordinate.</param>
-        /// <param name="y">The y coordinate.</param>
+        /// <param name="point">The coordinates.</param>
         /// <param name="range">The range.</param>
         /// <returns>The attackables in range of the specified coordinate.</returns>
-        public IEnumerable<IAttackable> GetAttackablesInRange(int x, int y, int range)
+        public IEnumerable<IAttackable> GetAttackablesInRange(Point point, int range)
         {
-            return this.areaOfInterestManager.GetInRange(x, y, range, RangeType.Quadratic).OfType<IAttackable>().ToList();
+            return this.areaOfInterestManager.GetInRange(point, range, RangeType.Quadratic).OfType<IAttackable>().ToList();
         }
 
         /// <summary>
@@ -156,16 +156,15 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
-        /// Moves the locateable on the map.
+        /// Moves the locatable on the map.
         /// </summary>
-        /// <param name="locateable">The monster.</param>
-        /// <param name="newX">The new x coordinate.</param>
-        /// <param name="newY">The new y coordinate.</param>
+        /// <param name="locatable">The monster.</param>
+        /// <param name="target">The new coordinates.</param>
         /// <param name="moveLock">The move lock.</param>
         /// <param name="moveType">Type of the move.</param>
-        public void Move(ILocateable locateable, byte newX, byte newY, object moveLock, MoveType moveType)
+        public void Move(ILocateable locatable, Point target, object moveLock, MoveType moveType)
         {
-            this.areaOfInterestManager.MoveObject(locateable, newX, newY, moveLock, moveType);
+            this.areaOfInterestManager.MoveObject(locatable, target, moveLock, moveType);
         }
 
         /// <summary>

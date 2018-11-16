@@ -66,25 +66,24 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets a random drop coordinate at the specified point in the specified radius.
         /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="maxmimumRadius">The maximum radius around the specifeied coordinate.</param>
+        /// <param name="point">The target point.</param>
+        /// <param name="maxmimumRadius">The maximum radius around the specified coordinate.</param>
         /// <returns>The random drop coordinate.</returns>
-        public Point GetRandomDropCoordinate(byte x, byte y, byte maxmimumRadius)
+        public Point GetRandomDropCoordinate(Point point, byte maxmimumRadius)
         {
-            byte tempx = (byte)Rand.NextInt(Math.Max(0, x - maxmimumRadius), Math.Min(255, x + maxmimumRadius + 1));
-            byte tempy = (byte)Rand.NextInt(Math.Max(0, y - maxmimumRadius), Math.Min(255, y + maxmimumRadius + 1));
+            byte tempx = (byte)Rand.NextInt(Math.Max(0, point.X - maxmimumRadius), Math.Min(255, point.X + maxmimumRadius + 1));
+            byte tempy = (byte)Rand.NextInt(Math.Max(0, point.Y - maxmimumRadius), Math.Min(255, point.Y + maxmimumRadius + 1));
             int i = 0;
             while (!this.WalkMap[tempx, tempy] && i < 20)
             {
-                tempx = (byte)Rand.NextInt(Math.Max(0, x - maxmimumRadius), Math.Min(255, x + maxmimumRadius + 1));
-                tempy = (byte)Rand.NextInt(Math.Max(0, y - maxmimumRadius), Math.Min(255, y + maxmimumRadius + 1));
+                tempx = (byte)Rand.NextInt(Math.Max(0, point.X - maxmimumRadius), Math.Min(255, point.X + maxmimumRadius + 1));
+                tempy = (byte)Rand.NextInt(Math.Max(0, point.Y - maxmimumRadius), Math.Min(255, point.Y + maxmimumRadius + 1));
                 i++;
             }
 
             if (i == 20)
             {
-                return new Point(x, y);
+                return point;
             }
 
             return new Point(tempx, tempy);

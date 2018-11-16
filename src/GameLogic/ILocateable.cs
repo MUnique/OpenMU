@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using MUnique.OpenMU.Pathfinding;
+
     /// <summary>
     /// Interface for an object which has a location on a map.
     /// </summary>
@@ -15,14 +17,9 @@ namespace MUnique.OpenMU.GameLogic
         GameMap CurrentMap { get; }
 
         /// <summary>
-        /// Gets or sets the x coordinate on the map.
+        /// Gets or sets the coordinates on the map.
         /// </summary>
-        byte X { get; set; }
-
-        /// <summary>
-        /// Gets or sets the y coordinate on the map.
-        /// </summary>
-        byte Y { get; set; }
+        Point Position { get; set; }
     }
 
     /// <summary>

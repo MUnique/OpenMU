@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Handler for area skill attack packets.
@@ -39,7 +40,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             byte tX = packet[5];
             byte tY = packet[6];
             byte rotation = packet[7];
-            this.attackAction.Attack(player, targetId, skillId, tX, tY, rotation);
+            this.attackAction.Attack(player, targetId, skillId, new Point(tX, tY), rotation);
         }
     }
 }

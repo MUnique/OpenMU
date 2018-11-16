@@ -189,8 +189,7 @@ namespace MUnique.OpenMU.GameLogic
                 try
                 {
                     var nextStep = this.nextSteps.Pop();
-                    this.walkSupporter.X = nextStep.To.X;
-                    this.walkSupporter.Y = nextStep.To.Y;
+                    this.walkSupporter.Position = nextStep.To;
 
                     if (this.walkSupporter is IRotatable rotateable)
                     {

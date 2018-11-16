@@ -58,10 +58,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         public GameMap CurrentMap => null;
 
         /// <inheritdoc/>
-        public byte X { get; set; }
-
-        /// <inheritdoc/>
-        public byte Y { get; set; }
+        public Point Position { get; set; }
 
         /// <inheritdoc/>
         public ushort Id { get; }
@@ -78,7 +75,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         /// <inheritdoc/>
         public void ObjectMoved(ILocateable movedObject, MoveType moveType)
         {
-            Point targetPoint = new Point(movedObject.X, movedObject.Y);
+            Point targetPoint = movedObject.Position;
             object steps = null;
             int walkDelay = 0;
             if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
@@ -109,7 +106,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         /// <inheritdoc/>
         public void ShowDroppedItems(IEnumerable<DroppedItem> droppedItems, bool freshDrops)
         {
-            this.clientProxy.SendAsync("ShowDroppedItems", droppedItems.Select(drop => new { id = drop.Id, x = drop.X, y = drop.Y, itemName = drop.Item.ToString() }), freshDrops);
+            this.clientProxy.SendAsync("ShowDroppedItems", droppedItems.Select(drop => new { id = drop.Id, x = drop.Position.X, y = drop.Position.Y, itemName = drop.Item.ToString() }), freshDrops);
         }
 
         /// <inheritdoc/>
@@ -143,8 +140,8 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
             {
                 id = o.Id,
                 name = o.Name,
-                x = o.X,
-                y = o.Y,
+                x = o.Position.X,
+                y = o.Position.Y,
                 rotation = o.Rotation,
                 serverId = this.ServerId,
                 mapId = this.MapId
@@ -154,7 +151,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         /// <inheritdoc/>
         public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
         {
-            this.clientProxy.SendAsync("NewNPCsInScope", newObjects.Select(o => new { id = o.Id, name = o.Definition.Designation, x = o.X, y = o.Y, rotation = o.Rotation, serverId = this.ServerId, mapId = this.MapId, isMonster = o is Monster }));
+            this.clientProxy.SendAsync("NewNPCsInScope", newObjects.Select(o => new { id = o.Id, name = o.Definition.Designation, x = o.Position.X, y = o.Position.Y, rotation = o.Rotation, serverId = this.ServerId, mapId = this.MapId, isMonster = o is Monster }));
         }
 
         /// <inheritdoc/>
@@ -170,9 +167,9 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         }
 
         /// <inheritdoc/>
-        public void ShowAreaSkillAnimation(Player player, Skill skill, byte x, byte y, byte rotation)
+        public void ShowAreaSkillAnimation(Player player, Skill skill, Point point, byte rotation)
         {
-            this.clientProxy.SendAsync("ShowAreaSkillAnimation", player.Id, skill.SkillID, x, y, rotation);
+            this.clientProxy.SendAsync("ShowAreaSkillAnimation", player.Id, skill.Number, point.X, point.Y, rotation);
         }
 
         /// <inheritdoc/>

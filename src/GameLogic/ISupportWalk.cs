@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic
         TimeSpan StepDelay { get; }
 
         /// <summary>
-        /// Gets or sets the walk target coordinate.
+        /// Gets the walk target coordinate.
         /// </summary>
         Point WalkTarget { get; }
 

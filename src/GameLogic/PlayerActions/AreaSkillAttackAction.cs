@@ -56,10 +56,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             player.ForEachObservingPlayer(p => p.PlayerView.WorldView.ShowAreaSkillAnimation(player, skill, targetAreaCenterX, targetAreaCenterY, rotation), true);
         }
 
-        private void PerformAutomaticHits(Player player, ushort extraTargetId, byte targetAreaCenterX, byte targetAreaCenterY, SkillEntry skillEntry, Skill skill)
+        private void PerformAutomaticHits(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)
         {
             bool extraTarget = extraTargetId == 0xFFFF;
-            var attackablesInRange = player.CurrentMap.GetAttackablesInRange(targetAreaCenterX, targetAreaCenterY, skill.Range);
+            var attackablesInRange = player.CurrentMap.GetAttackablesInRange(targetAreaCenter, skill.Range);
             if (!this.gameContext.Configuration.AreaSkillHitsPlayer)
             {
                 attackablesInRange = attackablesInRange.Where(a => !(a is Player));

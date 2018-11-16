@@ -39,10 +39,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public MonsterDefinition Definition { get; set; }
 
         /// <inheritdoc/>
-        public byte X { get; set; }
-
-        /// <inheritdoc/>
-        public byte Y { get; set; }
+        public Point Position { get; set; }
 
         /// <inheritdoc/>
         public Direction Rotation { get; set; }
@@ -75,20 +72,15 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public virtual void Initialize()
         {
             var spawnPoint = this.GetNewSpawnPoint(this.SpawnArea);
-            var newx = spawnPoint.X;
-            var newy = spawnPoint.Y;
             if (this.SpawnArea.Quantity > 1)
             {
-                while (!(!this.CurrentMap.Terrain.SafezoneMap[newx, newy] && this.CurrentMap.Terrain.WalkMap[newx, newy]))
+                while (!(!this.CurrentMap.Terrain.SafezoneMap[spawnPoint.X, spawnPoint.Y] && this.CurrentMap.Terrain.WalkMap[spawnPoint.X, spawnPoint.Y]))
                 {
                     spawnPoint = this.GetNewSpawnPoint(this.SpawnArea);
-                    newx = spawnPoint.X;
-                    newy = spawnPoint.Y;
                 }
             }
 
-            this.X = newx;
-            this.Y = newy;
+            this.Position = spawnPoint;
             this.Rotation = GetSpawnDirection(this.SpawnArea.Direction);
         }
 
@@ -123,7 +115,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{this.Definition.Designation} - Id: {this.Id} - Position: {this.X}/{this.Y}";
+            return $"{this.Definition.Designation} - Id: {this.Id} - Position: {this.Position}";
         }
 
         /// <inheritdoc/>
@@ -147,10 +139,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <summary>
         /// Moves the instance to the specified position.
         /// </summary>
-        /// <param name="newx">The new x coordinate.</param>
-        /// <param name="newy">The new y coordinate.</param>
+        /// <param name="target">The new coordinates.</param>
         /// <param name="type">The type of moving.</param>
-        protected virtual void Move(byte newx, byte newy, MoveType type)
+        protected virtual void Move(Point target, MoveType type)
         {
             throw new NotSupportedException("NPCs can't be moved");
         }

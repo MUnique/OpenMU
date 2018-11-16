@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// The default implementation of the world view which is forwarding everything to the game client which specific data packets.
@@ -84,8 +85,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     packet[2] = (byte)PacketType.Teleport;
                     packet[3] = objectId.GetHighByte();
                     packet[4] = objectId.GetLowByte();
-                    packet[5] = obj.X;
-                    packet[6] = obj.Y;
+                    packet[5] = obj.Position.X;
+                    packet[6] = obj.Position.Y;
                     writer.Commit();
                 }
             }
@@ -93,8 +94,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 Span<Direction> steps = this.SendWalkDirections ? stackalloc Direction[16] : null;
                 var stepsLength = 0;
-                var x = obj.X;
-                var y = obj.Y;
+                var point = obj.Position;
                 Direction rotation = Direction.Undefined;
                 if (obj is ISupportWalk supportWalk)
                 {
@@ -115,8 +115,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                         rotation = rotatable.Rotation.RotateLeft();
                     }
 
-                    x = supportWalk.WalkTarget.X;
-                    y = supportWalk.WalkTarget.Y;
+                    point = supportWalk.WalkTarget;
                 }
 
                 var stepsSize = steps == null ? 1 : (steps.Length / 2) + 2;
@@ -126,8 +125,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     walkPacket[2] = (byte)PacketType.Walk;
                     walkPacket[3] = objectId.GetHighByte();
                     walkPacket[4] = objectId.GetLowByte();
-                    walkPacket[5] = x;
-                    walkPacket[6] = y;
+                    walkPacket[5] = point.X;
+                    walkPacket[6] = point.Y;
                     walkPacket[7] = (byte)(stepsLength | ((byte)rotation) << 4);
                     if (steps != null)
                     {
@@ -172,8 +171,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     }
 
                     itemBlock[1] = item.Id.GetLowByte();
-                    itemBlock[2] = item.X;
-                    itemBlock[3] = item.Y;
+                    itemBlock[2] = item.Position.X;
+                    itemBlock[3] = item.Position.Y;
                     this.itemSerializer.SerializeItem(data.Slice(startIndex + 4), item.Item);
 
                     i++;
@@ -312,8 +311,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     var playerBlock = packet.Slice(actualSize);
                     playerBlock[0] = playerId.GetHighByte();
                     playerBlock[1] = playerId.GetLowByte();
-                    playerBlock[2] = newPlayer.X;
-                    playerBlock[3] = newPlayer.Y;
+                    playerBlock[2] = newPlayer.Position.X;
+                    playerBlock[3] = newPlayer.Position.Y;
                     playerBlock.Slice(4, 21);
                     this.appearanceSerializer.WriteAppearanceData(playerBlock.Slice(4, this.appearanceSerializer.NeededSpace), newPlayer.AppearanceData, true); // 4 ... 21
                     playerBlock.Slice(22, 10).WriteString(newPlayer.SelectedCharacter.Name, Encoding.UTF8); // 22 ... 31
@@ -324,8 +323,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     }
                     else
                     {
-                        playerBlock[32] = newPlayer.X;
-                        playerBlock[33] = newPlayer.Y;
+                        playerBlock[32] = newPlayer.Position.X;
+                        playerBlock[33] = newPlayer.Position.Y;
                     }
 
                     playerBlock[34] = (byte)(((int)newPlayer.Rotation * 0x10) + GetStateValue(newPlayer.SelectedCharacter.State));
@@ -399,8 +398,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     }
 
                     ////Coords:
-                    npcBlock[4] = npc.X;
-                    npcBlock[5] = npc.Y;
+                    npcBlock[4] = npc.Position.X;
+                    npcBlock[5] = npc.Position.Y;
                     var supportWalk = npc as ISupportWalk;
                     if (supportWalk?.IsWalking ?? false)
                     {
@@ -409,8 +408,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     }
                     else
                     {
-                        npcBlock[6] = npc.X;
-                        npcBlock[7] = npc.Y;
+                        npcBlock[6] = npc.Position.X;
+                        npcBlock[7] = npc.Position.Y;
                     }
 
                     npcBlock[8] = (byte)((int)npc.Rotation << 4);
@@ -449,7 +448,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
-        public void ShowAreaSkillAnimation(Player playerWhichPerformsSkill, Skill skill, byte x, byte y, byte rotation)
+        public void ShowAreaSkillAnimation(Player playerWhichPerformsSkill, Skill skill, Point point, byte rotation)
         {
             var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
             var playerId = playerWhichPerformsSkill.GetId(this.player);
@@ -462,8 +461,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[4] = skillId.GetLowByte();
                 packet[5] = playerId.GetHighByte();
                 packet[6] = playerId.GetLowByte();
-                packet[7] = x;
-                packet[8] = y;
+                packet[7] = point.X;
+                packet[8] = point.Y;
                 packet[9] = rotation;
                 writer.Commit();
             }

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Views
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Interface for the world view. The world view shows the terrain, the objects and their visible (to other players) actions on the map.
@@ -90,9 +91,8 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="skill">The skill.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
+        /// <param name="point">The coordinates.</param>
         /// <param name="rotation">The rotation.</param>
-        void ShowAreaSkillAnimation(Player player, Skill skill, byte x, byte y, byte rotation);
+        void ShowAreaSkillAnimation(Player player, Skill skill, Point point, byte rotation);
     }
 }

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using System.Collections.Generic;
     using log4net;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Action to send chat messages.
@@ -116,7 +117,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 case "/teleport":
                     if (sa.Length > 2)
                     {
-                        player.Move(byte.Parse(sa[1]), byte.Parse(sa[2]));
+                        player.Move(new Point(byte.Parse(sa[1]), byte.Parse(sa[2])));
                     }
 
                     break;

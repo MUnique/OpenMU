@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Pathfinding;
     using NUnit.Framework;
 
     /// <summary>
@@ -31,8 +32,7 @@ namespace MUnique.OpenMU.Tests
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
             var nonPlayer = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
             {
-                X = 128,
-                Y = 128
+                Position = new Point(128, 128)
             };
             map.Add(nonPlayer);
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
@@ -56,14 +56,12 @@ namespace MUnique.OpenMU.Tests
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
             var nonPlayer1 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
             {
-                X = 128,
-                Y = 128
+                Position = new Point(128, 128)
             };
             map.Add(nonPlayer1);
             var nonPlayer2 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
             {
-                X = 100,
-                Y = 128
+                Position = new Point(100, 128)
             };
             map.Add(nonPlayer2);
             adapter.ObservingBuckets.Add(nonPlayer1.NewBucket);
@@ -72,7 +70,7 @@ namespace MUnique.OpenMU.Tests
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer1));
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer2));
 
-            map.Move(nonPlayer1, nonPlayer2.X, nonPlayer2.Y, nonPlayer1, MoveType.Instant);
+            map.Move(nonPlayer1, nonPlayer2.Position, nonPlayer1, MoveType.Instant);
 
             view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1))), Times.Once);
             view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2))), Times.Once);

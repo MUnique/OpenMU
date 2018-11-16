@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// The type of the range calculation type.
@@ -87,62 +88,52 @@ namespace MUnique.OpenMU.GameLogic
         /// <value>
         /// The <see cref="Bucket{T}"/>.
         /// </value>
-        /// <param name="x">The x coordinate.</param>
-        /// <param name="y">The y coordinate.</param>
+        /// <param name="point">The coordinates.</param>
         /// <returns>The <see cref="Bucket{T}"/> at the specified coordinates.</returns>
-        public Bucket<T> this[int x, int y]
+        public Bucket<T> this[Point point]
         {
-            get
-            {
-                return this.list[(x / this.BucketSideLength) + ((y / this.BucketSideLength) * this.SideLength)];
-            }
+            get => this.list[this.GetListIndex(point)];
 
-            set
-            {
-                this.list[(x / this.BucketSideLength) + (y / this.BucketSideLength * this.SideLength)] = value;
-            }
+            set => this.list[this.GetListIndex(point)] = value;
         }
 
         /// <summary>
         /// Moves the specified element.
         /// </summary>
         /// <param name="element">The element.</param>
-        /// <param name="xOld">The old x coordinate.</param>
-        /// <param name="yOld">The old y coordinate.</param>
-        /// <param name="xNew">The new x coordinate.</param>
-        /// <param name="yNew">The new y coordinate.</param>
-        public void Move(T element, int xOld, int yOld, int xNew, int yNew)
+        /// <param name="source">The source coordinates.</param>
+        /// <param name="target">The target coordinates.</param>
+        public void Move(T element, Point source, Point target)
         {
-            if (xOld / this.BucketSideLength == xNew / this.BucketSideLength && yNew / this.BucketSideLength == yOld / this.BucketSideLength)
+            if (source.X / this.BucketSideLength == target.X / this.BucketSideLength && source.Y / this.BucketSideLength == target.Y / this.BucketSideLength)
             {
                 return;
             }
 
-            this[xOld, yOld].Remove(element);
-            this[xNew, yNew].Add(element);
+            this[source].Remove(element);
+            this[target].Add(element);
         }
 
         /// <summary>
-        /// Gets the items which are in range of the specified coordinate and range.
+        /// Gets the items which are in range of the specified coordinates and range.
         /// </summary>
-        /// <param name="x">The x coordinate.</param>
-        /// <param name="y">The y coordinate.</param>
+        /// <param name="point">The coordinates.</param>
         /// <param name="range">The maximum range.</param>
         /// <param name="rangeType">Type of the range.</param>
         /// <returns>The items which are in range of the specified coordinate and range.</returns>
-        public IEnumerable<ILocateable> GetInRange(int x, int y, int range, RangeType rangeType)
+        public IEnumerable<ILocateable> GetInRange(Point point, int range, RangeType rangeType)
         {
             var result = new List<ILocateable>();
-            var buckets = this.GetBucketsInRange(x, y, range, rangeType);
+            var buckets = this.GetBucketsInRange(point, range, rangeType);
             foreach (var bucket in buckets)
             {
                 if (rangeType == RangeType.Quadratic)
                 {
-                    result.AddRange(bucket.OfType<ILocateable>().Where(obj => obj.IsInRange(x, y, range)));
+                    result.AddRange(bucket.OfType<ILocateable>().Where(obj => obj.IsInRange(point, range)));
                 }
                 else
                 {
-                    result.AddRange(bucket.OfType<ILocateable>().Where(obj => IsInRangeExact(obj.X, obj.Y, x, y, range)));
+                    result.AddRange(bucket.OfType<ILocateable>().Where(obj => obj.Position.EuclideanDistanceTo(point) <= range));
                 }
             }
 
@@ -150,19 +141,18 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
-        /// Gets the buckets in the specified range of the specified coordinate.
+        /// Gets the buckets in the specified range of the specified coordinates.
         /// </summary>
-        /// <param name="x">The x coordinate.</param>
-        /// <param name="y">The y coordinate.</param>
+        /// <param name="point">The coordinates.</param>
         /// <param name="range">The range.</param>
         /// <param name="rangeType">Type of the range.</param>
         /// <returns>The buckets in the specified range of the specified coordinate.</returns>
-        public IEnumerable<Bucket<T>> GetBucketsInRange(int x, int y, int range, RangeType rangeType)
+        public IEnumerable<Bucket<T>> GetBucketsInRange(Point point, int range, RangeType rangeType)
         {
-            int maxX = Math.Min(x + range, (this.SideLength - 1) * this.BucketSideLength) / this.BucketSideLength;
-            int maxY = Math.Min(y + range, (this.SideLength - 1) * this.BucketSideLength) / this.BucketSideLength;
-            int minX = Math.Max(x - range, 0) / this.BucketSideLength;
-            int minY = Math.Max(y - range, 0) / this.BucketSideLength;
+            int maxX = Math.Min(point.X + range, (this.SideLength - 1) * this.BucketSideLength) / this.BucketSideLength;
+            int maxY = Math.Min(point.Y + range, (this.SideLength - 1) * this.BucketSideLength) / this.BucketSideLength;
+            int minX = Math.Max(point.X - range, 0) / this.BucketSideLength;
+            int minY = Math.Max(point.Y - range, 0) / this.BucketSideLength;
             for (int i = minX; maxX >= i; ++i)
             {
                 for (int j = minY; maxY >= j; ++j)
@@ -173,7 +163,7 @@ namespace MUnique.OpenMU.GameLogic
                     }
                     else
                     {
-                        if (IsInRangeExact(i, j, x / this.BucketSideLength, y / this.BucketSideLength, range))
+                        if (new Point((byte)i, (byte)j).EuclideanDistanceTo(new Point((byte)(point.X / this.BucketSideLength), (byte)(point.Y / this.BucketSideLength))) <= range)
                         {
                             yield return this.list[i + (j * this.SideLength)];
                         }
@@ -182,50 +172,7 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        /// <summary>
-        /// Determines whether the points x1/y1 and x2/y2 are in range.
-        /// </summary>
-        /// <param name="x1">The x coordinate of the first position.</param>
-        /// <param name="y1">The y coordinate of the first position.</param>
-        /// <param name="x2">The x coordinate of the second position.</param>
-        /// <param name="y2">The y coordinate of the second position.</param>
-        /// <param name="maxrange">The maximum range.</param>
-        /// <returns>True, if the points are in range.</returns>
-        private static bool IsInRangeExact(int x1, int y1, int x2, int y2, double maxrange)
-        {
-            int xdiff;
-            int ydiff;
-            if (x1 < x2)
-            {
-                xdiff = x2 - x1;
-            }
-            else if (x1 > x2)
-            {
-                xdiff = x1 - x2;
-            }
-            else
-            {
-                xdiff = 0;
-            }
-
-            if (y1 < y2)
-            {
-                ydiff = y2 - y1;
-            }
-            else if (y1 > y2)
-            {
-                ydiff = y1 - y2;
-            }
-            else
-            {
-                ydiff = 0;
-            }
-
-            xdiff *= xdiff;
-            ydiff *= ydiff;
-            double distance = Math.Sqrt(xdiff + ydiff);
-            return distance <= maxrange;
-        }
+        private int GetListIndex(Point point) => (point.X / this.BucketSideLength) + ((point.Y / this.BucketSideLength) * this.SideLength);
 
         private void InitList(int listCapacity)
         {

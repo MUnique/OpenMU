@@ -85,9 +85,9 @@ namespace MUnique.OpenMU.GameServer
 
             public string AccountName => this.player.Account.LoginName;
 
-            public byte LocationX => this.player.X;
+            public byte LocationX => this.player.Position.X;
 
-            public byte LocationY => this.player.Y;
+            public byte LocationY => this.player.Position.Y;
         }
     }
 }

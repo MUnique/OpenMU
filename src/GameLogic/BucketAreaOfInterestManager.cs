@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// A area of interest manager which works with a bucket map.
@@ -30,7 +31,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public void AddObject(ILocateable obj)
         {
-            var newBucket = this.Map[obj.X, obj.Y];
+            var newBucket = this.Map[obj.Position];
             if (obj is IHasBucketInformation bucketInfo)
             {
                 bucketInfo.OldBucket = null;
@@ -41,13 +42,13 @@ namespace MUnique.OpenMU.GameLogic
 
             if (obj is IBucketMapObserver observingPlayer)
             {
-                this.UpdateObservingBuckets(obj.X, obj.Y, observingPlayer);
+                this.UpdateObservingBuckets(obj.Position, observingPlayer);
             }
         }
 
         /// <inheritdoc/>
         /// <remarks>
-        /// This needs to take into account, that the <see cref="Walker"/> might change the <see cref="ILocateable.X"/> and <see cref="ILocateable.Y"/>,
+        /// This needs to take into account, that the <see cref="Walker"/> might change the <see cref="ILocateable.Position"/>,
         /// but not updating the buckets. So accessing the bucket of the current coordinates might not be the current bucket!
         /// </remarks>
         public void RemoveObject(ILocateable obj)
@@ -69,7 +70,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             else
             {
-                this.Map[obj.X, obj.Y].Remove(obj);
+                this.Map[obj.Position].Remove(obj);
             }
 
             if (obj is IBucketMapObserver observingPlayer)
@@ -90,9 +91,9 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public void MoveObject(ILocateable obj, byte newX, byte newY, object moveLock, MoveType moveType)
+        public void MoveObject(ILocateable obj, Point target, object moveLock, MoveType moveType)
         {
-            var differentBucket = this.MoveObjectOnMap(obj, newX, newY, moveLock, moveType);
+            var differentBucket = this.MoveObjectOnMap(obj, target, moveLock, moveType);
 
             if (obj is IObservable observable)
             {
@@ -110,25 +111,24 @@ namespace MUnique.OpenMU.GameLogic
             var observingPlayer = obj as IBucketMapObserver;
             if (differentBucket && observingPlayer != null)
             {
-                this.UpdateObservingBuckets(newX, newY, observingPlayer);
+                this.UpdateObservingBuckets(target, observingPlayer);
             }
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ILocateable> GetInRange(int x, int y, int range, RangeType rangeType)
+        public IEnumerable<ILocateable> GetInRange(Point point, int range, RangeType rangeType)
         {
-            return this.Map.GetInRange(x, y, range, rangeType);
+            return this.Map.GetInRange(point, range, rangeType);
         }
 
         /// <summary>
         /// Updates the observing buckets, and notifies the <paramref name="player"/> about new objects which are in scope, and old objects which are out of scope.
         /// </summary>
-        /// <param name="newx">The new x coordinate on the map.</param>
-        /// <param name="newy">The new y coordinate on the map.</param>
+        /// <param name="newPoint">The new coordinates on the map.</param>
         /// <param name="player">The player.</param>
-        protected void UpdateObservingBuckets(int newx, int newy, IBucketMapObserver player)
+        protected void UpdateObservingBuckets(Point newPoint, IBucketMapObserver player)
         {
-            var curbuckets = this.Map.GetBucketsInRange(newx, newy, player.InfoRange, RangeType.Quadratic).ToList(); // All buckets in range
+            var curbuckets = this.Map.GetBucketsInRange(newPoint, player.InfoRange, RangeType.Quadratic).ToList(); // All buckets in range
             var oldbuckets = player.ObservingBuckets.Where(i => !curbuckets.Contains(i)).ToList(); // Buckets which are not meant to be observed anymore
             var newbuckets = curbuckets.Where(i => !player.ObservingBuckets.Contains(i)).ToList(); // New buckets for observation
 
@@ -156,19 +156,18 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private bool MoveObjectOnMap(ILocateable obj, byte newX, byte newY, object moveLock, MoveType moveType)
+        private bool MoveObjectOnMap(ILocateable obj, Point target, object moveLock, MoveType moveType)
         {
             if (moveType == MoveType.Walk)
             {
                 if (obj is ISupportWalk supportWalk)
                 {
-                    newX = supportWalk.WalkTarget.X;
-                    newY = supportWalk.WalkTarget.Y;
+                    target = supportWalk.WalkTarget;
                 }
             }
 
-            var differentBucket = obj.X / this.Map.BucketSideLength != newX / this.Map.BucketSideLength
-                                  || obj.Y / this.Map.BucketSideLength != newY / this.Map.BucketSideLength;
+            var differentBucket = obj.Position.X / this.Map.BucketSideLength != target.X / this.Map.BucketSideLength
+                                  || obj.Position.Y / this.Map.BucketSideLength != target.Y / this.Map.BucketSideLength;
 
             if (!differentBucket)
             {
@@ -177,10 +176,9 @@ namespace MUnique.OpenMU.GameLogic
 
             lock (moveLock)
             {
-                var oldX = obj.X;
-                var oldY = obj.Y;
+                var oldPosition = obj.Position;
                 Bucket<ILocateable> oldBucket;
-                Bucket<ILocateable> newBucket = this.Map[newX, newY];
+                Bucket<ILocateable> newBucket = this.Map[target];
                 if (obj is IHasBucketInformation bucketInfo)
                 {
                     oldBucket = bucketInfo.NewBucket;
@@ -189,14 +187,13 @@ namespace MUnique.OpenMU.GameLogic
                 }
                 else
                 {
-                    oldBucket = this.Map[oldX, oldY];
+                    oldBucket = this.Map[oldPosition];
                 }
 
                 // only set x and y of the object if it's not walking - the Walker sets these coordinates!
                 if (moveType != MoveType.Walk)
                 {
-                    obj.X = newX;
-                    obj.Y = newY;
+                    obj.Position = target;
                 }
 
                 oldBucket?.Remove(obj);

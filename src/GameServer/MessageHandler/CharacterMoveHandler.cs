@@ -29,20 +29,19 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             var y = packet[4];
             if (moveType == MoveType.Walk)
             {
-                this.Walk(player, packet, x, y);
+                this.Walk(player, packet, new Point(x, y));
             }
             else
             {
-                player.Move(x, y);
+                    player.Move(new Point(x, y));
             }
         }
 
-        private void Walk(Player player, Span<byte> packet, byte x, byte y)
+        private void Walk(Player player, Span<byte> packet, Point sourcePoint)
         {
             if (packet.Length > 6)
             {
                 // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
-                var sourcePoint = new Point(x, y);
                 var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
                 Point target = this.GetTarget(steps, sourcePoint);
 
