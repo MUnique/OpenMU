@@ -32,8 +32,8 @@ namespace MUnique.OpenMU.GameLogic.Attributes
                 throw new ArgumentException($"targetAttribute [{targetAttribute}] is not composable");
             }
 
-            this.parentAttribute.AddElement(this);
             this.element = element;
+            this.parentAttribute.AddElement(this);
             this.element.ValueChanged += this.OnValueChanged;
         }
 
