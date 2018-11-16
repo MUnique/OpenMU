@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="targetAreaCenterX">The x coordinate of the center of the target area.</param>
         /// <param name="targetAreaCenterY">The y coordinate of the center of the target area.</param>
         /// <param name="rotation">The rotation in which the player is looking. It's not really relevant for the hitted objects yet, but for some directed skills in the future it might be.</param>
-        public void Attack(Player player, ushort extraTargetId, ushort skillId, byte targetAreaCenterX, byte targetAreaCenterY, byte rotation)
+        public void Attack(Player player, ushort extraTargetId, ushort skillId, Point targetAreaCenter, byte rotation)
         {
             SkillEntry skillEntry = player.SkillList.GetSkill(skillId);
             var skill = skillEntry.Skill;
@@ -51,10 +51,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (skill.SkillType == SkillType.AreaSkillAutomaticHits)
             {
-                this.PerformAutomaticHits(player, extraTargetId, targetAreaCenterX, targetAreaCenterY, skillEntry, skill);
+                this.PerformAutomaticHits(player, extraTargetId, targetAreaCenter, skillEntry, skill);
             }
 
-            player.ForEachObservingPlayer(p => p.PlayerView.WorldView.ShowAreaSkillAnimation(player, skill, targetAreaCenterX, targetAreaCenterY, rotation), true);
+            player.ForEachObservingPlayer(p => p.PlayerView.WorldView.ShowAreaSkillAnimation(player, skill, targetAreaCenter, rotation), true);
         }
 
         private void PerformAutomaticHits(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)
