@@ -169,7 +169,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         /// <inheritdoc/>
         public void ShowAreaSkillAnimation(Player player, Skill skill, Point point, byte rotation)
         {
-            this.clientProxy.SendAsync("ShowAreaSkillAnimation", player.Id, skill.Number, point.X, point.Y, rotation);
+            this.clientProxy.SendAsync("ShowAreaSkillAnimation", player.Id, skill.SkillID, point.X, point.Y, rotation);
         }
 
         /// <inheritdoc/>
