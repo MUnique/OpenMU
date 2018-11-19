@@ -37,6 +37,8 @@ namespace MUnique.OpenMU.ChatServer
 
         private readonly Timer roomCleanupTimer;
 
+        private readonly IIpAddressResolver addressResolver;
+
         private string publicIp;
 
         private Listener chatClientListener;
@@ -48,10 +50,12 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         /// <param name="port">The port.</param>
         /// <param name="stateObserver">The state observer.</param>
-        public ChatServerListener(int port, IServerStateObserver stateObserver)
+        /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
+        public ChatServerListener(int port, IServerStateObserver stateObserver, IIpAddressResolver addressResolver)
         {
             this.port = port;
             this.stateObserver = stateObserver;
+            this.addressResolver = addressResolver;
             this.manager = new ChatRoomManager();
             this.randomNumberGenerator = RandomNumberGenerator.Create();
 
@@ -176,7 +180,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <returns>The ip address of the server.</returns>
         public string GetIPAddress()
         {
-            return this.publicIp ?? (this.publicIp = PublicIpResolver.GetIPv4().ToString());
+            return this.publicIp ?? (this.publicIp = this.addressResolver.GetIPv4().ToString());
         }
 
         /// <summary>

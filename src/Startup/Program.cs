@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.GuildServer;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.LoginServer;
+    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.Initialization;
@@ -55,11 +56,13 @@ namespace MUnique.OpenMU.Startup
                 this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"));
             }
 
+            var ipResolver = args.Contains("-local") ? (IIpAddressResolver)new LocalIpResolver() : new PublicIpResolver();
+
             Log.Info("Start initializing sub-components");
             var signalRServerObserver = new SignalRGameServerStateObserver();
             var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
             var loginServer = new LoginServer();
-            var chatServer = new ChatServerListener(55980, signalRServerObserver);
+            var chatServer = new ChatServerListener(55980, signalRServerObserver, ipResolver);
             this.servers.Add(chatServer);
             var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
             var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
@@ -77,7 +80,7 @@ namespace MUnique.OpenMU.Startup
                     {
                         // At the moment only one main packet handler should be used.
                         // A TCP port can only be used for one TCP listener, so we have to introduce something to pair ports with main packets handlers.
-                        gameServer.AddListener(new DefaultTcpGameServerListener(gameServerDefinition.NetworkPort, gameServer.ServerInfo, gameServer.Context, connectServer, mainPacketHandler));
+                        gameServer.AddListener(new DefaultTcpGameServerListener(gameServerDefinition.NetworkPort, gameServer.ServerInfo, gameServer.Context, connectServer, mainPacketHandler, ipResolver));
                     }
 
                     this.servers.Add(gameServer);

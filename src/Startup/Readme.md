@@ -17,3 +17,4 @@ You can start the server with the following parameters:
 | -autostart  | It automatically initializes the game servers and starts the tcp listeners of all (sub-)servers |
 | -reinit     | It recreates and reinitializes the database. It doesn't have any effect when *-demo* is used. |
 | -demo       | Instead of using an external database, it uses in-memory repositories and data is initialized at each start. Only for testing, not for production usage, as player progress is **not saved** to a database or file. |
+| -local      | Uses the local ip address to bind listeners on it. Otherwise, the public ip is automatically determined by an [external API](https://www.ipify.org/). |

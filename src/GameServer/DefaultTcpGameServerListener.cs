@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameServer
 
         private readonly IConnectServer connectServer;
         private readonly IMainPacketHandler mainPacketHandler;
-
+        private readonly IIpAddressResolver addressResolver;
         private TcpListener gslistener;
 
         /// <summary>
@@ -44,13 +44,15 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="gameContext">The game context.</param>
         /// <param name="connectServer">The connect server.</param>
         /// <param name="mainPacketHandler">The main packet handler which should be used by clients which connected through this listener.</param>
-        public DefaultTcpGameServerListener(int port, IGameServerInfo gameServerInfo, GameServerContext gameContext, IConnectServer connectServer, IMainPacketHandler mainPacketHandler)
+        /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
+        public DefaultTcpGameServerListener(int port, IGameServerInfo gameServerInfo, GameServerContext gameContext, IConnectServer connectServer, IMainPacketHandler mainPacketHandler, IIpAddressResolver addressResolver)
         {
             this.port = port;
             this.gameServerInfo = gameServerInfo;
             this.gameContext = gameContext;
             this.connectServer = connectServer;
             this.mainPacketHandler = mainPacketHandler;
+            this.addressResolver = addressResolver;
         }
 
         /// <inheritdoc/>
@@ -68,7 +70,7 @@ namespace MUnique.OpenMU.GameServer
             Logger.InfoFormat("Starting Server Listener, port {0}", this.port);
             this.gslistener = new TcpListener(IPAddress.Any, this.port);
             this.gslistener.Start();
-            this.connectServer.RegisterGameServer(this.gameServerInfo, new IPEndPoint(PublicIpResolver.GetIPv4(), this.port));
+            this.connectServer.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), this.port));
             Task.Run(this.BeginAccept);
             Logger.Info("Server listener started.");
         }
