@@ -7,9 +7,11 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     using System;
     using System.IO;
     using System.Reflection;
+    using System.Linq;
     using log4net;
     using log4net.Config;
     using MUnique.OpenMU.ChatServer;
+    using MUnique.OpenMU.Network;
 
     /// <summary>
     /// The main entry class of the application.
@@ -31,7 +33,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         {
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
-
+            var addressResolver = args.Contains("-local") ? (IIpAddressResolver)new LocalIpResolver() : new PublicIpResolver();
             var settings = new Settings("ChatServer.cfg");
 
             int chatServerListenerPort = settings.ChatServerListenerPort ?? 55980;
@@ -41,7 +43,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
 
             try
             {
-                var chatServer = new ChatServerListener(chatServerListenerPort, null);
+                var chatServer = new ChatServerListener(chatServerListenerPort, null, addressResolver);
                 chatServer.Xor32Key = customXor32Key ?? chatServer.Xor32Key;
                 chatServer.Start();
                 var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort);
