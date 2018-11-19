@@ -10,28 +10,29 @@ namespace MUnique.OpenMU.Network
     using log4net;
 
     /// <summary>
-    /// Resolves the public ip address.
+    /// Resolves the own ip address by calling an external API to get the public <see cref="IPAddress"/>.
     /// </summary>
-    public static class PublicIpResolver
+    public class PublicIpResolver : IIpAddressResolver
     {
-        private static readonly TimeSpan MaximumCachedAddressLifetime = new TimeSpan(0, 5, 0);
         private static readonly ILog Log = LogManager.GetLogger(typeof(PublicIpResolver));
-        private static IPAddress publicIPv4;
-        private static DateTime lastRequest = DateTime.MinValue;
+        private static PublicIpResolver instance;
+        private readonly TimeSpan maximumCachedAddressLifetime = new TimeSpan(0, 5, 0);
+        private IPAddress publicIPv4;
+        private DateTime lastRequest = DateTime.MinValue;
 
         /// <summary>
         /// Gets the public IPv4 address with the help of the following api: https://www.ipify.org/.
         /// </summary>
         /// <returns>The public IPv4 address.</returns>
-        public static IPAddress GetIPv4()
+        public IPAddress GetIPv4()
         {
-            if (lastRequest + MaximumCachedAddressLifetime < DateTime.Now)
+            if (this.lastRequest + this.maximumCachedAddressLifetime < DateTime.Now)
             {
-                publicIPv4 = InternalGetIPv4();
-                lastRequest = DateTime.Now;
+                this.publicIPv4 = InternalGetIPv4();
+                this.lastRequest = DateTime.Now;
             }
 
-            return publicIPv4;
+            return this.publicIPv4;
         }
 
         private static IPAddress InternalGetIPv4()
