@@ -171,7 +171,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.walkLock.EnterReadLock();
                 try
                 {
-                    stop = !(attackable?.Alive ?? false) || this.nextSteps.Count <= 0;
+                    stop = this.ShouldWalkerStop();
                 }
                 finally
                 {
@@ -188,12 +188,15 @@ namespace MUnique.OpenMU.GameLogic
                 this.walkLock.EnterWriteLock();
                 try
                 {
-                    var nextStep = this.nextSteps.Pop();
-                    this.walkSupporter.Position = nextStep.To;
-
-                    if (this.walkSupporter is IRotatable rotateable)
+                    if (!this.ShouldWalkerStop())
                     {
-                        rotateable.Rotation = nextStep.Direction;
+                        var nextStep = this.nextSteps.Pop();
+                        this.walkSupporter.Position = nextStep.To;
+
+                        if (this.walkSupporter is IRotatable rotateable)
+                        {
+                            rotateable.Rotation = nextStep.Direction;
+                        }
                     }
                 }
                 finally
@@ -206,5 +209,7 @@ namespace MUnique.OpenMU.GameLogic
                 Log.Error(e.Message, e);
             }
         }
+
+        private bool ShouldWalkerStop() => !((this.walkSupporter as IAttackable)?.Alive ?? false) || this.nextSteps.Count <= 0;
     }
 }
