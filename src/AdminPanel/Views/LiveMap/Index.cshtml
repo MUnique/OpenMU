@@ -1,79 +1,81 @@
 ﻿@page
 @{
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+        <title>Live Map</title>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
-    <title>Live Map</title>
+        <link rel="stylesheet" href="@Url.Content("~/content/css/bootstrap.css")">
 
-    <link rel="stylesheet" href="@Url.Content("~/content/css/bootstrap.css")">
+        <script src="@Url.Content("~/content/js/signalr.js")"></script>
+        <script src="@Url.Content("~/content/js/system-production.js")"></script>
+        <script src="@Url.Content("~/content/js/app.js")"></script>
+        <script src="@Url.Content("~/content/js/Stats.js")"></script>
+        <script src="@Url.Content("~/content/js/three.min.js")"></script>
 
-    <script src="@Url.Content("~/content/js/signalr.js")"></script>
-    <script src="@Url.Content("~/content/js/system-production.js")"></script>
-    <script src="@Url.Content("~/content/js/app.js")"></script>
-    <script src="@Url.Content("~/content/js/Stats.js")"></script>
-    <script src="@Url.Content("~/content/js/three.min.js")"></script>
+        <style type="text/css">
+            body {
+                margin: auto;
+                overflow: hidden;
+                font-style: normal;
+                font-weight: 400;
+            }
+        </style>
+    </head>
 
-    <style type="text/css">
-        body {
-            margin: auto;
-            overflow: hidden;
-            font-style: normal;
-            font-weight: 400;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="container" style="float: left;width: 25%"></div>
-    <div style="float: left; width: 250px;">
-        <div id="player_list"></div>
-        <div id="selected_info" style="padding-left: 8px;position: absolute;bottom: 0;">
-            <p>Name: <span id="objectData_name"></span>, ID: <span id="objectData_id"></span>, Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</p>
+    <body>
+        <div id="container" style="float: left;width: 25%"></div>
+        <div style="float: left; width: 250px;">
+            <div id="player_list"></div>
+            <div id="selected_info" style="padding-left: 8px;position: absolute;bottom: 0;">
+                <p>Name: <span id="objectData_name"></span>, ID: <span id="objectData_id"></span>, Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</p>
+            </div>
         </div>
-    </div>
-</body>
-
-@await Html.PartialAsync("SystemConfig")
-
-<script>
-
-    function getParameterByName(name, url) {
-        if (!url) url = window.location.href;
-        url = url.toLowerCase(); // This is just to avoid case sensitiveness
-        name = name.replace(/[\[\]]/g, "\\$&").toLowerCase();// This is just to avoid case sensitiveness for query parameter name
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-    }
-
-    var stats = new Stats();
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.top = '0px';
-    document.body.appendChild(stats.domElement);
-
-    System.import("liveview/MapApp")
-        .then(module =>
-        {
-            console.log('MapApp module resolved');
 
 
+        @await Html.PartialAsync("SystemConfig")
 
-            // TODO: Make React component
-            let onPickObject = function(obj) {
-                if (obj !== undefined && obj !== null) {
-                    document.getElementById("objectData_name").textContent = obj.name;
-                    document.getElementById("objectData_id").textContent = obj.id;
-                    document.getElementById("objectData_x").textContent = obj.x;
-                    document.getElementById("objectData_y").textContent = obj.y;
-                }
+        <script>
+
+            function getParameterByName(name, url) {
+                if (!url) url = window.location.href;
+                url = url.toLowerCase(); // This is just to avoid case sensitiveness
+                name = name.replace(/[\[\]]/g, "\\$&").toLowerCase();// This is just to avoid case sensitiveness for query parameter name
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, " "));
             }
 
-            let mapApp = new module.MapApp(stats, getParameterByName('serverId'), getParameterByName('mapId'), document.getElementById('container'), document.getElementById("player_list"), onPickObject);
-        })
-        .catch(err => console.error(err));
+            var stats = new Stats();
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.top = '0px';
+            document.body.appendChild(stats.domElement);
 
-</script>
+            System.import("liveview/MapApp")
+                .then(module => {
+                    console.log('MapApp module resolved');
+
+
+
+                    // TODO: Make React component
+                    let onPickObject = function (obj) {
+                        if (obj !== undefined && obj !== null) {
+                            document.getElementById("objectData_name").textContent = obj.name;
+                            document.getElementById("objectData_id").textContent = obj.id;
+                            document.getElementById("objectData_x").textContent = obj.x;
+                            document.getElementById("objectData_y").textContent = obj.y;
+                        }
+                    }
+
+                    let mapApp = new module.MapApp(stats, getParameterByName('serverId'), getParameterByName('mapId'), document.getElementById('container'), document.getElementById("player_list"), onPickObject);
+                })
+                .catch(err => console.error(err));
+
+        </script>
+    </body>
+</html>
 }
