@@ -13,8 +13,6 @@ namespace MUnique.OpenMU.Network
     /// </summary>
     public class LocalIpResolver : IIpAddressResolver
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(LocalIpResolver));
-
         /// <inheritdoc/>
         public IPAddress GetIPv4()
         {
