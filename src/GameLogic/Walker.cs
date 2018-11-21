@@ -188,16 +188,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.walkLock.EnterWriteLock();
                 try
                 {
-                    if (!this.ShouldWalkerStop())
-                    {
-                        var nextStep = this.nextSteps.Pop();
-                        this.walkSupporter.Position = nextStep.To;
-
-                        if (this.walkSupporter is IRotatable rotateable)
-                        {
-                            rotateable.Rotation = nextStep.Direction;
-                        }
-                    }
+                    this.WalkNextStepIfStepAvailable();
                 }
                 finally
                 {
@@ -207,6 +198,20 @@ namespace MUnique.OpenMU.GameLogic
             catch (Exception e)
             {
                 Log.Error(e.Message, e);
+            }
+        }
+
+        private void WalkNextStepIfStepAvailable()
+        {
+            if (!this.ShouldWalkerStop())
+            {
+                var nextStep = this.nextSteps.Pop();
+                this.walkSupporter.Position = nextStep.To;
+
+                if (this.walkSupporter is IRotatable rotateable)
+                {
+                    rotateable.Rotation = nextStep.Direction;
+                }
             }
         }
 
