@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         }
 
         /// <inheritdoc/>
-        public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, byte direction)
+        public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction)
         {
             this.clientProxy.SendAsync("ShowAnimation", animatingObj.Id, animation, targetObj?.Id, direction);
         }

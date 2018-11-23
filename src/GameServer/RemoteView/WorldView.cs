@@ -112,7 +112,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
                     if (obj is IRotatable rotatable)
                     {
-                        rotation = rotatable.Rotation.RotateLeft();
+                        rotation = rotatable.Rotation;
                     }
 
                     point = supportWalk.WalkTarget;
@@ -127,15 +127,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     walkPacket[4] = objectId.GetLowByte();
                     walkPacket[5] = point.X;
                     walkPacket[6] = point.Y;
-                    walkPacket[7] = (byte)(stepsLength | ((byte)rotation) << 4);
+                    walkPacket[7] = (byte)(stepsLength | ((byte)rotation - 1) << 4);
                     if (steps != null)
                     {
                         walkPacket[7] = (byte)((int)steps[0] << 4 | stepsSize);
                         for (int i = 0; i < stepsSize; i += 2)
                         {
                             var index = 8 + (i / 2);
-                            var firstStep = steps[i];
-                            var secondStep = stepsSize > i + 2 ? steps[i + 2] : Direction.Undefined;
+                            var firstStep = steps[i] - 1;
+                            var secondStep = stepsSize > i + 2 ? steps[i + 2] - 1 : Direction.Undefined;
                             walkPacket[index] = (byte)((int)firstStep << 4 | (int)secondStep);
                         }
                     }
@@ -209,7 +209,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// This Packet is sent to the Server when an Object does an animation, including attacking other players.
         /// It will create the animation at the client side.
         /// </remarks>
-        public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, byte direction)
+        public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction)
         {
             var animatingId = animatingObj.GetId(this.player);
             if (targetObj == null)
@@ -220,7 +220,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     packet[2] = 0x18;
                     packet[3] = animatingId.GetHighByte();
                     packet[4] = animatingId.GetLowByte();
-                    packet[5] = direction;
+                    packet[5] = (byte)(direction - 1);
                     packet[6] = animation;
                     writer.Commit();
                 }
@@ -234,7 +234,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     packet[2] = 0x18;
                     packet[3] = animatingId.GetHighByte();
                     packet[4] = animatingId.GetLowByte();
-                    packet[5] = direction;
+                    packet[5] = (byte)(direction - 1);
                     packet[6] = animation;
                     packet[7] = targetId.GetHighByte();
                     packet[8] = targetId.GetLowByte();

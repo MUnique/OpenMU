@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
     using log4net;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.Network;
@@ -38,7 +39,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
             ushort id = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
             var attackAnimation = packet[5];
-            var lookingDirection = packet[6];
+            var lookingDirection = (Direction)(packet[6] + 1);
             var currentMap = player.CurrentMap;
             if (currentMap == null)
             {

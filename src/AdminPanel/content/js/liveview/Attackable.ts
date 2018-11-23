@@ -93,7 +93,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
     }
 
     private setRotation(value: number) {
-        this.rotation.z = THREE.Math.degToRad(((value + 1) * 360) / 8);
+        this.rotation.z = THREE.Math.degToRad((value * 360) / 8);
     }
 
     setObjectPositionOnMap(newX: number, newY: number) {

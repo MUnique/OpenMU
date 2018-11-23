@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
@@ -125,55 +125,9 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="objectTo">The object to which the direction is calculated.</param>
         /// <returns>The direction between this and another object.</returns>
         /// <remarks>
-        /// TODO: Replace usages by <see cref="DirectionExtensions.GetDirectionTo"/>.
         ///       The returned values differ a bit, so we first have to analyze which function is correct.
         /// </remarks>
-        public static byte GetDirectionTo(this ILocateable objectFrom, ILocateable objectTo) => GetDirectionTo2(objectFrom.Position, objectTo.Position);
-
-        /// <summary>
-        /// Gets the direction to another object.
-        /// </summary>
-        /// <param name="from">The object from which the direction is calculated.</param>
-        /// <param name="to">The object to which the direction is calculated.</param>
-        /// <returns>The direction between this and another object.</returns>
-        public static byte GetDirectionTo2(this Point from, Point to)
-        {
-            byte dir = 0;
-            if ((from.X < to.X) && (from.Y < to.Y))
-            {
-                dir = 0;
-            }
-            else if ((from.X == to.X) && (from.Y < to.Y))
-            {
-                dir = 1;
-            }
-            else if ((from.X > to.X) && (from.Y < to.Y))
-            {
-                dir = 2;
-            }
-            else if ((from.X > to.X) && (from.Y == to.Y))
-            {
-                dir = 3;
-            }
-            else if ((from.X > to.X) && (from.Y > to.Y))
-            {
-                dir = 4;
-            }
-            else if ((from.X == to.X) && (from.Y > to.Y))
-            {
-                dir = 5;
-            }
-            else if ((from.X < to.X) && (from.Y > to.Y))
-            {
-                dir = 6;
-            }
-            else if ((from.X < to.X) && (from.Y == to.Y))
-            {
-                dir = 7;
-            }
-
-            return dir;
-        }
+        public static Direction GetDirectionTo(this ILocateable objectFrom, ILocateable objectTo) => objectFrom.Position.GetDirectionTo(objectTo.Position);
 
         /// <summary>
         /// Determines whether the object is at the safezone of his current map.

@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             area.GameMap = map;
             area.MonsterDefinition = monsterDefinition;
             area.Quantity = quantity;
-            area.Direction = (Direction)direction;
+            area.Direction = direction == 0 ? Direction.Undefined : (Direction)(direction + 1);
             area.SpawnTrigger = spawnTrigger;
             area.X1 = x1;
             area.X2 = x2;

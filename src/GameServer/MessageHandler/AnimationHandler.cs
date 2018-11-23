@@ -21,11 +21,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            var rotation = packet[3];
+            var rotation = (Direction)(packet[3] + 1);
             var animation = packet[4];
             if (packet[4] == 0x7A)
             {
-                player.Rotation = (Direction)rotation;
+                player.Rotation = rotation;
             }
 
             player.ForEachObservingPlayer(o => o.WorldView.ShowAnimation(player, animation, null, rotation), false);

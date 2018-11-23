@@ -8,13 +8,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// Direction where an object is looking at.
     /// </summary>
     /// <remarks>
-    /// Direction Matrix (P = Player), similar to how it's shown in the web live map:
-    ///     Y | - | y | +
-    ///   X   |   |   |
-    /// -------------------
-    ///   -   | 4 | 5 | 6
-    ///   x   | 3 | P | 7
-    ///   +   | 2 | 1 | 8
+    /// The directions are named/valued after how they look like due the game client.
+    /// That means, when a character looks to south, it looks straight downwards. Because the map is rotated on the game client, that's actually a corner.
+    /// Since we use the value 0 as 'Undefined' and the original game client uses value 0 as 'West', this has to be considered when communicating with it.
     /// </remarks>
     public enum Direction
     {
@@ -24,9 +20,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
         Undefined = 0,
 
         /// <summary>
-        /// The direction looking to the south.
+        /// The direction looking to the west.
         /// </summary>
-        South = 1,
+        West = 1,
 
         /// <summary>
         /// The direction looking to the south east.
@@ -34,33 +30,33 @@ namespace MUnique.OpenMU.DataModel.Configuration
         SouthWest = 2,
 
         /// <summary>
-        /// The direction looking to the east.
+        /// The direction looking to the south.
         /// </summary>
-        West = 3,
-
-        /// <summary>
-        /// The direction looking to the north east.
-        /// </summary>
-        NorthWest = 4,
-
-        /// <summary>
-        /// The direction looking to the north.
-        /// </summary>
-        North = 5,
-
-        /// <summary>
-        /// The direction looking to the north west.
-        /// </summary>
-        NorthEast = 6,
-
-        /// <summary>
-        /// The direction looking to the west.
-        /// </summary>
-        East = 7,
+        South = 3,
 
         /// <summary>
         /// The direction looking to the south west.
         /// </summary>
-        SouthEast = 8,
+        SouthEast = 4,
+
+        /// <summary>
+        /// The direction looking to the east.
+        /// </summary>
+        East = 5,
+
+        /// <summary>
+        /// The direction looking to the north east.
+        /// </summary>
+        NorthEast = 6,
+
+        /// <summary>
+        /// The direction looking to the north.
+        /// </summary>
+        North = 7,
+
+        /// <summary>
+        /// The direction looking to the north west.
+        /// </summary>
+        NorthWest = 8,
     }
 }

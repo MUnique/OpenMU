@@ -90,14 +90,15 @@ export class WorldUpdater extends SignalRConnector {
     showAreaSkillAnimation(playerId: number, skill: number, x: number, y: number, rotation: number) {
         let animating = this.world.getObjectById(playerId);
         if (animating !== undefined && animating !== null) {
-            animating.rotateTo(rotation);
+            
+            animating.rotateTo(rotation); // TODO: rotation (0-255) is different to direction (1-8)!
         }
     }
 
     showAnimation(animatingId: number, animation: number, targetId: number, direction: number) {
         let animating = this.world.getObjectById(animatingId);
         if (animating !== undefined && animating !== null) {
-            animating.rotateTo(direction / 0x10);
+            animating.rotateTo(direction);
         }
 
         if (targetId !== null) {

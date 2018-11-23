@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// <param name="animation">The animation.</param>
         /// <param name="targetObj">The target object.</param>
         /// <param name="direction">The direction.</param>
-        void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, byte direction);
+        void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction);
 
         /// <summary>
         /// Will be called then the map got changed. The new map and coordinates are defined in the player.SelectedCharacter.CurrentMap.

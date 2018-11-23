@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
             else
             {
-                player.Rotation = (Direction)((packet[5] >> 4) & 0x0F);
+                player.Rotation = (Direction)(1 + (packet[5] >> 4) & 0x0F);
             }
         }
 
@@ -94,20 +94,20 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             // the first 4 bits of the first path byte contains the number of steps
             var count = packet[5] & 0x0F;
             var result = new Direction[count];
-            var firstDirection = (Direction)((packet[5] >> 4) & 0x0F);
-            result[0] = firstDirection.RotateLeft();
+            var firstDirection = (Direction)(1 + (packet[5] >> 4) & 0x0F);
+            result[0] = firstDirection;
 
             int i;
             for (i = 1; i < count; i++)
             {
                 var index = 5 + (i / 2);
-                var direction = (Direction)((packet[index] >> ((i % 2) == 0 ? 0 : 4)) & 0x0F);
+                var direction = (Direction)(1 + (packet[index] >> ((i % 2) == 0 ? 0 : 4)) & 0x0F);
                 if (direction == Direction.Undefined)
                 {
                     break;
                 }
 
-                result[i] = direction.RotateLeft();
+                result[i] = direction;
             }
 
             return result.AsSpan(0, i);
