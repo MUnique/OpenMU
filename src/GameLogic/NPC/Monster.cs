@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public void Attack(IAttackable player)
         {
             player.AttackBy(this, null);
-            this.ForEachObservingPlayer(p => p.PlayerView.WorldView.ShowAnimation(this, MonsterAttackAnimation, player, this.GetDirectionTo(player)), true);
+            this.ForEachWorldObserver(p => p.WorldView.ShowAnimation(this, MonsterAttackAnimation, player, this.GetDirectionTo(player)), true);
         }
 
         /// <summary>

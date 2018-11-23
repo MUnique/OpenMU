@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 this.PerformAutomaticHits(player, extraTargetId, targetAreaCenter, skillEntry, skill);
             }
 
-            player.ForEachObservingPlayer(p => p.PlayerView.WorldView.ShowAreaSkillAnimation(player, skill, targetAreaCenter, rotation), true);
+            player.ForEachWorldObserver(p => p.WorldView.ShowAreaSkillAnimation(player, skill, targetAreaCenter, rotation), true);
         }
 
         private void PerformAutomaticHits(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)

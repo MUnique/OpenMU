@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 player.Rotation = rotation;
             }
 
-            player.ForEachObservingPlayer(o => o.WorldView.ShowAnimation(player, animation, null, rotation), false);
+            player.ForEachWorldObserver(o => o.WorldView.ShowAnimation(player, animation, null, rotation), false);
         }
     }
 }

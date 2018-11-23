@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            player.ForEachObservingPlayer(obs => obs.PlayerView.WorldView.ShowSkillAnimation(player, target, skill), true);
+            player.ForEachWorldObserver(obs => obs.WorldView.ShowSkillAnimation(player, target, skill), true);
             if (!player.IsInRange(target.Position, skill.Range + 2))
             {
                 return;
