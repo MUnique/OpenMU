@@ -71,7 +71,7 @@ namespace MUnique.OpenMU.Tests
             item.Durability = 1;
             player.Inventory.AddItem(0, item);
             var skillList = new SkillList(player);
-            Assert.That(skillList.RemoveItemSkill(item.Definition.Skill.SkillID.ToUnsigned()), Is.True);
+            Assert.That(skillList.RemoveItemSkill(item.Definition.Skill.Number.ToUnsigned()), Is.True);
             Assert.That(skillList.ContainsSkill(ItemSkillId), Is.False);
         }
 
@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.Tests
             definition.SetupAllProperties();
             definition.Object.Skill = new OpenMU.DataModel.Configuration.Skill
             {
-                SkillID = ItemSkillId.ToSigned()
+                Number = ItemSkillId.ToSigned()
             };
 
             definition.Object.Height = 1;
@@ -108,7 +108,7 @@ namespace MUnique.OpenMU.Tests
 
         private SkillEntry CreateSkillEntry(ushort skillId)
         {
-            var skillEntry = new SkillEntry { Skill = new OpenMU.DataModel.Configuration.Skill { SkillID = skillId.ToSigned() } };
+            var skillEntry = new SkillEntry { Skill = new OpenMU.DataModel.Configuration.Skill { Number = skillId.ToSigned() } };
             return skillEntry;
         }
 

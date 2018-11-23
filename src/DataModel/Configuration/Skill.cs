@@ -97,12 +97,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
     public class Skill
     {
         /// <summary>
-        /// Gets or sets the skill identifier.
+        /// Gets or sets the skill number.
         /// </summary>
         /// <remarks>
-        /// The client is referencing skills by this id.
+        /// The client is referencing skills by this number.
         /// </remarks>
-        public short SkillID { get; set; }
+        public short Number { get; set; }
 
         /// <summary>
         /// Gets or sets the name.

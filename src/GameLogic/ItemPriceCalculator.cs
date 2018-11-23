@@ -319,7 +319,7 @@ namespace MUnique.OpenMU.GameLogic
                     }
                 }
 
-                if (item.HasSkill && definition.Skill?.SkillID != ForceWaveSkillId)
+                if (item.HasSkill && definition.Skill?.Number != ForceWaveSkillId)
                 {
                     price += (long)(price * 1.5);
                 }

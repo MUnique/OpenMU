@@ -455,7 +455,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         {
             foreach (var effectOfSkill in EffectsOfSkills)
             {
-                var skill = this.GameConfiguration.Skills.First(s => s.SkillID == (short)effectOfSkill.Key);
+                var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)effectOfSkill.Key);
                 var effect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)effectOfSkill.Value);
                 skill.MagicEffectDef = effect;
             }
@@ -465,7 +465,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         {
             var skill = this.Context.CreateNew<Skill>();
             this.GameConfiguration.Skills.Add(skill);
-            skill.SkillID = (short)skillId;
+            skill.Number = (short)skillId;
             skill.Name = name;
             if (levelRequirement > 0)
             {

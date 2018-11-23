@@ -78,7 +78,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(scroll);
             scroll.Group = 15;
             scroll.Number = number;
-            scroll.Skill = this.GameConfiguration.Skills.First(skill => skill.SkillID == skillNumber);
+            scroll.Skill = this.GameConfiguration.Skills.First(skill => skill.Number == skillNumber);
             scroll.Width = 1;
             scroll.Height = 2;
             scroll.Name = name;

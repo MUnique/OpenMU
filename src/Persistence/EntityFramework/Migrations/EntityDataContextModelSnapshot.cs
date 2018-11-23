@@ -1482,8 +1482,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("Name");
 
                     b.Property<short>("Range");
+                    b.Property<short>("Number");
 
-                    b.Property<short>("SkillID");
 
                     b.Property<int>("SkillType");
 

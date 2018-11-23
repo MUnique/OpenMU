@@ -427,7 +427,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var shield = this.CreateArmor(number, slot, width, height, name, dropLevel, 0, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
             if (skill != 0)
             {
-                shield.Skill = this.GameConfiguration.Skills.First(s => s.SkillID == skill);
+                shield.Skill = this.GameConfiguration.Skills.First(s => s.Number == skill);
             }
 
             if (defense > 0)

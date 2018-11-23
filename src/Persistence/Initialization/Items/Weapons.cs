@@ -309,7 +309,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             if (skillNumber > 0)
             {
-                var itemSkill = this.GameConfiguration.Skills.First(s => s.SkillID == skillNumber);
+                var itemSkill = this.GameConfiguration.Skills.First(s => s.Number == skillNumber);
                 item.Skill = itemSkill;
             }
 

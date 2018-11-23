@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(orb);
             orb.Group = 12;
             orb.Number = number;
-            orb.Skill = this.GameConfiguration.Skills.First(skill => skill.SkillID == skillNumber);
+            orb.Skill = this.GameConfiguration.Skills.First(skill => skill.Number == (short)skillNumber);
             orb.Width = 1;
             orb.Height = height;
             orb.Name = name;

@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.player = player;
             this.learnedSkills = this.player.SelectedCharacter.LearnedSkills ?? new List<SkillEntry>();
-            this.availableSkills = this.learnedSkills.ToDictionary(skillEntry => skillEntry.Skill.SkillID.ToUnsigned());
+            this.availableSkills = this.learnedSkills.ToDictionary(skillEntry => skillEntry.Skill.Number.ToUnsigned());
             this.itemSkills = new List<SkillEntry>();
             this.player.Inventory.EquippedItems
                 .Where(item => item.HasSkill)
@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.GameLogic
 
             // We need to take into account that we there might be multiple items equipped with the same skill
             var skillRemoved = this.itemSkills.Remove(skillEntry);
-            if (skillRemoved && this.itemSkills.All(s => s.Skill.SkillID != skillId))
+            if (skillRemoved && this.itemSkills.All(s => s.Skill.Number != skillId))
             {
                 this.player.PlayerView.RemoveSkill(skillEntry.Skill);
                 this.availableSkills.Remove(skillId);
@@ -111,16 +111,16 @@ namespace MUnique.OpenMU.GameLogic
             this.itemSkills.Add(skillEntry);
 
             // Item skills are always level 0, so it doesn't matter which one is added to the dictionary.
-            if (!this.ContainsSkill((ushort)skill.SkillID))
+            if (!this.ContainsSkill((ushort)skill.Number))
             {
-                this.availableSkills.Add(skill.SkillID.ToUnsigned(), skillEntry);
+                this.availableSkills.Add(skill.Number.ToUnsigned(), skillEntry);
                 this.player.PlayerView.AddSkill(skill);
             }
         }
 
         private void AddLearnedSkill(SkillEntry skill)
         {
-            this.availableSkills.Add(skill.Skill.SkillID.ToUnsigned(), skill);
+            this.availableSkills.Add(skill.Skill.Number.ToUnsigned(), skill);
             this.learnedSkills.Add(skill);
 
             this.player.PlayerView.AddSkill(skill.Skill);
@@ -159,7 +159,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             else
             {
-                this.RemoveItemSkill(item.Definition.Skill.SkillID.ToUnsigned());
+                this.RemoveItemSkill(item.Definition.Skill.Number.ToUnsigned());
             }
         }
     }

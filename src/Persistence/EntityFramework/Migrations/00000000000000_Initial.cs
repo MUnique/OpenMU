@@ -1078,8 +1078,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     DamageType = table.Column<int>(nullable: false),
+                    Number = table.Column<short>(nullable: false),
                     Range = table.Column<short>(nullable: false),
-                    SkillID = table.Column<short>(nullable: false),
                     SkillType = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Id = table.Column<Guid>(nullable: false),

@@ -214,7 +214,7 @@ namespace MUnique.OpenMU.Tests
 
             var skill = new Mock<Skill>();
             skill.SetupAllProperties();
-            skill.Object.SkillID = id;
+            skill.Object.Number = id;
             skill.Setup(s => s.QualifiedCharacters).Returns(new List<CharacterClass>());
             skill.Setup(s => s.MasterDefinitions).Returns(new List<MasterSkillDefinition>());
             skill.Object.QualifiedCharacters.Add(charClass);

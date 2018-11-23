@@ -432,7 +432,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var playerId = attackingPlayer.GetId(this.player);
             var targetId = target.GetId(this.player);
-            var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
+            var skillId = NumberConversionExtensions.ToUnsigned(skill.Number);
             using (var writer = this.connection.StartSafeWrite(0xC3, 0x09))
             {
                 var packet = writer.Span;
@@ -450,7 +450,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowAreaSkillAnimation(Player playerWhichPerformsSkill, Skill skill, Point point, byte rotation)
         {
-            var skillId = NumberConversionExtensions.ToUnsigned(skill.SkillID);
+            var skillId = NumberConversionExtensions.ToUnsigned(skill.Number);
             var playerId = playerWhichPerformsSkill.GetId(this.player);
             using (var writer = this.connection.StartSafeWrite(0xC3, 0x0A))
             {

@@ -275,7 +275,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 }
 
                 packet[6] = skillIndex.Value;
-                var unsignedSkillId = ShortExtensions.ToUnsigned(skill.SkillID);
+                var unsignedSkillId = ShortExtensions.ToUnsigned(skill.Number);
                 packet[7] = unsignedSkillId.GetLowByte();
                 packet[8] = unsignedSkillId.GetHighByte();
                 writer.Commit();
@@ -292,7 +292,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[3] = 0x11;
                 packet[4] = 0xFF;
                 packet[6] = (byte)this.SkillList.IndexOf(skill);
-                var unsignedSkillId = ShortExtensions.ToUnsigned(skill.SkillID);
+                var unsignedSkillId = ShortExtensions.ToUnsigned(skill.Number);
                 packet[7] = unsignedSkillId.GetLowByte();
                 packet[8] = unsignedSkillId.GetHighByte();
                 writer.Commit();
@@ -670,7 +670,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     int offset = i * 4;
                     packet[6 + offset] = i;
                     this.SkillList.Add(skillEntry.Skill);
-                    var unsignedSkillId = ShortExtensions.ToUnsigned(skillEntry.Skill.SkillID);
+                    var unsignedSkillId = ShortExtensions.ToUnsigned(skillEntry.Skill.Number);
                     packet[7 + offset] = unsignedSkillId.GetLowByte();
                     packet[8 + offset] = unsignedSkillId.GetHighByte();
                     packet[9 + offset] = (byte)skillEntry.Level;

@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return;
             }
 
-            Skill skill = this.gameContext.Configuration.Skills.FirstOrDefault(s => s.SkillID == skillId);
+            Skill skill = this.gameContext.Configuration.Skills.FirstOrDefault(s => s.Number == skillId);
             if (skill == null)
             {
                 Log.WarnFormat("Skill {0} does not exist, account: {1}", skillId, player.Account.LoginName);
@@ -58,11 +58,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
             if (skill.MasterDefinitions == null || skill.MasterDefinitions.Count == 0)
             {
-                Log.WarnFormat("Not a master skill, skillId: {0}, account: {1}", skill.SkillID, player.Account);
+                Log.WarnFormat("Not a master skill, skillId: {0}, account: {1}", skill.Number, player.Account);
                 return;
             }
 
-            SkillEntry learnedSkill = player.SelectedCharacter.LearnedSkills.FirstOrDefault(ls => ls.Skill.SkillID == skillId);
+            SkillEntry learnedSkill = player.SelectedCharacter.LearnedSkills.FirstOrDefault(ls => ls.Skill.Number == skillId);
             if (learnedSkill == null)
             {
                 if (this.CheckRequisitions(player, skill))
