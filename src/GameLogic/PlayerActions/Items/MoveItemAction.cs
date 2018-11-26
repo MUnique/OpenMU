@@ -137,39 +137,34 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     player.CompliesRequirements(itemDefinition))
                 {
                     // UpdatePreviewCharSet();
+                    if (itemDefinition.ItemSlot.ItemSlots.Contains(RightHandSlot)
+                        && itemDefinition.ItemSlot.ItemSlots.Contains(LeftHandSlot)
+                        && toSlot == RightHandSlot
+                        && storage.GetItem(LeftHandSlot)?.Definition.Width >= 2)
+                    {
+                        return false;
+                    }
+
                     return true;
                 }
 
-                /* TODO:
-                else if (itemDefinition.ItemSlot == 0 && toSlot == 1 &&
-                    player.SelectedCharacter.CharacterClass.CanWear2ndWeapon && player.ComplyRequirements(itemDefinition)
-                    && itemDefinition.X == 1) //2nd weapon
-                {
-                    if (storage.GetItem(0) != null)
-                    {
-                        var firstwep = item.Definition;
-                        return (firstwep.X < 2);
-                    }
-                    else
-                        return true;
-                }*/
-                else
-                {
-                    player.PlayerView.ShowMessage("You can't wear this Item.", MessageType.BlueNormal);
-                    return false;
-                }
+                player.PlayerView.ShowMessage("You can't wear this Item.", MessageType.BlueNormal);
+                return false;
             }
 
+            return this.ItemFitsAtNewLocation(item, toSlot, fromSlot, toStorage, fromStorage);
+        }
+
+        private bool ItemFitsAtNewLocation(Item item, byte toSlot, byte fromSlot, StorageInfo toStorage, StorageInfo fromStorage)
+        {
             // Build an array, and set true, where an item is blocking a place.
-            bool samestorage = toStorage.Storage == fromStorage.Storage;
+            bool sameStorage = toStorage.Storage == fromStorage.Storage;
 
-            // var storageInfo = GetStorageInfo(player, toStorageType);
-            byte starti = toStorage.StartIndex;
-            bool[,] inv = new bool[toStorage.Rows, RowSize];
+            bool[,] usedSlots = new bool[toStorage.Rows, RowSize];
 
-            for (; toStorage.StartIndex < toStorage.EndIndex; toStorage.StartIndex++)
+            for (var i = toStorage.StartIndex; i < toStorage.EndIndex; i++)
             {
-                if (toStorage.StartIndex == fromSlot && samestorage)
+                if (toStorage.StartIndex == fromSlot && sameStorage)
                 {
                     continue; // to make sure that the same item is not blocking itself
                 }
@@ -180,26 +175,56 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     continue; // no item is blocking the slot
                 }
 
-                var bas = blockingItem.Definition;
-                int ci = (toStorage.StartIndex - starti) % RowSize;
-                int ri = (toStorage.StartIndex - starti) / RowSize;
+                this.SetUsedSlots(toStorage, blockingItem, usedSlots);
+            }
 
-                // Set all taken slots of this item to true
-                for (int r = ri; r < ri + bas.Height; r++)
+            return !this.AreTargetSlotsBlocked(item, toSlot, toStorage, usedSlots);
+        }
+
+        private bool AreTargetSlotsBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
+        {
+            for (var i = toStorage.StartIndex; i < toStorage.EndIndex; i++)
+            {
+                if (this.IsTargetSlotBlocked(item, toSlot, toStorage, usedSlots))
                 {
-                    for (int c = ci; c < ci + bas.Width; c++)
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsTargetSlotBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
+        {
+            int rowIndex = (toSlot - toStorage.StartIndex) / RowSize;
+            int columnIndex = (toSlot - toStorage.StartIndex) % RowSize;
+            for (int r = rowIndex; r < rowIndex + item.Definition.Height; r++)
+            {
+                for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)
+                {
+                    if (usedSlots[r, c])
                     {
-                        inv[r, c] = true;
+                        return true;
                     }
                 }
             }
 
-            int ro = (toSlot - starti) / RowSize;
-            int co = (toSlot - starti) % RowSize;
-            var bi = item.Definition;
+            return false;
+        }
 
-            // TODO return (storage.FitsInside(inv, (byte)ro, (byte)co, bi.X, bi.Y));
-            return true;
+        private void SetUsedSlots(StorageInfo toStorage, Item blockingItem, bool[,] usedSlots)
+        {
+            int columnIndex = (blockingItem.ItemSlot - toStorage.StartIndex) % RowSize;
+            int rowIndex = (blockingItem.ItemSlot - toStorage.StartIndex) / RowSize;
+
+            // Set all taken slots of this item to true
+            for (int r = rowIndex; r < rowIndex + blockingItem.Definition.Height; r++)
+            {
+                for (int c = columnIndex; c < columnIndex + blockingItem.Definition.Width; c++)
+                {
+                    usedSlots[r, c] = true;
+                }
+            }
         }
 
         private class StorageInfo
