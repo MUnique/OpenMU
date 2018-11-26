@@ -54,21 +54,20 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             player.PlayerView.InventoryView.ItemMoved(item, toSlot, toStorage);
-            if (player.PlayerState.CurrentState == PlayerState.TradeOpened || (player.PlayerState.CurrentState == PlayerState.TradeButtonPressed
-                && player.TradingPartner != null && toItemStorage == player.TemporaryStorage) || fromItemStorage == player.TemporaryStorage)
+            var isTradeOngoing = player.PlayerState.CurrentState == PlayerState.TradeOpened
+                                 || player.PlayerState.CurrentState == PlayerState.TradeButtonPressed;
+            var isItemMovedToOrFromTrade = toItemStorage == player.TemporaryStorage || fromItemStorage == player.TemporaryStorage;
+            if (isTradeOngoing && isItemMovedToOrFromTrade && player.TradingPartner is Player tradingPartner)
             {
-                if (player.TradingPartner is Player tradingPartner)
+                // When Trading, send update to Trading-Partner
+                if (fromItemStorage == player.TemporaryStorage)
                 {
-                    // When Trading, send to Trading-Partner
-                    if (fromItemStorage == player.TemporaryStorage)
-                    {
-                        tradingPartner.PlayerView.TradeView.TradeItemDisappear(fromSlot, item);
-                    }
+                    tradingPartner.PlayerView.TradeView.TradeItemDisappear(fromSlot, item);
+                }
 
-                    if (toItemStorage == player.TemporaryStorage)
-                    {
-                        tradingPartner.PlayerView.TradeView.TradeItemAppear(toSlot, item);
-                    }
+                if (toItemStorage == player.TemporaryStorage)
+                {
+                    tradingPartner.PlayerView.TradeView.TradeItemAppear(toSlot, item);
                 }
             }
         }
