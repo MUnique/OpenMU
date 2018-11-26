@@ -462,6 +462,7 @@ namespace MUnique.OpenMU.GameLogic
 
             currentMap.Remove(this);
             this.Alive = false;
+            this.walker.Stop();
             this.observerToWorldViewAdapter.ClearObservingObjectsList();
             this.SelectedCharacter.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
             this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
@@ -570,10 +571,14 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="steps">The steps.</param>
         public void WalkTo(Point target, Span<WalkingStep> steps)
         {
-            Logger.DebugFormat("WalkTo: Player is walking to {0}", target);
-            this.walker.WalkTo(target, steps);
-            this.CurrentMap.Move(this, target, this.moveLock, MoveType.Walk);
-            Logger.DebugFormat("WalkTo: Observer Count: {0}", this.Observers.Count);
+            var currentMap = this.CurrentMap;
+            if (currentMap != null)
+            {
+                Logger.DebugFormat("WalkTo: Player is walking to {0}", target);
+                this.walker.WalkTo(target, steps);
+                currentMap.Move(this, target, this.moveLock, MoveType.Walk);
+                Logger.DebugFormat("WalkTo: Observer Count: {0}", this.Observers.Count);
+            }
         }
 
         /// <inheritdoc />

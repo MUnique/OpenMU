@@ -37,10 +37,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            if (player.CurrentMap.Definition.EnterGates.Contains(enterGate) && !(player.WalkTarget.X >= enterGate.X1 - INACCURACY &&
-                  player.WalkTarget.X <= enterGate.X2 + INACCURACY &&
-                  player.WalkTarget.Y >= enterGate.Y1 - INACCURACY &&
-                  player.WalkTarget.Y <= enterGate.Y2 + INACCURACY))
+            var currentPosition = player.IsWalking ? player.WalkTarget : player.Position;
+            if (player.CurrentMap.Definition.EnterGates.Contains(enterGate)
+                && !(currentPosition.X >= enterGate.X1 - INACCURACY
+                && currentPosition.X <= enterGate.X2 + INACCURACY
+                && currentPosition.Y >= enterGate.Y1 - INACCURACY
+                && currentPosition.Y <= enterGate.Y2 + INACCURACY))
             {
                 return;
             }

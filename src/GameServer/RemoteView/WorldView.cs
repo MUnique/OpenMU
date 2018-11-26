@@ -253,10 +253,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[2] = 0x1C;
                 packet[3] = 0x0F;
                 packet[4] = 1;
-                packet[5] = mapNumber.GetHighByte();
-                packet[6] = mapNumber.GetLowByte();
-                packet[7] = this.player.SelectedCharacter.PositionX;
-                packet[8] = this.player.SelectedCharacter.PositionY;
+                packet.Slice(5).SetShortSmallEndian(mapNumber);
+                var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
+                packet[7] = position.X;
+                packet[8] = position.Y;
                 writer.Commit();
             }
         }
