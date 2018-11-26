@@ -73,21 +73,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
         }
 
-        private IStorage GetStorage(Player player, Storages storage)
-        {
-            switch (storage)
-            {
-                case Storages.Inventory:
-                    return player.Inventory;
-                case Storages.PersonalStore:
-                    return player.ShopStorage;
-                case Storages.Vault:
-                    return player.Vault;
-                default: // Trade+CM
-                    return player.TemporaryStorage;
-            }
-        }
-
         private StorageInfo GetStorageInfo(Player player, Storages storageType)
         {
             StorageInfo result;
