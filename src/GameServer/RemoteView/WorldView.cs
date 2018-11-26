@@ -127,16 +127,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     walkPacket[4] = objectId.GetLowByte();
                     walkPacket[5] = point.X;
                     walkPacket[6] = point.Y;
-                    walkPacket[7] = (byte)(stepsLength | ((byte)rotation - 1) << 4);
+                    walkPacket[7] = (byte)(stepsLength | rotation.ToPacketByte() << 4);
                     if (steps != null)
                     {
-                        walkPacket[7] = (byte)((int)steps[0] << 4 | stepsSize);
+                        walkPacket[7] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
                         for (int i = 0; i < stepsSize; i += 2)
                         {
                             var index = 8 + (i / 2);
-                            var firstStep = steps[i] - 1;
-                            var secondStep = stepsSize > i + 2 ? steps[i + 2] - 1 : Direction.Undefined;
-                            walkPacket[index] = (byte)((int)firstStep << 4 | (int)secondStep);
+                            var firstStep = steps[i].ToPacketByte();
+                            var secondStep = stepsSize > i + 2 ? steps[i + 2].ToPacketByte() : 0;
+                            walkPacket[index] = (byte)(firstStep << 4 | secondStep);
                         }
                     }
 
@@ -220,7 +220,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     packet[2] = 0x18;
                     packet[3] = animatingId.GetHighByte();
                     packet[4] = animatingId.GetLowByte();
-                    packet[5] = (byte)(direction - 1);
+                    packet[5] = direction.ToPacketByte();
                     packet[6] = animation;
                     writer.Commit();
                 }
@@ -234,7 +234,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     packet[2] = 0x18;
                     packet[3] = animatingId.GetHighByte();
                     packet[4] = animatingId.GetLowByte();
-                    packet[5] = (byte)(direction - 1);
+                    packet[5] = direction.ToPacketByte();
                     packet[6] = animation;
                     packet[7] = targetId.GetHighByte();
                     packet[8] = targetId.GetLowByte();
@@ -327,7 +327,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                         playerBlock[33] = newPlayer.Position.Y;
                     }
 
-                    playerBlock[34] = (byte)(((int)newPlayer.Rotation * 0x10) + GetStateValue(newPlayer.SelectedCharacter.State));
+                    playerBlock[34] = (byte)((newPlayer.Rotation.ToPacketByte() * 0x10) + GetStateValue(newPlayer.SelectedCharacter.State));
                     var activeEffects = newPlayer.MagicEffectList.GetVisibleEffects();
                     var effectCount = 0;
                     for (int e = activeEffects.Count - 1; e >= 0; e--)
@@ -412,7 +412,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                         npcBlock[7] = npc.Position.Y;
                     }
 
-                    npcBlock[8] = (byte)((int)npc.Rotation << 4);
+                    npcBlock[8] = (byte)(npc.Rotation.ToPacketByte() << 4);
                     ////9 = offset byte for magic effects - currently we don't show them for NPCs
                     i++;
                 }

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
 
     /// <summary>
@@ -21,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            var rotation = (Direction)(packet[3] + 1);
+            var rotation = packet[3].ParseAsDirection();
             var animation = packet[4];
             if (packet[4] == 0x7A)
             {

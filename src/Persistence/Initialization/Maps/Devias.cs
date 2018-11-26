@@ -28,39 +28,39 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[540], 1, 1, SpawnTrigger.Automatic, 233, 233, 66, 66);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[406], 1, 3, SpawnTrigger.Automatic, 181, 181, 35, 35);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[385], 1, 1, SpawnTrigger.Automatic, 197, 197, 53, 53);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[478], 1, 3, SpawnTrigger.Automatic, 191, 191, 17, 17);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[256], 1, 3, SpawnTrigger.Automatic, 193, 193, 13, 13);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[522], 1, 1, SpawnTrigger.Automatic, 229, 229, 221, 221);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[229], 1, 3, SpawnTrigger.Automatic, 183, 183, 30, 30);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[233], 1, 3, SpawnTrigger.Automatic, 217, 217, 29, 29);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[233], 1, 3, SpawnTrigger.Automatic, 217, 217, 20, 20);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[235], 1, 3, SpawnTrigger.Automatic, 183, 183, 32, 32);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[244], 1, 3, SpawnTrigger.Automatic, 226, 226, 25, 25);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[245], 1, 3, SpawnTrigger.Automatic, 225, 225, 41, 41);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[246], 1, 3, SpawnTrigger.Automatic, 186, 186, 47, 47);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, 5, SpawnTrigger.Automatic, 224, 224, 79, 79);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, 5, SpawnTrigger.Automatic, 219, 219, 79, 79);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, 7, SpawnTrigger.Automatic, 169, 169, 45, 45);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, 7, SpawnTrigger.Automatic, 169, 169, 39, 39);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[241], 1, 1, SpawnTrigger.Automatic, 215, 215, 45, 45);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[240], 1, 2, SpawnTrigger.Automatic, 218, 218, 63, 63);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 3, SpawnTrigger.Automatic, 219, 219, 76, 76);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[566], 1, 3, SpawnTrigger.Automatic, 204, 204, 61, 61);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[379], 1, 3, SpawnTrigger.Automatic, 13, 13, 28, 28);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[540], 1, Direction.SouthWest, SpawnTrigger.Automatic, 233, 233, 66, 66);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[406], 1, Direction.SouthEast, SpawnTrigger.Automatic, 181, 181, 35, 35);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[385], 1, Direction.SouthWest, SpawnTrigger.Automatic, 197, 197, 53, 53);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[478], 1, Direction.SouthEast, SpawnTrigger.Automatic, 191, 191, 17, 17);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[256], 1, Direction.SouthEast, SpawnTrigger.Automatic, 193, 193, 13, 13);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[522], 1, Direction.SouthWest, SpawnTrigger.Automatic, 229, 229, 221, 221);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[229], 1, Direction.SouthEast, SpawnTrigger.Automatic, 183, 183, 30, 30);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[233], 1, Direction.SouthEast, SpawnTrigger.Automatic, 217, 217, 29, 29);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[233], 1, Direction.SouthEast, SpawnTrigger.Automatic, 217, 217, 20, 20);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[235], 1, Direction.SouthEast, SpawnTrigger.Automatic, 183, 183, 32, 32);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[244], 1, Direction.SouthEast, SpawnTrigger.Automatic, 226, 226, 25, 25);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[245], 1, Direction.SouthEast, SpawnTrigger.Automatic, 225, 225, 41, 41);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[246], 1, Direction.SouthEast, SpawnTrigger.Automatic, 186, 186, 47, 47);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, Direction.NorthEast, SpawnTrigger.Automatic, 224, 224, 79, 79);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, Direction.NorthEast, SpawnTrigger.Automatic, 219, 219, 79, 79);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, Direction.NorthWest, SpawnTrigger.Automatic, 169, 169, 45, 45);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[247], 1, Direction.NorthWest, SpawnTrigger.Automatic, 169, 169, 39, 39);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[241], 1, Direction.SouthWest, SpawnTrigger.Automatic, 215, 215, 45, 45);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[240], 1, Direction.South, SpawnTrigger.Automatic, 218, 218, 63, 63);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, Direction.SouthEast, SpawnTrigger.Automatic, 219, 219, 76, 76);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[566], 1, Direction.SouthEast, SpawnTrigger.Automatic, 204, 204, 61, 61);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[379], 1, Direction.SouthEast, SpawnTrigger.Automatic, 13, 13, 28, 28);
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 10, 0, SpawnTrigger.Automatic, 194, 194, 165, 165);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 10, 0, SpawnTrigger.Automatic, 36, 36, 25, 25);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 15, 0, SpawnTrigger.Automatic, 210, 242, 210, 220);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 200, 0, SpawnTrigger.Automatic, 0, 251, 128, 245);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[25], 75, 0, SpawnTrigger.Automatic, 0, 128, 128, 245);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[23], 75, 0, SpawnTrigger.Automatic, 0, 128, 0, 128);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[22], 75, 0, SpawnTrigger.Automatic, 0, 128, 0, 128);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[24], 65, 0, SpawnTrigger.Automatic, 128, 251, 0, 128);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[21], 35, 0, SpawnTrigger.Automatic, 128, 251, 0, 128);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 10, Direction.Undefined, SpawnTrigger.Automatic, 194, 194, 165, 165);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 10, Direction.Undefined, SpawnTrigger.Automatic, 36, 36, 25, 25);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 15, Direction.Undefined, SpawnTrigger.Automatic, 210, 242, 210, 220);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[20], 200, Direction.Undefined, SpawnTrigger.Automatic, 0, 251, 128, 245);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[25], 75, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 128, 245);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[23], 75, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 0, 128);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[22], 75, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 0, 128);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[24], 65, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 0, 128);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[21], 35, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 0, 128);
         }
 
         /// <inheritdoc/>

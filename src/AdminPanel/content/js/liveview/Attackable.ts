@@ -1,12 +1,12 @@
 ﻿import * as THREE from "three";
 import TWEEN from "tween";
-import { ObjectData, Step } from "../stores/map/types";
+import { ObjectData, Step, Direction } from "../stores/map/types";
 
 export interface GameObject extends THREE.Object3D {
     data: ObjectData;
     respawn(newData: any): void;
     moveTo(newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]): void;
-    rotateTo(rotation: number): void;
+    rotateTo(rotation: Direction): void;
     gotKilled(): void;
 }
 
@@ -73,16 +73,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.moveTween.start();
     }
 
-
-    /*   Direction Matrix (P = Player):  
-     *     Y | - | y | +
-     *   X   |   |   |
-     * -------------------
-     *   -   | 4 | 5 | 6
-     *   x   | 3 | P | 7
-     *   +   | 2 | 1 | 8
-     */
-    rotateTo(rotation: number) {
+    rotateTo(rotation: Direction) {
         if (this.data !== undefined) {
             this.data = Object.assign({}, this.data, rotation);
         }
@@ -92,8 +83,8 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.setRotation(rotation);
     }
 
-    private setRotation(value: number) {
-        this.rotation.z = THREE.Math.degToRad(((value + 1) * 360) / 8);
+    private setRotation(value: Direction) {
+        this.rotation.z = THREE.Math.degToRad((value * 360) / 8);
     }
 
     setObjectPositionOnMap(newX: number, newY: number) {

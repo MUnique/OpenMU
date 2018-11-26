@@ -22,9 +22,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
         {
-            yield return this.CreateMonsterSpawn(context, mapDefinition, gameConfiguration.Monsters.First(m => m.Number == 240), 1, 1, SpawnTrigger.Automatic, 58, 58, 140, 140);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, gameConfiguration.Monsters.First(m => m.Number == 200), 1, 1, SpawnTrigger.Automatic, 63, 63, 160, 160);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, gameConfiguration.Monsters.First(m => m.Number == 239), 1, 1, SpawnTrigger.Automatic, 67, 67, 140, 140);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, gameConfiguration.Monsters.First(m => m.Number == 240), 1, Direction.SouthWest, SpawnTrigger.Automatic, 58, 58, 140, 140);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, gameConfiguration.Monsters.First(m => m.Number == 200), 1, Direction.SouthWest, SpawnTrigger.Automatic, 63, 63, 160, 160);
+            yield return this.CreateMonsterSpawn(context, mapDefinition, gameConfiguration.Monsters.First(m => m.Number == 239), 1, Direction.SouthWest, SpawnTrigger.Automatic, 67, 67, 140, 140);
         }
 
         /// <inheritdoc/>

@@ -33,17 +33,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, 0, SpawnTrigger.Automatic, 104, 104, 179, 179); // Death Spirit (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, 0, SpawnTrigger.Automatic, 104, 104, 200, 200); // Death Spirit (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, 0, SpawnTrigger.Automatic, 085, 085, 179, 179); // Death Spirit (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, 0, SpawnTrigger.Automatic, 086, 086, 199, 199); // Death Spirit (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, Direction.Undefined, SpawnTrigger.Automatic, 104, 104, 179, 179); // Death Spirit (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, Direction.Undefined, SpawnTrigger.Automatic, 104, 104, 200, 200); // Death Spirit (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, Direction.Undefined, SpawnTrigger.Automatic, 085, 085, 179, 179); // Death Spirit (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, Direction.Undefined, SpawnTrigger.Automatic, 086, 086, 199, 199); // Death Spirit (Trainee Soldier)
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, 0, SpawnTrigger.Automatic, 092, 092, 174, 174); // Soram (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, 0, SpawnTrigger.Automatic, 111, 111, 190, 190); // Soram (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, 0, SpawnTrigger.Automatic, 094, 094, 202, 202); // Soram (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, 0, SpawnTrigger.Automatic, 082, 082, 190, 190); // Soram (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, Direction.Undefined, SpawnTrigger.Automatic, 092, 092, 174, 174); // Soram (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, Direction.Undefined, SpawnTrigger.Automatic, 111, 111, 190, 190); // Soram (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, Direction.Undefined, SpawnTrigger.Automatic, 094, 094, 202, 202); // Soram (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, Direction.Undefined, SpawnTrigger.Automatic, 082, 082, 190, 190); // Soram (Trainee Soldier)
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[412], 1, 0, SpawnTrigger.Automatic, 097, 097, 187, 187); // Dark Elf (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[412], 1, Direction.Undefined, SpawnTrigger.Automatic, 097, 097, 187, 187); // Dark Elf (Trainee Soldier)
         }
 
         /// <inheritdoc/>

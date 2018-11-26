@@ -33,31 +33,31 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[256], 1, 1, SpawnTrigger.Automatic, 37, 37, 242, 242); // Lahap
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[415], 1, 1, SpawnTrigger.Automatic, 44, 44, 229, 229); // Silvia
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[416], 1, 2, SpawnTrigger.Automatic, 29, 29, 237, 237); // Rhea
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[417], 1, 1, SpawnTrigger.Automatic, 37, 37, 218, 218); // Marce
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 3, SpawnTrigger.Automatic, 44, 44, 189, 189); // Shadow Phantom Soldier
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 1, SpawnTrigger.Automatic, 57, 57, 231, 231); // Shadow Phantom Soldier
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, 1, SpawnTrigger.Automatic, 74, 74, 219, 220); // Shadow Phantom Soldier
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[240], 1, 1, SpawnTrigger.Automatic, 51, 51, 229, 229); // Safety Guardian
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[385], 1, 1, SpawnTrigger.Automatic, 55, 55, 243, 243); // Mirage
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[452], 1, 1, SpawnTrigger.Automatic, 45, 45, 243, 243); // Seed Master
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[453], 1, 1, SpawnTrigger.Automatic, 49, 49, 243, 243); // Seed Researcher
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[540], 1, 2, SpawnTrigger.Automatic, 49, 49, 216, 216); // Lugard
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[492], 1, 2, SpawnTrigger.Automatic, 22, 22, 225, 225); // Moss
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[579], 1, 3, SpawnTrigger.Automatic, 20, 20, 214, 214); // David
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[568], 1, 2, SpawnTrigger.Automatic, 55, 55, 199, 199); // Wandering Merchant Zyro
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[256], 1, Direction.SouthWest, SpawnTrigger.Automatic, 37, 37, 242, 242); // Lahap
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[415], 1, Direction.SouthWest, SpawnTrigger.Automatic, 44, 44, 229, 229); // Silvia
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[416], 1, Direction.South, SpawnTrigger.Automatic, 29, 29, 237, 237); // Rhea
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[417], 1, Direction.SouthWest, SpawnTrigger.Automatic, 37, 37, 218, 218); // Marce
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, Direction.SouthEast, SpawnTrigger.Automatic, 44, 44, 189, 189); // Shadow Phantom Soldier
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, Direction.SouthWest, SpawnTrigger.Automatic, 57, 57, 231, 231); // Shadow Phantom Soldier
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, Direction.SouthWest, SpawnTrigger.Automatic, 74, 74, 219, 220); // Shadow Phantom Soldier
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[240], 1, Direction.SouthWest, SpawnTrigger.Automatic, 51, 51, 229, 229); // Safety Guardian
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[385], 1, Direction.SouthWest, SpawnTrigger.Automatic, 55, 55, 243, 243); // Mirage
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[452], 1, Direction.SouthWest, SpawnTrigger.Automatic, 45, 45, 243, 243); // Seed Master
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[453], 1, Direction.SouthWest, SpawnTrigger.Automatic, 49, 49, 243, 243); // Seed Researcher
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[540], 1, Direction.South, SpawnTrigger.Automatic, 49, 49, 216, 216); // Lugard
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[492], 1, Direction.South, SpawnTrigger.Automatic, 22, 22, 225, 225); // Moss
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[579], 1, Direction.SouthEast, SpawnTrigger.Automatic, 20, 20, 214, 214); // David
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[568], 1, Direction.South, SpawnTrigger.Automatic, 55, 55, 199, 199); // Wandering Merchant Zyro
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[418], 80, 0, SpawnTrigger.Automatic, 0, 128, 128, 245); // Strange Rabbit
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[419], 45, 0, SpawnTrigger.Automatic, 0, 251, 128, 245); // Polluted Butterfly
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[420], 45, 0, SpawnTrigger.Automatic, 0, 128, 0, 128); // Hideous Rabbit
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[421], 30, 0, SpawnTrigger.Automatic, 0, 128, 0, 128); // Werewolf
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[422], 30, 0, SpawnTrigger.Automatic, 128, 251, 0, 128); // Cursed Lich
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[423], 20, 0, SpawnTrigger.Automatic, 128, 251, 0, 128); // Totem Golem
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[424], 20, 0, SpawnTrigger.Automatic, 128, 251, 0, 128); // Grizzly
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[425], 20, 0, SpawnTrigger.Automatic, 128, 251, 0, 128); // Captain Grizzly
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[418], 80, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 128, 245); // Strange Rabbit
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[419], 45, Direction.Undefined, SpawnTrigger.Automatic, 0, 251, 128, 245); // Polluted Butterfly
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[420], 45, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 0, 128); // Hideous Rabbit
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[421], 30, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 0, 128); // Werewolf
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[422], 30, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 0, 128); // Cursed Lich
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[423], 20, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 0, 128); // Totem Golem
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[424], 20, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 0, 128); // Grizzly
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[425], 20, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 0, 128); // Captain Grizzly
         }
 
         /// <inheritdoc/>

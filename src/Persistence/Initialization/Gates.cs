@@ -111,6 +111,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             gate.Y1 = y1;
             gate.X2 = x2;
             gate.Y2 = y2;
+
+            // different to all other configurations, 0 means 'Undefined', so we just assume that we can cast it to Direction without adding 1.
             gate.Direction = (Direction)direction;
             gate.IsSpawnGate = isSpawnGate;
             map.ExitGates.Add(gate);

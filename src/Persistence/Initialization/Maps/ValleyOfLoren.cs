@@ -30,16 +30,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[216], 1, 1, SpawnTrigger.Automatic, 176, 176, 212, 212); // Crown
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[216], 1, 1, SpawnTrigger.Automatic, 176, 176, 212, 212); // Crown
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[217], 1, 7, SpawnTrigger.Automatic, 167, 167, 194, 194); // Crown Switch1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[218], 1, 7, SpawnTrigger.Automatic, 184, 184, 195, 195); // Crown Switch2
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[220], 1, 3, SpawnTrigger.Automatic, 139, 139, 101, 101); // Guard
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[223], 1, 1, SpawnTrigger.Automatic, 179, 179, 214, 214); // Sinior
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[224], 1, 1, SpawnTrigger.Automatic, 086, 086, 061, 061); // Guardsman
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[224], 1, 1, SpawnTrigger.Automatic, 099, 099, 061, 061); // Guardsman
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[376], 1, 1, SpawnTrigger.Automatic, 090, 090, 043, 043); // Pamela
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[377], 1, 3, SpawnTrigger.Automatic, 090, 090, 218, 218); // Angela
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[216], 1, Direction.SouthWest, SpawnTrigger.Automatic, 176, 176, 212, 212); // Crown
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[216], 1, Direction.SouthWest, SpawnTrigger.Automatic, 176, 176, 212, 212); // Crown
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[217], 1, Direction.NorthWest, SpawnTrigger.Automatic, 167, 167, 194, 194); // Crown Switch1
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[218], 1, Direction.NorthWest, SpawnTrigger.Automatic, 184, 184, 195, 195); // Crown Switch2
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[220], 1, Direction.SouthEast, SpawnTrigger.Automatic, 139, 139, 101, 101); // Guard
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[223], 1, Direction.SouthWest, SpawnTrigger.Automatic, 179, 179, 214, 214); // Sinior
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[224], 1, Direction.SouthWest, SpawnTrigger.Automatic, 086, 086, 061, 061); // Guardsman
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[224], 1, Direction.SouthWest, SpawnTrigger.Automatic, 099, 099, 061, 061); // Guardsman
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[376], 1, Direction.SouthWest, SpawnTrigger.Automatic, 090, 090, 043, 043); // Pamela
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[377], 1, Direction.SouthEast, SpawnTrigger.Automatic, 090, 090, 218, 218); // Angela
         }
 
         /// <inheritdoc/>

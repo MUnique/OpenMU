@@ -51,9 +51,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <remarks>
         /// Can be extracted from MonsterSetBase.txt by Regex:
         /// Search (single): (?m)^(\d+)[ \t]+(\d+)[ \t]+(\d+)[ \t]+(\d+)[ \t]+(\d+)[ \t]+((-|)\d+).*?$
-        /// Replace by (single): <![CDATA[yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[$1], 1, $6, SpawnTrigger.Automatic, $4, $4, $5, $5);]]>
+        /// Replace by (single): <![CDATA[yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[$1], 1, $Direction.North, SpawnTrigger.Automatic, $4, $4, $5, $5);]]>
         /// Search (multiple): (?m)^(\d+)\t*?(\d+)\t+?(\d+)\t+?(\d+)\t+?(\d+)\t+?(\d+)\t+?(\d+)\t+?(-*\d+)\t+?(\d+).*?$
-        /// Replace by (multiple): <![CDATA[yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[$1], $9, 0, SpawnTrigger.Automatic, $4, $6, $5, $7);]]>
+        /// Replace by (multiple): <![CDATA[yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[$1], $9, Direction.Undefined, SpawnTrigger.Automatic, $4, $6, $5, $7);]]>
         /// </remarks>
         protected abstract IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration);
 
@@ -82,13 +82,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <param name="y1">The y1 coordinate.</param>
         /// <param name="y2">The y2 coordinate.</param>
         /// <returns>The created monster spawn area.</returns>
-        protected MonsterSpawnArea CreateMonsterSpawn(IContext context, GameMapDefinition map, MonsterDefinition monsterDefinition, short quantity, byte direction, SpawnTrigger spawnTrigger, byte x1, byte x2, byte y1, byte y2)
+        protected MonsterSpawnArea CreateMonsterSpawn(IContext context, GameMapDefinition map, MonsterDefinition monsterDefinition, short quantity, Direction direction, SpawnTrigger spawnTrigger, byte x1, byte x2, byte y1, byte y2)
         {
             var area = context.CreateNew<MonsterSpawnArea>();
             area.GameMap = map;
             area.MonsterDefinition = monsterDefinition;
             area.Quantity = quantity;
-            area.Direction = (Direction)direction;
+            area.Direction = direction; // (Direction)(direction + 1);
             area.SpawnTrigger = spawnTrigger;
             area.X1 = x1;
             area.X2 = x2;

@@ -33,14 +33,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[573], 35, 0, SpawnTrigger.AutomaticDuringEvent, 120, 150, 80, 115); // Crypta
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[574], 35, 0, SpawnTrigger.AutomaticDuringEvent, 120, 150, 80, 115); // Crypos
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[573], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 120, 150, 80, 115); // Crypta
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[574], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 120, 150, 80, 115); // Crypos
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[449], 35, 0, SpawnTrigger.AutomaticDuringEvent, 122, 151, 152, 184); // Blaze Napin
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[575], 35, 0, SpawnTrigger.AutomaticDuringEvent, 122, 151, 152, 184); // Condra
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[449], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 122, 151, 152, 184); // Blaze Napin
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[575], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 122, 151, 152, 184); // Condra
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[573], 35, 0, SpawnTrigger.AutomaticDuringEvent, 50, 79, 138, 173); // Crypta
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[574], 35, 0, SpawnTrigger.AutomaticDuringEvent, 50, 79, 138, 173); // Crypos
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[573], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 50, 79, 138, 173); // Crypta
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[574], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 50, 79, 138, 173); // Crypos
         }
 
         /// <inheritdoc/>

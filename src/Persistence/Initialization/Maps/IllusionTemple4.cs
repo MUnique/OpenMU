@@ -30,17 +30,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[658], 1, 0, SpawnTrigger.AutomaticDuringEvent, 169, 169, 085, 085); // Cursed Statue
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[659], 1, 0, SpawnTrigger.AutomaticDuringEvent, 136, 136, 101, 101); // Captured Stone Statue (1)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[660], 1, 0, SpawnTrigger.AutomaticDuringEvent, 151, 151, 119, 119); // Captured Stone Statue (2)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[661], 1, 0, SpawnTrigger.AutomaticDuringEvent, 150, 150, 088, 088); // Captured Stone Statue (3)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[662], 1, 0, SpawnTrigger.AutomaticDuringEvent, 165, 165, 102, 102); // Captured Stone Statue (4)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[663], 1, 0, SpawnTrigger.AutomaticDuringEvent, 173, 173, 067, 067); // Captured Stone Statue (5)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[664], 1, 0, SpawnTrigger.AutomaticDuringEvent, 187, 187, 081, 081); // Captured Stone Statue (6)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[665], 1, 0, SpawnTrigger.AutomaticDuringEvent, 187, 187, 051, 051); // Captured Stone Statue (7)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[666], 1, 0, SpawnTrigger.AutomaticDuringEvent, 203, 203, 067, 067); // Captured Stone Statue (8)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[667], 1, 0, SpawnTrigger.AutomaticDuringEvent, 133, 133, 121, 121); // Captured Stone Statue (9)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[668], 1, 0, SpawnTrigger.AutomaticDuringEvent, 206, 206, 048, 048); // Captured Stone Statue (10)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[658], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 169, 169, 085, 085); // Cursed Statue
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[659], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 136, 136, 101, 101); // Captured Stone Statue (1)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[660], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 151, 151, 119, 119); // Captured Stone Statue (2)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[661], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 150, 150, 088, 088); // Captured Stone Statue (3)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[662], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 165, 165, 102, 102); // Captured Stone Statue (4)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[663], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 173, 173, 067, 067); // Captured Stone Statue (5)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[664], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 187, 187, 081, 081); // Captured Stone Statue (6)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[665], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 187, 187, 051, 051); // Captured Stone Statue (7)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[666], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 203, 203, 067, 067); // Captured Stone Statue (8)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[667], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 133, 133, 121, 121); // Captured Stone Statue (9)
+            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[668], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 206, 206, 048, 048); // Captured Stone Statue (10)
         }
 
         /// <inheritdoc/>
