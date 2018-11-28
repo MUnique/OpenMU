@@ -151,7 +151,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 111 },
                     { Stats.MaximumHealth, 20000 },
@@ -160,19 +160,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 245 },
                     { Stats.AttackRatePvm, 480 },
                     { Stats.DefenseRatePvm, 1900 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 7 },
                     { Stats.IceResistance, 7 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 7 },
                     { Stats.LightningResistance, 7 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             } // 426 Chaos Castle 13
 
             {
@@ -188,7 +182,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 114 },
                     { Stats.MaximumHealth, 23000 },
@@ -197,19 +191,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 280 },
                     { Stats.AttackRatePvm, 480 },
                     { Stats.DefenseRatePvm, 190 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 6 },
                     { Stats.IceResistance, 6 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 6 },
                     { Stats.LightningResistance, 6 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             } // 427 Chaos Castle 14
         }
     }

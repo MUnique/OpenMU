@@ -618,7 +618,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 38 },
                     { Stats.MaximumHealth, 1400 },
@@ -627,18 +627,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 55 },
                     { Stats.AttackRatePvm, 190 },
                     { Stats.DefenseRatePvm, 45 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 3 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -654,7 +646,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 46 },
                     { Stats.MaximumHealth, 2500 },
@@ -663,18 +655,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 75 },
                     { Stats.AttackRatePvm, 230 },
                     { Stats.DefenseRatePvm, 61 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 6 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -690,7 +674,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 44 },
                     { Stats.MaximumHealth, 2000 },
@@ -699,18 +683,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 70 },
                     { Stats.AttackRatePvm, 220 },
                     { Stats.DefenseRatePvm, 55 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
                     { Stats.WaterResistance, 3 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -726,7 +702,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 48 },
                     { Stats.MaximumHealth, 3000 },
@@ -735,18 +711,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 80 },
                     { Stats.AttackRatePvm, 240 },
                     { Stats.DefenseRatePvm, 70 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 3 },
                     { Stats.IceResistance, 3 },
                     { Stats.WaterResistance, 3 },
                     { Stats.FireResistance, 3 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -762,7 +733,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 32 },
                     { Stats.MaximumHealth, 1000 },
@@ -771,18 +742,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 40 },
                     { Stats.AttackRatePvm, 160 },
                     { Stats.DefenseRatePvm, 39 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 2 },
                     { Stats.IceResistance, 2 },
                     { Stats.WaterResistance, 2 },
                     { Stats.FireResistance, 2 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -798,7 +764,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 25 },
                     { Stats.MaximumHealth, 750 },
@@ -807,18 +773,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 31 },
                     { Stats.AttackRatePvm, 125 },
                     { Stats.DefenseRatePvm, 31 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -834,7 +791,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 40 },
                     { Stats.MaximumHealth, 1600 },
@@ -843,18 +800,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 60 },
                     { Stats.AttackRatePvm, 200 },
                     { Stats.DefenseRatePvm, 47 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 3 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -870,7 +819,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 34 },
                     { Stats.MaximumHealth, 1100 },
@@ -879,18 +828,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 45 },
                     { Stats.AttackRatePvm, 170 },
                     { Stats.DefenseRatePvm, 41 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -906,7 +846,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 42 },
                     { Stats.MaximumHealth, 1800 },
@@ -915,18 +855,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 65 },
                     { Stats.AttackRatePvm, 210 },
                     { Stats.DefenseRatePvm, 49 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -942,7 +873,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 28 },
                     { Stats.MaximumHealth, 850 },
@@ -951,18 +882,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 35 },
                     { Stats.AttackRatePvm, 140 },
                     { Stats.DefenseRatePvm, 35 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 2 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -978,7 +901,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 55 },
                     { Stats.MaximumHealth, 6000 },
@@ -987,18 +910,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 100 },
                     { Stats.AttackRatePvm, 275 },
                     { Stats.DefenseRatePvm, 82 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 6 },
                     { Stats.IceResistance, 6 },
                     { Stats.WaterResistance, 6 },
                     { Stats.FireResistance, 6 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -1014,27 +932,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
                 trap.Attribute = 1;
                 trap.NumberOfMaximumItemDrops = 0;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 80 },
                     { Stats.MaximumHealth, 1000 },
                     { Stats.MinimumPhysBaseDmg, 100 },
                     { Stats.MaximumPhysBaseDmg, 110 },
-                    { Stats.DefenseBase, 0 },
                     { Stats.AttackRatePvm, 400 },
                     { Stats.DefenseRatePvm, 500 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(trap.Attributes.Add);
+                };
+
+                trap.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -1050,27 +958,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
                 trap.Attribute = 1;
                 trap.NumberOfMaximumItemDrops = 0;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 80 },
                     { Stats.MaximumHealth, 1000 },
                     { Stats.MinimumPhysBaseDmg, 110 },
                     { Stats.MaximumPhysBaseDmg, 130 },
-                    { Stats.DefenseBase, 0 },
                     { Stats.AttackRatePvm, 400 },
                     { Stats.DefenseRatePvm, 500 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(trap.Attributes.Add);
+                };
+
+                trap.AddAttributes(attributes, context, gameConfiguration);
             }
 
             {
@@ -1086,27 +984,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
                 trap.Attribute = 1;
                 trap.NumberOfMaximumItemDrops = 0;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 80 },
                     { Stats.MaximumHealth, 1000 },
                     { Stats.MinimumPhysBaseDmg, 130 },
                     { Stats.MaximumPhysBaseDmg, 150 },
-                    { Stats.DefenseBase, 0 },
                     { Stats.AttackRatePvm, 400 },
                     { Stats.DefenseRatePvm, 500 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(trap.Attributes.Add);
+                };
+
+                trap.AddAttributes(attributes, context, gameConfiguration);
             }
         }
     }

@@ -156,7 +156,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 114 },
                     { Stats.MaximumHealth, 173500 },
@@ -165,19 +165,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 600 },
                     { Stats.AttackRatePvm, 640 },
                     { Stats.DefenseRatePvm, 426 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 7 },
                     { Stats.IceResistance, 7 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 7 },
                     { Stats.LightningResistance, 7 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             } // 138 Chief Skeleton Warrior 7
 
             {
@@ -193,7 +187,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 117 },
                     { Stats.MaximumHealth, 175000 },
@@ -202,19 +196,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 615 },
                     { Stats.AttackRatePvm, 690 },
                     { Stats.DefenseRatePvm, 440 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 7 },
                     { Stats.IceResistance, 7 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 7 },
                     { Stats.LightningResistance, 7 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             } // 139 Chief Skeleton Archer 7
 
             {
@@ -230,7 +218,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 125 },
                     { Stats.MaximumHealth, 184000 },
@@ -239,19 +227,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 622 },
                     { Stats.AttackRatePvm, 760 },
                     { Stats.DefenseRatePvm, 465 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 7 },
                     { Stats.IceResistance, 7 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 7 },
                     { Stats.LightningResistance, 7 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             } // 140 Dark Skull Soldier 7
 
             {
@@ -267,7 +249,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 129 },
                     { Stats.MaximumHealth, 208000 },
@@ -276,19 +258,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 635 },
                     { Stats.AttackRatePvm, 830 },
                     { Stats.DefenseRatePvm, 510 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 7 },
                     { Stats.IceResistance, 7 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 7 },
                     { Stats.LightningResistance, 7 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             } // 141 Giant Ogre 7
 
             {
@@ -304,7 +280,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 132 },
                     { Stats.MaximumHealth, 208700 },
@@ -313,19 +289,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 648 },
                     { Stats.AttackRatePvm, 900 },
                     { Stats.DefenseRatePvm, 585 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 7 },
                     { Stats.IceResistance, 7 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 7 },
                     { Stats.LightningResistance, 7 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             } // 142 Red Skeleton Knight 7
 
             {
@@ -341,7 +311,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
-                new Dictionary<AttributeDefinition, float>
+                var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 140 },
                     { Stats.MaximumHealth, 215000 },
@@ -350,19 +320,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseBase, 670 },
                     { Stats.AttackRatePvm, 950 },
                     { Stats.DefenseRatePvm, 750 },
-                    { Stats.WindResistance, 0 },
                     { Stats.PoisonResistance, 10 },
                     { Stats.IceResistance, 10 },
-                    { Stats.WaterResistance, 0 },
                     { Stats.FireResistance, 10 },
                     { Stats.LightningResistance, 10 },
-                }.Select(kvp =>
-                {
-                    var attribute = context.CreateNew<MonsterAttribute>();
-                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);
-                    attribute.Value = kvp.Value;
-                    return attribute;
-                }).ToList().ForEach(monster.Attributes.Add);
+                };
+
+                monster.AddAttributes(attributes, context, gameConfiguration);
             } // 143 Magic Skeleton 7
         }
     }
