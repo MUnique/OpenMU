@@ -71,18 +71,22 @@ For example, if we want to use a document based database, an account could be on
 To accomplish the design goals, the game logic (and other parts) are using abstractions, [Repositories](https://martinfowler.com/eaaCatalog/repository.html), to access data.
 These abstractions are located at the MUnique.OpenMU.Persistence namespace.
 
-We use a context-based approach to access data, e.g. the [GameConfiguration](../src/DataModel/Configuration/GameConfiguration.cs) is loaded through a [GameConfigurationRepository](../src/Persistence/EntityFramework/GameConfigurationRepository.cs) while "using" a [context](../src/Persistence/IContext.cs), and each connected player uses its own [context](../src/Persistence/IContext.cs) to load its [Account](../src/DataModel/Entities/Account.cs).
+We use a context-based approach to access data, e.g. the [GameConfiguration](../src/DataModel/Configuration/GameConfiguration.cs) is loaded through a [GameConfigurationRepository](../src/Persistence/EntityFramework/GameConfigurationRepository.cs) while "using" a [context](../src/Persistence/IContext.cs), and each connected player uses its own [player context](../src/Persistence/IPlayerContext.cs) to load its [Account](../src/DataModel/Entities/Account.cs).
 When saving an account, we actually save the it's context. The context then takes care that every required change is done at the database.
 When accessing or creating new persistent objects, the [context](../src/Persistence/IContext.cs) needs to be "in use" on the current thread, because the actual context implementation may need to track these objects.
-There is a [repository manager](../src/Persistence/IRepositoryManager.cs) which takes care of a lot of things (too many responsibilites?), e.g. creating new objects, using or creating contexts.
+It takes care of a lot of things, e.g. creating new objects. Contexts can be created with the [PersistenceContextProvider](../src/Persistence/IPersistenceContextProvider.cs).
 
 #### Current implementation and supported database ####
 At the moment the persistence layer is implemented by [MUnique.OpenMU.Persistence.EntityFramework](../src/Persistence/EntityFramework/Readme.md) which uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) and [PostgreSQL](https://www.postgresql.org/) as database.
 
 #### Future
 Because the data model is pretty complicated (which is required if the configuration should be that flexible), a full relational model 
-on a database is probably not the best thing to do (performance wise). Loading the game configuration takes about 15 seconds at the moment, and the data isn't even complete yet.
-A solution could be to mix relational tables with json columns or to fully switch to a document based database (e.g. RavenDB).
+on a database is probably not the best thing to do (performance wise).
+Currently, we use an approach to load the game configuration or account with just one big dynamically generated query which gives us the data as json. That's suprisingly fast, as the query itself to load
+the really complex game configuration finishes in about 1.5 seconds.
+
+If there might be a problem in the future, we could go further and mix relational tables with json columns or to fully switch to a document based database (e.g. RavenDB).
+
 
 ### Further informations
   * [Admin Panel](../src/AdminPanel/Readme.md): The user inferface of the server
