@@ -247,7 +247,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void MapChange()
         {
             var mapNumber = NumberConversionExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number);
-            using (var writer = this.connection.StartSafeWrite(0xC3, 0x09))
             using (var writer = this.connection.StartSafeWrite(0xC3, 0x0F))
             {
                 var packet = writer.Span;
