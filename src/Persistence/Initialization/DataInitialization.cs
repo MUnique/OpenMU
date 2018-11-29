@@ -699,69 +699,72 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private void CreateGameMapDefinitions()
         {
-            var maps = new Maps.IMapInitializer[]
+            var mapInitializers = new[]
             {
-                new Lorencia(),
-                new Dungeon(),
-                new Devias(),
-                new Noria(),
-                new LostTower(),
-                new Exile(),
-                new Arena(),
-                new Atlans(),
-                new Tarkan(),
-                new DevilSquare1To4(),
-                new Icarus(),
-                new Elvenland(),
-                new Karutan1(),
-                new Karutan2(),
-                new Aida(),
-                new Vulcanus(),
-                new CrywolfFortress(),
-                new LandOfTrials(),
-                new LorenMarket(),
-                new SantaVillage(),
-                new SilentMap(),
-                new ValleyOfLoren(),
-                new BarracksOfBalgass(),
-                new BalgassRefuge(),
-                new Kalima1(),
-                new Kalima2(),
-                new Kalima3(),
-                new Kalima4(),
-                new Kalima5(),
-                new Kalima6(),
-                new Kalima7(),
-                new KanturuRelics(),
-                new KanturuRuins(),
-                new Raklion(),
-                new SwampOfCalmness(),
-                new BloodCastle1(),
-                new BloodCastle2(),
-                new BloodCastle3(),
-                new BloodCastle4(),
-                new BloodCastle5(),
-                new BloodCastle6(),
-                new BloodCastle7(),
-                new BloodCastle8(),
-                new ChaosCastle1(),
-                new ChaosCastle2(),
-                new ChaosCastle3(),
-                new ChaosCastle4(),
-                new ChaosCastle5(),
-                new ChaosCastle6(),
-                new ChaosCastle7(),
-                new IllusionTemple1(),
-                new IllusionTemple2(),
-                new IllusionTemple3(),
-                new IllusionTemple4(),
-                new IllusionTemple5(),
-                new IllusionTemple6(),
+                typeof(Lorencia),
+                typeof(Dungeon),
+                typeof(Devias),
+                typeof(Noria),
+                typeof(LostTower),
+                typeof(Exile),
+                typeof(Arena),
+                typeof(Atlans),
+                typeof(Tarkan),
+                typeof(DevilSquare1To4),
+                typeof(Icarus),
+                typeof(Elvenland),
+                typeof(Karutan1),
+                typeof(Karutan2),
+                typeof(Aida),
+                typeof(Vulcanus),
+                typeof(CrywolfFortress),
+                typeof(LandOfTrials),
+                typeof(LorenMarket),
+                typeof(SantaVillage),
+                typeof(SilentMap),
+                typeof(ValleyOfLoren),
+                typeof(BarracksOfBalgass),
+                typeof(BalgassRefuge),
+                typeof(Kalima1),
+                typeof(Kalima2),
+                typeof(Kalima3),
+                typeof(Kalima4),
+                typeof(Kalima5),
+                typeof(Kalima6),
+                typeof(Kalima7),
+                typeof(KanturuRelics),
+                typeof(KanturuRuins),
+                typeof(Raklion),
+                typeof(SwampOfCalmness),
+                typeof(BloodCastle1),
+                typeof(BloodCastle2),
+                typeof(BloodCastle3),
+                typeof(BloodCastle4),
+                typeof(BloodCastle5),
+                typeof(BloodCastle6),
+                typeof(BloodCastle7),
+                typeof(BloodCastle8),
+                typeof(ChaosCastle1),
+                typeof(ChaosCastle2),
+                typeof(ChaosCastle3),
+                typeof(ChaosCastle4),
+                typeof(ChaosCastle5),
+                typeof(ChaosCastle6),
+                typeof(ChaosCastle7),
+                typeof(IllusionTemple1),
+                typeof(IllusionTemple2),
+                typeof(IllusionTemple3),
+                typeof(IllusionTemple4),
+                typeof(IllusionTemple5),
+                typeof(IllusionTemple6),
+                typeof(DevilSquare5To7),
             };
 
-            foreach (var map in maps)
+            var parameters = new object[] { this.context, this.gameConfiguration };
+            foreach (var map in mapInitializers)
             {
-                this.gameConfiguration.Maps.Add(map.Initialize(this.context, this.gameConfiguration));
+                var mapInitializer = map.GetConstructors().First().Invoke(parameters) as IInitializer;
+                mapInitializer?.Initialize();
             }
 
             var mapNames = new List<string>
@@ -769,7 +772,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 "Lorencia", "Dungeon", "Devias", "Noria", "Lost Tower", "Exile", "Arena", "Atlans", "Tarkan", "Devil Square (1-4)", "Icarus", // 10
                 "Blood Castle 1", "Blood Castle 2", "Blood Castle 3", "Blood Castle 4", "Blood Castle 5", "Blood Castle 6", "Blood Castle 7", "Chaos Castle 1", "Chaos Castle 2", "Chaos Castle 3", // 20
                 "Chaos Castle 4", "Chaos Castle 5", "Chaos Castle 6", "Kalima 1", "Kalima 2", "Kalima 3", "Kalima 4", "Kalima 5", "Kalima 6", "Valley of Loren", // 30
-                "Land_of_Trials", "Devil Square (5-6)", "Aida", "Crywolf Fortress", "?", "Kalima 7", "Kanturu_I", "Kanturu_III", "Kanturu_Event", "Silent Map?", // 40
+                "Land_of_Trials", "Devil Square (5-7)", "Aida", "Crywolf Fortress", "?", "Kalima 7", "Kanturu_I", "Kanturu_III", "Kanturu_Event", "Silent Map?", // 40
                 "Barracks of Balgass", "Balgass Refuge", "?", "?", "Illusion Temple 1", "Illusion Temple 2", "Illusion Temple 3", "Illusion Temple 4", "Illusion Temple 5", "Illusion Temple 6", // 50
                 "Elvenland", "Blood Castle 8", "Chaos Castle 7", "?", "?", "Swamp Of Calmness", "LaCleon", "LaCleonBoss", "?", "?", // 60
                 "?", "Santa Village", "Vulcanus", "Duel Arena", "Double Gear 1", "Double Gear 2", "Double Gear 3", "Double Gear 4", "Empire Fortress 1", // 69

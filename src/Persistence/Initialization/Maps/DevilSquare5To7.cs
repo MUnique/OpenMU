@@ -4,12 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Maps
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
     /// Initialization for the devil square map which hosts devil square 5 to 7.
@@ -17,34 +14,39 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     internal class DevilSquare5To7 : BaseMapInitializer
     {
         /// <summary>
-        /// The default number of the devil square 5 to 7 map.
+        /// Initializes a new instance of the <see cref="DevilSquare5To7"/> class.
         /// </summary>
-        public static readonly byte Number = 32;
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public DevilSquare5To7(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
 
         /// <inheritdoc/>
-        protected override byte MapNumber => Number;
+        protected override byte MapNumber => 32;
 
         /// <inheritdoc/>
         protected override string MapName => "Devil Square (5-7)";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
-            var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
+            var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[573], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 120, 150, 80, 115); // Crypta
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[574], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 120, 150, 80, 115); // Crypos
+            yield return this.CreateMonsterSpawn(npcDictionary[573], 120, 150, 80, 115, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Crypta
+            yield return this.CreateMonsterSpawn(npcDictionary[574], 120, 150, 80, 115, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Crypos
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[449], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 122, 151, 152, 184); // Blaze Napin
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[575], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 122, 151, 152, 184); // Condra
+            yield return this.CreateMonsterSpawn(npcDictionary[449], 122, 151, 152, 184, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Blaze Napin
+            yield return this.CreateMonsterSpawn(npcDictionary[575], 122, 151, 152, 184, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Condra
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[573], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 50, 79, 138, 173); // Crypta
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[574], 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 50, 79, 138, 173); // Crypos
+            yield return this.CreateMonsterSpawn(npcDictionary[573], 50, 79, 138, 173, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Crypta
+            yield return this.CreateMonsterSpawn(npcDictionary[574], 50, 79, 138, 173, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Crypos
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             // no monsters here
         }

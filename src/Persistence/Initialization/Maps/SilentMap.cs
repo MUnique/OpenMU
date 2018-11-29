@@ -13,24 +13,29 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     internal class SilentMap : BaseMapInitializer
     {
         /// <summary>
-        /// The default number of the Silent map.
+        /// Initializes a new instance of the <see cref="SilentMap"/> class.
         /// </summary>
-        public static readonly byte Number = 40;
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public SilentMap(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
 
         /// <inheritdoc/>
-        protected override byte MapNumber => Number;
+        protected override byte MapNumber => 40;
 
         /// <inheritdoc/>
         protected override string MapName => "Silent Map?";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
             yield break;
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             // no monsters here
         }

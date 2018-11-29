@@ -17,135 +17,140 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     internal class BloodCastle5 : BaseMapInitializer
     {
         /// <summary>
-        /// The default number of the Blood Castle 5 map.
+        /// Initializes a new instance of the <see cref="BloodCastle5"/> class.
         /// </summary>
-        public static readonly byte Number = 15;
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public BloodCastle5(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
 
         /// <inheritdoc/>
-        protected override byte MapNumber => Number;
+        protected override byte MapNumber => 15;
 
         /// <inheritdoc/>
         protected override string MapName => "Blood Castle 5";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
-            var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
+            var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[131], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 075, 075); // Castle Gate
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[132], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 095, 095); // Statue of Saint
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[232], 1, Direction.SouthWest, SpawnTrigger.AutomaticDuringEvent, 010, 010, 009, 009); // Archangel
+            yield return this.CreateMonsterSpawn(npcDictionary[131], 014, 075, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Castle Gate
+            yield return this.CreateMonsterSpawn(npcDictionary[132], 014, 095, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Statue of Saint
+            yield return this.CreateMonsterSpawn(npcDictionary[232], 010, 009, Direction.SouthWest, SpawnTrigger.AutomaticDuringEvent); // Archangel
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 034, 034); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 038, 038); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 035, 035); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 028, 028); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 035, 035); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 033, 033); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 041, 041); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 042, 042); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 025, 025); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 023, 023); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 026, 026); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 037, 037); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 040, 040); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 039, 039); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 027, 027); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 024, 024); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 032, 032); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 045, 045); // Chief Skeleton Warrior 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[119], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 031, 031); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 014, 034, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 014, 038, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 013, 035, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 013, 028, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 015, 035, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 014, 033, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 015, 041, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 014, 042, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 015, 025, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 015, 023, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 013, 026, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 013, 037, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 014, 040, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 013, 039, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 014, 027, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 014, 024, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 014, 032, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 015, 045, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
+            yield return this.CreateMonsterSpawn(npcDictionary[119], 015, 031, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Warrior 5
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 045, 045); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 023, 023); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 043, 043); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 039, 039); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 037, 037); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 029, 029); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 028, 028); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 025, 025); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 021, 021); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 022, 022); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 021, 021); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 031, 031); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 030, 030); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 033, 033); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 021, 021); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 043, 043); // Chief Skeleton Archer 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[120], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 026, 026); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 013, 045, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 013, 023, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 015, 043, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 015, 039, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 015, 037, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 013, 029, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 015, 028, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 013, 025, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 013, 021, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 014, 022, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 015, 021, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 013, 031, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 015, 030, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 015, 033, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 014, 021, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 013, 043, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
+            yield return this.CreateMonsterSpawn(npcDictionary[120], 015, 026, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chief Skeleton Archer 5
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 046, 046); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 063, 063); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 053, 053); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 065, 065); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 067, 067); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 059, 059); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 059, 059); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 055, 055); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 062, 062); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 041, 041); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 069, 069); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 050, 050); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 048, 048); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 046, 046); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 044, 044); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 051, 051); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 049, 049); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 057, 057); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 064, 064); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 067, 067); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 053, 053); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 065, 065); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 060, 060); // Dark Skull Soldier 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[121], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 057, 057); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 046, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 063, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 053, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 065, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 067, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 059, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 059, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 055, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 062, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 041, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 069, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 050, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 048, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 046, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 014, 044, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 051, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 014, 049, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 057, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 014, 064, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 014, 067, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 053, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 065, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 015, 060, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
+            yield return this.CreateMonsterSpawn(npcDictionary[121], 013, 057, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Dark Skull Soldier 5
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 069, 069); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 061, 061); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 055, 055); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 058, 058); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 052, 052); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 050, 050); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 066, 066); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 056, 056); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 070, 070); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 048, 048); // Giant Ogre 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[122], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 063, 063); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 013, 069, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 014, 061, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 013, 055, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 014, 058, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 014, 052, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 015, 050, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 015, 066, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 014, 056, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 014, 070, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 013, 048, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
+            yield return this.CreateMonsterSpawn(npcDictionary[122], 013, 063, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 5
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 078, 078); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 083, 083); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 078, 078); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 078, 078); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 016, 016, 080, 080); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 062, 062); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 017, 017, 083, 083); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 090, 090); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 011, 011, 083, 083); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 094, 094); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 020, 020, 082, 082); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 020, 020, 088, 088); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 054, 054); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 036, 036); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 015, 015, 068, 068); // Red Skeleton Knight 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[123], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 047, 047); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 013, 078, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 014, 083, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 014, 078, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 015, 078, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 016, 080, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 015, 062, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 017, 083, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 014, 090, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 011, 083, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 015, 094, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 020, 082, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 020, 088, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 014, 054, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 014, 036, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 015, 068, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
+            yield return this.CreateMonsterSpawn(npcDictionary[123], 014, 047, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Red Skeleton Knight 5
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[124], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 016, 016, 087, 087); // Magic Skeleton 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[124], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 012, 012, 081, 081); // Magic Skeleton 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[124], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 088, 088); // Magic Skeleton 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[124], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 085, 085); // Magic Skeleton 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[124], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 019, 019, 085, 085); // Magic Skeleton 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[124], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 013, 013, 093, 093); // Magic Skeleton 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[124], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 014, 014, 080, 080); // Magic Skeleton 5
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[124], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 018, 018, 081, 081); // Magic Skeleton 5
+            yield return this.CreateMonsterSpawn(npcDictionary[124], 016, 087, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Magic Skeleton 5
+            yield return this.CreateMonsterSpawn(npcDictionary[124], 012, 081, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Magic Skeleton 5
+            yield return this.CreateMonsterSpawn(npcDictionary[124], 013, 088, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Magic Skeleton 5
+            yield return this.CreateMonsterSpawn(npcDictionary[124], 013, 085, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Magic Skeleton 5
+            yield return this.CreateMonsterSpawn(npcDictionary[124], 019, 085, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Magic Skeleton 5
+            yield return this.CreateMonsterSpawn(npcDictionary[124], 013, 093, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Magic Skeleton 5
+            yield return this.CreateMonsterSpawn(npcDictionary[124], 014, 080, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Magic Skeleton 5
+            yield return this.CreateMonsterSpawn(npcDictionary[124], 018, 081, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Magic Skeleton 5
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 119;
                 monster.Designation = "Chief Skeleton Warrior 5";
                 monster.MoveRange = 3;
@@ -171,12 +176,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.LightningResistance, 7 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             } // 119 Chief Skeleton Warrior 5
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 120;
                 monster.Designation = "Chief Skeleton Archer 5";
                 monster.MoveRange = 3;
@@ -202,12 +207,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.LightningResistance, 7 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             } // 120 Chief Skeleton Archer 5
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 121;
                 monster.Designation = "Dark Skull Soldier 5";
                 monster.MoveRange = 3;
@@ -233,12 +238,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.LightningResistance, 7 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             } // 121 Dark Skull Soldier 5
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 122;
                 monster.Designation = "Giant Ogre 5";
                 monster.MoveRange = 3;
@@ -264,12 +269,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.LightningResistance, 7 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             } // 122 Giant Ogre 5
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 123;
                 monster.Designation = "Red Skeleton Knight 5";
                 monster.MoveRange = 3;
@@ -295,12 +300,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.LightningResistance, 7 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             } // 123 Red Skeleton Knight 5
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 124;
                 monster.Designation = "Magic Skeleton 5";
                 monster.MoveRange = 4;
@@ -326,7 +331,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.LightningResistance, 10 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             } // 124 Magic Skeleton 5
         }
     }

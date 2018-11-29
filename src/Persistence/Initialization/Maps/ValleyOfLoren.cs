@@ -14,36 +14,41 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     internal class ValleyOfLoren : BaseMapInitializer
     {
         /// <summary>
-        /// The default number of the Valley of Loren map.
+        /// Initializes a new instance of the <see cref="ValleyOfLoren"/> class.
         /// </summary>
-        public static readonly byte Number = 30;
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public ValleyOfLoren(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
 
         /// <inheritdoc/>
-        protected override byte MapNumber => Number;
+        protected override byte MapNumber => 30;
 
         /// <inheritdoc/>
         protected override string MapName => "Valley of Loren";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
-            var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
+            var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[216], 1, Direction.SouthWest, SpawnTrigger.Automatic, 176, 176, 212, 212); // Crown
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[216], 1, Direction.SouthWest, SpawnTrigger.Automatic, 176, 176, 212, 212); // Crown
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[217], 1, Direction.NorthWest, SpawnTrigger.Automatic, 167, 167, 194, 194); // Crown Switch1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[218], 1, Direction.NorthWest, SpawnTrigger.Automatic, 184, 184, 195, 195); // Crown Switch2
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[220], 1, Direction.SouthEast, SpawnTrigger.Automatic, 139, 139, 101, 101); // Guard
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[223], 1, Direction.SouthWest, SpawnTrigger.Automatic, 179, 179, 214, 214); // Sinior
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[224], 1, Direction.SouthWest, SpawnTrigger.Automatic, 086, 086, 061, 061); // Guardsman
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[224], 1, Direction.SouthWest, SpawnTrigger.Automatic, 099, 099, 061, 061); // Guardsman
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[376], 1, Direction.SouthWest, SpawnTrigger.Automatic, 090, 090, 043, 043); // Pamela
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[377], 1, Direction.SouthEast, SpawnTrigger.Automatic, 090, 090, 218, 218); // Angela
+            yield return this.CreateMonsterSpawn(npcDictionary[216], 176, 212, Direction.SouthWest); // Crown
+            yield return this.CreateMonsterSpawn(npcDictionary[216], 176, 212, Direction.SouthWest); // Crown
+            yield return this.CreateMonsterSpawn(npcDictionary[217], 167, 194, Direction.NorthWest); // Crown Switch1
+            yield return this.CreateMonsterSpawn(npcDictionary[218], 184, 195, Direction.NorthWest); // Crown Switch2
+            yield return this.CreateMonsterSpawn(npcDictionary[220], 139, 101, Direction.SouthEast); // Guard
+            yield return this.CreateMonsterSpawn(npcDictionary[223], 179, 214, Direction.SouthWest); // Sinior
+            yield return this.CreateMonsterSpawn(npcDictionary[224], 086, 061, Direction.SouthWest); // Guardsman
+            yield return this.CreateMonsterSpawn(npcDictionary[224], 099, 061, Direction.SouthWest); // Guardsman
+            yield return this.CreateMonsterSpawn(npcDictionary[376], 090, 043, Direction.SouthWest); // Pamela
+            yield return this.CreateMonsterSpawn(npcDictionary[377], 090, 218, Direction.SouthEast); // Angela
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             // no monsters here
         }

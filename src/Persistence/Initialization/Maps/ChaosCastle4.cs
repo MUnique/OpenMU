@@ -17,130 +17,135 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     internal class ChaosCastle4 : BaseMapInitializer
     {
         /// <summary>
-        /// The default number of the Chaos Castle 4 map.
+        /// Initializes a new instance of the <see cref="ChaosCastle4"/> class.
         /// </summary>
-        public static readonly byte Number = 21;
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public ChaosCastle4(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
 
         /// <inheritdoc/>
-        protected override byte MapNumber => Number;
+        protected override byte MapNumber => 21;
 
         /// <inheritdoc/>
         protected override string MapName => "Chaos Castle 4";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
-            var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
+            var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 026, 026, 105, 105); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 028, 028, 090, 090); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 028, 028, 082, 082); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 034, 034, 078, 078); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 039, 039, 078, 078); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 080, 080); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 086, 086); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 041, 041, 082, 082); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 032, 032, 091, 091); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 042, 042, 090, 090); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 030, 030, 078, 078); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 040, 040, 098, 098); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 033, 033, 103, 103); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 042, 042, 105, 105); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 035, 035, 105, 105); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 028, 028, 097, 097); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 028, 028, 079, 079); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 025, 025, 082, 082); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 033, 033, 076, 076); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 031, 031, 080, 080); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 076, 076); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 039, 039, 082, 082); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 042, 042, 094, 094); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 034, 034, 090, 090); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 030, 030, 105, 105); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 028, 028, 100, 100); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 035, 035, 102, 102); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 043, 043, 096, 096); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 025, 025, 091, 091); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 030, 030, 098, 098); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 041, 041, 089, 089); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 039, 039, 095, 095); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 029, 029, 103, 103); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 025, 025, 097, 097); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 027, 027, 088, 088); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 032, 032, 089, 089); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 037, 037, 089, 089); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 099, 099); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 043, 043, 081, 081); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 042, 042, 075, 075); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 024, 024, 080, 080); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 024, 024, 089, 089); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 024, 024, 101, 101); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 041, 041, 096, 096); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 041, 041, 076, 076); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 096, 096); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 032, 032, 078, 078); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 027, 027, 104, 104); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 044, 044, 102, 102); // Chaos Castle 7
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[168], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 039, 039, 093, 093); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 026, 105, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 028, 090, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 028, 082, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 034, 078, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 039, 078, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 038, 080, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 038, 086, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 041, 082, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 032, 091, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 042, 090, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 030, 078, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 040, 098, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 033, 103, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 042, 105, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 035, 105, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 028, 097, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 028, 079, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 025, 082, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 033, 076, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 031, 080, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 038, 076, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 039, 082, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 042, 094, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 034, 090, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 030, 105, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 028, 100, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 035, 102, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 043, 096, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 025, 091, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 030, 098, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 041, 089, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 039, 095, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 029, 103, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 025, 097, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 027, 088, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 032, 089, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 037, 089, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 038, 099, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 043, 081, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 042, 075, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 024, 080, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 024, 089, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 024, 101, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 041, 096, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 041, 076, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 038, 096, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 032, 078, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 027, 104, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 044, 102, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
+            yield return this.CreateMonsterSpawn(npcDictionary[168], 039, 093, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 7
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 026, 026, 098, 098); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 027, 027, 086, 086); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 026, 026, 079, 079); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 033, 033, 081, 081); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 026, 026, 077, 077); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 043, 043, 077, 077); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 043, 043, 084, 084); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 027, 027, 094, 094); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 029, 029, 084, 084); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 044, 044, 087, 087); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 092, 092); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 029, 029, 101, 101); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 089, 089); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 042, 042, 099, 099); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 029, 029, 093, 093); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 026, 026, 084, 084); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 029, 029, 076, 076); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 035, 035, 079, 079); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 041, 041, 079, 079); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 036, 036, 081, 081); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 041, 041, 086, 086); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 035, 035, 092, 092); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 101, 101); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 026, 026, 102, 102); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 106, 106); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 042, 042, 102, 102); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 030, 030, 088, 088); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 029, 029, 091, 091); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 041, 041, 093, 093); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 043, 043, 091, 091); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 032, 032, 101, 101); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 033, 033, 105, 105); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 024, 024, 094, 094); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 032, 032, 094, 094); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 036, 036, 092, 092); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 040, 040, 091, 091); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 040, 040, 101, 101); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 036, 036, 076, 076); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 026, 026, 075, 075); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 030, 030, 082, 082); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 024, 024, 086, 086); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 037, 037, 104, 104); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 039, 039, 087, 087); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 038, 038, 084, 084); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 030, 030, 095, 095); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 029, 029, 086, 086); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 040, 040, 104, 104); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 043, 043, 098, 098); // Chaos Castle 8
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[169], 1, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent, 041, 041, 084, 084); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 026, 098, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 027, 086, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 026, 079, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 033, 081, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 026, 077, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 043, 077, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 043, 084, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 027, 094, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 029, 084, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 044, 087, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 038, 092, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 029, 101, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 038, 089, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 042, 099, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 029, 093, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 026, 084, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 029, 076, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 035, 079, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 041, 079, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 036, 081, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 041, 086, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 035, 092, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 038, 101, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 026, 102, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 038, 106, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 042, 102, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 030, 088, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 029, 091, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 041, 093, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 043, 091, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 032, 101, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 033, 105, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 024, 094, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 032, 094, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 036, 092, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 040, 091, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 040, 101, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 036, 076, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 026, 075, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 030, 082, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 024, 086, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 037, 104, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 039, 087, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 038, 084, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 030, 095, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 029, 086, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 040, 104, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 043, 098, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
+            yield return this.CreateMonsterSpawn(npcDictionary[169], 041, 084, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Chaos Castle 8
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 168;
                 monster.Designation = "Chaos Castle 7";
                 monster.MoveRange = 50;
@@ -166,12 +171,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.LightningResistance, 4 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             } // 168 Chaos Castle 7
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 169;
                 monster.Designation = "Chaos Castle 8";
                 monster.MoveRange = 50;
@@ -197,7 +202,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.LightningResistance, 4 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             } // 169 Chaos Castle 8
         }
     }

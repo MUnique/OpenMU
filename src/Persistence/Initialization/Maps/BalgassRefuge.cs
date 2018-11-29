@@ -17,41 +17,46 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     internal class BalgassRefuge : BaseMapInitializer
     {
         /// <summary>
-        /// The default number of the barracks of balgass map.
+        /// Initializes a new instance of the <see cref="BalgassRefuge"/> class.
         /// </summary>
-        public static readonly byte Number = 42;
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public BalgassRefuge(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
 
         /// <inheritdoc/>
-        protected override byte MapNumber => Number;
+        protected override byte MapNumber => 42;
 
         /// <inheritdoc/>
         protected override string MapName => "Balgass Refuge";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
-            var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
+            var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, Direction.Undefined, SpawnTrigger.Automatic, 104, 104, 179, 179); // Death Spirit (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, Direction.Undefined, SpawnTrigger.Automatic, 104, 104, 200, 200); // Death Spirit (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, Direction.Undefined, SpawnTrigger.Automatic, 085, 085, 179, 179); // Death Spirit (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[410], 1, Direction.Undefined, SpawnTrigger.Automatic, 086, 086, 199, 199); // Death Spirit (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[410], 104, 179); // Death Spirit (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[410], 104, 200); // Death Spirit (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[410], 085, 179); // Death Spirit (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[410], 086, 199); // Death Spirit (Trainee Soldier)
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, Direction.Undefined, SpawnTrigger.Automatic, 092, 092, 174, 174); // Soram (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, Direction.Undefined, SpawnTrigger.Automatic, 111, 111, 190, 190); // Soram (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, Direction.Undefined, SpawnTrigger.Automatic, 094, 094, 202, 202); // Soram (Trainee Soldier)
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[411], 1, Direction.Undefined, SpawnTrigger.Automatic, 082, 082, 190, 190); // Soram (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[411], 092, 174); // Soram (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[411], 111, 190); // Soram (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[411], 094, 202); // Soram (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[411], 082, 190); // Soram (Trainee Soldier)
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[412], 1, Direction.Undefined, SpawnTrigger.Automatic, 097, 097, 187, 187); // Dark Elf (Trainee Soldier)
+            yield return this.CreateMonsterSpawn(npcDictionary[412], 097, 187); // Dark Elf (Trainee Soldier)
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 412;
                 monster.Designation = "Dark Elf (Trainee Soldier)";
                 monster.MoveRange = 6;
@@ -77,7 +82,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 23 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
         }
     }

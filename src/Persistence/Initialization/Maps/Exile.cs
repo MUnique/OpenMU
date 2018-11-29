@@ -12,6 +12,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     /// </summary>
     internal class Exile : BaseMapInitializer
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Exile"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public Exile(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
+
         /// <inheritdoc/>
         protected override byte MapNumber => 5;
 
@@ -19,13 +29,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Exile";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
             yield break;
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             // no monsters here
         }

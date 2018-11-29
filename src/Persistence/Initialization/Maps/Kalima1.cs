@@ -17,101 +17,106 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     internal class Kalima1 : BaseMapInitializer
     {
         /// <summary>
-        /// The default number of the kalima 1 map.
+        /// Initializes a new instance of the <see cref="Kalima1"/> class.
         /// </summary>
-        public static readonly byte Number = 24;
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public Kalima1(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
 
         /// <inheritdoc/>
-        protected override byte MapNumber => Number;
+        protected override byte MapNumber => 24;
 
         /// <inheritdoc/>
         protected override string MapName => "Kalima 1";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
-            var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
+            var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[259], 1, Direction.South, SpawnTrigger.Automatic, 007, 007, 019, 019); // Oracle Layla
+            yield return this.CreateMonsterSpawn(npcDictionary[259], 007, 019, Direction.South); // Oracle Layla
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 120, 120, 050, 050); // Death Angel 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 105, 105, 054, 054); // Death Angel 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 119, 119, 057, 057); // Death Angel 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 110, 110, 065, 065); // Death Angel 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 121, 121, 067, 067); // Death Angel 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 111, 111, 072, 072); // Death Angel 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 105, 105, 086, 086); // Death Angel 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 118, 118, 095, 095); // Death Angel 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[144], 1, Direction.Undefined, SpawnTrigger.Automatic, 120, 120, 075, 075); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 120, 050); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 105, 054); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 119, 057); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 110, 065); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 121, 067); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 111, 072); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 105, 086); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 118, 095); // Death Angel 1
+            yield return this.CreateMonsterSpawn(npcDictionary[144], 120, 075); // Death Angel 1
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[145], 1, Direction.Undefined, SpawnTrigger.Automatic, 087, 087, 090, 090); // Death Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[145], 1, Direction.Undefined, SpawnTrigger.Automatic, 068, 068, 077, 077); // Death Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[145], 1, Direction.Undefined, SpawnTrigger.Automatic, 063, 063, 072, 072); // Death Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[145], 1, Direction.Undefined, SpawnTrigger.Automatic, 058, 058, 078, 078); // Death Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[145], 1, Direction.Undefined, SpawnTrigger.Automatic, 057, 057, 071, 071); // Death Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[145], 087, 090); // Death Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[145], 068, 077); // Death Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[145], 063, 072); // Death Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[145], 058, 078); // Death Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[145], 057, 071); // Death Centurion 1
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[146], 1, Direction.Undefined, SpawnTrigger.Automatic, 110, 110, 009, 009); // Blood Soldier 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[146], 1, Direction.Undefined, SpawnTrigger.Automatic, 118, 118, 017, 017); // Blood Soldier 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[146], 1, Direction.Undefined, SpawnTrigger.Automatic, 110, 110, 035, 035); // Blood Soldier 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[146], 1, Direction.Undefined, SpawnTrigger.Automatic, 121, 121, 027, 027); // Blood Soldier 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[146], 1, Direction.Undefined, SpawnTrigger.Automatic, 119, 119, 035, 035); // Blood Soldier 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[146], 1, Direction.Undefined, SpawnTrigger.Automatic, 114, 114, 044, 044); // Blood Soldier 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[146], 1, Direction.Undefined, SpawnTrigger.Automatic, 108, 108, 028, 028); // Blood Soldier 1
+            yield return this.CreateMonsterSpawn(npcDictionary[146], 110, 009); // Blood Soldier 1
+            yield return this.CreateMonsterSpawn(npcDictionary[146], 118, 017); // Blood Soldier 1
+            yield return this.CreateMonsterSpawn(npcDictionary[146], 110, 035); // Blood Soldier 1
+            yield return this.CreateMonsterSpawn(npcDictionary[146], 121, 027); // Blood Soldier 1
+            yield return this.CreateMonsterSpawn(npcDictionary[146], 119, 035); // Blood Soldier 1
+            yield return this.CreateMonsterSpawn(npcDictionary[146], 114, 044); // Blood Soldier 1
+            yield return this.CreateMonsterSpawn(npcDictionary[146], 108, 028); // Blood Soldier 1
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 030, 030, 075, 075); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 035, 035, 021, 021); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 028, 028, 017, 017); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 036, 036, 011, 011); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 051, 051, 011, 011); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 042, 042, 012, 012); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 045, 045, 022, 022); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 052, 052, 024, 024); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 053, 053, 017, 017); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 060, 060, 009, 009); // Aegis 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[147], 1, Direction.Undefined, SpawnTrigger.Automatic, 060, 060, 022, 022); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 030, 075); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 035, 021); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 028, 017); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 036, 011); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 051, 011); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 042, 012); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 045, 022); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 052, 024); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 053, 017); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 060, 009); // Aegis 1
+            yield return this.CreateMonsterSpawn(npcDictionary[147], 060, 022); // Aegis 1
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 067, 067, 022, 022); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 069, 069, 009, 009); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 074, 074, 014, 014); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 082, 082, 008, 008); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 081, 081, 019, 019); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 086, 086, 013, 013); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 092, 092, 006, 006); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 096, 096, 016, 016); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 099, 099, 009, 009); // Rogue Centurion 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[148], 1, Direction.Undefined, SpawnTrigger.Automatic, 109, 109, 019, 019); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 067, 022); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 069, 009); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 074, 014); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 082, 008); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 081, 019); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 086, 013); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 092, 006); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 096, 016); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 099, 009); // Rogue Centurion 1
+            yield return this.CreateMonsterSpawn(npcDictionary[148], 109, 019); // Rogue Centurion 1
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[149], 1, Direction.Undefined, SpawnTrigger.Automatic, 118, 118, 084, 084); // Necron 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[149], 1, Direction.Undefined, SpawnTrigger.Automatic, 104, 104, 101, 101); // Necron 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[149], 1, Direction.Undefined, SpawnTrigger.Automatic, 115, 115, 106, 106); // Necron 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[149], 1, Direction.Undefined, SpawnTrigger.Automatic, 093, 093, 096, 096); // Necron 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[149], 1, Direction.Undefined, SpawnTrigger.Automatic, 093, 093, 084, 084); // Necron 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[149], 1, Direction.Undefined, SpawnTrigger.Automatic, 082, 082, 085, 085); // Necron 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[149], 1, Direction.Undefined, SpawnTrigger.Automatic, 082, 082, 077, 077); // Necron 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[149], 1, Direction.Undefined, SpawnTrigger.Automatic, 074, 074, 076, 076); // Necron 1
+            yield return this.CreateMonsterSpawn(npcDictionary[149], 118, 084); // Necron 1
+            yield return this.CreateMonsterSpawn(npcDictionary[149], 104, 101); // Necron 1
+            yield return this.CreateMonsterSpawn(npcDictionary[149], 115, 106); // Necron 1
+            yield return this.CreateMonsterSpawn(npcDictionary[149], 093, 096); // Necron 1
+            yield return this.CreateMonsterSpawn(npcDictionary[149], 093, 084); // Necron 1
+            yield return this.CreateMonsterSpawn(npcDictionary[149], 082, 085); // Necron 1
+            yield return this.CreateMonsterSpawn(npcDictionary[149], 082, 077); // Necron 1
+            yield return this.CreateMonsterSpawn(npcDictionary[149], 074, 076); // Necron 1
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 032, 032, 050, 050); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 042, 042, 051, 051); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 038, 038, 058, 058); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 029, 029, 065, 065); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 046, 046, 066, 066); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 042, 042, 097, 097); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 037, 037, 109, 109); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 047, 047, 107, 107); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 053, 053, 093, 093); // Schriker 1
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[160], 1, Direction.Undefined, SpawnTrigger.Automatic, 035, 035, 087, 087); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 032, 050); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 042, 051); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 038, 058); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 029, 065); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 046, 066); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 042, 097); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 037, 109); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 047, 107); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 053, 093); // Schriker 1
+            yield return this.CreateMonsterSpawn(npcDictionary[160], 035, 087); // Schriker 1
 
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[161], 1, Direction.Undefined, SpawnTrigger.Automatic, 026, 026, 076, 076); // Illusion of Kundun 1
+            yield return this.CreateMonsterSpawn(npcDictionary[161], 026, 076); // Illusion of Kundun 1
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 144;
                 monster.Designation = "Death Angel 1";
                 monster.MoveRange = 2;
@@ -137,12 +142,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 11 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 145;
                 monster.Designation = "Death Centurion 1";
                 monster.MoveRange = 3;
@@ -168,12 +173,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 13 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 146;
                 monster.Designation = "Blood Soldier 1";
                 monster.MoveRange = 3;
@@ -199,12 +204,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 10 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 147;
                 monster.Designation = "Aegis 1";
                 monster.MoveRange = 3;
@@ -230,12 +235,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 8 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 148;
                 monster.Designation = "Rogue Centurion 1";
                 monster.MoveRange = 3;
@@ -261,12 +266,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 9 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 149;
                 monster.Designation = "Necron 1";
                 monster.MoveRange = 3;
@@ -292,12 +297,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 12 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 160;
                 monster.Designation = "Schriker 1";
                 monster.MoveRange = 3;
@@ -323,12 +328,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 14 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 161;
                 monster.Designation = "Illusion of Kundun 1";
                 monster.MoveRange = 3;
@@ -354,7 +359,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.FireResistance, 30 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
         }
     }

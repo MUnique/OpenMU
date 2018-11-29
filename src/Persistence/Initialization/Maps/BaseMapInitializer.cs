@@ -10,8 +10,37 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     /// <summary>
     /// Base class for a map initializer which provides some common basic functionality.
     /// </summary>
-    internal abstract class BaseMapInitializer : IMapInitializer
+    internal abstract class BaseMapInitializer : IInitializer
     {
+        private GameMapDefinition mapDefinition;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseMapInitializer"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        protected BaseMapInitializer(IContext context, GameConfiguration gameConfiguration)
+        {
+            this.Context = context;
+            this.GameConfiguration = gameConfiguration;
+        }
+
+        /// <summary>
+        /// Gets the context.
+        /// </summary>
+        /// <value>
+        /// The context.
+        /// </value>
+        protected IContext Context { get; }
+
+        /// <summary>
+        /// Gets the game configuration.
+        /// </summary>
+        /// <value>
+        /// The game configuration.
+        /// </value>
+        protected GameConfiguration GameConfiguration { get; }
+
         /// <summary>
         /// Gets the map number which will be set as <see cref="GameMapDefinition.Number"/>.
         /// </summary>
@@ -23,72 +52,65 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected abstract string MapName { get; }
 
         /// <inheritdoc />
-        public GameMapDefinition Initialize(IContext context, GameConfiguration gameConfiguration)
+        public void Initialize()
         {
-            this.CreateMonsters(context, gameConfiguration);
-            var mapDefinition = context.CreateNew<GameMapDefinition>();
-            mapDefinition.Number = this.MapNumber;
-            mapDefinition.Name = this.MapName;
-            mapDefinition.TerrainData = Terrains.ResourceManager.GetObject("Terrain" + (this.MapNumber + 1)) as byte[];
-            mapDefinition.ExpMultiplier = 1;
-            foreach (var spawn in this.CreateSpawns(context, mapDefinition, gameConfiguration))
+            this.CreateMonsters();
+            this.mapDefinition = this.Context.CreateNew<GameMapDefinition>();
+            this.mapDefinition.Number = this.MapNumber;
+            this.mapDefinition.Name = this.MapName;
+            this.mapDefinition.TerrainData = Terrains.ResourceManager.GetObject("Terrain" + (this.MapNumber + 1)) as byte[];
+            this.mapDefinition.ExpMultiplier = 1;
+            foreach (var spawn in this.CreateSpawns())
             {
-                mapDefinition.MonsterSpawns.Add(spawn);
+                this.mapDefinition.MonsterSpawns.Add(spawn);
             }
 
-            return mapDefinition;
+            this.GameConfiguration.Maps.Add(this.mapDefinition);
         }
 
         /// <summary>
         /// Creates all monster spawn areas.
         /// </summary>
-        /// <param name="context">The persistence context.</param>
-        /// <param name="mapDefinition">The game map definition.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
         /// <returns>
         /// The spawn areas of the game map.
         /// </returns>
         /// <remarks>
         /// Can be extracted from MonsterSetBase.txt by Regex:
         /// Search (single): (?m)^(\d+)[ \t]+(\d+)[ \t]+(\d+)[ \t]+(\d+)[ \t]+(\d+)[ \t]+((-|)\d+).*?$
-        /// Replace by (single): <![CDATA[yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[$1], 1, $Direction.North, SpawnTrigger.Automatic, $4, $4, $5, $5);]]>
+        /// Replace by (single): <![CDATA[yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[$1], $4, $5, (Direction)$6, SpawnTrigger.Automatic);]]>
         /// Search (multiple): (?m)^(\d+)\t*?(\d+)\t+?(\d+)\t+?(\d+)\t+?(\d+)\t+?(\d+)\t+?(\d+)\t+?(-*\d+)\t+?(\d+).*?$
-        /// Replace by (multiple): <![CDATA[yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[$1], $9, Direction.Undefined, SpawnTrigger.Automatic, $4, $6, $5, $7);]]>
+        /// Replace by (multiple): <![CDATA[yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[$1], $4, $6, $5, $7, $9, Direction.Undefined, SpawnTrigger.Automatic);]]>
         /// </remarks>
-        protected abstract IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration);
+        protected abstract IEnumerable<MonsterSpawnArea> CreateSpawns();
 
         /// <summary>
         /// Creates all map specific <see cref="MonsterDefinition"/>s and adds them to the gameConfiguration.
         /// </summary>
-        /// <param name="context">The persistence context.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
         /// <remarks>
         /// Can be extracted from Monsters.txt by Regex: (?m)^(\d+)\t1\t"(.*?)"\t*?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+).*?$
-        /// <![CDATA[Replace by:            {\r\n                var monster = context.CreateNew<MonsterDefinition>();\r\n                gameConfiguration.Monsters.Add(monster);\r\n                monster.Number = $1;\r\n                monster.Designation = "$2";\r\n                monster.MoveRange = $12;\r\n                monster.AttackRange = $14;\r\n                monster.ViewRange = $15;\r\n                monster.MoveDelay = new TimeSpan\($16 * TimeSpan.TicksPerMillisecond\);\r\n                monster.AttackDelay = new TimeSpan\($17 * TimeSpan.TicksPerMillisecond\);\r\n                monster.RespawnDelay = new TimeSpan\($18 * TimeSpan.TicksPerSecond\);\r\n                monster.Attribute = $19;\r\n                monster.NumberOfMaximumItemDrops = 1;\r\n                var attributes = new Dictionary<AttributeDefinition, float>\r\n                {\r\n                    { Stats.Level, $3 },\r\n                    { Stats.MaximumHealth, $4 },\r\n                    { Stats.MinimumPhysBaseDmg, $6 },\r\n                    { Stats.MaximumPhysBaseDmg, $7 },\r\n                    { Stats.DefenseBase, $8 },\r\n                    { Stats.AttackRatePvm, $10 },\r\n                    { Stats.DefenseRatePvm, $11 },\r\n                    { Stats.WindResistance, $23 },\r\n                    { Stats.PoisonResistance, $24 },\r\n                    { Stats.IceResistance, $25 },\r\n                    { Stats.WaterResistance, $26 },\r\n                    { Stats.FireResistance, $27 },\r\n                }.Select(kvp =>\r\n                {\r\n                    var attribute = context.CreateNew<MonsterAttribute>();\r\n                    attribute.AttributeDefinition = gameConfiguration.Attributes.First(a => a == kvp.Key);\r\n                    attribute.Value = kvp.Value;\r\n                    return attribute;\r\n                }).ToList().ForEach(monster.Attributes.Add);\r\n            }\r\n]]>
+        /// <![CDATA[Replace by:            {\r\n                var monster = context.CreateNew<MonsterDefinition>();\r\n                gameConfiguration.Monsters.Add(monster);\r\n                monster.Number = $1;\r\n                monster.Designation = "$2";\r\n                monster.MoveRange = $12;\r\n                monster.AttackRange = $14;\r\n                monster.ViewRange = $15;\r\n                monster.MoveDelay = new TimeSpan\($16 * TimeSpan.TicksPerMillisecond\);\r\n                monster.AttackDelay = new TimeSpan\($17 * TimeSpan.TicksPerMillisecond\);\r\n                monster.RespawnDelay = new TimeSpan\($18 * TimeSpan.TicksPerSecond\);\r\n                monster.Attribute = $19;\r\n                monster.NumberOfMaximumItemDrops = 1;\r\n                var attributes = new Dictionary<AttributeDefinition, float>\r\n                {\r\n                    { Stats.Level, $3 },\r\n                    { Stats.MaximumHealth, $4 },\r\n                    { Stats.MinimumPhysBaseDmg, $6 },\r\n                    { Stats.MaximumPhysBaseDmg, $7 },\r\n                    { Stats.DefenseBase, $8 },\r\n                    { Stats.AttackRatePvm, $10 },\r\n                    { Stats.DefenseRatePvm, $11 },\r\n                    { Stats.WindResistance, $23 },\r\n                    { Stats.PoisonResistance, $24 },\r\n                    { Stats.IceResistance, $25 },\r\n                    { Stats.WaterResistance, $26 },\r\n                    { Stats.FireResistance, $27 },\r\n                };\r\n                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);\r\n            }\r\n]]>
         /// </remarks>
-        protected abstract void CreateMonsters(IContext context, GameConfiguration gameConfiguration);
+        protected abstract void CreateMonsters();
 
         /// <summary>
         /// Creates a new <see cref="MonsterSpawnArea"/> with the specified data.
         /// </summary>
-        /// <param name="context">The persistence context.</param>
-        /// <param name="map">The map.</param>
         /// <param name="monsterDefinition">The monster definition.</param>
-        /// <param name="quantity">The quantity.</param>
-        /// <param name="direction">The direction.</param>
-        /// <param name="spawnTrigger">The spawn trigger.</param>
         /// <param name="x1">The x1 coordinate.</param>
         /// <param name="x2">The x2 coordinate.</param>
         /// <param name="y1">The y1 coordinate.</param>
         /// <param name="y2">The y2 coordinate.</param>
+        /// <param name="quantity">The quantity.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="spawnTrigger">The spawn trigger.</param>
         /// <returns>The created monster spawn area.</returns>
-        protected MonsterSpawnArea CreateMonsterSpawn(IContext context, GameMapDefinition map, MonsterDefinition monsterDefinition, short quantity, Direction direction, SpawnTrigger spawnTrigger, byte x1, byte x2, byte y1, byte y2)
+        protected MonsterSpawnArea CreateMonsterSpawn(MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, short quantity = 1, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic)
         {
-            var area = context.CreateNew<MonsterSpawnArea>();
-            area.GameMap = map;
+            var area = this.Context.CreateNew<MonsterSpawnArea>();
+            area.GameMap = this.mapDefinition;
             area.MonsterDefinition = monsterDefinition;
             area.Quantity = quantity;
-            area.Direction = direction; // (Direction)(direction + 1);
+            area.Direction = direction;
             area.SpawnTrigger = spawnTrigger;
             area.X1 = x1;
             area.X2 = x2;
@@ -96,5 +118,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             area.Y2 = y2;
             return area;
         }
+
+        /// <summary>
+        /// Creates a new <see cref="MonsterSpawnArea"/> with the specified data.
+        /// </summary>
+        /// <param name="monsterDefinition">The monster definition.</param>
+        /// <param name="x">The x coordinate.</param>
+        /// <param name="y">The y coordinate.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="spawnTrigger">The spawn trigger.</param>
+        /// <returns>The created monster spawn area.</returns>
+        protected MonsterSpawnArea CreateMonsterSpawn(MonsterDefinition monsterDefinition, byte x, byte y, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic)
+            => this.CreateMonsterSpawn(monsterDefinition, x, x, y, y, 1, direction, spawnTrigger);
     }
 }

@@ -21,6 +21,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// </summary>
         public static readonly byte Number = 3;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Noria"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public Noria(IContext context, GameConfiguration gameConfiguration)
+            : base(context, gameConfiguration)
+        {
+        }
+
         /// <inheritdoc/>
         protected override byte MapNumber => Number;
 
@@ -28,40 +38,40 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Noria";
 
         /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateSpawns(IContext context, GameMapDefinition mapDefinition, GameConfiguration gameConfiguration)
+        protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
-            var npcDictionary = gameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
+            var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);
 
             // NPCs:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[253], 1, Direction.SouthEast, SpawnTrigger.Automatic, 169, 169, 109, 109);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[253], 1, Direction.South, SpawnTrigger.Automatic, 193, 193, 110, 110);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[544], 1, Direction.SouthWest, SpawnTrigger.Automatic, 187, 187, 125, 125);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[237], 1, Direction.SouthEast, SpawnTrigger.Automatic, 171, 171, 105, 105);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[242], 1, Direction.SouthWest, SpawnTrigger.Automatic, 173, 173, 125, 125);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[243], 1, Direction.South, SpawnTrigger.Automatic, 195, 195, 124, 124);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[240], 1, Direction.SouthEast, SpawnTrigger.Automatic, 172, 172, 96, 96);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[238], 1, Direction.SouthWest, SpawnTrigger.Automatic, 180, 180, 103, 103);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[257], 1, Direction.SouthWest, SpawnTrigger.Automatic, 167, 167, 118, 118);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[450], 1, Direction.SouthWest, SpawnTrigger.Automatic, 179, 179, 126, 126);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[451], 1, Direction.SouthEast, SpawnTrigger.Automatic, 179, 179, 129, 129);
+            yield return this.CreateMonsterSpawn(npcDictionary[253], 169, 109, Direction.SouthEast);
+            yield return this.CreateMonsterSpawn(npcDictionary[253], 193, 110, Direction.South);
+            yield return this.CreateMonsterSpawn(npcDictionary[544], 187, 125, Direction.SouthWest);
+            yield return this.CreateMonsterSpawn(npcDictionary[237], 171, 105, Direction.SouthEast);
+            yield return this.CreateMonsterSpawn(npcDictionary[242], 173, 125, Direction.SouthWest);
+            yield return this.CreateMonsterSpawn(npcDictionary[243], 195, 124, Direction.South);
+            yield return this.CreateMonsterSpawn(npcDictionary[240], 172, 96, Direction.SouthEast);
+            yield return this.CreateMonsterSpawn(npcDictionary[238], 180, 103, Direction.SouthWest);
+            yield return this.CreateMonsterSpawn(npcDictionary[257], 167, 118, Direction.SouthWest);
+            yield return this.CreateMonsterSpawn(npcDictionary[450], 179, 126, Direction.SouthWest);
+            yield return this.CreateMonsterSpawn(npcDictionary[451], 179, 129, Direction.SouthEast);
 
             // Monsters:
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[26], 155, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 0, 128);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[27], 125, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 0, 128);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[28], 125, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 0, 128);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[29], 125, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 0, 128);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[30], 125, Direction.Undefined, SpawnTrigger.Automatic, 0, 251, 128, 245);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[31], 125, Direction.Undefined, SpawnTrigger.Automatic, 0, 251, 128, 245);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[32], 100, Direction.Undefined, SpawnTrigger.Automatic, 128, 251, 128, 245);
-            yield return this.CreateMonsterSpawn(context, mapDefinition, npcDictionary[33], 125, Direction.Undefined, SpawnTrigger.Automatic, 0, 128, 128, 245);
+            yield return this.CreateMonsterSpawn(npcDictionary[26], 128, 251, 0, 128, 155);
+            yield return this.CreateMonsterSpawn(npcDictionary[27], 128, 251, 0, 128, 125);
+            yield return this.CreateMonsterSpawn(npcDictionary[28], 0, 128, 0, 128, 125);
+            yield return this.CreateMonsterSpawn(npcDictionary[29], 0, 128, 0, 128, 125);
+            yield return this.CreateMonsterSpawn(npcDictionary[30], 0, 251, 128, 245, 125);
+            yield return this.CreateMonsterSpawn(npcDictionary[31], 0, 251, 128, 245, 125);
+            yield return this.CreateMonsterSpawn(npcDictionary[32], 128, 251, 128, 245, 100);
+            yield return this.CreateMonsterSpawn(npcDictionary[33], 0, 128, 128, 245, 125);
         }
 
         /// <inheritdoc/>
-        protected override void CreateMonsters(IContext context, GameConfiguration gameConfiguration)
+        protected override void CreateMonsters()
         {
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 26;
                 monster.Designation = "Goblin";
                 monster.MoveRange = 2;
@@ -74,25 +84,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.NumberOfMaximumItemDrops = 1;
                 var attributes = new Dictionary<AttributeDefinition, float>
                 {
-                    {Stats.Level, 3},
-                    {Stats.MaximumHealth, 45},
-                    {Stats.MinimumPhysBaseDmg, 7},
-                    {Stats.MaximumPhysBaseDmg, 10},
-                    {Stats.DefenseBase, 2},
-                    {Stats.AttackRatePvm, 13},
-                    {Stats.DefenseRatePvm, 2},
-                    {Stats.WindResistance, 0},
-                    {Stats.PoisonResistance, 0},
-                    {Stats.IceResistance, 0},
-                    {Stats.WaterResistance, 0},
-                    {Stats.FireResistance, 0},
+                    { Stats.Level, 3 },
+                    { Stats.MaximumHealth, 45 },
+                    { Stats.MinimumPhysBaseDmg, 7 },
+                    { Stats.MaximumPhysBaseDmg, 10 },
+                    { Stats.DefenseBase, 2 },
+                    { Stats.AttackRatePvm, 13 },
+                    { Stats.DefenseRatePvm, 2 },
+                    { Stats.WindResistance, 0 },
+                    { Stats.PoisonResistance, 0 },
+                    { Stats.IceResistance, 0 },
+                    { Stats.WaterResistance, 0 },
+                    { Stats.FireResistance, 0 },
                 };
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 27;
                 monster.Designation = "Chain Scorpion";
                 monster.MoveRange = 3;
@@ -114,12 +124,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseRatePvm, 4 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 28;
                 monster.Designation = "Beetle Monster";
                 monster.MoveRange = 3;
@@ -140,12 +150,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.AttackRatePvm, 44 },
                     { Stats.DefenseRatePvm, 10 },
                 };
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 29;
                 monster.Designation = "Hunter";
                 monster.MoveRange = 3;
@@ -167,12 +177,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseRatePvm, 13 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 30;
                 monster.Designation = "Forest Monster";
                 monster.MoveRange = 3;
@@ -194,12 +204,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseRatePvm, 15 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 31;
                 monster.Designation = "Agon";
                 monster.MoveRange = 2;
@@ -221,12 +231,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseRatePvm, 16 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 32;
                 monster.Designation = "Stone Golem";
                 monster.MoveRange = 2;
@@ -247,12 +257,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.AttackRatePvm, 86 },
                     { Stats.DefenseRatePvm, 20 },
                 };
-               monster.AddAttributes(attributes, context, gameConfiguration);
+               monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {
-                var monster = context.CreateNew<MonsterDefinition>();
-                gameConfiguration.Monsters.Add(monster);
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
                 monster.Number = 33;
                 monster.Designation = "Elite Goblin";
                 monster.MoveRange = 3;
@@ -274,7 +284,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.DefenseRatePvm, 8 },
                 };
 
-                monster.AddAttributes(attributes, context, gameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
         }
     }
