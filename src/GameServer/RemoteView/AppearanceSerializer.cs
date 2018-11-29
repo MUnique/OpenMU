@@ -281,6 +281,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 case WingIndex.SmallCloakOfWarrior:
                     preview[5] |= 0x0C;
                     break;
+                default:
+                    // nothing to do
+                    break;
             }
 
             switch ((WingIndex)wing.Definition.Number)
@@ -334,6 +337,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     break;
                 case WingIndex.SmallCloakOfWarrior:
                     preview[17] |= 0xC0;
+                    break;
+                default:
+                    // nothing to do
                     break;
             }
         }
@@ -396,6 +402,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     break;
                 case PetIndex.Demon:
                     preview[16] |= 0x20;
+                    break;
+                default:
+                    // no further flag required.
                     break;
             }
         }
