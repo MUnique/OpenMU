@@ -257,6 +257,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
                 packet[7] = position.X;
                 packet[8] = position.Y;
+                packet[9] = this.player.Rotation.ToPacketByte();
                 writer.Commit();
             }
         }
