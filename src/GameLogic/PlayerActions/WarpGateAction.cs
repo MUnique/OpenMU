@@ -12,8 +12,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// </summary>
     public class WarpGateAction
     {
-        private const byte INACCURACY = 2;
-
         /// <summary>
         /// Enters the gate.
         /// </summary>
@@ -21,33 +19,46 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="enterGate">The enter gate.</param>
         public void EnterGate(Player player, EnterGate enterGate)
         {
+            if (this.IsWarpLegit(player, enterGate))
+            {
+                player.WarpTo(enterGate.TargetGate);
+            }
+            else
+            {
+                player.PlayerView.WorldView.MapChange();
+            }
+        }
+
+        private bool IsWarpLegit(Player player, EnterGate enterGate)
+        {
             if (enterGate == null)
             {
-                return;
+                return false;
             }
 
             if (player.SelectedCharacter == null)
             {
-                return;
+                return false;
             }
 
             if (enterGate.LevelRequirement > player.Attributes[Stats.Level])
             {
                 player.PlayerView.ShowMessage("Your level is too low to enter this map.", Interfaces.MessageType.BlueNormal);
-                return;
+                return false;
             }
 
             var currentPosition = player.IsWalking ? player.WalkTarget : player.Position;
+            var inaccuracy = player.GameContext.Configuration.InfoRange;
             if (player.CurrentMap.Definition.EnterGates.Contains(enterGate)
-                && !(currentPosition.X >= enterGate.X1 - INACCURACY
-                && currentPosition.X <= enterGate.X2 + INACCURACY
-                && currentPosition.Y >= enterGate.Y1 - INACCURACY
-                && currentPosition.Y <= enterGate.Y2 + INACCURACY))
+                && !(currentPosition.X >= enterGate.X1 - inaccuracy
+                && currentPosition.X <= enterGate.X2 + inaccuracy
+                && currentPosition.Y >= enterGate.Y1 - inaccuracy
+                && currentPosition.Y <= enterGate.Y2 + inaccuracy))
             {
-                return;
+                return false;
             }
 
-            player.WarpTo(enterGate.TargetGate);
+            return true;
         }
     }
 }
