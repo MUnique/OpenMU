@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             using (var context = this.GetContext())
             {
                 var account = this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
-                if (account != null)
+                if (account != null && context.Context.Entry(account) == null)
                 {
                     context.Context.Attach(account);
                 }
