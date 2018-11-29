@@ -173,34 +173,44 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             return (byte)(value & 0x0F);
         }
 
+        private void SetEmptyArmor(Span<byte> preview, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
+        {
+            // if the item is not equipped every index bit is set to 1
+            preview[firstIndex] |= firstIndexHigh ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);
+            preview[9] |= secondIndexMask;
+            preview[thirdIndex] |= thirdIndexHigh ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);
+        }
+
+        private void SetArmorItemIndex(Span<byte> preview, ItemAppearance item, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
+        {
+            preview[firstIndex] |= firstIndexHigh ? this.GetOrMaskForHighNibble(item.Definition.Number) : this.GetOrMaskForLowNibble(item.Definition.Number);
+            byte multi = (byte)(item.Definition.Number / 16);
+            if (multi > 0)
+            {
+                byte bit1 = (byte)(multi % 2);
+                byte byte2 = (byte)(multi / 2);
+                if (bit1 == 1)
+                {
+                    preview[9] |= secondIndexMask;
+                }
+
+                if (byte2 > 0)
+                {
+                    preview[thirdIndex] |= thirdIndexHigh ? this.GetOrMaskForHighNibble(byte2) : this.GetOrMaskForLowNibble(byte2);
+                }
+            }
+        }
+
         private void SetArmorPiece(Span<byte> preview, ItemAppearance item, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
         {
             if (item == null)
             {
-                // if the item is not equipped every index bit is set to 1
-                preview[firstIndex] |= firstIndexHigh ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);
-                preview[9] |= secondIndexMask;
-                preview[thirdIndex] |= thirdIndexHigh ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);
+                this.SetEmptyArmor(preview, firstIndex, firstIndexHigh, secondIndexMask, thirdIndex, thirdIndexHigh);
             }
             else
             {
                 // item id
-                preview[firstIndex] |= firstIndexHigh ? this.GetOrMaskForHighNibble(item.Definition.Number) : this.GetOrMaskForLowNibble(item.Definition.Number);
-                byte multi = (byte)(item.Definition.Number / 16);
-                if (multi > 0)
-                {
-                    byte bit1 = (byte)(multi % 2);
-                    byte byte2 = (byte)(multi / 2);
-                    if (bit1 == 1)
-                    {
-                        preview[9] |= secondIndexMask;
-                    }
-
-                    if (byte2 > 0)
-                    {
-                        preview[thirdIndex] |= byte2;
-                    }
-                }
+                this.SetArmorItemIndex(preview, item, firstIndex, firstIndexHigh, secondIndexMask, thirdIndex, thirdIndexHigh);
 
                 // exc bit
                 if (this.IsExcellent(item))
