@@ -232,6 +232,9 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public bool Alive { get; set; }
 
+        /// <inheritdoc />
+        public uint LastReceivedDamage { get; private set; }
+
         /// <inheritdoc/>
         public Point Position
         {
@@ -798,6 +801,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             this.Attributes[Stats.CurrentHealth] -= hitInfo.HealthDamage;
+            this.LastReceivedDamage = hitInfo.HealthDamage;
             this.PlayerView.ShowHit(this, hitInfo);
             (attacker as Player)?.PlayerView.ShowHit(this, hitInfo);
 

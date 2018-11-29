@@ -72,6 +72,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public bool Alive { get; set; }
 
         /// <inheritdoc/>
+        public uint LastReceivedDamage { get; private set; }
+
+        /// <inheritdoc/>
         public IAttributeSystem Attributes { get; }
 
         /// <inheritdoc/>
@@ -333,6 +336,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             try
             {
                 Interlocked.Add(ref this.health, -(int)damage);
+                this.LastReceivedDamage = damage;
                 return false;
             }
             catch

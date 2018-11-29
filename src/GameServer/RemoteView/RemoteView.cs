@@ -489,8 +489,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     packet[2] = 0x16;
                     packet.Slice(3).SetShortSmallEndian(id);
                     packet.Slice(5).SetShortSmallEndian(sendExp);
-
-                    // last 2 bytes = last hit dmg
+                    packet.Slice(7).SetShortSmallEndian((ushort)((obj as IAttackable)?.LastReceivedDamage ?? 0));
                     writer.Commit();
                 }
 

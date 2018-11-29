@@ -26,6 +26,11 @@ namespace MUnique.OpenMU.GameLogic
         bool Alive { get; }
 
         /// <summary>
+        /// Gets the last received damage.
+        /// </summary>
+        uint LastReceivedDamage { get; }
+
+        /// <summary>
         /// Attacks this object by the attacker with the specified skill.
         /// </summary>
         /// <param name="attacker">The attacker.</param>
