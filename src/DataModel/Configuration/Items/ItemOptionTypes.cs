@@ -55,5 +55,23 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets the socket option type.
         /// </summary>
         public static ItemOptionType SocketOption { get; } = new ItemOptionType { Name = "Socket Option", Id = new Guid("{AAB309D3-CD97-4F77-AE1B-E9F904102502}") };
+
+        /// <summary>
+        /// Gets the blue fenrir option type.
+        /// </summary>
+        /// <remarks>Applies only to the fenrir pet.</remarks>
+        public static ItemOptionType BlueFenrir { get; } = new ItemOptionType { Name = "Blue Fenrir Option", Id = new Guid("{C3ED45BC-5713-494D-A8C8-DC4AFAE56223}"), IsVisible = true };
+
+        /// <summary>
+        /// Gets the black fenrir option type.
+        /// </summary>
+        /// <remarks>Applies only to the fenrir pet.</remarks>
+        public static ItemOptionType BlackFenrir { get; } = new ItemOptionType { Name = "Black Fenrir Option", Id = new Guid("{ED978695-BD3E-46EA-86D8-F8C30EA99B50}"), IsVisible = true };
+
+        /// <summary>
+        /// Gets the gold fenrir option type.
+        /// </summary>
+        /// <remarks>Applies only to the fenrir pet.</remarks>
+        public static ItemOptionType GoldFenrir { get; } = new ItemOptionType { Name = "Gold Fenrir Option", Id = new Guid("{78E6DB0B-AC53-454C-956F-CD2B5467856E}"), IsVisible = true };
     }
 }

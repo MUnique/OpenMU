@@ -374,9 +374,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     preview[12] |= 0x04;
                     preview[16] = 0x00;
 
-                    // TODO: Red Fenrir: preview[16] |= 0x01;
-                    // TODO: Blue Fenrir: preview[16] |= 0x02;
-                    // TODO: Gold Fenrir: preview[17] |= 0x01;
+                    if (pet.VisibleOptions.Contains(ItemOptionTypes.BlackFenrir))
+                    {
+                        preview[16] |= 0x01;
+                    }
+
+                    if (pet.VisibleOptions.Contains(ItemOptionTypes.BlueFenrir))
+                    {
+                        preview[16] |= 0x02;
+                    }
+
+                    if (pet.VisibleOptions.Contains(ItemOptionTypes.GoldFenrir))
+                    {
+                        preview[17] |= 0x01;
+                    }
+
                     break;
                 default:
                     preview[5] |= 0x03;

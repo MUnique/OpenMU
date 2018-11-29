@@ -64,13 +64,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private const byte AncientDiscriminatorMask = 0b0011;
         private const byte AncientMask = AncientBonusLevelMask | AncientDiscriminatorMask;
 
-        private const byte MaximumSocketOptions = 50;
+        private const byte BlackFenrirFlag = 0x01;
+        private const byte BlueFenrirFlag = 0x02;
+        private const byte GoldFenrirFlag = 0x04;
 
         /// <inheritdoc/>
-        public int NeededSpace
-        {
-            get { return 12; }
-        }
+        public int NeededSpace => 12;
 
         /// <inheritdoc/>
         public void SerializeItem(Span<byte> target, Item item)
@@ -132,7 +131,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 target[5] |= Option380Flag;
             }
 
-            target[6] = GetHarmonyByte(item);
+            target[6] = (byte)(GetHarmonyByte(item) | GetFenrirByte(item));
             SetSocketBytes(target.Slice(7), item);
         }
 
@@ -165,7 +164,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             ReadNormalOption(array, persistenceContext, item);
             ReadAncientOption(array[4], persistenceContext, item);
             ReadLevel380Option(array[5], persistenceContext, item);
-            ReadHarmonyOption(array[6], persistenceContext, item);
+            if (item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.BlackFenrir)))
+            {
+                ReadFenrirOptions(array[6], persistenceContext, item);
+            }
+            else
+            {
+                ReadHarmonyOption(array[6], persistenceContext, item);
+            }
+
             ReadSockets(array.Slice(7), persistenceContext, item);
             return item;
         }
@@ -348,6 +355,54 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             optionLink.ItemOption = harmonyOption;
             optionLink.Level = level;
             item.ItemOptions.Add(optionLink);
+        }
+
+        private static void ReadFenrirOptions(byte fenrirByte, IContext persistenceContext, Item item)
+        {
+            if (fenrirByte == 0)
+            {
+                return;
+            }
+
+            AddFenrirOptionIfFlagSet(fenrirByte, BlackFenrirFlag, ItemOptionTypes.BlackFenrir, persistenceContext, item);
+            AddFenrirOptionIfFlagSet(fenrirByte, BlueFenrirFlag, ItemOptionTypes.BlueFenrir, persistenceContext, item);
+            AddFenrirOptionIfFlagSet(fenrirByte, GoldFenrirFlag, ItemOptionTypes.GoldFenrir, persistenceContext, item);
+        }
+
+        private static void AddFenrirOptionIfFlagSet(byte fenrirByte, byte fenrirFlag, ItemOptionType fenrirOptionType, IContext persistenceContext, Item item)
+        {
+            var isFlagSet = (fenrirByte & fenrirFlag) == fenrirFlag;
+            if (!isFlagSet)
+            {
+                return;
+            }
+
+            var blackOption = item.Definition.PossibleItemOptions.FirstOrDefault(o => o.PossibleOptions.Any(p => p.OptionType == fenrirOptionType))
+                              ?? throw new ArgumentException($"The fenrir flag {fenrirFlag} in {fenrirByte} was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = blackOption.PossibleOptions.First();
+            item.ItemOptions.Add(optionLink);
+        }
+
+        private static byte GetFenrirByte(Item item)
+        {
+            byte result = 0;
+            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.BlackFenrir))
+            {
+                result |= BlackFenrirFlag;
+            }
+
+            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.BlueFenrir))
+            {
+                result |= BlueFenrirFlag;
+            }
+
+            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.GoldFenrir))
+            {
+                result |= GoldFenrirFlag;
+            }
+
+            return result;
         }
 
         private static void SetSocketBytes(Span<byte> target, Item item)
