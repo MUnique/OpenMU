@@ -13,12 +13,16 @@ The value of the stat attribute gets increased by one if the success flag is 1.
 |  Length  | Data type | Value | Description |
 |----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
-| 1 | byte | 0x05   | Packet header - length of the packet |
+| 1 | byte | 0x0C   | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |
 | 1 | byte | 0x06   | Packet header - character stat increase |
 | 1 | bit |  | Success flag |
 | 3 | bit |  | unused |
 | 4 | bit |  | Stat attribute identifier |
+| 1 | byte |        | Padding |
+| 1 | ushort (BE) |        | If successful: Depends on stat attribute identifier; For energy, it's the new maximum mana. For vitality it's the new maximum health. |
+| 1 | ushort (BE) |        | If successful: New maximum shield |
+| 1 | ushort (BE) |        | If successful: New maximum ability |
 
 ### Stat attribute Identifier ###
 | Value | Description |

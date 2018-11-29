@@ -816,12 +816,31 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 successAndStatType += 1 << 4;
             }
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
                 packet[3] = 0x06;
                 packet[4] = successAndStatType;
+                if (success)
+                {
+                    if (attribute == Stats.BaseEnergy)
+                    {
+                        packet.Slice(6).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
+                    }
+                    else if (attribute == Stats.BaseVitality)
+                    {
+                        packet.Slice(6).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth]);
+                    }
+                    else
+                    {
+                        // no updated value required at index 6
+                    }
+
+                    packet.Slice(8).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield]);
+                    packet.Slice(10).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility]);
+                }
+
                 writer.Commit();
             }
         }
