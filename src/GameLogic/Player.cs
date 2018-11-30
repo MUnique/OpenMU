@@ -470,9 +470,9 @@ namespace MUnique.OpenMU.GameLogic
             this.SelectedCharacter.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
             this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
             this.SelectedCharacter.CurrentMap = gate.Map;
-            this.CurrentMap = null; // Will be set again, when the client acknoledged the map change by F3 12 packet.
-            this.PlayerView.WorldView.MapChange();
             this.Rotation = gate.Direction;
+            this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
+            this.PlayerView.WorldView.MapChange();
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
             // the map and is ready to receive the new meet player/monster etc.
