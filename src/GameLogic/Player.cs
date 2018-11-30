@@ -113,6 +113,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc />
         public bool IsWalking => this.walker.CurrentTarget != default;
 
+        /// <inheritdoc />
         public TimeSpan StepDelay => this.GetStepDelay();
 
         /// <inheritdoc />
