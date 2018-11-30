@@ -467,20 +467,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void AddExperience(int exp, IIdentifiable obj)
         {
+            var remainingExperience = exp;
             ushort id = obj.GetId(this.player);
-            while (exp > 0)
+            while (remainingExperience > 0)
             {
                 // We send multiple exp packets if the value is bigger than ushort.MaxValue, because that's all what the packet can carry.
                 // On a normal exp server this should never be an issue, but with higher settings, it fixes the problem that the exp bar
                 // shows less exp than the player actually gained.
                 ushort sendExp;
-                if (exp > ushort.MaxValue)
+                if (remainingExperience > ushort.MaxValue)
                 {
                     sendExp = ushort.MaxValue;
                 }
                 else
                 {
-                    sendExp = (ushort)exp;
+                    sendExp = (ushort)remainingExperience;
                 }
 
                 using (var writer = this.connection.StartSafeWrite(0xC3, 0x09))
@@ -493,7 +494,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     writer.Commit();
                 }
 
-                exp -= sendExp;
+                remainingExperience -= sendExp;
             }
         }
 
