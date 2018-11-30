@@ -768,7 +768,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the step delay depending on the equipped items.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The current step delay, depending on equipped items.</returns>
         private TimeSpan GetStepDelay()
         {
             if (this.Inventory.EquippedItems.Any(item => item.Definition.ItemSlot.ItemSlots.Contains(7)))
