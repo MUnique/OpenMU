@@ -955,6 +955,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 colorResult = DamageColor.DarkPink;
             }
+            else
+            {
+                // no special color
+            }
 
             byte result = (byte)colorResult;
             if (attributes.HasFlag(DamageAttributes.Double))
@@ -1002,9 +1006,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     return 0x80;
                 case GuildPosition.BattleMaster:
                     return 0x20;
+                default:
+                    throw new ArgumentException("GuildPosition not mapped.");
             }
-
-            throw new ArgumentException("GuildPosition not mapped.");
         }
 
         private byte GetPlayerStateCode(HeroState state)
@@ -1042,9 +1046,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 case NpcWindow.JuliaWarpMarketServer: return 0x25;
                 case NpcWindow.CombineLuckyItem: return 0x26;
                 case NpcWindow.GuildMaster: throw new ArgumentException("guild master dialog is opened by another action.");
+                default: return (byte)window;
             }
-
-            return (byte)window;
         }
 
         private byte[] GetLowestClientVersionOfConfiguration()
