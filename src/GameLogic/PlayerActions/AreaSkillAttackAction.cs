@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System.Linq;
-
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
@@ -32,8 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="player">The player.</param>
         /// <param name="extraTargetId">The extra target identifier.</param>
         /// <param name="skillId">The skill identifier.</param>
-        /// <param name="targetAreaCenterX">The x coordinate of the center of the target area.</param>
-        /// <param name="targetAreaCenterY">The y coordinate of the center of the target area.</param>
+        /// <param name="targetAreaCenter">The coordinates of the center of the target area.</param>
         /// <param name="rotation">The rotation in which the player is looking. It's not really relevant for the hitted objects yet, but for some directed skills in the future it might be.</param>
         public void Attack(Player player, ushort extraTargetId, ushort skillId, Point targetAreaCenter, byte rotation)
         {
@@ -59,25 +58,38 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private void PerformAutomaticHits(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)
         {
-            bool extraTarget = extraTargetId == 0xFFFF;
+            bool isExtraTargetDefined = extraTargetId == 0xFFFF;
             var attackablesInRange = player.CurrentMap.GetAttackablesInRange(targetAreaCenter, skill.Range);
             if (!this.gameContext.Configuration.AreaSkillHitsPlayer)
             {
                 attackablesInRange = attackablesInRange.Where(a => !(a is Player));
-                extraTarget = false;
+                isExtraTargetDefined = false;
             }
 
+            IAttackable extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
             foreach (var target in attackablesInRange)
             {
-                target.AttackBy(player, skillEntry);
+                this.ApplySkill(player, skillEntry, skill, target);
+
+                if (target == extraTarget)
+                {
+                    isExtraTargetDefined = false;
+                    extraTarget = null;
+                }
             }
 
-            if (extraTarget)
+            if (isExtraTargetDefined)
             {
-                if (player.CurrentMap.GetObject(extraTargetId) is IAttackable otherObject)
-                {
-                    otherObject.AttackBy(player, skillEntry);
-                }
+                this.ApplySkill(player, skillEntry, skill, extraTarget);
+            }
+        }
+
+        private void ApplySkill(Player player, SkillEntry skillEntry, Skill skill, IAttackable target)
+        {
+            if (target.CheckSkillTargetRestrictions(player, skill))
+            {
+                target.AttackBy(player, skillEntry);
+                target.ApplyElementalEffects(player, skillEntry);
             }
         }
     }

@@ -14,6 +14,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// <summary>
     /// Handler for area skill hit packets.
     /// </summary>
+    /// <remarks>
+    /// TODO: It's usually required to perform a <see cref="AreaSkillAttackAction"/> before, so this check has to be implemented.
+    ///       Each animation and hit is usually referenced due a counter value in the packets.
+    /// </remarks>
     internal class AreaSkillHitHandler : BasePacketHandler
     {
         private readonly AreaSkillHitAction skillHitAction;
@@ -46,7 +50,16 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             ushort targetId = NumberConversionExtensions.MakeWord(packet[10], packet[9]);
             if (player.GetObject(targetId) is IAttackable target)
             {
-                this.skillHitAction.AttackTarget(player, target, skillEntry);
+                if (target is IObservable observable && observable.Observers.Contains(player))
+                {
+                    this.skillHitAction.AttackTarget(player, target, skillEntry);
+                }
+                else
+                {
+                    // Client may be out of sync (or it's an hacker attempt),
+                    // so we tell him the object is out of scope - this should prevent further attempts to attack it.
+                    player.WorldView.ObjectsOutOfScope(target.GetAsEnumerable());
+                }
             }
         }
     }

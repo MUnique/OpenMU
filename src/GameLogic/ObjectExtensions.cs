@@ -19,6 +19,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The enumerable with <paramref name="obj"/> as the only result.</returns>
         public static IEnumerable<T> GetAsEnumerable<T>(this T obj)
         {
+            if (obj == null)
+            {
+                yield break;
+            }
+
             yield return obj;
         }
     }

@@ -189,6 +189,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition MaximumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "maximumCurseBaseDmg", string.Empty);
 
         /// <summary>
+        /// Gets the base damage bonus attribute definition.
+        /// </summary>
+        public static AttributeDefinition BaseDamageBonus { get; } = new AttributeDefinition(new Guid("BB6F0151-EAB2-4A9D-BFE3-51E145F36C52"), "Base Damage Bonus", "A bonus value which gets added to all min/max damage values during the damage calculation");
+
+        /// <summary>
         /// Gets the skill multiplier attribute definition.
         /// </summary>
         public static AttributeDefinition SkillMultiplier { get; } = new AttributeDefinition(new Guid("D9FB3323-6DF5-48F7-8253-FDBB5EF82114"), "skillMultiplier", string.Empty);
@@ -252,7 +257,6 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         /// <summary>
         /// Gets the ice resistance attribute definition.
-        /// TODO Consider resistancies of monsters, players and the attacking skills
         /// </summary>
         public static AttributeDefinition IceResistance { get; } = new AttributeDefinition(new Guid("47235C36-41BB-44B4-8823-6FC415709F59"), "iceResistance", string.Empty);
 

@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     internal class TargettedSkillHandler : BasePacketHandler
     {
-        private readonly TargettedSkillAction attackAction;
+        private readonly TargetedSkillAction attackAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TargettedSkillHandler"/> class.
@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public TargettedSkillHandler(IGameContext gameContext)
             : base(gameContext)
         {
-            this.attackAction = new TargettedSkillAction();
+            this.attackAction = new TargetedSkillAction();
         }
 
         /// <inheritdoc/>

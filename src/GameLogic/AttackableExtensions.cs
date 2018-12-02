@@ -6,16 +6,23 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Linq;
+    using log4net;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Extensions for <see cref="IAttackable"/>s. Contains the damage calculation.
     /// </summary>
     public static class AttackableExtensions
     {
+        /// <summary>
+        /// The logger of this class.
+        /// </summary>
+        private static readonly ILog Log = LogManager.GetLogger(typeof(AttackableExtensions));
+
         /// <summary>
         /// Calculates the damage, using a skill.
         /// </summary>
@@ -115,6 +122,131 @@ namespace MUnique.OpenMU.GameLogic
             return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes);
         }
 
+        /// <summary>
+        /// Applies the magic effect of the players skill to the target.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="player">The player.</param>
+        /// <param name="skillEntry">The skill entry.</param>
+        public static void ApplyMagicEffect(this IAttackable target, Player player, SkillEntry skillEntry)
+        {
+            if (skillEntry.BuffPowerUp == null)
+            {
+                player.CreateMagicEffectPowerUp(skillEntry);
+            }
+
+            var magicEffect = new MagicEffect(skillEntry.BuffPowerUp, skillEntry.Skill.MagicEffectDef, TimeSpan.FromSeconds(skillEntry.PowerUpDuration.Value));
+            target.MagicEffectList.AddEffect(magicEffect);
+        }
+
+        /// <summary>
+        /// Applies the regeneration of the players skill to the target.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="player">The player.</param>
+        /// <param name="skill">The skill.</param>
+        public static void ApplyRegeneration(this IAttackable target, Player player, Skill skill)
+        {
+            var regenerationValue = player.Attributes.CreateElement(skill.MagicEffectDef.PowerUpDefinition.Boost);
+            var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r =>
+                r.CurrentAttribute == skill.MagicEffectDef.PowerUpDefinition.TargetAttribute);
+            if (regeneration != null)
+            {
+                target.Attributes[regeneration.CurrentAttribute] = Math.Min(
+                    target.Attributes[regeneration.CurrentAttribute] + regenerationValue.Value,
+                    target.Attributes[regeneration.MaximumAttribute]);
+            }
+            else
+            {
+                Log.Warn(
+                    $"Regeneration skill {skill.Name} is configured to regenerate a non-regeneration-able target attribute {skill.MagicEffectDef.PowerUpDefinition.TargetAttribute}.");
+            }
+        }
+
+        /// <summary>
+        /// Applies the elemental effects of a players skill to the target.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="player">The player.</param>
+        /// <param name="skillEntry">The skill entry.</param>
+        public static void ApplyElementalEffects(this IAttackable target, Player player, SkillEntry skillEntry)
+        {
+            var modifier = skillEntry.Skill.ElementalModifierTarget;
+            if (modifier == null)
+            {
+                return;
+            }
+
+            var resistance = target.Attributes[modifier];
+            if (resistance >= 1.0f)
+            {
+                return;
+            }
+
+            if (Rand.NextRandomBool(1.0f - resistance))
+            {
+                // power-up is the wrong term here... it's more like a power-down ;-)
+                if (skillEntry.Skill.MagicEffectDef != null)
+                {
+                    target.ApplyMagicEffect(player, skillEntry);
+                }
+
+                if (modifier == Stats.LightningResistance)
+                {
+                    target.MoveRandomly();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the target can be attacked by the player, based on the target restrictions of the skill.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="player">The player.</param>
+        /// <param name="skill">The skill.</param>
+        /// <returns><c>True</c>, if the target can be attacked; Otherwise, <c>false</c>.</returns>
+        public static bool CheckSkillTargetRestrictions(this IAttackable target, Player player, Skill skill)
+        {
+            var result = true;
+            if (skill.TargetRestriction == SkillTargetRestriction.Self && target != player)
+            {
+                Log.Warn($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to himself.");
+                result = false;
+            }
+            else if (skill.TargetRestriction == SkillTargetRestriction.Party && target != player && (player.Party == null || !player.Party.PartyList.Contains(target as IPartyMember)))
+            {
+                Log.Warn($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to his party.");
+                result = false;
+            }
+            else if (skill.TargetRestriction == SkillTargetRestriction.Player && !(target is Player))
+            {
+                Log.Warn($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to players.");
+                result = false;
+            }
+            else
+            {
+                // everything fine
+            }
+
+            return result;
+        }
+
+        /// <summary>Moves the target randomly.</summary>
+        /// <param name="target">The target.</param>
+        public static void MoveRandomly(this IAttackable target)
+        {
+            if (target is IMovable movable)
+            {
+                var terrain = target.CurrentMap.Terrain;
+                var newX = target.Position.X + Rand.NextInt(-1, 2);
+                var newY = target.Position.Y + Rand.NextInt(-1, 2);
+                if (newX >= 0 && newX < 256 && newY >= 0 && newY < 256 && terrain.AIgrid[newX, newY] == 1)
+                {
+                    movable.Move(new Point((byte)newX, (byte)newY));
+                }
+            }
+        }
+
         private static bool IsAttackSuccessfulTo(this IAttackable attacker, IAttackable defender)
         {
             var hitChance = attacker.GetHitChanceTo(defender);
@@ -191,6 +323,9 @@ namespace MUnique.OpenMU.GameLogic
                 basemin = (int)attackerStats[Stats.MinimumCurseBaseDmg];
                 basemax = (int)attackerStats[Stats.MaximumCurseBaseDmg];
             }
+
+            basemin += (int)attackerStats[Stats.BaseDamageBonus];
+            basemax += (int)attackerStats[Stats.BaseDamageBonus];
         }
     }
 }

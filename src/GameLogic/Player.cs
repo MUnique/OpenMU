@@ -708,6 +708,18 @@ namespace MUnique.OpenMU.GameLogic
             return true;
         }
 
+        /// <summary>
+        /// Creates the magic effect power up for the given skill entry.
+        /// </summary>
+        /// <param name="skillEntry">The skill entry.</param>
+        public void CreateMagicEffectPowerUp(SkillEntry skillEntry)
+        {
+            var skill = skillEntry.Skill;
+            var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
+            skillEntry.BuffPowerUp = this.Attributes.CreateElement(powerUpDef.Boost);
+            skillEntry.PowerUpDuration = this.Attributes.CreateElement(powerUpDef.Duration);
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {

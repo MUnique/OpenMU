@@ -9,8 +9,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
     /// <summary>
     /// Action to hit targets with an area skill, which requires explicit hits <seealso cref="SkillType.AreaSkillExplicitHits"/>.
-    /// TODO: It's usually required to perform a <see cref="AreaSkillAttackAction"/> before, so this check has to be implemented.
-    ///       Each animation and hit is usually referenced due a counter value in the packets.
     /// </summary>
     public class AreaSkillHitAction
     {
@@ -29,7 +27,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            target.AttackBy(player, skill);
+            if (target.CheckSkillTargetRestrictions(player, skill.Skill))
+            {
+                target.AttackBy(player, skill);
+                target.ApplyElementalEffects(player, skill);
+            }
         }
     }
 }
