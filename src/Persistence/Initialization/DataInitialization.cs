@@ -734,8 +734,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 typeof(Kalima7),
                 typeof(KanturuRelics),
                 typeof(KanturuRuins),
+                typeof(KanturuEvent),
                 typeof(Raklion),
+                typeof(RaklionBoss),
                 typeof(SwampOfCalmness),
+                typeof(DuelArena),
                 typeof(BloodCastle1),
                 typeof(BloodCastle2),
                 typeof(BloodCastle3),
@@ -758,6 +761,14 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 typeof(IllusionTemple5),
                 typeof(IllusionTemple6),
                 typeof(DevilSquare5To7),
+                typeof(Doppelgaenger1),
+                typeof(Doppelgaenger2),
+                typeof(Doppelgaenger3),
+                typeof(Doppelgaenger4),
+                typeof(FortressOfImperialGuardian1),
+                typeof(FortressOfImperialGuardian2),
+                typeof(FortressOfImperialGuardian3),
+                typeof(FortressOfImperialGuardian4),
             };
 
             var parameters = new object[] { this.context, this.gameConfiguration };
@@ -766,34 +777,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var mapInitializer = map.GetConstructors().First().Invoke(parameters) as IInitializer;
                 mapInitializer?.Initialize();
             }
-
-            var mapNames = new List<string>
-            {
-                "Lorencia", "Dungeon", "Devias", "Noria", "Lost Tower", "Exile", "Arena", "Atlans", "Tarkan", "Devil Square (1-4)", "Icarus", // 10
-                "Blood Castle 1", "Blood Castle 2", "Blood Castle 3", "Blood Castle 4", "Blood Castle 5", "Blood Castle 6", "Blood Castle 7", "Chaos Castle 1", "Chaos Castle 2", "Chaos Castle 3", // 20
-                "Chaos Castle 4", "Chaos Castle 5", "Chaos Castle 6", "Kalima 1", "Kalima 2", "Kalima 3", "Kalima 4", "Kalima 5", "Kalima 6", "Valley of Loren", // 30
-                "Land_of_Trials", "Devil Square (5-7)", "Aida", "Crywolf Fortress", "?", "Kalima 7", "Kanturu_I", "Kanturu_III", "Kanturu_Event", "Silent Map?", // 40
-                "Barracks of Balgass", "Balgass Refuge", "?", "?", "Illusion Temple 1", "Illusion Temple 2", "Illusion Temple 3", "Illusion Temple 4", "Illusion Temple 5", "Illusion Temple 6", // 50
-                "Elvenland", "Blood Castle 8", "Chaos Castle 7", "?", "?", "Swamp Of Calmness", "LaCleon", "LaCleonBoss", "?", "?", // 60
-                "?", "Santa Village", "Vulcanus", "Duel Arena", "Double Gear 1", "Double Gear 2", "Double Gear 3", "Double Gear 4", "Empire Fortress 1", // 69
-                "Empire Fortress 2", "Empire Fortress 3", "Empire Fortress 4", "Empire Fortress 5", "?", "?", "?", "?", "?", "LorenMarket", // 79
-                "Karutan1", "Karutan2"
-            };
-
-            // Maps which were not initialized before, are getting automatically initialized here, but without NPCs of course.
-            mapNames.Where(name => name != "?" && this.gameConfiguration.Maps.All(m => m.Name != name)).ToList()
-                .ForEach((mapName) =>
-                {
-                    var map = this.context.CreateNew<GameMapDefinition>();
-                    map.Name = mapName;
-                    map.Number = (short)mapNames.IndexOf(mapName);
-                    map.ExpMultiplier = 1;
-                    var terrain =
-                        Terrains.ResourceManager.GetObject("Terrain" + (map.Number + 1).ToString()) as byte[]
-                        ?? Terrains.ResourceManager.GetObject("Terrain" + (mapNames.IndexOf(mapName.Substring(0, mapName.Length - 1) + "1") + 1)) as byte[];
-                    map.TerrainData = terrain;
-                    this.gameConfiguration.Maps.Add(map);
-                });
         }
 
         private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)
