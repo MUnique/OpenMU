@@ -20,6 +20,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             { SkillNumber.SwellLife, MagicEffectNumber.GreaterFortitude },
             { SkillNumber.SoulBarrier, MagicEffectNumber.SoulBarrier },
             { SkillNumber.Defense, MagicEffectNumber.ShieldSkill },
+            { SkillNumber.GreaterDefense, MagicEffectNumber.GreaterDefense },
+            { SkillNumber.GreaterDamage, MagicEffectNumber.GreaterDamage },
+            { SkillNumber.Heal, MagicEffectNumber.Heal },
+            { SkillNumber.Recovery, MagicEffectNumber.ShieldRecover },
         };
 
         /// <summary>
@@ -56,18 +60,18 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.Cometfall, "Cometfall", 80, 70, 150, 0, 3, 150, 0, 2, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.Inferno, "Inferno", 88, 100, 200, 0, 0, 200, 0, 3, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillExplicitHits);
             this.CreateSkill(SkillNumber.TeleportAlly, "Teleport Ally", 83, 0, 90, 25, 6, 188, 0, -1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Other);
-            this.CreateSkill(SkillNumber.SoulBarrier, "Soul Barrier", 77, 0, 70, 22, 6, 126, 0, -1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
+            this.CreateSkill(SkillNumber.SoulBarrier, "Soul Barrier", 77, 0, 70, 22, 6, 126, 0, -1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff, SkillTarget.Explicit, 0, SkillTargetRestriction.Party);
             this.CreateSkill(SkillNumber.EnergyBall, "Energy Ball", 2, 3, 1, 0, 6, 0, 0, -1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0);
-            this.CreateSkill(SkillNumber.Defense, "Defense", 0, 0, 30, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, SkillType.Buff);
-            this.CreateSkill(SkillNumber.FallingSlash, "Falling Slash", 0, 0, 9, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0);
-            this.CreateSkill(SkillNumber.Lunge, "Lunge", 0, 0, 9, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0);
-            this.CreateSkill(SkillNumber.Uppercut, "Uppercut", 0, 0, 8, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0);
-            this.CreateSkill(SkillNumber.Cyclone, "Cyclone", 0, 0, 9, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0);
-            this.CreateSkill(SkillNumber.Slash, "Slash", 0, 0, 10, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0);
+            this.CreateSkill(SkillNumber.Defense, "Defense", 0, 0, 30, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, SkillType.Buff, SkillTarget.Explicit, 0, SkillTargetRestriction.Self);
+            this.CreateSkill(SkillNumber.FallingSlash, "Falling Slash", 0, 0, 9, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.Lunge, "Lunge", 0, 0, 9, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.Uppercut, "Uppercut", 0, 0, 8, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.Cyclone, "Cyclone", 0, 0, 9, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.Slash, "Slash", 0, 0, 10, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, movesToTarget: true, movesTarget: true);
             this.CreateSkill(SkillNumber.TripleShot, "Triple Shot", 0, 0, 5, 0, 6, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillExplicitHits);
-            this.CreateSkill(SkillNumber.Heal, "Heal", 8, 0, 20, 0, 6, 100, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
-            this.CreateSkill(SkillNumber.GreaterDefense, "Greater Defense", 13, 0, 30, 0, 6, 100, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
-            this.CreateSkill(SkillNumber.GreaterDamage, "Greater Damage", 18, 0, 40, 0, 6, 100, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
+            this.CreateSkill(SkillNumber.Heal, "Heal", 8, 0, 20, 0, 6, 100, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
+            this.CreateSkill(SkillNumber.GreaterDefense, "Greater Defense", 13, 0, 30, 0, 6, 100, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
+            this.CreateSkill(SkillNumber.GreaterDamage, "Greater Damage", 18, 0, 40, 0, 6, 100, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
             this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", 0, 0, 40, 0, 0, 90, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Other);
             this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", 0, 0, 70, 0, 0, 170, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Other);
             this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", 0, 0, 110, 0, 0, 190, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, SkillType.Other);
@@ -80,12 +84,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.Nova, "Nova", 100, 0, 180, 45, 6, 258, 0, 3, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Other);
             this.CreateSkill(SkillNumber.TwistingSlash, "Twisting Slash", 0, 0, 10, 10, 2, 0, 0, 5, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.RagefulBlow, "Rageful Blow", 170, 60, 25, 20, 3, 0, 0, 4, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
-            this.CreateSkill(SkillNumber.DeathStab, "Death Stab", 160, 70, 15, 12, 2, 0, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
-            this.CreateSkill(SkillNumber.CrescentMoonSlash, "Crescent Moon Slash", 0, 90, 22, 15, 4, 0, 0, -1, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+            this.CreateSkill(SkillNumber.DeathStab, "Death Stab", 160, 70, 15, 12, 2, 0, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.DirectHit, SkillTarget.ExplicitWithImplicitInRange, 1);
+            this.CreateSkill(SkillNumber.CrescentMoonSlash, "Crescent Moon Slash", 0, 90, 22, 15, 4, 0, 0, -1, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, movesToTarget: true, movesTarget: true);
             this.CreateSkill(SkillNumber.Lance, "Lance", 0, 90, 150, 10, 6, 0, 0, -1, -1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.Starfall, "Starfall", 0, 120, 20, 15, 8, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.Impale, "Impale", 28, 15, 8, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0);
-            this.CreateSkill(SkillNumber.SwellLife, "Swell Life", 120, 0, 22, 24, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff);
+            this.CreateSkill(SkillNumber.SwellLife, "Swell Life", 120, 0, 22, 24, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Buff, SkillTarget.ImplicitParty);
             this.CreateSkill(SkillNumber.FireBreath, "Fire Breath", 110, 30, 9, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.FlameofEvil, "Flame of Evil (Monster)", 60, 120, 160, 0, 0, 100, 0, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.IceArrow, "Ice Arrow", 0, 105, 10, 12, 8, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0);
@@ -94,7 +98,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.PowerSlash, "Power Slash", 0, 0, 15, 0, 5, 100, 0, -1, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.SpiralSlash, "Spiral Slash", 0, 75, 20, 15, 5, 0, 0, -1, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.Force, "Force", 0, 10, 10, 0, 4, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-            this.CreateSkill(SkillNumber.FireBurst, "Fire Burst", 74, 100, 25, 0, 6, 20, 0, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
+            this.CreateSkill(SkillNumber.FireBurst, "Fire Burst", 74, 100, 25, 0, 6, 20, 0, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, SkillType.DirectHit, SkillTarget.ExplicitWithImplicitInRange, 1);
             this.CreateSkill(SkillNumber.Earthshake, "Earthshake", 0, 150, 0, 50, 10, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.Summon, "Summon", 98, 0, 70, 30, 0, 34, 400, -1, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, SkillType.Other);
             this.CreateSkill(SkillNumber.IncreaseCriticalDamage, "Increase Critical Damage", 82, 0, 50, 50, 0, 25, 300, -1, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, SkillType.Buff);
@@ -134,7 +138,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.LightningShock, "Lightning Shock", 93, 95, 115, 7, 6, 216, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.StrikeofDestruction, "Strike of Destruction", 100, 110, 30, 24, 5, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.ExpansionofWizardry, "Expansion of Wizardry", 220, 0, 200, 50, 6, 118, 0, -1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            this.CreateSkill(SkillNumber.Recovery, "Recovery", 100, 0, 40, 10, 6, 37, 0, -1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0);
+            this.CreateSkill(SkillNumber.Recovery, "Recovery", 100, 0, 40, 10, 6, 37, 0, -1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
             this.CreateSkill(SkillNumber.MultiShot, "Multi-Shot", 100, 40, 10, 7, 6, 0, 0, -1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.FlameStrike, "Flame Strike", 100, 140, 20, 25, 3, 0, 0, 3, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateSkill(SkillNumber.GiganticStorm, "Gigantic Storm", 220, 110, 120, 10, 6, 118, 0, 5, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
@@ -449,6 +453,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             new SoulBarrierEffectInitializer(this.Context, this.GameConfiguration).Initialize();
             new LifeSwellEffectInitializer(this.Context, this.GameConfiguration).Initialize();
             new DefenseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+            new GreaterDamageEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+            new GreaterDefenseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+            new HealEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+            new ShieldRecoverEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         }
 
         private void MapSkillsToEffects()
@@ -461,12 +469,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             }
         }
 
-        private Skill CreateSkill(SkillNumber skillId, string name, int levelRequirement, int damage, int manaConsumption, int abilityConsumption, short distance, int energyRequirement, int leadershipRequirement, int elementalModifier, int attackType, int useType, int count, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int rank, int group, int masterp, SkillType skillType = SkillType.DirectHit)
+        private void CreateSkill(SkillNumber skillId, string name, int levelRequirement, int damage, int manaConsumption, int abilityConsumption, short distance, int energyRequirement, int leadershipRequirement, int elementalModifier, int attackType, int useType, int count, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int rank, int group, int masterp, SkillType skillType = SkillType.DirectHit, SkillTarget skillTarget = SkillTarget.Explicit, short implicitTargetRange = 0, SkillTargetRestriction targetRestriction = SkillTargetRestriction.Undefined, bool movesToTarget = false, bool movesTarget = false)
         {
             var skill = this.Context.CreateNew<Skill>();
             this.GameConfiguration.Skills.Add(skill);
             skill.Number = (short)skillId;
             skill.Name = name;
+            skill.MovesToTarget = movesToTarget;
+            skill.MovesTarget = movesTarget;
             if (levelRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
@@ -518,6 +528,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             skill.Range = distance;
             skill.DamageType = attackType == 1 ? DamageType.Wizardry : DamageType.Physical;
             skill.SkillType = skillType;
+            skill.ImplicitTargetRange = implicitTargetRange;
+            skill.Target = skillTarget;
+            skill.TargetRestriction = targetRestriction;
             var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
             foreach (var characterClass in classes)
             {
@@ -525,7 +538,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             }
 
             // TODO: Master skill related stuff?
-            return skill;
         }
     }
 }

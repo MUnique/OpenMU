@@ -11,6 +11,22 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
     internal enum MagicEffectNumber : short
     {
         /// <summary>
+        /// The shield recover skill effect number.
+        /// </summary>
+        /// <remarks>
+        /// Internal.
+        /// </remarks>
+        ShieldRecover = -3,
+
+        /// <summary>
+        /// The heal skill effect number.
+        /// </summary>
+        /// <remarks>
+        /// Internal.
+        /// </remarks>
+        Heal = -2,
+
+        /// <summary>
         /// The shield skill effect number.
         /// </summary>
         /// <remarks>
@@ -26,12 +42,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         /// <summary>
         /// The damage buff effect.
         /// </summary>
-        DamageBuff = 1,
+        GreaterDamage = 1,
 
         /// <summary>
         /// The defense buff effect.
         /// </summary>
-        DefenseBuff = 2,
+        GreaterDefense = 2,
 
         /// <summary>
         /// The elf soldier buff effect.
@@ -169,9 +185,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         Iced = 0x38,
 
         /// <summary>
-        /// The iced arrowed effect.
+        /// The freeze effect, caused by the ice arrow skill.
         /// </summary>
-        IcedArrowed = 0x39,
+        Freeze = 0x39,
 
         /// <summary>
         /// The defense reduction effect.
