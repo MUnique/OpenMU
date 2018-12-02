@@ -33,7 +33,16 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
             else
             {
+                // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
+                // However, it adds way for cheaters to move through the map.
+                // So, we just allow it for developers when the debugger is attached.
+                // When handling a skill which moves to the target, we'll handle the move on server-side, instead.
+#if DEBUG
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
                     player.Move(new Point(x, y));
+                }
+#endif
             }
         }
 
