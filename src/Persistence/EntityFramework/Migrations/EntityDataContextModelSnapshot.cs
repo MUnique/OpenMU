@@ -236,6 +236,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("CreationAllowedFlag");
 
+                    b.Property<int>("FruitCalculation");
+
                     b.Property<Guid?>("GameConfigurationId");
 
                     b.Property<Guid?>("HomeMapId");
@@ -1477,15 +1479,26 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("GameConfigurationId");
 
+                    b.Property<short>("ImplicitTargetRange");
+
                     b.Property<Guid?>("MagicEffectDefId");
+
+                    b.Property<bool>("MovesTarget");
+
+                    b.Property<bool>("MovesToTarget");
 
                     b.Property<string>("Name");
 
                     b.Property<short>("Range");
                     b.Property<short>("Number");
 
+                    b.Property<short>("Range");
 
                     b.Property<int>("SkillType");
+
+                    b.Property<int>("Target");
+
+                    b.Property<int>("TargetRestriction");
 
                     b.HasKey("Id");
 

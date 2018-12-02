@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
-
+    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
@@ -81,14 +81,86 @@ namespace MUnique.OpenMU.DataModel.Configuration
         Buff = 5,
 
         /// <summary>
+        /// The regeneration skill type. Regenerates the target attribute of the defined effect.
+        /// </summary>
+        Regeneration = 6,
+
+        /// <summary>
         /// The passive boost skill type. Applies boosts to the player who has learned this skill, without the need to be casted.
         /// </summary>
-        PassiveBoost = 6,
+        PassiveBoost = 7,
 
         /// <summary>
         /// Other skill type.
         /// </summary>
-        Other = 7
+        Other = 8
+    }
+
+    /// <summary>
+    /// Defines how the target(s) of a skill are determined.
+    /// </summary>
+    public enum SkillTarget
+    {
+        /// <summary>
+        /// The target selection is undefined.
+        /// </summary>
+        Undefined = 0,
+
+        /// <summary>
+        /// The skill target is stated explicitly.
+        /// </summary>
+        Explicit = 1,
+
+        /// <summary>
+        /// The targets are implicitly all party member which are in view range of the attacker.
+        /// </summary>
+        ImplicitParty = 2,
+
+        /// <summary>
+        /// The targets are implicitly all players which are in <see cref="Skill.ImplicitTargetRange"/> of the attacker.
+        /// </summary>
+        ImplicitPlayersInRange = 3,
+
+        /// <summary>
+        /// The targets are implicitly all non-player-characters in <see cref="Skill.ImplicitTargetRange"/> of the attacker.
+        /// </summary>
+        ImplicitNpcsInRange = 4,
+
+        /// <summary>
+        /// The targets are implicitly all objects in <see cref="Skill.ImplicitTargetRange"/> of the attacker.
+        /// </summary>
+        ImplicitAllInRange = 5,
+
+        /// <summary>
+        /// The primary target is stated explicitly, additional targets are all objects in the <see cref="Skill.ImplicitTargetRange"/> of the primary target.
+        /// </summary>
+        ExplicitWithImplicitInRange = 6
+    }
+
+    /// <summary>
+    /// Defines how a skill is restricted to specific targets.
+    /// </summary>
+    public enum SkillTargetRestriction
+    {
+        /// <summary>
+        /// Undefined restriction. Skill can be applied to all possible entities (players, NPCs, etc.).
+        /// </summary>
+        Undefined = 0,
+
+        /// <summary>
+        /// The skill can only be applied to the executor.
+        /// </summary>
+        Self = 1,
+
+        /// <summary>
+        /// The skill can only be applied to the executor or its party members.
+        /// </summary>
+        Party = 2,
+
+        /// <summary>
+        /// The skill can only be applied to players (and summoned monsters of a player).
+        /// </summary>
+        Player = 3,
     }
 
     /// <summary>
@@ -120,7 +192,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public virtual ICollection<AttributeRequirement> ConsumeRequirements { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the maximum range between executer of the skill and the target object.
+        /// Gets or sets the maximum range between executor of the skill and the target object.
         /// </summary>
         public short Range { get; set; }
 
@@ -133,6 +205,47 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the type of the skill.
         /// </summary>
         public SkillType SkillType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="SkillTarget"/> which defines how the target(s) of a skill are determined.
+        /// </summary>
+        public SkillTarget Target { get; set; }
+
+        /// <summary>
+        /// Gets or sets the range for automatic targeting of additional target.
+        /// Has only effect if greater than <c>0</c>.
+        /// </summary>
+        /// <remarks>
+        /// Possible use cases: Additional hits for the "Fireburst" or "Deathstab" skills. They use direct targeting, but also hit nearby enemies.
+        /// </remarks>
+        public short ImplicitTargetRange { get; set; }
+
+        /// <summary>
+        /// Gets or sets the target restriction.
+        /// </summary>
+        public SkillTargetRestriction TargetRestriction { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the skill moves the attacker to the target.
+        /// </summary>
+        /// <remarks>Used by dark knight weapon skills, e.g. Slash.</remarks>
+        public bool MovesToTarget { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the skill moves the target.
+        /// </summary>
+        /// <remarks>
+        /// Used by dark knight weapon physical attack skills, e.g. Slash. The target gets pushed around randomly.
+        /// This is not a use case for the lightning skill, since resistances play a role there.
+        /// </remarks>
+        public bool MovesTarget { get; set; }
+
+        /// <summary>
+        /// Gets or sets the elemental modifier target attribute.
+        /// If this is set, hitting the target (successfully or not) may apply additional effects.
+        /// A value of <c>1.0f</c> means, the target is immune to effects of this element.
+        /// </summary>
+        public virtual AttributeDefinition ElementalModifierTarget { get; set; }
 
         /// <summary>
         /// Gets or sets the magic effect definition. It will be applied for buff skills.
