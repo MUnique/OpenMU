@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The base implementation of a player.
     /// </summary>
-    public class Player : IBucketMapObserver, IAttackable, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk
+    public class Player : IBucketMapObserver, IAttackable, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Player));
 

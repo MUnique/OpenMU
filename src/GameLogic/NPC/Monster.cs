@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// <summary>
     /// The implementation of a monster, which can attack players.
     /// </summary>
-    public sealed class Monster : NonPlayerCharacter, IAttackable, ISupportWalk
+    public sealed class Monster : NonPlayerCharacter, IAttackable, ISupportWalk, IMovable
     {
         private const byte MonsterAttackAnimation = 0x78;
         private readonly IDropGenerator dropGenerator;
@@ -189,9 +189,15 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.Hit(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector);
         }
 
+        /// <inheritdoc/>
+        public void Move(Point target)
+        {
+            this.Move(target, MoveType.Instant);
+        }
+
         /// <summary>
         /// Moves this instance randomly.
-        /// </summary> 
+        /// </summary>
         internal void RandomMove()
         {
             byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + 2));
