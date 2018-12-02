@@ -444,8 +444,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var maximumMana = (ushort)charStats[Stats.MaximumMana];
             var maximumShield = (ushort)charStats[Stats.MaximumShield];
             var maximumAbility = (ushort)charStats[Stats.MaximumAbility];
-            var fruitPoints = (ushort)selectedCharacter.UsedFruitPoints; // TODO: is this right or is this the new MaxFruitPoints?
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x12))
+            var fruitPoints = (ushort)selectedCharacter.UsedFruitPoints;
+            var maxFruitPoints = selectedCharacter.GetMaximumFruitPoints();
+            var negativeFruitPoints = (ushort)selectedCharacter.UsedNegFruitPoints;
+
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x18))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -457,6 +460,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet.Slice(12).SetShortBigEndian(maximumShield);
                 packet.Slice(14).SetShortBigEndian(maximumAbility);
                 packet.Slice(16).SetShortBigEndian(fruitPoints);
+                packet.Slice(18).SetShortBigEndian(maxFruitPoints);
+                packet.Slice(20).SetShortBigEndian(negativeFruitPoints);
+                packet.Slice(22).SetShortBigEndian(maxFruitPoints);
 
                 writer.Commit();
             }
@@ -602,10 +608,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[56] = (byte)this.player.SelectedCharacter.PlayerKillCount;
                 packet[57] = (byte)this.player.SelectedCharacter.State;
                 packet.Slice(58).SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedFruitPoints);
-                packet.Slice(60).SetShortBigEndian(127); // TODO: MaxFruits, calculate the right value
+                packet.Slice(60).SetShortBigEndian(this.player.SelectedCharacter.GetMaximumFruitPoints());
                 packet.Slice(62).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseLeadership]);
                 packet.Slice(64).SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedNegFruitPoints);
-                packet.Slice(66).SetShortBigEndian(127); // TODO: MaxNegFruits, calculate the right value
+                packet.Slice(66).SetShortBigEndian(this.player.SelectedCharacter.GetMaximumFruitPoints());
                 packet[68] = this.player.Account.IsVaultExtended ? (byte)1 : (byte)0;
                 //// 3 additional bytes are padding
 

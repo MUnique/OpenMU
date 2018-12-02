@@ -70,6 +70,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public int LevelWarpRequirementReductionPercent { get; set; }
 
         /// <summary>
+        /// Gets or sets the fruit calculation strategy.
+        /// </summary>
+        public FruitCalculationStrategy FruitCalculation { get; set; }
+
+        /// <summary>
         /// Gets or sets the stat attributes.
         /// </summary>
         public virtual ICollection<StatAttributeDefinition> StatAttributes { get; protected set; }
