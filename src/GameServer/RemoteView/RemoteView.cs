@@ -648,15 +648,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
-        public void ActivateMagicEffect(MagicEffect effect, Player affectedPlayer)
+        public void ActivateMagicEffect(MagicEffect effect, IAttackable affectedObject)
         {
-            this.SendMagicEffectStatus(effect, affectedPlayer, true, effect.Definition.SendDuration ? (uint)effect.Duration.TotalMilliseconds : 0);
+            this.SendMagicEffectStatus(effect, affectedObject, true, effect.Definition.SendDuration ? (uint)effect.Duration.TotalMilliseconds : 0);
         }
 
         /// <inheritdoc/>
-        public void DeactivateMagicEffect(MagicEffect effect, Player affectedPlayer)
+        public void DeactivateMagicEffect(MagicEffect effect, IAttackable affectedObject)
         {
-            this.SendMagicEffectStatus(effect, affectedPlayer, false, 0);
+            this.SendMagicEffectStatus(effect, affectedObject, false, 0);
         }
 
         /// <inheritdoc/>
@@ -980,7 +980,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             return result;
         }
 
-        private void SendMagicEffectStatus(MagicEffect effect, Player affectedPlayer, bool isActive, uint duration)
+        private void SendMagicEffectStatus(MagicEffect effect, IAttackable affectedPlayer, bool isActive, uint duration)
         {
             if (effect.Definition.Number <= 0)
             {

@@ -44,12 +44,16 @@ namespace MUnique.OpenMU.GameLogic.NPC
         {
             this.dropGenerator = dropGenerator;
             this.Attributes = new MonsterAttributeHolder(this);
+            this.MagicEffectList = new MagicEffectsList(this);
             this.walker = new Walker(this, () => this.StepDelay);
             this.intelligence = monsterIntelligence;
             this.intelligence.Monster = this;
             this.intelligence.Start();
             this.Initialize();
         }
+
+        /// <inheritdoc/>
+        public MagicEffectsList MagicEffectList { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Monster"/> is walking.

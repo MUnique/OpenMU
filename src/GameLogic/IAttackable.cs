@@ -18,6 +18,11 @@ namespace MUnique.OpenMU.GameLogic
         IAttributeSystem Attributes { get; }
 
         /// <summary>
+        /// Gets the magic effect list which contains buffs and de-buffs.
+        /// </summary>
+        MagicEffectsList MagicEffectList { get; }
+
+        /// <summary>
         /// Gets a value indicating whether this <see cref="IAttackable"/> is alive.
         /// </summary>
         /// <value>

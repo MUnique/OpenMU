@@ -339,15 +339,15 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// Activates the magic effect.
         /// </summary>
         /// <param name="effect">The effect.</param>
-        /// <param name="affectedPlayer">The affected player.</param>
-        void ActivateMagicEffect(MagicEffect effect, Player affectedPlayer);
+        /// <param name="affectedObject">The affected object.</param>
+        void ActivateMagicEffect(MagicEffect effect, IAttackable affectedObject);
 
         /// <summary>
         /// Deactivates the magic effect.
         /// </summary>
         /// <param name="effect">The effect.</param>
-        /// <param name="affectedPlayer">The affected player.</param>
-        void DeactivateMagicEffect(MagicEffect effect, Player affectedPlayer);
+        /// <param name="affectedObject">The affected object.</param>
+        void DeactivateMagicEffect(MagicEffect effect, IAttackable affectedObject);
 
         /// <summary>
         /// Updates the skill list.
