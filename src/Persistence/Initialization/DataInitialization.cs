@@ -245,8 +245,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var character = this.CreateCharacter(loginName, CharacterClassNumber.BattleMaster, 400, 0);
             account.Characters.Add(character);
             character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
-            character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
-            character.LevelUpPoints -= 1500; // for the added strength and agility
+            character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 400;
+            character.LevelUpPoints -= 1600; // for the added strength and agility
             character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
             character.MasterLevelUpPoints = 100; // To test master skill tree
 
@@ -284,9 +284,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var character = this.CreateCharacter(loginName, CharacterClassNumber.BladeKnight, 300, 0);
             account.Characters.Add(character);
 
-            character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
+            character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 400;
             character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
-            character.LevelUpPoints -= 600; // for the added strength and agility
+            character.LevelUpPoints -= 700; // for the added strength and agility
             character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
 
             character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
