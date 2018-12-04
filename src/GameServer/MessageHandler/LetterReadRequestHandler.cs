@@ -21,10 +21,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <summary>
         /// Initializes a new instance of the <see cref="LetterReadRequestHandler"/> class.
         /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public LetterReadRequestHandler(IGameContext gameContext)
+        public LetterReadRequestHandler()
         {
-            this.readAction = new LetterReadRequestAction(gameContext);
+            this.readAction = new LetterReadRequestAction();
         }
 
         /// <inheritdoc/>

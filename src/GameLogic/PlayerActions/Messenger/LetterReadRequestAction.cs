@@ -4,26 +4,12 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.Persistence;
-
     /// <summary>
     /// Action to read a letter.
     /// </summary>
     public class LetterReadRequestAction
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(LetterReadRequestAction));
-
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LetterReadRequestAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public LetterReadRequestAction(IGameContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
 
         /// <summary>
         /// Requests the letter which should be shown to the player.
