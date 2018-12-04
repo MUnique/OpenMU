@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         {
             var relations = value.RelatedValues;
             IElement result = value.ConstantValue;
-            if (relations != null)
+            if (relations?.Any() ?? false)
             {
                 var elements = relations
                     .Select(r => new AttributeRelationshipElement(
@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
             if (result == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException($"The passed {nameof(PowerUpDefinitionValue)} doesn't have a constant value or related values.", nameof(value));
             }
 
             return result;
