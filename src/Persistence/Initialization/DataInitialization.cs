@@ -831,7 +831,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             yield return this.CreatePacketConfig<CharacterGroupHandler>(PacketType.CharacterGroup);
 
             yield return this.CreatePacketConfig<HitHandler>(PacketType.Hit);
-            yield return this.CreatePacketConfig<TargettedSkillHandler>(PacketType.SkillAttack);
+            yield return this.CreatePacketConfig<TargetedSkillHandler>(PacketType.SkillAttack);
             yield return this.CreatePacketConfig<AreaSkillAttackHandler>(PacketType.AreaSkill);
             yield return this.CreatePacketConfig<AreaSkillHitHandler>(PacketType.AreaSkillHit);
 
