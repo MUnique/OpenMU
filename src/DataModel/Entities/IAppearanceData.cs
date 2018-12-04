@@ -24,6 +24,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         CharacterClass CharacterClass { get; }
 
         /// <summary>
+        /// Gets the current pose.
+        /// </summary>
+        CharacterPose Pose { get; }
+
+        /// <summary>
         /// Gets the equipped items.
         /// </summary>
         IEnumerable<ItemAppearance> EquippedItems { get; }

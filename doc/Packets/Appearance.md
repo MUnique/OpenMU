@@ -12,7 +12,8 @@ Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte
 
 |  Byte index | Length | Data type | Description |
 |----------|---------|-------------|------------|
-| 0 | 1 | byte | Character class |
+| 0 | 4 | bit  | Character class |
+| 0 | 4 | bit  | Character pose, see below |
 | 1 | 1 | byte | Left hand item index. 0xFF if empty. |
 | 2 | 1 | byte | Right hand item index. 0xFF if empty. |
 | 3 | 4 | bit | Helm item index (lower 4 bits). See byte index 9 and 13 for the rest. |
@@ -71,7 +72,17 @@ Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte
 | 17 | 3 | bit | unused |
 | 17 | 1 | bit | Gold fenrir flag |
 
+### Character pose ###
 
+| Value | Meaning |
+|-------|---------|
+|   0   | Standing (default) |
+|   1   | unused  |
+|   2   | Sitting (e.g. on a trunk) |
+|   3   | Leaning (e.g. against a wall) |
+|   4   | Hanging (at these strange things in Noria) |
+
+Note: At Season 10 and above, the values are different. Sitting is at 1, Leaning 2, Hanging 3. So, they removed the unused value.
 
 ### Item level calculation ###
 

@@ -22,33 +22,6 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
-    /// The character pose.
-    /// TODO: Use it.
-    /// </summary>
-    public enum CharacterPose : byte
-    {
-        /// <summary>
-        /// The character is standing (normal).
-        /// </summary>
-        Standing = 0,
-
-        /// <summary>
-        /// The character is sitting on an object.
-        /// </summary>
-        Sitting = 2,
-
-        /// <summary>
-        /// The character is leaning towards something (wall etc).
-        /// </summary>
-        Leaning = 3,
-
-        /// <summary>
-        /// The character is hanging on something.
-        /// </summary>
-        Hanging = 4
-    }
-
-    /// <summary>
     /// The base implementation of a player.
     /// </summary>
     public class Player : IBucketMapObserver, IAttackable, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable
@@ -163,6 +136,11 @@ namespace MUnique.OpenMU.GameLogic
 
             set
             {
+                if (this.selectedCharacter == value)
+                {
+                    return;
+                }
+
                 if (value == null)
                 {
                     this.appearanceData.RaiseAppearanceChanged();
@@ -175,6 +153,26 @@ namespace MUnique.OpenMU.GameLogic
                     this.PlayerEnteredWorld?.Invoke(this, null);
                     this.appearanceData.RaiseAppearanceChanged();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the pose of the currently selected character.
+        /// </summary>
+        public CharacterPose Pose
+        {
+            get => this.selectedCharacter?.Pose ?? default;
+
+            set
+            {
+                var character = this.selectedCharacter;
+                if (character == null || character.Pose == this.Pose)
+                {
+                    return;
+                }
+
+                character.Pose = value;
+                this.appearanceData.RaiseAppearanceChanged();
             }
         }
 
@@ -932,6 +930,8 @@ namespace MUnique.OpenMU.GameLogic
             public event EventHandler AppearanceChanged;
 
             public CharacterClass CharacterClass => this.player.SelectedCharacter?.CharacterClass;
+
+            public CharacterPose Pose => this.player.SelectedCharacter?.Pose ?? default;
 
             public IEnumerable<ItemAppearance> EquippedItems
             {

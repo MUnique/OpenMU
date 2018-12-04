@@ -903,7 +903,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    CharacterClassId = table.Column<Guid>(nullable: true)
+                    CharacterClassId = table.Column<Guid>(nullable: true),
+                    Pose = table.Column<byte>(nullable: false),
                 },
                 constraints: table =>
                 {
@@ -931,6 +932,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MasterExperience = table.Column<long>(nullable: false),
                     MasterLevelUpPoints = table.Column<int>(nullable: false),
                     PlayerKillCount = table.Column<int>(nullable: false),
+                    Pose = table.Column<byte>(nullable: false),
                     PositionX = table.Column<byte>(nullable: false),
                     PositionY = table.Column<byte>(nullable: false),
                     State = table.Column<int>(nullable: false),

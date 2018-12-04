@@ -57,6 +57,32 @@ namespace MUnique.OpenMU.DataModel.Entities
     }
 
     /// <summary>
+    /// The character pose.
+    /// </summary>
+    public enum CharacterPose : byte
+    {
+        /// <summary>
+        /// The character is standing (normal).
+        /// </summary>
+        Standing = 0,
+
+        /// <summary>
+        /// The character is sitting on an object.
+        /// </summary>
+        Sitting = 2,
+
+        /// <summary>
+        /// The character is leaning towards something (wall etc).
+        /// </summary>
+        Leaning = 3,
+
+        /// <summary>
+        /// The character is hanging on something.
+        /// </summary>
+        Hanging = 4
+    }
+
+    /// <summary>
     /// The character of a player.
     /// </summary>
     public class Character
@@ -135,6 +161,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the hero state.
         /// </summary>
         public HeroState State { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pose.
+        /// </summary>
+        public CharacterPose Pose { get; set; }
 
         /// <summary>
         /// Gets or sets the quest info. Don't know yet what its content is.

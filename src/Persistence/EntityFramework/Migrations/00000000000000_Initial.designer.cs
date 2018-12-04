@@ -80,6 +80,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("CharacterClassId");
 
+                    b.Property<byte>("Pose");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CharacterClassId");
@@ -200,6 +202,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasMaxLength(10);
 
                     b.Property<int>("PlayerKillCount");
+
+                    b.Property<byte>("Pose");
 
                     b.Property<byte>("PositionX");
 

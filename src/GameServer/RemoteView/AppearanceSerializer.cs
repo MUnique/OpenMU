@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
             else
             {
-                this.WritePreviewCharSet(target, appearance.CharacterClass, appearance.EquippedItems);
+                this.WritePreviewCharSet(target, appearance);
                 if (useCache)
                 {
                     var cacheEntry = target.Slice(0, this.NeededSpace).ToArray();
@@ -106,15 +106,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void OnAppearanceOfAppearanceChanged(object sender, EventArgs args) => this.InvalidateCache(sender as IAppearanceData);
 
-        private void WritePreviewCharSet(Span<byte> target, CharacterClass characterClass, IEnumerable<ItemAppearance> equippedItems)
+        private void WritePreviewCharSet(Span<byte> target, IAppearanceData appearanceData)
         {
             ItemAppearance[] itemArray = new ItemAppearance[InventoryConstants.EquippableSlotsCount];
             for (byte i = 0; i < itemArray.Length; i++)
             {
-                itemArray[i] = equippedItems.FirstOrDefault(item => item.ItemSlot == i);
+                itemArray[i] = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == i);
             }
 
-            target[0] = (byte)(characterClass.Number << 3 & 0xF8);
+            target[0] = (byte)(appearanceData.CharacterClass.Number << 3 & 0xF8);
+            target[0] |= (byte)appearanceData.Pose;
             this.SetHand(target, itemArray[InventoryConstants.LeftHandSlot], 1, 12);
 
             this.SetHand(target, itemArray[InventoryConstants.RightHandSlot], 2, 13);

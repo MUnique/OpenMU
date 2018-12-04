@@ -1078,6 +1078,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             public CharacterClass CharacterClass => this.character?.CharacterClass;
 
+            /// <inheritdoc />
+            public CharacterPose Pose => CharacterPose.Standing;
+
             public IEnumerable<ItemAppearance> EquippedItems
             {
                 get

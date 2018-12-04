@@ -26,6 +26,9 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// </summary>
         public virtual CharacterClass CharacterClass { get; set; }
 
+        /// <inheritdoc />
+        public CharacterPose Pose { get; set; }
+
         /// <summary>
         /// Gets or sets the equipped items.
         /// </summary>
