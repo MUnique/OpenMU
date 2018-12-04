@@ -19,15 +19,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="warpInfo">The warp information.</param>
         public void WarpTo(Player player, WarpInfo warpInfo)
         {
-            if (warpInfo.LevelRequirement > player.Attributes[Stats.Level])
-            {
-                return; // todo: check if we need failed packet
-            }
-
-            if (player.TryRemoveMoney((int)warpInfo.Costs))
+            if (warpInfo.LevelRequirement <= player.Attributes[Stats.Level]
+                && player.TryRemoveMoney(warpInfo.Costs))
             {
                 player.WarpTo(warpInfo.Gate);
-            } // todo: else maybe send failed packet?
+            }
+            else
+            {
+                // no further action required.
+            }
         }
     }
 }
