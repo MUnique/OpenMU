@@ -30,9 +30,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         public override void HandlePacket(Player player, Span<byte> packet)
         {
-            ////          skill targt
+            ////          skill target
             ////C3 len 19 XX XX TT TT
-            ushort skillId = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
+            ushort skillId = packet.MakeWordSmallEndian(3);
 
             if (!player.SkillList.ContainsSkill(skillId))
             {
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
 
             // The target can be the own player too, for example when using buff skills.
-            ushort targetId = NumberConversionExtensions.MakeWord(packet[6], packet[5]);
+            ushort targetId = packet.MakeWordSmallEndian(5);
             if (player.GetObject(targetId) is IAttackable target)
             {
                 this.attackAction.PerformSkill(player, target, skillId);
