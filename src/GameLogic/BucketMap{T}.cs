@@ -98,23 +98,6 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
-        /// Moves the specified element.
-        /// </summary>
-        /// <param name="element">The element.</param>
-        /// <param name="source">The source coordinates.</param>
-        /// <param name="target">The target coordinates.</param>
-        public void Move(T element, Point source, Point target)
-        {
-            if (source.X / this.BucketSideLength == target.X / this.BucketSideLength && source.Y / this.BucketSideLength == target.Y / this.BucketSideLength)
-            {
-                return;
-            }
-
-            this[source].Remove(element);
-            this[target].Add(element);
-        }
-
-        /// <summary>
         /// Gets the items which are in range of the specified coordinates and range.
         /// </summary>
         /// <param name="point">The coordinates.</param>

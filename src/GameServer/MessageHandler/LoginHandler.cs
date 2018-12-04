@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         {
             this.gameContext = gameContext;
             this.loginAction = new LoginAction(gameContext);
-            this.logoutAction = new LogoutAction(gameContext);
+            this.logoutAction = new LogoutAction();
             this.decryptor = new Xor3Decryptor(0);
         }
 

@@ -111,20 +111,5 @@ namespace MUnique.OpenMU.Tests
             var skillEntry = new SkillEntry { Skill = new OpenMU.DataModel.Configuration.Skill { Number = skillId.ToSigned() } };
             return skillEntry;
         }
-
-        private IStorage CreateStorage()
-        {
-            var result = new Storage(0, 12, 0xFF, new ItemStorage());
-            return result;
-        }
-
-        private Character CreateCharacter()
-        {
-            var result = new Mock<Character>();
-            result.SetupAllProperties();
-            result.Setup(c => c.LearnedSkills).Returns(new List<SkillEntry>());
-            result.Object.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
-            return result.Object;
-        }
     }
 }

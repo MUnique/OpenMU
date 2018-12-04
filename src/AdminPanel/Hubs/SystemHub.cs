@@ -19,7 +19,6 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
     {
         private const string SubscriberGroup = "Subscribers";
         private const int TimerInterval = 1000;
-        private static readonly ILog Log = LogManager.GetLogger(typeof(SystemHub));
 
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable we want to keep it from getting garbage collected
         private static readonly Timer Timer = CreateTimer();

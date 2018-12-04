@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
-    using log4net;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -12,19 +11,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     /// </summary>
     public class GuildRequestAction
     {
-        private static ILog log = LogManager.GetLogger(typeof(GuildRequestAction));
-
-        private readonly IGameServerContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildRequestAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public GuildRequestAction(IGameServerContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Requests the guild from the guild master player with the specified id.
         /// </summary>

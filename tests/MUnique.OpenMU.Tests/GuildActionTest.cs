@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void GuildRequest()
         {
-            var guildRequestAction = new GuildRequestAction(this.gameServerContext);
+            var guildRequestAction = new GuildRequestAction();
             guildRequestAction.RequestGuild(this.player, this.guildMasterPlayer.Id);
             Assert.That(this.guildMasterPlayer.LastGuildRequester, Is.SameAs(this.player));
             Mock.Get(this.guildMasterPlayer.PlayerView.GuildView).Verify(g => g.ShowGuildJoinRequest(this.player), Times.Once);
@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.Tests
 
         private void RequestGuildAndRespond(bool acceptRequest)
         {
-            var guildRequestAction = new GuildRequestAction(this.gameServerContext);
+            var guildRequestAction = new GuildRequestAction();
             guildRequestAction.RequestGuild(this.player, this.guildMasterPlayer.Id);
             var guildResponseAction = new GuildRequestAnswerAction(this.gameServerContext);
             guildResponseAction.AnswerRequest(this.guildMasterPlayer, acceptRequest);

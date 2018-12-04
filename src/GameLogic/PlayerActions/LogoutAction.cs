@@ -11,19 +11,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// </summary>
     public class LogoutAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(LogoutAction));
-
-        private readonly IGameServerContext gameServerContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LogoutAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public LogoutAction(IGameServerContext gameContext)
-        {
-            this.gameServerContext = gameContext;
-        }
-
         /// <summary>
         /// Logs out the specified player.
         /// </summary>
