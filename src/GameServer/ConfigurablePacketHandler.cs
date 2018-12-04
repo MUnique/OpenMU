@@ -76,7 +76,7 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="handlerConfiguration">The handler configuration.</param>
         protected void CreateHandler(IUnityContainer container, PacketHandlerConfiguration handlerConfiguration)
         {
-            IPacketHandler handler;
+            IPacketHandler handler = null;
             this.encryptionChecks[handlerConfiguration.PacketIdentifier] = handlerConfiguration.NeedsToBeEncrypted;
             if (handlerConfiguration.SubPacketHandlers != null && handlerConfiguration.SubPacketHandlers.Count > 0)
             {
@@ -85,8 +85,15 @@ namespace MUnique.OpenMU.GameServer
             else
             {
                 var handlerType = Type.GetType(handlerConfiguration.PacketHandlerClassName);
-                var obj = container.Resolve(handlerType, string.Empty);
-                handler = obj as IPacketHandler;
+                if (handlerType == null)
+                {
+                    this.log.Warn($"Handler type {handlerConfiguration.PacketHandlerClassName} not found.");
+                }
+                else
+                {
+                    var obj = container.Resolve(handlerType, string.Empty);
+                    handler = obj as IPacketHandler;
+                }
             }
 
             this.packetHandler[handlerConfiguration.PacketIdentifier] = handler;
