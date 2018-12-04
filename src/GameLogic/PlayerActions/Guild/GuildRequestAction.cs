@@ -18,21 +18,21 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="guildMasterId">The guild master identifier.</param>
         public void RequestGuild(Player player, ushort guildMasterId)
         {
-            Player guildmaster = player.CurrentMap.GetObject(guildMasterId) as Player;
+            Player guildMaster = player.CurrentMap.GetObject(guildMasterId) as Player;
 
-            if (guildmaster?.GuildStatus?.Position != GuildPosition.GuildMaster)
+            if (guildMaster?.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                return; // targetted player not in a guild or not the guild master
+                return; // targeted player not in a guild or not the guild master
             }
 
-            if (guildmaster.LastGuildRequester != null)
+            if (guildMaster.LastGuildRequester != null)
             {
                 player.PlayerView.ShowMessage("The Guild Master is busy.", MessageType.BlueNormal);
                 return;
             }
 
-            guildmaster.LastGuildRequester = player;
-            guildmaster.PlayerView.GuildView.ShowGuildJoinRequest(player);
+            guildMaster.LastGuildRequester = player;
+            guildMaster.PlayerView.GuildView.ShowGuildJoinRequest(player);
         }
     }
 }
