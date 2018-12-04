@@ -18,10 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="logoutType">Type of the logout.</param>
         public void Logout(Player player, LogoutType logoutType)
         {
-            if (player.CurrentMap != null)
-            {
-                player.CurrentMap.Remove(player);
-            }
+            player.CurrentMap?.Remove(player);
 
             if (player.SelectedCharacter != null)
             {
