@@ -158,6 +158,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 ReadWingOption(array[3], persistenceContext, item);
             }
+            else
+            {
+                // set nothing.
+            }
 
             ReadSkillFlag(array[1], item);
             ReadLuckOption(array[1], persistenceContext, item);

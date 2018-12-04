@@ -130,6 +130,9 @@ namespace MUnique.OpenMU.Startup
                         case "gc":
                             GC.Collect();
                             break;
+                        default:
+                            Console.WriteLine("Unknown command");
+                            break;
                     }
                 }
             }
@@ -174,6 +177,10 @@ namespace MUnique.OpenMU.Startup
                     Console.WriteLine("Cancelled the update process, can't start the server.");
                     return null;
                 }
+            }
+            else
+            {
+                // everything is fine and ready
             }
 
             return manager;

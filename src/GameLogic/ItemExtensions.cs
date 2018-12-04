@@ -45,6 +45,11 @@ namespace MUnique.OpenMU.GameLogic
                 // TODO: archangel weapons, but I guess it's not a big issue if we don't, because of their already high durability
                 result += 15;
             }
+            else
+            {
+                // there are no other options which increase the durability.
+                // It might be nice to add the magic values above to the ItemOptionType, as data.
+            }
 
             return (byte)Math.Min(byte.MaxValue, result);
         }

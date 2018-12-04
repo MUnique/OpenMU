@@ -42,9 +42,8 @@ namespace MUnique.OpenMU.GameLogic
                     return new Point((byte)(origin.X + 1), origin.Y);
                 case Direction.SouthWest:
                     return new Point(origin.X, (byte)(origin.Y - 1));
+                default: throw new ArgumentException($"Direction value {direction} is not defined", nameof(direction));
             }
-
-            throw new ArgumentException($"Direction value {direction} is not defined", nameof(direction));
         }
 
         /// <summary>

@@ -218,6 +218,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
                 item.PossibleItemOptions.Add(option);
             }
+            else
+            {
+                // we add no option.
+            }
 
             if (resistanceAttribute != null)
             {

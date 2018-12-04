@@ -52,6 +52,10 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
                 {
                     this.DisconnectClientUnknownPacket(client, packet);
                 }
+                else
+                {
+                    // do nothing.
+                }
             }
             catch (SocketException ex)
             {

@@ -120,13 +120,12 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
         private MoveType GetMoveType(byte value)
         {
-            switch (value)
+            if (value == (byte)PacketType.Walk)
             {
-                case (byte)PacketType.Teleport: return MoveType.Instant;
-                case (byte)PacketType.Walk: return MoveType.Walk;
+                return MoveType.Walk;
             }
 
-            return (MoveType)value;
+            return MoveType.Instant;
         }
     }
 }

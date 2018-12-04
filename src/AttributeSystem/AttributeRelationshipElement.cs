@@ -75,9 +75,9 @@ namespace MUnique.OpenMU.AttributeSystem
                     return this.InputElements.Sum(a => a.Value) + this.InputOperand;
                 case InputOperator.Exponentiate:
                     return (float)System.Math.Pow(this.InputElements.Sum(a => a.Value), this.InputOperand);
+                default:
+                    throw new System.InvalidOperationException($"Input operator {this.InputOperator} unknown");
             }
-
-            throw new System.InvalidOperationException($"Input operator {this.InputOperator} unknown");
         }
     }
 }

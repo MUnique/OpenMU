@@ -189,6 +189,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     }
 
                     break;
+                default:
+                    // do nothing.
+                    break;
             }
         }
     }

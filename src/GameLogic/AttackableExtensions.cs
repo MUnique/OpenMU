@@ -292,40 +292,41 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="attacker">The attacker.</param>
         /// <param name="skill">Skill which is used.</param>
-        /// <param name="basemin">Minimum base damage.</param>
-        /// <param name="basemax">Maximum base damage.</param>
-        private static void GetBaseDmg(this IAttackable attacker, SkillEntry skill, out int basemin, out int basemax)
+        /// <param name="minimumBaseDamage">Minimum base damage.</param>
+        /// <param name="maximumBaseDamage">Maximum base damage.</param>
+        private static void GetBaseDmg(this IAttackable attacker, SkillEntry skill, out int minimumBaseDamage, out int maximumBaseDamage)
         {
-            basemin = 0;
-            basemax = 0;
             var attackerStats = attacker.Attributes;
+            minimumBaseDamage = (int)attackerStats[Stats.BaseDamageBonus];
+            maximumBaseDamage = (int)attackerStats[Stats.BaseDamageBonus];
+
             DamageType damageType = DamageType.Physical;
             if (skill != null)
             {
                 damageType = skill.Skill.DamageType;
                 var skillDamage = skill.Skill.AttackDamage.Where(d => d.Level == skill.Level).Select(d => d.Damage).FirstOrDefault();
-                basemin += skillDamage;
-                basemax += skillDamage;
+                minimumBaseDamage += skillDamage;
+                maximumBaseDamage += skillDamage;
             }
 
-            if (damageType == DamageType.Physical)
+            switch (damageType)
             {
-                basemin = (int)attackerStats[Stats.MinimumPhysBaseDmg];
-                basemax = (int)attackerStats[Stats.MaximumPhysBaseDmg];
+                case DamageType.Wizardry:
+                    minimumBaseDamage = (int)attackerStats[Stats.MinimumWizBaseDmg];
+                    maximumBaseDamage = (int)attackerStats[Stats.MaximumWizBaseDmg];
+                    break;
+                case DamageType.Curse:
+                    minimumBaseDamage = (int)attackerStats[Stats.MinimumCurseBaseDmg];
+                    maximumBaseDamage = (int)attackerStats[Stats.MaximumCurseBaseDmg];
+                    break;
+                case DamageType.Physical:
+                    minimumBaseDamage = (int)attackerStats[Stats.MinimumPhysBaseDmg];
+                    maximumBaseDamage = (int)attackerStats[Stats.MaximumPhysBaseDmg];
+                    break;
+                default:
+                    // the skill has some other damage type defined which is not applicable to this calculation
+                    break;
             }
-            else if (damageType == DamageType.Wizardry)
-            {
-                basemin = (int)attackerStats[Stats.MinimumWizBaseDmg];
-                basemax = (int)attackerStats[Stats.MaximumWizBaseDmg];
-            }
-            else if (damageType == DamageType.Curse)
-            {
-                basemin = (int)attackerStats[Stats.MinimumCurseBaseDmg];
-                basemax = (int)attackerStats[Stats.MaximumCurseBaseDmg];
-            }
-
-            basemin += (int)attackerStats[Stats.BaseDamageBonus];
-            basemax += (int)attackerStats[Stats.BaseDamageBonus];
         }
     }
 }

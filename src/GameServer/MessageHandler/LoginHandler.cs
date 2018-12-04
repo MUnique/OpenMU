@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System;
     using System.Linq;
     using System.Text;
+    using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
@@ -19,6 +20,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     internal class LoginHandler : IPacketHandler
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(LoginHandler));
+
         private readonly ISpanDecryptor decryptor;
 
         private readonly LoginAction loginAction;
@@ -49,6 +52,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             else if (packet[3] == 2)
             {
                 this.ReadLogoutPacket(player, packet);
+            }
+            else
+            {
+                Log.Warn($"Player: {player}, Unknown login action: {packet[3]:X}");
             }
         }
 

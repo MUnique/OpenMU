@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
-    using System.Linq;
     using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Character;
@@ -83,6 +82,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                     break;
                 case 0x52:
                     this.AddMasterSkillPoint(player, packet);
+                    break;
+                default:
+                    Log.Warn($"Packet F3 {packet[3] : X} isn't implemented.");
                     break;
             }
         }

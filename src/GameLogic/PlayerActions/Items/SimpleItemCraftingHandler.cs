@@ -121,6 +121,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
                     // TODO: Send item updated
                     break;
+                default:
+                    // The item stays as is.
+                    break;
             }
         }
     }

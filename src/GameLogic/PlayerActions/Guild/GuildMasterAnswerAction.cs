@@ -42,6 +42,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             {
                 player.OpenedNpc = null;
             }
+            else
+            {
+                // nothing to do.
+            }
         }
     }
 }

@@ -114,30 +114,31 @@ namespace MUnique.OpenMU.Network.Analyzer
                     return this.innerData.MakeQword(field.Index).ToString();
                 case FieldType.LongBigEndian:
                     return this.innerData.MakeQwordBigEndian(field.Index).ToString();
+                default:
+                    return string.Empty;
             }
-
-            return string.Empty;
         }
 
         private int? GetFieldSizeInBytes(Field field)
         {
             switch (field.Type)
             {
-                    case FieldType.Byte: return 1;
-                    case FieldType.Integer:
-                    case FieldType.IntegerBigEndian:
-                        return sizeof(int);
-                    case FieldType.Long:
-                    case FieldType.LongBigEndian:
-                        return sizeof(long);
-                    case FieldType.Short:
+                case FieldType.Byte:
+                    return 1;
+                case FieldType.Integer:
+                case FieldType.IntegerBigEndian:
+                    return sizeof(int);
+                case FieldType.Long:
+                case FieldType.LongBigEndian:
+                    return sizeof(long);
+                case FieldType.Short:
                 case FieldType.ShortBigEndian:
-                        return sizeof(short);
-                    case FieldType.String:
-                        return field.LengthSpecified ? field.Length : (int?)null;
+                    return sizeof(short);
+                case FieldType.String:
+                    return field.LengthSpecified ? field.Length : (int?)null;
+                default:
+                    return null;
             }
-
-            return null;
         }
     }
 }

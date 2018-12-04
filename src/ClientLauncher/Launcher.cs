@@ -79,9 +79,10 @@ namespace MUnique.OpenMU.ClientLauncher
                 case 3:
                     port += (0x13 - ((port % 4) * 2)) - (((port / 0x10) % 2) * 0x20);
                     return port;
+                default:
+                    // we'll hopefully never run into this one
+                    return port;
             }
-
-            return port;
         }
 
         /// <summary>
@@ -113,6 +114,9 @@ namespace MUnique.OpenMU.ClientLauncher
                     case 4:
                         encodedCharacter = (char)(ch + '\x0013');
                         counter = 0;
+                        break;
+                    default:
+                        // we should not run into this case, since it's always 1 to 4.
                         break;
                 }
 

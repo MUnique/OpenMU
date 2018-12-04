@@ -59,9 +59,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                         return this.logger.IsErrorEnabled;
                     case NpgsqlLogLevel.Fatal:
                         return this.logger.IsFatalEnabled;
+                    default:
+                        return false;
                 }
-
-                return false;
             }
 
             public override void Log(NpgsqlLogLevel level, int connectorId, string msg, Exception exception = null)
@@ -82,6 +82,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                         break;
                     case NpgsqlLogLevel.Fatal:
                         this.logger.Fatal(msg, exception);
+                        break;
+                    default:
+                        // log nothing
                         break;
                 }
             }

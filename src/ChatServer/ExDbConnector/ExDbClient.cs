@@ -121,6 +121,9 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                     case 0xA1:
                         this.ReadChatRoomInvitation(packet);
                         break;
+                    default:
+                        Log.Warn($"Unknown packet received from ExDB-Server, code: {packet[2]}");
+                        break;
                 }
             }
             catch (Exception exception)

@@ -83,6 +83,10 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
                         {
                             color = SKColors.SpringGreen;
                         }
+                        else
+                        {
+                            // we use the default color.
+                        }
 
                         bitmap.SetPixel(x, y, color);
                     }

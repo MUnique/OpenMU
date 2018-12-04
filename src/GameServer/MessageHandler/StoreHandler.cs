@@ -63,6 +63,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 case 0x06:
                     this.ReadBuyRequest(player, packet);
                     break;
+                default:
+                    throw new NotImplementedException($"Store Packet {packet[3] : X} isn't implemented.");
             }
         }
 

@@ -56,6 +56,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
                     byte slot = packet.Length > 6 ? packet[6] : (byte)0;
                     this.mixAction.UnstackItems(player, mixId, slot);
                     break;
+                default:
+                    throw new ArgumentException($"The mix type {mixType} is unknown.");
             }
         }
     }

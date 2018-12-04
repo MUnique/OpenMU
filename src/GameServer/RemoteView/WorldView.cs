@@ -473,8 +473,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             switch (state)
             {
-                case HeroState.New:
-                    return 0;
                 case HeroState.LightHero:
                     return 1;
                 case HeroState.MediumHero:
@@ -487,9 +485,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     return 5;
                 case HeroState.PlayerKiller2ndStage:
                     return 6;
+                default:
+                    return 0;
             }
-
-            return 0;
         }
     }
 }

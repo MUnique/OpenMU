@@ -34,6 +34,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         public enum ItemFailResult
         {
             /// <summary>
+            /// Nothing happens.
+            /// </summary>
+            None,
+
+            /// <summary>
             /// Sets the option to level one.
             /// </summary>
             SetOptionToLevelOne,
@@ -114,6 +119,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                     break;
                 case ItemFailResult.SetOptionToLevelOne:
                     itemOption.Level = 1;
+                    break;
+                default:
+                    // do nothing
                     break;
             }
         }

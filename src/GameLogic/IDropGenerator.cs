@@ -286,6 +286,9 @@ namespace MUnique.OpenMU.GameLogic
                         return this.GetRandomItem((int)monster[Stats.Level], false);
                     case SpecialItemType.SocketItem:
                         return this.GetRandomItem((int)monster[Stats.Level], true);
+                    default:
+                        // none
+                        return null;
                 }
             }
 

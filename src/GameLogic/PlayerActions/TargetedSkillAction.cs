@@ -104,6 +104,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     {
                         target.ApplyRegeneration(player, skill);
                     }
+                    else
+                    {
+                        Log.Warn($"Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                    }
+                }
+                else
+                {
+                    Log.Warn($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
                 }
             }
         }

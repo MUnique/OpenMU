@@ -550,6 +550,8 @@ namespace MUnique.OpenMU.Network
                     packet[1] = (byte)((size & 0xFF00) >> 8);
                     packet[2] = (byte)(size & 0x00FF);
                     break;
+                default:
+                    throw new ArgumentException($"Unknown packet type {packet[0] : X}");
             }
         }
 

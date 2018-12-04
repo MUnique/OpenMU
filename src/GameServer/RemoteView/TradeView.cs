@@ -166,9 +166,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 case TradeResult.FailedByFullInventory: return 2;
                 case TradeResult.TimedOut: return 3;
                 case TradeResult.FailedByItemsNotAllowedToTrade: return 4;
+                default: throw new ArgumentException($"TradeResult {tradeResult} not mapped to a byte value.");
             }
-
-            throw new ArgumentException($"TradeResult {tradeResult} not mapped to a byte value.");
         }
     }
 }

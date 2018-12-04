@@ -109,9 +109,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     return typeof(GuildContext);
                 case DatabaseRole.Friend:
                     return typeof(FriendContext);
+                default: throw new ArgumentException($"Role {role} unknown.");
             }
-
-            throw new ArgumentException($"Role {role} unknown.");
         }
 
         private static IDictionary<Type, ConnectionSetting> LoadSettings()

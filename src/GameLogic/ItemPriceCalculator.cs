@@ -297,6 +297,9 @@ namespace MUnique.OpenMU.GameLogic
                     case 13: dropLevel += 245; break;
                     case 14: dropLevel += 305; break;
                     case 15: dropLevel += 365; break;
+                    default:
+                        // other levels don't add value.
+                        break;
                 }
 
                 // Wings
@@ -403,6 +406,10 @@ namespace MUnique.OpenMU.GameLogic
             else if (result >= 100)
             {
                 result = result / 10 * 10;
+            }
+            else
+            {
+                // no rounding for smaller values.
             }
 
             return result;
