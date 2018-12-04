@@ -124,9 +124,10 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
-        /// Reads the mu online packet by raising <see cref="PacketReceived"/>.
+        /// Reads the mu online packet by raising <see cref="PacketReceived" />.
         /// </summary>
         /// <param name="packet">The mu online packet.</param>
+        /// <returns>The async task.</returns>
         protected override Task ReadPacket(ReadOnlySequence<byte> packet)
         {
             this.PacketReceived?.Invoke(this, packet);
