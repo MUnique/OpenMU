@@ -19,12 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         public void Logout(Player player, LogoutType logoutType)
         {
             player.CurrentMap?.Remove(player);
-
-            if (player.SelectedCharacter != null)
-            {
-                player.SelectedCharacter = null;
-            }
-
+            player.SelectedCharacter = null;
             player.MagicEffectList.ClearAllEffects();
             player.PersistenceContext.SaveChanges();
             if (logoutType == LogoutType.CloseGame)
