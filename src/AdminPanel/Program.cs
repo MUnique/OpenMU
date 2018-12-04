@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.AdminPanel
     /// <remarks>
     /// Currently, that's NOT supported!
     /// </remarks>
-    public class Program
+    public static class Program
     {
         /// <summary>
         /// The main entry point.
