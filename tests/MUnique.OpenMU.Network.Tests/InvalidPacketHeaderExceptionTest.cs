@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Network.Tests
         [Test]
         public async Task TestHeader()
         {
-            await this.TestException(e => Assert.That(e.Header, Is.EquivalentTo(new byte[] {0x00, 0x00, 0x00})));
+            await this.TestException(e => Assert.That(e.Header, Is.EquivalentTo(new byte[] { 0x00, 0x00, 0x00 })));
         }
 
         /// <summary>
