@@ -31,30 +31,26 @@ namespace MUnique.OpenMU.Tests
         [SetUp]
         public void SetUp()
         {
-            this.initialState = new State
+            this.initialState = new State(new Guid("ADBEC1FA-7DB8-4A80-B054-2297B20AF32B"))
             {
-                Id = new Guid("ADBEC1FA-7DB8-4A80-B054-2297B20AF32B"),
                 Name = "Initial State",
                 PossibleTransitions = new List<State>()
             };
-            this.nextState = new State
+            this.nextState = new State(new Guid("9954D837-D5FC-4204-AD96-6BD9F19353EA"))
             {
-                Id = new Guid("9954D837-D5FC-4204-AD96-6BD9F19353EA"),
                 Name = "Next State",
                 PossibleTransitions = new List<State>()
             };
             this.initialState.PossibleTransitions.Add(this.nextState);
             this.nextState.PossibleTransitions.Add(this.initialState);
-            this.finishedState = new State
+            this.finishedState = new State(new Guid("F3658D9E-581B-451A-9C35-92A6B13B8C64"))
             {
-                Id = new Guid("F3658D9E-581B-451A-9C35-92A6B13B8C64"),
                 Name = "Finished"
             };
             this.nextState.PossibleTransitions.Add(this.finishedState);
 
-            this.isolatedState = new State
+            this.isolatedState = new State(new Guid("4D45D4B0-1CA5-4222-91CC-B05DC5D87D56"))
             {
-                Id = new Guid("4D45D4B0-1CA5-4222-91CC-B05DC5D87D56"),
                 Name = "Isolated State"
             };
 

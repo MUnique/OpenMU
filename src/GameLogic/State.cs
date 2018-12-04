@@ -10,15 +10,23 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// A state of a state machine.
     /// </summary>
-    public class State
+    public class State : IEquatable<State>
     {
         /// <summary>
-        /// Gets or sets the unique id of a state.
+        /// Initializes a new instance of the <see cref="State"/> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        public State(Guid id)
+        {
+            this.Id = id;
+        }
+
+        /// <summary>
+        /// Gets the unique id of a state.
         /// </summary>
         public Guid Id
         {
             get;
-            set;
         }
 
         /// <summary>
@@ -76,9 +84,11 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override bool Equals(object obj) => this.Equals(obj as State);
+
+        /// <inheritdoc />
+        public bool Equals(State other)
         {
-            State other = obj as State;
             if (other == null)
             {
                 return false;
