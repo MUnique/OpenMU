@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                 }
                 catch
                 {
-                    // I know, bad practise... but when it fails, because of some invalid xml file, we just don't assign it.
+                    // I know, bad practice... but when it fails, because of some invalid xml file, we just don't assign it.
                     return;
                 }
 
