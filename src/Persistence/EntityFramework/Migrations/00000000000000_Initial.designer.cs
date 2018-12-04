@@ -428,6 +428,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MaximumLetters");
 
+                    b.Property<int>("LetterSendPrice");
+
                     b.Property<short>("MaximumLevel");
 
                     b.Property<byte>("MaximumPartySize");

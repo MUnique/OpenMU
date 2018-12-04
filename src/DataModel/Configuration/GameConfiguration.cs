@@ -58,6 +58,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public int MaximumLetters { get; set; }
 
         /// <summary>
+        /// Gets or sets the price of sending a letter.
+        /// </summary>
+        public int LetterSendPrice { get; set; }
+
+        /// <summary>
         /// Gets or sets the maximum number of characters per account.
         /// </summary>
         public byte MaximumCharactersPerAccount { get; set; }

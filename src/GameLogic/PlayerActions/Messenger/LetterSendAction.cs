@@ -17,11 +17,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     /// </summary>
     public class LetterSendAction
     {
-        /// <summary>
-        /// The price of sending a letter. TODO: Letter price should be configurable.
-        /// </summary>
-        private const int LetterSendCost = 1000;
-
         private static readonly ILog Log = LogManager.GetLogger(typeof(LetterSendAction));
 
         private readonly IGameContext gameContext;
@@ -52,7 +47,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="letterId">The client side letter id.</param>
         public void SendLetter(Player player, string receiver, string message, string title, byte rotation, byte animation, uint letterId)
         {
-            if (player.Money < LetterSendCost)
+            var sendPrice = this.gameContext.Configuration.LetterSendPrice;
+            if (player.Money < sendPrice)
             {
                 player.PlayerView.ShowMessage("Not enough Zen to send a letter.", MessageType.BlueNormal);
                 player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.NotEnoughMoney, letterId);
@@ -74,7 +70,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
                 }
 
                 player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.Success, letterId);
-                player.TryAddMoney(-LetterSendCost);
+                player.TryAddMoney(-sendPrice);
             }
             catch (Exception ex)
             {

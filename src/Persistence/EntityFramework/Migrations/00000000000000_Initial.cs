@@ -37,6 +37,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MaximumInventoryMoney = table.Column<int>(nullable: false),
                     RecoveryInterval = table.Column<int>(nullable: false),
                     MaximumLetters = table.Column<int>(nullable: false),
+                    LetterSendPrice = table.Column<int>(nullable: false),
                     MaximumCharactersPerAccount = table.Column<byte>(nullable: false),
                     CharacterNameRegex = table.Column<string>(nullable: true),
                     MaximumPasswordLength = table.Column<int>(nullable: false),

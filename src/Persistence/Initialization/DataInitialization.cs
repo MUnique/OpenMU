@@ -869,6 +869,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.MaximumInventoryMoney = int.MaxValue;
             this.gameConfiguration.RecoveryInterval = 3000;
             this.gameConfiguration.MaximumLetters = 50;
+            this.gameConfiguration.LetterSendPrice = 1000;
             this.gameConfiguration.MaximumCharactersPerAccount = 5;
             this.gameConfiguration.CharacterNameRegex = "^[a-zA-Z0-9]{3,10}$";
             this.gameConfiguration.MaximumPasswordLength = 20;
