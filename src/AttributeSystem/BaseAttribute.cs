@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <param name="aggregateType">Type of the aggregate.</param>
         protected BaseAttribute(AttributeDefinition definition, AggregateType aggregateType)
         {
-            this.Definition = definition;
+            this.definition = definition;
             this.AggregateType = aggregateType;
         }
 
