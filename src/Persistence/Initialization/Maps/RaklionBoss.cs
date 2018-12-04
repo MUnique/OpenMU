@@ -192,8 +192,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 };
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
-
-
         }
     }
 }
