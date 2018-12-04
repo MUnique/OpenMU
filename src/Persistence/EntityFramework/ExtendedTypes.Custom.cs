@@ -217,4 +217,26 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             return this.Adapt<BasicModel.GameConfiguration>();
         }
     }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.Interfaces.LetterHeader"/>.
+    /// This implementation adds the receiver additionally as reference to <see cref="Character"/>.
+    /// </summary>
+    /// <remarks>
+    /// You may ask, why we didn't add the sender as reference to <see cref="Character"/>. That's because
+    /// it's okay to keep just the name. Also, if the sender gets deleted, we still have the name and one reference less to care about.
+    /// </remarks>
+    internal partial class LetterHeader
+    {
+        /// <summary>
+        /// Gets or sets the receiver of the letter.
+        /// </summary>
+        [ForeignKey(nameof(ReceiverId))]
+        public Character Receiver { get; set; }
+
+        /// <summary>
+        /// Gets or sets the receiver identifier.
+        /// </summary>
+        public Guid ReceiverId { get; set; }
+    }
 }

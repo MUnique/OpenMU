@@ -60,13 +60,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             {
                 using (var context = this.gameContext.PersistenceContextProvider.CreateNewPlayerContext(this.gameContext.Configuration))
                 {
-                    letter = this.CreateLetter(context, player, receiver, message, title, rotation, animation);
 
-                    if (!context.SaveChanges())
+                    letter = this.CreateLetter(context, player, receiver, message, title, rotation, animation);
+                    if (!context.CanSaveLetter(letter))
                     {
                         player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.ReceiverNotExists, letterId);
                         return;
                     }
+
+                    context.SaveChanges();
                 }
 
                 player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.Success, letterId);
@@ -97,8 +99,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         {
             var letterHeader = context.CreateNew<LetterHeader>();
             letterHeader.LetterDate = DateTime.Now;
-            letterHeader.Sender = player.SelectedCharacter.Name;
-            letterHeader.Receiver = receiver;
+            letterHeader.SenderName = player.SelectedCharacter.Name;
+            letterHeader.ReceiverName = receiver;
             letterHeader.Subject = title;
 
             var letterBody = context.CreateNew<LetterBody>();

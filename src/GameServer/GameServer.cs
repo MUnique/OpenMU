@@ -180,7 +180,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void LetterReceived(LetterHeader letter)
         {
-            var player = this.gameContext.GetPlayerByCharacterName(letter.Receiver);
+            var player = this.gameContext.GetPlayerByCharacterName(letter.ReceiverName);
             if (player != null)
             {
                 var newLetterIndex = player.SelectedCharacter.Letters.Count;

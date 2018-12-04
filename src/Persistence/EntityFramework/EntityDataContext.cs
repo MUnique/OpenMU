@@ -68,6 +68,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 entity.Property(character => character.CreateDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 var accountKey = entity.Metadata.GetForeignKeys().First(key => key.PrincipalEntityType == modelBuilder.Entity<Account>().Metadata);
                 accountKey.DeleteBehavior = DeleteBehavior.Cascade;
+
+                entity.HasMany(character => character.RawLetters).WithOne(letter => letter.Receiver).OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<ItemStorage>().HasMany(storage => storage.RawItems).WithOne(item => item.RawItemStorage);
@@ -93,6 +95,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawRoot);
             modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawCharacterClass);
             modelBuilder.Entity<LetterBody>().HasOne(body => body.RawHeader);
+            modelBuilder.Entity<LetterHeader>().Ignore(header => header.ReceiverName);
 
             // TODO:
             modelBuilder.Entity<GameConfiguration>().Ignore(c => c.ExperienceTable)

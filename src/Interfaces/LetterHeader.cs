@@ -20,17 +20,19 @@ namespace MUnique.OpenMU.Interfaces
         /// Gets or sets the sender.
         /// </summary>
         /// <remarks>
-        /// TODO: Reference to character id needed?
+        /// The persistence implementation can implement to keep an internal id, too.
+        /// However, it should keep the name, if it should stay available after a sender character got deleted.
         /// </remarks>
-        public string Sender { get; set; }
+        public string SenderName { get; set; }
 
         /// <summary>
         /// Gets or sets the receiver.
         /// </summary>
         /// <remarks>
-        /// TODO: Reference to character id needed?
+        /// The persistence implementation can implement to keep an internal id, too.
+        /// In this case, it may not be required to save the name itself.
         /// </remarks>
-        public string Receiver { get; set; }
+        public string ReceiverName { get; set; }
 
         /// <summary>
         /// Gets or sets the subject.

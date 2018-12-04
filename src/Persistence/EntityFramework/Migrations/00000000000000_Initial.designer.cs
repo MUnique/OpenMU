@@ -1105,21 +1105,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("CharacterId");
+                    b.Property<Guid?>("ReceiverId");
 
                     b.Property<DateTime>("LetterDate");
 
                     b.Property<bool>("ReadFlag");
 
-                    b.Property<string>("Receiver");
-
-                    b.Property<string>("Sender");
+                    b.Property<string>("SenderName");
 
                     b.Property<string>("Subject");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterId");
+                    b.HasIndex("ReceiverId");
 
                     b.ToTable("LetterHeader","data");
                 });

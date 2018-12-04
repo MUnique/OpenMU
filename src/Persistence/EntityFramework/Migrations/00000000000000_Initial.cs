@@ -1149,21 +1149,20 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     LetterDate = table.Column<DateTime>(nullable: false),
                     ReadFlag = table.Column<bool>(nullable: false),
-                    Sender = table.Column<string>(nullable: true),
-                    Receiver = table.Column<string>(nullable: true),
+                    SenderName = table.Column<string>(nullable: true),
                     Subject = table.Column<string>(nullable: true),
-                    CharacterId = table.Column<Guid>(nullable: true)
+                    ReceiverId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LetterHeader", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LetterHeader_Character_CharacterId",
-                        column: x => x.CharacterId,
+                        name: "FK_LetterHeader_Character_ReceiverId",
+                        column: x => x.ReceiverId,
                         principalSchema: "data",
                         principalTable: "Character",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1499,7 +1498,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalSchema: "data",
                         principalTable: "LetterHeader",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_LetterBody_AppearanceData_SenderAppearanceId",
                         column: x => x.SenderAppearanceId,
@@ -2814,10 +2813,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "SenderAppearanceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LetterHeader_CharacterId",
+                name: "IX_LetterHeader_ReceiverId",
                 schema: "data",
                 table: "LetterHeader",
-                column: "CharacterId");
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SkillEntry_CharacterId",

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence.BasicModel;
 
     /// <summary>
@@ -39,6 +40,12 @@ namespace MUnique.OpenMU.Persistence.InMemory
         public IEnumerable<MUnique.OpenMU.DataModel.Entities.Account> GetAccountsOrderedByLoginName(int skip, int count)
         {
             return this.Manager.GetRepository<Account>().GetAll().OrderBy(a => a.LoginName).Skip(skip).Take(count);
+        }
+
+        /// <inheritdoc/>
+        public bool CanSaveLetter(Interfaces.LetterHeader letterHeader)
+        {
+            return true;
         }
     }
 }
