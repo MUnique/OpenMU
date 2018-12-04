@@ -16,12 +16,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// Enters the gate.
         /// </summary>
         /// <param name="player">The player.</param>
-        /// <param name="enterGate">The enter gate.</param>
-        public void EnterGate(Player player, EnterGate enterGate)
+        /// <param name="gate">The enter gate.</param>
+        public void EnterGate(Player player, EnterGate gate)
         {
-            if (this.IsWarpLegit(player, enterGate))
+            if (this.IsWarpLegit(player, gate))
             {
-                player.WarpTo(enterGate.TargetGate);
+                player.WarpTo(gate.TargetGate);
             }
             else
             {
