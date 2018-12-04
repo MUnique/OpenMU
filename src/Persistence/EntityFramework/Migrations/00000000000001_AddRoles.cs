@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
     /// <seealso cref="Microsoft.EntityFrameworkCore.Migrations.Migration" />
     [DbContext(typeof(EntityDataContext))]
     [Migration("00000000000001_AddRoles")]
-    public partial class AddRoles : Migration
+    public class AddRoles : Migration
     {
         /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
