@@ -18,6 +18,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
         /// Main entry point of the program.
         /// </summary>
         /// <param name="args">The arguments.</param>
+        /// <returns>The async task.</returns>
         public static async Task Main(string[] args)
         {
             if (args.Length == 1)
