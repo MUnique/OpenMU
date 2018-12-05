@@ -487,8 +487,6 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public void ClientReadyAfterMapChange()
         {
-            this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
-            this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
             this.CurrentMap = this.gameContext.GetMap(this.SelectedCharacter.CurrentMap.Number.ToUnsigned());
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.Alive = true;
@@ -869,7 +867,7 @@ namespace MUnique.OpenMU.GameLogic
             this.TemporaryStorage = new Storage(0, 0, InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
             this.Vault = null; // vault storage is getting set when vault npc is opened.
             this.SkillList = new SkillList(this);
-            this.SetMaximumStatAttributes();
+            this.SetStatAttributesBeforeEnterGame();
             this.PlayerView.UpdateSkillList();
             this.PlayerView.UpdateCharacterStats();
             this.PlayerView.InventoryView.UpdateInventoryList();
@@ -886,8 +884,11 @@ namespace MUnique.OpenMU.GameLogic
             this.PlayerView.MessengerView.InitializeMessenger(this.gameContext.Configuration.MaximumLetters);
         }
 
-        private void SetMaximumStatAttributes()
+        private void SetStatAttributesBeforeEnterGame()
         {
+            this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
+            this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
+            this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
             foreach (var regeneration in Stats.IntervalRegenerationAttributes)
             {
                 this.Attributes[regeneration.CurrentAttribute] = Math.Min(this.Attributes[regeneration.CurrentAttribute], this.Attributes[regeneration.MaximumAttribute]);
