@@ -149,7 +149,7 @@ namespace MUnique.OpenMU.GameLogic
             var averageExperience = killedObject.Attributes[Stats.Level] * 1000 / averageLevel;
             var totalAverageExperience = averageExperience * partyMembersInRange.Count * Math.Pow(1.2, partyMembersInRange.Count - 1);
             var randomizedTotalExperience = Rand.NextInt((int)(totalAverageExperience * 0.8), (int)(totalAverageExperience * 1.2));
-            var randomizedTotalExperiencePerLevel = randomizedTotalExperience / totalLevel;
+            var randomizedTotalExperiencePerLevel = randomizedTotalExperience / (float)totalLevel;
             foreach (var player in partyMembersInRange)
             {
                 player.AddExperience((int)(randomizedTotalExperiencePerLevel * player.Attributes[Stats.Level]), killedObject);
