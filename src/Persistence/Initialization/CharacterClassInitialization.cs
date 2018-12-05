@@ -138,8 +138,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, 0.005f, Stats.TotalEnergy));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ManaRecovery, 1.0f / 27.5f, Stats.MaximumMana));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AbilityRecovery, 1.0f / 33f, Stats.MaximumAbility));
+
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.TotalLeadership));
             /* TODO: Add these stats
@@ -155,7 +154,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(38, Stats.MaximumMana));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(48.5f, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
@@ -237,14 +237,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1.0f / 9, Stats.TotalEnergy));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1.0f / 4, Stats.TotalEnergy));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ManaRecovery, 1 / 27.5f, Stats.MaximumMana));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AbilityRecovery, 1.0f / 33, Stats.MaximumAbility));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
 
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(57, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(7, Stats.MaximumMana));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
@@ -332,14 +331,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 8, Stats.TotalStrength));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ManaRecovery, 1 / 27.5f, Stats.MaximumMana));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AbilityRecovery, 1.0f / 33, Stats.MaximumAbility));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
 
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(39, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(6, Stats.MaximumMana));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
@@ -427,13 +425,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1.0f / 9, Stats.TotalEnergy));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1.0f / 4, Stats.TotalEnergy));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ManaRecovery, 1 / 27.5f, Stats.MaximumMana));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AbilityRecovery, 1.0f / 33, Stats.MaximumAbility));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
 
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(30, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
@@ -521,14 +518,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, 0.01f, Stats.TotalEnergy));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ManaRecovery, 1 / 27.5f, Stats.MaximumMana));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AbilityRecovery, 0.05f, Stats.MaximumAbility));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
 
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(10, Stats.MaximumMana));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(35, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.05f, Stats.AbilityRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));

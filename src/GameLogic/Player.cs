@@ -382,7 +382,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             foreach (var recoverAfterMonsterKill in Stats.AfterMonsterKillRegenerationAttributes)
             {
-                var additionalValue = (uint)(this.Attributes[recoverAfterMonsterKill.RegenerationMultiplier] * this.Attributes[recoverAfterMonsterKill.MaximumAttribute]);
+                var additionalValue = (uint)(this.Attributes[recoverAfterMonsterKill.RegenerationMultiplier] * this.Attributes[recoverAfterMonsterKill.MaximumAttribute] + recoverAfterMonsterKill.ConstantRegeneration);
                 this.Attributes[recoverAfterMonsterKill.CurrentAttribute] = (uint)Math.Min(this.Attributes[recoverAfterMonsterKill.MaximumAttribute], this.Attributes[recoverAfterMonsterKill.CurrentAttribute] + additionalValue);
             }
 
@@ -593,16 +593,18 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void Regenerate()
         {
-            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0))
+            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || r.ConstantRegeneration > 0))
             {
-                this.Attributes[r.CurrentAttribute] = Math.Min(this.Attributes[r.CurrentAttribute] + (this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]), this.Attributes[r.MaximumAttribute]);
+                this.Attributes[r.CurrentAttribute] = Math.Min(
+                    this.Attributes[r.CurrentAttribute] + ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) + r.ConstantRegeneration),
+                    this.Attributes[r.MaximumAttribute]);
             }
 
             this.PlayerView.UpdateCurrentManaAndHp();
         }
 
         /// <summary>
-        /// Disonnects the player from the game. Remote connections will be closed and data will be saved.
+        /// Disconnects the player from the game. Remote connections will be closed and data will be saved.
         /// </summary>
         public void Disconnect()
         {
