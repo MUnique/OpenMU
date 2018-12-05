@@ -95,6 +95,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 this.ShowFriendRequest(requesterName);
             }
 
+            var letters = this.player.SelectedCharacter.Letters;
             for (ushort l = 0; l < letters.Count; l++)
             {
                 this.AddToLetterList(letters[l], l, false);
