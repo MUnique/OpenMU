@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Globalization;
     using System.Linq;
     using System.Text;
+    using System.Threading.Tasks;
     using GameLogic.Views;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
@@ -46,11 +47,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void InitializeMessenger(int maxLetters)
         {
-            var letters = this.player.SelectedCharacter.Letters;
             var friends = this.friendServer.GetFriendList(this.player.SelectedCharacter.Id);
             var friendList = friends as ICollection<string> ?? friends.ToList();
 
-            var letterCount = (byte)letters.Count;
+            var letterCount = (byte)this.player.SelectedCharacter.Letters.Count;
             if (friendList.Count == 0)
             {
                 using (var writer = this.connection.StartSafeWrite(0xC2, 7))
@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 result[4] = newLetterIndex.GetLowByte();
                 result[5] = newLetterIndex.GetHighByte();
                 result.Slice(6, 10).WriteString(letter.SenderName, Encoding.UTF8);
-                var date = letter.LetterDate.ToUniversalTime().AddHours(this.player.Account.TimeZone).ToString(CultureInfo.InvariantCulture.DateTimeFormat);
+                var date = letter.LetterDate.ToUniversalTime().AddHours(this.player.Account.TimeZone).ToString("yyyy-MM-dd HH:mm:ss");
                 result.Slice(16, 30).WriteString(date, Encoding.UTF8);
                 result.Slice(46, 32).WriteString(letter.Subject, Encoding.UTF8);
                 result[78] = (byte)(letter.ReadFlag ? 1 : 0);
