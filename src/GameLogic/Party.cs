@@ -119,7 +119,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="killedObject">The object which was killed.</param>
         /// <returns>The total distributed experience to all party members.</returns>
-        public int DistributeExperienceAfterKill(IAttackable killedObject)
+        public int DistributeExperienceAfterKill(IAttackable killedObject, IObservable killer)
         {
             IList<Player> partyMembersInRange;
             if (killedObject is IObservable observable)
@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.GameLogic
                 observable.ObserverLock.EnterReadLock();
                 try
                 {
-                    partyMembersInRange = this.PartyList.OfType<Player>().Where(p => observable.Observers.Contains(p)).ToList();
+                    partyMembersInRange = this.PartyList.OfType<Player>().Where(p => killer.Observers.Contains(p)).ToList();
                 }
                 finally
                 {

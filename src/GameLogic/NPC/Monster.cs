@@ -298,7 +298,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             if (attacker is Player player)
             {
-                int exp = player.Party?.DistributeExperienceAfterKill(this) ?? player.AddExpAfterKill(this);
+                int exp = player.Party?.DistributeExperienceAfterKill(this, player) ?? player.AddExpAfterKill(this);
                 this.DropItem(exp, player);
                 player.AfterKilledMonster();
             }
