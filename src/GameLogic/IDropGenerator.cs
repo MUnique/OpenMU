@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic
     public class DefaultDropGenerator : IDropGenerator
     {
         /// <summary>
-        /// The amoun of money which is dropped at least, and added to the gained experience.
+        /// The amount of money which is dropped at least, and added to the gained experience.
         /// </summary>
         public static readonly int BaseMoneyDrop = 7;
 
@@ -46,6 +46,8 @@ namespace MUnique.OpenMU.GameLogic
         private readonly IList<ItemDefinition> ancientItems;
 
         private readonly IList<ItemDefinition> droppableItems;
+
+        private readonly IList<ItemDefinition>[] droppableItemsPerMonsterLevel = new IList<ItemDefinition>[byte.MaxValue + 1];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultDropGenerator" /> class.
@@ -112,8 +114,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>A random item.</returns>
         protected Item GetRandomItem(int monsterLvl, bool socketItems)
         {
-            var possible = this.GetPossibleList(monsterLvl).ToList();
-            if (!possible.Any())
+            var possible = this.GetPossibleList(monsterLvl);
+            if (possible == null || !possible.Any())
             {
                 return null;
             }
@@ -162,8 +164,13 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>A random excellent item.</returns>
         protected Item GetRandomExcellentItem(int monsterLvl)
         {
-            var possible = this.GetPossibleList(monsterLvl - 25).ToList();
-            if (!possible.Any())
+            if (monsterLvl < 25)
+            {
+                return null;
+            }
+
+            var possible = this.GetPossibleList(monsterLvl - 25);
+            if (possible == null || !possible.Any())
             {
                 return null;
             }
@@ -313,13 +320,17 @@ namespace MUnique.OpenMU.GameLogic
             return null;
         }
 
-        private IEnumerable<ItemDefinition> GetPossibleList(int monsterLevel)
+        private IList<ItemDefinition> GetPossibleList(int monsterLevel)
         {
-            ////TODO: Optimize this by using a sorted list and a binary search to find the starting point. Maybe even build up a cache?
-            return from it in this.droppableItems
+            if (monsterLevel < byte.MinValue || monsterLevel > byte.MaxValue)
+            {
+                return null;
+            }
+
+            return this.droppableItemsPerMonsterLevel[monsterLevel] ?? (this.droppableItemsPerMonsterLevel[monsterLevel] = (from it in this.droppableItems
                     where (it.DropLevel <= monsterLevel)
                     && (it.DropLevel > monsterLevel - 12)
-                    select it;
+                    select it).ToList());
         }
     }
 }
