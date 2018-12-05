@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 result[2] = 0xC6;
                 result[4] = newLetterIndex.GetLowByte();
                 result[5] = newLetterIndex.GetHighByte();
-                result.Slice(6, 10).WriteString(letter.Sender, Encoding.UTF8);
+                result.Slice(6, 10).WriteString(letter.SenderName, Encoding.UTF8);
                 var date = letter.LetterDate.ToUniversalTime().AddHours(this.player.Account.TimeZone).ToString(CultureInfo.InvariantCulture.DateTimeFormat);
                 result.Slice(16, 30).WriteString(date, Encoding.UTF8);
                 result.Slice(46, 32).WriteString(letter.Subject, Encoding.UTF8);
