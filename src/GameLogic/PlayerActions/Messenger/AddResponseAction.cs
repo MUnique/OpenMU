@@ -28,6 +28,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="accepted">if set to <c>true</c> the request has been accepted.</param>
         public void ProceedReponse(Player player, string requesterName, bool accepted)
         {
+            if (string.IsNullOrEmpty(requesterName))
+            {
+                // this happens after a letter has been sent to an unknown character
+                return;
+            }
+
             if (accepted)
             {
                 player.PlayerView.MessengerView.FriendAdded(requesterName);
