@@ -32,11 +32,74 @@ namespace MUnique.OpenMU.Tests
         /// </summary>
         /// <param name="level">The level.</param>
         /// <param name="price">The price.</param>
-        [TestCase(0, 60)]
-        [TestCase(1, 120)]
+        [TestCase(0, 20)]
+        [TestCase(1, 40)]
         public void Apple(byte level, int price)
         {
-            this.CheckPrice(0, 1, 3, 1, 1, 14, 5, level, price);
+            this.CheckPrice(0, 1, 1, 1, 1, 14, 5, level, price);
+        }
+
+        /// <summary>
+        /// Tests if the small heal potion price is calculated correctly.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="price">The price.</param>
+        [TestCase(0, 80)]
+        [TestCase(1, 160)]
+        public void SmallHealPotion(byte level, int price)
+        {
+            this.CheckPrice(1, 40, 1, 1, 1, 14, 10, level, price);
+        }
+
+        /// <summary>
+        /// Tests if the heal potion price is calculated correctly.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="price">The price.</param>
+        [TestCase(0, 330)]
+        [TestCase(1, 660)]
+        public void HealPotion(byte level, int price)
+        {
+            this.CheckPrice(2, 40, 1, 1, 1, 14, 20, level, price);
+        }
+
+        /// <summary>
+        /// Tests if the large heal potion price is calculated correctly.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="price">The price.</param>
+        [TestCase(0, 1500)]
+        [TestCase(1, 3000)]
+        public void LargeHealPotion(byte level, int price)
+        {
+            this.CheckPrice(3, 40, 1, 1, 1, 14, 30, level, price);
+        }
+
+        /// <summary>
+        /// Tests if the small shield potion price is calculated correctly.
+        /// </summary>
+        [Test]
+        public void SmallShieldPotion()
+        {
+            this.CheckPrice(35, 40, 1, 1, 1, 14, 50, 0, 2000);
+        }
+
+        /// <summary>
+        /// Tests if the shield potion price is calculated correctly.
+        /// </summary>
+        [Test]
+        public void ShieldPotion()
+        {
+            this.CheckPrice(36, 40, 1, 1, 1, 14, 80, 0, 4000);
+        }
+
+        /// <summary>
+        /// Tests if the shield potion price is calculated correctly.
+        /// </summary>
+        [Test]
+        public void LargeShieldPotion()
+        {
+            this.CheckPrice(37, 40, 1, 1, 1, 14, 100, 0, 6000);
         }
 
         /// <summary>

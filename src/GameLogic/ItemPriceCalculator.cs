@@ -101,6 +101,8 @@ namespace MUnique.OpenMU.GameLogic
             { (int)SpecialItems.SmallSdPotion, item => item.Durability * 2000 },
             { (int)SpecialItems.SdPotion, item => item.Durability * 4000 },
             { (int)SpecialItems.LargeSdPotion, item => item.Durability * 6000 },
+            { (int)SpecialItems.LargeHealPotion, item => item.Durability * 1500 * (item.Level + 1) },
+            { (int)SpecialItems.LargeManaPotion, item => item.Durability * 1500 * (item.Level + 1) },
             { (int)SpecialItems.SmallComplexPotion, item => item.Durability * 2500 },
             { (int)SpecialItems.ComplexPotion, item => item.Durability * 5000 },
             { (int)SpecialItems.LargeComplexPotion, item => item.Durability * 7500 },
@@ -179,6 +181,8 @@ namespace MUnique.OpenMU.GameLogic
             Fruits = 0xF0D, // getId(13,15),
             LochFeather = 0xE0D, // getId(13,14),
             JewelGuardian = 0x1F0E, // getId(14,31),
+            LargeHealPotion = 0x030E,
+            LargeManaPotion = 0x060E,
             SiegePotion = 0x70E, // getId(14,7),
             OrderGuardianLifeStone = 0xB0D, // getId(13,11),
             ContractSummon = 0x70D, // getId(13,7),
@@ -230,10 +234,10 @@ namespace MUnique.OpenMU.GameLogic
             if (item.Definition.Group == 14 && (item.Definition.Number <= 8))
             {
                 // Potions + Antidote
-                sellingPrice /= 100;
+                return sellingPrice / 10 * 10;
             }
 
-            return sellingPrice;
+            return RoundPrice(sellingPrice);
         }
 
         /// <summary>
