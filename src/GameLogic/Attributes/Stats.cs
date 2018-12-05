@@ -169,6 +169,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition MaximumPhysBaseDmg { get; } = new AttributeDefinition(new Guid("8A918EA2-893A-48B2-A684-3E71526CA71F"), "Maximum Physical Base Damage", string.Empty);
 
         /// <summary>
+        /// Gets the item count of maximum physical base DMG per 20 level option attribute definition.
+        /// </summary>
+        public static AttributeDefinition MaximumPhysBaseDmgPer20LevelItemCount { get; } = new AttributeDefinition(new Guid("{8788D563-5501-472D-8C48-F9EB5AFB1FD8}"), "Maximum Physical Base Damage per 20 level item count", string.Empty);
+
+        /// <summary>
         /// Gets the minimum wiz base DMG attribute definition.
         /// </summary>
         public static AttributeDefinition MinimumWizBaseDmg { get; } = new AttributeDefinition(new Guid("65583A02-AB94-4A17-9B79-86ECC82DC835"), "minimumWizBaseDmg", string.Empty);
@@ -179,6 +184,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition MaximumWizBaseDmg { get; } = new AttributeDefinition(new Guid("44B8236A-BF5B-4082-BA8B-5DEDA1458D33"), "maximumWizBaseDmg", string.Empty);
 
         /// <summary>
+        /// Gets the item count of maximum wiz base DMG per 20 level option attribute definition.
+        /// </summary>
+        public static AttributeDefinition MaximumWizBaseDmgPer20LevelItemCount { get; } = new AttributeDefinition(new Guid("99229ACA-B6F4-40EF-9835-2AB0C53C08CF"), "Maximum Wizardry Base Damage per 20 level item count", string.Empty);
+
+        /// <summary>
         /// Gets the minimum curse base DMG attribute definition.
         /// </summary>
         public static AttributeDefinition MinimumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("B8AE2D6B-05CE-43A9-B2BB-3C32F288A043"), "minimumCurseBaseDmg", string.Empty);
@@ -187,6 +197,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// Gets the maximum curse base DMG attribute definition.
         /// </summary>
         public static AttributeDefinition MaximumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "maximumCurseBaseDmg", string.Empty);
+
+        /// <summary>
+        /// Gets the item count of maximum curse base DMG per 20 level option attribute definition.
+        /// </summary>
+        public static AttributeDefinition MaximumCurseBaseDmgPer20LevelItemCount { get; } = new AttributeDefinition(new Guid("5CB9BC7B-96DA-4121-80C1-F842270E07D8"), "Maximum Curse Base Damage per 20 level item count", string.Empty);
 
         /// <summary>
         /// Gets the base damage bonus attribute definition.
@@ -428,21 +443,21 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             }
         }
 
-        private static Regeneration ManaRegeneration { get; } = new Regeneration(ManaRecovery, MaximumMana, CurrentMana);
+        private static Regeneration ManaRegeneration { get; } = new Regeneration(ManaRecovery, MaximumMana, CurrentMana, 0);
 
-        private static Regeneration HealthRegeneration { get; } = new Regeneration(HealthRecovery, MaximumHealth, CurrentHealth);
+        private static Regeneration HealthRegeneration { get; } = new Regeneration(HealthRecovery, MaximumHealth, CurrentHealth, 0);
 
-        private static Regeneration AbilityRegeneration { get; } = new Regeneration(AbilityRecovery, MaximumAbility, CurrentAbility);
+        private static Regeneration AbilityRegeneration { get; } = new Regeneration(AbilityRecovery, MaximumAbility, CurrentAbility, 2);
 
-        private static Regeneration ShieldRegeneration { get; } = new Regeneration(ShieldRecovery, MaximumShield, CurrentShield);
+        private static Regeneration ShieldRegeneration { get; } = new Regeneration(ShieldRecovery, MaximumShield, CurrentShield, 0);
 
-        private static Regeneration ManaRegenerationAfterMonsterKill { get; } = new Regeneration(ManaAfterMonsterKill, MaximumMana, CurrentMana);
+        private static Regeneration ManaRegenerationAfterMonsterKill { get; } = new Regeneration(ManaAfterMonsterKill, MaximumMana, CurrentMana, 0);
 
-        private static Regeneration HealthRegenerationAfterMonsterKill { get; } = new Regeneration(HealthAfterMonsterKill, MaximumHealth, CurrentHealth);
+        private static Regeneration HealthRegenerationAfterMonsterKill { get; } = new Regeneration(HealthAfterMonsterKill, MaximumHealth, CurrentHealth, 0);
 
-        private static Regeneration AbilityRegenerationAfterMonsterKill { get; } = new Regeneration(AbilityAfterMonsterKill, MaximumAbility, CurrentAbility);
+        private static Regeneration AbilityRegenerationAfterMonsterKill { get; } = new Regeneration(AbilityAfterMonsterKill, MaximumAbility, CurrentAbility, 0);
 
-        private static Regeneration ShieldRegenerationAfterMonsterKill { get; } = new Regeneration(ShieldAfterMonsterKill, MaximumShield, CurrentShield);
+        private static Regeneration ShieldRegenerationAfterMonsterKill { get; } = new Regeneration(ShieldAfterMonsterKill, MaximumShield, CurrentShield, 0);
 
         /// <summary>
         /// A regeneration definition.
@@ -452,34 +467,41 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public class Regeneration
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="Regeneration"/> class.
-            /// At regeneration the value of <paramref name="regenerationMultiplier"/> * <paramref name="maximumAttribute"/> is getting added to
-            /// <paramref name="currentAttribute"/>, until the value of <paramref name="maximumAttribute"/> is reached.
+            /// Initializes a new instance of the <see cref="Regeneration" /> class.
+            /// At regeneration the value of <paramref name="regenerationMultiplier" /> * <paramref name="maximumAttribute" /> is getting added to
+            /// <paramref name="currentAttribute" />, until the value of <paramref name="maximumAttribute" /> is reached.
             /// </summary>
             /// <param name="regenerationMultiplier">The regeneration multiplier.</param>
             /// <param name="maximumAttribute">The maximum attribute.</param>
             /// <param name="currentAttribute">The current attribute.</param>
-            public Regeneration(AttributeDefinition regenerationMultiplier, AttributeDefinition maximumAttribute, AttributeDefinition currentAttribute)
+            /// <param name="constantRegeneration">The constant regeneration.</param>
+            public Regeneration(AttributeDefinition regenerationMultiplier, AttributeDefinition maximumAttribute, AttributeDefinition currentAttribute, float constantRegeneration)
             {
                 this.RegenerationMultiplier = regenerationMultiplier;
                 this.MaximumAttribute = maximumAttribute;
                 this.CurrentAttribute = currentAttribute;
+                this.ConstantRegeneration = constantRegeneration;
             }
 
             /// <summary>
-            /// Gets or sets the regeneration multiplier.
+            /// Gets the regeneration multiplier.
             /// </summary>
-            public AttributeDefinition RegenerationMultiplier { get; set; }
+            public AttributeDefinition RegenerationMultiplier { get; }
 
             /// <summary>
-            /// Gets or sets the maximum attribute.
+            /// Gets the constant regeneration which is always regenerated, independently from the multiplier.
             /// </summary>
-            public AttributeDefinition MaximumAttribute { get; set; }
+            public float ConstantRegeneration { get; }
 
             /// <summary>
-            /// Gets or sets the current attribute.
+            /// Gets the maximum attribute.
             /// </summary>
-            public AttributeDefinition CurrentAttribute { get; set; }
+            public AttributeDefinition MaximumAttribute { get; }
+
+            /// <summary>
+            /// Gets the current attribute.
+            /// </summary>
+            public AttributeDefinition CurrentAttribute { get; }
         }
     }
 }
