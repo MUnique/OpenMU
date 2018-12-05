@@ -29,9 +29,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet[3] != 0)
+            if (packet.Length < 6)
             {
-                Log.WarnFormat("Player {0} Unknown Letter Read Request: {1}", player.SelectedCharacter.Name, packet.AsString());
+                Log.WarnFormat("Player {0}, Unknown Letter Read Request (too short, min size is 6 bytes): {1}", player.SelectedCharacter.Name, packet.AsString());
                 return;
             }
 
