@@ -96,6 +96,13 @@ namespace MUnique.OpenMU.GameLogic.Views
         void AssignPlayersToGuild(ICollection<Player> guildPlayers, bool appearsNew);
 
         /// <summary>
+        /// Assigns the specified player to its guild.
+        /// </summary>
+        /// <param name="guildPlayer">The player of a guild.</param>
+        /// <param name="appearsNew">If set to <c>true</c>,the player just appeared in the view. Otherwise, the players were already in the view, and freshly assigned to the guild.</param>
+        void AssignPlayerToGuild(Player guildPlayer, bool appearsNew);
+
+        /// <summary>
         /// Shows the result of the kick request.
         /// </summary>
         /// <param name="successCode">The success code.</param>

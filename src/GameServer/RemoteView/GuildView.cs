@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void PlayerLeftGuild(Player player)
         {
             var playerId = player.GetId(this.player);
-            if (player.GuildStatus.Position == GuildPosition.GuildMaster)
+            if (player.GuildStatus?.Position == GuildPosition.GuildMaster)
             {
                 playerId |= 0x80;
             }
@@ -110,21 +110,43 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 int i = 0;
                 foreach (var guildPlayer in guildPlayers)
                 {
-                    var playerBlock = packet.Slice(5 + (i * sizePerPlayer));
-
-                    playerBlock.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId);
-                    playerBlock[4] = (byte)guildPlayer.GuildStatus.Position;
-
-                    var playerId = guildPlayer.GetId(this.player);
-                    playerBlock[7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
-                    playerBlock[8] = playerId.GetLowByte();
-                    ////todo: for alliances there is an extra packet, code 0x67
-
+                    this.SetGuildPlayerBlock(packet.Slice(5 + (i * sizePerPlayer)), guildPlayer, appearsNew);
                     i++;
                 }
 
                 writer.Commit();
             }
+        }
+
+        /// <inheritdoc />
+        public void AssignPlayerToGuild(Player guildPlayer, bool appearsNew)
+        {
+            // C2 00 11
+            // 65
+            // 01
+            // 34 4B 00 00 80 00 00
+            // A4 F2 00 00 00
+            const int sizePerPlayer = 12;
+            using (var writer = this.connection.StartSafeWrite(0xC2, sizePerPlayer + 5))
+            {
+                var packet = writer.Span;
+                packet[3] = 0x65;
+                packet[4] = 1; // One player
+                this.SetGuildPlayerBlock(packet.Slice(5), guildPlayer, appearsNew);
+
+                writer.Commit();
+            }
+        }
+
+        private void SetGuildPlayerBlock(Span<byte> playerBlock, Player guildPlayer, bool appearsNew)
+        {
+            playerBlock.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId);
+            playerBlock[4] = (byte)guildPlayer.GuildStatus.Position;
+
+            var playerId = guildPlayer.GetId(this.player);
+            playerBlock[7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
+            playerBlock[8] = playerId.GetLowByte();
+            ////todo: for alliances there is an extra packet, code 0x67
         }
 
         /// <inheritdoc/>
