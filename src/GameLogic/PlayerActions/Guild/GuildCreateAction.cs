@@ -52,6 +52,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             }
 
             creator.PlayerView.GuildView.ShowGuildCreateResult(GuildCreateErrorDetail.None);
+            creator.ForEachObservingPlayer(p => p.PlayerView.GuildView.AssignPlayerToGuild(creator, false), true);
 
             Log.InfoFormat("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);
         }
