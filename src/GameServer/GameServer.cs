@@ -332,8 +332,8 @@ namespace MUnique.OpenMU.GameServer
 
         private static void RemovePlayerFromGuild(Player player)
         {
-            player.GuildStatus = null;
             player.ForEachObservingPlayer(observer => observer.PlayerView.GuildView.PlayerLeftGuild(player), true);
+            player.GuildStatus = null;
         }
 
         private void OnPlayerConnected(object sender, PlayerConnectedEventArgs e)
