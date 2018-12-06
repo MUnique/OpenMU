@@ -56,8 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 var guildStatus = this.gameContext.GuildServer.CreateGuildMember(player.GuildStatus.GuildId, player.LastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, this.gameContext.Id);
                 lastGuildRequester.GuildStatus = guildStatus;
 
-                var playerList = new List<Player>(1) { player };
-                player.ForEachObservingPlayer(p => p.PlayerView.GuildView.AssignPlayersToGuild(playerList, false), true);
+                player.ForEachObservingPlayer(p => p.PlayerView.GuildView.AssignPlayerToGuild(player, false), true);
             }
 
             lastGuildRequester.PlayerView.GuildView.GuildJoinResponse(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused);
