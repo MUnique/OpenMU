@@ -539,10 +539,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     this.Attributes[Stats.Level]++;
                     this.SelectedCharacter.LevelUpPoints += this.SelectedCharacter.CharacterClass.PointsPerLevelUp;
-                    this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
-                    this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
-                    this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
-                    this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility];
+                    this.SetReclaimableAttributesToMaximum();
                     Logger.DebugFormat("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
                     this.PlayerView.UpdateLevel();
                 }
@@ -852,10 +849,7 @@ namespace MUnique.OpenMU.GameLogic
               async () =>
               {
                   await Task.Delay(3000, this.respawnAfterDeathToken);
-                  this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
-                  this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
-                  this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
-                  this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility];
+                  this.SetReclaimableAttributesToMaximum();
                   this.WarpTo(this.GetSpawnGateOfCurrentMap());
               },
               this.respawnAfterDeathToken);
@@ -869,7 +863,7 @@ namespace MUnique.OpenMU.GameLogic
             this.TemporaryStorage = new Storage(0, 0, InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
             this.Vault = null; // vault storage is getting set when vault npc is opened.
             this.SkillList = new SkillList(this);
-            this.SetStatAttributesBeforeEnterGame();
+            this.SetReclaimableAttributesBeforeEnterGame();
             this.PlayerView.UpdateSkillList();
             this.PlayerView.UpdateCharacterStats();
             this.PlayerView.InventoryView.UpdateInventoryList();
@@ -886,14 +880,25 @@ namespace MUnique.OpenMU.GameLogic
             this.PlayerView.MessengerView.InitializeMessenger(this.gameContext.Configuration.MaximumLetters);
         }
 
-        private void SetStatAttributesBeforeEnterGame()
+        /// <summary>
+        /// Sets the reclaimable attributes before a character enters the game.
+        /// Current shield and mana is set to their maximum values.
+        /// Current ability starts at the half of the maximum (as at the original server).
+        /// The current health value was restored from the previous session and is not set to the maximum value - it's just limited by the maximum value.
+        /// </summary>
+        private void SetReclaimableAttributesBeforeEnterGame()
         {
             this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
-            this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
             this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
+            this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
+            this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
+        }
+
+        private void SetReclaimableAttributesToMaximum()
+        {
             foreach (var regeneration in Stats.IntervalRegenerationAttributes)
             {
-                this.Attributes[regeneration.CurrentAttribute] = Math.Min(this.Attributes[regeneration.CurrentAttribute], this.Attributes[regeneration.MaximumAttribute]);
+                this.Attributes[regeneration.CurrentAttribute] = this.Attributes[regeneration.MaximumAttribute];
             }
         }
 
