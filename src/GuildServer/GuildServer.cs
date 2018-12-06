@@ -239,6 +239,7 @@ namespace MUnique.OpenMU.GuildServer
             if (guildMember != null)
             {
                 guildContainer.DatabaseContext.Delete(guildMember);
+                guildContainer.DatabaseContext.SaveChanges();
             }
 
             if (this.gameServers.TryGetValue(member.ServerId, out IGameServer gameServer))
@@ -259,7 +260,7 @@ namespace MUnique.OpenMU.GuildServer
         private void DeleteGuild(GuildContainer guildContainer)
         {
             guildContainer.DatabaseContext.Delete(guildContainer.Guild);
-
+            guildContainer.DatabaseContext.SaveChanges();
             this.RemoveGuildContainer(guildContainer);
 
             foreach (var gameServer in this.gameServers.Values)
