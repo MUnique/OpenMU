@@ -873,7 +873,6 @@ namespace MUnique.OpenMU.GameLogic
             this.Attributes.GetOrCreateAttribute(Stats.MaximumHealth).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumShield).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
 
-            // TODO: bind own player to guild
             this.ClientReadyAfterMapChange();
 
             this.PlayerView.WorldView.UpdateRotation();

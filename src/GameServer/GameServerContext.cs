@@ -98,6 +98,10 @@ namespace MUnique.OpenMU.GameServer
             {
                 this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
                 player.GuildStatus = this.GuildServer.PlayerEnteredGame(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
+                if (player.GuildStatus != null)
+                {
+                    player.ForEachObservingPlayer(p => p.PlayerView.GuildView.AssignPlayerToGuild(player, true), true);
+                }
             }
         }
 
