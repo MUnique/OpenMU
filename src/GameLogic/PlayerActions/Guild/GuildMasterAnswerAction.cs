@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             {
                 player.PlayerView.GuildView.ShowGuildCreationDialog();
             }
-            else if (player.OpenedNpc.Definition.NpcWindow == NpcWindow.GuildMaster)
+            else if (player.OpenedNpc?.Definition.NpcWindow == NpcWindow.GuildMaster && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
             {
                 player.OpenedNpc = null;
             }
