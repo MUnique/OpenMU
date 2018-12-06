@@ -51,8 +51,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (nickname == guildMaster.SelectedCharacter.Name)
             {
-                this.gameContext.GuildServer.KickMember(guildMaster.GuildStatus.GuildId, nickname);
-                this.gameContext.GuildCache.Invalidate(guildMaster.GuildStatus.GuildId);
+                var guildId = guildMaster.GuildStatus.GuildId;
+                this.gameContext.GuildServer.KickMember(guildId, nickname);
+                this.gameContext.GuildCache.Invalidate(guildId);
                 guildMaster.GuildStatus = null;
                 guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.GuildDisband);
                 return;
