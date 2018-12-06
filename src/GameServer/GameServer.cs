@@ -393,7 +393,7 @@ namespace MUnique.OpenMU.GameServer
             {
                 Logger.Error($"Couldn't Save at Disconnect. Player: {this}", ex);
 
-                // TODO: Log Character/Account values, to be able to restore players data if neccessary.
+                // TODO: Log Character/Account values, to be able to restore players data if necessary.
             }
         }
 
