@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="securityCode">The security code.</param>
         public void KickPlayer(Player guildMaster, string nickname, string securityCode)
         {
-            if (guildMaster.Account.SecurityCode != securityCode)
+            if (guildMaster.Account.SecurityCode != null && guildMaster.Account.SecurityCode != securityCode)
             {
                 guildMaster.PlayerView.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
                 Log.DebugFormat("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, guildMaster.Account.SecurityCode, guildMaster.SelectedCharacter.Name);
