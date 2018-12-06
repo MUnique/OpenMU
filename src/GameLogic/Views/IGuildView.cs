@@ -126,6 +126,11 @@ namespace MUnique.OpenMU.GameLogic.Views
         void ShowGuildCreationDialog();
 
         /// <summary>
+        /// Shows the guild master dialog which is shown after talking with the guild master npc, if the player is allowed to create a guild.
+        /// </summary>
+        void ShowGuildMasterDialog();
+
+        /// <summary>
         /// Shows the guild join response from the guild master.
         /// </summary>
         /// <param name="response">The response.</param>

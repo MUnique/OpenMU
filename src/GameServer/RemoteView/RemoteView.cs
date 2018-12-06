@@ -702,6 +702,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
+        /// <inheritdoc />
+        public void ShowMessageOfObject(string message, IIdentifiable sender)
+        {
+            using (var writer = this.connection.StartSafeWrite(0xC1, 6 + message.Length))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x01;
+                packet.Slice(3).SetShortSmallEndian(sender.Id);
+                packet.Slice(5).WriteString(message, Encoding.UTF8);
+                writer.Commit();
+            }
+        }
+
         /// <inheritdoc/>
         public void ShowShopItemList(Player requestedPlayer)
         {

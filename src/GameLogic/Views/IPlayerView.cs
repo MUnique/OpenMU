@@ -362,6 +362,13 @@ namespace MUnique.OpenMU.GameLogic.Views
         void ShowMessage(string message, MessageType messageType);
 
         /// <summary>
+        /// Shows the message of an object, e.g. NPC.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="sender">The sender.</param>
+        void ShowMessageOfObject(string message, IIdentifiable sender);
+
+        /// <summary>
         /// Shows the shop item list of the requested players shop.
         /// </summary>
         /// <param name="requestedPlayer">The requested player.</param>

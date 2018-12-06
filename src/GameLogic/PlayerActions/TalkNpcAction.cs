@@ -39,23 +39,56 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             }
             else
             {
-                if (npcStats.NpcWindow == NpcWindow.Undefined)
-                {
-                    player.PlayerView.ShowMessage($"Talking to this Monster ({npcStats.Number}) is not implemented yet.", MessageType.BlueNormal);
-                    player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
-                    return;
-                }
+                this.ShowDialogOfOpenedNpc(player);
+            }
+        }
 
-                if (npcStats.NpcWindow == NpcWindow.VaultStorage)
-                {
+        private void ShowDialogOfOpenedNpc(Player player)
+        {
+            var npcStats = player.OpenedNpc.Definition;
+            switch (npcStats.NpcWindow)
+            {
+                case NpcWindow.Undefined:
+                    player.PlayerView.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
+                    player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                    break;
+                case NpcWindow.VaultStorage:
                     player.Vault = new Storage(0, 0, InventoryConstants.WarehouseSize, player.Account.Vault);
                     player.PlayerView.ShowVault();
-                }
-                else
-                {
+                    break;
+                case NpcWindow.GuildMaster:
+                    if (this.IsPlayedAllowedToCreateGuild(player))
+                    {
+                        player.PlayerView.GuildView.ShowGuildMasterDialog();
+                    }
+                    else
+                    {
+                        player.OpenedNpc = null;
+                        player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                    }
+
+                    break;
+                default:
                     player.PlayerView.OpenNpcWindow(npcStats.NpcWindow);
-                }
+                    break;
             }
+        }
+
+        private bool IsPlayedAllowedToCreateGuild(Player player)
+        {
+            if (player.Level < 100)
+            {
+                player.PlayerView.ShowMessageOfObject("Your level should be at least level 100", player.OpenedNpc);
+                return false;
+            }
+
+            if (player.GuildStatus != null)
+            {
+                player.PlayerView.ShowMessageOfObject("You already belong to a guild", player.OpenedNpc);
+                return false;
+            }
+
+            return true;
         }
     }
 }

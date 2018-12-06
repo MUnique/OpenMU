@@ -222,6 +222,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
+        /// <inheritdoc/>
+        public void ShowGuildMasterDialog()
+        {
+            using (var writer = this.connection.StartSafeWrite(0xC1, 3))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x54;
+                writer.Commit();
+            }
+        }
+
         private byte PlayerPositionValue(GuildPosition playerPosition)
         {
             switch (playerPosition)
