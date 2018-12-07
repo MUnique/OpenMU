@@ -138,17 +138,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private void SetGuildPlayerBlock(Span<byte> playerBlock, Player guildPlayer, bool appearsNew)
-        {
-            playerBlock.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId);
-            playerBlock[4] = (byte)guildPlayer.GuildStatus.Position;
-
-            var playerId = guildPlayer.GetId(this.player);
-            playerBlock[7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
-            playerBlock[8] = playerId.GetLowByte();
-            ////todo: for alliances there is an extra packet, code 0x67
-        }
-
         /// <inheritdoc/>
         public void GuildKickResult(GuildKickSuccess successCode)
         {
@@ -231,6 +220,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[2] = 0x54;
                 writer.Commit();
             }
+        }
+
+        private void SetGuildPlayerBlock(Span<byte> playerBlock, Player guildPlayer, bool appearsNew)
+        {
+            playerBlock.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId);
+            playerBlock[4] = this.PlayerPositionValue(guildPlayer.GuildStatus.Position);
+
+            var playerId = guildPlayer.GetId(this.player);
+            playerBlock[7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
+            playerBlock[8] = playerId.GetLowByte();
+            ////todo: for alliances there is an extra packet, code 0x67
         }
 
         private byte PlayerPositionValue(GuildPosition playerPosition)
