@@ -97,7 +97,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             var value = this.characterToValue[character];
             if (value == int.MaxValue)
             {
-                throw new Exception($"invalid character: {character}");
+                throw new ArgumentException($"invalid character: {character}", nameof(character));
             }
 
             return value;

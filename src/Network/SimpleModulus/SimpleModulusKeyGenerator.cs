@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
         /// <summary>
         /// Finds the other key when one of the decryption or encryption key is known.
-        /// It works in both directions, when the encryption key is known and passen, the decryption key is returned and vice versa.
+        /// It works in both directions, when the encryption key is known and passed, the decryption key is returned and vice versa.
         /// This greatly demonstrates the "secureness" of this algorithm...
         /// </summary>
         /// <param name="modulusKey">The modulus key.</param>
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                 }
                 else
                 {
-                    throw new Exception($"Key could not be found. ModulusKey: {modulusKey[i]}, CryptKey: {cryptKey[i]}");
+                    throw new KeyNotFoundException(modulusKey[i], cryptKey[i]);
                 }
             }
 
@@ -156,6 +156,14 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             }
 
             return false;
+        }
+
+        private class KeyNotFoundException : Exception
+        {
+            public KeyNotFoundException(uint modulusKey, uint cryptKey)
+            : base($"Key could not be found. ModulusKey: {modulusKey}, CryptKey: {cryptKey}")
+            {
+            }
         }
     }
 }

@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
                 return fileName.Replace("Dec", "Enc");
             }
 
-            throw new Exception("File name does not begin with 'Enc' or 'Dec'.");
+            throw new ArgumentException("File name does not begin with 'Enc' or 'Dec'.", nameof(fileName));
         }
 
         private static async Task GenerateNewKeyPair()

@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 }
             }
 
-            throw new Exception($"No configuration found for context type {context.GetType()}");
+            throw new ArgumentException($"No configuration found for context type {context.GetType()}", nameof(context));
         }
 
         private static Type GetContextTypeOfRole(DatabaseRole role)

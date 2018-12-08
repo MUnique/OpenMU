@@ -56,12 +56,12 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
             int diffY = end.Y - start.Y + 8;
             if (diffX > 15)
             {
-                throw new IndexOutOfRangeException("diffX");
+                throw new ArgumentException($"The difference between start and end in the x value is greater than the allowed 15. start: {start}, end: {end}");
             }
 
             if (diffY > 15)
             {
-                throw new IndexOutOfRangeException("diffY");
+                throw new ArgumentException($"The difference between start and end in the y value is greater than the allowed 15. start: {start}, end: {end}");
             }
 
             return (byte)(((diffX << 4) & 0xF0) | (diffY & 0x0F));

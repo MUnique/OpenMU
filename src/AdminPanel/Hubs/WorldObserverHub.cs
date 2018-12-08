@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
 
             if (!FreeIds.TryDequeue(out ushort observerKey))
             {
-                throw new Exception("no free observer keys available");
+                throw new OutOfObserverKeysException();
             }
 
             var clientProxy = this.Clients.Client(this.Context.ConnectionId);
@@ -93,6 +93,10 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         {
             this.Unsubscribe();
             return base.OnDisconnectedAsync(exception);
+        }
+
+        private class OutOfObserverKeysException : Exception
+        {
         }
     }
 }
