@@ -31,6 +31,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <inheritdoc />
         protected override void CreateMonsters()
         {
+            // no special monsters required
         }
 
         /// <inheritdoc />

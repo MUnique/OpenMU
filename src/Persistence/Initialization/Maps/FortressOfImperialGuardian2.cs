@@ -32,6 +32,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <inheritdoc />
         protected override void CreateMonsters()
         {
+            // All Monsters and NPCs are defined in the first map.
         }
 
         /// <inheritdoc />
