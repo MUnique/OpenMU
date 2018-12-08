@@ -212,7 +212,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <param name="skill">if set to <c>true</c>, the item has skill.</param>
         /// <param name="targetExcellentOption">The target excellent option.</param>
         /// <returns>The created weapon.</returns>
-        public Item CreateWeapon(byte itemSlot, byte group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition targetExcellentOption = null)
+        public Item CreateWeapon(byte itemSlot, byte group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition targetExcellentOption)
         {
             var weapon = this.context.CreateNew<Item>();
             weapon.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == number);
