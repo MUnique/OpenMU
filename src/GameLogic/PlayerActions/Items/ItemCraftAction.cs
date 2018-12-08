@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             if (crafting.SimpleCraftingSettings != null)
             {
-                return new SimpleItemCraftingHandler(this.gameContext, crafting.SimpleCraftingSettings);
+                return new SimpleItemCraftingHandler(crafting.SimpleCraftingSettings);
             }
 
             if (crafting.ItemCraftingHandlerClassName != null)

@@ -18,10 +18,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         /// <summary>
         /// Initializes a new instance of the <see cref="BuyNPCItemHandler"/> class.
         /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public BuyNPCItemHandler(IGameContext gameContext)
+        public BuyNPCItemHandler()
         {
-            this.buyAction = new BuyNpcItemAction(gameContext);
+            this.buyAction = new BuyNpcItemAction();
         }
 
         /// <inheritdoc/>

@@ -14,17 +14,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SelectCharacterAction));
 
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SelectCharacterAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public SelectCharacterAction(IGameContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Selects the character and enters the world.
         /// </summary>
@@ -44,7 +33,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             {
                 Logger.ErrorFormat("Could not select character because character not found: [{0}]", characterName);
                 player.Disconnect();
-                return;
             }
         }
     }

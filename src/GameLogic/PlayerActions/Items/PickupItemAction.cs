@@ -9,17 +9,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class PickupItemAction
     {
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PickupItemAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public PickupItemAction(IGameContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Pickups the item.
         /// </summary>

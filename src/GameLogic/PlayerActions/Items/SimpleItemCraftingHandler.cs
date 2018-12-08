@@ -19,16 +19,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private readonly SimpleCraftingSettings settings;
 
-        private readonly IGameContext gameContext;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleItemCraftingHandler"/> class.
         /// </summary>
-        /// <param name="gameContext">The game context.</param>
         /// <param name="settings">The settings.</param>
-        public SimpleItemCraftingHandler(IGameContext gameContext, SimpleCraftingSettings settings)
+        public SimpleItemCraftingHandler(SimpleCraftingSettings settings)
         {
-            this.gameContext = gameContext;
             this.settings = settings;
         }
 

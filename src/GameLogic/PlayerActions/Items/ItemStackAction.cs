@@ -34,16 +34,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private readonly IDictionary<byte, JewelMix> mixes;
 
-        private readonly IGameContext gameContext;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemStackAction"/> class.
         /// </summary>
         /// <param name="gameContext">The game context.</param>
         public ItemStackAction(IGameContext gameContext)
         {
-            this.gameContext = gameContext;
-            this.mixes = this.gameContext.Configuration.JewelMixes?.ToDictionary(mix => mix.Number);
+            this.mixes = gameContext.Configuration.JewelMixes?.ToDictionary(mix => mix.Number);
         }
 
         /// <summary>

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
     using log4net;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -14,17 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     public class LetterDeleteAction
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(LetterDeleteAction));
-
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LetterDeleteAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public LetterDeleteAction(IGameContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
 
         /// <summary>
         /// Deletes the letter.

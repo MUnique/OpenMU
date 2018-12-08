@@ -19,10 +19,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         /// <summary>
         /// Initializes a new instance of the <see cref="PickupItemHandler"/> class.
         /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public PickupItemHandler(IGameContext gameContext)
+        public PickupItemHandler()
         {
-            this.pickupAction = new PickupItemAction(gameContext);
+            this.pickupAction = new PickupItemAction();
         }
 
         /// <inheritdoc/>

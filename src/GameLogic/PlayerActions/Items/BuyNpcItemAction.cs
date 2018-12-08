@@ -13,16 +13,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class BuyNpcItemAction
     {
-        private readonly IGameContext gameContext;
         private readonly ItemPriceCalculator priceCalculator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BuyNpcItemAction"/> class.
         /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public BuyNpcItemAction(IGameContext gameContext)
+        public BuyNpcItemAction()
         {
-            this.gameContext = gameContext;
             this.priceCalculator = new ItemPriceCalculator();
         }
 

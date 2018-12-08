@@ -21,10 +21,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <summary>
         /// Initializes a new instance of the <see cref="LetterDeleteHandler"/> class.
         /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public LetterDeleteHandler(IGameContext gameContext)
+        public LetterDeleteHandler()
         {
-            this.deleteAction = new LetterDeleteAction(gameContext);
+            this.deleteAction = new LetterDeleteAction();
         }
 
         /// <inheritdoc/>

@@ -6,26 +6,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
     using System;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Entities;
     using Views;
 
     /// <summary>
-    /// Action to delete a character in the character selction screen.
+    /// Action to delete a character in the character selection screen.
     /// </summary>
     public class DeleteCharacterAction
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(DeleteCharacterAction));
-
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteCharacterAction"/> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public DeleteCharacterAction(IGameContext context)
-        {
-            this.gameContext = context;
-        }
 
         /// <summary>
         /// Tries to delete the character.

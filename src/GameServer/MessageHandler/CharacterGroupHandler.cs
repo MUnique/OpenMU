@@ -42,10 +42,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             : base(gameContext)
         {
             this.createCharacterAction = new CreateCharacterAction(gameContext);
-            this.deleteCharacterAction = new DeleteCharacterAction(gameContext);
+            this.deleteCharacterAction = new DeleteCharacterAction();
             this.requestCharacterListAction = new RequestCharacterListAction();
             this.focusCharacterAction = new FocusCharacterAction();
-            this.characterSelectAction = new SelectCharacterAction(gameContext);
+            this.characterSelectAction = new SelectCharacterAction();
             this.increaseStatsAction = new IncreaseStatsAction();
             this.saveKeyConfigurationAction = new SaveKeyConfigurationAction();
             this.addMasterPointAction = new AddMasterPointAction(gameContext);
