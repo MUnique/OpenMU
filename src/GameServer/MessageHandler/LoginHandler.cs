@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
             else
             {
-                Log.Warn($"Player: {player}, Unknown login action: {packet[3]:X}");
+                Log.Warn($"Player: {player}, Unknown login action: {packet[3] :X}");
             }
         }
 
