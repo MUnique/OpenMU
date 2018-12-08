@@ -118,7 +118,10 @@ namespace MUnique.OpenMU.GameLogic
         /// Distributes the experience after kill.
         /// </summary>
         /// <param name="killedObject">The object which was killed.</param>
-        /// <returns>The total distributed experience to all party members.</returns>
+        /// <param name="killer">The killer which is member of the party. All players which observe the killer, get experience.</param>
+        /// <returns>
+        /// The total distributed experience to all party members.
+        /// </returns>
         public int DistributeExperienceAfterKill(IAttackable killedObject, IObservable killer)
         {
             IList<Player> partyMembersInRange;
