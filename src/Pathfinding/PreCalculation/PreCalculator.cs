@@ -52,18 +52,6 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
             return resultList.SelectMany(pathInfo => pathInfo);
         }
 
-        private bool NearWall(int x, int y, bool[,] map)
-        {
-            return (x + 1 < 255 && 1 + y < 255 && !map[x + 1, y + 1])
-                || (x + 1 < 255 && !map[x + 1, y])
-                || (x + 1 < 255 && y - 1 >= 0 && !map[x + 1, y - 1])
-                || (y + 1 < 255 && !map[x, y + 1])
-                || (y - 1 >= 0 && !map[x, y - 1])
-                || (x - 1 >= 0 && y + 1 < 255 && !map[x - 1, y + 1])
-                || (x - 1 >= 0 && !map[x - 1, y])
-                || (x - 1 >= 0 && y - 1 >= 0 && !map[x - 1, y - 1]);
-        }
-
         private IEnumerable<PathInfo> FindPaths(Point start, bool[,] map, IPathFinder pathFinder, int maxDistance)
         {
             byte toX = (byte)Math.Min(start.X + maxDistance - 1, 0xFF);
