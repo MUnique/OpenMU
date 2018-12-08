@@ -158,7 +158,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             return false;
         }
 
-        private class KeyNotFoundException : Exception
+        public class KeyNotFoundException : Exception
         {
             public KeyNotFoundException(uint modulusKey, uint cryptKey)
             : base($"Key could not be found. ModulusKey: {modulusKey}, CryptKey: {cryptKey}")

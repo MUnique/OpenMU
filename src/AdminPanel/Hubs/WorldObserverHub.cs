@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        private class OutOfObserverKeysException : Exception
+        public class OutOfObserverKeysException : Exception
         {
         }
     }
