@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.Pathfinding.Tests
         /// Compares the performance between <see cref="BinaryMinHeap{T}"/> and <see cref="IndexedLinkedList{T}"/>.
         /// </summary>
         [Test]
-        public void PerformanceComparism()
+        public void PerformanceComparison()
         {
             var simpleHeap = new BinaryMinHeap<Node>(new NodeComparer());
             var indexedHeap = new IndexedLinkedList<Node>(new NodeComparer(), new NodeIndexer());
