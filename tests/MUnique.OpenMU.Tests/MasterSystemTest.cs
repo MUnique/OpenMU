@@ -23,7 +23,6 @@ namespace MUnique.OpenMU.Tests
         private readonly int skillIdRank1 = 2;
         private readonly int skillIdRank2 = 3;
 
-        private IGameContext context;
         private Player player;
         private Skill skillRank0;
         private Skill skillRank1;
@@ -37,14 +36,14 @@ namespace MUnique.OpenMU.Tests
         public void Setup()
         {
             this.player = TestHelper.GetPlayer();
-            this.context = this.player.GameContext;
+            var context = this.player.GameContext;
             this.skillRank0 = this.CreateSkill(1, 0, 1, null, this.player.SelectedCharacter.CharacterClass);
             this.skillRank1 = this.CreateSkill(2, 1, 1, null, this.player.SelectedCharacter.CharacterClass);
             this.skillRank2 = this.CreateSkill((short)this.skillIdRank2, 2, 1, null, this.player.SelectedCharacter.CharacterClass);
-            this.context.Configuration.Skills.Add(this.skillRank0);
-            this.context.Configuration.Skills.Add(this.skillRank1);
-            this.context.Configuration.Skills.Add(this.skillRank2);
-            this.addAction = new AddMasterPointAction(this.context);
+            context.Configuration.Skills.Add(this.skillRank0);
+            context.Configuration.Skills.Add(this.skillRank1);
+            context.Configuration.Skills.Add(this.skillRank2);
+            this.addAction = new AddMasterPointAction(context);
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if the adding of master points failes because of an insufficient reached skill rank.
+        /// Tests if the adding of master points fails because of an insufficient reached skill rank.
         /// </summary>
         [Test]
         public void RankNotSufficient()
@@ -80,7 +79,7 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if the adding of master points failes because the skill of the previous rank does not have the required level 10.
+        /// Tests if the adding of master points fails because the skill of the previous rank does not have the required level 10.
         /// </summary>
         [Test]
         public void PreviousRankTooLowLevel()
