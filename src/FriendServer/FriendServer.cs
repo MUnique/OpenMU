@@ -77,13 +77,10 @@ namespace MUnique.OpenMU.FriendServer
                     saveSuccess = context.SaveChanges();
                 }
 
-                if (saveSuccess)
+                if (saveSuccess && this.OnlineFriends.TryGetValue(friendName, out var onlineFriend))
                 {
-                    if (this.OnlineFriends.TryGetValue(friendName, out var onlineFriend))
-                    {
-                        // Friend is online, so we directly send him a request.
-                        onlineFriend.GameServer.FriendRequest(playerName, friendName);
-                    }
+                    // Friend is online, so we directly send him a request.
+                    onlineFriend.GameServer.FriendRequest(playerName, friendName);
                 }
 
                 return friendIsNew && saveSuccess;
@@ -93,12 +90,9 @@ namespace MUnique.OpenMU.FriendServer
         /// <inheritdoc/>
         public void DeleteFriend(string playerName, string friendName)
         {
-            if (this.OnlineFriends.TryGetValue(playerName, out var player))
+            if (this.OnlineFriends.TryGetValue(playerName, out var player) && this.OnlineFriends.TryGetValue(friendName, out var friend))
             {
-                if (this.OnlineFriends.TryGetValue(friendName, out var friend))
-                {
-                    player.RemoveSubscriber(friend);
-                }
+                player.RemoveSubscriber(friend);
             }
 
             using (var context = this.persistenceContextProvider.CreateNewFriendServerContext())

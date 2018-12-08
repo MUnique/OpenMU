@@ -31,13 +31,11 @@ namespace MUnique.OpenMU.ConnectServer
         public bool OnAfterSocketAccept(Socket socket)
         {
             var ipAddress = ((IPEndPoint)socket.RemoteEndPoint).Address;
-            if (this.settings.CheckMaxConnectionsPerAddress)
+            if (this.settings.CheckMaxConnectionsPerAddress
+                && this.clientCounter.GetConnectionCount(ipAddress) >= this.settings.MaxConnectionsPerAddress)
             {
-                if (this.clientCounter.GetConnectionCount(ipAddress) >= this.settings.MaxConnectionsPerAddress)
-                {
-                    Logger.WarnFormat("Maximum Connections per IP reached: {0}, Connection refused.", ipAddress);
-                    return false;
-                }
+                Logger.WarnFormat("Maximum Connections per IP reached: {0}, Connection refused.", ipAddress);
+                return false;
             }
 
             this.clientCounter.AddConnection(ipAddress);

@@ -76,13 +76,9 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <inheritdoc/>
         public float GetValueOfAttribute(AttributeDefinition attributeDefinition)
         {
-            var attributeDictionary = this.attributes;
-            if (attributeDictionary != null)
+            if (this.attributes != null && this.attributes.TryGetValue(attributeDefinition, out IComposableAttribute attribute))
             {
-                if (attributeDictionary.TryGetValue(attributeDefinition, out IComposableAttribute attribute))
-                {
-                    return attribute.Value;
-                }
+                return attribute.Value;
             }
 
             if (this.statAttributes.TryGetValue(attributeDefinition, out float value))
