@@ -60,7 +60,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             {
                 using (var context = this.gameContext.PersistenceContextProvider.CreateNewPlayerContext(this.gameContext.Configuration))
                 {
-
                     letter = this.CreateLetter(context, player, receiver, message, title, rotation, animation);
                     if (!context.CanSaveLetter(letter))
                     {

@@ -67,7 +67,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
 
             var logoutType = buffer[4];
-
             this.logoutAction.Logout(player, (LogoutType)logoutType);
         }
 
