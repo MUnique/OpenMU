@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using Pathfinding;
 
     /// <summary>
     /// Action to warp to another place through a gate.
@@ -53,15 +54,19 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             var currentPosition = player.IsWalking ? player.WalkTarget : player.Position;
             var inaccuracy = player.GameContext.Configuration.InfoRange;
             if (player.CurrentMap.Definition.EnterGates.Contains(enterGate)
-                && !(currentPosition.X >= enterGate.X1 - inaccuracy
-                && currentPosition.X <= enterGate.X2 + inaccuracy
-                && currentPosition.Y >= enterGate.Y1 - inaccuracy
-                && currentPosition.Y <= enterGate.Y2 + inaccuracy))
+                && !(this.IsXInRange(currentPosition, enterGate, inaccuracy)
+                && this.IsYInRange(currentPosition, enterGate, inaccuracy)))
             {
                 return false;
             }
 
             return true;
         }
+
+        private bool IsXInRange(Point currentPosition, Gate gate, byte inaccuracy) => currentPosition.X >= gate.X1 - inaccuracy
+                                                                                      && currentPosition.X <= gate.X2 + inaccuracy;
+
+        private bool IsYInRange(Point currentPosition, Gate gate, byte inaccuracy) => currentPosition.Y >= gate.Y1 - inaccuracy
+                                                                                      && currentPosition.Y <= gate.Y2 + inaccuracy;
     }
 }

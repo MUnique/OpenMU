@@ -240,7 +240,9 @@ namespace MUnique.OpenMU.GameLogic
                 var terrain = target.CurrentMap.Terrain;
                 var newX = target.Position.X + Rand.NextInt(-1, 2);
                 var newY = target.Position.Y + Rand.NextInt(-1, 2);
-                if (newX >= 0 && newX < 256 && newY >= 0 && newY < 256 && terrain.AIgrid[newX, newY] == 1)
+                var isNewXAllowed = newX >= byte.MinValue && newX <= byte.MaxValue;
+                var isNewYAllowed = newY >= byte.MinValue && newY <= byte.MaxValue;
+                if (isNewXAllowed && isNewYAllowed && terrain.AIgrid[newX, newY] == 1)
                 {
                     movable.Move(new Point((byte)newX, (byte)newY));
                 }

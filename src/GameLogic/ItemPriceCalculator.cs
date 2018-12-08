@@ -317,13 +317,11 @@ namespace MUnique.OpenMU.GameLogic
                     price = ((dropLevel + 40) * dropLevel * dropLevel / 8) + 100;
                 }
 
-                if (item.Definition.Group <= 6)
+                var isOneHandedWeapon = item.Definition.Group < 6 && definition.Width < 2 && definition.BasePowerUpAttributes.Any(o => o.TargetAttribute == Stats.MinimumPhysBaseDmg);
+                var isShield = item.Definition.Group == 6;
+                if (isOneHandedWeapon || isShield)
                 {
-                    // if it's not a two-handed weapon or it's a shield
-                    if (item.Definition.Group == 6 || (definition.BasePowerUpAttributes.Any(o => o.TargetAttribute == Stats.MinimumPhysBaseDmg) && definition.Width < 2))
-                    {
-                        price = price * 80 / 100;
-                    }
+                    price = price * 80 / 100;
                 }
 
                 if (item.HasSkill && definition.Skill?.Number != ForceWaveSkillId)
