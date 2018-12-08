@@ -876,7 +876,7 @@ namespace MUnique.OpenMU.GameLogic
             this.ClientReadyAfterMapChange();
 
             this.PlayerView.WorldView.UpdateRotation();
-            this.PlayerView.MessengerView.InitializeMessenger(this.gameContext.Configuration.MaximumLetters);
+            Task.Delay(1000).ContinueWith(_ => this.PlayerView.MessengerView.InitializeMessenger(this.gameContext.Configuration.MaximumLetters)).Wait();
         }
 
         /// <summary>
