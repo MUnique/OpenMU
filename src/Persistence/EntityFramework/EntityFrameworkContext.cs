@@ -22,8 +22,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="contextProvider">The contextProvider.</param>
+        public EntityFrameworkContext(DbContext context, PersistenceContextProvider contextProvider)
+            : this(context, contextProvider, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityFrameworkContext" /> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="contextProvider">The contextProvider.</param>
         /// <param name="isOwner">if set to <c>true</c> this instance owns the <paramref name="context" />.</param>
-        public EntityFrameworkContext(DbContext context, PersistenceContextProvider contextProvider, bool isOwner = true)
+        public EntityFrameworkContext(DbContext context, PersistenceContextProvider contextProvider, bool isOwner)
         {
             this.Context = context;
             this.contextProvider = contextProvider;
