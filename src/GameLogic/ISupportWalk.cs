@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// A walking step information.
     /// </summary>
-    public struct WalkingStep
+    public struct WalkingStep : IEquatable<WalkingStep>
     {
         /// <summary>
         /// Gets or sets point from where the step originates.
@@ -62,5 +62,12 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets or sets the direction (1 - 8).
         /// </summary>
         public Direction Direction { get; set; }
+
+        /// <inheritdoc/>
+        public bool Equals(WalkingStep other)
+        {
+            return this.From == other.From
+                   && this.Direction == other.Direction;
+        }
     }
 }
