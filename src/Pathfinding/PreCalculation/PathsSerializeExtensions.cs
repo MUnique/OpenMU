@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
         /// <param name="pathInfos">The path infos.</param>
         /// <param name="target">The target stream.</param>
         /// <param name="format">The format.</param>
-        public static void SerializeToStream(this IEnumerable<PathInfo> pathInfos, Stream target, PathInfoFormat format = PathInfoFormat.Compact)
+        public static void SerializeToStream(this IEnumerable<PathInfo> pathInfos, Stream target, PathInfoFormat format)
         {
             IPathsSerializer serializer = format == PathInfoFormat.Compact ? new CompactPathsSerializer() as IPathsSerializer : new NormalPathsSerializer();
             target.WriteByte((byte)format);
