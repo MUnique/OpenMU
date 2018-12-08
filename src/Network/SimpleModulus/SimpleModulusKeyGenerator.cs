@@ -158,8 +158,16 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             return false;
         }
 
+        /// <summary>
+        /// Exception which is thrown when a key is not found for the specified modulus and crypt keys.
+        /// </summary>
         public class KeyNotFoundException : Exception
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="KeyNotFoundException" /> class.
+            /// </summary>
+            /// <param name="modulusKey">The modulus key.</param>
+            /// <param name="cryptKey">The crypt key.</param>
             public KeyNotFoundException(uint modulusKey, uint cryptKey)
             : base($"Key could not be found. ModulusKey: {modulusKey}, CryptKey: {cryptKey}")
             {
