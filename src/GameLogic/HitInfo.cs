@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The information about a hit.
     /// </summary>
-    public struct HitInfo
+    public struct HitInfo : IEquatable<HitInfo>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HitInfo"/> struct.
@@ -85,5 +85,13 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets or sets the damage which reduces the shield points.
         /// </summary>
         public uint ShieldDamage { get; set; }
+
+        /// <inheritdoc/>
+        public bool Equals(HitInfo other)
+        {
+            return this.HealthDamage == other.HealthDamage
+                   && this.ShieldDamage == other.ShieldDamage
+                   && this.Attributes == other.Attributes;
+        }
     }
 }

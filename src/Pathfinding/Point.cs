@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.Pathfinding
     /// Defines a coordinate on a map.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
-    public struct Point
+    public struct Point : IEquatable<Point>
     {
         private readonly byte x;
         private readonly byte y;
@@ -73,11 +73,7 @@ namespace MUnique.OpenMU.Pathfinding
             return Math.Sqrt(Math.Pow(Math.Abs(this.X - otherPoint.X), 2) + Math.Pow(Math.Abs(this.Y - otherPoint.Y), 2));
         }
 
-        /// <summary>
-        /// Equalses the specified other point.
-        /// </summary>
-        /// <param name="otherPoint">The other point.</param>
-        /// <returns>True, if the points are on the same coordinate.</returns>
+        /// <inheritdoc />
         public bool Equals(Point otherPoint)
         {
             return otherPoint.X == this.X && otherPoint.Y == this.Y;

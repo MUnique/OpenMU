@@ -4,10 +4,12 @@
 
 namespace MUnique.OpenMU.Pathfinding
 {
+    using System;
+
     /// <summary>
     /// A path finder node.
     /// </summary>
-    public struct PathResultNode
+    public struct PathResultNode : IEquatable<PathResultNode>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PathResultNode" /> struct.
@@ -36,5 +38,11 @@ namespace MUnique.OpenMU.Pathfinding
         public byte Y => this.ThisPoint.Y;
 
         private Point ThisPoint { get; }
+
+        /// <inheritdoc/>
+        public bool Equals(PathResultNode other)
+        {
+            return this.ThisPoint == other.ThisPoint && this.PreviousPoint == other.PreviousPoint;
+        }
     }
 }

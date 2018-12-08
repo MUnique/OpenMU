@@ -4,13 +4,14 @@
 
 namespace MUnique.OpenMU.Pathfinding.PreCalculation
 {
+    using System;
     using System.Runtime.InteropServices;
 
     /// <summary>
     /// A combination of the start and end point, which acts like a key for the next step to reach the end point.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
-    public struct PointCombination
+    public struct PointCombination : IEquatable<PointCombination>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PointCombination"/> struct.
@@ -32,5 +33,11 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
         /// Gets the end point.
         /// </summary>
         public Point End { get; }
+
+        /// <inheritdoc/>
+        public bool Equals(PointCombination other)
+        {
+            return other.Start == this.Start && other.End == this.End;
+        }
     }
 }
