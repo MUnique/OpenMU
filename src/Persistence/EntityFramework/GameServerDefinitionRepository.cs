@@ -24,7 +24,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         protected override void LoadDependentData(object obj, DbContext currentContext)
         {
-            // TODO: TEST IF REALLY REQUIRED!
             if (obj is GameServerDefinition definition)
             {
                 if (definition.GameConfigurationId.HasValue)
