@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </summary>
     public class EntityFrameworkContext : IContext
     {
-        [Obsolete]
         private readonly bool isOwner;
         private readonly PersistenceContextProvider contextProvider;
 
