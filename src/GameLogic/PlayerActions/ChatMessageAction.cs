@@ -61,52 +61,51 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (messageType == ChatMessageType.Whisper)
             {
-                Log.DebugFormat("Whisper Message Received From [{0}] to [{1}]:[{1}]", sender.SelectedCharacter.Name, playerName, message);
                 var whisperReceiver = this.gameContext.GetPlayerByCharacterName(playerName);
-                if (whisperReceiver != null)
-                {
-                    whisperReceiver.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
-                }
+                whisperReceiver?.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
             }
             else
             {
-                Log.DebugFormat("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter.Name, message);
-                if (messageType == ChatMessageType.Party)
-                {
-                    if (sender.Party != null)
-                    {
-                        sender.Party.SendChatMessage(message, sender.SelectedCharacter.Name);
-                    }
-                }
-                else if (messageType == ChatMessageType.Alliance)
-                {
-                    // gameContext.GuildServer.AllianceMessage(Player.GuildStatus, Player.SelectedCharacter.Name, message);
-                }
-                else if (messageType == ChatMessageType.Guild && sender.GuildStatus != null)
+                this.HandleChatMessage(sender, message, messageType);
+            }
+        }
+
+        private void HandleChatMessage(Player sender, string message, ChatMessageType messageType)
+        {
+            Log.DebugFormat("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter.Name, message);
+
+            switch (messageType)
+            {
+                case ChatMessageType.Party:
+                    sender.Party?.SendChatMessage(message, sender.SelectedCharacter.Name);
+                    break;
+                case ChatMessageType.Alliance when sender.GuildStatus != null:
                 {
                     var guildServer = (this.gameContext as IGameServerContext)?.GuildServer;
-                    if (guildServer != null)
-                    {
-                        var guildId = sender.GuildStatus?.GuildId;
-                        if (guildId.HasValue)
-                        {
-                            guildServer.GuildMessage(guildId.Value, sender.SelectedCharacter.Name, message);
-                        }
-                    }
+                    guildServer?.AllianceMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    break;
                 }
-                else
+
+                case ChatMessageType.Guild when sender.GuildStatus != null:
                 {
+                    var guildServer = (this.gameContext as IGameServerContext)?.GuildServer;
+                    guildServer?.GuildMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    break;
+                }
+
+                default:
                     Log.DebugFormat("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
                     sender.ForEachObservingPlayer(p => p.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true);
-                }
+                    break;
             }
         }
 
         private void ChatCommand(Player player, string message)
         {
             // TODO: implement plugin system to be able to add custom commands.
-            string[] sa = message.Split(' ');
-            switch (sa[0])
+            string[] arguments = message.Split(' ');
+            var command = arguments[0];
+            switch (command)
             {
                 /* after Season 5.4 it works by a separate packet. look for WarpAction.
                 case "/move":
@@ -115,9 +114,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     break;
                     */
                 case "/teleport":
-                    if (sa.Length > 2)
+                    if (arguments.Length > 2)
                     {
-                        player.Move(new Point(byte.Parse(sa[1]), byte.Parse(sa[2])));
+                        player.Move(new Point(byte.Parse(arguments[1]), byte.Parse(arguments[2])));
                     }
 
                     break;
