@@ -716,6 +716,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
+        /// <remarks>
+        /// Maybe cache the result, because a lot of players could request the same list. However, this isn't critical.
+        /// </remarks>
         public void ShowShopItemList(Player requestedPlayer)
         {
             const int maxCharacterNameLength = 10;
@@ -723,7 +726,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const int itemPriceSize = 4;
             var sizePerItem = this.itemSerializer.NeededSpace + itemPriceSize + 4; // don't know yet, where the additional 4 bytes come from
 
-            // TODO:  Maybe cache the result, because a lot of players could request the same list.
             var playerId = requestedPlayer.GetId(this.player);
             var itemlist = requestedPlayer.ShopStorage.Items.ToList();
             var itemcount = itemlist.Count;
