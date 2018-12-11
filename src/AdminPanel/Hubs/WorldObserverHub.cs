@@ -95,7 +95,11 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        private class OutOfObserverKeysException : Exception
+        /// <summary>
+        /// Exception which is thrown when the server is out of free unique observer keys.
+        /// </summary>
+        /// <seealso cref="System.Exception" />
+        public class OutOfObserverKeysException : Exception
         {
         }
     }
