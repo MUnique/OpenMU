@@ -480,16 +480,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 // We send multiple exp packets if the value is bigger than ushort.MaxValue, because that's all what the packet can carry.
                 // On a normal exp server this should never be an issue, but with higher settings, it fixes the problem that the exp bar
                 // shows less exp than the player actually gained.
-                ushort sendExp;
-                if (remainingExperience > ushort.MaxValue)
-                {
-                    sendExp = ushort.MaxValue;
-                }
-                else
-                {
-                    sendExp = (ushort)remainingExperience;
-                }
-
+                ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
                 using (var writer = this.connection.StartSafeWrite(0xC3, 0x09))
                 {
                     var packet = writer.Span;
