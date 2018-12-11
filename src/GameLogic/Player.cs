@@ -928,6 +928,7 @@ namespace MUnique.OpenMU.GameLogic
         private class AppearanceDataAdapter : IAppearanceData
         {
             private readonly Player player;
+            private bool? fullAncientSetEquipped;
 
             public AppearanceDataAdapter(Player player)
             {
@@ -939,6 +940,8 @@ namespace MUnique.OpenMU.GameLogic
             public CharacterClass CharacterClass => this.player.SelectedCharacter?.CharacterClass;
 
             public CharacterPose Pose => this.player.SelectedCharacter?.Pose ?? default;
+
+            public bool FullAncientSetEquipped => (this.fullAncientSetEquipped ?? (this.fullAncientSetEquipped = this.player.SelectedCharacter.HasFullAncientSetEquipped())).Value;
 
             public IEnumerable<ItemAppearance> EquippedItems
             {
@@ -956,7 +959,11 @@ namespace MUnique.OpenMU.GameLogic
             /// <summary>
             /// Raises the <see cref="AppearanceChanged"/> event.
             /// </summary>
-            public void RaiseAppearanceChanged() => this.AppearanceChanged?.Invoke(this, EventArgs.Empty);
+            public void RaiseAppearanceChanged()
+            {
+                this.fullAncientSetEquipped = null;
+                this.AppearanceChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
     }
 }

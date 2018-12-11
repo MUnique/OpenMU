@@ -80,6 +80,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("CharacterClassId");
 
+                    b.Property<bool>("FullAncientSetEquipped");
+
                     b.Property<byte>("Pose");
 
                     b.HasKey("Id");

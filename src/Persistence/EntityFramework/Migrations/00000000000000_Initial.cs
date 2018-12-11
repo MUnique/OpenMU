@@ -904,6 +904,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     CharacterClassId = table.Column<Guid>(nullable: true),
+                    FullAncientSetEquipped = table.Column<bool>(nullable: false),
                     Pose = table.Column<byte>(nullable: false),
                 },
                 constraints: table =>

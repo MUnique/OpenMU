@@ -29,6 +29,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         CharacterPose Pose { get; }
 
         /// <summary>
+        /// Gets a value indicating whether a full ancient set is equipped.
+        /// </summary>
+        bool FullAncientSetEquipped { get; }
+
+        /// <summary>
         /// Gets the equipped items.
         /// </summary>
         IEnumerable<ItemAppearance> EquippedItems { get; }

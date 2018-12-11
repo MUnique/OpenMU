@@ -29,6 +29,9 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <inheritdoc />
         public CharacterPose Pose { get; set; }
 
+        /// <inheritdoc />
+        public bool FullAncientSetEquipped { get; set; }
+
         /// <summary>
         /// Gets or sets the equipped items.
         /// </summary>

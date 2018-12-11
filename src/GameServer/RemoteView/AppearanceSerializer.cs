@@ -132,22 +132,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             this.SetItemLevels(target, itemArray);
 
-            this.SetAncientSetCompleteness(target, itemArray);
+            if (appearanceData.FullAncientSetEquipped)
+            {
+                target[11] |= 0x01;
+            }
 
             this.AddWing(target, itemArray[InventoryConstants.WingsSlot]);
 
             this.AddPet(target, itemArray[InventoryConstants.PetSlot]);
-        }
-
-        private void SetAncientSetCompleteness(Span<byte> preview, ItemAppearance[] itemArray)
-        {
-            var isAncientSetComplete = false;
-
-            // TODO
-            if (isAncientSetComplete)
-            {
-                preview[11] |= 0x01;
-            }
         }
 
         private void SetHand(Span<byte> preview, ItemAppearance item, int indexIndex, int groupIndex)

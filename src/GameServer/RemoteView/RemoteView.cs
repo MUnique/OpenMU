@@ -1094,6 +1094,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             /// <inheritdoc />
             public CharacterPose Pose => CharacterPose.Standing;
 
+            public bool FullAncientSetEquipped => this.character.HasFullAncientSetEquipped();
+
             public IEnumerable<ItemAppearance> EquippedItems
             {
                 get
