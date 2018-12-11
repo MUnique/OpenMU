@@ -618,23 +618,32 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <remarks>
         /// This Packet is sent to the Client when a Player or Monster got Hit and damaged.
         /// It includes which Player/Monster got hit by who, and the Damage Type.
-        /// TODO: It is obvious that the mu online protocol only supports 16 bits for each damage value. Maybe in the future we could send more than one packet, if the 16bits are not enough.
+        /// It is obvious that the mu online protocol only supports 16 bits for each damage value. To prevent bugs (own player health)
+        /// and to make it somehow visible that the damage exceeds 65k, we send more than one packet, if the 16bits are not enough.
         /// </remarks>
         /// <inheritdoc/>
         public void ShowHit(IAttackable target, HitInfo hitInfo)
         {
-            var healthDamage = (ushort)(hitInfo.HealthDamage & 0xFFFF);
-            var shieldDamage = (ushort)(hitInfo.ShieldDamage & 0xFFFF);
             var targetId = target.GetId(this.player);
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
+            var remainingHealthDamage = hitInfo.HealthDamage;
+            var remainingShieldDamage = hitInfo.ShieldDamage;
+            while (remainingHealthDamage > 0 || remainingShieldDamage > 0)
             {
-                var packet = writer.Span;
-                packet[2] = (byte)PacketType.Hit;
-                packet.Slice(3).SetShortSmallEndian(targetId);
-                packet.Slice(5).SetShortSmallEndian(healthDamage);
-                packet[7] = this.GetDamageColor(hitInfo.Attributes);
-                packet.Slice(8).SetShortSmallEndian(shieldDamage);
-                writer.Commit();
+                var healthDamage = (ushort)(remainingShieldDamage & 0xFFFF);
+                var shieldDamage = (ushort)(remainingShieldDamage & 0xFFFF);
+                using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
+                {
+                    var packet = writer.Span;
+                    packet[2] = (byte) PacketType.Hit;
+                    packet.Slice(3).SetShortSmallEndian(targetId);
+                    packet.Slice(5).SetShortSmallEndian(healthDamage);
+                    packet[7] = this.GetDamageColor(hitInfo.Attributes);
+                    packet.Slice(8).SetShortSmallEndian(shieldDamage);
+                    writer.Commit();
+                }
+
+                remainingShieldDamage -= shieldDamage;
+                remainingHealthDamage -= healthDamage;
             }
         }
 
