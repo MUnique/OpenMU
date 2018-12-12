@@ -1,4 +1,4 @@
-﻿// <copyright file="SellItemToNPCHandler.cs" company="MUnique">
+﻿// <copyright file="SellItemToNpcHandler.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     /// <summary>
     /// Handler for item sale to npc packets.
     /// </summary>
-    internal class SellItemToNPCHandler : IPacketHandler
+    internal class SellItemToNpcHandler : IPacketHandler
     {
         private readonly SellItemToNpcAction sellAction = new SellItemToNpcAction();
 

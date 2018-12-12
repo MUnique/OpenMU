@@ -811,9 +811,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             yield return this.CreatePacketConfig<ItemMoveHandler>(PacketType.InventoryMove);
             yield return this.CreatePacketConfig<ConsumeItemHandler>(PacketType.ConsumeItem);
             yield return this.CreatePacketConfig<TalkNpcHandler>(PacketType.TalkNPC);
-            yield return this.CreatePacketConfig<CloseNPCHandler>(PacketType.CloseNPC);
+            yield return this.CreatePacketConfig<CloseNpcDialogHandler>(PacketType.CloseNPC);
             yield return this.CreatePacketConfig<BuyNPCItemHandler>(PacketType.BuyNPCItem);
-            yield return this.CreatePacketConfig<SellItemToNPCHandler>(PacketType.SellNPCItem);
+            yield return this.CreatePacketConfig<SellItemToNpcHandler>(PacketType.SellNPCItem);
             yield return this.CreatePacketConfig<WarpHandler>(PacketType.WarpCommand);
             yield return this.CreatePacketConfig<WarpGateHandler>(PacketType.WarpGate);
             yield return this.CreatePacketConfig<WarehouseCloseHandler>(PacketType.VaultClose);

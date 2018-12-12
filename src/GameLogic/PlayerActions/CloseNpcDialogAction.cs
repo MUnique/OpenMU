@@ -1,4 +1,4 @@
-﻿// <copyright file="CloseNpcAction.cs" company="MUnique">
+﻿// <copyright file="CloseNpcDialogAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,12 +9,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// <summary>
     /// Action to close a npc dialog.
     /// </summary>
-    public class CloseNpcAction
+    public class CloseNpcDialogAction
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CloseNpcAction));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(CloseNpcDialogAction));
 
         /// <summary>
-        /// Closes the Monster dialog.
+        /// Closes the currently opened npc dialog.
         /// </summary>
         /// <param name="player">The player who wants to close the dialog.</param>
         public void CloseNpcDialog(Player player)
