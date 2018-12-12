@@ -13,20 +13,20 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     internal class WarehouseCloseHandler : IPacketHandler
     {
-        private readonly CloseNpcAction closeAction;
+        private readonly CloseNpcDialogAction closeDialogAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WarehouseCloseHandler"/> class.
         /// </summary>
         public WarehouseCloseHandler()
         {
-            this.closeAction = new CloseNpcAction();
+            this.closeDialogAction = new CloseNpcDialogAction();
         }
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            this.closeAction.CloseNpcDialog(player);
+            this.closeDialogAction.CloseNpcDialog(player);
         }
     }
 }
