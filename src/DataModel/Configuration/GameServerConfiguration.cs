@@ -17,15 +17,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public virtual ICollection<MainPacketHandlerConfiguration> SupportedPacketHandlers { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the maximum npc count.
-        /// </summary>
-        public short MaximumNPCs
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets the maximum number of players which can connect.
         /// </summary>
         public short MaximumPlayers

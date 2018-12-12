@@ -782,7 +782,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)
         {
             var gameServerConfiguration = this.context.CreateNew<GameServerConfiguration>();
-            gameServerConfiguration.MaximumNPCs = 20000;
             gameServerConfiguration.MaximumPlayers = 1000;
 
             var mainPacketHandlerConfig = this.context.CreateNew<MainPacketHandlerConfiguration>();

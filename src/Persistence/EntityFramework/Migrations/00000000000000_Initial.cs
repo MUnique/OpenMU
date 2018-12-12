@@ -54,7 +54,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    MaximumNPCs = table.Column<short>(nullable: false),
                     MaximumPlayers = table.Column<short>(nullable: false),
                     Id = table.Column<Guid>(nullable: false)
                 },

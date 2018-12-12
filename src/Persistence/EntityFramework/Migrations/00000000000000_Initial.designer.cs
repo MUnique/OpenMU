@@ -493,8 +493,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<short>("MaximumNPCs");
-
                     b.Property<short>("MaximumPlayers");
 
                     b.HasKey("Id");
