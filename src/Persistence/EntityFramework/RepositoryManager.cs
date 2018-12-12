@@ -90,10 +90,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             if (type.Namespace == this.GetType().Namespace && type.BaseType != typeof(object))
             {
-                type = type.BaseType;
+                base.RegisterRepository(type.BaseType, repository);
             }
-
-            base.RegisterRepository(type, repository);
+            else
+            {
+                base.RegisterRepository(type, repository);
+            }
         }
     }
 }
