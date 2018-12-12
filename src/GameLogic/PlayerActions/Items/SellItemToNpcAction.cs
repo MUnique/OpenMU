@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
+    using log4net;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
 
@@ -12,6 +13,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class SellItemToNpcAction
     {
+        /// <summary>
+        /// The logger of this class.
+        /// </summary>
+        private static readonly ILog Log = LogManager.GetLogger(typeof(SellItemToNpcAction));
+
         private readonly ItemPriceCalculator itemPriceCalculator;
 
         /// <summary>
@@ -32,6 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             Item item = player.Inventory.GetItem(slot);
             if (item == null)
             {
+                Log.WarnFormat("Player {0} requested to sell item at slot {1}, but item wasn't found.", player, slot);
                 player.PlayerView.InventoryView.ItemSoldToNpc(false);
                 return;
             }
@@ -41,16 +48,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private void SellItem(Player player, Item item)
         {
-            if (player.TryAddMoney(this.GetNPCPrice(item)))
+            var sellingPrice = (int)this.itemPriceCalculator.CalculateSellingPrice(item);
+            Log.DebugFormat("Calculated selling price {0} for item {1}", sellingPrice, item);
+            if (player.TryAddMoney(sellingPrice))
             {
+                Log.DebugFormat("Sold Item {0} for price: {1}", item, sellingPrice);
                 player.Inventory.RemoveItem(item);
                 player.PlayerView.InventoryView.ItemSoldToNpc(true);
             }
-        }
-
-        private int GetNPCPrice(Item item)
-        {
-            return (int)this.itemPriceCalculator.CalculateSellingPrice(item);
         }
     }
 }
