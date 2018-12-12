@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
+    using DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views;
+
     /// <summary>
     /// Action to pick up an item from the floor.
     /// </summary>
@@ -19,35 +22,49 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var droppedItem = player.CurrentMap.GetDrop(dropId);
             if (droppedItem == null)
             {
+                player.PlayerView.InventoryView.ItemPickUpFailed(ItemPickFailReason.General);
                 return;
             }
 
-            this.PickupItem(player, droppedItem);
+            if (this.TryPickupItem(player, droppedItem, out var stackTarget))
+            {
+                if (stackTarget != null)
+                {
+                    player.PlayerView.InventoryView.ItemPickUpFailed(ItemPickFailReason.ItemStacked);
+                    player.PlayerView.InventoryView.ItemDurabilityChanged(stackTarget, false);
+                }
+                else
+                {
+                    player.PlayerView.InventoryView.ItemAppear(droppedItem.Item);
+                }
+            }
+            else
+            {
+                player.PlayerView.InventoryView.ItemPickUpFailed(ItemPickFailReason.General);
+            }
         }
 
-        private void PickupItem(Player player, DroppedItem droppedItem)
+        private bool TryPickupItem(Player player, DroppedItem droppedItem, out Item stackTarget)
         {
-            // Check the Distance Player <> Item
+            stackTarget = null;
+            if (!player.Alive)
+            {
+                return false;
+            }
+
             double dist = player.GetDistanceTo(droppedItem);
             if (dist > 3)
             {
-                return;
+                return false;
             }
 
-            // Check Inv Space
             int slot = player.Inventory.CheckInvSpace(droppedItem.Item);
-            if (slot < 12)
+            if (slot < InventoryConstants.EquippableSlotsCount)
             {
-                return;
+                return false;
             }
 
-            var success = droppedItem.TryPickUpBy(player);
-            if (success)
-            {
-                player.PlayerView.InventoryView.ItemAppear(droppedItem.Item);
-            }
-
-            // todo: "Obtained message" ?? guess not
+            return droppedItem.TryPickUpBy(player, out stackTarget);
         }
     }
 }

@@ -38,12 +38,44 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var toStorageInfo = this.GetStorageInfo(player, toStorage);
             var toItemStorage = toStorageInfo.Storage;
 
-            if (!this.CanMove(player, item, toSlot, fromSlot, toStorageInfo, fromStorageInfo))
+            var movement = this.CanMove(player, item, toSlot, fromSlot, toStorageInfo, fromStorageInfo);
+            switch (movement)
             {
-                player.PlayerView.InventoryView.ItemMoveFailed(item);
-                return;
+                case Movement.Normal:
+                    this.MoveNormal(player, fromSlot, toSlot, toStorage, fromItemStorage, item, toItemStorage);
+                    break;
+                case Movement.PartiallyStack:
+                    this.PartiallyStack(player, item, toItemStorage.GetItem(toSlot));
+                    break;
+                case Movement.CompleteStack:
+                    this.FullStack(player, item, toItemStorage.GetItem(toSlot));
+                    break;
+                default:
+                    player.PlayerView.InventoryView.ItemMoveFailed(item);
+                    break;
             }
+        }
 
+        private void FullStack(Player player, Item sourceItem, Item targetItem)
+        {
+            targetItem.Durability += sourceItem.Durability;
+            player.PlayerView.InventoryView.ItemMoveFailed(sourceItem);
+            player.PlayerView.InventoryView.ItemConsumed(sourceItem.ItemSlot, true);
+            player.PlayerView.InventoryView.ItemDurabilityChanged(targetItem, false);
+        }
+
+        private void PartiallyStack(Player player, Item sourceItem, Item targetItem)
+        {
+            var partialAmount = (byte)Math.Min(targetItem.Definition.Durability - targetItem.Durability, sourceItem.Durability);
+            targetItem.Durability += partialAmount;
+            sourceItem.Durability -= partialAmount;
+            player.PlayerView.InventoryView.ItemMoveFailed(sourceItem);
+            player.PlayerView.InventoryView.ItemDurabilityChanged(sourceItem, false);
+            player.PlayerView.InventoryView.ItemDurabilityChanged(targetItem, false);
+        }
+
+        private void MoveNormal(Player player, byte fromSlot, byte toSlot, Storages toStorage, IStorage fromItemStorage, Item item, IStorage toItemStorage)
+        {
             fromItemStorage.RemoveItem(item);
             if (!toItemStorage.AddItem(toSlot, item))
             {
@@ -121,14 +153,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             return result;
         }
 
-        private bool CanMove(Player player, Item item, byte toSlot, byte fromSlot, StorageInfo toStorage, StorageInfo fromStorage)
+        private Movement CanMove(Player player, Item item, byte toSlot, byte fromSlot, StorageInfo toStorage, StorageInfo fromStorage)
         {
             var storage = toStorage.Storage;
             if (toStorage.Storage == player.Inventory && toSlot <= LastEquippableItemSlotIndex)
             {
                 if (storage.GetItem(toSlot) != null)
                 {
-                    return false;
+                    return Movement.None;
                 }
 
                 var itemDefinition = item.Definition;
@@ -142,21 +174,43 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                         && toSlot == RightHandSlot
                         && storage.GetItem(LeftHandSlot)?.Definition.Width >= 2)
                     {
-                        return false;
+                        return Movement.None;
                     }
 
-                    return true;
+                    return Movement.Normal;
                 }
 
                 player.PlayerView.ShowMessage("You can't wear this Item.", MessageType.BlueNormal);
-                return false;
+                return Movement.None;
             }
 
-            return this.ItemFitsAtNewLocation(item, toSlot, fromSlot, toStorage, fromStorage);
+            return this.ItemFitsAtNewLocation(player, item, toSlot, fromSlot, toStorage, fromStorage);
         }
 
-        private bool ItemFitsAtNewLocation(Item item, byte toSlot, byte fromSlot, StorageInfo toStorage, StorageInfo fromStorage)
+        private Movement ItemFitsAtNewLocation(Player player, Item item, byte toSlot, byte fromSlot, StorageInfo toStorage, StorageInfo fromStorage)
         {
+            var targetItem = toStorage.Storage.GetItem(toSlot);
+            if (targetItem != null)
+            {
+                var insidePlayerInventory = toStorage.Storage == player.Inventory && fromStorage.Storage == player.Inventory;
+                if (!insidePlayerInventory)
+                {
+                    return Movement.None;
+                }
+
+                if (item.CanCompletelyStackOn(targetItem))
+                {
+                    return Movement.CompleteStack;
+                }
+
+                if (item.CanPartiallyStackOn(targetItem))
+                {
+                    return Movement.PartiallyStack;
+                }
+
+                return Movement.None;
+            }
+
             // Build an array, and set true, where an item is blocking a place.
             bool sameStorage = toStorage.Storage == fromStorage.Storage;
 
@@ -178,7 +232,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 this.SetUsedSlots(toStorage, blockingItem, usedSlots);
             }
 
-            return !this.AreTargetSlotsBlocked(item, toSlot, toStorage, usedSlots);
+            return this.AreTargetSlotsBlocked(item, toSlot, toStorage, usedSlots) ? Movement.None : Movement.Normal;
         }
 
         private bool AreTargetSlotsBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
@@ -225,6 +279,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     usedSlots[r, c] = true;
                 }
             }
+        }
+
+        private enum Movement
+        {
+            None,
+
+            Normal,
+
+            PartiallyStack,
+
+            CompleteStack,
         }
 
         private class StorageInfo

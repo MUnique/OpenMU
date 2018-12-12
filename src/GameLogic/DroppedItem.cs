@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
@@ -65,47 +66,43 @@ namespace MUnique.OpenMU.GameLogic
         /// Tries to pick the item up by the specified player.
         /// </summary>
         /// <param name="player">The player.</param>
-        /// <returns>The success.</returns>
-        /// <remarks>Can be overwritten, for example for quest items which dropped only for a specific player.</remarks>
-        public bool TryPickUpBy(Player player)
+        /// <param name="stackTarget">If the success is <c>true</c>, and this is not <c>null</c>, this dropped item was stacked on an existing item of the players inventory.</param>
+        /// <returns>
+        /// The success.
+        /// </returns>
+        /// <remarks>
+        /// Can be overwritten, for example for quest items which dropped only for a specific player.
+        /// </remarks>
+        public bool TryPickUpBy(Player player, out Item stackTarget)
         {
+            stackTarget = null;
             if (!this.availableToPick)
             {
                 return false;
             }
 
-            int slot = player.Inventory.CheckInvSpace(this.Item);
-            if (slot < InventoryConstants.LastEquippableItemSlotIndex)
+            if (this.Item.IsStackable())
             {
+                stackTarget = player.Inventory.Items.FirstOrDefault(i => i.CanCompletelyStackOn(this.Item));
+            }
+
+            if (stackTarget != null)
+            {
+                if (this.TryStackOnItem(player, stackTarget))
+                {
+                    return true;
+                }
+
                 return false;
             }
 
-            lock (this.pickupLock)
-            {
-                if (!this.availableToPick)
-                {
-                    return false;
-                }
+            return this.TryPickUp(player);
+        }
 
-                if (!player.Inventory.AddItem((byte)slot, this.Item))
-                {
-                    return false;
-                }
-
-                this.availableToPick = false;
-            }
-
-            Log.Info($"Item '{this.Item}' is getting picked by by player '{player}'.");
-            this.Dispose();
-            if (this.dropper != null && !this.dropper.PlayerState.Finished)
-            {
-                this.dropper.PersistenceContext.SaveChanges(); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
-                this.dropper.PersistenceContext.Detach(this.Item);
-            }
-
-            player.PersistenceContext.Attach(this.Item);
-
-            return true;
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{this.Id}: {this.Item} at {this.CurrentMap.Definition.Name} ({this.Position})";
         }
 
         /// <inheritdoc/>
@@ -139,9 +136,69 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
+        private bool TryPickUp(Player player)
+        {
+            Log.DebugFormat("Player {0} tries to pick up {1}", player, this);
+            int slot = player.Inventory.CheckInvSpace(this.Item);
+            if (slot < InventoryConstants.LastEquippableItemSlotIndex)
+            {
+                Log.DebugFormat("Inventory full, Player {0}, Item {1}", player, this);
+                return false;
+            }
+
+            lock (this.pickupLock)
+            {
+                if (!this.availableToPick)
+                {
+                    Log.DebugFormat("Picked up by another player in the mean time, Player {0}, Item {1}", player, this);
+                    return false;
+                }
+
+                if (!player.Inventory.AddItem((byte)slot, this.Item))
+                {
+                    Log.DebugFormat("Item could not be added to the inventory, Player {0}, Item {1}", player, this);
+                    return false;
+                }
+
+                this.availableToPick = false;
+            }
+
+            Log.InfoFormat("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+            this.Dispose();
+            if (this.dropper != null && !this.dropper.PlayerState.Finished)
+            {
+                this.dropper.PersistenceContext.SaveChanges(); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
+                this.dropper.PersistenceContext.Detach(this.Item);
+            }
+
+            player.PersistenceContext.Attach(this.Item);
+
+            return true;
+        }
+
+        private bool TryStackOnItem(Player player, Item stackTarget)
+        {
+            Log.DebugFormat("Player {0} tries to pick up {1}, trying to add to an existing item at slot {2}", player, this, stackTarget.ItemSlot);
+            lock (this.pickupLock)
+            {
+                if (!this.availableToPick)
+                {
+                    Log.DebugFormat("Picked up by another player in the mean time, Player {0}, Item {1}", player, this);
+                    return false;
+                }
+
+                stackTarget.Durability += this.Item.Durability;
+                this.availableToPick = false;
+            }
+
+            Log.InfoFormat("Item '{0}' got picked up by player '{1}'. Durability of available stack {2} increased to {3}", this, player, stackTarget, stackTarget.Durability);
+            this.DisposeAndDelete(null);
+            return true;
+        }
+
         private void DeleteItem(Player player)
         {
-            Log.Info($"Item '{this.Item}' which was dropped by player {player} is getting deleted.");
+            Log.InfoFormat("Item '{0}' which was dropped by player '{1}' is getting deleted.", this, player);
             if (!player.PlayerState.Finished)
             {
                 player.PersistenceContext.Detach(this.Item);

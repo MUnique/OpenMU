@@ -4,11 +4,12 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
+    using System;
     using System.Linq;
     using System.Text;
-    using GameLogic.Views;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -158,6 +159,34 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 message[2] = 0x22;
                 message[3] = newItem.ItemSlot;
                 this.itemSerializer.SerializeItem(message.Slice(4), newItem);
+                writer.Commit();
+            }
+        }
+
+        /// <inheritdoc />
+        public void ItemPickUpFailed(ItemPickFailReason reason)
+        {
+            byte reasonByte;
+            switch (reason)
+            {
+                case ItemPickFailReason.General:
+                    reasonByte = 0xFF;
+                    break;
+                case ItemPickFailReason.ItemStacked:
+                    reasonByte = 0xFD;
+                    break;
+                case ItemPickFailReason.MaximumInventoryMoneyReached:
+                    reasonByte = 0xFE;
+                    break;
+                default:
+                    throw new ArgumentException($"Reason {reason} is unknown.");
+            }
+
+            using (var writer = this.connection.StartSafeWrite(0xC3, 4))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x22;
+                packet[3] = reasonByte;
                 writer.Commit();
             }
         }

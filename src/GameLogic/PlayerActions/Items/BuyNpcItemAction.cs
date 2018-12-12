@@ -52,28 +52,53 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             // Inventory Update:
-            int toSlot = player.Inventory.CheckInvSpace(storeItem);
-            if (toSlot == -1)
+            if (storeItem.IsStackable() && player.Inventory.Items.FirstOrDefault(item => storeItem.CanCompletelyStackOn(item)) is Item targetItem)
             {
-                player.PlayerView.ShowMessage("Inventory Full", MessageType.BlueNormal);
+                if (!this.CheckMoney(player, storeItem))
+                {
+                    return;
+                }
+
+                targetItem.Durability += storeItem.Durability;
+                player.PlayerView.InventoryView.ItemDurabilityChanged(targetItem, false);
                 player.PlayerView.InventoryView.BuyNpcItemFailed();
-                return;
+            }
+            else
+            {
+                int toSlot = player.Inventory.CheckInvSpace(storeItem);
+                if (toSlot == -1)
+                {
+                    player.PlayerView.ShowMessage("Inventory Full", MessageType.BlueNormal);
+                    player.PlayerView.InventoryView.BuyNpcItemFailed();
+                    return;
+                }
+
+                if (!this.CheckMoney(player, storeItem))
+                {
+                    return;
+                }
+
+                var newItem = player.PersistenceContext.CreateNew<Item>();
+                newItem.AssignValues(storeItem);
+                newItem.ItemSlot = (byte)toSlot;
+                player.PlayerView.InventoryView.NpcItemBought(newItem);
+                player.Inventory.AddItem(newItem.ItemSlot, newItem);
             }
 
-            var price = this.priceCalculator.CalculateBuyingPrice(storeItem);
+            player.PlayerView.InventoryView.UpdateMoney();
+        }
+
+        private bool CheckMoney(Player player, Item item)
+        {
+            var price = this.priceCalculator.CalculateBuyingPrice(item);
             if (!player.TryRemoveMoney((int)price))
             {
                 player.PlayerView.ShowMessage("You don't have enough Money", MessageType.BlueNormal);
                 player.PlayerView.InventoryView.BuyNpcItemFailed();
-                return;
+                return false;
             }
 
-            var newItem = player.PersistenceContext.CreateNew<Item>();
-            newItem.AssignValues(storeItem);
-            newItem.ItemSlot = (byte)toSlot;
-            player.PlayerView.InventoryView.NpcItemBought(newItem);
-            player.Inventory.AddItem(newItem.ItemSlot, newItem);
-            player.PlayerView.InventoryView.UpdateMoney();
+            return true;
         }
     }
 }

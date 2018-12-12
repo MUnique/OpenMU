@@ -49,6 +49,36 @@ namespace MUnique.OpenMU.GameLogic.Views
     }
 
     /// <summary>
+    /// The item pick fail reason.
+    /// </summary>
+    public enum ItemPickFailReason
+    {
+        /// <summary>
+        /// The undefined enum value. Should never be passed to <see cref="IInventoryView.ItemPickUpFailed"/>.
+        /// </summary>
+        Undefined = 0,
+
+        /// <summary>
+        /// The general, non-specific reason. It just failed.
+        /// </summary>
+        General,
+
+        /// <summary>
+        /// The picked up item was combined into an existing item of the players inventory.
+        /// A separate durability update will be sent to the client.
+        /// </summary>
+        ItemStacked,
+
+        /// <summary>
+        /// The maximum inventory money has been reached, so the money wasn't picked up.
+        /// </summary>
+        /// <remarks>
+        /// Unused, because we never drop money and therefore can't pick it up.
+        /// </remarks>
+        MaximumInventoryMoneyReached,
+    }
+
+    /// <summary>
     /// The inventory view.
     /// </summary>
     public interface IInventoryView
@@ -102,6 +132,12 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// </summary>
         /// <param name="newItem">The new item.</param>
         void ItemAppear(Item newItem);
+
+        /// <summary>
+        /// Notifies the client that the previous attempt to pick up an item failed.
+        /// </summary>
+        /// <param name="reason">The reason for the fail.</param>
+        void ItemPickUpFailed(ItemPickFailReason reason);
 
         /// <summary>
         /// Notifies the client that the item could not be bought from the npc.

@@ -29,10 +29,10 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public static byte GetMaximumDurabilityOfOnePiece(this Item item)
         {
-            if (item.Definition.ItemSlot == null)
+            if (item.IsWearable())
             {
                 // Items which are not wearable don't have a "real" durability. If the item is stackable, durability means number of pieces in this case
-                return 1; // TODO: check if this makes sense for all cases
+                return 1;
             }
 
             var result = item.Definition.Durability + AdditionalDurabilityPerLevel[item.Level];
@@ -53,6 +53,57 @@ namespace MUnique.OpenMU.GameLogic
 
             return (byte)Math.Min(byte.MaxValue, result);
         }
+
+        /// <summary>
+        /// Determines whether this item is wearable.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified item is wearable; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsWearable(this Item item) => item.Definition.ItemSlot != null;
+
+        /// <summary>
+        /// Determines whether this item is stackable.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified item is stackable; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsStackable(this Item item) => !item.IsWearable() && item.Definition.Durability > 1;
+
+        /// <summary>
+        /// Determines whether this item can be completely stacked on the specified other item.
+        /// After stacking, this item is destroyed.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="otherItem">The other item.</param>
+        /// <returns>
+        ///   <c>true</c> if this item can be completely stacked on the specified other item; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool CanCompletelyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && (item.Durability + otherItem.Durability) <= item.Definition.Durability;
+
+        /// <summary>
+        /// Determines whether this item can be partially stacked on the specified other item.
+        /// After stacking, this item is left with the rest of its durability.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="otherItem">The other item.</param>
+        /// <returns>
+        ///   <c>true</c> if this item can be partially stacked on the specified other item; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool CanPartiallyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && otherItem.Durability < otherItem.Definition.Durability;
+
+        /// <summary>
+        /// Determines whether this item is of the same type as the specified other item.
+        /// <see cref="Item.Definition"/> and <see cref="Item.Level"/> need to be equal to get considered as the same item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="otherItem">The other item.</param>
+        /// <returns>
+        ///   <c>true</c> if this item is of the same type as the specified other item; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsSameItemAs(this Item item, Item otherItem) => item.Definition == otherItem.Definition && item.Level == otherItem.Level;
 
         /// <summary>
         /// Gets the item data which is relvant for the visual appearance of an item.
