@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Network.SimpleModulus
 {
-    using System;
     using System.IO;
 
     /// <summary>
@@ -53,22 +52,26 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// Deserializes (loads) the keys from the specified file.
         /// </summary>
         /// <param name="fileName">Name (and path) of the file.</param>
-        /// <param name="modKey">The mod key.</param>
+        /// <param name="modulusKey">The modulus key.</param>
         /// <param name="key">The key.</param>
         /// <param name="xorKey">The xor key.</param>
-        public void Deserialize(string fileName, out uint[] modKey, out uint[] key, out uint[] xorKey)
+        /// <returns><c>True</c>, if successful; Otherwise, <c>false</c>.</returns>
+        public bool TryDeserialize(string fileName, out uint[] modulusKey, out uint[] key, out uint[] xorKey)
         {
             var buffer = new byte[(12 * sizeof(uint)) + this.header.Length];
             using (var fileStream = File.OpenRead(fileName))
             {
                 if (fileStream.Read(buffer, 0, buffer.Length) != buffer.Length)
                 {
-                    throw new ArgumentException($"File content too small. Stream length: {fileStream.Length}");
+                    modulusKey = null;
+                    key = null;
+                    xorKey = null;
+                    return false;
                 }
             }
 
             var offset = this.header.Length;
-            modKey = new[]
+            modulusKey = new[]
             {
                 buffer.MakeDwordBigEndian(offset) ^ this.encryptionKeys[0],
                 buffer.MakeDwordBigEndian(offset + 4) ^ this.encryptionKeys[1],
@@ -91,6 +94,8 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                 buffer.MakeDwordBigEndian(offset + 8) ^ this.encryptionKeys[2],
                 buffer.MakeDwordBigEndian(offset + 12) ^ this.encryptionKeys[3]
             };
+
+            return true;
         }
     }
 }

@@ -35,17 +35,22 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
         {
             var serializer = new SimpleModulusKeySerializer();
 
-            serializer.Deserialize(keyFilePath, out uint[] modkey, out uint[] cryptKey, out uint[] xorKey);
-
-            var generator = new SimpleModulusKeyGenerator();
-            var otherCryptKey = generator.FindOtherKey(modkey, cryptKey);
-            var file = new FileInfo(keyFilePath);
-            var otherFileName = GetOtherFileName(file.Name);
-            var otherFilePath = Path.Combine(file.DirectoryName, otherFileName);
-            Console.WriteLine($"Calculation successful. To save the calculated key to file '{otherFilePath}' press any key");
-            Console.ReadKey(true);
-            serializer.Serialize(otherFilePath, modkey, otherCryptKey, xorKey);
-            Console.WriteLine("Key saved");
+            if (serializer.TryDeserialize(keyFilePath, out uint[] modulusKey, out uint[] cryptKey, out uint[] xorKey))
+            {
+                var generator = new SimpleModulusKeyGenerator();
+                var otherCryptKey = generator.FindOtherKey(modulusKey, cryptKey);
+                var file = new FileInfo(keyFilePath);
+                var otherFileName = GetOtherFileName(file.Name);
+                var otherFilePath = Path.Combine(file.DirectoryName, otherFileName);
+                Console.WriteLine($"Calculation successful. To save the calculated key to file '{otherFilePath}' press any key");
+                Console.ReadKey(true);
+                serializer.Serialize(otherFilePath, modulusKey, otherCryptKey, xorKey);
+                Console.WriteLine("Key saved");
+            }
+            else
+            {
+                throw new ArgumentException("Keys could not be read, file too small?", nameof(keyFilePath));
+            }
         }
 
         private static string GetOtherFileName(string fileName)
