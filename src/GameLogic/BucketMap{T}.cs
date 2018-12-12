@@ -10,22 +10,6 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
-    /// The type of the range calculation type.
-    /// </summary>
-    public enum RangeType
-    {
-        /// <summary>
-        /// An object is in range, when its in the quadrat of (x-range, y-range) and (x+range, y+range).
-        /// </summary>
-        Quadratic,
-
-        /// <summary>
-        /// An object is in range, when it is exactly in range (a²+b²=c²).
-        /// </summary>
-        Exact
-    }
-
-    /// <summary>
     /// A two-dimensional map of buckets.
     /// </summary>
     /// <typeparam name="T">The type of objects which should be hold.</typeparam>
@@ -102,22 +86,14 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="point">The coordinates.</param>
         /// <param name="range">The maximum range.</param>
-        /// <param name="rangeType">Type of the range.</param>
         /// <returns>The items which are in range of the specified coordinate and range.</returns>
-        public IEnumerable<ILocateable> GetInRange(Point point, int range, RangeType rangeType)
+        public IEnumerable<ILocateable> GetInRange(Point point, int range)
         {
             var result = new List<ILocateable>();
-            var buckets = this.GetBucketsInRange(point, range, rangeType);
+            var buckets = this.GetBucketsInRange(point, range);
             foreach (var bucket in buckets)
             {
-                if (rangeType == RangeType.Quadratic)
-                {
-                    result.AddRange(bucket.OfType<ILocateable>().Where(obj => obj.IsInRange(point, range)));
-                }
-                else
-                {
-                    result.AddRange(bucket.OfType<ILocateable>().Where(obj => obj.Position.EuclideanDistanceTo(point) <= range));
-                }
+                result.AddRange(bucket.OfType<ILocateable>().Where(obj => obj.IsInRange(point, range)));
             }
 
             return result;
@@ -128,9 +104,8 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="point">The coordinates.</param>
         /// <param name="range">The range.</param>
-        /// <param name="rangeType">Type of the range.</param>
         /// <returns>The buckets in the specified range of the specified coordinate.</returns>
-        public IEnumerable<Bucket<T>> GetBucketsInRange(Point point, int range, RangeType rangeType)
+        public IEnumerable<Bucket<T>> GetBucketsInRange(Point point, int range)
         {
             int maxX = Math.Min(point.X + range, (this.SideLength - 1) * this.BucketSideLength) / this.BucketSideLength;
             int maxY = Math.Min(point.Y + range, (this.SideLength - 1) * this.BucketSideLength) / this.BucketSideLength;
@@ -140,17 +115,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 for (int j = minY; maxY >= j; ++j)
                 {
-                    if (rangeType == RangeType.Quadratic)
-                    {
-                        yield return this.list[i + (j * this.SideLength)];
-                    }
-                    else
-                    {
-                        if (new Point((byte)i, (byte)j).EuclideanDistanceTo(new Point((byte)(point.X / this.BucketSideLength), (byte)(point.Y / this.BucketSideLength))) <= range)
-                        {
-                            yield return this.list[i + (j * this.SideLength)];
-                        }
-                    }
+                    yield return this.list[i + (j * this.SideLength)];
                 }
             }
         }

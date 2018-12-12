@@ -116,9 +116,9 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ILocateable> GetInRange(Point point, int range, RangeType rangeType)
+        public IEnumerable<ILocateable> GetInRange(Point point, int range)
         {
-            return this.Map.GetInRange(point, range, rangeType);
+            return this.Map.GetInRange(point, range);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="player">The player.</param>
         protected void UpdateObservingBuckets(Point newPoint, IBucketMapObserver player)
         {
-            var curbuckets = this.Map.GetBucketsInRange(newPoint, player.InfoRange, RangeType.Quadratic).ToList(); // All buckets in range
+            var curbuckets = this.Map.GetBucketsInRange(newPoint, player.InfoRange).ToList(); // All buckets in range
             var oldbuckets = player.ObservingBuckets.Where(i => !curbuckets.Contains(i)).ToList(); // Buckets which are not meant to be observed anymore
             var newbuckets = curbuckets.Where(i => !player.ObservingBuckets.Contains(i)).ToList(); // New buckets for observation
 

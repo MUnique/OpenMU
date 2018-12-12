@@ -39,8 +39,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="point">The point at which the objects are searched in the specified range.</param>
         /// <param name="range">The range.</param>
-        /// <param name="rangeType">Type of the range.</param>
         /// <returns>The objects in range.</returns>
-        IEnumerable<ILocateable> GetInRange(Point point, int range, RangeType rangeType);
+        IEnumerable<ILocateable> GetInRange(Point point, int range);
     }
 }

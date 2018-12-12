@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The attackables in range of the specified coordinate.</returns>
         public IEnumerable<IAttackable> GetAttackablesInRange(Point point, int range)
         {
-            return this.areaOfInterestManager.GetInRange(point, range, RangeType.Quadratic).OfType<IAttackable>().ToList();
+            return this.areaOfInterestManager.GetInRange(point, range).OfType<IAttackable>().ToList();
         }
 
         /// <summary>
