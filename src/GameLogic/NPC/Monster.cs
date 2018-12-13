@@ -218,9 +218,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc/>
-        protected override void Dispose(bool dispose)
+        protected override void Dispose(bool managed)
         {
-            base.Dispose(dispose);
+            base.Dispose(managed);
             this.respawnTimer.Dispose();
             this.walker.Dispose();
             (this.intelligence as IDisposable)?.Dispose();
