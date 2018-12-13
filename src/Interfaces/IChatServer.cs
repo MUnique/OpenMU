@@ -27,6 +27,6 @@ namespace MUnique.OpenMU.Interfaces
         /// Gets the ip address.
         /// </summary>
         /// <returns>The ip address.</returns>
-        string GetIPAddress();
+        string GetIpAddress();
     }
 }

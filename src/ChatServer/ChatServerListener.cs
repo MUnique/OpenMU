@@ -178,7 +178,7 @@ namespace MUnique.OpenMU.ChatServer
         /// Gets the ip address of the server.
         /// </summary>
         /// <returns>The ip address of the server.</returns>
-        public string GetIPAddress()
+        public string GetIpAddress()
         {
             return this.publicIp ?? (this.publicIp = this.addressResolver.GetIPv4().ToString());
         }

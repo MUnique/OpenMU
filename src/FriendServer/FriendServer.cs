@@ -257,7 +257,7 @@ namespace MUnique.OpenMU.FriendServer
         /// <inheritdoc/>
         public string GetChatserverIP()
         {
-            return this.chatServer.GetIPAddress();
+            return this.chatServer.GetIpAddress();
         }
 
         /// <inheritdoc/>
