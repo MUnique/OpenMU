@@ -848,7 +848,7 @@ namespace MUnique.OpenMU.GameLogic
             Task.Run(
               async () =>
               {
-                  await Task.Delay(3000, this.respawnAfterDeathToken);
+                  await Task.Delay(3000, this.respawnAfterDeathToken).ConfigureAwait(false);
                   this.SetReclaimableAttributesToMaximum();
                   this.WarpTo(this.GetSpawnGateOfCurrentMap());
               },

@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             this.port = port;
             this.chatServer = chatServer;
             this.chatServerPort = (ushort)chatServerPort;
-            Task.Run(async () => await this.Connect());
+            Task.Run(async () => await this.Connect().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                 catch
                 {
                     Log.Warn($"Connection to ExDB-Server ({this.host}:{this.port}) failed, trying again in 10 Seconds...");
-                    await Task.Delay(10000);
+                    await Task.Delay(10000).ConfigureAwait(false);
                 }
             }
 
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
 
             this.connection = new Connection(SocketConnection.Create(socket), null, null);
             this.connection.PacketReceived += this.ExDbPacketReceived;
-            this.connection.Disconnected += (sender, e) => Task.Run(async () => await this.Connect());
+            this.connection.Disconnected += (sender, e) => Task.Run(async () => await this.Connect().ConfigureAwait(false));
             this.SendHello();
             await this.connection.BeginReceive();
         }
