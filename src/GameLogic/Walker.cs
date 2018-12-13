@@ -166,7 +166,6 @@ namespace MUnique.OpenMU.GameLogic
                     return;
                 }
 
-                var attackable = this.walkSupporter as IAttackable;
                 bool stop;
                 this.walkLock.EnterReadLock();
                 try
