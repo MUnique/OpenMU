@@ -15,7 +15,7 @@
         <MinAmount>1</MinAmount>
         <SuccessResult>0</SuccessResult>
         <FailResult>4</FailResult>
-        <NPCPriceDiv>7000</NPCPriceDiv>
+        <NpcPriceDivisor>7000</NpcPriceDivisor>
       </Item>
       <Item>
         <!-- Chaos -->

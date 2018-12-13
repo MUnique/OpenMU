@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// Gets or sets the NPC price divisor. For each full division, the percentage gets increased by 1 percent, and the mix price rises.
         /// </summary>
-        public int NPCPriceDiv { get; set; }
+        public int NpcPriceDivisor { get; set; }
 
         /// <summary>
         /// Gets or sets the add percentage per division.

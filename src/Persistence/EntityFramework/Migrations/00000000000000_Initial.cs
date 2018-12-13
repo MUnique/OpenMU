@@ -1618,7 +1618,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     FailResult = table.Column<int>(nullable: false),
                     MinAmount = table.Column<byte>(nullable: false),
                     MinLvl = table.Column<byte>(nullable: false),
-                    NPCPriceDiv = table.Column<int>(nullable: false),
+                    NpcPriceDivisor = table.Column<int>(nullable: false),
                     RefID = table.Column<byte>(nullable: false),
                     SuccessResult = table.Column<int>(nullable: false),
                     Id = table.Column<Guid>(nullable: false),

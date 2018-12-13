@@ -737,7 +737,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("MinLvl");
 
-                    b.Property<int>("NPCPriceDiv");
+                    b.Property<int>("NpcPriceDivisor");
 
                     b.Property<byte>("RefID");
 
