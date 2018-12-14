@@ -91,6 +91,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public override void Initialize()
         {
             base.Initialize();
+            this.respawnTimer?.Dispose();
             this.Health = (int)this.Attributes[Stats.MaximumHealth];
             this.Alive = true;
         }
@@ -221,9 +222,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         protected override void Dispose(bool managed)
         {
             base.Dispose(managed);
-            this.respawnTimer.Dispose();
-            this.walker.Dispose();
-            (this.intelligence as IDisposable)?.Dispose();
+            if (managed)
+            {
+                this.respawnTimer?.Dispose();
+                this.walker.Dispose();
+                (this.intelligence as IDisposable)?.Dispose();
+            }
         }
 
         /// <inheritdoc />
