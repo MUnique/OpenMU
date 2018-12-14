@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
     /// <summary>
     /// The main entry point class.
     /// </summary>
-    public class Program
+    public static class Program
     {
         /// <summary>
         /// Main entry point of the program.
