@@ -173,7 +173,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(2, 11, 0, 66, 1, 4, true, "Lord Scepter", 98, 91, 102, 40, 72, 52, 0, 105, 23, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateWeapon(2, 12, 0, 66, 1, 4, true, "Great Lord Scepter", 140, 108, 120, 40, 84, 67, 0, 90, 20, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateWeapon(2, 13, 0, 66, 1, 4, true, "Divine Scepter of Archangel", 150, 120, 143, 40, 90, 78, 0, 75, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-            this.CreateWeapon(2, 14, 0, 66, 1, 4, true, "Solay Scepter", 146, 130, 153, 40, 95, 84, 0, 80, 15, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+            this.CreateWeapon(2, 14, 0, 66, 1, 4, true, "Soleil Scepter", 146, 130, 153, 40, 95, 84, 380, 80, 15, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateWeapon(2, 15, 0, 66, 1, 4, true, "Shining Scepter", 110, 99, 111, 40, 78, 60, 0, 108, 22, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateWeapon(2, 16, 0, 0, 1, 3, true, "Frost mace", 121, 106, 146, 50, 80, 0, 0, 27, 19, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
             this.CreateWeapon(2, 17, 0, 66, 1, 4, true, "Absolute Scepter", 135, 114, 132, 40, 90, 72, 0, 119, 24, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
@@ -214,7 +214,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(4, 18, 0, 24, 2, 3, true, "Divine CB of Archangel", 100, 144, 166, 35, 200, 0, 0, 40, 110, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
             this.CreateWeapon(4, 19, 0, 24, 2, 3, true, "Great Reign Crossbow", 100, 150, 172, 40, 80, 0, 0, 61, 285, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0);
             this.CreateWeapon(4, 20, 1, 24, 2, 4, true, "Arrow Viper Bow", 135, 166, 190, 45, 86, 0, 0, 52, 245, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0);
-            this.CreateWeapon(4, 21, 1, 24, 2, 4, true, "Sylph Wind Bow", 147, 177, 200, 45, 93, 0, 0, 46, 210, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+            this.CreateWeapon(4, 21, 1, 24, 2, 4, true, "Sylph Wind Bow", 147, 177, 200, 45, 93, 0, 380, 46, 210, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
             this.CreateWeapon(4, 22, 1, 24, 2, 4, true, "Albatross Bow", 110, 155, 177, 45, 70, 0, 0, 60, 265, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
             this.CreateWeapon(4, 23, 1, 24, 2, 4, true, "Stinger Bow", 134, 162, 184, 45, 80, 0, 0, 32, 209, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0);
             this.CreateWeapon(4, 24, 1, 24, 2, 4, false, "Air Lyn Bow", 147, 170, 194, 45, 88, 0, 0, 49, 226, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
@@ -231,14 +231,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(5, 9, 0, 0, 1, 4, true, "Dragon Soul Staff", 100, 46, 48, 30, 0, 92, 0, 52, 16, 0, 0, 3, 2, 0, 0, 0, 0, 0, 0);
             this.CreateWeapon(5, 10, 0, 0, 1, 4, true, "Divine Staff of Archangel", 104, 53, 55, 20, 0, 106, 0, 36, 4, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(5, 11, 0, 0, 1, 4, true, "Staff of Kundun", 140, 55, 61, 30, 0, 110, 0, 45, 16, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 12, 0, 0, 1, 4, true, "Grand Viper Staff", 147, 66, 74, 30, 0, 130, 0, 39, 13, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateWeapon(5, 12, 0, 0, 1, 4, true, "Grand Viper Staff", 147, 66, 74, 30, 0, 130, 380, 39, 13, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
             this.CreateWeapon(5, 13, 0, 0, 1, 4, true, "Platina Staff", 110, 51, 53, 30, 0, 120, 0, 50, 16, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
             this.CreateWeapon(5, 14, 0, 0, 1, 4, true, "Mistery Stick", 28, 17, 18, 25, 0, 34, 0, 34, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
             this.CreateWeapon(5, 15, 0, 0, 1, 4, true, "Violent Wind Stick", 42, 23, 25, 25, 0, 46, 0, 33, 17, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
             this.CreateWeapon(5, 16, 0, 0, 1, 4, true, "Red Wing Stick", 59, 29, 31, 25, 0, 59, 0, 36, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
             this.CreateWeapon(5, 17, 0, 0, 1, 4, true, "Ancient Stick", 78, 38, 40, 25, 0, 76, 0, 50, 19, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-            this.CreateWeapon(5, 18, 0, 0, 1, 4, true, "Black Rose Staff", 100, 46, 48, 30, 0, 92, 0, 54, 15, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-            this.CreateWeapon(5, 19, 0, 0, 1, 4, true, "Aura Staff", 110, 51, 53, 30, 0, 110, 0, 64, 15, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+            this.CreateWeapon(5, 18, 0, 0, 1, 4, true, "Demonic Stick", 100, 46, 48, 30, 0, 92, 0, 54, 15, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+            this.CreateWeapon(5, 19, 0, 0, 1, 4, true, "Storm Blitz Stick", 110, 51, 53, 30, 0, 110, 380, 64, 15, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
             this.CreateWeapon(5, 20, 0, 0, 1, 4, true, "Lilium Staff", 130, 56, 58, 25, 0, 113, 0, 60, 25, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
             this.CreateWeapon(5, 21, 1, 223, 1, 2, true, "Book of Sahamutt", 52, 0, 0, 25, 0, 46, 0, 0, 20, 135, 0, 0, 0, 0, 0, 0, 0, 1, 0);
             this.CreateWeapon(5, 22, 1, 224, 1, 2, true, "Book of Neil", 59, 0, 0, 25, 0, 59, 0, 0, 25, 168, 0, 0, 0, 0, 0, 0, 0, 1, 0);
@@ -249,6 +249,27 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(5, 33, 0, 0, 1, 4, false, "Chroma ticks staff", 147, 55, 57, 30, 0, 124, 0, 50, 12, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(5, 34, 0, 0, 1, 4, false, "Raven Stick", 147, 70, 78, 30, 0, 130, 0, 50, 14, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
             this.CreateWeapon(5, 36, 0, 0, 1, 4, true, "Divine Stick of Archangel", 104, 153, 165, 30, 0, 146, 0, 55, 13, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+
+            this.AddGuardianOptions();
+        }
+
+        private void AddGuardianOptions()
+        {
+            var weaponOption = this.GameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.GuardianOption && po.Number == (int)ItemGroups.Weapon));
+
+            var boneBlade = this.GameConfiguration.Items.First(i => i.Number == 22 && i.Group == (int) ItemGroups.Swords);
+            var explosionBlade = this.GameConfiguration.Items.First(i => i.Number == 23 && i.Group == (int)ItemGroups.Swords);
+            var soleilScepter = this.GameConfiguration.Items.First(i => i.Number == 14 && i.Group == (int)ItemGroups.Scepters);
+            var sylphWindBow = this.GameConfiguration.Items.First(i => i.Number == 21 && i.Group == (int)ItemGroups.Bows);
+            var viperStaff = this.GameConfiguration.Items.First(i => i.Number == 12 && i.Group == (int)ItemGroups.Staff);
+            var stormBlitzStick = this.GameConfiguration.Items.First(i => i.Number == 19 && i.Group == (int)ItemGroups.Staff);
+
+            boneBlade.PossibleItemOptions.Add(weaponOption);
+            explosionBlade.PossibleItemOptions.Add(weaponOption);
+            soleilScepter.PossibleItemOptions.Add(weaponOption);
+            sylphWindBow.PossibleItemOptions.Add(weaponOption);
+            viperStaff.PossibleItemOptions.Add(weaponOption);
+            stormBlitzStick.PossibleItemOptions.Add(weaponOption);
         }
 
         /// <summary>

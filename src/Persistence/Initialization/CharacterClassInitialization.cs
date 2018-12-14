@@ -154,8 +154,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(38, Stats.MaximumMana));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(48.5f, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecovery));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
@@ -242,8 +244,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(57, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(7, Stats.MaximumMana));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecovery));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
@@ -336,8 +340,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(39, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(6, Stats.MaximumMana));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecovery));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
@@ -429,8 +435,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(30, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecovery));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
@@ -523,8 +531,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(10, Stats.MaximumMana));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(35, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.05f, Stats.AbilityRecovery));
-            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecovery));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.05f, Stats.AbilityRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));

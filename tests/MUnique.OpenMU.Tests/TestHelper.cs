@@ -105,7 +105,7 @@ namespace MUnique.OpenMU.Tests
                 new ConstValueAttribute(10, Stats.MaximumMana),
                 new ConstValueAttribute(35, Stats.MaximumHealth),
                 new ConstValueAttribute(2, Stats.SkillMultiplier),
-                new ConstValueAttribute(2, Stats.AbilityRecovery),
+                new ConstValueAttribute(2, Stats.AbilityRecoveryMultiplier),
                 new ConstValueAttribute(1, Stats.DamageReceiveDecrement),
                 new ConstValueAttribute(1, Stats.AttackDamageIncrease),
                 new ConstValueAttribute(1, Stats.MoneyAmountRate)

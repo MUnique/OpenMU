@@ -47,9 +47,9 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         public static ItemOptionType AncientBonus { get; } = new ItemOptionType { Name = "Ancient Bonus Option", Id = new Guid("{5E2C10EF-E580-48D5-A48B-0FFCD0678966}") };
 
         /// <summary>
-        /// Gets the level380 option type.
+        /// Gets the guardian option type.
         /// </summary>
-        public static ItemOptionType Level380Option { get; } = new ItemOptionType { Name = "Level 380 Option", Id = new Guid("{4AA95715-1ED3-453D-8D1D-093B281416CA}") };
+        public static ItemOptionType GuardianOption { get; } = new ItemOptionType { Name = "Guardian Option", Id = new Guid("{4AA95715-1ED3-453D-8D1D-093B281416CA}"), Description = "This option is added by the chaos machine with a jewel of guardian on level 380 items."};
 
         /// <summary>
         /// Gets the socket option type.

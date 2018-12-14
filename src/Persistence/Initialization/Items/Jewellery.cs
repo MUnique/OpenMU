@@ -32,20 +32,20 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <inheritdoc/>
         public override void Initialize()
         {
-            this.healthRecoverOptionDefinition = this.CreateOption("Health recover for jewellery", Stats.HealthRecovery, 0.01f);
+            this.healthRecoverOptionDefinition = this.CreateOption("Health recover for jewellery", Stats.HealthRecoveryMultiplier, 0.01f);
 
-            this.CreateRing(8, "Ring of Ice", 20, 50, Stats.HealthRecovery, Stats.IceResistance);
-            this.CreateRing(9, "Ring of Poison", 17, 50, Stats.HealthRecovery, Stats.PoisonResistance);
-            this.CreateRing(21, "Ring of Fire", 30, 50, Stats.HealthRecovery, Stats.FireResistance);
-            this.CreateRing(22, "Ring of Earth", 38, 50, Stats.HealthRecovery, Stats.EarthResistance);
-            this.CreateRing(23, "Ring of Wind", 44, 50, Stats.HealthRecovery, Stats.WindResistance);
+            this.CreateRing(8, "Ring of Ice", 20, 50, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
+            this.CreateRing(9, "Ring of Poison", 17, 50, Stats.HealthRecoveryMultiplier, Stats.PoisonResistance);
+            this.CreateRing(21, "Ring of Fire", 30, 50, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
+            this.CreateRing(22, "Ring of Earth", 38, 50, Stats.HealthRecoveryMultiplier, Stats.EarthResistance);
+            this.CreateRing(23, "Ring of Wind", 44, 50, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
             this.CreateRing(24, "Ring of Magic", 47, 50, Stats.MaximumMana, null);
 
-            this.CreatePendant(12, "Pendant of Lighting", 21, 50, DamageType.Wizardry, Stats.HealthRecovery, Stats.LightningResistance);
-            this.CreatePendant(13, "Pendant of Fire", 13, 50, DamageType.Physical, Stats.HealthRecovery, Stats.FireResistance);
-            this.CreatePendant(25, "Pendant of Ice", 34, 50, DamageType.Wizardry, Stats.HealthRecovery, Stats.IceResistance);
-            this.CreatePendant(26, "Pendant of Wind", 42, 50, DamageType.Physical, Stats.HealthRecovery, Stats.WindResistance);
-            this.CreatePendant(27, "Pendant of Water", 46, 50, DamageType.Wizardry, Stats.HealthRecovery, Stats.WaterResistance);
+            this.CreatePendant(12, "Pendant of Lighting", 21, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.LightningResistance);
+            this.CreatePendant(13, "Pendant of Fire", 13, 50, DamageType.Physical, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
+            this.CreatePendant(25, "Pendant of Ice", 34, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
+            this.CreatePendant(26, "Pendant of Wind", 42, 50, DamageType.Physical, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
+            this.CreatePendant(27, "Pendant of Water", 46, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.WaterResistance);
             this.CreatePendant(28, "Pendant of Ability", 50, 50, DamageType.Physical, Stats.MaximumAbility, null);
 
             // Requirement for Kanturu Event:
@@ -207,7 +207,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 item.PossibleItemOptions.Add(excellentOptionDefinition);
             }
 
-            if (optionTargetAttribute == Stats.HealthRecovery)
+            if (optionTargetAttribute == Stats.HealthRecoveryMultiplier)
             {
                 item.PossibleItemOptions.Add(this.healthRecoverOptionDefinition);
             }

@@ -313,22 +313,48 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the mana recovery attribute definition.
         /// </summary>
-        public static AttributeDefinition ManaRecovery { get; } = new AttributeDefinition(new Guid("E4EC7913-5004-48FC-ACB1-E1764237A251"), "manaRecovery", string.Empty);
+        public static AttributeDefinition ManaRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("E4EC7913-5004-48FC-ACB1-E1764237A251"), "manaRecovery", string.Empty);
 
         /// <summary>
         /// Gets the health recovery attribute definition.
         /// </summary>
-        public static AttributeDefinition HealthRecovery { get; } = new AttributeDefinition(new Guid("0A427A13-3708-4125-BA83-A2DF7C0753B8"), "healthRecovery", string.Empty);
+        public static AttributeDefinition HealthRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("0A427A13-3708-4125-BA83-A2DF7C0753B8"), "healthRecovery", string.Empty);
 
         /// <summary>
         /// Gets the ability recovery attribute definition.
         /// </summary>
-        public static AttributeDefinition AbilityRecovery { get; } = new AttributeDefinition(new Guid("A3E274F5-FA74-4E6A-97EA-D0930AAF0374"), "abilityRecovery", string.Empty);
+        public static AttributeDefinition AbilityRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("A3E274F5-FA74-4E6A-97EA-D0930AAF0374"), "abilityRecovery", string.Empty);
 
         /// <summary>
         /// Gets the shield recovery attribute definition.
         /// </summary>
-        public static AttributeDefinition ShieldRecovery { get; } = new AttributeDefinition(new Guid("6B99AA99-C1A3-413B-8C70-602567EB5163"), "shieldRecovery", string.Empty);
+        public static AttributeDefinition ShieldRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("6B99AA99-C1A3-413B-8C70-602567EB5163"), "shieldRecovery", string.Empty);
+
+        /// <summary>
+        /// Gets the mana recovery absolute attribute definition.
+        /// </summary>
+        public static AttributeDefinition ManaRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("33DE588D-1FAB-493A-8FB1-837BF9C5131F"), nameof(ManaRecoveryAbsolute), string.Empty);
+
+        /// <summary>
+        /// Gets the health recovery absolute attribute definition.
+        /// </summary>
+        public static AttributeDefinition HealthRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("CBC4AB00-FD01-44D4-823A-D04B5E208AA0"), nameof(HealthRecoveryAbsolute), string.Empty);
+
+        /// <summary>
+        /// Gets the ability recovery absolute attribute definition.
+        /// </summary>
+        public static AttributeDefinition AbilityRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("19A76D11-B7AA-4C1E-885C-2B7E29071E3F"), nameof(AbilityRecoveryAbsolute), string.Empty);
+
+        /// <summary>
+        /// Gets the shield recovery absolute attribute definition.
+        /// </summary>
+        public static AttributeDefinition ShieldRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("323F479D-3205-4E24-B9BC-0A3EFC851EDF"), nameof(ShieldRecoveryAbsolute), string.Empty);
+
+        /// <summary>
+        /// Gets the shield recovery everywhere attribute definition.
+        /// By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.
+        /// </summary>
+        public static AttributeDefinition ShieldRecoveryEverywhere { get; } = new AttributeDefinition(new Guid("3D0A78FF-CCD4-442E-8B4E-64E5082ABD78"), "shieldRecovery", string.Empty);
 
         /// <summary>
         /// Gets the critical damage chance attribute definition.
@@ -443,21 +469,21 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             }
         }
 
-        private static Regeneration ManaRegeneration { get; } = new Regeneration(ManaRecovery, MaximumMana, CurrentMana, 0);
+        private static Regeneration ManaRegeneration { get; } = new Regeneration(ManaRecoveryMultiplier, MaximumMana, CurrentMana, ManaRecoveryAbsolute);
 
-        private static Regeneration HealthRegeneration { get; } = new Regeneration(HealthRecovery, MaximumHealth, CurrentHealth, 0);
+        private static Regeneration HealthRegeneration { get; } = new Regeneration(HealthRecoveryMultiplier, MaximumHealth, CurrentHealth, HealthRecoveryAbsolute);
 
-        private static Regeneration AbilityRegeneration { get; } = new Regeneration(AbilityRecovery, MaximumAbility, CurrentAbility, 2);
+        private static Regeneration AbilityRegeneration { get; } = new Regeneration(AbilityRecoveryMultiplier, MaximumAbility, CurrentAbility, AbilityRecoveryAbsolute);
 
-        private static Regeneration ShieldRegeneration { get; } = new Regeneration(ShieldRecovery, MaximumShield, CurrentShield, 0);
+        private static Regeneration ShieldRegeneration { get; } = new Regeneration(ShieldRecoveryMultiplier, MaximumShield, CurrentShield, ShieldRecoveryAbsolute);
 
-        private static Regeneration ManaRegenerationAfterMonsterKill { get; } = new Regeneration(ManaAfterMonsterKill, MaximumMana, CurrentMana, 0);
+        private static Regeneration ManaRegenerationAfterMonsterKill { get; } = new Regeneration(ManaAfterMonsterKill, MaximumMana, CurrentMana, null);
 
-        private static Regeneration HealthRegenerationAfterMonsterKill { get; } = new Regeneration(HealthAfterMonsterKill, MaximumHealth, CurrentHealth, 0);
+        private static Regeneration HealthRegenerationAfterMonsterKill { get; } = new Regeneration(HealthAfterMonsterKill, MaximumHealth, CurrentHealth, null);
 
-        private static Regeneration AbilityRegenerationAfterMonsterKill { get; } = new Regeneration(AbilityAfterMonsterKill, MaximumAbility, CurrentAbility, 0);
+        private static Regeneration AbilityRegenerationAfterMonsterKill { get; } = new Regeneration(AbilityAfterMonsterKill, MaximumAbility, CurrentAbility, null);
 
-        private static Regeneration ShieldRegenerationAfterMonsterKill { get; } = new Regeneration(ShieldAfterMonsterKill, MaximumShield, CurrentShield, 0);
+        private static Regeneration ShieldRegenerationAfterMonsterKill { get; } = new Regeneration(ShieldAfterMonsterKill, MaximumShield, CurrentShield, null);
 
         /// <summary>
         /// A regeneration definition.
@@ -474,13 +500,13 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             /// <param name="regenerationMultiplier">The regeneration multiplier.</param>
             /// <param name="maximumAttribute">The maximum attribute.</param>
             /// <param name="currentAttribute">The current attribute.</param>
-            /// <param name="constantRegeneration">The constant regeneration.</param>
-            public Regeneration(AttributeDefinition regenerationMultiplier, AttributeDefinition maximumAttribute, AttributeDefinition currentAttribute, float constantRegeneration)
+            /// <param name="absoluteAttribute">The constant regeneration.</param>
+            public Regeneration(AttributeDefinition regenerationMultiplier, AttributeDefinition maximumAttribute, AttributeDefinition currentAttribute, AttributeDefinition absoluteAttribute)
             {
                 this.RegenerationMultiplier = regenerationMultiplier;
                 this.MaximumAttribute = maximumAttribute;
                 this.CurrentAttribute = currentAttribute;
-                this.ConstantRegeneration = constantRegeneration;
+                this.AbsoluteAttribute = absoluteAttribute;
             }
 
             /// <summary>
@@ -489,9 +515,9 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             public AttributeDefinition RegenerationMultiplier { get; }
 
             /// <summary>
-            /// Gets the constant regeneration which is always regenerated, independently from the multiplier.
+            /// Gets the absolute regeneration which is always regenerated, independently from the multiplier.
             /// </summary>
-            public float ConstantRegeneration { get; }
+            public AttributeDefinition AbsoluteAttribute { get; }
 
             /// <summary>
             /// Gets the maximum attribute.

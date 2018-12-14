@@ -381,7 +381,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
             }
 
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Level380Option))
+            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.GuardianOption))
             {
                 price += price * 16 / 100;
             }

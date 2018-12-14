@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private const byte LevelMask = 0x78;
 
-        private const byte Option380Flag = 0x08;
+        private const byte GuardianOptionFlag = 0x08;
 
         private const byte NoSocket = 0xFF;
 
@@ -126,9 +126,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
 
             target[5] = (byte)(item.Definition.Group << 4);
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Level380Option))
+            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.GuardianOption))
             {
-                target[5] |= Option380Flag;
+                target[5] |= GuardianOptionFlag;
             }
 
             target[6] = (byte)(GetHarmonyByte(item) | GetFenrirByte(item));
@@ -292,18 +292,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private static void ReadLevel380Option(byte option380Byte, IContext persistenceContext, Item item)
         {
-            if ((option380Byte & Option380Flag) == 0)
+            if ((option380Byte & GuardianOptionFlag) == 0)
             {
                 return;
             }
 
-            var option380 = item.Definition.PossibleItemOptions
-                                .SelectMany(o => o.PossibleOptions.Where(i => i.OptionType == ItemOptionTypes.Level380Option))
-                                .FirstOrDefault()
-                            ?? throw new ArgumentException($"The lvl380 option flag was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
-            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = option380;
-            item.ItemOptions.Add(optionLink);
+            if (!item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.GuardianOption)))
+            {
+                throw new ArgumentException($"The lvl380 option flag was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+            }
+
+            var guardianOptions = item.Definition.PossibleItemOptions
+                                .SelectMany(o => o.PossibleOptions.Where(i => i.OptionType == ItemOptionTypes.GuardianOption));
+            foreach (var option in guardianOptions)
+            {
+                var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = option;
+                item.ItemOptions.Add(optionLink);
+            }
         }
 
         private static void ReadSockets(Span<byte> socketBytes, IContext persistenceContext, Item item)
@@ -450,39 +456,4 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             return result;
         }
     }
-
-    /*
-    public enum ExcArmorOptions
-    {
-        Zen = 1,
-        DefenseRate = 2,
-        Reflect = 4,
-        DamageDecrease = 8,
-        Mana = 16,
-        HP = 32
-    }
-
-    public enum ExcWeaponOptions
-    {
-        Mana8 = 1,
-        Life8 = 2,
-        Speed7 = 4,
-        Dmg2Percent = 8,
-        DmgLvl20 = 16,
-        ExcDmg = 32
-    }
-
-    public enum Lvl380Options
-    {
-        None = 0,
-        AttackSuccessRate = 1,
-        AddDamage = 2,
-        DefenseSuccessRate = 3,
-        Defense = 4,
-        MaxHPinc = 5,
-        MaxSDinc = 6,
-        SDrecover = 7,
-        SDrecoverRateInc = 8
-    }
-    */
 }

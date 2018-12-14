@@ -899,6 +899,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Scrolls(this.context, this.gameConfiguration).Initialize();
             new Wings(this.context, this.gameConfiguration).Initialize();
             new ExcellentOptions(this.context, this.gameConfiguration).Initialize();
+            new GuardianOptions(this.context, this.gameConfiguration).Initialize();
             new Armors(this.context, this.gameConfiguration).Initialize();
             new Weapons(this.context, this.gameConfiguration).Initialize();
             new Potions(this.context, this.gameConfiguration).Initialize();

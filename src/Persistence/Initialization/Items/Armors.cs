@@ -94,10 +94,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateArmor(26, 2, 2, 2, "Adamantine Mask", 66, 24, 56, 0, 77, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(27, 2, 2, 2, "Dark Steel Mask", 86, 26, 70, 0, 84, 22, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(28, 2, 2, 2, "Dark Master Mask", 106, 34, 78, 0, 80, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-            this.CreateArmor(29, 2, 2, 2, "Dragon Knight Helm", 130, 66, 90, 0, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-            this.CreateArmor(30, 2, 2, 2, "Venom Mist Helm", 126, 48, 86, 0, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateArmor(31, 2, 2, 2, "Sylphid Ray Helm", 126, 57, 86, 0, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-            this.CreateArmor(33, 2, 2, 2, "Sunlight Mask", 130, 46, 82, 0, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+            this.CreateArmor(29, 2, 2, 2, "Dragon Knight Helm", 130, 66, 90, 380, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+            this.CreateArmor(30, 2, 2, 2, "Venom Mist Helm", 126, 48, 86, 380, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateArmor(31, 2, 2, 2, "Sylphid Ray Helm", 126, 57, 86, 380, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+            this.CreateArmor(33, 2, 2, 2, "Sunlight Mask", 130, 46, 82, 380, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(34, 2, 2, 2, "Ashcrow Helm", 67, 27, 72, 0, 160, 50, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
             this.CreateArmor(35, 2, 2, 2, "Eclipse Helm", 67, 22, 54, 0, 53, 12, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateArmor(36, 2, 2, 2, "Iris Helm", 67, 30, 59, 0, 50, 70, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
@@ -149,11 +149,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateArmor(26, 3, 2, 3, "Adamantine Armor", 78, 36, 56, 0, 77, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(27, 3, 2, 3, "Dark Steel Armor", 96, 43, 70, 0, 84, 22, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(28, 3, 2, 3, "Dark Master Armor", 117, 51, 78, 0, 80, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-            this.CreateArmor(29, 3, 2, 3, "Dragon Knight Armor", 140, 88, 90, 0, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-            this.CreateArmor(30, 3, 2, 3, "Venom Mist Armor", 146, 57, 86, 0, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateArmor(31, 3, 2, 3, "Sylphid Ray Armor", 146, 68, 86, 0, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-            this.CreateArmor(32, 3, 2, 3, "Volcano Armor", 147, 86, 95, 0, 145, 60, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-            this.CreateArmor(33, 3, 2, 3, "Sunlight Armor", 147, 64, 82, 0, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+            this.CreateArmor(29, 3, 2, 3, "Dragon Knight Armor", 140, 88, 90, 380, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+            this.CreateArmor(30, 3, 2, 3, "Venom Mist Armor", 146, 57, 86, 380, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateArmor(31, 3, 2, 3, "Sylphid Ray Armor", 146, 68, 86, 380, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+            this.CreateArmor(32, 3, 2, 3, "Volcano Armor", 147, 86, 95, 380, 145, 60, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+            this.CreateArmor(33, 3, 2, 3, "Sunlight Armor", 147, 64, 82, 380, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(34, 3, 2, 3, "Ashcrow Armor", 75, 42, 72, 0, 160, 50, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
             this.CreateArmor(35, 3, 2, 3, "Eclipse Armor", 75, 27, 54, 0, 53, 12, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateArmor(36, 3, 2, 3, "Iris Armor", 75, 36, 59, 0, 50, 70, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
@@ -208,11 +208,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateArmor(26, 4, 2, 2, "Adamantine Pants", 70, 26, 56, 0, 77, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(27, 4, 2, 2, "Dark Steel Pants", 92, 31, 70, 0, 84, 22, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(28, 4, 2, 2, "Dark Master Pants", 110, 39, 78, 0, 80, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-            this.CreateArmor(29, 4, 2, 2, "Dragon Knight Pants", 134, 78, 90, 0, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-            this.CreateArmor(30, 4, 2, 2, "Venom Mist Pants", 135, 55, 86, 0, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateArmor(31, 4, 2, 2, "Sylphid Ray Pants", 135, 61, 86, 0, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-            this.CreateArmor(32, 4, 2, 2, "Volcano Pants", 135, 74, 95, 0, 145, 60, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-            this.CreateArmor(33, 4, 2, 2, "Sunlight Pants", 140, 52, 82, 0, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+            this.CreateArmor(29, 4, 2, 2, "Dragon Knight Pants", 134, 78, 90, 380, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+            this.CreateArmor(30, 4, 2, 2, "Venom Mist Pants", 135, 55, 86, 380, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateArmor(31, 4, 2, 2, "Sylphid Ray Pants", 135, 61, 86, 380, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+            this.CreateArmor(32, 4, 2, 2, "Volcano Pants", 135, 74, 95, 380, 145, 60, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+            this.CreateArmor(33, 4, 2, 2, "Sunlight Pants", 140, 52, 82, 380, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(34, 4, 2, 2, "Ashcrow Pants", 69, 33, 72, 0, 160, 50, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
             this.CreateArmor(35, 4, 2, 2, "Eclipse Pants", 69, 25, 54, 0, 53, 12, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateArmor(36, 4, 2, 2, "Iris Pants", 69, 32, 59, 0, 50, 70, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
@@ -267,11 +267,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateArmor(26, 5, 2, 2, "Adamantine Gloves", 57, 18, 56, 0, 77, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(27, 5, 2, 2, "Dark Steel Gloves", 75, 21, 70, 0, 84, 22, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(28, 5, 2, 2, "Dark Master Gloves", 89, 29, 78, 0, 80, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-            this.CreateArmor(29, 5, 2, 2, "Dragon Knight Gloves", 114, 60, 90, 0, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-            this.CreateArmor(30, 5, 2, 2, "Venom Mist Gloves", 111, 44, 86, 0, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateArmor(31, 5, 2, 2, "Sylphid Ray Gloves", 111, 50, 86, 0, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-            this.CreateArmor(32, 5, 2, 2, "Volcano Gloves", 127, 55, 95, 0, 145, 60, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-            this.CreateArmor(33, 5, 2, 2, "Sunlight Gloves", 110, 40, 82, 0, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+            this.CreateArmor(29, 5, 2, 2, "Dragon Knight Gloves", 114, 60, 90, 380, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+            this.CreateArmor(30, 5, 2, 2, "Venom Mist Gloves", 111, 44, 86, 380, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateArmor(31, 5, 2, 2, "Sylphid Ray Gloves", 111, 50, 86, 380, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+            this.CreateArmor(32, 5, 2, 2, "Volcano Gloves", 127, 55, 95, 380, 145, 60, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+            this.CreateArmor(33, 5, 2, 2, "Sunlight Gloves", 110, 40, 82, 380, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(34, 5, 2, 2, "Ashcrow Gloves", 61, 18, 72, 0, 160, 50, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
             this.CreateArmor(35, 5, 2, 2, "Eclipse Gloves", 61, 15, 54, 0, 53, 12, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateArmor(36, 5, 2, 2, "Iris Gloves", 61, 22, 59, 0, 50, 70, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
@@ -322,11 +322,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateArmor(26, 6, 2, 2, "Adamantine Boots", 60, 20, 56, 0, 77, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(27, 6, 2, 2, "Dark Steel Boots", 83, 25, 70, 0, 84, 22, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(28, 6, 2, 2, "Dark Master Boots", 95, 33, 78, 0, 80, 21, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-            this.CreateArmor(29, 6, 2, 2, "Dragon Knight Boots", 119, 63, 90, 0, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-            this.CreateArmor(30, 6, 2, 2, "Venom Mist Boots", 119, 47, 86, 0, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateArmor(31, 6, 2, 2, "Sylphid Ray Boots", 119, 53, 86, 0, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-            this.CreateArmor(32, 6, 2, 2, "Volcano Boots", 131, 61, 95, 0, 145, 60, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-            this.CreateArmor(33, 6, 2, 2, "Sunlight Boots", 121, 44, 82, 0, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+            this.CreateArmor(29, 6, 2, 2, "Dragon Knight Boots", 119, 63, 90, 380, 170, 60, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+            this.CreateArmor(30, 6, 2, 2, "Venom Mist Boots", 119, 47, 86, 380, 44, 15, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateArmor(31, 6, 2, 2, "Sylphid Ray Boots", 119, 53, 86, 380, 38, 80, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+            this.CreateArmor(32, 6, 2, 2, "Volcano Boots", 131, 61, 95, 380, 145, 60, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+            this.CreateArmor(33, 6, 2, 2, "Sunlight Boots", 121, 44, 82, 380, 62, 16, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
             this.CreateArmor(34, 6, 2, 2, "Ashcrow Boots", 68, 19, 72, 0, 160, 50, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
             this.CreateArmor(35, 6, 2, 2, "Eclipse Boots", 68, 17, 54, 0, 53, 12, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
             this.CreateArmor(36, 6, 2, 2, "Iris Boots", 68, 23, 59, 0, 50, 70, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
@@ -352,6 +352,33 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateArmor(73, 6, 2, 2, "Phoenix Soul Boots", 119, 57, 88, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
             this.BuildSets();
+            this.AddGuardianOptionsToSets();
+        }
+
+        private void AddGuardianOptionsToSets()
+        {
+            const int dragonKnightSetIndex = 29;
+            const int sunlightSetIndex = 33;
+            for (int i = dragonKnightSetIndex; i <= sunlightSetIndex; i++)
+            {
+                this.AddGuardianOptionForArmor(i, ItemGroups.Armor);
+                this.AddGuardianOptionForArmor(i, ItemGroups.Pants);
+                this.AddGuardianOptionForArmor(i, ItemGroups.Helm);
+                this.AddGuardianOptionForArmor(i, ItemGroups.Boots);
+                this.AddGuardianOptionForArmor(i, ItemGroups.Gloves);
+            }
+        }
+
+        private void AddGuardianOptionForArmor(int setNumber, ItemGroups itemGroup)
+        {
+            var armor = this.GameConfiguration.Items.FirstOrDefault(item => item.Number == setNumber && item.Group == (int)itemGroup);
+            if (armor == null)
+            {
+                return;
+            }
+
+            var itemOption = this.GameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.GuardianOption && po.Number == (int)itemGroup));
+            armor.PossibleItemOptions.Add(itemOption);
         }
 
         private IncreasableItemOption BuildDefenseBonusOption(float bonus)

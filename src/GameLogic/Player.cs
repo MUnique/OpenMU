@@ -382,7 +382,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             foreach (var recoverAfterMonsterKill in Stats.AfterMonsterKillRegenerationAttributes)
             {
-                var additionalValue = (uint)(this.Attributes[recoverAfterMonsterKill.RegenerationMultiplier] * this.Attributes[recoverAfterMonsterKill.MaximumAttribute] + recoverAfterMonsterKill.ConstantRegeneration);
+                var additionalValue = (uint)((this.Attributes[recoverAfterMonsterKill.RegenerationMultiplier] * this.Attributes[recoverAfterMonsterKill.MaximumAttribute]) + this.Attributes[recoverAfterMonsterKill.AbsoluteAttribute]);
                 this.Attributes[recoverAfterMonsterKill.CurrentAttribute] = (uint)Math.Min(this.Attributes[recoverAfterMonsterKill.MaximumAttribute], this.Attributes[recoverAfterMonsterKill.CurrentAttribute] + additionalValue);
             }
 
@@ -590,10 +590,20 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void Regenerate()
         {
-            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || r.ConstantRegeneration > 0))
+            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
             {
+                if (r.CurrentAttribute == Stats.CurrentShield)
+                {
+                    if (!this.IsAtSafezone() && this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                    {
+                        // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
+                        // This attribute is usually provided by a level 380 armor and a Guardian Option.
+                        continue;
+                    }
+                }
+
                 this.Attributes[r.CurrentAttribute] = Math.Min(
-                    this.Attributes[r.CurrentAttribute] + ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) + r.ConstantRegeneration),
+                    this.Attributes[r.CurrentAttribute] + ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) + this.Attributes[r.AbsoluteAttribute]),
                     this.Attributes[r.MaximumAttribute]);
             }
 

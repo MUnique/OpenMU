@@ -135,7 +135,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                         yield return this.CreateOption(tuple.Item1, Stats.DefenseBase, 0, AggregateType.AddRaw, 4f);
                         break;
                     case OptionType.HealthRecover:
-                        yield return this.CreateOption(tuple.Item1, Stats.HealthRecovery, 0, AggregateType.AddRaw, 0.01f);
+                        yield return this.CreateOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f);
                         break;
                     case OptionType.PhysDamage:
                         yield return this.CreateOption(tuple.Item1, Stats.MaximumPhysBaseDmg, 0, AggregateType.AddRaw, 4f);
