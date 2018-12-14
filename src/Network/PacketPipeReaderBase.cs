@@ -97,8 +97,16 @@ namespace MUnique.OpenMU.Network
             }
             while (buffer.Length > 2);
 
-            // Tell the PipeReader how much of the buffer we have consumed
-            this.Source.AdvanceTo(buffer.Start);
+            if (result.IsCanceled || result.IsCompleted)
+            {
+                // Not possible to advance any further, e.g. because of a disconnected network connection.
+                this.OnComplete(null);
+            }
+            else
+            {
+                // Tell the PipeReader how much of the buffer we have consumed
+                this.Source.AdvanceTo(buffer.Start);
+            }
 
             return result.IsCompleted;
         }
