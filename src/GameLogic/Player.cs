@@ -592,14 +592,11 @@ namespace MUnique.OpenMU.GameLogic
         {
             foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
             {
-                if (r.CurrentAttribute == Stats.CurrentShield)
+                if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() && this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
                 {
-                    if (!this.IsAtSafezone() && this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
-                    {
-                        // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
-                        // This attribute is usually provided by a level 380 armor and a Guardian Option.
-                        continue;
-                    }
+                    // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
+                    // This attribute is usually provided by a level 380 armor and a Guardian Option.
+                    continue;
                 }
 
                 this.Attributes[r.CurrentAttribute] = Math.Min(
