@@ -629,7 +629,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var remainingShieldDamage = hitInfo.ShieldDamage;
             while (remainingHealthDamage > 0 || remainingShieldDamage > 0)
             {
-                var healthDamage = (ushort)(remainingShieldDamage & 0xFFFF);
+                var healthDamage = (ushort)(remainingHealthDamage & 0xFFFF);
                 var shieldDamage = (ushort)(remainingShieldDamage & 0xFFFF);
                 using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
                 {
