@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// </summary>
         /// <param name="statAttributes">The stat attributes. These attributes are added just as-is and are not wrapped by a <see cref="ComposableAttribute"/>.</param>
         /// <param name="baseAttributes">The initial base attributes. These attributes contain the base values which will be wrapped by a <see cref="ComposableAttribute"/>, so additional elements can contribute to the attributes value. Instead of providing them here, you could also add them to the system by calling <see cref="AddElement"/> later.</param>
-        /// <param name="attributeRelationships">The inital attribute relationships. Instead of providing them here, you could also add them to the system by calling <see cref="AddAttributeRelationship(AttributeRelationship, IAttributeSystem)"/> later.</param>
+        /// <param name="attributeRelationships">The initial attribute relationships. Instead of providing them here, you could also add them to the system by calling <see cref="AddAttributeRelationship(AttributeRelationship, IAttributeSystem)"/> later.</param>
         public AttributeSystem(IEnumerable<IAttribute> statAttributes, IEnumerable<IAttribute> baseAttributes, IEnumerable<AttributeRelationship> attributeRelationships)
         {
             foreach (var statAttribute in statAttributes)
@@ -197,6 +197,11 @@ namespace MUnique.OpenMU.AttributeSystem
 
         private IElement GetAttribute(AttributeDefinition attributeDefinition)
         {
+            if (attributeDefinition == null)
+            {
+                return null;
+            }
+
             if (this.attributes.TryGetValue(attributeDefinition, out IAttribute attribute))
             {
                 return attribute;
