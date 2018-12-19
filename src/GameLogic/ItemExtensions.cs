@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public static byte GetMaximumDurabilityOfOnePiece(this Item item)
         {
-            if (item.IsWearable())
+            if (!item.IsWearable())
             {
                 // Items which are not wearable don't have a "real" durability. If the item is stackable, durability means number of pieces in this case
                 return 1;
