@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests
 {
+    using System;
     using System.Collections.Generic;
     using Moq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -386,6 +387,10 @@ namespace MUnique.OpenMU.Tests
             itemDefinition.Group = group;
             itemDefinition.Value = value;
             itemDefinition.Number = id;
+            if (group <= 11)
+            {
+                itemDefinition.ItemSlot = new ItemSlotType();
+            }
 
             if (group < 6)
             {
@@ -398,8 +403,8 @@ namespace MUnique.OpenMU.Tests
             itemMock.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
             var item = itemMock.Object;
             item.Definition = itemDefinition;
-            item.Durability = itemDefinition.Durability;
             item.Level = level;
+            item.Durability = Math.Max(item.GetMaximumDurabilityOfOnePiece(), maxDurability);
 
             if (luck)
             {
