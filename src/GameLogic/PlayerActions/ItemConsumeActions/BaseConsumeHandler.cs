@@ -7,7 +7,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     /// <summary>
-    /// Base class of an item consumation handler.
+    /// Base class of an item consumption handler.
     /// </summary>
     public class BaseConsumeHandler : IItemConsumeHandler
     {
