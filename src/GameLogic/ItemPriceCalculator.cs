@@ -160,6 +160,12 @@ namespace MUnique.OpenMU.GameLogic
                     item.Level == 7 ? 75000 :
                     item.Level == 8 ? 90000 : 15000
             },
+            {
+                (int)SpecialItems.OldScroll, item => item.Level == 1 ? 500000 : (item.Level + 1) * 200000
+            },
+            {
+                (int)SpecialItems.IllusionSorcererCovenant, item => item.Level == 1 ? 500000 : (item.Level + 1) * 200000
+            },
             { (int)SpecialItems.ArmorGuardman, item => 5000 },
             { (int)SpecialItems.WizardsRing, item => item.Level == 0 ? 30000 : 0 },
             { (int)SpecialItems.SpiritPet, item => item.Level == 0 ? 30000000 : item.Level == 1 ? 15000000 : 0 },
@@ -235,6 +241,8 @@ namespace MUnique.OpenMU.GameLogic
             Halloween5 = 0x310E, // getId(14, 49),
             Halloween6 = 0x320E, // getId(14, 50),
             GemOfSecret = 0x1A0C, // getId(12,26),
+            OldScroll = 0x310D,
+            IllusionSorcererCovenant = 0x320D,
         }
 
         /// <summary>
