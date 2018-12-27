@@ -38,6 +38,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(this.CreateMediumShieldPotion());
             this.GameConfiguration.Items.Add(this.CreateLargeShieldPotion());
             this.GameConfiguration.Items.Add(this.CreateAlcohol());
+            this.GameConfiguration.Items.Add(this.CreateAntidotePotion());
+            this.GameConfiguration.Items.Add(this.CreateTownPortalScroll());
         }
 
         private ItemDefinition CreateAlcohol()
@@ -250,6 +252,42 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Durability = 3;
             definition.Width = 1;
             definition.Height = 1;
+            return definition;
+        }
+
+        /// <summary>
+        /// Gets the antidote definition.
+        /// </summary>
+        /// <returns>The created antidote definition.</returns>
+        private ItemDefinition CreateAntidotePotion()
+        {
+            var definition = this.Context.CreateNew<ItemDefinition>();
+            definition.Name = "Antidote";
+            definition.Number = 8;
+            definition.Group = 14;
+            definition.DropsFromMonsters = true;
+            definition.DropLevel = 10;
+            definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.AntidoteConsumeHandler).FullName;
+            definition.Durability = 3;
+            definition.Value = 10;
+            definition.Width = 1;
+            definition.Height = 1;
+            return definition;
+        }
+
+        private ItemDefinition CreateTownPortalScroll()
+        {
+            var definition = this.Context.CreateNew<ItemDefinition>();
+            definition.Name = "Town Portal Scroll";
+            definition.Number = 10;
+            definition.Group = 14;
+            definition.DropsFromMonsters = true;
+            definition.DropLevel = 30;
+            definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.TownPortalScrollConsumeHandler).FullName;
+            definition.Durability = 1;
+            definition.Value = 30;
+            definition.Width = 1;
+            definition.Height = 2;
             return definition;
         }
     }
