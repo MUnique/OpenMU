@@ -158,9 +158,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             {
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 244;
-                def.Designation = "Lumen The Barmaid";
+                def.Designation = "Caren the Barmaid";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreateLumenTheBarmaidStore();
+                def.MerchantStore = this.CreateCarenTheBarmaidStore();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -244,9 +244,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             {
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 255;
-                def.Designation = "Lumen The Barmaid";
+                def.Designation = "Lumen the Barmaid";
                 def.NpcWindow = NpcWindow.Merchant;
-                def.MerchantStore = this.CreatePotionGirl();
+                def.MerchantStore = this.CreateLumenTheBarmaidStore();
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -1475,6 +1475,25 @@ namespace MUnique.OpenMU.Persistence.Initialization
             itemList.Add(this.itemHelper.CreateItem(62, 49, 13, 1, 5)); // Old Scroll
             itemList.Add(this.itemHelper.CreatePotion(64, 9, 1, 0)); // Ale
             itemList.Add(this.itemHelper.CreateItem(65, 29, 13, 1, 0)); // Armor of Guardsman
+
+            return this.CreateMerchantStore(itemList);
+        }
+
+        private ItemStorage CreateCarenTheBarmaidStore()
+        {
+            List<Item> itemList = new List<Item>();
+
+            itemList.Add(this.itemHelper.CreatePotion(0, 9, 1, 0)); // Ale 
+            itemList.Add(this.itemHelper.CreateItem(1, 10, 14, 1, 0)); // Town Portal Scroll 
+            itemList.Add(this.itemHelper.CreateItem(2, 16, 13, 1, 1)); // Scroll of Archangel + 1
+            itemList.Add(this.itemHelper.CreateItem(3, 16, 13, 1, 2)); // Scroll of Archangel + 2 
+            itemList.Add(this.itemHelper.CreateItem(4, 17, 13, 1, 1)); // Blood Bone + 1
+            itemList.Add(this.itemHelper.CreateItem(5, 17, 13, 1, 2)); // Blood Bone + 2 
+            itemList.Add(this.itemHelper.CreateItem(6, 17, 14, 1, 1)); // Devils Eye + 1
+            itemList.Add(this.itemHelper.CreateItem(7, 17, 14, 1, 2)); // Devils Eye + 2 
+            itemList.Add(this.itemHelper.CreateItem(14, 18, 14, 1, 1)); // Devils key + 1
+            itemList.Add(this.itemHelper.CreateItem(15, 18, 14, 1, 2)); // Devils key + 2 
+            itemList.Add(this.itemHelper.CreateItem(16, 29, 13, 1, 0)); // Armor of Guardsman 
 
             return this.CreateMerchantStore(itemList);
         }
