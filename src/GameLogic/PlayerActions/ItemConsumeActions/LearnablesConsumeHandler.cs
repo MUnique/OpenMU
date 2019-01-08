@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
+    using DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -33,15 +34,28 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (learnable.Skill == null || player.SkillList.ContainsSkill(learnable.Skill.Number.ToUnsigned()))
+            var skill = this.GetLearnableSkill(item, player.GameContext.Configuration);
+
+            if (skill == null || player.SkillList.ContainsSkill(skill.Number.ToUnsigned()))
             {
                 return false;
             }
 
-            player.SkillList.AddLearnedSkill(learnable.Skill);
+            player.SkillList.AddLearnedSkill(skill);
             player.Inventory.RemoveItem(item);
             player.PersistenceContext.Delete(item);
             return true;
+        }
+
+        /// <summary>
+        /// Gets the learnable skill.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        /// <returns>The skill to learn.</returns>
+        protected virtual Skill GetLearnableSkill(Item item, GameConfiguration gameConfiguration)
+        {
+            return item.Definition.Skill;
         }
     }
 }

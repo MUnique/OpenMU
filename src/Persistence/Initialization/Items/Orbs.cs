@@ -74,6 +74,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             orb.DropsFromMonsters = true;
             orb.Durability = 1;
             orb.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LearnablesConsumeHandler).FullName;
+            if (skillNumber == SkillNumber.SummonGoblin)
+            {
+                orb.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SummoningOrbConsumeHandler).FullName;
+            }
 
             if (levelRequirement > 0)
             {

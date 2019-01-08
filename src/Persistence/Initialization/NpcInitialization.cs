@@ -1199,9 +1199,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
             itemList.Add(this.itemHelper.CreateOrb(24, 8));
             itemList.Add(this.itemHelper.CreateOrb(25, 9));
             itemList.Add(this.itemHelper.CreateOrb(26, 10));
-            itemList.Add(this.itemHelper.CreateOrb(27, 11));
 
-            //// TODO: Add Summoning Orb
+            itemList.Add(this.itemHelper.CreateSummonOrb(27, 0)); // Orb of Summon "Goblin"
+            itemList.Add(this.itemHelper.CreateSummonOrb(28, 1)); // Orb of Summon + 1 "Stone Golem"
+            itemList.Add(this.itemHelper.CreateSummonOrb(29, 2)); // Orb of Summon + 2 "Assassin"
+            itemList.Add(this.itemHelper.CreateSummonOrb(30, 3)); // Orb of Summon + 3 "Elite Yeti"
+            itemList.Add(this.itemHelper.CreateSummonOrb(31, 4)); // Orb of Summon + 4 "Dark Knight"
 
             itemList.Add(this.itemHelper.CreateSetItem(32, 10, 7, null, 0, 1, true));    // Vine Helme +0+4+L
             itemList.Add(this.itemHelper.CreateSetItem(34, 10, 8, null, 0, 1, true));    // Vine Armor +0+4+L

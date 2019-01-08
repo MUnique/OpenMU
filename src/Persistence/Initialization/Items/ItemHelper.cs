@@ -42,6 +42,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         }
 
         /// <summary>
+        /// Creates an summon orb.
+        /// </summary>
+        /// <param name="itemSlot">The item slot.</param>
+        /// <param name="level">The level of the orb - indirectly defines the skill which will be learned.</param>
+        /// <returns>The orb.</returns>
+        public Item CreateSummonOrb(byte itemSlot, byte level)
+        {
+            var orb = this.CreateLearnable(itemSlot, 11, 12); // 12 - Orb group
+            orb.Level = level;
+            return orb;
+        }
+
+        /// <summary>
         /// Creates a scroll.
         /// </summary>
         /// <param name="itemSlot">The item slot.</param>
