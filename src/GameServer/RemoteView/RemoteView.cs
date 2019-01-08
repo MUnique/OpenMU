@@ -613,6 +613,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 this.SendMasterStats();
             }
+
+            this.SendKeyConfiguration();
         }
 
         /// <remarks>
@@ -953,6 +955,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
                 packet.Slice(28).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield]);
                 packet.Slice(30).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility]);
+                writer.Commit();
+            }
+        }
+
+        private void SendKeyConfiguration()
+        {
+            var keyConfiguration = this.player.SelectedCharacter.KeyConfiguration;
+            if (keyConfiguration == null || keyConfiguration.Length == 0)
+            {
+                return;
+            }
+
+            using (var writer = this.connection.StartSafeWrite(0xC1, 4 + keyConfiguration.Length))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x30;
+                keyConfiguration.AsSpan().CopyTo(packet.Slice(4));
                 writer.Commit();
             }
         }
