@@ -28,38 +28,39 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <summary>
         /// Kicks the player out of the guild.
         /// </summary>
-        /// <param name="guildMaster">The guild master.</param>
+        /// <param name="player">The player.</param>
         /// <param name="nickname">The nickname.</param>
         /// <param name="securityCode">The security code.</param>
-        public void KickPlayer(Player guildMaster, string nickname, string securityCode)
+        public void KickPlayer(Player player, string nickname, string securityCode)
         {
-            if (guildMaster.Account.SecurityCode != null && guildMaster.Account.SecurityCode != securityCode)
+            if (player.Account.SecurityCode != null && player.Account.SecurityCode != securityCode)
             {
-                guildMaster.PlayerView.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
-                Log.DebugFormat("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, guildMaster.Account.SecurityCode, guildMaster.SelectedCharacter.Name);
+                player.PlayerView.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
+                Log.DebugFormat("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, player.Account.SecurityCode, player.SelectedCharacter.Name);
 
-                guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.Failed);
+                player.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.Failed);
                 return;
             }
 
-            if (guildMaster.GuildStatus?.Position != GuildPosition.GuildMaster)
+            var isKickingHimself = player.SelectedCharacter.Name == nickname;
+            if (!isKickingHimself && player.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                Log.WarnFormat("Suspicious request for player with name: {0} (player is not a guild master), could be hack attempt.", guildMaster.Name);
-                guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.Failed);
+                Log.WarnFormat("Suspicious kick request for player with name: {0} (player is not a guild master) to kick {1}, could be hack attempt.", player.Name, nickname);
+                player.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.Failed);
                 return;
             }
 
-            if (nickname == guildMaster.SelectedCharacter.Name)
+            if (isKickingHimself && player.GuildStatus?.Position == GuildPosition.GuildMaster)
             {
-                var guildId = guildMaster.GuildStatus.GuildId;
+                var guildId = player.GuildStatus.GuildId;
                 this.gameContext.GuildServer.KickMember(guildId, nickname);
                 this.gameContext.GuildCache.Invalidate(guildId);
-                guildMaster.GuildStatus = null;
-                guildMaster.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.GuildDisband);
+                player.GuildStatus = null;
+                player.PlayerView.GuildView.GuildKickResult(GuildKickSuccess.GuildDisband);
                 return;
             }
 
-            this.gameContext.GuildServer.KickMember(guildMaster.GuildStatus.GuildId, nickname);
+            this.gameContext.GuildServer.KickMember(player.GuildStatus.GuildId, nickname);
         }
     }
 }
