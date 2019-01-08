@@ -57,7 +57,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 try
                 {
                     var objectLoader = new AccountJsonObjectLoader();
-                    return objectLoader.LoadObject<Account>(accountInfo.Id, context.Context);
+                    var account = objectLoader.LoadObject<Account>(accountInfo.Id, context.Context);
+                    context.Context.Attach(account);
+                    return account;
                 }
                 finally
                 {
