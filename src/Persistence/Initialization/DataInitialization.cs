@@ -70,8 +70,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 }
 
                 this.CreateTestAccounts(10);
-                this.CreateTest300();
-                this.CreateTest400();
+                this.CreateTest(300);
+                this.CreateTest(400);
 
                 this.context.SaveChanges();
             }
@@ -121,47 +121,184 @@ namespace MUnique.OpenMU.Persistence.Initialization
             account.Characters.Add(this.CreateWizard(loginName + "Wiz", level));
         }
 
+        private void CreateTest(int level)
+        {
+            var loginName = "test" + level.ToString();
+            var account = this.context.CreateNew<Account>();
+            account.LoginName = loginName;
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
+            account.Vault = this.context.CreateNew<ItemStorage>();
+
+            account.Characters.Add(this.CreateDarkKnight(loginName + "Dk", level));
+            account.Characters.Add(this.CreateElf(loginName + "Elf", level));
+            account.Characters.Add(this.CreateWizard(loginName + "Wiz", level));
+        }
+
         private Character CreateWizard(string name, int level)
         {
             var character = this.CreateCharacter(name, CharacterClassNumber.DarkWizard, level, 1);
-            this.AddTestJewelsAndPotions(character.Inventory);
-            character.Inventory.Items.Add(this.CreateSkullStaff(0));
-            character.Inventory.Items.Add(this.CreateSetItem(52, 2, 8)); // Pad Armor
-            character.Inventory.Items.Add(this.CreateSetItem(47, 2, 7)); // Pad Helm
-            character.Inventory.Items.Add(this.CreateSetItem(49, 2, 9)); // Pad Pants
-            character.Inventory.Items.Add(this.CreateSetItem(63, 2, 10)); // Pad Gloves
-            character.Inventory.Items.Add(this.CreateSetItem(65, 2, 11)); // Pad Boots
+            switch (level)
+            {
+                case 300:
+                    character = this.CreateCharacter(name, CharacterClassNumber.SoulMaster, level, 1);
 
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 400;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+                    character.LevelUpPoints -= 700; // for the added strength and agility
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 7, 8, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 7, 7, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 7, 9, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 7, 10, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 7, 11, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 4, 13)); // Wings of Soul +13
+                    break;
+                case 400:
+                    character = this.CreateCharacter(name, CharacterClassNumber.GrandMaster, level, 1);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 400;
+                    character.LevelUpPoints -= 1600; // for the added strength and agility
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+                    character.MasterLevelUpPoints = 100; // To test master skill tree
+
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 9, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc +15+16+L+ExcDmg
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.RightHandSlot, 15, 6, null, 15, 4, true)); // +15+16+L
+
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 30, 8, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 30, 7, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 30, 9, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 30, 10, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 30, 11, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 37, 15)); // Wing of Eternal +15
+                    break;
+                default:
+                    character.Inventory.Items.Add(this.CreateSkullStaff(0));
+                    character.Inventory.Items.Add(this.CreateSetItem(52, 2, 8)); // Pad Armor
+                    character.Inventory.Items.Add(this.CreateSetItem(47, 2, 7)); // Pad Helm
+                    character.Inventory.Items.Add(this.CreateSetItem(49, 2, 9)); // Pad Pants
+                    character.Inventory.Items.Add(this.CreateSetItem(63, 2, 10)); // Pad Gloves
+                    character.Inventory.Items.Add(this.CreateSetItem(65, 2, 11)); // Pad Boots
+                    break;
+            }
+
+            this.AddTestJewelsAndPotions(character.Inventory);
             return character;
         }
 
         private Character CreateElf(string name, int level)
         {
             var character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
-            this.AddTestJewelsAndPotions(character.Inventory);
-            character.Inventory.Items.Add(this.CreateShortBow(1));
-            character.Inventory.Items.Add(this.CreateArrows(0));
-            character.Inventory.Items.Add(this.CreateSetItem(52, 10, 8)); // Vine Armor
-            character.Inventory.Items.Add(this.CreateSetItem(47, 10, 7)); // Vine Helm
-            character.Inventory.Items.Add(this.CreateSetItem(49, 10, 9)); // Vine Pants
-            character.Inventory.Items.Add(this.CreateSetItem(63, 10, 10)); // Vine Gloves
-            character.Inventory.Items.Add(this.CreateSetItem(65, 10, 11)); // Vine Boots
+            switch (level)
+            {
+                case 300:
+                    character = this.CreateCharacter(name, CharacterClassNumber.MuseElf, level, 2);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 400;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+                    character.LevelUpPoints -= 700; // for the added strength and agility
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 12, 8, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 12, 7, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 12, 9, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 12, 10, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 12, 11, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 3, 13)); // Wings of Spirits +13
+                    break;
+                case 400:
+                    character = this.CreateCharacter(name, CharacterClassNumber.HighElf, level, 2);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 600;
+                    character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 600;
+                    character.LevelUpPoints -= 1600; // for the added strength and agility
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+                    character.MasterLevelUpPoints = 100; // To test master skill tree
+
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 31, 8, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 31, 7, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 31, 9, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 31, 10, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 31, 11, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 38, 15)); // Wing of Illusion +15
+                    break;
+                default:
+                    character.Inventory.Items.Add(this.CreateShortBow(1));
+                    character.Inventory.Items.Add(this.CreateArrows(0));
+                    character.Inventory.Items.Add(this.CreateSetItem(52, 10, 8)); // Vine Armor
+                    character.Inventory.Items.Add(this.CreateSetItem(47, 10, 7)); // Vine Helm
+                    character.Inventory.Items.Add(this.CreateSetItem(49, 10, 9)); // Vine Pants
+                    character.Inventory.Items.Add(this.CreateSetItem(63, 10, 10)); // Vine Gloves
+                    character.Inventory.Items.Add(this.CreateSetItem(65, 10, 11)); // Vine Boots
+                    break;
+            }
+
             character.Inventory.Items.Add(this.CreateOrb(67, 8)); // Healing Orb
             character.Inventory.Items.Add(this.CreateOrb(75, 9)); // Defense Orb
             character.Inventory.Items.Add(this.CreateOrb(68, 10)); // Damage Orb
+            this.AddTestJewelsAndPotions(character.Inventory);
             return character;
         }
 
         private Character CreateDarkKnight(string name, int level)
         {
             var character = this.CreateCharacter(name, CharacterClassNumber.DarkKnight, level, 0);
+            switch (level)
+            {
+                case 300:
+                    character = this.CreateCharacter(name, CharacterClassNumber.BladeKnight, level, 0);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 400;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+                    character.LevelUpPoints -= 700; // for the added strength and agility
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 5, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Blade+13+16+L+ExcDmg
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 6, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Exc Scale Armor+13+16+L
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 6, 7, Stats.MaximumHealth, 13, 4, true)); // Exc Scale Helm+13+16+L
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 6, 9, Stats.MoneyAmountRate, 13, 4, true)); // Exc Scale Pants+13+16+L
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 6, 10, Stats.MaximumMana, 13, 4, true)); // Exc Scale Gloves+13+16+L
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 6, 11, Stats.DamageReflection, 13, 4, true)); // Exc Scale Boots+13+16+L
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 5, 13)); // Dragon Wings +13
+
+                    this.AddDarkKnightItems(character.Inventory);
+                    break;
+                case 400:
+                    character = this.CreateCharacter(name, CharacterClassNumber.BattleMaster, level, 0);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 400;
+                    character.LevelUpPoints -= 1600; // for the added strength and agility
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+                    character.MasterLevelUpPoints = 100; // To test master skill tree
+
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 19, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Sword+15+16+L+ExcDmg
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 22, 15, 4, true, true)); // Bone Blade+15+16+L
+
+                    // Dragon Knight Set+15+16+L:
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 29, 8, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 29, 7, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 29, 9, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 29, 10, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 29, 11, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 36, 15)); // Wing of Storm +15
+
+                    this.AddDarkKnightItems(character.Inventory);
+                    break;
+                default:
+                    character.Inventory.Items.Add(this.CreateSmallAxe(0));
+                    character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather Armor
+                    character.Inventory.Items.Add(this.CreateSetItem(47, 5, 7)); // Leather Helm
+                    character.Inventory.Items.Add(this.CreateSetItem(49, 5, 9)); // Leather Pants
+                    character.Inventory.Items.Add(this.CreateSetItem(63, 5, 10, Stats.DamageReflection)); // Leather Gloves
+                    character.Inventory.Items.Add(this.CreateSetItem(65, 5, 11, Stats.DamageReflection)); // Leather Boots
+                    break;
+            }
+
             this.AddTestJewelsAndPotions(character.Inventory);
-            character.Inventory.Items.Add(this.CreateSmallAxe(0));
-            character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather Armor
-            character.Inventory.Items.Add(this.CreateSetItem(47, 5, 7)); // Leather Helm
-            character.Inventory.Items.Add(this.CreateSetItem(49, 5, 9)); // Leather Pants
-            character.Inventory.Items.Add(this.CreateSetItem(63, 5, 10, Stats.DamageReflection)); // Leather Gloves
-            character.Inventory.Items.Add(this.CreateSetItem(65, 5, 11, Stats.DamageReflection)); // Leather Boots
 
             return character;
         }
@@ -233,80 +370,17 @@ namespace MUnique.OpenMU.Persistence.Initialization
             inventory.Items.Add(this.CreateShieldPotion(46, 2));
         }
 
-        private void CreateTest400()
+        private void AddDarkKnightItems(ItemStorage inventory)
         {
-            var loginName = "test400";
-
-            var account = this.context.CreateNew<Account>();
-            account.LoginName = loginName;
-            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
-            account.Vault = this.context.CreateNew<ItemStorage>();
-
-            var character = this.CreateCharacter(loginName, CharacterClassNumber.BattleMaster, 400, 0);
-            account.Characters.Add(character);
-            character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
-            character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 400;
-            character.LevelUpPoints -= 1600; // for the added strength and agility
-            character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
-            character.MasterLevelUpPoints = 100; // To test master skill tree
-
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 19, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Sword+15+16+L+ExcDmg
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 22, 15, 4, true, true)); // Bone Blade+15+16+L
-
-            // Dragon Knight Set+15+16+L:
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 29, 8, null, 15, 4, true));
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 29, 7, null, 15, 4, true));
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 29, 9, null, 15, 4, true));
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 29, 10, null, 15, 4, true));
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 29, 11, null, 15, 4, true));
-            character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 36, 15)); // Wing of Storm +15
-            this.AddTestJewelsAndPotions(character.Inventory);
-            character.Inventory.Items.Add(this.CreateOrb(47, 12));
-            character.Inventory.Items.Add(this.CreateOrb(48, 14));
-            character.Inventory.Items.Add(this.CreateOrb(49, 19));
-            character.Inventory.Items.Add(this.CreateOrb(50, 44));
-            character.Inventory.Items.Add(this.CreateOrb(56, 7));
-            character.Inventory.Items.Add(this.CreateFullOptionJewellery(52, 20)); // Wizards Ring
-            character.Inventory.Items.Add(this.CreateFullOptionJewellery(53, 8)); // Ring of Ice
-            character.Inventory.Items.Add(this.CreateFullOptionJewellery(54, 9)); // Ring of Poison
-            character.Inventory.Items.Add(this.CreateFullOptionJewellery(55, 12)); // Pendant of Lightning
-        }
-
-        private void CreateTest300()
-        {
-            var loginName = "test300";
-
-            var account = this.context.CreateNew<Account>();
-            account.LoginName = loginName;
-            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
-            account.Vault = this.context.CreateNew<ItemStorage>();
-
-            var character = this.CreateCharacter(loginName, CharacterClassNumber.BladeKnight, 300, 0);
-            account.Characters.Add(character);
-
-            character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 400;
-            character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
-            character.LevelUpPoints -= 700; // for the added strength and agility
-            character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
-
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 5, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Blade+13+16+L+ExcDmg
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 6, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Exc Scale Armor+13+16+L
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 6, 7, Stats.MaximumHealth, 13, 4, true)); // Exc Scale Helm+13+16+L
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 6, 9, Stats.MoneyAmountRate, 13, 4, true)); // Exc Scale Pants+13+16+L
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 6, 10, Stats.MaximumMana, 13, 4, true)); // Exc Scale Gloves+13+16+L
-            character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 6, 11, Stats.DamageReflection, 13, 4, true)); // Exc Scale Boots+13+16+L
-            character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 5, 13)); // Dragon Wings +13
-            this.AddTestJewelsAndPotions(character.Inventory);
-            character.Inventory.Items.Add(this.CreateOrb(47, 12));
-            character.Inventory.Items.Add(this.CreateOrb(48, 14));
-            character.Inventory.Items.Add(this.CreateOrb(49, 19));
-            character.Inventory.Items.Add(this.CreateOrb(50, 44));
-            character.Inventory.Items.Add(this.CreateOrb(56, 7));
-            character.Inventory.Items.Add(this.CreateFullOptionJewellery(52, 20)); // Wizards Ring
-            character.Inventory.Items.Add(this.CreateFullOptionJewellery(53, 8)); // Ring of Ice
-            character.Inventory.Items.Add(this.CreateFullOptionJewellery(54, 9)); // Ring of Poison
-            character.Inventory.Items.Add(this.CreateFullOptionJewellery(55, 12)); // Pendant of Lightning
+            inventory.Items.Add(this.CreateOrb(47, 12));
+            inventory.Items.Add(this.CreateOrb(48, 14));
+            inventory.Items.Add(this.CreateOrb(49, 19));
+            inventory.Items.Add(this.CreateOrb(50, 44));
+            inventory.Items.Add(this.CreateOrb(56, 7));
+            inventory.Items.Add(this.CreateFullOptionJewellery(52, 20)); // Wizards Ring
+            inventory.Items.Add(this.CreateFullOptionJewellery(53, 8)); // Ring of Ice
+            inventory.Items.Add(this.CreateFullOptionJewellery(54, 9)); // Ring of Poison
+            inventory.Items.Add(this.CreateFullOptionJewellery(55, 12)); // Pendant of Lightning
         }
 
         private Item CreateFullOptionJewellery(byte itemSlot, int number)
