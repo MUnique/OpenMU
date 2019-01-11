@@ -636,7 +636,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
                 {
                     var packet = writer.Span;
-                    packet[2] = (byte) PacketType.Hit;
+                    packet[2] = (byte)PacketType.Hit;
                     packet.Slice(3).SetShortSmallEndian(targetId);
                     packet.Slice(5).SetShortSmallEndian(healthDamage);
                     packet[7] = this.GetDamageColor(hitInfo.Attributes);

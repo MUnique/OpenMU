@@ -257,7 +257,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         {
             var weaponOption = this.GameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.GuardianOption && po.Number == (int)ItemGroups.Weapon));
 
-            var boneBlade = this.GameConfiguration.Items.First(i => i.Number == 22 && i.Group == (int) ItemGroups.Swords);
+            var boneBlade = this.GameConfiguration.Items.First(i => i.Number == 22 && i.Group == (int)ItemGroups.Swords);
             var explosionBlade = this.GameConfiguration.Items.First(i => i.Number == 23 && i.Group == (int)ItemGroups.Swords);
             var soleilScepter = this.GameConfiguration.Items.First(i => i.Number == 14 && i.Group == (int)ItemGroups.Scepters);
             var sylphWindBow = this.GameConfiguration.Items.First(i => i.Number == 21 && i.Group == (int)ItemGroups.Bows);
