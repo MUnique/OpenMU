@@ -24,6 +24,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition TotalStrength { get; } = new AttributeDefinition(new Guid("F59709A3-44B0-4147-AAEB-E90CEC251641"), "Total Strength", "The total strength of the character, which contains the base strength and additional strength powerups");
 
         /// <summary>
+        /// Gets the total strength requirement value attribute definition.
+        /// </summary>
+        public static AttributeDefinition TotalStrengthRequirementValue { get; } = new AttributeDefinition(new Guid("7BC30A84-5FDE-490B-81A4-FFECB41CA901"), "Total Strength Requirement Value", "The total strength requirement value of an item, which is used to calculate the required total strength of a character to equip an item. The required total strength depends on the options, drop level and level of the item.");
+
+        /// <summary>
         /// Gets the base agility attribute definition.
         /// </summary>
         public static AttributeDefinition BaseAgility { get; } = new AttributeDefinition(new Guid("1AE9C014-E3CD-4703-BD05-1B65F5F94CEB"), "baseAgility", string.Empty);
@@ -32,6 +37,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// Gets the total agility attribute definition.
         /// </summary>
         public static AttributeDefinition TotalAgility { get; } = new AttributeDefinition(new Guid("364F1207-00F8-485B-9F2C-74E04CB78C73"), "totalAgility", string.Empty);
+
+        /// <summary>
+        /// Gets the total agility requirement value attribute definition.
+        /// </summary>
+        public static AttributeDefinition TotalAgilityRequirementValue { get; } = new AttributeDefinition(new Guid("DFE7A14F-BF1C-414F-8B77-B8FE6FD76A7D"), "Total Agility Requirement Value", "The total agility requirement value of an item, which is used to calculate the required total agility of a character to equip an item. The required total agility depends on the options, drop level and level of the item.");
 
         /// <summary>
         /// Gets the base vitality attribute definition.
@@ -44,6 +54,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition TotalVitality { get; } = new AttributeDefinition(new Guid("6A0076E4-69DC-42E7-A92B-C8711392EF82"), "totalVitality", string.Empty);
 
         /// <summary>
+        /// Gets the total vitality requirement value attribute definition.
+        /// </summary>
+        public static AttributeDefinition TotalVitalityRequirementValue { get; } = new AttributeDefinition(new Guid("B7B77FF8-1833-4739-98EE-0C2DD7344F56"), "Total Vitality Requirement Value", "The total vitality requirement value of an item, which is used to calculate the required total vitality of a character to equip an item. The required total vitality depends on the options, drop level and level of the item.");
+
+        /// <summary>
         /// Gets the base energy attribute definition.
         /// </summary>
         public static AttributeDefinition BaseEnergy { get; } = new AttributeDefinition(new Guid("01B0EF28-F7A0-46B5-97BA-2B624A54CD75"), "baseEnergy", string.Empty);
@@ -54,6 +69,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition TotalEnergy { get; } = new AttributeDefinition(new Guid("12956B45-007C-453A-AE1F-36475B8CEBBF"), "totalEnergy", string.Empty);
 
         /// <summary>
+        /// Gets the total energy requirement value attribute definition.
+        /// </summary>
+        public static AttributeDefinition TotalEnergyRequirementValue { get; } = new AttributeDefinition(new Guid("5EF1FCD1-0C08-4087-BFCE-C655BB121CDD"), "Total Energy Requirement Value", "The total energy requirement value of an item, which is used to calculate the required total energy of a character to equip an item. The required total energy depends on the options, drop level and level of the item.");
+
+        /// <summary>
         /// Gets the base leadership attribute definition.
         /// </summary>
         public static AttributeDefinition BaseLeadership { get; } = new AttributeDefinition(new Guid("6AF2C9DF-3AE4-4721-8462-9A8EC7F56FE4"), "baseLeadership", string.Empty);
@@ -62,6 +82,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// Gets the total leadership attribute definition.
         /// </summary>
         public static AttributeDefinition TotalLeadership { get; } = new AttributeDefinition(new Guid("35E04272-63F3-4EBB-8FB5-EF2128DDB9F6"), "totalLeadership", string.Empty);
+
+        /// <summary>
+        /// Gets the total leadership requirement value attribute definition.
+        /// </summary>
+        public static AttributeDefinition TotalLeadershipRequirementValue { get; } = new AttributeDefinition(new Guid("E38A897E-ED6F-4C06-AE11-7CAA7EAEC5A9"), "Total Leadership Requirement Value", "The total leadership requirement value of an item, which is used to calculate the required total leadership of a character to equip an item. The required total leadership depends on the options, drop level and level of the item.");
 
         /// <summary>
         /// Gets the level attribute definition.

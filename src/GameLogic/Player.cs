@@ -397,20 +397,19 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Determines whether the player complies with the requirements of the specified item.
         /// </summary>
-        /// <param name="item">The definition of the item.</param>
+        /// <param name="item">The item.</param>
         /// <returns><c>True</c>, if the player complies with the requirements of the specified item; Otherwise, <c>false</c>.</returns>
-        public bool CompliesRequirements(ItemDefinition item)
+        public bool CompliesRequirements(Item item)
         {
-            foreach (var requirement in item.Requirements)
+            foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
             {
-                // TODO: Added Requirements of additional Levels and Options
-                if (this.Attributes[requirement.Attribute] < requirement.MinimumValue)
+                if (this.Attributes[requirement.Item1] < requirement.Item2)
                 {
                     return false;
                 }
             }
 
-            return item.QualifiedCharacters.Contains(this.SelectedCharacter.CharacterClass);
+            return item.Definition.QualifiedCharacters.Contains(this.SelectedCharacter.CharacterClass);
         }
 
         /// <summary>

@@ -98,7 +98,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             if (energyRequirement > 0)
             {
                 var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+                requirement.Attribute = Stats.TotalEnergyRequirementValue.GetPersistent(this.GameConfiguration);
                 requirement.MinimumValue = energyRequirement;
                 scroll.Requirements.Add(requirement);
             }

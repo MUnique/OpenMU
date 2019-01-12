@@ -490,11 +490,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             armor.Durability = durability;
             armor.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(slot));
             this.CreateRequirementIfNeeded(armor, Stats.Level, levelRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalStrength, strengthRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalAgility, agilityRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalEnergy, energyRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalVitality, vitalityRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalLeadership, leadershipRequirement);
+            this.CreateRequirementIfNeeded(armor, Stats.TotalStrengthRequirementValue, strengthRequirement);
+            this.CreateRequirementIfNeeded(armor, Stats.TotalAgilityRequirementValue, agilityRequirement);
+            this.CreateRequirementIfNeeded(armor, Stats.TotalEnergyRequirementValue, energyRequirement);
+            this.CreateRequirementIfNeeded(armor, Stats.TotalVitalityRequirementValue, vitalityRequirement);
+            this.CreateRequirementIfNeeded(armor, Stats.TotalLeadershipRequirementValue, leadershipRequirement);
 
             if (defense > 0)
             {
@@ -545,7 +545,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 return;
             }
 
-            //// TODO: each level increases some requirements
             var persistentAttribute = attribute.GetPersistent(this.GameConfiguration);
             var requirement = this.CreateAttributeRequirement(persistentAttribute, requiredValue);
             armor.Requirements.Add(requirement);

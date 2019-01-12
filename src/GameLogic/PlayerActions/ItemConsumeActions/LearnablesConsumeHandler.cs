@@ -26,10 +26,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            var learnable = item.Definition;
-
             // Check Requirements
-            if (!player.CompliesRequirements(learnable))
+            if (!player.CompliesRequirements(item))
             {
                 return false;
             }
