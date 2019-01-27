@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private Character CreateWizard(string name, int level)
         {
-            var character = this.CreateCharacter(name, CharacterClassNumber.DarkWizard, level, 1);
+            Character character;
             switch (level)
             {
                 case 300:
@@ -175,6 +175,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 37, 15)); // Wing of Eternal +15
                     break;
                 default:
+                    character = this.CreateCharacter(name, CharacterClassNumber.DarkWizard, level, 1);
                     character.Inventory.Items.Add(this.CreateSkullStaff(0));
                     character.Inventory.Items.Add(this.CreateSetItem(52, 2, 8)); // Pad Armor
                     character.Inventory.Items.Add(this.CreateSetItem(47, 2, 7)); // Pad Helm
@@ -190,7 +191,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private Character CreateElf(string name, int level)
         {
-            var character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
+            Character character;
             switch (level)
             {
                 case 300:
@@ -226,6 +227,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 38, 15)); // Wing of Illusion +15
                     break;
                 default:
+                    character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
                     character.Inventory.Items.Add(this.CreateShortBow(1));
                     character.Inventory.Items.Add(this.CreateArrows(0));
                     character.Inventory.Items.Add(this.CreateSetItem(52, 10, 8)); // Vine Armor
@@ -245,7 +247,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private Character CreateDarkKnight(string name, int level)
         {
-            var character = this.CreateCharacter(name, CharacterClassNumber.DarkKnight, level, 0);
+            Character character;
             switch (level)
             {
                 case 300:
@@ -290,6 +292,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     this.AddDarkKnightItems(character.Inventory);
                     break;
                 default:
+                    character = this.CreateCharacter(name, CharacterClassNumber.DarkKnight, level, 0);
                     character.Inventory.Items.Add(this.CreateSmallAxe(0));
                     character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather Armor
                     character.Inventory.Items.Add(this.CreateSetItem(47, 5, 7)); // Leather Helm
