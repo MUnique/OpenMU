@@ -13,15 +13,18 @@ The value of the master skill level gets increased by one if the success flag is
 |  Length  | Data type | Value | Description |
 |----------|---------|-------------|---------|
 | 1 | byte | 0xC1   | [Packet type](PacketTypes.md) |
-| 1 | byte | 0x05   | Packet header - length of the packet |
+| 1 | byte |    | Packet header - length of the packet |
 | 1 | byte | 0xF3   | Packet header - packet type identifier |
 | 1 | byte | 0x52   | Packet header - master skill level increase |
 | 1 | byte |  | Success flag |
-| 7 | byte |  | unknown, maybe trash because of field alignment? |
-| 1 | ushort (BE) | 0xA601 | Master Skill Id |
-| 2 | byte |  | unknown |
+| 1 | byte |  | padding |
+| 2 | ushort (BE) |  | Remaining master points |
+| 1 | byte |  | Master skill index |
+| 3 | byte |  | padding |
+| 2 | ushort (BE) | 0xA601 | Skill Number |
+| 2 | byte |  | padding |
 | 1 | byte |  | Updated skill level |
-| 3 | byte |  | unknown |
-| 4 | byte |  | unknown, maybe a minimum or the previous value of the skill effect |
-| 4 | byte |  | unknown, maybe a maximum or the updated value of the skill effect |
+| 3 | byte |  | padding |
+| 4 | float |  | new current value of the skill effect |
+| 4 | float |  | value of the skills next level of the skill effect |
 
