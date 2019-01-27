@@ -132,6 +132,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             account.Characters.Add(this.CreateDarkKnight(loginName + "Dk", level));
             account.Characters.Add(this.CreateElf(loginName + "Elf", level));
             account.Characters.Add(this.CreateWizard(loginName + "Wiz", level));
+            account.Characters.Add(this.CreateDarkLord(loginName + "Dl", level));
         }
 
         private Character CreateWizard(string name, int level)
@@ -303,6 +304,64 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return character;
         }
 
+        private Character CreateDarkLord(string name, int level)
+        {
+            Character character;
+            switch (level)
+            {
+                case 300:
+                    character = this.CreateCharacter(name, CharacterClassNumber.DarkLord, level, 3);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 400;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+                    character.LevelUpPoints -= 700; // for the added strength and agility
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 12, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Great Lord Scepter+13+16+L+ExcDmg
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 26, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Exc Ada Armor+13+16+L
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 26, 9, Stats.MoneyAmountRate, 13, 4, true)); // Exc Ada Pants+13+16+L
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 26, 10, Stats.MaximumMana, 13, 4, true)); // Exc Ada Gloves+13+16+L
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 26, 11, Stats.DamageReflection, 13, 4, true)); // Exc Ada Boots+13+16+L
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 30, 13, 13)); // Cape +13
+
+                    this.AddDarkLordItems(character.Inventory);
+                    break;
+                case 400:
+                    character = this.CreateCharacter(name, CharacterClassNumber.LordEmperor, level, 3);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 400;
+                    character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 400;
+                    character.LevelUpPoints -= 2000; // for the added strength and agility
+                    character.MasterLevelUpPoints = 100; // To test master skill tree
+
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 13, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Scepter+15+16+L+ExcDmg
+
+                    // Sunlight Set+15+16+L:
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 33, 8, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 33, 7, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 33, 9, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 33, 10, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 33, 11, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 40, 15)); // Cape of Emperor +15
+
+                    this.AddDarkLordItems(character.Inventory);
+                    break;
+                default:
+                    character = this.CreateCharacter(name, CharacterClassNumber.DarkLord, level, 0);
+                    character.Inventory.Items.Add(this.CreateSmallAxe(0));
+                    character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather Armor
+                    character.Inventory.Items.Add(this.CreateSetItem(49, 5, 9)); // Leather Pants
+                    character.Inventory.Items.Add(this.CreateSetItem(63, 5, 10, Stats.DamageReflection)); // Leather Gloves
+                    character.Inventory.Items.Add(this.CreateSetItem(65, 5, 11, Stats.DamageReflection)); // Leather Boots
+                    break;
+            }
+
+            this.AddTestJewelsAndPotions(character.Inventory);
+
+            return character;
+        }
+
         private Character CreateCharacter(string name, CharacterClassNumber characterClass, int level, byte slot)
         {
             var character = this.context.CreateNew<Character>();
@@ -383,6 +442,19 @@ namespace MUnique.OpenMU.Persistence.Initialization
             inventory.Items.Add(this.CreateFullOptionJewellery(55, 12)); // Pendant of Lightning
         }
 
+        private void AddDarkLordItems(ItemStorage inventory)
+        {
+            inventory.Items.Add(this.CreateOrb(47, 21));
+            inventory.Items.Add(this.CreateOrb(48, 22));
+            inventory.Items.Add(this.CreateOrb(49, 23));
+            inventory.Items.Add(this.CreateOrb(50, 24));
+            inventory.Items.Add(this.CreateOrb(60, 35));
+            inventory.Items.Add(this.CreateOrb(61, 48));
+            inventory.Items.Add(this.CreateFullOptionJewellery(62, 8)); // Ring of Ice
+            inventory.Items.Add(this.CreateFullOptionJewellery(63, 9)); // Ring of Poison
+            inventory.Items.Add(this.CreateFullOptionJewellery(64, 12)); // Pendant of Lightning
+        }
+
         private Item CreateFullOptionJewellery(byte itemSlot, int number)
         {
             var item = this.context.CreateNew<Item>();
@@ -399,10 +471,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return item;
         }
 
-        private Item CreateTestWing(byte itemSlot, byte number, byte level)
+        private Item CreateTestWing(byte itemSlot, byte number, byte level, byte group = 12)
         {
             var item = this.context.CreateNew<Item>();
-            item.Definition = this.gameConfiguration.Items.First(def => def.Group == 12 && def.Number == number);
+            item.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == number);
             item.Durability = item.Definition.Durability;
             item.ItemSlot = itemSlot;
             item.Level = level;
