@@ -19,14 +19,14 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class MasterSystemTest
     {
-        private readonly int skillIdRank0 = 1;
-        private readonly int skillIdRank1 = 2;
-        private readonly int skillIdRank2 = 3;
+        private readonly int skillIdRank1 = 1;
+        private readonly int skillIdRank2 = 2;
+        private readonly int skillIdRank3 = 3;
 
         private Player player;
-        private Skill skillRank0;
         private Skill skillRank1;
         private Skill skillRank2;
+        private Skill skillRank3;
         private AddMasterPointAction addAction;
 
         /// <summary>
@@ -37,12 +37,13 @@ namespace MUnique.OpenMU.Tests
         {
             this.player = TestHelper.GetPlayer();
             var context = this.player.GameContext;
-            this.skillRank0 = this.CreateSkill(1, 0, 1, null, this.player.SelectedCharacter.CharacterClass);
-            this.skillRank1 = this.CreateSkill(2, 1, 1, null, this.player.SelectedCharacter.CharacterClass);
-            this.skillRank2 = this.CreateSkill((short)this.skillIdRank2, 2, 1, null, this.player.SelectedCharacter.CharacterClass);
-            context.Configuration.Skills.Add(this.skillRank0);
+            this.skillRank1 = this.CreateSkill(1, 1, 1, null, this.player.SelectedCharacter.CharacterClass);
+            this.skillRank2 = this.CreateSkill(2, 2, 1, null, this.player.SelectedCharacter.CharacterClass);
+            this.skillRank3 = this.CreateSkill((short)this.skillIdRank3, 3, 1, null, this.player.SelectedCharacter.CharacterClass);
+            this.skillRank3.MasterDefinition.MinimumLevel = 10;
             context.Configuration.Skills.Add(this.skillRank1);
             context.Configuration.Skills.Add(this.skillRank2);
+            context.Configuration.Skills.Add(this.skillRank3);
             this.addAction = new AddMasterPointAction(context);
         }
 
@@ -52,7 +53,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void FailedInsufficientLevelUpPoints()
         {
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Is.Empty);
         }
 
@@ -63,7 +64,7 @@ namespace MUnique.OpenMU.Tests
         public void Succeeded()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 1;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Is.Not.Empty);
         }
 
@@ -74,7 +75,7 @@ namespace MUnique.OpenMU.Tests
         public void RankNotSufficient()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 1;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Is.Empty);
         }
 
@@ -85,11 +86,11 @@ namespace MUnique.OpenMU.Tests
         public void PreviousRankTooLowLevel()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 2;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
-            this.player.SelectedCharacter.LearnedSkills.First().Level = 9;
             this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.player.SelectedCharacter.LearnedSkills.First().Level = 9;
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(1));
-            Assert.That(this.player.SelectedCharacter.LearnedSkills.First().Skill, Is.SameAs(this.skillRank0));
+            Assert.That(this.player.SelectedCharacter.LearnedSkills.First().Skill, Is.SameAs(this.skillRank1));
         }
 
         /// <summary>
@@ -99,12 +100,46 @@ namespace MUnique.OpenMU.Tests
         public void PreviousRankEnoughLevels()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 2;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
-            this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
             this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
-            Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank0), Is.True);
             Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank1), Is.True);
+            Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank2), Is.True);
+        }
+
+        /// <summary>
+        /// Tests if the adding of master points succeeds when a skill has a minium level of 10 and the character has enough master points.
+        /// </summary>
+        [Test]
+        public void MinimumLevel10WithEnoughPoints()
+        {
+            this.player.SelectedCharacter.MasterLevelUpPoints = 2;
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
+            this.player.SelectedCharacter.LearnedSkills.Last().Level = 10;
+            this.player.SelectedCharacter.MasterLevelUpPoints = 10;
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank3);
+            Assert.That(this.player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(3));
+            Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank3), Is.True);
+        }
+
+        /// <summary>
+        /// Tests if the adding of master points succeeds when a skill has a minimum level of 10 and the character has not enough master points.
+        /// </summary>
+        [Test]
+        public void MinimumLevel10WithoutEnoughPoints()
+        {
+            this.player.SelectedCharacter.MasterLevelUpPoints = 2;
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
+            this.player.SelectedCharacter.LearnedSkills.Last().Level = 10;
+            this.player.SelectedCharacter.MasterLevelUpPoints = 9;
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank3);
+            Assert.That(this.player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
+            Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank3), Is.False);
         }
 
         /// <summary>
@@ -114,7 +149,7 @@ namespace MUnique.OpenMU.Tests
         public void AddedSkillGotLevel()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 1;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             Assert.That(this.player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(1));
         }
 
@@ -125,8 +160,8 @@ namespace MUnique.OpenMU.Tests
         public void AddLevelToLearnedSkill()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 2;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             Assert.That(this.player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(2));
         }
 
@@ -137,13 +172,13 @@ namespace MUnique.OpenMU.Tests
         public void RequiredSkillNotLearned()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 2;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
 
-            this.skillRank1.MasterDefinitions.First().RequiredMasterSkills.Add(new Skill());
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.skillRank2.MasterDefinition.RequiredMasterSkills.Add(new Skill());
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(1));
-            Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank1), Is.False);
+            Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank2), Is.False);
         }
 
         /// <summary>
@@ -153,12 +188,12 @@ namespace MUnique.OpenMU.Tests
         public void RequiredSkillLearned()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 2;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
-            this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
-            this.skillRank1.MasterDefinitions.First().RequiredMasterSkills.Add(this.skillRank0);
             this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
+            this.skillRank2.MasterDefinition.RequiredMasterSkills.Add(this.skillRank1);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
-            Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank1), Is.True);
+            Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank2), Is.True);
         }
 
         /// <summary>
@@ -168,7 +203,7 @@ namespace MUnique.OpenMU.Tests
         public void MasterLevelUpPointDecreasedWhenLearned()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 1;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             Assert.That(this.player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(0));
         }
 
@@ -179,7 +214,7 @@ namespace MUnique.OpenMU.Tests
         public void MasterLevelUpPointNotDecreasedWhenNotLearned()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 1;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
             Assert.That(this.player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
         }
 
@@ -190,10 +225,10 @@ namespace MUnique.OpenMU.Tests
         public void MasterLevelMaximumReached()
         {
             this.player.SelectedCharacter.MasterLevelUpPoints = 3;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             this.player.SelectedCharacter.LearnedSkills.First().Level = 19;
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
-            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank0);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
+            this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             Assert.That(this.player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(20));
             Assert.That(this.player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
         }
@@ -202,8 +237,9 @@ namespace MUnique.OpenMU.Tests
         {
             var masterDef = new Mock<MasterSkillDefinition>();
             masterDef.SetupAllProperties();
-            masterDef.Object.CharacterClass = charClass;
             masterDef.Object.Rank = rank;
+            masterDef.Object.MaximumLevel = 20;
+            masterDef.Object.MinimumLevel = 1;
             masterDef.Object.Root = new MasterSkillRoot { Id = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, rootId) };
             masterDef.Setup(m => m.RequiredMasterSkills).Returns(new List<Skill>());
             if (requiredSkill != null)
@@ -215,9 +251,8 @@ namespace MUnique.OpenMU.Tests
             skill.SetupAllProperties();
             skill.Object.Number = id;
             skill.Setup(s => s.QualifiedCharacters).Returns(new List<CharacterClass>());
-            skill.Setup(s => s.MasterDefinitions).Returns(new List<MasterSkillDefinition>());
             skill.Object.QualifiedCharacters.Add(charClass);
-            skill.Object.MasterDefinitions.Add(masterDef.Object);
+            skill.Object.MasterDefinition = masterDef.Object;
 
             return skill.Object;
         }

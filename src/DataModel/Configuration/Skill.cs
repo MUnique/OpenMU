@@ -258,18 +258,13 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public virtual ICollection<CharacterClass> QualifiedCharacters { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the master definitions. Only relevant for master skills.
+        /// Gets or sets the master skill definition. Only relevant for master skills.
         /// </summary>
-        public virtual ICollection<MasterSkillDefinition> MasterDefinitions { get; protected set; }
+        public virtual MasterSkillDefinition MasterDefinition { get; set; }
 
         /// <summary>
-        /// Gets or sets the passive power ups, depending on the skill level. Only relevant for skills of type <see cref="SkillType.PassiveBoost"/>.
+        /// Gets or sets the attack damage. Only relevant for attack skills.
         /// </summary>
-        public virtual IDictionary<int, PowerUpDefinition> PassivePowerUps { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the level dependent attack damage. Only relevant for attack skills.
-        /// </summary>
-        public virtual ICollection<LevelDependentDamage> AttackDamage { get; protected set; }
+        public int AttackDamage { get; set; }
     }
 }

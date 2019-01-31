@@ -93,7 +93,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<StatAttribute>().Ignore("ValueGetter");
 
             modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawRoot);
-            modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawCharacterClass);
             modelBuilder.Entity<LetterBody>().HasOne(body => body.RawHeader);
             modelBuilder.Entity<LetterHeader>().Ignore(header => header.ReceiverName);
 
@@ -102,7 +101,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 .Ignore(c => c.MasterExperienceTable);
 
             // join entity keys:
-            modelBuilder.Entity<SkillPowerUpDefinition>().HasKey(e => new { e.Key, e.ValueId });
             this.AddJoinDefinitions(modelBuilder);
 
             var types = modelBuilder.Model.GetEntityTypes();

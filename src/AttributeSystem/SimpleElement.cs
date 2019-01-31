@@ -14,6 +14,24 @@ namespace MUnique.OpenMU.AttributeSystem
         private float value;
         private AggregateType aggregateType;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleElement"/> class.
+        /// </summary>
+        public SimpleElement()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleElement"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="aggregateType">Type of the aggregate.</param>
+        public SimpleElement(float value, AggregateType aggregateType)
+        {
+            this.value = value;
+            this.aggregateType = aggregateType;
+        }
+
         /// <inheritdoc/>
         public event EventHandler ValueChanged;
 

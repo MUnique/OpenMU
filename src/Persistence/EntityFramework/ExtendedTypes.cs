@@ -1947,30 +1947,58 @@ public ICollection<PacketHandlerConfiguration> RawPacketHandlers { get; } = new 
         }
 
                 /// <summary>
-        /// Gets or sets the identifier of <see cref="CharacterClass"/>.
+        /// Gets or sets the identifier of <see cref="TargetAttribute"/>.
         /// </summary>
-        public Guid? CharacterClassId { get; set; }
+        public Guid? TargetAttributeId { get; set; }
         
-        [ForeignKey("CharacterClassId")]
-        public CharacterClass RawCharacterClass
+        [ForeignKey("TargetAttributeId")]
+        public AttributeDefinition RawTargetAttribute
         { 
-            get { return base.CharacterClass as CharacterClass; }
-            set { base.CharacterClass = value; } 
+            get { return base.TargetAttribute as AttributeDefinition; }
+            set { base.TargetAttribute = value; } 
         }
                 
         /// <inheritdoc/>
         [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
+        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
         {
             get
             {
-                return base.CharacterClass;
+                return base.TargetAttribute;
             }
             
             set
             {
-                base.CharacterClass = value;
-                this.CharacterClassId = this.RawCharacterClass?.Id;
+                base.TargetAttribute = value;
+                this.TargetAttributeId = this.RawTargetAttribute?.Id;
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="ReplacedSkill"/>.
+        /// </summary>
+        public Guid? ReplacedSkillId { get; set; }
+        
+        [ForeignKey("ReplacedSkillId")]
+        public Skill RawReplacedSkill
+        { 
+            get { return base.ReplacedSkill as Skill; }
+            set { base.ReplacedSkill = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.Skill ReplacedSkill
+        {
+            get
+            {
+                return base.ReplacedSkill;
+            }
+            
+            set
+            {
+                base.ReplacedSkill = value;
+                this.ReplacedSkillId = this.RawReplacedSkill?.Id;
             }
         }
 
@@ -2362,8 +2390,6 @@ public ICollection<PacketHandlerConfiguration> RawSubPacketHandlers { get; } = n
         {
           
             this.QualifiedCharacters = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, SkillCharacterClass>(this.JoinedQualifiedCharacters, joinEntity => joinEntity.CharacterClass, entity => new SkillCharacterClass { Skill = this, SkillId = this.Id, CharacterClass = (CharacterClass)entity, CharacterClassId = ((CharacterClass)entity).Id});
-          
-            this.MasterDefinitions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition, SkillMasterSkillDefinition>(this.JoinedMasterDefinitions, joinEntity => joinEntity.MasterSkillDefinition, entity => new SkillMasterSkillDefinition { Skill = this, SkillId = this.Id, MasterSkillDefinition = (MasterSkillDefinition)entity, MasterSkillDefinitionId = ((MasterSkillDefinition)entity).Id});
         }
 
         /// <summary>
@@ -2390,6 +2416,34 @@ public ICollection<AttributeRequirement> RawRequirements { get; } = new List<Att
             get
             {
                 return base.ConsumeRequirements ?? (base.ConsumeRequirements = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawConsumeRequirements)); 
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="ElementalModifierTarget"/>.
+        /// </summary>
+        public Guid? ElementalModifierTargetId { get; set; }
+        
+        [ForeignKey("ElementalModifierTargetId")]
+        public AttributeDefinition RawElementalModifierTarget
+        { 
+            get { return base.ElementalModifierTarget as AttributeDefinition; }
+            set { base.ElementalModifierTarget = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition ElementalModifierTarget
+        {
+            get
+            {
+                return base.ElementalModifierTarget;
+            }
+            
+            set
+            {
+                base.ElementalModifierTarget = value;
+                this.ElementalModifierTargetId = this.RawElementalModifierTarget?.Id;
             }
         }
 
@@ -2421,25 +2475,31 @@ public ICollection<AttributeRequirement> RawRequirements { get; } = new List<Att
             }
         }
 
-        public ICollection<SkillPowerUpDefinition> RawPassivePowerUps { get; } = new List<SkillPowerUpDefinition>();        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override IDictionary<System.Int32, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PassivePowerUps
-        {
-            get
-            {
-                return base.PassivePowerUps ?? (base.PassivePowerUps = new CollectionToDictionaryAdapter<Int32, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition, SkillPowerUpDefinition>(this.RawPassivePowerUps)); 
-            }
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="MasterDefinition"/>.
+        /// </summary>
+        public Guid? MasterDefinitionId { get; set; }
+        
+        [ForeignKey("MasterDefinitionId")]
+        public MasterSkillDefinition RawMasterDefinition
+        { 
+            get { return base.MasterDefinition as MasterSkillDefinition; }
+            set { base.MasterDefinition = value; } 
         }
-
-        public ICollection<LevelDependentDamage> RawAttackDamage { get; } = new List<LevelDependentDamage>();        
+                
         /// <inheritdoc/>
         [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.LevelDependentDamage> AttackDamage
+        public override MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition MasterDefinition
         {
             get
             {
-                return base.AttackDamage ?? (base.AttackDamage = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.LevelDependentDamage, LevelDependentDamage>(this.RawAttackDamage)); 
+                return base.MasterDefinition;
+            }
+            
+            set
+            {
+                base.MasterDefinition = value;
+                this.MasterDefinitionId = this.RawMasterDefinition?.Id;
             }
         }
 
@@ -4157,6 +4217,12 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             this.InitJoinCollections();
         } 
 
+        public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute)
+          : base (targetAttribute, inputOperand, inputAttribute)
+        {
+            this.InitJoinCollections();
+        }
+
         public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator)
           : base (targetAttribute, inputOperand, inputAttribute, inputOperator)
         {
@@ -4402,8 +4468,6 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Entity<MonsterDefinitionDropItemGroup>().HasKey(join => new { join.MonsterDefinitionId, join.DropItemGroupId });
             modelBuilder.Entity<Skill>().HasMany(entity => entity.JoinedQualifiedCharacters).WithOne(join => join.Skill);
             modelBuilder.Entity<SkillCharacterClass>().HasKey(join => new { join.SkillId, join.CharacterClassId });
-            modelBuilder.Entity<Skill>().HasMany(entity => entity.JoinedMasterDefinitions).WithOne(join => join.Skill);
-            modelBuilder.Entity<SkillMasterSkillDefinition>().HasKey(join => new { join.SkillId, join.MasterSkillDefinitionId });
             modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedQualifiedCharacters).WithOne(join => join.ItemDefinition);
             modelBuilder.Entity<ItemDefinitionCharacterClass>().HasKey(join => new { join.ItemDefinitionId, join.CharacterClassId });
             modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedPossibleItemSetGroups).WithOne(join => join.ItemDefinition);
@@ -4526,8 +4590,6 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Skill, MUnique.OpenMU.DataModel.Configuration.Skill>()
                             .Include<Skill, BasicModel.Skill>();
-            Mapster.TypeAdapterConfig.GlobalSettings.ForDestinationType<IDictionary<System.Int32, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition>>()
-                .ConstructUsing(() => new Dictionary<System.Int32, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition>());
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition, MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>()
                             .Include<StatAttributeDefinition, BasicModel.StatAttributeDefinition>();

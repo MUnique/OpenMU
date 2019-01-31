@@ -144,16 +144,18 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="target">The target.</param>
         /// <param name="player">The player.</param>
-        /// <param name="skill">The skill.</param>
-        public static void ApplyRegeneration(this IAttackable target, Player player, Skill skill)
+        /// <param name="skillEntry">The skill entry.</param>
+        public static void ApplyRegeneration(this IAttackable target, Player player, SkillEntry skillEntry)
         {
+            var skill = skillEntry.Skill;
             var regenerationValue = player.Attributes.CreateElement(skill.MagicEffectDef.PowerUpDefinition.Boost);
             var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r =>
                 r.CurrentAttribute == skill.MagicEffectDef.PowerUpDefinition.TargetAttribute);
             if (regeneration != null)
             {
+                var value = skillEntry.Level > 0 ? regenerationValue.Value : regenerationValue.Value + skillEntry.CalculateValue();
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
-                    target.Attributes[regeneration.CurrentAttribute] + regenerationValue.Value,
+                    target.Attributes[regeneration.CurrentAttribute] + value,
                     target.Attributes[regeneration.MaximumAttribute]);
             }
             else
@@ -289,6 +291,17 @@ namespace MUnique.OpenMU.GameLogic
             return Stats.DefensePvm;
         }
 
+        private static int GetDamage(this SkillEntry skill)
+        {
+            var result = skill.Skill.AttackDamage;
+            if (skill.Skill.MasterDefinition != null)
+            {
+                result += (int)skill.CalculateValue();
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Returns the base damage if the attacker, using a specific skill.
         /// </summary>
@@ -306,7 +319,8 @@ namespace MUnique.OpenMU.GameLogic
             if (skill != null)
             {
                 damageType = skill.Skill.DamageType;
-                var skillDamage = skill.Skill.AttackDamage.Where(d => d.Level == skill.Level).Select(d => d.Damage).FirstOrDefault();
+
+                var skillDamage = skill.GetDamage();
                 minimumBaseDamage += skillDamage;
                 maximumBaseDamage += skillDamage;
             }

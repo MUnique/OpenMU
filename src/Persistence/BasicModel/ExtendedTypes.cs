@@ -2324,27 +2324,52 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
-        /// Gets the raw object of <see cref="CharacterClass" />.
+        /// Gets the raw object of <see cref="TargetAttribute" />.
         /// </summary>
-        [JsonProperty("CharacterClass")]
-        public CharacterClass RawCharacterClass
+        [JsonProperty("TargetAttribute")]
+        public AttributeDefinition RawTargetAttribute
         { 
-            get { return base.CharacterClass as CharacterClass; }
-            set { base.CharacterClass = value; } 
+            get { return base.TargetAttribute as AttributeDefinition; }
+            set { base.TargetAttribute = value; } 
         }
         
         /// <inheritdoc/>
         [JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
+        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
         {
             get
             {
-                return base.CharacterClass;
+                return base.TargetAttribute;
             }
             
             set
             {
-                base.CharacterClass = value;
+                base.TargetAttribute = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="ReplacedSkill" />.
+        /// </summary>
+        [JsonProperty("ReplacedSkill")]
+        public Skill RawReplacedSkill
+        { 
+            get { return base.ReplacedSkill as Skill; }
+            set { base.ReplacedSkill = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.Skill ReplacedSkill
+        {
+            get
+            {
+                return base.ReplacedSkill;
+            }
+            
+            set
+            {
+                base.ReplacedSkill = value;
             }
         }
         
@@ -2757,30 +2782,6 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets the raw dictionary of <see cref="PassivePowerUps" />.
-        /// </summary>
-        [JsonProperty("PassivePowerUps")]
-        public IDictionary<Int32, PowerUpDefinition> RawPassivePowerUps { get; } = new Dictionary<Int32, PowerUpDefinition>();
-        
-        /// <inheritdoc/>
-        [JsonIgnore]
-        public override IDictionary<System.Int32, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PassivePowerUps
-        {
-            get
-            {
-                return base.PassivePowerUps ?? (base.PassivePowerUps = new DictionaryAdapter<Int32, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPassivePowerUps));
-            }
-            protected set
-            {
-                this.PassivePowerUps.Clear();
-                foreach (var item in value)
-                {
-                    this.PassivePowerUps.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets the raw collection of <see cref="Requirements" />.
         /// </summary>
         [JsonProperty("Requirements")]
@@ -2853,50 +2854,27 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
-        /// Gets the raw collection of <see cref="MasterDefinitions" />.
+        /// Gets the raw object of <see cref="ElementalModifierTarget" />.
         /// </summary>
-        [JsonProperty("MasterDefinitions")]
-        public ICollection<MasterSkillDefinition> RawMasterDefinitions { get; } = new List<MasterSkillDefinition>();
-        
-        /// <inheritdoc/>
-        [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition> MasterDefinitions
-        {
-            get
-            {
-                return base.MasterDefinitions ?? (base.MasterDefinitions = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition, MasterSkillDefinition>(this.RawMasterDefinitions)); 
-            }
-            protected set
-            {
-                this.MasterDefinitions.Clear();
-                foreach (var item in value)
-                {
-                    this.MasterDefinitions.Add(item);
-                }
-            }
+        [JsonProperty("ElementalModifierTarget")]
+        public AttributeDefinition RawElementalModifierTarget
+        { 
+            get { return base.ElementalModifierTarget as AttributeDefinition; }
+            set { base.ElementalModifierTarget = value; } 
         }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="AttackDamage" />.
-        /// </summary>
-        [JsonProperty("AttackDamage")]
-        public ICollection<LevelDependentDamage> RawAttackDamage { get; } = new List<LevelDependentDamage>();
         
         /// <inheritdoc/>
         [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.LevelDependentDamage> AttackDamage
+        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition ElementalModifierTarget
         {
             get
             {
-                return base.AttackDamage ?? (base.AttackDamage = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.LevelDependentDamage, LevelDependentDamage>(this.RawAttackDamage)); 
+                return base.ElementalModifierTarget;
             }
-            protected set
+            
+            set
             {
-                this.AttackDamage.Clear();
-                foreach (var item in value)
-                {
-                    this.AttackDamage.Add(item);
-                }
+                base.ElementalModifierTarget = value;
             }
         }
 
@@ -2922,6 +2900,31 @@ namespace MUnique.OpenMU.Persistence.BasicModel
             set
             {
                 base.MagicEffectDef = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="MasterDefinition" />.
+        /// </summary>
+        [JsonProperty("MasterDefinition")]
+        public MasterSkillDefinition RawMasterDefinition
+        { 
+            get { return base.MasterDefinition as MasterSkillDefinition; }
+            set { base.MasterDefinition = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition MasterDefinition
+        {
+            get
+            {
+                return base.MasterDefinition;
+            }
+            
+            set
+            {
+                base.MasterDefinition = value;
             }
         }
         
@@ -4671,6 +4674,12 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         public AttributeRelationship()
         {
         } 
+
+        /// <inheritdoc />
+        public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute)
+          : base (targetAttribute, inputOperand, inputAttribute)
+        {
+        }
 
         /// <inheritdoc />
         public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator)

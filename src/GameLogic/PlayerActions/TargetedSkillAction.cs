@@ -102,7 +102,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     }
                     else if (skill.SkillType == SkillType.Regeneration)
                     {
-                        target.ApplyRegeneration(player, skill);
+                        target.ApplyRegeneration(player, skillEntry);
                     }
                     else
                     {

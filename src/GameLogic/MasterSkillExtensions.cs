@@ -1,0 +1,75 @@
+﻿// <copyright file="MasterSkillExtensions.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic
+{
+    using System;
+    using System.Collections.Concurrent;
+    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Entities;
+    using org.mariuszgromada.math.mxparser;
+
+    /// <summary>
+    /// Extension methods regarding master skills.
+    /// </summary>
+    public static class MasterSkillExtensions
+    {
+        private static readonly ConcurrentDictionary<string, float[]> ValueResultCache = new ConcurrentDictionary<string, float[]>();
+
+        /// <summary>
+        /// Calculates the effective value of the specified skill, depending on its formula and level.
+        /// </summary>
+        /// <param name="skillEntry">The skill entry of the master skill.</param>
+        /// <returns>The value of the specified skill, depending on its formula and level.</returns>
+        public static float CalculateValue(this SkillEntry skillEntry) => skillEntry.Skill.MasterDefinition.CalculateValue(skillEntry.Level);
+
+        /// <summary>
+        /// Calculates the display value of the specified skill, depending on its formula and level.
+        /// </summary>
+        /// <param name="skillEntry">The skill entry of the master skill.</param>
+        /// <returns>The value of the specified skill, depending on its formula and level.</returns>
+        public static float CalculateDisplayValue(this SkillEntry skillEntry) => skillEntry.Skill.MasterDefinition.CalculateDisplayValue(skillEntry.Level);
+
+        /// <summary>
+        /// Calculates the next display value of the specified skill, depending on its formula and level.
+        /// </summary>
+        /// <param name="skillEntry">The skill entry of the master skill.</param>
+        /// <returns>The value of the specified skill, depending on its formula and level.</returns>
+        public static float CalculateNextDisplayValue(this SkillEntry skillEntry)
+        {
+            var level = Math.Min(skillEntry.Level + 1, skillEntry.Skill.MasterDefinition.MaximumLevel);
+            return skillEntry.Skill.MasterDefinition.CalculateDisplayValue(level);
+        }
+
+        private static float CalculateValue(this MasterSkillDefinition skillDefinition, int level) => skillDefinition.ValueFormula.GetValue(level, skillDefinition.MaximumLevel);
+
+        private static float CalculateDisplayValue(this MasterSkillDefinition skillDefinition, int level) => skillDefinition.DisplayValueFormula.GetValue(level, skillDefinition.MaximumLevel);
+
+        private static float GetValue(this string formula, int level, int maximumLevel)
+        {
+            if (level <= 0 || level > maximumLevel)
+            {
+                return 0f;
+            }
+
+            if (!ValueResultCache.TryGetValue(formula, out float[] results))
+            {
+                results = new float[maximumLevel];
+
+                var argument = new Argument("level", 0);
+                var expression = new Expression(formula);
+                expression.addArguments(argument);
+                for (int i = 0; i < maximumLevel; i++)
+                {
+                    argument.setArgumentValue(i + 1);
+                    results[i] = (float)expression.calculate();
+                }
+
+                ValueResultCache.TryAdd(formula, results);
+            }
+
+            return results[level - 1];
+        }
+    }
+}

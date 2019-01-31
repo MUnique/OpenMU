@@ -14,7 +14,10 @@
     <OutputPath>..\bin\doc\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="MasterSystem.md" />
     <None Include="packages.config" />
+    <None Include="Packets\C1F353 - Master skill list.md" />
+    <None Include="Skills-Progress.md" />
     <Pandoc Include="Packets\C1F330 - Save key configuration.md" />
     <Pandoc Include="Packets\C1F352 - Master skill level increase request.md" />
     <None Include="Packets\C1F603 - Quest Event Response %28by server%29.md" />

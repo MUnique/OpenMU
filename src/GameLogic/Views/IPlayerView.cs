@@ -433,5 +433,11 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// Shows the login window.
         /// </summary>
         void ShowLoginWindow();
+
+        /// <summary>
+        /// Informs the player that the master skill level has been changed (usually increased).
+        /// </summary>
+        /// <param name="learnedSkill">The learned master skill.</param>
+        void MasterSkillLevelChanged(SkillEntry learnedSkill);
     }
 }

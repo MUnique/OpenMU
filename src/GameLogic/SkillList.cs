@@ -4,9 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Attributes;
+    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -21,8 +22,6 @@ namespace MUnique.OpenMU.GameLogic
         private readonly ICollection<SkillEntry> learnedSkills;
 
         private readonly ICollection<SkillEntry> itemSkills;
-
-        private readonly IDictionary<SkillEntry, IEnumerable<PowerUpWrapper>> passiveSkillPowerUps;
 
         private readonly Player player;
 
@@ -41,17 +40,9 @@ namespace MUnique.OpenMU.GameLogic
                 .Where(item => item.Definition.Skill != null)
                 .ForEach(item => this.AddItemSkill(item.Definition.Skill));
             this.player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChanged;
-            this.passiveSkillPowerUps = new Dictionary<SkillEntry, IEnumerable<PowerUpWrapper>>();
             foreach (var skill in this.learnedSkills.Where(s => s.Skill.SkillType == SkillType.PassiveBoost))
             {
-                this.CreatePowerUpWrappers(skill);
-                skill.PropertyChanged += (sender, eventArgs) =>
-                {
-                    if (eventArgs.PropertyName == "Level")
-                    {
-                        this.UpdateSkillPassivePowerUp((SkillEntry)sender);
-                    }
-                };
+                this.CreatePowerUpForPassiveSkill(skill);
             }
         }
 
@@ -124,24 +115,33 @@ namespace MUnique.OpenMU.GameLogic
             this.learnedSkills.Add(skill);
 
             this.player.PlayerView.AddSkill(skill.Skill);
+            if (skill.Skill.SkillType == SkillType.PassiveBoost)
+            {
+                this.CreatePowerUpForPassiveSkill(skill);
+            }
+        }
+
+        private void CreatePowerUpForPassiveSkill(SkillEntry skillEntry)
+        {
+            this.CreatePowerUpWrappers(skillEntry);
         }
 
         private void CreatePowerUpWrappers(SkillEntry skillEntry)
         {
-            if (skillEntry.Skill.PassivePowerUps.TryGetValue(skillEntry.Level, out PowerUpDefinition powerUp))
+            var masterDefinition = skillEntry.Skill.MasterDefinition;
+            if (masterDefinition == null)
             {
-                this.passiveSkillPowerUps.Add(skillEntry, PowerUpWrapper.CreateByPowerUpDefinition(powerUp, this.player.Attributes).ToList());
+                return;
             }
-        }
 
-        private void UpdateSkillPassivePowerUp(SkillEntry skillEntry)
-        {
-            if (this.passiveSkillPowerUps.TryGetValue(skillEntry, out IEnumerable<PowerUpWrapper> powerUps))
+            if (masterDefinition.TargetAttribute == null)
             {
-                this.passiveSkillPowerUps.Remove(skillEntry);
-                powerUps.ForEach(p => p.Dispose());
-                this.CreatePowerUpWrappers(skillEntry);
+                // log?
+                return;
             }
+
+            // maybe to do: We don't need to hold it, as it's added to the player attributes.
+            new PowerUpWrapper(new PassiveSkillBoostPowerUp(skillEntry), masterDefinition.TargetAttribute, this.player.Attributes);
         }
 
         private void Inventory_WearingItemsChanged(object sender, ItemEventArgs eventArgs)
@@ -161,6 +161,29 @@ namespace MUnique.OpenMU.GameLogic
             {
                 this.RemoveItemSkill(item.Definition.Skill.Number.ToUnsigned());
             }
+        }
+
+        private sealed class PassiveSkillBoostPowerUp : IElement
+        {
+            public PassiveSkillBoostPowerUp(SkillEntry skillEntry)
+            {
+                this.Value = skillEntry.CalculateValue();
+                this.AggregateType = skillEntry.Skill.MasterDefinition.Aggregation;
+                skillEntry.PropertyChanged += (sender, eventArgs) =>
+                {
+                    if (eventArgs.PropertyName == nameof(SkillEntry.Level))
+                    {
+                        this.Value = skillEntry.CalculateValue();
+                        this.ValueChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                };
+            }
+
+            public event EventHandler ValueChanged;
+
+            public float Value { get; private set; }
+
+            public AggregateType AggregateType { get; }
         }
     }
 }

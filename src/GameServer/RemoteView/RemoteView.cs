@@ -664,16 +664,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void UpdateSkillList()
         {
+            const int headerSize = 6;
+            const int skillBlockSize = 4;
             this.SkillList.Clear();
-            using (var writer = this.connection.StartSafeWrite(0xC1, 6 + (4 * this.player.SkillList.SkillCount)))
+            using (var writer = this.connection.StartSafeWrite(0xC1, headerSize + (skillBlockSize * this.player.SkillList.SkillCount)))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
                 packet[3] = 0x11;
-                packet[4] = this.player.SkillList.SkillCount;
+
+                var skills = this.player.SkillList.Skills.ToList();
+                if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
+                {
+                    var replacedSkills = skills.Select(entry => entry.Skill.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
+                    skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
+                }
 
                 byte i = 0;
-                foreach (var skillEntry in this.player.SkillList.Skills)
+                foreach (var skillEntry in skills.Distinct(default(SkillEqualityComparer)))
                 {
                     int offset = i * 4;
                     packet[6 + offset] = i;
@@ -685,7 +693,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     i++;
                 }
 
-                writer.Commit();
+                packet[4] = i;
+                var actualSize = headerSize + (skillBlockSize * i);
+                packet.Slice(0, actualSize).SetPacketSize();
+                writer.Commit(actualSize);
             }
         }
 
@@ -938,6 +949,28 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
+        /// <inheritdoc />
+        public void MasterSkillLevelChanged(SkillEntry skillEntry)
+        {
+            var character = this.player.SelectedCharacter;
+            using (var writer = this.connection.StartSafeWrite(0xC1, 28))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x52;
+                packet[4] = 1; // success
+                packet.Slice(6).SetShortBigEndian((ushort)character.MasterLevelUpPoints);
+                packet[8] = skillEntry.Skill.GetMasterSkillIndex(character.CharacterClass);
+                packet.Slice(12).SetShortBigEndian((ushort)skillEntry.Skill.Number);
+                packet[16] = (byte)skillEntry.Level;
+
+                // Instead of using the BitConverter, we should use something more efficient. BitConverter creates an array.
+                BitConverter.GetBytes(skillEntry.CalculateDisplayValue()).CopyTo(packet.Slice(20, 4));
+                BitConverter.GetBytes(skillEntry.CalculateNextDisplayValue()).CopyTo(packet.Slice(24, 4));
+                writer.Commit();
+            }
+        }
+
         private void SendMasterStats()
         {
             var character = this.player.SelectedCharacter;
@@ -955,6 +988,36 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
                 packet.Slice(28).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield]);
                 packet.Slice(30).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility]);
+                writer.Commit();
+            }
+
+            this.SendMasterSkills();
+        }
+
+        private void SendMasterSkills()
+        {
+            var masterSkills = this.player.SkillList.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
+
+            const int sizePerSkill = 12;
+            using (var writer = this.connection.StartSafeWrite(0xC2, 12 + (masterSkills.Count * sizePerSkill)))
+            {
+                var packet = writer.Span;
+                packet[3] = 0xF3;
+                packet[4] = 0x53;
+                packet.Slice(8).SetIntegerBigEndian((uint)masterSkills.Count);
+                var skillsBlock = packet.Slice(12);
+                foreach (var masterSkill in masterSkills)
+                {
+                    skillsBlock[0] = masterSkill.Skill.GetMasterSkillIndex(this.player.SelectedCharacter.CharacterClass);
+                    skillsBlock[1] = (byte)masterSkill.Level;
+                    //// 2 bytes padding
+                    // Instead of using the BitConverter, we should use something more efficient. BitConverter creates an array.
+                    BitConverter.GetBytes(masterSkill.CalculateDisplayValue()).CopyTo(skillsBlock.Slice(4, 4));
+                    BitConverter.GetBytes(masterSkill.CalculateNextDisplayValue()).CopyTo(skillsBlock.Slice(8, 4));
+
+                    skillsBlock = skillsBlock.Slice(sizePerSkill);
+                }
+
                 writer.Commit();
             }
         }
@@ -1131,6 +1194,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
                     return Enumerable.Empty<ItemAppearance>();
                 }
+            }
+        }
+
+        private struct SkillEqualityComparer : IEqualityComparer<SkillEntry>
+        {
+            public bool Equals(SkillEntry left, SkillEntry right)
+            {
+                return Equals(left.Skill, right.Skill);
+            }
+
+            public int GetHashCode(SkillEntry obj)
+            {
+                return obj.GetHashCode();
             }
         }
     }

@@ -14,17 +14,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     
-    [Table("SkillPowerUpDefinition", Schema = "config")]
-    internal partial class SkillPowerUpDefinition : IDictionaryEntity<Int32, PowerUpDefinition>
-    {
-        public Int32 Key { get; set; }
-
-        public Guid ValueId { get; set; }
-
-        [ForeignKey("ValueId")]
-        public PowerUpDefinition Value { get; set; }
-    }
-
     [Table("AccountCharacterClass", Schema = "data")]
     internal partial class AccountCharacterClass 
     {
@@ -173,21 +162,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     internal partial class Skill
     {
         public ICollection<SkillCharacterClass> JoinedQualifiedCharacters { get; } = new List<SkillCharacterClass>();
-    }
-
-    [Table("SkillMasterSkillDefinition", Schema = "config")]
-    internal partial class SkillMasterSkillDefinition 
-    {
-        public Guid SkillId { get; set; }
-        public Skill Skill { get; set; }
-
-        public Guid MasterSkillDefinitionId { get; set; }
-        public MasterSkillDefinition MasterSkillDefinition { get; set; }
-    }
-
-    internal partial class Skill
-    {
-        public ICollection<SkillMasterSkillDefinition> JoinedMasterDefinitions { get; } = new List<SkillMasterSkillDefinition>();
     }
 
     [Table("ItemDefinitionCharacterClass", Schema = "config")]

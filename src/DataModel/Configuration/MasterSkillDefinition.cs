@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.AttributeSystem;
 
     /// <summary>
     /// The definition of a master skill. One skill can have 0-n master skill definitions,
@@ -34,11 +35,51 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public byte Rank { get; set; }
 
         /// <summary>
-        /// Gets or sets the character class to which this definition belongs.
-        /// One master definiton is only valid for one master character class.
-        /// One skill can be a master skill of more than one character,
-        /// but with different requisitions.
+        /// Gets or sets the maximum level.
         /// </summary>
-        public virtual CharacterClass CharacterClass { get; set; }
+        /// <remarks>
+        /// Usually it's 20, but for some skills it's 10.
+        /// </remarks>
+        public byte MaximumLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum level which is required until the skill gets active.
+        /// It's also the number of master points which are initially required to learn the skill.
+        /// </summary>
+        public byte MinimumLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the formula to calculate the effective value, depending on the level of the master skill.
+        /// </summary>
+        /// <remarks>
+        /// We use the syntax of MathParser.org.
+        /// To use the level in the formula, use the argument "level".
+        /// </remarks>
+        public string ValueFormula { get; set; }
+
+        /// <summary>
+        /// Gets or sets the formula to calculate the visible value, depending on the level of the master skill.
+        /// </summary>
+        /// <remarks>
+        /// We use the syntax of MathParser.org.
+        /// To use the level in the formula, use the argument "level".
+        /// </remarks>
+        public string DisplayValueFormula { get; set; }
+
+        /// <summary>
+        /// Gets or sets the target attribute of a passive skill boost.
+        /// </summary>
+        public virtual AttributeDefinition TargetAttribute { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of how the calculated value is aggregated to the <see cref="TargetAttribute"/>.
+        /// </summary>
+        public AggregateType Aggregation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the replaced skill. If this skill is defined, this master skill replaces it in the skill list.
+        /// The attack damage is also inherited and increased by the damage AND value of the master skill.
+        /// </summary>
+        public virtual Skill ReplacedSkill { get; set; }
     }
 }

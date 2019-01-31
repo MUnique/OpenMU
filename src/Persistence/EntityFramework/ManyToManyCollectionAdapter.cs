@@ -70,7 +70,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public void Add(T item)
         {
-            this.rawCollection.Add(this.createJoinEntityFunction(item));
+            if (item != null)
+            {
+                this.rawCollection.Add(this.createJoinEntityFunction(item));
+            }
         }
 
         /// <inheritdoc/>

@@ -717,7 +717,17 @@ namespace MUnique.OpenMU.GameLogic
         {
             var skill = skillEntry.Skill;
             var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
-            skillEntry.BuffPowerUp = this.Attributes.CreateElement(powerUpDef.Boost);
+            if (skillEntry.Level > 0)
+            {
+                var element = this.Attributes.CreateElement(powerUpDef.Boost);
+                var additionalValue = new SimpleElement(skillEntry.CalculateValue(), element.AggregateType);
+                skillEntry.BuffPowerUp = new CombinedElement(element, additionalValue);
+            }
+            else
+            {
+                skillEntry.BuffPowerUp = this.Attributes.CreateElement(powerUpDef.Boost);
+            }
+
             skillEntry.PowerUpDuration = this.Attributes.CreateElement(powerUpDef.Duration);
         }
 
