@@ -224,14 +224,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             wing.DropsFromMonsters = false;
             wing.Durability = durability;
             wing.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
-            if (levelRequirement > 0)
-            {
-                var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.Level.GetPersistent(this.GameConfiguration);
-                requirement.MinimumValue = levelRequirement;
-                //// TODO: each level increases the requirement by 5 Levels
-                wing.Requirements.Add(requirement);
-            }
+
+            //// TODO: each level increases the requirement by 5 Levels
+            this.CreateItemRequirementIfNeeded(wing, Stats.Level, levelRequirement);
 
             if (defense > 0)
             {

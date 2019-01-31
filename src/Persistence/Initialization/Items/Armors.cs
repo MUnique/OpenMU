@@ -489,12 +489,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             armor.DropsFromMonsters = true;
             armor.Durability = durability;
             armor.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(slot));
-            this.CreateRequirementIfNeeded(armor, Stats.Level, levelRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalStrengthRequirementValue, strengthRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalAgilityRequirementValue, agilityRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalEnergyRequirementValue, energyRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalVitalityRequirementValue, vitalityRequirement);
-            this.CreateRequirementIfNeeded(armor, Stats.TotalLeadershipRequirementValue, leadershipRequirement);
+            this.CreateItemRequirementIfNeeded(armor, Stats.Level, levelRequirement);
+            this.CreateItemRequirementIfNeeded(armor, Stats.TotalStrengthRequirementValue, strengthRequirement);
+            this.CreateItemRequirementIfNeeded(armor, Stats.TotalAgilityRequirementValue, agilityRequirement);
+            this.CreateItemRequirementIfNeeded(armor, Stats.TotalEnergyRequirementValue, energyRequirement);
+            this.CreateItemRequirementIfNeeded(armor, Stats.TotalVitalityRequirementValue, vitalityRequirement);
+            this.CreateItemRequirementIfNeeded(armor, Stats.TotalLeadershipRequirementValue, leadershipRequirement);
 
             if (defense > 0)
             {
@@ -536,33 +536,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 levelBonus.AdditionalValue = level;
                 this.shieldDefenseBonusPerLevel.Add(shieldLevelBonus);
             }
-        }
-
-        private void CreateRequirementIfNeeded(ItemDefinition armor, AttributeDefinition attribute, int requiredValue)
-        {
-            if (requiredValue == 0)
-            {
-                return;
-            }
-
-            var persistentAttribute = attribute.GetPersistent(this.GameConfiguration);
-            var requirement = this.CreateAttributeRequirement(persistentAttribute, requiredValue);
-            armor.Requirements.Add(requirement);
-        }
-
-        /// <summary>
-        /// Creates the attribute requirement.
-        /// TODO: Remove duplicated method.
-        /// </summary>
-        /// <param name="attributeDefinition">The attribute definition.</param>
-        /// <param name="minimumValue">The minimum value.</param>
-        /// <returns>The attribute requirement.</returns>
-        private AttributeRequirement CreateAttributeRequirement(AttributeDefinition attributeDefinition, int minimumValue)
-        {
-            var requirement = this.Context.CreateNew<AttributeRequirement>();
-            requirement.Attribute = attributeDefinition;
-            requirement.MinimumValue = minimumValue;
-            return requirement;
         }
     }
 }

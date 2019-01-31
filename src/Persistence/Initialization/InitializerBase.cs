@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization
 {
+    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Base class for an <see cref="IInitializer"/>.
@@ -41,5 +43,36 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         /// <inheritdoc />
         public abstract void Initialize();
+
+        /// <summary>
+        /// Creates an attribute requirement with the specified minimum value.
+        /// </summary>
+        /// <param name="attribute">The attribute.</param>
+        /// <param name="minimumValue">The minimum value.</param>
+        /// <returns>The created requirement.</returns>
+        protected AttributeRequirement CreateRequirement(AttributeDefinition attribute, int minimumValue)
+        {
+            var requirement = this.Context.CreateNew<AttributeRequirement>();
+            requirement.Attribute = attribute.GetPersistent(this.GameConfiguration);
+            requirement.MinimumValue = minimumValue;
+            return requirement;
+        }
+
+        /// <summary>
+        /// Creates an item requirement, if the required value is greater than 0.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="attribute">The attribute.</param>
+        /// <param name="requiredValue">The required value.</param>
+        protected void CreateItemRequirementIfNeeded(ItemDefinition item, AttributeDefinition attribute, int requiredValue)
+        {
+            if (requiredValue == 0)
+            {
+                return;
+            }
+
+            var requirement = this.CreateRequirement(attribute, requiredValue);
+            item.Requirements.Add(requirement);
+        }
     }
 }

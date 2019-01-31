@@ -79,45 +79,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 orb.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SummoningOrbConsumeHandler).FullName;
             }
 
-            if (levelRequirement > 0)
-            {
-                var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.Level.GetPersistent(this.GameConfiguration);
-                requirement.MinimumValue = levelRequirement;
-                orb.Requirements.Add(requirement);
-            }
-
-            if (energyRequirement > 0)
-            {
-                var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalEnergyRequirementValue.GetPersistent(this.GameConfiguration);
-                requirement.MinimumValue = energyRequirement;
-                orb.Requirements.Add(requirement);
-            }
-
-            if (strengthRequirement > 0)
-            {
-                var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalStrengthRequirementValue.GetPersistent(this.GameConfiguration);
-                requirement.MinimumValue = strengthRequirement;
-                orb.Requirements.Add(requirement);
-            }
-
-            if (agilityRequirement > 0)
-            {
-                var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalAgilityRequirementValue.GetPersistent(this.GameConfiguration);
-                requirement.MinimumValue = agilityRequirement;
-                orb.Requirements.Add(requirement);
-            }
-
-            if (leadershipRequirement > 0)
-            {
-                var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalLeadershipRequirementValue.GetPersistent(this.GameConfiguration);
-                requirement.MinimumValue = leadershipRequirement;
-                orb.Requirements.Add(requirement);
-            }
+            this.CreateItemRequirementIfNeeded(orb, Stats.Level, levelRequirement);
+            this.CreateItemRequirementIfNeeded(orb, Stats.TotalEnergy, energyRequirement);
+            this.CreateItemRequirementIfNeeded(orb, Stats.TotalStrength, strengthRequirement);
+            this.CreateItemRequirementIfNeeded(orb, Stats.TotalAgility, agilityRequirement);
+            this.CreateItemRequirementIfNeeded(orb, Stats.TotalLeadership, leadershipRequirement);
 
             orb.Value = money;
             var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);

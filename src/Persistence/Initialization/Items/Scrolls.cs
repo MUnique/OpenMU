@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
     using System.Linq;
+    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -87,21 +88,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             scroll.Durability = 1;
             scroll.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LearnablesConsumeHandler).FullName;
 
-            if (levelRequirement > 0)
-            {
-                var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.Level.GetPersistent(this.GameConfiguration);
-                requirement.MinimumValue = levelRequirement;
-                scroll.Requirements.Add(requirement);
-            }
-
-            if (energyRequirement > 0)
-            {
-                var requirement = this.Context.CreateNew<AttributeRequirement>();
-                requirement.Attribute = Stats.TotalEnergyRequirementValue.GetPersistent(this.GameConfiguration);
-                requirement.MinimumValue = energyRequirement;
-                scroll.Requirements.Add(requirement);
-            }
+            this.CreateItemRequirementIfNeeded(scroll, Stats.Level, levelRequirement);
+            this.CreateItemRequirementIfNeeded(scroll, Stats.TotalEnergyRequirementValue, energyRequirement);
 
             scroll.Value = money;
             var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);

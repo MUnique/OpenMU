@@ -339,9 +339,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var minDamagePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
             minDamagePowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MinimumPhysBaseDmgByWeapon);
             minDamagePowerUp.BaseValue = minimumDamage;
+
             var maxDamagePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
             maxDamagePowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MaximumPhysBaseDmgByWeapon);
             maxDamagePowerUp.BaseValue = maximumDamage;
+
             this.damageBonusPerLevel.ForEach(minDamagePowerUp.BonusPerLevel.Add);
             this.damageBonusPerLevel.ForEach(maxDamagePowerUp.BonusPerLevel.Add);
             item.BasePowerUpAttributes.Add(minDamagePowerUp);
@@ -351,35 +353,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             speedPowerUp.BaseValue = attackSpeed;
             item.BasePowerUpAttributes.Add(speedPowerUp);
 
-            if (levelRequirement > 0)
-            {
-                item.Requirements.Add(
-                    this.CreateAttributeRequirement(Stats.Level, levelRequirement));
-            }
-
-            if (strengthRequirement > 0)
-            {
-                item.Requirements.Add(
-                    this.CreateAttributeRequirement(Stats.TotalStrengthRequirementValue, strengthRequirement));
-            }
-
-            if (agilityRequirement > 0)
-            {
-                item.Requirements.Add(
-                    this.CreateAttributeRequirement(Stats.TotalAgilityRequirementValue, agilityRequirement));
-            }
-
-            if (energyRequirement > 0)
-            {
-                item.Requirements.Add(
-                    this.CreateAttributeRequirement(Stats.TotalEnergyRequirementValue, energyRequirement));
-            }
-
-            if (vitalityRequirement > 0)
-            {
-                item.Requirements.Add(
-                    this.CreateAttributeRequirement(Stats.TotalVitalityRequirementValue, vitalityRequirement));
-            }
+            this.CreateItemRequirementIfNeeded(item, Stats.Level, levelRequirement);
+            this.CreateItemRequirementIfNeeded(item, Stats.TotalStrengthRequirementValue, strengthRequirement);
+            this.CreateItemRequirementIfNeeded(item, Stats.TotalAgilityRequirementValue, agilityRequirement);
+            this.CreateItemRequirementIfNeeded(item, Stats.TotalEnergyRequirementValue, energyRequirement);
+            this.CreateItemRequirementIfNeeded(item, Stats.TotalVitalityRequirementValue, vitalityRequirement);
 
             item.PossibleItemOptions.Add(this.Luck);
 
@@ -417,20 +395,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                     item.BasePowerUpAttributes.Add(staffRisePowerUpMaxDmg);
                 }
             }
-        }
-
-        /// <summary>
-        /// Creates the attribute requirement.
-        /// </summary>
-        /// <param name="attributeDefinition">The attribute definition.</param>
-        /// <param name="minimumValue">The minimum value.</param>
-        /// <returns>The attribute requirement.</returns>
-        protected AttributeRequirement CreateAttributeRequirement(AttributeDefinition attributeDefinition, int minimumValue)
-        {
-            var requirement = this.Context.CreateNew<AttributeRequirement>();
-            requirement.Attribute = attributeDefinition.GetPersistent(this.GameConfiguration);
-            requirement.MinimumValue = minimumValue;
-            return requirement;
         }
     }
 }

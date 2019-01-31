@@ -191,15 +191,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             item.Width = 1;
             item.Height = 1;
 
-            if (level > 0)
-            {
-                var levelRequirement = this.Context.CreateNew<AttributeRequirement>();
-                levelRequirement.Attribute = Stats.Level.GetPersistent(this.GameConfiguration);
-                levelRequirement.MinimumValue = level;
-
-                item.Requirements.Add(levelRequirement);
-                //// TODO: Requirement increases with item level
-            }
+            //// TODO: Requirement increases with item level
+            this.CreateItemRequirementIfNeeded(item, Stats.Level, level);
 
             item.Durability = durability;
             if (excellentOptionDefinition != null)
