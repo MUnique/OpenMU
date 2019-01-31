@@ -426,13 +426,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("InfoRange");
 
+                    b.Property<int>("LetterSendPrice");
+
                     b.Property<byte>("MaximumCharactersPerAccount");
 
                     b.Property<int>("MaximumInventoryMoney");
 
                     b.Property<int>("MaximumLetters");
-
-                    b.Property<int>("LetterSendPrice");
 
                     b.Property<short>("MaximumLevel");
 
@@ -1103,11 +1103,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("ReceiverId");
-
                     b.Property<DateTime>("LetterDate");
 
                     b.Property<bool>("ReadFlag");
+
+                    b.Property<Guid>("ReceiverId");
 
                     b.Property<string>("SenderName");
 
@@ -1136,24 +1136,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("ItemBasePowerUpDefinitionId");
 
                     b.ToTable("LevelBonus","config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LevelDependentDamage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("Damage");
-
-                    b.Property<int>("Level");
-
-                    b.Property<Guid?>("SkillId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SkillId");
-
-                    b.ToTable("LevelDependentDamage","config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", b =>
@@ -1211,17 +1193,31 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("CharacterClassId");
+                    b.Property<int>("Aggregation");
+
+                    b.Property<byte>("MaximumLevel");
+
+                    b.Property<byte>("MinimumLevel");
 
                     b.Property<byte>("Rank");
 
+                    b.Property<Guid?>("ReplacedSkillId");
+
                     b.Property<Guid?>("RootId");
+
+                    b.Property<Guid?>("TargetAttributeId");
+
+                    b.Property<string>("ValueFormula");
+
+                    b.Property<string>("DisplayValueFormula");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterClassId");
+                    b.HasIndex("ReplacedSkillId");
 
                     b.HasIndex("RootId");
+
+                    b.HasIndex("TargetAttributeId");
 
                     b.ToTable("MasterSkillDefinition","config");
                 });
@@ -1481,13 +1477,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("AttackDamage");
+
                     b.Property<int>("DamageType");
+
+                    b.Property<Guid?>("ElementalModifierTargetId");
 
                     b.Property<Guid?>("GameConfigurationId");
 
                     b.Property<short>("ImplicitTargetRange");
 
                     b.Property<Guid?>("MagicEffectDefId");
+
+                    b.Property<Guid?>("MasterDefinitionId");
 
                     b.Property<bool>("MovesTarget");
 
@@ -1507,9 +1509,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ElementalModifierTargetId");
+
                     b.HasIndex("GameConfigurationId");
 
                     b.HasIndex("MagicEffectDefId");
+
+                    b.HasIndex("MasterDefinitionId");
 
                     b.ToTable("Skill","config");
                 });
@@ -1545,36 +1551,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("SkillId");
 
                     b.ToTable("SkillEntry","data");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillMasterSkillDefinition", b =>
-                {
-                    b.Property<Guid>("SkillId");
-
-                    b.Property<Guid>("MasterSkillDefinitionId");
-
-                    b.HasKey("SkillId", "MasterSkillDefinitionId");
-
-                    b.HasIndex("MasterSkillDefinitionId");
-
-                    b.ToTable("SkillMasterSkillDefinition","config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillPowerUpDefinition", b =>
-                {
-                    b.Property<int>("Key");
-
-                    b.Property<Guid>("ValueId");
-
-                    b.Property<Guid?>("SkillId");
-
-                    b.HasKey("Key", "ValueId");
-
-                    b.HasIndex("SkillId");
-
-                    b.HasIndex("ValueId");
-
-                    b.ToTable("SkillPowerUpDefinition","config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttribute", b =>
@@ -2159,9 +2135,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterHeader", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Receiver")
                         .WithMany("RawLetters")
-                        .HasForeignKey("CharacterId");
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LevelBonus", b =>
@@ -2169,13 +2146,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemBasePowerUpDefinition")
                         .WithMany("RawBonusPerLevel")
                         .HasForeignKey("ItemBasePowerUpDefinitionId");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LevelDependentDamage", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill")
-                        .WithMany("RawAttackDamage")
-                        .HasForeignKey("SkillId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", b =>
@@ -2198,13 +2168,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawCharacterClass")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawReplacedSkill")
                         .WithMany()
-                        .HasForeignKey("CharacterClassId");
+                        .HasForeignKey("ReplacedSkillId");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillRoot", "RawRoot")
                         .WithMany()
                         .HasForeignKey("RootId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                        .WithMany()
+                        .HasForeignKey("TargetAttributeId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinitionSkill", b =>
@@ -2320,6 +2294,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Skill", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawElementalModifierTarget")
+                        .WithMany()
+                        .HasForeignKey("ElementalModifierTargetId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration")
                         .WithMany("RawSkills")
                         .HasForeignKey("GameConfigurationId");
@@ -2327,6 +2305,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", "RawMagicEffectDef")
                         .WithMany()
                         .HasForeignKey("MagicEffectDefId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "RawMasterDefinition")
+                        .WithMany()
+                        .HasForeignKey("MasterDefinitionId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillCharacterClass", b =>
@@ -2351,31 +2333,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawSkill")
                         .WithMany()
                         .HasForeignKey("SkillId");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillMasterSkillDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "MasterSkillDefinition")
-                        .WithMany()
-                        .HasForeignKey("MasterSkillDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
-                        .WithMany("JoinedMasterDefinitions")
-                        .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillPowerUpDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill")
-                        .WithMany("RawPassivePowerUps")
-                        .HasForeignKey("SkillId");
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "Value")
-                        .WithMany()
-                        .HasForeignKey("ValueId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttribute", b =>
