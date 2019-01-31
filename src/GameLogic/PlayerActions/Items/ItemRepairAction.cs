@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
     /// <summary>
     /// Action to repair an item from the inventory.
-    /// TODO: Take money for repairing... at the moment repairing is free.
     /// </summary>
     public class ItemRepairAction
     {
@@ -36,8 +35,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return;
             }
 
-            item.Durability = item.GetMaximumDurabilityOfOnePiece();
-            player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
+            if (item.Durability == item.GetMaximumDurabilityOfOnePiece())
+            {
+                return;
+            }
+
+            if (this.CheckMoney(player, item, false))
+            {
+                item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
+            }
         }
 
         /// <summary>
@@ -66,8 +73,36 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     continue;
                 }
 
-                item.Durability = item.GetMaximumDurabilityOfOnePiece();
-                player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
+                if (item.Durability == item.GetMaximumDurabilityOfOnePiece())
+                {
+                    continue;
+                }
+
+                if (this.CheckMoney(player, item, true))
+                {
+                    item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                    player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
+                }
+            }
+        }
+
+        private bool CheckMoney(Player player, Item item, bool repairDiscount)
+        {
+            var priceCalculator = new ItemPriceCalculator();
+            var price = priceCalculator.CalculateRepairPrice(item);
+            if (repairDiscount)
+            {
+                // TODO: I dont know what the discount is, just for now /2
+                price = price / 2;
+            }
+
+            if (!player.TryRemoveMoney((int)price))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
     }

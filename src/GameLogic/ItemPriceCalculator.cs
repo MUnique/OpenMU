@@ -263,6 +263,30 @@ namespace MUnique.OpenMU.GameLogic
             return RoundPrice(sellingPrice);
         }
 
+
+        /// <summary>
+        /// Calculates the repair price of the item, which the player has to pay if he wants to repair the item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>The Repair price.</returns>
+        public float CalculateRepairPrice(Item item)
+        {
+
+            if (item.GetMaximumDurabilityOfOnePiece() == 0)
+            {
+                return 0;
+            }
+
+            var basePrice = this.CalculateBuyingPrice(item) / 3;
+
+            float sq1 = (float)Math.Sqrt((float)basePrice);
+            float sq2 = (float)Math.Sqrt(sq1);
+
+            long repairPrice = (long)((((3.0 * sq1) * sq2) * (1 - (item.Durability / item.GetMaximumDurabilityOfOnePiece()))) + 1);
+
+            return RoundPrice(repairPrice);
+        }
+
         /// <summary>
         /// Calculates the buying price of the item, which the player has to pay if he wants to buy the item from a merchant.
         /// </summary>
@@ -274,7 +298,7 @@ namespace MUnique.OpenMU.GameLogic
 
             if (definition.Value > 0 && (definition.Group == 15 || definition.Group == 12))
             {
-               return RoundPrice(definition.Value);
+                return RoundPrice(definition.Value);
             }
 
             long price = 0;
