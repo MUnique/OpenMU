@@ -1483,17 +1483,17 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             List<Item> itemList = new List<Item>();
 
-            itemList.Add(this.itemHelper.CreatePotion(0, 9, 1, 0)); // Ale 
-            itemList.Add(this.itemHelper.CreateItem(1, 10, 14, 1, 0)); // Town Portal Scroll 
+            itemList.Add(this.itemHelper.CreatePotion(0, 9, 1, 0)); // Ale
+            itemList.Add(this.itemHelper.CreateItem(1, 10, 14, 1, 0)); // Town Portal Scroll
             itemList.Add(this.itemHelper.CreateItem(2, 16, 13, 1, 1)); // Scroll of Archangel + 1
-            itemList.Add(this.itemHelper.CreateItem(3, 16, 13, 1, 2)); // Scroll of Archangel + 2 
+            itemList.Add(this.itemHelper.CreateItem(3, 16, 13, 1, 2)); // Scroll of Archangel + 2
             itemList.Add(this.itemHelper.CreateItem(4, 17, 13, 1, 1)); // Blood Bone + 1
-            itemList.Add(this.itemHelper.CreateItem(5, 17, 13, 1, 2)); // Blood Bone + 2 
+            itemList.Add(this.itemHelper.CreateItem(5, 17, 13, 1, 2)); // Blood Bone + 2
             itemList.Add(this.itemHelper.CreateItem(6, 17, 14, 1, 1)); // Devils Eye + 1
-            itemList.Add(this.itemHelper.CreateItem(7, 17, 14, 1, 2)); // Devils Eye + 2 
+            itemList.Add(this.itemHelper.CreateItem(7, 17, 14, 1, 2)); // Devils Eye + 2
             itemList.Add(this.itemHelper.CreateItem(14, 18, 14, 1, 1)); // Devils key + 1
-            itemList.Add(this.itemHelper.CreateItem(15, 18, 14, 1, 2)); // Devils key + 2 
-            itemList.Add(this.itemHelper.CreateItem(16, 29, 13, 1, 0)); // Armor of Guardsman 
+            itemList.Add(this.itemHelper.CreateItem(15, 18, 14, 1, 2)); // Devils key + 2
+            itemList.Add(this.itemHelper.CreateItem(16, 29, 13, 1, 0)); // Armor of Guardsman
 
             return this.CreateMerchantStore(itemList);
         }
