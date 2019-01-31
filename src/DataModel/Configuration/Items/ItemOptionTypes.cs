@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets the guardian option type.
         /// </summary>
-        public static ItemOptionType GuardianOption { get; } = new ItemOptionType { Name = "Guardian Option", Id = new Guid("{4AA95715-1ED3-453D-8D1D-093B281416CA}"), Description = "This option is added by the chaos machine with a jewel of guardian on level 380 items."};
+        public static ItemOptionType GuardianOption { get; } = new ItemOptionType { Name = "Guardian Option", Id = new Guid("{4AA95715-1ED3-453D-8D1D-093B281416CA}"), Description = "This option is added by the chaos machine with a jewel of guardian on level 380 items." };
 
         /// <summary>
         /// Gets the socket option type.
