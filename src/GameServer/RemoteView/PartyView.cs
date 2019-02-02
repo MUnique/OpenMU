@@ -46,13 +46,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         }
 
         /// <inheritdoc/>
-        public void PartyClosed()
+        public void PartyMemberDelete(byte index)
         {
             using (var writer = this.connection.StartSafeWrite(0xC1, 4))
             {
                 var packet = writer.Span;
-                packet[2] = 0x42;
-                packet[3] = 0x00;
+                packet[2] = 0x43;
+                packet[3] = index;
                 writer.Commit();
             }
         }

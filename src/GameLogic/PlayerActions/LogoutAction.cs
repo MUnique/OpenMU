@@ -21,6 +21,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             player.CurrentMap?.Remove(player);
             player.SelectedCharacter = null;
             player.MagicEffectList.ClearAllEffects();
+            player.Party?.KickMySelf(player);
             player.PersistenceContext.SaveChanges();
             if (logoutType == LogoutType.CloseGame)
             {

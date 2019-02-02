@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
             if (player.LastPartyRequester.Party != null)
             {
                 // The Requester got a party already, so add him to his party
-                player.LastPartyRequester.Party.Add(player.LastPartyRequester);
+                player.LastPartyRequester.Party.Add(player);
             }
             else
             {

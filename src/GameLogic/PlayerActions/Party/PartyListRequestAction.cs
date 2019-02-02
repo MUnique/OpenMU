@@ -17,13 +17,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
         /// <param name="player">The player who is requesting the list.</param>
         public void RequestPartyList(Player player)
         {
-            if (player.Party == null)
+            if (player.Party != null)
             {
-                player.PlayerView.PartyView.PartyClosed();
-                return;
+                player.PlayerView.PartyView.UpdatePartyList();
             }
-
-            player.PlayerView.PartyView.UpdatePartyList();
         }
     }
 }
