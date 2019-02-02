@@ -16,11 +16,6 @@ namespace MUnique.OpenMU.GameLogic.Views
         void ShowPartyRequest(IPartyMember requester);
 
         /// <summary>
-        /// The party has been closed.
-        /// </summary>
-        void PartyClosed();
-
-        /// <summary>
         /// Updates the party list.
         /// </summary>
         void UpdatePartyList();
@@ -35,5 +30,11 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// </summary>
         /// <returns>If set to <c>true</c>, a health update is needed; Otherwise not.</returns>
         bool IsHealthUpdateNeeded();
+
+        /// <summary>
+        /// Delete Member from Party.
+        /// </summary>
+        /// <param name="index">index of the player</param>
+        void PartyMemberDelete(byte index);
     }
 }

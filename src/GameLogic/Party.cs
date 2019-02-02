@@ -66,6 +66,24 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <summary>
         /// Kicks the player from the party.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        public void KickMySelf(IPartyMember sender)
+        {
+            int i = 0;
+
+            for (i = 0; i < this.PartyList.Count; i++)
+            {
+                if (this.PartyList[i].Id == sender.Id)
+                {
+                    this.ExitParty(this.PartyList[i], (byte)i);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Kicks the player from the party.
         /// Only the party master is allowed to kick other players. However, players can kick themself out of the party.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -80,7 +98,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var toKick = this.PartyList[index];
-            this.ExitParty(toKick);
+            this.ExitParty(toKick, index);
         }
 
         /// <summary>
@@ -168,7 +186,9 @@ namespace MUnique.OpenMU.GameLogic
             {
                 for (byte i = 0; i < this.PartyList.Count; i++)
                 {
-                    this.PartyList[i].PartyView.PartyClosed();
+
+
+                    this.PartyList[i].PartyView.PartyMemberDelete(i);
                     this.PartyList[i].Party = null;
                 }
 
@@ -178,7 +198,7 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private void ExitParty(IPartyMember player)
+        private void ExitParty(IPartyMember player, byte index)
         {
             if (this.PartyList.Count < 3 || Equals(this.PartyMaster, player))
             {
@@ -188,7 +208,7 @@ namespace MUnique.OpenMU.GameLogic
 
             this.PartyList.Remove(player);
             player.Party = null;
-            player.PartyView.PartyClosed();
+            player.PartyView.PartyMemberDelete(index);
             this.SendPartyList();
         }
 
