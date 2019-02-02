@@ -94,6 +94,7 @@ namespace MUnique.OpenMU.Tests
             var party = new Party(5);
             var partyMember1 = CreatePartyMember();
             party.Add(partyMember1);
+            var partyMember1Index = (byte)(party.PartyList.Count - 1);
             var partyMember2 = CreatePartyMember();
             party.Add(partyMember2);
             var partyMember2Index = (byte)(party.PartyList.Count - 1);
@@ -102,8 +103,8 @@ namespace MUnique.OpenMU.Tests
             Assert.That(partyMember2.Party, Is.Null);
             Assert.That(party.PartyList, Is.Null.Or.Empty);
 
-            Mock.Get(partyMember1.PlayerView.PartyView).Verify(v => v.PartyClosed(), Times.Once);
-            Mock.Get(partyMember2.PlayerView.PartyView).Verify(v => v.PartyClosed(), Times.Once);
+            Mock.Get(partyMember1.PlayerView.PartyView).Verify(v => v.PartyMemberDelete(partyMember1Index), Times.Once);
+            Mock.Get(partyMember2.PlayerView.PartyView).Verify(v => v.PartyMemberDelete(partyMember2Index), Times.Once);
         }
 
         /// <summary>

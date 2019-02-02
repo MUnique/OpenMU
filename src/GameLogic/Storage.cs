@@ -151,7 +151,7 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-           this.itemStorage.Money = checked(this.ItemStorage.Money + value);
+            this.itemStorage.Money = this.ItemStorage.Money + value;
             return true;
         }
 
@@ -163,7 +163,7 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-            this.itemStorage.Money = checked(this.ItemStorage.Money - value);
+            this.itemStorage.Money = this.ItemStorage.Money - value;
             return true;
         }
 
