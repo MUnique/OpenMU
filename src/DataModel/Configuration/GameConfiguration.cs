@@ -38,6 +38,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public int MaximumInventoryMoney { get; set; }
 
         /// <summary>
+        /// Gets or sets the maximum vault money value.
+        /// </summary>
+        public int MaximumVaultMoney { get; set; }
+
+        /// <summary>
         /// Gets or sets the experience table. Index is the player level, value the needed experience to reach that level.
         /// </summary>
         public long[] ExperienceTable { get; set; }

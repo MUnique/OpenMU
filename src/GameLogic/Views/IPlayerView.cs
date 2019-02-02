@@ -324,6 +324,11 @@ namespace MUnique.OpenMU.GameLogic.Views
         void ShowVault();
 
         /// <summary>
+        /// Refresh vault and player money on client side.
+        /// </summary>
+        void UpdateVaultMoney();
+
+        /// <summary>
         /// Updates the character stats.
         /// </summary>
         void UpdateCharacterStats();

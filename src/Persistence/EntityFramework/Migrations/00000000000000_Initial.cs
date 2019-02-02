@@ -36,6 +36,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     InfoRange = table.Column<byte>(nullable: false),
                     AreaSkillHitsPlayer = table.Column<bool>(nullable: false),
                     MaximumInventoryMoney = table.Column<int>(nullable: false),
+                    MaximumVaultMoney = table.Column<int>(nullable: false),
                     RecoveryInterval = table.Column<int>(nullable: false),
                     MaximumLetters = table.Column<int>(nullable: false),
                     LetterSendPrice = table.Column<int>(nullable: false),
