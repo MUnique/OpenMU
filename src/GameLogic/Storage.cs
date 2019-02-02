@@ -144,6 +144,30 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
+        public bool TryAddMoney(int value)
+        {
+            if (this.ItemStorage.Money + value < 0)
+            {
+                return false;
+            }
+
+           this.itemStorage.Money = checked(this.ItemStorage.Money + value);
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public bool TryRemoveMoney(int value)
+        {
+            if (this.ItemStorage.Money - value < 0)
+            {
+                return false;
+            }
+
+            this.itemStorage.Money = checked(this.ItemStorage.Money - value);
+            return true;
+        }
+
+        /// <inheritdoc/>
         public int CheckInvSpace(Item item)
         {
             if (item.Definition.Number == 0x0F && item.Definition.Group == 0xE)

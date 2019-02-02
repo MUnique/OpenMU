@@ -93,6 +93,20 @@ namespace MUnique.OpenMU.GameLogic
         bool AddItem(Item item);
 
         /// <summary>
+        /// Tries to add money to itemStorage.
+        /// </summary>
+        /// <param name="value">The value which should be added.</param>
+        /// <returns><c>True</c>, if the money can be add to itemStorage; Otherwise, <c>false</c>.</returns>
+        bool TryAddMoney(int value);
+
+        /// <summary>
+        /// Tries to remove money from itemStorage.
+        /// </summary>
+        /// <param name="value">The value which should be added.</param>
+        /// <returns><c>True</c>, if had enought money to be remove; Otherwise, <c>false</c>.</returns>
+        bool TryRemoveMoney(int value);
+
+        /// <summary>
         /// Returns the index of a slot in which the item would fit.
         /// </summary>
         /// <param name="item">The item.</param>

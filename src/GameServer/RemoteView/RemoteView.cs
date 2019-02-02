@@ -545,15 +545,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 writer.Commit();
             }
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
-            {
-                uint zen = (uint)this.player.Account.Vault.Money;
-                var zenPacket = writer.Span;
-                zenPacket[2] = 0x81;
-                zenPacket[3] = 0x01;
-                zenPacket.Slice(4).SetIntegerBigEndian(zen);
-                writer.Commit();
-            }
+            this.UpdateVaultMoney();
 
             using (var writer = this.connection.StartSafeWrite(0xC1, 4))
             {
@@ -561,6 +553,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 var packet = writer.Span;
                 packet[2] = 0x83;
                 packet[3] = 0; // if protected, it's 1
+                writer.Commit();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void UpdateVaultMoney()
+        {
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
+            {
+
+                uint zenPlayer = (uint)this.player.Money;
+                uint zenStorage = (uint)this.player.Account.Vault.Money;
+                var zenPacket = writer.Span;
+                zenPacket[2] = 0x81;
+                zenPacket[3] = 0x01;
+                zenPacket.Slice(4).SetIntegerBigEndian(zenStorage);
+                zenPacket.Slice(8).SetIntegerBigEndian(zenPlayer);
                 writer.Commit();
             }
         }

@@ -429,6 +429,46 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Tries to deposit the money from the players inventory.
+        /// </summary>
+        /// <param name="value">The value which should be moved the the vault.</param>
+        /// <returns><c>True</c>, if the players inventory had enough money to move; Otherwise, <c>false</c>.</returns>
+        public bool TryDepositVaultMoney(int value)
+        {
+            if (this.Vault.ItemStorage.Money + value > this.gameContext?.Configuration?.MaximumVaultMoney)
+            {
+                return false;
+            }
+
+            if (this.TryRemoveMoney(value))
+            {
+                return this.Vault.TryAddMoney(value);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to take the money from the the vault.
+        /// </summary>
+        /// <param name="value">The value which should be retrive the the vault.</param>
+        /// <returns><c>True</c>, if the vault had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
+        public bool TryTakeVaultMoney(int value)
+        {
+            if (this.Money + value > this.gameContext?.Configuration?.MaximumInventoryMoney)
+            {
+                return false;
+            }
+
+            if (this.Vault.TryRemoveMoney(value))
+            {
+                return this.TryAddMoney(value);
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Tries to add the money from the players inventory.
         /// </summary>
         /// <param name="value">The value which should be added.</param>

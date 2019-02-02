@@ -432,6 +432,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MaximumInventoryMoney");
 
+                    b.Property<int>("MaximumVaultMoney");
+
                     b.Property<int>("MaximumLetters");
 
                     b.Property<short>("MaximumLevel");

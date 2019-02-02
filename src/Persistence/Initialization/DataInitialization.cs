@@ -966,6 +966,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             yield return this.CreatePacketConfig<WarpHandler>(PacketType.WarpCommand);
             yield return this.CreatePacketConfig<WarpGateHandler>(PacketType.WarpGate);
             yield return this.CreatePacketConfig<WarehouseCloseHandler>(PacketType.VaultClose);
+            yield return this.CreatePacketConfig<WarehouseMoneyHandler>(PacketType.VaultMoneyInOut);
             yield return this.CreatePacketConfig<JewelMixHandler>(PacketType.JewelMix);
 
             yield return this.CreatePacketConfig<PartyListRequestHandler>(PacketType.RequestPartyList);
@@ -1015,6 +1016,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.InfoRange = 12;
             this.gameConfiguration.AreaSkillHitsPlayer = false;
             this.gameConfiguration.MaximumInventoryMoney = int.MaxValue;
+            this.gameConfiguration.MaximumVaultMoney = int.MaxValue;
             this.gameConfiguration.RecoveryInterval = 3000;
             this.gameConfiguration.MaximumLetters = 50;
             this.gameConfiguration.LetterSendPrice = 1000;
