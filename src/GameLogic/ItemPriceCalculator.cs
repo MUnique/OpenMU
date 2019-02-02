@@ -340,7 +340,7 @@ namespace MUnique.OpenMU.GameLogic
                     price = ((dropLevel + 40) * dropLevel * dropLevel / 8) + 100;
                 }
 
-                var isOneHandedWeapon = item.Definition.Group < 6 && definition.Width < 2 && definition.BasePowerUpAttributes.Any(o => o.TargetAttribute == Stats.MinimumPhysBaseDmg);
+                var isOneHandedWeapon = (item.Definition.Group < 6) && (definition.Width < 2) && definition.BasePowerUpAttributes.Any(o => o.TargetAttribute == Stats.MinimumPhysBaseDmg);
                 var isShield = item.Definition.Group == 6;
                 if (isOneHandedWeapon || isShield)
                 {
