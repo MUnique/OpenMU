@@ -1002,6 +1002,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             yield return this.CreatePacketConfig<ItemRepairHandler>(PacketType.ItemRepair);
             yield return this.CreatePacketConfig<ChaosMixHandler>(PacketType.ChaosMachineMix);
+            yield return this.CreatePacketConfig<ChaosMachineCloseHandler>(PacketType.ChaosMachineClose);
             yield return this.CreatePacketConfig<AddFriendHandler>(PacketType.FriendAdd);
             yield return this.CreatePacketConfig<DeleteFriendHandler>(PacketType.FriendDelete);
             yield return this.CreatePacketConfig<ChatRequestHandler>(PacketType.ChatRoomCreate);

@@ -562,7 +562,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
             {
-
                 uint zenPlayer = (uint)this.player.Money;
                 uint zenStorage = (uint)this.player.Account.Vault.Money;
                 var zenPacket = writer.Span;
