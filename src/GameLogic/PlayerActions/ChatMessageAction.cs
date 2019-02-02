@@ -79,17 +79,25 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 case ChatMessageType.Party:
                     sender.Party?.SendChatMessage(message, sender.SelectedCharacter.Name);
                     break;
-                case ChatMessageType.Alliance when sender.GuildStatus != null:
+                case ChatMessageType.Alliance:
                 {
-                    var guildServer = (this.gameContext as IGameServerContext)?.GuildServer;
-                    guildServer?.AllianceMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    if (sender.GuildStatus != null)
+                    {
+                        var guildServer = (this.gameContext as IGameServerContext)?.GuildServer;
+                        guildServer?.AllianceMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    }
+
                     break;
                 }
 
-                case ChatMessageType.Guild when sender.GuildStatus != null:
+                case ChatMessageType.Guild:
                 {
-                    var guildServer = (this.gameContext as IGameServerContext)?.GuildServer;
-                    guildServer?.GuildMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    if (sender.GuildStatus != null)
+                    {
+                        var guildServer = (this.gameContext as IGameServerContext)?.GuildServer;
+                        guildServer?.GuildMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    }
+
                     break;
                 }
 

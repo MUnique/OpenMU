@@ -157,9 +157,14 @@ namespace MUnique.OpenMU.GameServer
                 where player.GuildStatus?.GuildId == guildId
                 select player;
 
+            if (!message.StartsWith("@"))
+            {
+                message = "@" + message;
+            }
+
             foreach (var player in guildplayers)
             {
-                player.PlayerView.ChatMessage("@" + message, sender, 0);
+                player.PlayerView.ChatMessage(message, sender, 0);
             }
         }
 
@@ -170,10 +175,15 @@ namespace MUnique.OpenMU.GameServer
                 where player.GuildStatus?.GuildId == guildId
                 select player;
 
+            if (!message.StartsWith("@@"))
+            {
+                message = "@@" + message;
+            }
+
             // TODO: determine alliance
             foreach (var player in guildplayers)
             {
-                player.PlayerView.ChatMessage("@@" + message, sender, 0);
+                player.PlayerView.ChatMessage(message, sender, 0);
             }
         }
 
