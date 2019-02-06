@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
     /// <summary>
     /// Action to repair an item from the inventory.
-    /// TODO: Take money for repairing... at the moment repairing is free.
     /// </summary>
     public class ItemRepairAction
     {
@@ -22,7 +21,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="slot">The inventory slot.</param>
         public void RepairItem(Player player, byte slot)
         {
-            if (slot == 8 && player.OpenedNpc == null)
+            if (slot == InventoryConstants.PetSlot && player.OpenedNpc == null)
             {
                 Log.WarnFormat("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
                 return;
@@ -36,14 +35,26 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return;
             }
 
-            item.Durability = item.GetMaximumDurabilityOfOnePiece();
-            player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
+            if (item.Durability == item.GetMaximumDurabilityOfOnePiece())
+            {
+                return;
+            }
+
+            if (IsMoneySufficient(player, item))
+            {
+                item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
+            }
         }
 
         /// <summary>
         /// Repairs all equipped items.
         /// </summary>
         /// <param name="player">The player.</param>
+        /// <remarks>
+        /// The client calculates a sum based on all items in the inventory, even these which are not equipped.
+        /// However, it should really just repair the equipped ones.
+        /// </remarks>
         public void RepairAllItems(Player player)
         {
             if (player.OpenedNpc == null)
@@ -57,6 +68,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             {
                 if (i == InventoryConstants.PetSlot)
                 {
+                    // Pets are repaired due pet trainer
                     continue;
                 }
 
@@ -66,9 +78,24 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     continue;
                 }
 
-                item.Durability = item.GetMaximumDurabilityOfOnePiece();
-                player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
+                if (item.Durability == item.GetMaximumDurabilityOfOnePiece())
+                {
+                    continue;
+                }
+
+                if (IsMoneySufficient(player, item))
+                {
+                    item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                    player.PlayerView.InventoryView.ItemDurabilityChanged(item, false);
+                }
             }
+        }
+
+        private static bool IsMoneySufficient(Player player, Item item)
+        {
+            var priceCalculator = new ItemPriceCalculator();
+            var price = priceCalculator.CalculateRepairPrice(item, player.OpenedNpc != null);
+            return player.TryRemoveMoney((int)price);
         }
     }
 }

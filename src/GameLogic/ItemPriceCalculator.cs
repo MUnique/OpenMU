@@ -23,6 +23,9 @@ namespace MUnique.OpenMU.GameLogic
     {
         private const short ForceWaveSkillId = 66;
         private const long MaximumPrice = 3000000000;
+        private const float DestroyedPetPenalty = 2.0f;
+        private const float DestroyedItemPenalty = 1.4f;
+
         private static readonly HashSet<short> WingIds = new HashSet<short>
         {
             0, 1, 2, 3, 4, 5, 6,
@@ -264,17 +267,62 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Calculates the repair price of the item, which the player has to pay if he wants to repair the item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="npcDiscount">If set to <c>true</c>, the item is repaired through an NPC which gives a discount.</param>
+        /// <returns>The repair price.</returns>
+        public long CalculateRepairPrice(Item item, bool npcDiscount)
+        {
+            if (item.GetMaximumDurabilityOfOnePiece() == 0)
+            {
+                return 0;
+            }
+
+            const long maximumBasePrice = 400000000;
+            var isPet = item.ItemSlot == InventoryConstants.PetSlot;
+            var maximumDurability = item.GetMaximumDurabilityOfOnePiece();
+            var basePrice = Math.Min(isPet ? CalculateBuyingPrice(item, maximumDurability) : CalculateBuyingPrice(item, maximumDurability) / 3, maximumBasePrice);
+            basePrice = RoundPrice(basePrice);
+
+            float squareRootOfBasePrice = (float)Math.Sqrt(basePrice);
+            float squareRootOfSquareRoot = (float)Math.Sqrt(squareRootOfBasePrice);
+            float missingDurability = 1 - ((float)item.Durability / item.GetMaximumDurabilityOfOnePiece());
+            float repairPrice = (3.0f * squareRootOfBasePrice * squareRootOfSquareRoot * missingDurability) + 1.0f;
+            if (item.Durability <= 0)
+            {
+                if (isPet)
+                {
+                    repairPrice *= DestroyedPetPenalty;
+                }
+                else
+                {
+                    repairPrice *= DestroyedItemPenalty;
+                }
+            }
+
+            if (!npcDiscount)
+            {
+                repairPrice *= 2.5f;
+            }
+
+            return RoundPrice((long)repairPrice);
+        }
+
+        /// <summary>
         /// Calculates the buying price of the item, which the player has to pay if he wants to buy the item from a merchant.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>The buying price.</returns>
-        public long CalculateBuyingPrice(Item item)
+        public long CalculateBuyingPrice(Item item) => CalculateBuyingPrice(item, item.Durability);
+
+        private static long CalculateBuyingPrice(Item item, byte durability)
         {
             var definition = item.Definition;
 
             if (definition.Value > 0 && (definition.Group == 15 || definition.Group == 12))
             {
-               return RoundPrice(definition.Value);
+                return RoundPrice(definition.Value);
             }
 
             long price = 0;
@@ -340,7 +388,7 @@ namespace MUnique.OpenMU.GameLogic
                     price = ((dropLevel + 40) * dropLevel * dropLevel / 8) + 100;
                 }
 
-                var isOneHandedWeapon = (item.Definition.Group < 6) && (definition.Width < 2) && definition.BasePowerUpAttributes.Any(o => o.TargetAttribute == Stats.MinimumPhysBaseDmg);
+                var isOneHandedWeapon = item.Definition.Group < 6 && definition.Width < 2 && definition.BasePowerUpAttributes.Any(o => o.TargetAttribute == Stats.MinimumPhysBaseDmg);
                 var isShield = item.Definition.Group == 6;
                 if (isOneHandedWeapon || isShield)
                 {
@@ -400,9 +448,9 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var maxDurability = item.GetMaximumDurabilityOfOnePiece();
-            if (maxDurability > 1)
+            if (maxDurability > 1 && maxDurability > durability)
             {
-                float multiplier = 1.0f - ((float)item.Durability / maxDurability);
+                float multiplier = 1.0f - ((float)durability / maxDurability);
                 long loss = (long)(price * 0.6 * multiplier);
                 price -= loss;
             }
