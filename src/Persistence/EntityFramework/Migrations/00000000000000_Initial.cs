@@ -908,6 +908,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Pose = table.Column<byte>(nullable: false),
                     PositionX = table.Column<byte>(nullable: false),
                     PositionY = table.Column<byte>(nullable: false),
+                    CharacterStatus = table.Column<int>(nullable: false),
                     State = table.Column<int>(nullable: false),
                     StateRemainingSeconds = table.Column<int>(nullable: false),
                     UsedFruitPoints = table.Column<int>(nullable: false),

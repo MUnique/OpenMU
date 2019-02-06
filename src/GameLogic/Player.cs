@@ -375,6 +375,29 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Is called after the player killed a <see cref="Player"/>.
+        /// Increment PK Level
+        /// </summary>
+        public void AfterKilledPlayer()
+        {
+            // TODO: Self Defense System
+            if (this.selectedCharacter.State != HeroState.PlayerKiller2ndStage)
+            {
+                if (this.selectedCharacter.State < HeroState.Normal)
+                {
+                    this.selectedCharacter.State = HeroState.PlayerKillWarning;
+                }
+                else
+                {
+                    this.selectedCharacter.State += 1;
+                }
+            }
+
+            this.selectedCharacter.PlayerKillCount += 1;
+            this.playerView.UpdateCharacterHeroState();
+        }
+
+        /// <summary>
         /// Is called after the player killed a <see cref="Monster"/>.
         /// Adds recovered mana and health to the players attributes.
         /// </summary>
@@ -890,6 +913,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private void OnDeath(IAttackable killer)
         {
+
+
             if (!this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.Dead))
             {
                 return;
@@ -898,7 +923,12 @@ namespace MUnique.OpenMU.GameLogic
             this.walker.Stop();
             this.Alive = false;
             this.respawnAfterDeathToken = default(CancellationToken);
-            this.PlayerView.WorldView.ObjectGotKilled(this, killer);
+            this.ForEachObservingPlayer(p => p.WorldView.ObjectGotKilled(this, killer), true);
+
+            if (killer is Player killerAfterKilled)
+            {
+                killerAfterKilled.AfterKilledPlayer();
+            }
 
             // TODO: Drop items
             Task.Run(

@@ -292,6 +292,11 @@ namespace MUnique.OpenMU.GameLogic.Views
         void UpdateCurrentHealth();
 
         /// <summary>
+        /// Updates the current hero state.
+        /// </summary>
+        void UpdateCharacterHeroState();
+
+        /// <summary>
         /// Updates the maximum mana.
         /// </summary>
         void UpdateMaximumMana();
