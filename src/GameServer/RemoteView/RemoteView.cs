@@ -194,7 +194,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     var level = (ushort)character.Attributes.First(s => s.Definition == Stats.Level).Value;
                     characterBlock[12] = level.GetLowByte();
                     characterBlock[13] = level.GetHighByte();
-                    characterBlock[14] = (byte)character.State; // | 0x10 for item block?
+                    characterBlock[14] = (byte)character.CharacterStatus; // | 0x10 for item block?
 
                     this.appearanceSerializer.WriteAppearanceData(characterBlock.Slice(15), new CharacterAppearanceDataAdapter(character), false);
 
@@ -235,7 +235,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[16] = 0x01;
                 packet[17] = 0x00;
                 packet[18] = (byte)(character.CharacterClass.Number << 3);
-                packet[19] = this.GetPlayerStateCode(character.State);
+                packet[19] = (byte)character.CharacterStatus;
                 packet.Slice(20, 22).Fill(0xFF); // preview data?
                 writer.Commit();
             }
@@ -322,6 +322,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[2] = 0xF3;
                 packet[3] = 0x02;
                 packet[4] = (byte)result;
+                writer.Commit();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void UpdateCharacterHeroState()
+        {
+            var playerId = this.player.GetId(this.player);
+            var characterHeroState = this.player.SelectedCharacter.State;
+
+            using (var writer = this.connection.StartSafeWrite(0xC1, 0x07))
+            {
+                var packet = writer.Span;
+                packet[2] = 0xF3;
+                packet[3] = 0x08;
+                packet[4] = playerId.GetHighByte();
+                packet[5] = playerId.GetLowByte();
+                packet[6] = (byte)characterHeroState;
                 writer.Commit();
             }
         }
@@ -604,8 +622,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
                 //// 2 missing bytes here are padding
                 packet.Slice(52).SetIntegerBigEndian((uint)this.player.Money);
-                packet[56] = (byte)this.player.SelectedCharacter.PlayerKillCount;
-                packet[57] = (byte)this.player.SelectedCharacter.State;
+                packet[56] = (byte)this.player.SelectedCharacter.State;
+                packet[57] = (byte)this.player.SelectedCharacter.CharacterStatus;
                 packet.Slice(58).SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedFruitPoints);
                 packet.Slice(60).SetShortBigEndian(this.player.SelectedCharacter.GetMaximumFruitPoints());
                 packet.Slice(62).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseLeadership]);
@@ -1121,12 +1139,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 default:
                     throw new ArgumentException("GuildPosition not mapped.");
             }
-        }
-
-        private byte GetPlayerStateCode(HeroState state)
-        {
-            // TODO: check if this is right.
-            return (byte)state;
         }
 
         private byte GetWindowIdOf(NpcWindow window)

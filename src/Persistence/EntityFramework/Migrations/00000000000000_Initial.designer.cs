@@ -213,6 +213,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte[]>("QuestInfo");
 
+                    b.Property<int>("CharacterStatus");
+
                     b.Property<int>("State");
 
                     b.Property<int>("StateRemainingSeconds");

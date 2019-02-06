@@ -328,7 +328,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                         playerBlock[33] = newPlayer.Position.Y;
                     }
 
-                    playerBlock[34] = (byte)((newPlayer.Rotation.ToPacketByte() * 0x10) + GetStateValue(newPlayer.SelectedCharacter.State));
+                    playerBlock[34] = (byte)((newPlayer.Rotation.ToPacketByte() * 0x10) + newPlayer.SelectedCharacter.State);
                     var activeEffects = newPlayer.MagicEffectList.GetVisibleEffects();
                     var effectCount = 0;
                     for (int e = activeEffects.Count - 1; e >= 0; e--)
@@ -466,27 +466,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[8] = point.Y;
                 packet[9] = rotation;
                 writer.Commit();
-            }
-        }
-
-        private static byte GetStateValue(HeroState state)
-        {
-            switch (state)
-            {
-                case HeroState.LightHero:
-                    return 1;
-                case HeroState.MediumHero:
-                    return 2;
-                case HeroState.Hero:
-                    return 3;
-                case HeroState.PlayerKillWarning:
-                    return 4;
-                case HeroState.PlayerKiller1stStage:
-                    return 5;
-                case HeroState.PlayerKiller2ndStage:
-                    return 6;
-                default:
-                    return 0;
             }
         }
     }

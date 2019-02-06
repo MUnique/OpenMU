@@ -26,11 +26,6 @@ namespace MUnique.OpenMU.DataModel.Entities
         Hero,
 
         /// <summary>
-        /// The character is a hero, but it's some time ago.
-        /// </summary>
-        MediumHero,
-
-        /// <summary>
         /// The character is a hero, but the hero state is almost gone.
         /// </summary>
         LightHero,
@@ -54,6 +49,27 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// The character killed more than two characters, and has hard restrictions.
         /// </summary>
         PlayerKiller2ndStage
+    }
+
+    /// <summary>
+    /// The Character Status of a player.
+    /// </summary>
+    public enum CharacterStatus
+    {
+        /// <summary>
+        /// The character is normal
+        /// </summary>
+        Normal = 0,
+
+        /// <summary>
+        /// The character is banned
+        /// </summary>
+        Banned = 1,
+
+        /// <summary>
+        /// The character is a GameMaster (have mu logo on the head)
+        /// </summary>
+        GameMaster = 32
     }
 
     /// <summary>
@@ -161,6 +177,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the hero state.
         /// </summary>
         public HeroState State { get; set; }
+
+        /// <summary>
+        /// Gets or sets the character status.
+        /// </summary>
+        public CharacterStatus CharacterStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the pose.
