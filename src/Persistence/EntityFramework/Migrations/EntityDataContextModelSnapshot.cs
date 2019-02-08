@@ -1388,6 +1388,28 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("PacketHandlerConfiguration","config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PlugInConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CustomPlugInSource");
+
+                    b.Property<string>("ExternalAssemblyName");
+
+                    b.Property<Guid?>("GameConfigurationId");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<Guid>("TypeId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameConfigurationId");
+
+                    b.ToTable("PlugInConfiguration","config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2262,6 +2284,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PacketHandlerConfiguration")
                         .WithMany("RawSubPacketHandlers")
                         .HasForeignKey("PacketHandlerConfigurationId");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PlugInConfiguration", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration")
+                        .WithMany("RawPlugInConfigurations")
+                        .HasForeignKey("GameConfigurationId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", b =>

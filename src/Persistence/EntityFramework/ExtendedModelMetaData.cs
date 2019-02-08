@@ -36,6 +36,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                    || (type.BaseType?.Namespace?.StartsWith(ConfigurationNamespace) ?? false)
                    || type.Name.Contains("Definition")
                    || type.Name == nameof(AttributeRelationship)
+                   || type.Name == nameof(PlugInConfiguration)
                    || type.Name == nameof(ConstValueAttribute);
         }
 

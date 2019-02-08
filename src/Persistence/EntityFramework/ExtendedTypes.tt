@@ -8,6 +8,7 @@
 <#@ assembly Name="C:\Program Files\dotnet\sdk\2.1.4\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.DataModel.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.AttributeSystem.dll" #>
+<#@ assembly name="$(TargetDir)\MUnique.OpenMU.PlugIns.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.Interfaces.dll" #>
 <#@ assembly name="$(TargetPath)" #>
 <#@ import namespace="System.Text" #>
@@ -47,8 +48,9 @@ customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstValueAttribute));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationship));
 customTypes.Add(typeof(MUnique.OpenMU.Interfaces.LetterHeader));
 customTypes.Add(typeof(MUnique.OpenMU.Interfaces.Friend));
+customTypes.Add(typeof(MUnique.OpenMU.PlugIns.PlugInConfiguration));
 
-
+    
 string customTypeSuffix = string.Empty;
 
 foreach (Type type in customTypes)

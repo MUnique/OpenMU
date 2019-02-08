@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Defines the game configuration.
@@ -164,5 +165,10 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the master skill roots.
         /// </summary>
         public virtual ICollection<MasterSkillRoot> MasterSkillRoots { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the plug in configurations.
+        /// </summary>
+        public virtual ICollection<PlugInConfiguration> PlugInConfigurations { get; protected set; }
     }
 }

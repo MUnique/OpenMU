@@ -11,6 +11,7 @@
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.DataModel.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.AttributeSystem.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.Interfaces.dll" #>
+<#@ assembly name="$(TargetDir)\MUnique.OpenMU.PlugIns.dll" #>
 <#@ assembly name="$(TargetPath)" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Linq" #>
@@ -46,6 +47,7 @@ customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstValueAttribute));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationship));
 customTypes.Add(typeof(MUnique.OpenMU.Interfaces.LetterHeader));
 customTypes.Add(typeof(MUnique.OpenMU.Interfaces.Friend));
+customTypes.Add(typeof(MUnique.OpenMU.PlugIns.PlugInConfiguration));
 
 
 foreach (Type type in customTypes)
