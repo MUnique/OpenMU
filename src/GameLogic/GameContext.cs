@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The game context which holds all data of the game together.
@@ -41,6 +42,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 this.Configuration = configuration;
                 this.PersistenceContextProvider = persistenceContextProvider;
+                this.PlugInManager = new PlugInManager(configuration.PlugInConfigurations);
                 this.mapList = new Dictionary<ushort, GameMap>();
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
             }
@@ -61,6 +63,9 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <inheritdoc/>
         public GameConfiguration Configuration { get; }
+
+        /// <inheritdoc/>
+        public PlugInManager PlugInManager { get; }
 
         /// <inheritdoc/>
         public IItemPowerUpFactory ItemPowerUpFactory { get; } = new ItemPowerUpFactory();

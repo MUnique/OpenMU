@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The context of the game.
@@ -27,6 +28,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the configuration.
         /// </summary>
         GameConfiguration Configuration { get; }
+
+        /// <summary>
+        /// Gets the plug in manager.
+        /// </summary>
+        PlugInManager PlugInManager { get; }
 
         /// <summary>
         /// Gets the players of the game in a list.
