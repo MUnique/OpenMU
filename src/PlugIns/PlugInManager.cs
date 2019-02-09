@@ -179,7 +179,6 @@ namespace MUnique.OpenMU.PlugIns
                 throw new ArgumentException($"Plugin Type {instance.GetType()} is missing a {typeof(GuidAttribute)}. It's required to identify the plugin in the configuration. Otherwise, the plugin would get a different Guid every time it gets compiled.", nameof(instance));
             }
 
-            var plugInTypeId = instance.GetType().GUID;
             if (!this.plugInPoints.TryGetValue(typeof(TPlugInInterface), out var point))
             {
                 var proxy = this.CreateProxy<TPlugInInterface>();
@@ -195,6 +194,7 @@ namespace MUnique.OpenMU.PlugIns
                 throw new InvalidPlugInProxyException(point.GetType(), typeof(IPlugInPointProxy<TPlugInInterface>));
             }
 
+            var plugInTypeId = instance.GetType().GUID;
             if (!this.knownPlugIns.ContainsKey(plugInTypeId))
             {
                 this.knownPlugIns.Add(plugInTypeId, instance.GetType());
