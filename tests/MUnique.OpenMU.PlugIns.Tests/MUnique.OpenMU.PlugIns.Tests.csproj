@@ -34,6 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+    <ProjectReference Include="..\MUnique.OpenMU.Tests\MUnique.OpenMU.Tests.csproj" />
   </ItemGroup>
 
 </Project>
