@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Linq;
     using log4net;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.PlugIns;
@@ -56,7 +57,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (messageType == ChatMessageType.Command)
             {
-                sender.GameContext.PlugInManager.GetPlugInPoint<IChatCommandPlugIn>()?.HandleCommand(sender, message, new CancelEventArgs());
+                var commandKey = message.Split(' ').First();
+                sender.GameContext.PlugInManager.GetStrategy<string, IChatCommandPlugIn>()?[commandKey]?.HandleCommand(sender, message);
                 return;
             }
 

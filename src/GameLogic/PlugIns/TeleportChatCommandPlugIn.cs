@@ -20,19 +20,18 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
     [PlugIn("Teleport chat command", "Handles the chat command '/teleport x y'. Teleports the character to the specified coordinates.")]
     public class TeleportChatCommandPlugIn : IChatCommandPlugIn
     {
-        /// <inheritdoc />
-        public void HandleCommand(Player player, string command, CancelEventArgs args)
-        {
-            if (!command.StartsWith("/teleport "))
-            {
-                return;
-            }
+        private const string CommandKey = "/teleport";
 
+        /// <inheritdoc />
+        public string Key => CommandKey;
+
+        /// <inheritdoc />
+        public void HandleCommand(Player player, string command)
+        {
             var arguments = command.Split(' ');
             if (arguments.Length > 2 && byte.TryParse(arguments[1], out var x) && byte.TryParse(arguments[2], out var y))
             {
                 player.Move(new Point(x, y));
-                args.Cancel = true;
             }
         }
     }
