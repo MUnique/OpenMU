@@ -137,6 +137,23 @@ namespace MUnique.OpenMU.PlugIns
         }
 
         /// <summary>
+        /// Gets the strategy plug in.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
+        /// <returns>The strategy plug in</returns>
+        public IStrategyPlugInProvider<TKey, TStrategy> GetStrategy<TKey, TStrategy>()
+            where TStrategy : class, IStrategyPlugIn<TKey>
+        {
+            if (this.plugInPoints.TryGetValue(typeof(TStrategy), out var obj) && obj is IStrategyPlugInProvider<TKey, TStrategy> plugIn)
+            {
+                return plugIn;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Registers the plug in class for the specified plug in interface.
         /// </summary>
         /// <typeparam name="TPlugInInterface">The type of the plug in interface.</typeparam>
@@ -163,11 +180,9 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             var plugInTypeId = instance.GetType().GUID;
-            var point = this.GetPlugInPoint<TPlugInInterface>();
-            if (point == null)
+            if (!this.plugInPoints.TryGetValue(typeof(TPlugInInterface), out var point))
             {
-                var proxyGenerator = new PlugInProxyTypeGenerator();
-                var proxy = proxyGenerator.GenerateProxy<TPlugInInterface>(this);
+                var proxy = this.CreateProxy<TPlugInInterface>();
                 proxy.AddPlugIn(instance, true);
                 this.plugInPoints.Add(typeof(TPlugInInterface), proxy);
             }
@@ -185,6 +200,26 @@ namespace MUnique.OpenMU.PlugIns
                 this.knownPlugIns.Add(plugInTypeId, instance.GetType());
                 Log.DebugFormat("Added known plugin {0}, {1}", plugInTypeId, instance.GetType());
             }
+        }
+
+        private IPlugInPointProxy<TPlugInInterface> CreateProxy<TPlugInInterface>()
+            where TPlugInInterface : class
+        {
+            IPlugInPointProxy<TPlugInInterface> proxy;
+            var strategyPlugInInterface = typeof(TPlugInInterface).GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IStrategyPlugIn<>));
+            if (strategyPlugInInterface != null)
+            {
+                var keyType = strategyPlugInInterface.GetGenericArguments()[0];
+                var providerType = typeof(StrategyPlugInProvider<,>).MakeGenericType(keyType, typeof(TPlugInInterface));
+                proxy = Activator.CreateInstance(providerType, this) as IPlugInPointProxy<TPlugInInterface>;
+            }
+            else
+            {
+                var proxyGenerator = new PlugInProxyTypeGenerator();
+                proxy = proxyGenerator.GenerateProxy<TPlugInInterface>(this);
+            }
+
+            return proxy;
         }
 
         private void ReadConfiguration(PlugInConfiguration configuration, HashSet<string> loadedAssemblies)

@@ -65,13 +65,31 @@ namespace MUnique.OpenMU.PlugIns
                 this.knownPlugIns.Add(plugIn);
                 if (isActive)
                 {
-                    this.ActivePlugIns.Add(plugIn);
+                    this.ActivatePlugIn(plugIn);
                 }
             }
             finally
             {
                 this.LockSlim.ExitWriteLock();
             }
+        }
+
+        /// <summary>
+        /// Activates the plug in.
+        /// </summary>
+        /// <param name="plugIn">The plug in.</param>
+        protected virtual void ActivatePlugIn(TPlugIn plugIn)
+        {
+            this.ActivePlugIns.Add(plugIn);
+        }
+
+        /// <summary>
+        /// Deactivates the plug in.
+        /// </summary>
+        /// <param name="plugIn">The plug in.</param>
+        protected virtual void DeactivatePlugIn(TPlugIn plugIn)
+        {
+            this.ActivePlugIns.Remove(plugIn);
         }
 
         private bool IsEventRelevant(PlugInEventArgs e) => typeof(TPlugIn).IsAssignableFrom(e.PlugInType);
@@ -118,7 +136,7 @@ namespace MUnique.OpenMU.PlugIns
             this.LockSlim.EnterWriteLock();
             try
             {
-                this.ActivePlugIns.Remove(plugIn);
+                this.DeactivatePlugIn(plugIn);
             }
             finally
             {
@@ -148,7 +166,7 @@ namespace MUnique.OpenMU.PlugIns
             this.LockSlim.EnterWriteLock();
             try
             {
-                this.ActivePlugIns.Add(plugIn);
+                this.ActivatePlugIn(plugIn);
             }
             finally
             {

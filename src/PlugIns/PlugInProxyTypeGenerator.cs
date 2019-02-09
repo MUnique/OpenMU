@@ -34,7 +34,6 @@ namespace MUnique.OpenMU.PlugIns
         /// <exception cref="T:System.Reflection.AmbiguousMatchException">More than one of the requested attributes was found.</exception>
         public IPlugInPointProxy<TPlugIn> GenerateProxy<TPlugIn>(PlugInManager manager)
         {
-            IPlugInPointProxy<TPlugIn> proxy;
             var type = typeof(TPlugIn);
             if (!type.IsInterface)
             {

@@ -292,5 +292,79 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var manager = new PlugInManager();
             Assert.Throws<ArgumentException>(() => manager.RegisterPlugIn<IExamplePlugIn, ExamplePlugIn.NestedWithoutGuid>());
         }
+
+        /// <summary>
+        /// Tests if the strategy provider is created for registered strategy plug in.
+        /// </summary>
+        [Test]
+        public void StrategyProviderCreatedForRegisteredStrategyPlugIn()
+        {
+            var manager = new PlugInManager();
+            manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
+
+            var strategyProvider = manager.GetStrategy<string, IExampleStrategyPlugIn>();
+            Assert.That(strategyProvider, Is.Not.Null);
+        }
+
+        /// <summary>
+        /// Tests if the strategy provider is not created when there is no registered strategy plug in yet.
+        /// </summary>
+        [Test]
+        public void StrategyProviderNotCreatedWithoutRegisteredStrategyPlugIn()
+        {
+            var manager = new PlugInManager();
+
+            var strategyProvider = manager.GetStrategy<string, IExampleStrategyPlugIn>();
+            Assert.That(strategyProvider, Is.Null);
+        }
+
+        /// <summary>
+        /// Tests if the registered strategy plug in is available.
+        /// </summary>
+        [Test]
+        public void RegisteredStrategyPlugInAvailable()
+        {
+            var manager = new PlugInManager();
+            manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
+
+            var strategy = manager.GetStrategy<string, IExampleStrategyPlugIn>()?[ExampleStrategyPlugIn.CommandKey];
+            Assert.That(strategy, Is.Not.Null);
+            Assert.That(strategy, Is.TypeOf<ExampleStrategyPlugIn>());
+        }
+
+        /// <summary>
+        /// Tests if the registered, but deactivated strategy plug in is not available.
+        /// </summary>
+        [Test]
+        public void DeactivatedStrategyPlugInNotAvailable()
+        {
+            var manager = new PlugInManager();
+            manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
+            manager.DeactivatePlugIn<ExampleStrategyPlugIn>();
+            var strategy = manager.GetStrategy<string, IExampleStrategyPlugIn>()?[ExampleStrategyPlugIn.CommandKey];
+            Assert.That(strategy, Is.Null);
+        }
+
+        /// <summary>
+        /// Tests if registering an already registered strategy plug in does not throw an error.
+        /// </summary>
+        [Test]
+        public void RegisteringRegisteredStrategyPlugInDoesntThrowError()
+        {
+            var manager = new PlugInManager();
+            manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
+            manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
+        }
+
+        /// <summary>
+        /// Tests if no plug in point is created and returned for strategy plug ins.
+        /// </summary>
+        [Test]
+        public void NoPlugInPointForStrategyPlugIn()
+        {
+            var manager = new PlugInManager();
+            manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
+            Assert.That(manager.GetPlugInPoint<IExampleStrategyPlugIn>(), Is.Null);
+        }
     }
 }
