@@ -247,6 +247,10 @@ namespace MUnique.OpenMU.PlugIns
                     Assembly customPlugInAssembly = this.CompileCustomPlugInAssembly(configuration);
                     this.DiscoverAndRegisterPlugIns(customPlugInAssembly);
                 }
+                else
+                {
+                    // nothing we can do
+                }
             }
 
             if (this.knownPlugIns.TryGetValue(configuration.TypeId, out Type plugInType))
