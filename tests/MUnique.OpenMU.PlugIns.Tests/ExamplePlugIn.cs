@@ -39,6 +39,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             /// <inheritdoc/>
             public void DoStuff(Player player, string text, MyEventArgs args)
             {
+                // do nothing
             }
         }
 
@@ -52,6 +53,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             /// <inheritdoc/>
             public void DoStuff(Player player, string text, MyEventArgs args)
             {
+                // does nothing, too
             }
         }
     }
