@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.PlugIns
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
-    public interface IStrategyPlugInProvider<TKey, TStrategy>
+    public interface IStrategyPlugInProvider<in TKey, out TStrategy>
         where TStrategy : class, IStrategyPlugIn<TKey>
     {
         /// <summary>

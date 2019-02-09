@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.PlugIns
     /// Interface for a strategy plugin which provides a key under which the strategy is getting registered.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface IStrategyPlugIn<TKey>
+    public interface IStrategyPlugIn<out TKey>
     {
         /// <summary>
         /// Gets the key under which the strategy is getting registered.

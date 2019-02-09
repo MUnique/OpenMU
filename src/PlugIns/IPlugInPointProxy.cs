@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.PlugIns
     /// A interface for the proxy object which implements <typeparamref name="TPlugIn"/>.
     /// </summary>
     /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
-    public interface IPlugInPointProxy<TPlugIn>
+    public interface IPlugInPointProxy<in TPlugIn>
     {
         /// <summary>
         /// Adds the plug in to the plugin point.
