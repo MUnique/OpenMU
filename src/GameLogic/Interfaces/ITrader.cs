@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic.Interfaces
 {
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Persistence;
+    using OpenMU.Interfaces;
+    using Persistence;
+    using Views;
 
     /// <summary>
     /// Interface of a trader.

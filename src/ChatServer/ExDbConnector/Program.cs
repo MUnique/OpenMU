@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     using log4net.Config;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.Network;
+    using Network.Interfaces;
 
     /// <summary>
     /// The main entry class of the application.

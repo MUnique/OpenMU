@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.ChatServer
     using log4net;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Xor;
+    using Network.Interfaces;
 
     /// <summary>
     /// ChatClient implementation, uses socket connections.
