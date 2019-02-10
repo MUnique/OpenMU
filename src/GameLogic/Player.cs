@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Interfaces;
     using log4net;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -20,6 +21,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.Persistence;
+    using IIdentifiable = Interfaces.IIdentifiable;
 
     /// <summary>
     /// The base implementation of a player.

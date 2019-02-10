@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Interfaces;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Pathfinding;
 

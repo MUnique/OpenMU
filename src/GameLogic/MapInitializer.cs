@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Linq;
+    using Interfaces;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
@@ -14,7 +15,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// A basic map initializer.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.IMapInitializer" />
+    /// <seealso cref="IMapInitializer" />
     public class MapInitializer : IMapInitializer
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(MapInitializer));

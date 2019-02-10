@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
+    using Interfaces;
     using log4net;
     using MUnique.OpenMU.Interfaces;
 

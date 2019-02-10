@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     using System.IO.Pipelines;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
+    using Interfaces;
 
     /// <summary>
     /// The standard encryptor (server-side) which encrypts 0xC3 and 0xC4-packets with the "simple modulus" algorithm.

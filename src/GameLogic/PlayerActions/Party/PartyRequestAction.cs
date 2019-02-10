@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
 {
+    using Interfaces;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Pathfinding.Tests
     using System;
     using System.Diagnostics;
     using System.Linq;
+    using Interfaces;
     using MUnique.OpenMU.Pathfinding;
     using NUnit.Framework;
 

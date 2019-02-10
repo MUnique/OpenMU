@@ -7,12 +7,13 @@ namespace MUnique.OpenMU.Pathfinding
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Interfaces;
 
     /// <summary>
     /// Network which is built of a two-dimensional grid of nodes where
     /// each coordinate has a fixed cost to reach it from any direction.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.Pathfinding.INetwork" />
+    /// <seealso cref="INetwork" />
     public class GridNetwork : INetwork
     {
         /// <summary>

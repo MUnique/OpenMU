@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System.Collections.Concurrent;
+    using Interfaces;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>

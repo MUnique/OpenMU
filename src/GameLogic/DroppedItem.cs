@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Linq;
     using System.Threading;
+    using Interfaces;
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Pathfinding;

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Views
 {
     using System.Collections.Generic;
+    using Interfaces;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;

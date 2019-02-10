@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Views
 {
+    using Interfaces;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 

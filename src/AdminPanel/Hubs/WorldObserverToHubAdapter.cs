@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GameLogic.Interfaces;
     using Microsoft.AspNetCore.SignalR;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;

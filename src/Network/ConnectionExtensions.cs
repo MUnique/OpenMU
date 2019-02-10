@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network
 {
     using System;
+    using Interfaces;
 
     /// <summary>
     /// Extension methods for <see cref="IConnection"/>.

@@ -5,9 +5,11 @@
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System.Text;
+    using GameLogic.Interfaces;
     using GameLogic.Views;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.Network;
+    using Network.Interfaces;
 
     /// <summary>
     /// The default implementation of the party view which is forwarding everything to the game client which specific data packets.

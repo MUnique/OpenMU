@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
+    using Interfaces;
+
     /// <summary>
     /// Action to request a chat with a friend with the messenger.
     /// </summary>

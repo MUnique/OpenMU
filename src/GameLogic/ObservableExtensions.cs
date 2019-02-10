@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Linq;
+    using Interfaces;
 
     /// <summary>
     /// Extensions for <see cref="IObservable"/> objects.

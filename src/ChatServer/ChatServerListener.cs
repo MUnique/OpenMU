@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.ChatServer
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.SimpleModulus;
     using MUnique.OpenMU.Network.Xor;
+    using Network.Interfaces;
 
     /// <summary>
     /// Chat Server Listener, accepts incoming connections.

@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using Interfaces;
+
     /// <summary>
     /// A static class to provide random functions by encapsulating the default Randomizer <see cref="System.Random"/>.
     /// </summary>

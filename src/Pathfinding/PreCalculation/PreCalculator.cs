@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Interfaces;
 
     /// <summary>
     /// With this class you can pre-calculate all paths of a given map and save it in a compact way.

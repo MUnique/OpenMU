@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Network
     using System.IO.Pipelines;
     using System.Net;
     using System.Net.Sockets;
+    using Interfaces;
     using log4net;
     using Pipelines.Sockets.Unofficial;
 

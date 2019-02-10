@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network
 {
     using System.IO.Pipelines;
+    using Interfaces;
     using MUnique.OpenMU.Network.SimpleModulus;
 
     /// <summary>

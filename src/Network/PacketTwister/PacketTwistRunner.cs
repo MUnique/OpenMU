@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network.PacketTwister
 {
     using System;
     using System.Collections.Generic;
+    using Interfaces;
 
     /// <summary>
     /// The main entry point to decrypt packets with the packet twisting algorithm.

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Pathfinding
 {
     using System;
+    using Interfaces;
 
     /// <summary>
     /// A heuristic which takes the maximum distance value between the x-axis or the y-axis.

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
+    using GameLogic.Interfaces;
     using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;

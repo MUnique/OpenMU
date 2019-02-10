@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic.Interfaces
 {
     using System.Collections.Generic;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Pathfinding;
+    using Pathfinding;
+    using Views;
 
     /// <summary>
     /// A manager of an area of interest.

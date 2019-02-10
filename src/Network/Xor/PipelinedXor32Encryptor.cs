@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Network.Xor
     using System.Buffers;
     using System.IO.Pipelines;
     using System.Threading.Tasks;
+    using Interfaces;
 
     /// <summary>
     /// Pipelined encryptor which uses a 32 byte key for a xor encryption.

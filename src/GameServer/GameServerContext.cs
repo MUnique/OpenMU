@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer
 {
     using System;
     using System.Linq;
+    using GameLogic.Interfaces;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.MessageHandler;

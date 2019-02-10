@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network
 {
     using System;
+    using Interfaces;
 
     /// <summary>
     /// Event args for <see cref="Listener.ClientAccepted"/> which contains the connection of the client.

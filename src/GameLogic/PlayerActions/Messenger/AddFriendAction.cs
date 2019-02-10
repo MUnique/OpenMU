@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
+    using Interfaces;
+
     /// <summary>
     /// Action to add a friend to the friendlist.
     /// </summary>

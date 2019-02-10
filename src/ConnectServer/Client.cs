@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.ConnectServer
     using log4net;
     using MUnique.OpenMU.ConnectServer.PacketHandler;
     using MUnique.OpenMU.Network;
+    using Network.Interfaces;
 
     /// <summary>
     /// The client which connected to the connect server.

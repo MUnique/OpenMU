@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network
 {
     using System;
     using System.Threading;
+    using Interfaces;
 
     /// <summary>
     /// A helper struct to write safely to a <see cref="IConnection.Output" />.

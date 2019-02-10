@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System;
+    using Interfaces;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence;

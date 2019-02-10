@@ -5,9 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using System;
+    using Interfaces;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
-    using static OpenMU.GameLogic.InventoryConstants;
+    using static Interfaces.InventoryConstants;
 
     /// <summary>
     /// Action to move an item between <see cref="Storages"/> or the same storage.

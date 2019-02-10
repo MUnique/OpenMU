@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
+    using GameLogic.Interfaces;
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;

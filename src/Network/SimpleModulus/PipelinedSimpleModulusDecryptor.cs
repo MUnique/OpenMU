@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     using System.IO.Pipelines;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
+    using Interfaces;
     using log4net;
 
     /// <summary>

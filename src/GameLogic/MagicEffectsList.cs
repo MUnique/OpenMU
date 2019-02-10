@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Interfaces;
 
     /// <summary>
     /// The list of magic effects of a player instance. Automatically applies the power-ups of the effects to the player.

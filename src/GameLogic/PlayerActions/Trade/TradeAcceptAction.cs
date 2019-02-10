@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
+    using Interfaces;
+
     /// <summary>
     /// Action to accept the trade.
     /// </summary>

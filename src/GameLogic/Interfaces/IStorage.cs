@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic.Interfaces
 {
     using System;
     using System.Collections.Generic;
-
-    using MUnique.OpenMU.DataModel.Entities;
+    using DataModel.Entities;
 
     /// <summary>
     /// The types of item storages.

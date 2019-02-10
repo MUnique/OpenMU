@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
+    using Interfaces;
+
     /// <summary>
     /// Action to respond to a friend request.
     /// </summary>

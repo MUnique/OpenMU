@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     using System;
     using System.Linq;
     using System.Text.RegularExpressions;
-
+    using Interfaces;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;

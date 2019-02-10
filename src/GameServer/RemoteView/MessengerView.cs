@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using Network.Interfaces;
 
     /// <summary>
     /// The default implementation of the messenger view which is forwarding everything to the game client which specific data packets.

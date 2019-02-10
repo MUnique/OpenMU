@@ -6,6 +6,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
+    using Interfaces;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Persistence;
 

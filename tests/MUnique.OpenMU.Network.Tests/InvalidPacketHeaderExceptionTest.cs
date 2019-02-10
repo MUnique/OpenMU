@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Network.Tests
     using System;
     using System.IO.Pipelines;
     using System.Threading.Tasks;
+    using Interfaces;
     using NUnit.Framework;
 
     /// <summary>

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GameLogic.Interfaces;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;

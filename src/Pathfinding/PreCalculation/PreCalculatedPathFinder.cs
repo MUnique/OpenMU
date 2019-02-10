@@ -6,11 +6,12 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Interfaces;
 
     /// <summary>
     /// Path finder which uses pre calculated paths.
     /// </summary>
-    /// <seealso cref="OpenMU.Pathfinding.IPathFinder" />
+    /// <seealso cref="IPathFinder" />
     public class PreCalculatedPathFinder : IPathFinder
     {
         private readonly IDictionary<PointCombination, Point> nextSteps;

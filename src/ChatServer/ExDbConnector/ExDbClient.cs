@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     using log4net;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using Network.Interfaces;
     using Pipelines.Sockets.Unofficial;
 
     /// <summary>

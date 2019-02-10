@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Interfaces;
 
     /// <summary>
     /// A basic monster AI which is pretty basic.

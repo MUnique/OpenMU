@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Pathfinding
 {
+    using Interfaces;
+
     /// <summary>
     /// A heuristic which does not calculate a heuristic distance.
     /// </summary>

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Pathfinding
 {
     using System;
+    using Interfaces;
 
     /// <summary>
     /// The manhattan (because of how the buildings are placed) heuristic.

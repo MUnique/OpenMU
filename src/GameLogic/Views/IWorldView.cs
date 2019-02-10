@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Views
 {
     using System.Collections.Generic;
+    using Interfaces;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.Pathfinding;

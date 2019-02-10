@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
+    using Interfaces;
+
     /// <summary>
     /// Action to change the online state for the messenger.
     /// </summary>

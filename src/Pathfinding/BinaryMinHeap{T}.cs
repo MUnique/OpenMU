@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Pathfinding
 {
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
+    using Interfaces;
 
     /// <summary>
     /// A binary min heap which implements <see cref="IPriorityQueue{T}"/>.

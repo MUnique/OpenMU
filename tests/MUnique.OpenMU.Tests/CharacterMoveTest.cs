@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests
 {
     using System;
+    using GameLogic.Interfaces;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.GameServer.MessageHandler;

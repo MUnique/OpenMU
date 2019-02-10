@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Interfaces;
     using log4net;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;

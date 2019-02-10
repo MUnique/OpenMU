@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading;
+    using Interfaces;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
@@ -16,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The game context which holds all data of the game together.
     /// </summary>
-    public class GameContext : OpenMU.GameLogic.IGameContext, IDisposable
+    public class GameContext : IGameContext, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(GameContext));
 

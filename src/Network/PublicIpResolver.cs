@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Network
     using System;
     using System.Net;
     using System.Text.RegularExpressions;
+    using Interfaces;
     using log4net;
 
     /// <summary>

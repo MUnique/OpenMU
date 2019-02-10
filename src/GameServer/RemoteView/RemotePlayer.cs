@@ -6,10 +6,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
     using System.Buffers;
+    using GameLogic.Interfaces;
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.Network;
+    using Network.Interfaces;
 
     /// <summary>
     /// A player which is playing though a remote connection.

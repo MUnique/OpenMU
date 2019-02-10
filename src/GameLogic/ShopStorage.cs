@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using Interfaces;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>

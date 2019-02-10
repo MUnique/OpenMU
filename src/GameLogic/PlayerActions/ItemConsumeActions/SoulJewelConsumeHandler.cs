@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using System;
     using System.Linq;
+    using Interfaces;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Persistence;

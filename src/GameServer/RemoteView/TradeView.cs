@@ -6,10 +6,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
     using System.Text;
+    using GameLogic.Interfaces;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
+    using Network.Interfaces;
 
     /// <summary>
     /// The default implementation of the trade view which is forwarding everything to the game client which specific data packets.

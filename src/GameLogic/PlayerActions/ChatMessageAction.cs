@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System;
     using System.Collections.Generic;
+    using Interfaces;
     using log4net;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Pathfinding;

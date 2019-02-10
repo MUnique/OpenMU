@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Network.Tests
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
+    using Interfaces;
     using NUnit.Framework;
     using Pipelines.Sockets.Unofficial;
 

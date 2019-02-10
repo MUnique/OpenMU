@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
+    using Interfaces;
     using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>

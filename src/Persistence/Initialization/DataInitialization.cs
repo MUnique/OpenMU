@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using System.Linq;
     using System.Reflection;
     using System.Text;
+    using GameLogic.Interfaces;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System.Buffers;
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
+    using Interfaces;
     using log4net;
 
     /// <summary>

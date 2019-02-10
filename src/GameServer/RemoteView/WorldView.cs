@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using GameLogic.Interfaces;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
@@ -16,6 +17,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Pathfinding;
+    using Network.Interfaces;
 
     /// <summary>
     /// The default implementation of the world view which is forwarding everything to the game client which specific data packets.

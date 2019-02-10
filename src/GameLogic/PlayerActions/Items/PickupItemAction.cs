@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using DataModel.Entities;
+    using Interfaces;
     using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>

@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic.Interfaces
 {
-    using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.DataModel.Entities;
+    using AttributeSystem;
+    using DataModel.Entities;
 
     /// <summary>
     /// Interface for an attackable object. An attackable object can also attack other attackable objects.

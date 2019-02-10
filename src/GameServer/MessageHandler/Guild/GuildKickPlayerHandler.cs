@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
 {
     using System;
     using System.Text;
+    using GameLogic.Interfaces;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
     using MUnique.OpenMU.Network;

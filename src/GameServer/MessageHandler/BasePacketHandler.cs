@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
+    using GameLogic.Interfaces;
     using MUnique.OpenMU.GameLogic;
 
     /// <summary>

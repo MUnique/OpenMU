@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Network
     using System.Buffers;
     using System.IO.Pipelines;
     using System.Threading.Tasks;
+    using Interfaces;
 
     /// <summary>
     /// Base class for all classes which read mu online data packets from a <see cref="PipeReader"/>.

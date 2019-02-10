@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
+    using Interfaces;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>

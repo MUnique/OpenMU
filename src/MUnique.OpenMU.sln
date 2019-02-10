@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28531.58
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.GameServer", "GameServer\MUnique.OpenMU.GameServer.csproj", "{8EC9EBEE-56DD-4139-AA02-D154CA8536E6}"
 EndProject
@@ -47,8 +47,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Documentation", "..\doc\MUnique.OpenMU.Documentation.proj", "{F8C6B8AF-47F6-421B-B01D-31CBCF59FC33}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence.EntityFramework", "Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj", "{B54420E7-17E7-43B5-84D9-7320133289B3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence.Initialization.Tests", "..\tests\MUnique.OpenMU.Persistence.Initialization.Tests\MUnique.OpenMU.Persistence.Initialization.Tests.csproj", "{7E700210-36D7-4E8D-86D8-F8C12D36B0C9}"
@@ -72,13 +70,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.ChatServer.E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.SimpleModulusKeyGenerator", "SimpleModulusKeyGenerator\MUnique.OpenMU.SimpleModulusKeyGenerator.csproj", "{F4FB8089-880E-43C3-A1B3-0B1B73B24729}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Network.Analyzer", "Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj", "{2D35FBDD-5636-466D-9D6B-9FCEBD017E80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Analyzer", "Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj", "{2D35FBDD-5636-466D-9D6B-9FCEBD017E80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence.InMemory", "Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj", "{23B216A0-B407-4A76-A387-0B9E72B15363}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AttributeSystem", "AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj", "{F4AFDE9B-6690-4D2B-83C6-DA7426479293}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Benchmarks", "..\tests\MUnique.OpenMU.Network.Benchmarks\MUnique.OpenMU.Network.Benchmarks.csproj", "{F9871781-EC97-4570-A165-6FFF6CAC7004}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{57DB1179-5DB7-4FC5-BCDB-29616E0B8E1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Servers", "Servers", "{57C0F194-DCD9-4761-A633-63A8A5008AD4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{5F9EBF3F-E3C4-4886-A197-3FC1B94D2A57}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -146,9 +150,6 @@ Global
 		{6C3C3CA7-B9A8-4016-88FF-31D0510D4A88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C3C3CA7-B9A8-4016-88FF-31D0510D4A88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C3C3CA7-B9A8-4016-88FF-31D0510D4A88}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F8C6B8AF-47F6-421B-B01D-31CBCF59FC33}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{F8C6B8AF-47F6-421B-B01D-31CBCF59FC33}.Release|Any CPU.ActiveCfg = Debug|x86
-		{F8C6B8AF-47F6-421B-B01D-31CBCF59FC33}.Release|Any CPU.Build.0 = Debug|x86
 		{B54420E7-17E7-43B5-84D9-7320133289B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B54420E7-17E7-43B5-84D9-7320133289B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B54420E7-17E7-43B5-84D9-7320133289B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -208,6 +209,21 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8EC9EBEE-56DD-4139-AA02-D154CA8536E6} = {57C0F194-DCD9-4761-A633-63A8A5008AD4}
+		{B3737BB5-05AE-4AEE-8CE7-161B78B9F985} = {57DB1179-5DB7-4FC5-BCDB-29616E0B8E1D}
+		{DFCE247F-6E84-4791-A8F3-84AF4C371A2E} = {57C0F194-DCD9-4761-A633-63A8A5008AD4}
+		{06BB9B23-7466-4DAE-8F7C-C1094975462F} = {57C0F194-DCD9-4761-A633-63A8A5008AD4}
+		{D2BAED1F-EB47-4D42-9E8B-1FF7FC708CAD} = {57C0F194-DCD9-4761-A633-63A8A5008AD4}
+		{A956C55B-08A8-41B9-BF72-03427BC6BB22} = {57C0F194-DCD9-4761-A633-63A8A5008AD4}
+		{6D4644A5-FEE4-4415-B254-38B196701292} = {57C0F194-DCD9-4761-A633-63A8A5008AD4}
+		{8675AE62-9B7C-410C-A956-148904035F67} = {57DB1179-5DB7-4FC5-BCDB-29616E0B8E1D}
+		{69B012FB-B13F-4265-B7E8-6BEE3FE33B12} = {5F9EBF3F-E3C4-4886-A197-3FC1B94D2A57}
+		{7E700210-36D7-4E8D-86D8-F8C12D36B0C9} = {57DB1179-5DB7-4FC5-BCDB-29616E0B8E1D}
+		{66A6E404-2601-4354-A51A-C8F1EEBC8079} = {57DB1179-5DB7-4FC5-BCDB-29616E0B8E1D}
+		{6B8AC12A-9C67-40BC-B62A-B74BD895A4C0} = {57DB1179-5DB7-4FC5-BCDB-29616E0B8E1D}
+		{DAA084C5-3A0C-4A69-A30B-B13A52901316} = {57DB1179-5DB7-4FC5-BCDB-29616E0B8E1D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28C13837-B616-4790-84D6-4BDCB4A8166D}

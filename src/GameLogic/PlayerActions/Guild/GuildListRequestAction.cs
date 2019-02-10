@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
+    using Interfaces;
+
     /// <summary>
     /// Action to request the guild list.
     /// </summary>

@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic.Interfaces
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Attributes;
+    using DataModel.Entities;
     using log4net;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Attributes;
-    using static OpenMU.GameLogic.InventoryConstants;
 
     /// <summary>
     /// The storage of an inventory of a player, which also contains equippable slots. This class also manages the powerups which get created by equipped items.
@@ -29,10 +28,10 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="context">The game context.</param>
         public InventoryStorage(Player player, IGameContext context)
             : base(
-                FirstEquippableItemSlotIndex,
-                LastEquippableItemSlotIndex,
-                GetInventorySize(player),
-                new ItemStorageAdapter(player.SelectedCharacter.Inventory, FirstEquippableItemSlotIndex, GetInventorySize(player)))
+                InventoryConstants.FirstEquippableItemSlotIndex,
+                InventoryConstants.LastEquippableItemSlotIndex,
+                InventoryConstants.GetInventorySize(player),
+                new ItemStorageAdapter(player.SelectedCharacter.Inventory, InventoryConstants.FirstEquippableItemSlotIndex, InventoryConstants.GetInventorySize(player)))
         {
             this.player = player;
             this.EquippedItemsChanged += (sender, eventArgs) => this.UpdateItemsOnChange(eventArgs.Item);

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Pathfinding
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Interfaces;
 
     /// <summary>
     /// An implementation of the pathfinder which finds paths inside a two-dimensional grid.

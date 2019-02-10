@@ -25,6 +25,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.Initialization;
     using MUnique.OpenMU.Persistence.InMemory;
+    using Network.Interfaces;
 
     /// <summary>
     /// The startup class for an all-in-one game server.

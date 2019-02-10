@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network.Xor
 {
     using System;
+    using Interfaces;
 
     /// <summary>
     /// A decryptor which XOR-decrypts data using a 3-byte key.

@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-
+    using GameLogic.Interfaces;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
@@ -18,6 +18,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using Network.Interfaces;
 
     /// <summary>
     /// Type of an attribute update.

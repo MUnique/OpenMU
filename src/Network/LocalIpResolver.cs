@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network
 {
     using System.Linq;
     using System.Net;
+    using Interfaces;
     using log4net;
 
     /// <summary>

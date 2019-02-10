@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Collections.Generic;
+    using Interfaces;
 
     /// <summary>
     /// The states of a player, used by the <see cref="ITrader.PlayerState"/>.

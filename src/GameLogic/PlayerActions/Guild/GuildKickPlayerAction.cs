@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
+    using Interfaces;
     using MUnique.OpenMU.Interfaces;
     using Views;
 

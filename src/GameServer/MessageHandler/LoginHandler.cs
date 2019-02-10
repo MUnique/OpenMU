@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System;
     using System.Linq;
     using System.Text;
+    using GameLogic.Interfaces;
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
@@ -14,6 +15,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Xor;
+    using Network.Interfaces;
 
     /// <summary>
     /// Handler for login packets.
