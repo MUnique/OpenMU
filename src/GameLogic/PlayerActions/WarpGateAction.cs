@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Interfaces;
+
     using Pathfinding;
 
     /// <summary>
@@ -47,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (enterGate.LevelRequirement > player.Attributes[Stats.Level])
             {
-                player.PlayerView.ShowMessage("Your level is too low to enter this map.", Interfaces.MessageType.BlueNormal);
+                player.PlayerView.ShowMessage("Your level is too low to enter this map.", MessageType.BlueNormal);
                 return false;
             }
 
