@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             if (messageType == ChatMessageType.Command)
             {
                 var commandKey = message.Split(' ').First();
-                sender.GameContext.PlugInManager.GetStrategy<string, IChatCommandPlugIn>()?[commandKey]?.HandleCommand(sender, message);
+                sender.GameContext.PlugInManager.GetStrategy<IChatCommandPlugIn>(commandKey)?.HandleCommand(sender, message);
                 return;
             }
 
