@@ -302,7 +302,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var manager = new PlugInManager();
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
 
-            var strategyProvider = manager.GetStrategy<string, IExampleStrategyPlugIn>();
+            var strategyProvider = manager.GetStrategyProvider<string, IExampleStrategyPlugIn>();
             Assert.That(strategyProvider, Is.Not.Null);
         }
 
@@ -314,7 +314,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         {
             var manager = new PlugInManager();
 
-            var strategyProvider = manager.GetStrategy<string, IExampleStrategyPlugIn>();
+            var strategyProvider = manager.GetStrategyProvider<string, IExampleStrategyPlugIn>();
             Assert.That(strategyProvider, Is.Null);
         }
 
@@ -327,7 +327,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var manager = new PlugInManager();
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
 
-            var strategy = manager.GetStrategy<string, IExampleStrategyPlugIn>()?[ExampleStrategyPlugIn.CommandKey];
+            var strategy = manager.GetStrategy<IExampleStrategyPlugIn>(ExampleStrategyPlugIn.CommandKey);
             Assert.That(strategy, Is.Not.Null);
             Assert.That(strategy, Is.TypeOf<ExampleStrategyPlugIn>());
         }
@@ -341,7 +341,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var manager = new PlugInManager();
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
             manager.DeactivatePlugIn<ExampleStrategyPlugIn>();
-            var strategy = manager.GetStrategy<string, IExampleStrategyPlugIn>()?[ExampleStrategyPlugIn.CommandKey];
+            var strategy = manager.GetStrategy<IExampleStrategyPlugIn>(ExampleStrategyPlugIn.CommandKey);
             Assert.That(strategy, Is.Null);
         }
 

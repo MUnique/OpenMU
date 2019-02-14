@@ -142,7 +142,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <typeparam name="TKey">The type of the key.</typeparam>
         /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
         /// <returns>The strategy plug in</returns>
-        public IStrategyPlugInProvider<TKey, TStrategy> GetStrategy<TKey, TStrategy>()
+        public IStrategyPlugInProvider<TKey, TStrategy> GetStrategyProvider<TKey, TStrategy>()
             where TStrategy : class, IStrategyPlugIn<TKey>
         {
             if (this.plugInPoints.TryGetValue(typeof(TStrategy), out var obj) && obj is IStrategyPlugInProvider<TKey, TStrategy> plugIn)
@@ -151,6 +151,31 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets the strategy plug in.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>The strategy plug in of the specified key, if available; Otherwise, <c>null</c>.</returns>
+        public TStrategy GetStrategy<TKey, TStrategy>(TKey key)
+            where TStrategy : class, IStrategyPlugIn<TKey>
+        {
+            return this.GetStrategyProvider<TKey, TStrategy>()[key];
+        }
+
+        /// <summary>
+        /// Gets the strategy plug in.
+        /// </summary>
+        /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>The strategy plug in of the specified key, if available; Otherwise, <c>null</c>.</returns>
+        public TStrategy GetStrategy<TStrategy>(string key)
+            where TStrategy : class, IStrategyPlugIn<string>
+        {
+            return this.GetStrategy<string, TStrategy>(key);
         }
 
         /// <summary>

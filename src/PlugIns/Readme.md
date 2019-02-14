@@ -21,8 +21,10 @@ Example:
 ```csharp
   // The following call would execute the function "ExecuteSomeMethod" of
   // all active plugins which implement "ISomePlugIn":
-  manager.GetPlugInPoint<ISomePlugIn>().ExecuteSomeMethod("example parameter");
+  manager.GetPlugInPoint<ISomePlugIn>()?.ExecuteSomeMethod("example parameter");
 ```
+
+Note, that I use the ?. operator here, because if no plugin is defined, we might get null.
 
 ### Strategy Plugins
 Sometimes we just want to execute one specific plugin for one specific case.
@@ -33,8 +35,17 @@ Example:
   // The following call would execute the function "HandleCommand" of
   // the active plugin which implements "IChatCommandPlugIn" and is responsible
   // for the command "/post":
-  manager.GetStrategy<string, IChatCommandPlugIn>()["/post"].HandleCommand("/post Hello World");
+  manager.GetStrategy<IChatCommandPlugIn>("/post")?.HandleCommand("/post Hello World");
 ```
+
+Note, that I use the ?. operator here, because if no strategy plugin is defined for the key, we might get null.
+
+In this example, there is also some syntactic sugar used. When the key is something else as a string (or any
+non-considered type in the future), you must specify it's type explicitly:
+```csharp
+  manager.GetStrategy<long, IAnotherStrategyPlugIn>(1337)?.DoStuff();
+```
+
 
 ## Defining Plugin Points / Interfaces
 To define a plugin point (= interface), we simply add a new interface for it.
