@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization
+namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             if (knightClass > 0)
             {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BattleMaster);
+                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BladeMaster);
                 if (knightClass < 3)
                 {
                     yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BladeKnight);
@@ -86,28 +86,27 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 }
             }
 
-            ////if (summonerClass > 0)
-            ////{
-            ////    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DimensionMaster);
-            ////    if (summonerClass < 3)
-            ////    {
-            ////        yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BloodySummoner);
-            ////        if (summonerClass < 2)
-            ////        {
-            ////            yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.Summoner);
-            ////        }
-            ////    }
-            ////}
+            if (summonerClass > 0)
+            {
+                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DimensionMaster);
+                if (summonerClass < 3)
+                {
+                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BloodySummoner);
+                    if (summonerClass < 2)
+                    {
+                        yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.Summoner);
+                    }
+                }
+            }
 
-            //// TODO
-            ////if (ragefighterClass > 0)
-            ////{
-            ////    yield return characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.FistMaster);
-            ////    if (ragefighterClass < 3)
-            ////    {
-            ////        yield return characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.RageFighter);
-            ////    }
-            ////}
+            if (ragefighterClass > 0)
+            {
+                yield return characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.FistMaster);
+                if (ragefighterClass < 3)
+                {
+                    yield return characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.RageFighter);
+                }
+            }
         }
     }
 }

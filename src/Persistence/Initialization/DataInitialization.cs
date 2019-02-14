@@ -23,6 +23,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using MUnique.OpenMU.GameServer.MessageHandler.Items;
     using MUnique.OpenMU.GameServer.MessageHandler.Party;
     using MUnique.OpenMU.GameServer.MessageHandler.Trade;
+    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.Persistence.Initialization.Items;
     using MUnique.OpenMU.Persistence.Initialization.Maps;
     using MUnique.OpenMU.Persistence.Initialization.Skills;
@@ -70,8 +71,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 }
 
                 this.CreateTestAccounts(10);
-                this.CreateTest(300);
-                this.CreateTest(400);
+                this.CreateTestAccount("test300", 300);
+                this.CreateTestAccount("test400", 400);
 
                 this.context.SaveChanges();
             }
@@ -81,7 +82,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             for (int i = 0; i < count; i++)
             {
-                this.CreateTestAccount(i);
+                var level = (i * 10) + 1;
+                this.CreateTestAccount("test" + i, level);
             }
         }
 
@@ -106,24 +108,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256));
         }
 
-        private void CreateTestAccount(int index)
+        private void CreateTestAccount(string loginName, int level)
         {
-            var loginName = "test" + index.ToString();
-
-            var account = this.context.CreateNew<Account>();
-            account.LoginName = loginName;
-            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
-            account.Vault = this.context.CreateNew<ItemStorage>();
-
-            var level = (index * 10) + 1;
-            account.Characters.Add(this.CreateDarkKnight(loginName + "Dk", level));
-            account.Characters.Add(this.CreateElf(loginName + "Elf", level));
-            account.Characters.Add(this.CreateWizard(loginName + "Wiz", level));
-        }
-
-        private void CreateTest(int level)
-        {
-            var loginName = "test" + level.ToString();
             var account = this.context.CreateNew<Account>();
             account.LoginName = loginName;
             account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(loginName);
@@ -270,7 +256,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     this.AddDarkKnightItems(character.Inventory);
                     break;
                 case 400:
-                    character = this.CreateCharacter(name, CharacterClassNumber.BattleMaster, level, 0);
+                    character = this.CreateCharacter(name, CharacterClassNumber.BladeMaster, level, 0);
 
                     character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
                     character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 400;
@@ -1045,7 +1031,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumWizBaseDmg));
             this.gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumCurseBaseDmg));
 
-            new CharacterClassInitialization(this.context, this.gameConfiguration).CreateCharacterClasses();
+            new CharacterClassInitialization(this.context, this.gameConfiguration).Initialize();
             new SkillsInitializer(this.context, this.gameConfiguration).Initialize();
             new Orbs(this.context, this.gameConfiguration).Initialize();
             new Scrolls(this.context, this.gameConfiguration).Initialize();

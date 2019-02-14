@@ -5,10 +5,10 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
     using System.Linq;
-    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
     /// <summary>
     /// Initializer for scroll items which allow a character to learn <see cref="Skill"/>s.

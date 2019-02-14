@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
     /// <summary>
     /// Helper class to create weapon item definitions.
@@ -219,6 +219,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(4, 23, 1, 24, 2, 4, true, "Stinger Bow", 134, 162, 184, 45, 80, 0, 0, 32, 209, 0, 0, 0, 0, 2, 0, 0, 0, 0);
             this.CreateWeapon(4, 24, 1, 24, 2, 4, false, "Air Lyn Bow", 147, 170, 194, 45, 88, 0, 0, 49, 226, 0, 0, 0, 0, 2, 0, 0, 0, 0);
 
+            // TODO: 0 durability fix
             this.CreateWeapon(5, 0, 0, 0, 1, 3, true, "Skull Staff", 6, 3, 4, 20, 0, 6, 0, 40, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0);
             this.CreateWeapon(5, 1, 0, 0, 2, 3, true, "Angelic Staff", 18, 10, 12, 25, 0, 20, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(5, 2, 0, 0, 2, 3, true, "Serpent Staff", 30, 17, 18, 25, 0, 34, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
