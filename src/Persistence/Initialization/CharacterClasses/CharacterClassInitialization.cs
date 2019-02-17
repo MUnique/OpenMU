@@ -31,41 +31,30 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
         /// </summary>
         public override void Initialize()
         {
-            // var dragonKnight = this.CreateDragonKnight();
-            var bladeMaster = this.CreateBladeMaster(/*dragonKnight*/);
+            var bladeMaster = this.CreateBladeMaster();
             var bladeKnight = this.CreateBladeKnight(bladeMaster);
             this.CreateDarkKnight(CharacterClassNumber.DarkKnight, "Dark Knight", 5, false, bladeKnight, true);
 
-            // var soulWizard = this.CreateSoulWizard();
-            var grandMaster = this.CreateGrandMaster(/*soulWizard*/);
+            var grandMaster = this.CreateGrandMaster();
             var soulMaster = this.CreateSoulMaster(grandMaster);
             this.CreateDarkWizard(CharacterClassNumber.DarkWizard, "Dark Wizard", 5, false, soulMaster, true);
 
-            // var nobleElf = this.CreateNobleElf();
-            var highElf = this.CreateHighElf(/*nobleElf*/);
+            var highElf = this.CreateHighElf();
             var museElf = this.CreateMuseElf(highElf);
             this.CreateFairyElf(CharacterClassNumber.FairyElf, "Fairy Elf", 5, false, museElf, true);
 
-            // dimensionSummoner = this.CreateDimensionSummoner();
-            var dimensionMaster = this.CreateDimensionMaster(/*dimensionSummoner*/);
+            var dimensionMaster = this.CreateDimensionMaster();
             var bloodySummoner = this.CreateBloodySummoner(dimensionMaster);
             this.CreateSummoner(CharacterClassNumber.Summoner, "Summoner", 5, false, bloodySummoner, true);
 
-            // var magicKnight = this.CreateMagicKnight();
-            var duelMaster = this.CreateDuelMaster(/*magicKnight*/);
+            var duelMaster = this.CreateDuelMaster();
             this.CreateMagicGladiator(CharacterClassNumber.MagicGladiator, "Magic Gladiator", false, duelMaster, true);
 
-            // var empireRoad = this.CreateEmpireRoad();
-            var lordEmperor = this.CreateLordEmperor(/*empireRoad*/);
+            var lordEmperor = this.CreateLordEmperor();
             this.CreateDarkLord(CharacterClassNumber.DarkLord, "Dark Lord", 7, false, lordEmperor, true);
 
-            // var fistBlazer = this.CreateFistBlazer();
-            var fistMaster = this.CreateFistMaster(/*fistBlazer*/);
+            var fistMaster = this.CreateFistMaster();
             this.CreateRageFighter(CharacterClassNumber.RageFighter, "Rage Fighter", false, fistMaster, true);
-
-            // var shiningLancer = this.CreateShiningLancer();
-            // var mirageLancer = this.CreateMirageLancer(shiningLancer);
-            // this.CreateGrowLancer(CharacterClassNumber.GrowLancer, "Grow Lancer", 7, false, mirageLancer, true);
         }
 
         private StatAttributeDefinition CreateStatAttributeDefinition(AttributeDefinition attribute, int value, bool increasableByPlayer)
