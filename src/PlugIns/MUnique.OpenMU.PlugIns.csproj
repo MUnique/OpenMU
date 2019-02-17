@@ -4,15 +4,16 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.DataModel.xml</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.PlugIns.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-	<DocumentationFile>..\..\bin\Release\MUnique.OpenMU.DataModel.xml</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.PlugIns.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,13 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
-    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
-    <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.1.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

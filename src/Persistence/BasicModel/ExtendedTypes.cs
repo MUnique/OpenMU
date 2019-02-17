@@ -1667,6 +1667,30 @@ namespace MUnique.OpenMU.Persistence.BasicModel
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="PlugInConfigurations" />.
+        /// </summary>
+        [JsonProperty("PlugInConfigurations")]
+        public ICollection<PlugInConfiguration> RawPlugInConfigurations { get; } = new List<PlugInConfiguration>();
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override ICollection<MUnique.OpenMU.PlugIns.PlugInConfiguration> PlugInConfigurations
+        {
+            get
+            {
+                return base.PlugInConfigurations ?? (base.PlugInConfigurations = new CollectionAdapter<MUnique.OpenMU.PlugIns.PlugInConfiguration, PlugInConfiguration>(this.RawPlugInConfigurations)); 
+            }
+            protected set
+            {
+                this.PlugInConfigurations.Clear();
+                foreach (var item in value)
+                {
+                    this.PlugInConfigurations.Add(item);
+                }
+            }
+        }
         
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -4815,6 +4839,38 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 
         /// <inheritdoc/>
         public Friend Convert() => this;
+    }
+
+    /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.PlugIns.PlugInConfiguration"/>.
+    /// </summary>
+    public partial class PlugInConfiguration : MUnique.OpenMU.PlugIns.PlugInConfiguration, IIdentifiable, IConvertibleTo<PlugInConfiguration>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public PlugInConfiguration Convert() => this;
     }
 
     

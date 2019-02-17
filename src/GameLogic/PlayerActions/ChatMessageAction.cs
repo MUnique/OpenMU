@@ -6,9 +6,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Linq;
     using log4net;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// Action to send chat messages.
@@ -55,7 +57,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (messageType == ChatMessageType.Command)
             {
-                this.ChatCommand(sender, message);
+                var commandKey = message.Split(' ').First();
+                sender.GameContext.PlugInManager.GetStrategy<IChatCommandPlugIn>(commandKey)?.HandleCommand(sender, message);
                 return;
             }
 
@@ -104,29 +107,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 default:
                     Log.DebugFormat("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
                     sender.ForEachObservingPlayer(p => p.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true);
-                    break;
-            }
-        }
-
-        private void ChatCommand(Player player, string message)
-        {
-            // TODO: implement plugin system to be able to add custom commands.
-            string[] arguments = message.Split(' ');
-            var command = arguments[0];
-            switch (command)
-            {
-                /* after Season 5.4 it works by a separate packet. look for WarpAction.
-                case "/move":
-                case "/warp":
-                    ReadWarp(sa);
-                    break;
-                    */
-                case "/teleport":
-                    if (arguments.Length > 2)
-                    {
-                        player.Move(new Point(byte.Parse(arguments[1]), byte.Parse(arguments[2])));
-                    }
-
                     break;
             }
         }

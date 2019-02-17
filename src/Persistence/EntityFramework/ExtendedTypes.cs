@@ -1353,6 +1353,17 @@ public ICollection<JewelMix> RawJewelMixes { get; } = new List<JewelMix>();
             }
         }
 
+        public ICollection<PlugInConfiguration> RawPlugInConfigurations { get; } = new List<PlugInConfiguration>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.PlugIns.PlugInConfiguration> PlugInConfigurations
+        {
+            get
+            {
+                return base.PlugInConfigurations ?? (base.PlugInConfigurations = new CollectionAdapter<MUnique.OpenMU.PlugIns.PlugInConfiguration, PlugInConfiguration>(this.RawPlugInConfigurations)); 
+            }
+        }
+
                 
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -4375,6 +4386,42 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
     }
 
     /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.PlugIns.PlugInConfiguration"/>.
+    /// </summary>
+    [Table("PlugInConfiguration", Schema = "config")]
+    internal partial class PlugInConfiguration : MUnique.OpenMU.PlugIns.PlugInConfiguration, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
     /// DbContext which sets all extended base types to ignore.
     /// </summary>
     public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
@@ -4440,6 +4487,7 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.AttributeRelationship>();
             modelBuilder.Ignore<MUnique.OpenMU.Interfaces.LetterHeader>();
             modelBuilder.Ignore<MUnique.OpenMU.Interfaces.Friend>();
+            modelBuilder.Ignore<MUnique.OpenMU.PlugIns.PlugInConfiguration>();
         }
 
         /// <summary>
@@ -4671,6 +4719,9 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.Interfaces.Friend, MUnique.OpenMU.Interfaces.Friend>()
                             .Include<Friend, BasicModel.Friend>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.PlugIns.PlugInConfiguration, MUnique.OpenMU.PlugIns.PlugInConfiguration>()
+                            .Include<PlugInConfiguration, BasicModel.PlugInConfiguration>();
 
             isConfigured = true;
         }

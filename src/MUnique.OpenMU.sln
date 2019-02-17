@@ -80,6 +80,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AttributeSys
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Benchmarks", "..\tests\MUnique.OpenMU.Network.Benchmarks\MUnique.OpenMU.Network.Benchmarks.csproj", "{F9871781-EC97-4570-A165-6FFF6CAC7004}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.PlugIns", "PlugIns\MUnique.OpenMU.PlugIns.csproj", "{5AB17B80-021D-4898-9750-0C26B2AF1A39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.PlugIns.Tests", "..\tests\MUnique.OpenMU.PlugIns.Tests\MUnique.OpenMU.PlugIns.Tests.csproj", "{89669CA5-E5C8-4854-B318-3903459236A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,6 +209,14 @@ Global
 		{F9871781-EC97-4570-A165-6FFF6CAC7004}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9871781-EC97-4570-A165-6FFF6CAC7004}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9871781-EC97-4570-A165-6FFF6CAC7004}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AB17B80-021D-4898-9750-0C26B2AF1A39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AB17B80-021D-4898-9750-0C26B2AF1A39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AB17B80-021D-4898-9750-0C26B2AF1A39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AB17B80-021D-4898-9750-0C26B2AF1A39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89669CA5-E5C8-4854-B318-3903459236A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89669CA5-E5C8-4854-B318-3903459236A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89669CA5-E5C8-4854-B318-3903459236A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89669CA5-E5C8-4854-B318-3903459236A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

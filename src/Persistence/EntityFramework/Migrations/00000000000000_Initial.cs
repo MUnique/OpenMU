@@ -355,6 +355,30 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlugInConfiguration",
+                schema: "config",
+                columns: table => new
+                {
+                    IsActive = table.Column<bool>(nullable: false),
+                    TypeId = table.Column<Guid>(nullable: false),
+                    CustomPlugInSource = table.Column<string>(nullable: true),
+                    ExternalAssemblyName = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlugInConfiguration", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlugInConfiguration_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GameServerDefinition",
                 schema: "config",
                 columns: table => new
@@ -2734,6 +2758,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlugInConfiguration_GameConfigurationId",
+                schema: "config",
+                table: "PlugInConfiguration",
+                column: "GameConfigurationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SkillEntry_CharacterId",
                 schema: "data",
                 table: "SkillEntry",
@@ -3013,6 +3043,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.DropTable(
                 name: "LetterBody",
                 schema: "data");
+
+            migrationBuilder.DropTable(
+                name: "PlugInConfiguration",
+                schema: "config");
 
             migrationBuilder.DropTable(
                 name: "SkillEntry",

@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence.InMemory;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Some helper functions to create test objects.
@@ -31,6 +32,7 @@ namespace MUnique.OpenMU.Tests
             gameConfig.Setup(c => c.Maps).Returns(new List<GameMapDefinition>());
             gameConfig.Setup(c => c.Items).Returns(new List<ItemDefinition>());
             gameConfig.Setup(c => c.Skills).Returns(new List<Skill>());
+            gameConfig.Setup(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration>());
             var map = new Mock<GameMapDefinition>();
             map.SetupAllProperties();
             map.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
