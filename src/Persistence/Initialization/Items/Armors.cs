@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
     /// <summary>
     /// Initializer for armor data.

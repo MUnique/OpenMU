@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization
+namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
 {
     /// <summary>
     /// The default character class numbers.
@@ -35,9 +35,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
         BladeKnight = 0x30 >> 3,
 
         /// <summary>
-        /// The battle master
+        /// The blade master
         /// </summary>
-        BattleMaster = 0x38 >> 3,
+        BladeMaster = 0x38 >> 3,
 
         /// <summary>
         /// The fairy elf

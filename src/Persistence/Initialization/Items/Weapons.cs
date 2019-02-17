@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
     /// <summary>
     /// Helper class to create weapon item definitions.
@@ -219,36 +219,35 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(4, 23, 1, 24, 2, 4, true, "Stinger Bow", 134, 162, 184, 45, 80, 0, 0, 32, 209, 0, 0, 0, 0, 2, 0, 0, 0, 0);
             this.CreateWeapon(4, 24, 1, 24, 2, 4, false, "Air Lyn Bow", 147, 170, 194, 45, 88, 0, 0, 49, 226, 0, 0, 0, 0, 2, 0, 0, 0, 0);
 
-            this.CreateWeapon(5, 0, 0, 0, 1, 3, true, "Skull Staff", 6, 3, 4, 20, 0, 6, 0, 40, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0);
-            this.CreateWeapon(5, 1, 0, 0, 2, 3, true, "Angelic Staff", 18, 10, 12, 25, 0, 20, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 2, 0, 0, 2, 3, true, "Serpent Staff", 30, 17, 18, 25, 0, 34, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 3, 0, 0, 2, 4, true, "Thunder Staff", 42, 23, 25, 25, 0, 46, 0, 40, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 4, 0, 0, 2, 4, true, "Gorgon Staff", 52, 29, 32, 25, 0, 58, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 5, 0, 0, 1, 4, true, "Legendary Staff", 59, 29, 31, 25, 0, 59, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 6, 0, 0, 1, 4, true, "Staff of Resurrection", 70, 35, 39, 25, 0, 70, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 7, 0, 0, 2, 4, false, "Chaos Lighting Staff", 75, 47, 48, 30, 0, 94, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 8, 0, 0, 2, 4, true, "Staff of Destruction", 90, 50, 54, 30, 0, 101, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 9, 0, 0, 1, 4, true, "Dragon Soul Staff", 100, 46, 48, 30, 0, 92, 0, 52, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateWeapon(5, 10, 0, 0, 1, 4, true, "Divine Staff of Archangel", 104, 53, 55, 20, 0, 106, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 11, 0, 0, 1, 4, true, "Staff of Kundun", 140, 55, 61, 30, 0, 110, 0, 45, 16, 0, 0, 2, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 12, 0, 0, 1, 4, true, "Grand Viper Staff", 147, 66, 74, 30, 0, 130, 380, 39, 13, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateWeapon(5, 13, 0, 0, 1, 4, true, "Platina Staff", 110, 51, 53, 30, 0, 120, 0, 50, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateWeapon(5, 14, 0, 0, 1, 4, true, "Mistery Stick", 28, 17, 18, 25, 0, 34, 0, 34, 14, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-            this.CreateWeapon(5, 15, 0, 0, 1, 4, true, "Violent Wind Stick", 42, 23, 25, 25, 0, 46, 0, 33, 17, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-            this.CreateWeapon(5, 16, 0, 0, 1, 4, true, "Red Wing Stick", 59, 29, 31, 25, 0, 59, 0, 36, 14, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-            this.CreateWeapon(5, 17, 0, 0, 1, 4, true, "Ancient Stick", 78, 38, 40, 25, 0, 76, 0, 50, 19, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-            this.CreateWeapon(5, 18, 0, 0, 1, 4, true, "Demonic Stick", 100, 46, 48, 30, 0, 92, 0, 54, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-            this.CreateWeapon(5, 19, 0, 0, 1, 4, true, "Storm Blitz Stick", 110, 51, 53, 30, 0, 110, 380, 64, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-            this.CreateWeapon(5, 20, 0, 0, 1, 4, true, "Lilium Staff", 130, 56, 58, 25, 0, 113, 0, 60, 25, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-            this.CreateWeapon(5, 21, 1, 223, 1, 2, true, "Book of Sahamutt", 52, 0, 0, 25, 0, 46, 0, 0, 20, 135, 0, 0, 0, 0, 0, 0, 1, 0);
-            this.CreateWeapon(5, 22, 1, 224, 1, 2, true, "Book of Neil", 59, 0, 0, 25, 0, 59, 0, 0, 25, 168, 0, 0, 0, 0, 0, 0, 1, 0);
-            this.CreateWeapon(5, 23, 1, 225, 1, 2, true, "Book of Ghost Phantom", 65, 0, 0, 25, 0, 72, 0, 0, 30, 201, 0, 0, 0, 0, 0, 0, 1, 0);
-            this.CreateWeapon(5, 30, 0, 0, 1, 4, true, "Deadly Staff", 138, 57, 59, 30, 0, 126, 0, 47, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 31, 0, 0, 1, 4, true, "Imperial Staff", 137, 57, 61, 30, 0, 124, 0, 48, 14, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-            this.CreateWeapon(5, 32, 0, 0, 1, 4, true, "Merlin Staff", 130, 70, 80, 30, 0, 135, 0, 53, 15, 0, 0, 0, 0, 0, 0, 0, 3, 0);
-            this.CreateWeapon(5, 33, 0, 0, 1, 4, false, "Chroma ticks staff", 147, 55, 57, 30, 0, 124, 0, 50, 12, 0, 0, 2, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 34, 0, 0, 1, 4, false, "Raven Stick", 147, 70, 78, 30, 0, 130, 0, 50, 14, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-            this.CreateWeapon(5, 36, 0, 0, 1, 4, true, "Divine Stick of Archangel", 104, 153, 165, 30, 0, 146, 0, 55, 13, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(5, 0, 0, 0, 1, 3, true, "Skull Staff", 6, 3, 4, 20, 20, 6, 0, 40, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0);
+            this.CreateWeapon(5, 1, 0, 0, 2, 3, true, "Angelic Staff", 18, 10, 12, 25, 38, 20, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 2, 0, 0, 2, 3, true, "Serpent Staff", 30, 17, 18, 25, 50, 34, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 3, 0, 0, 2, 4, true, "Thunder Staff", 42, 23, 25, 25, 60, 46, 0, 40, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 4, 0, 0, 2, 4, true, "Gorgon Staff", 52, 29, 32, 25, 65, 58, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 5, 0, 0, 1, 4, true, "Legendary Staff", 59, 29, 31, 25, 66, 59, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 6, 0, 0, 1, 4, true, "Staff of Resurrection", 70, 35, 39, 25, 70, 70, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 7, 0, 0, 2, 4, false, "Chaos Lighting Staff", 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 8, 0, 0, 2, 4, true, "Staff of Destruction", 90, 50, 54, 30, 85, 101, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 9, 0, 0, 1, 4, true, "Dragon Soul Staff", 100, 46, 48, 30, 91, 92, 0, 52, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateWeapon(5, 10, 0, 0, 1, 4, true, "Divine Staff of Archangel", 104, 53, 55, 20, 182, 106, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 11, 0, 0, 1, 4, true, "Staff of Kundun", 140, 55, 61, 30, 95, 110, 0, 45, 16, 0, 0, 2, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 12, 0, 0, 1, 4, true, "Grand Viper Staff", 147, 66, 74, 30, 100, 130, 380, 39, 13, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateWeapon(5, 13, 0, 0, 1, 4, true, "Platina Staff", 110, 51, 53, 30, 78, 120, 0, 50, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateWeapon(5, 14, 0, 0, 1, 4, true, "Mistery Stick", 28, 17, 18, 25, 50, 34, 0, 34, 14, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(5, 15, 0, 0, 1, 4, true, "Violent Wind Stick", 42, 23, 25, 25, 60, 46, 0, 33, 17, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(5, 16, 0, 0, 1, 4, true, "Red Wing Stick", 59, 29, 31, 25, 65, 59, 0, 36, 14, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(5, 17, 0, 0, 1, 4, true, "Ancient Stick", 78, 38, 40, 25, 81, 76, 0, 50, 19, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(5, 18, 0, 0, 1, 4, true, "Demonic Stick", 100, 46, 48, 30, 91, 92, 0, 54, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+            this.CreateWeapon(5, 19, 0, 0, 1, 4, true, "Storm Blitz Stick", 110, 51, 53, 30, 95, 110, 380, 64, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+            this.CreateWeapon(5, 20, 0, 0, 1, 4, true, "Eternal Wing Stick", 130, 56, 58, 25, 100, 113, 0, 60, 25, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+            this.CreateWeapon(5, 21, 1, 223, 1, 2, true, "Book of Sahamutt", 52, 0, 0, 25, 60, 46, 0, 0, 20, 135, 0, 0, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(5, 22, 1, 224, 1, 2, true, "Book of Neil", 59, 0, 0, 25, 65, 59, 0, 0, 25, 168, 0, 0, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(5, 23, 1, 225, 1, 2, true, "Book of Lagle", 65, 0, 0, 25, 50, 72, 0, 0, 30, 201, 0, 0, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(5, 30, 0, 0, 1, 4, true, "Deadly Staff", 138, 57, 59, 30, 91, 126, 0, 47, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 31, 0, 0, 1, 4, true, "Imperial Staff", 137, 57, 61, 30, 182, 124, 0, 48, 14, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+            this.CreateWeapon(5, 33, 0, 0, 1, 4, false, "Chromatic Staff", 147, 55, 57, 30, 78, 124, 0, 50, 12, 0, 0, 2, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 34, 0, 0, 1, 4, false, "Raven Stick", 147, 70, 78, 30, 98, 130, 0, 50, 14, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+            this.CreateWeapon(5, 36, 0, 0, 1, 4, true, "Divine Stick of Archangel", 104, 153, 165, 30, 182, 146, 0, 55, 13, 0, 0, 0, 0, 0, 0, 0, 1, 0);
 
             this.AddGuardianOptions();
         }

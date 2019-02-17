@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
 {
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
@@ -514,32 +514,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             skill.Name = name;
             skill.MovesToTarget = movesToTarget;
             skill.MovesTarget = movesTarget;
-            if (levelRequirement > 0)
-            {
-                skill.Requirements.Add(this.CreateRequirement(Stats.Level, levelRequirement));
-            }
-
-            if (leadershipRequirement > 0)
-            {
-                skill.Requirements.Add(this.CreateRequirement(Stats.TotalLeadership, leadershipRequirement));
-            }
-
-            if (energyRequirement > 0)
-            {
-                skill.Requirements.Add(this.CreateRequirement(Stats.TotalEnergy, energyRequirement));
-            }
-
             skill.AttackDamage = damage;
 
-            if (manaConsumption > 0)
-            {
-                skill.ConsumeRequirements.Add(this.CreateRequirement(Stats.CurrentMana, manaConsumption));
-            }
-
-            if (abilityConsumption > 0)
-            {
-                skill.ConsumeRequirements.Add(this.CreateRequirement(Stats.CurrentAbility, abilityConsumption));
-            }
+            this.CreateSkillRequirementIfNeeded(skill, Stats.Level, levelRequirement);
+            this.CreateSkillRequirementIfNeeded(skill, Stats.TotalLeadership, leadershipRequirement);
+            this.CreateSkillRequirementIfNeeded(skill, Stats.TotalEnergy, energyRequirement);
+            this.CreateSkillConsumeRequirementIfNeeded(skill, Stats.CurrentMana, manaConsumption);
+            this.CreateSkillConsumeRequirementIfNeeded(skill, Stats.CurrentAbility, abilityConsumption);
 
             skill.Range = distance;
             skill.DamageType = attackType == 1 ? DamageType.Wizardry : DamageType.Physical;
@@ -557,6 +538,28 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             {
                 skill.QualifiedCharacters.Add(characterClass);
             }
+        }
+
+        private void CreateSkillConsumeRequirementIfNeeded(Skill skill, AttributeDefinition attribute, int requiredValue)
+        {
+            if (requiredValue == 0)
+            {
+                return;
+            }
+
+            var requirement = this.CreateRequirement(attribute, requiredValue);
+            skill.ConsumeRequirements.Add(requirement);
+        }
+
+        private void CreateSkillRequirementIfNeeded(Skill skill, AttributeDefinition attribute, int requiredValue)
+        {
+            if (requiredValue == 0)
+            {
+                return;
+            }
+
+            var requirement = this.CreateRequirement(attribute, requiredValue);
+            skill.Requirements.Add(requirement);
         }
 
         /// <summary>
