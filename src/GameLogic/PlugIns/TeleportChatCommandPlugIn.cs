@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns
 {
-    using System.ComponentModel;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
