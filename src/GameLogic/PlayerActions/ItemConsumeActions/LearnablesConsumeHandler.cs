@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlugIns;
 
     /// <summary>
     /// Consume handler for items (e.g. scrolls, orbs) which add a skill when being consumed.
@@ -13,14 +14,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class LearnablesConsumeHandler : IItemConsumeHandler
     {
         /// <inheritdoc/>
-        public bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        public bool ConsumeItem(Player player, Item item, Item targetItem)
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
                 return false;
             }
 
-            Item item = player.Inventory.GetItem(itemSlot);
             if (item == null)
             {
                 return false;

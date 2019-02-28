@@ -7,7 +7,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using System.Linq;
-    using DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
     /// Consume handler for the town portal scroll.
@@ -20,9 +21,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class TownPortalScrollConsumeHandler : BaseConsumeHandler
     {
         /// <inheritdoc />
-        public override bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem)
         {
-            if (base.ConsumeItem(player, itemSlot, targetSlot))
+            if (base.ConsumeItem(player, item, targetItem))
             {
                 var targetMap = player.CurrentMap.Definition.SafezoneMap ?? player.SelectedCharacter.CharacterClass.HomeMap;
                 var exitGate = targetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();

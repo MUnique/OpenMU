@@ -29,20 +29,19 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         protected IPersistenceContextProvider PersistenceContextProvider { get; }
 
         /// <inheritdoc/>
-        public bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        public bool ConsumeItem(Player player, Item item, Item targetItem)
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
                 return false;
             }
 
-            Item item = player.Inventory.GetItem(targetSlot);
-            if (item == null)
+            if (targetItem == null)
             {
                 return false;
             }
 
-            if (item.ItemSlot <= InventoryConstants.LastEquippableItemSlotIndex)
+            if (targetItem.ItemSlot <= InventoryConstants.LastEquippableItemSlotIndex)
             {
                 // It shouldn't be possible to upgrade an equipped item.
                 // The original server allowed this, however people managed to downgrade their maxed out weapons to +6 when some
@@ -51,12 +50,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (!this.ModifyItem(item, player.PersistenceContext))
+            if (!this.ModifyItem(targetItem, player.PersistenceContext))
             {
                 return false;
             }
 
-            player.PlayerView.InventoryView.ItemUpgraded(item);
+            player.PlayerView.InventoryView.ItemUpgraded(targetItem);
             return true;
         }
 

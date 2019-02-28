@@ -7,6 +7,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
@@ -33,9 +34,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         }
 
         /// <inheritdoc />
-        public override bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem)
         {
-            if (base.ConsumeItem(player, itemSlot, targetSlot))
+            if (base.ConsumeItem(player, item, targetItem))
             {
                 player.PlayerView.UpdateCurrentMana();
                 return true;

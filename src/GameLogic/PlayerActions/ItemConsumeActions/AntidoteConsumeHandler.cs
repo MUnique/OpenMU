@@ -6,6 +6,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
+    using MUnique.OpenMU.DataModel.Entities;
+
     /// <summary>
     /// Consume handler for the antidote potion. It removes the poison effect from the player.
     /// </summary>
@@ -14,9 +16,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         private const short PoisonEffectNumber = 0x37;
 
         /// <inheritdoc />
-        public override bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem)
         {
-            if (base.ConsumeItem(player, itemSlot, targetSlot))
+            if (base.ConsumeItem(player, item, targetItem))
             {
                 if (player.MagicEffectList.ActiveEffects.TryGetValue(PoisonEffectNumber, out var effect))
                 {

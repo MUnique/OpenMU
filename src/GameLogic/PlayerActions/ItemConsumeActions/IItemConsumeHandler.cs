@@ -6,6 +6,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
+    using MUnique.OpenMU.DataModel.Entities;
+
     /// <summary>
     /// Consume handler to modify items which are specified by the target slot.
     /// </summary>
@@ -14,12 +16,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <summary>
         /// Consumes the item at the specified slot, and reduces its durability by one.
         /// If the durability has reached 0, the item is getting destroyed.
-        /// If a target slot is specified, the consumation targets the item on this slot (e.g. uprade of an item by a jewel).
+        /// If a target slot is specified, the consumption targets the item on this slot (e.g. upgrade of an item by a jewel).
         /// </summary>
         /// <param name="player">The player which is consuming.</param>
-        /// <param name="itemSlot">The inventory slot of the item which should get consumed.</param>
-        /// <param name="targetSlot">The inventory slot of the item which is affected.</param>
-        /// <returns>The success of the consumation.</returns>
-        bool ConsumeItem(Player player, byte itemSlot, byte targetSlot);
+        /// <param name="item">The item which gets consumed.</param>
+        /// <param name="targetItem">The item which is the target of the consumption (e.g. upgrade target of a jewel).</param>
+        /// <returns>The success of the consumption.</returns>
+        bool ConsumeItem(Player player, Item item, Item targetItem);
     }
 }
