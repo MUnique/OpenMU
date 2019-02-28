@@ -12,10 +12,10 @@ namespace MUnique.OpenMU.GameLogic
     using log4net;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Pathfinding;
@@ -66,6 +66,8 @@ namespace MUnique.OpenMU.GameLogic
             this.MagicEffectList = new MagicEffectsList(this);
             this.appearanceData = new AppearanceDataAdapter(this);
             this.PlayerEnteredWorld += this.OnPlayerEnteredWorld;
+            this.PlayerState.StateChanged += (sender, args) => this.gameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChanged(this);
+            this.PlayerState.StateChanges += (sender, args) => this.gameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChanging(this, args);
         }
 
         /// <summary>
@@ -891,6 +893,7 @@ namespace MUnique.OpenMU.GameLogic
             this.LastReceivedDamage = hitInfo.HealthDamage;
             this.PlayerView.ShowHit(this, hitInfo);
             (attacker as Player)?.PlayerView.ShowHit(this, hitInfo);
+            this.gameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
 
             if (this.Attributes[Stats.CurrentHealth] < 1)
             {
@@ -913,8 +916,6 @@ namespace MUnique.OpenMU.GameLogic
 
         private void OnDeath(IAttackable killer)
         {
-
-
             if (!this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.Dead))
             {
                 return;
@@ -939,6 +940,8 @@ namespace MUnique.OpenMU.GameLogic
                   this.WarpTo(this.GetSpawnGateOfCurrentMap());
               },
               this.respawnAfterDeathToken);
+
+            this.gameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, killer);
         }
 
         private void OnPlayerEnteredWorld(object sender, EventArgs e)

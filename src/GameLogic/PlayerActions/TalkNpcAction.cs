@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -49,8 +50,23 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             switch (npcStats.NpcWindow)
             {
                 case NpcWindow.Undefined:
-                    player.PlayerView.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
-                    player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                    var eventArgs = new NpcTalkEventArgs();
+                    player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>()?.PlayerTalksToNpc(player, player.OpenedNpc, eventArgs);
+                    if (!eventArgs.HasBeenHandled)
+                    {
+                        player.PlayerView.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
+                        player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                    }
+                    else if (!eventArgs.LeavesDialogOpen)
+                    {
+                        player.OpenedNpc = null;
+                        player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                    }
+                    else
+                    {
+                        // Leaves dialog opened, so leave the state as it is.
+                    }
+
                     break;
                 case NpcWindow.VaultStorage:
                     player.Vault = new Storage(0, 0, InventoryConstants.WarehouseSize, player.Account.Vault);

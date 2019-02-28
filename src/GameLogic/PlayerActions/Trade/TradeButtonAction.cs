@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
     using System.Linq;
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence;
 
@@ -115,6 +116,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     (trader.TradingPartner as Player)?.PlayerView.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
                     this.ResetTradeState(trader.TradingPartner);
                     this.ResetTradeState(trader);
+                    this.CallPlugIn(traderItems, trader, tradingPartner);
+                    this.CallPlugIn(tradePartnerItems, tradingPartner, trader);
                     return TradeResult.Success;
                 }
                 catch (Exception exception)
@@ -126,6 +129,20 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     Log.Error($"An unexpected error occured during closing the trade. trader: {trader.Name}, partner:{tradingPartner.Name}", exception);
                     return TradeResult.Cancelled;
                 }
+            }
+        }
+
+        private void CallPlugIn(IEnumerable<Item> items, ITrader source, ITrader target)
+        {
+            var point = this.gameContext.PlugInManager.GetPlugInPoint<IItemTradedToOtherPlayerPlugIn>();
+            if (point == null)
+            {
+                return;
+            }
+
+            foreach (var item in items)
+            {
+                point.ItemTraded(source, target, item);
             }
         }
 

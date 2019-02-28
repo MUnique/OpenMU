@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
     using log4net;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -83,6 +84,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 
                         player.PlayerView.InventoryView.ItemBoughtFromPlayerShop(item);
                         player.PlayerView.InventoryView.UpdateMoney();
+                        player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToOtherPlayerPlugIn>()?.ItemSold(requestedPlayer, item, player);
                     }
                     else
                     {

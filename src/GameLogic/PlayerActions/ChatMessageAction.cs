@@ -65,7 +65,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             if (messageType == ChatMessageType.Whisper)
             {
                 var whisperReceiver = this.gameContext.GetPlayerByCharacterName(playerName);
-                whisperReceiver?.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
+                if (whisperReceiver != null)
+                {
+                    var eventArgs = new CancelEventArgs();
+                    sender.GameContext.PlugInManager.GetPlugInPoint<IWhisperMessageReceivedPlugIn>()?.WhisperMessageReceived(sender, whisperReceiver, message, eventArgs);
+                    if (!eventArgs.Cancel)
+                    {
+                        whisperReceiver.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
+                    }
+                }
             }
             else
             {
@@ -76,6 +84,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         private void HandleChatMessage(Player sender, string message, ChatMessageType messageType)
         {
             Log.DebugFormat("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter.Name, message);
+            var eventArgs = new CancelEventArgs();
+            sender.GameContext.PlugInManager.GetPlugInPoint<IChatMessageReceivedPlugIn>()?.ChatMessageReceived(sender, message, eventArgs);
+            if (eventArgs.Cancel)
+            {
+                return;
+            }
 
             switch (messageType)
             {
