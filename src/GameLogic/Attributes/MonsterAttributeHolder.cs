@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         /// <summary>
         /// Attribute dictionary of a monster instance.
-        /// Most monster instances don't have additional attributes, so we just instanciate one if needed.
+        /// Most monster instances don't have additional attributes, so we just instantiate one if needed.
         /// </summary>
         private IDictionary<AttributeDefinition, IComposableAttribute> attributes;
 
