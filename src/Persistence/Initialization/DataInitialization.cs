@@ -1049,8 +1049,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.AssignCharacterClassHomeMaps();
             new Gates().Initialize(this.context, this.gameConfiguration);
             //// TODO: ItemSetGroups
-            //// TODO: MagicEffects
-            //// TODO: MasterSkillRoots
         }
 
         private void AssignCharacterClassHomeMaps()
