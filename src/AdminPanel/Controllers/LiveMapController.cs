@@ -59,10 +59,12 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
             this.Response.ContentType = "image/png";
             using (var mapStream = this.RenderMap(map))
             {
+                // we need to set the length before writing the data into the body,
+                // otherwise it gets "chunked".
+                this.Response.ContentLength = mapStream.Length;
                 mapStream.CopyTo(this.Response.Body);
+                return this.Ok();
             }
-
-            return this.Ok();
         }
 
         private Stream RenderMap(IGameMapInfo map)
