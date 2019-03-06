@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
 {
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
     /// <summary>
     /// Initialization logic for <see cref="Skill"/>s.
