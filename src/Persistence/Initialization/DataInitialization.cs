@@ -514,7 +514,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             var weapon = this.context.CreateNew<Item>();
             weapon.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == number);
-            weapon.Durability = weapon.Definition?.Durability ?? 0;
+            weapon.Durability = weapon.Definition.Durability;
             weapon.ItemSlot = itemSlot;
             weapon.Level = level;
             weapon.HasSkill = skill;
