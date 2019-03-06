@@ -4,9 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
-    using System.Collections.Generic;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
-    using Views;
 
     /// <summary>
     /// Action for a guild master player to answer the guild membership request.

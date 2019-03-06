@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using System;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Action to log in a player to the game.

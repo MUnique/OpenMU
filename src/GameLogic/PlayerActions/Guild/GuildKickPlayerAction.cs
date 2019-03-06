@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
-    using Views;
 
     /// <summary>
     /// Action to kick a player out of a guild.
