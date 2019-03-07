@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence.InMemory;
+    using MUnique.OpenMU.PlugIns;
     using NUnit.Framework;
 
     /// <summary>
@@ -89,6 +90,7 @@ namespace MUnique.OpenMU.Tests
             trader2.TradingPartner = trader1;
 
             var gameContext = new Mock<IGameContext>();
+            gameContext.Setup(c => c.PlugInManager).Returns(new PlugInManager());
             gameContext.Setup(c => c.PersistenceContextProvider).Returns(new InMemoryPersistenceContextProvider());
             var tradeButtonHandler = new TradeButtonAction(gameContext.Object);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Unchecked);
