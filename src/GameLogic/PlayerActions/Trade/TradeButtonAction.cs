@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 {
                     this.CancelTrade(tradingPartner);
                     this.CancelTrade(trader);
-                    Log.Warn($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{trader.TradingPartner.Name}");
+                    Log.Warn($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{tradingPartner.Name}");
                 }
 
                 trader.TradeView.TradeFinished(result);
