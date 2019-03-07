@@ -76,7 +76,8 @@ namespace MUnique.OpenMU.Tests
                     new StatAttributeDefinition(Stats.BaseVitality, 25, true),
                     new StatAttributeDefinition(Stats.BaseEnergy, 10, true),
                     new StatAttributeDefinition(Stats.CurrentHealth, 0, false),
-                    new StatAttributeDefinition(Stats.CurrentMana, 0, false)
+                    new StatAttributeDefinition(Stats.CurrentMana, 0, false),
+                    new StatAttributeDefinition(Stats.CurrentShield, 0, false)
                 });
             characterClassMock.Setup(c => c.AttributeCombinations).Returns(new List<AttributeRelationship>
             {

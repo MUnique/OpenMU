@@ -245,9 +245,16 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Tests the shield potion consume.
         /// </summary>
+        [Test]
         public void ShieldPotion()
         {
-            Assert.That(true, Is.False);
+            var player = this.GetPlayer();
+            var item = this.GetItem();
+            player.Inventory.AddItem(ItemSlot, item);
+            var consumeHandler = new BigShieldPotionConsumeHandler();
+            var success = consumeHandler.ConsumeItem(player, item, null);
+            Assert.That(success, Is.True);
+            Assert.That(player.Attributes.GetValueOfAttribute(Stats.CurrentShield), Is.GreaterThan(0.0f));
         }
 
         /// <summary>
