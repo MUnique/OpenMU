@@ -6,15 +6,17 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
+    using MUnique.OpenMU.DataModel.Entities;
+
     /// <summary>
     /// The alcohol consume handler.
     /// </summary>
     public class AlcoholConsumeHandler : BaseConsumeHandler
     {
         /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem)
         {
-            if (base.ConsumeItem(player, itemSlot, targetSlot))
+            if (base.ConsumeItem(player, item, targetItem))
             {
                 player.PlayerView.DrinkAlcohol();
                 return true;

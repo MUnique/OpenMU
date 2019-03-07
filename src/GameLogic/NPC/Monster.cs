@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Pathfinding;
 
@@ -305,6 +306,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 int exp = player.Party?.DistributeExperienceAfterKill(this, player) ?? player.AddExpAfterKill(this);
                 this.DropItem(exp, player);
                 player.AfterKilledMonster();
+                player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, attacker);
             }
         }
 
@@ -319,8 +321,17 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void Hit(HitInfo hitInfo, IAttackable attacker)
         {
+            if (!this.Alive)
+            {
+                return;
+            }
+
             var killed = this.TryHit(hitInfo.HealthDamage + hitInfo.ShieldDamage, attacker);
-            (attacker as Player)?.PlayerView.ShowHit(this, hitInfo);
+            if (attacker is Player player)
+            {
+                player.PlayerView.ShowHit(this, hitInfo);
+                player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
+            }
 
             if (killed)
             {
@@ -330,11 +341,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private bool TryHit(uint damage, IAttackable attacker)
         {
-            if (!this.Alive)
-            {
-                return false;
-            }
-
             if (damage > 0)
             {
                 this.intelligence.RegisterHit(attacker);

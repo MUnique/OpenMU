@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Threading;
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
@@ -213,6 +214,8 @@ namespace MUnique.OpenMU.GameLogic
                 context.Delete(this.Item);
                 context.SaveChanges();
             }
+
+            player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(this.Item);
         }
     }
 }

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
@@ -51,6 +52,16 @@ namespace MUnique.OpenMU.GameLogic
             this.areaOfInterestManager = new BucketAreaOfInterestManager(chunkSize);
             this.objectIdGenerator = new IdGenerator(ViewExtensions.ConstantPlayerId + 1, 0x7FFF);
         }
+
+        /// <summary>
+        /// Occurs when an object was added to the map.
+        /// </summary>
+        public event EventHandler<GameMapEventArgs> ObjectAdded;
+
+        /// <summary>
+        /// Occurs when an object was removed from the map.
+        /// </summary>
+        public event EventHandler<GameMapEventArgs> ObjectRemoved;
 
         /// <summary>
         /// Gets the map identifier.
@@ -122,6 +133,8 @@ namespace MUnique.OpenMU.GameLogic
                     Interlocked.Decrement(ref this.playerCount);
                     this.stateObserver?.PlayerCountChanged(this.MapId, this.playerCount);
                 }
+
+                this.ObjectRemoved?.Invoke(this, new GameMapEventArgs(this, locateable));
             }
         }
 
@@ -153,6 +166,7 @@ namespace MUnique.OpenMU.GameLogic
 
             this.objectsInMap.Add(locateable.Id, locateable);
             this.areaOfInterestManager.AddObject(locateable);
+            this.ObjectAdded?.Invoke(this, new GameMapEventArgs(this, locateable));
         }
 
         /// <summary>

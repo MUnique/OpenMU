@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using System.Linq;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -83,6 +84,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 newItem.ItemSlot = (byte)toSlot;
                 player.PlayerView.InventoryView.NpcItemBought(newItem);
                 player.Inventory.AddItem(newItem.ItemSlot, newItem);
+                player.GameContext.PlugInManager.GetPlugInPoint<IItemBoughtFromMerchantPlugIn>()?.ItemBought(player, newItem, storeItem, player.OpenedNpc);
             }
 
             player.PlayerView.InventoryView.UpdateMoney();

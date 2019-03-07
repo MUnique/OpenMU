@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using System;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
@@ -29,9 +30,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         protected abstract AttributeDefinition MaximumAttribute { get; }
 
         /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, byte itemSlot, byte targetSlot)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem)
         {
-            if (base.ConsumeItem(player, itemSlot, targetSlot))
+            if (base.ConsumeItem(player, item, targetItem))
             {
                 var recabs = (player.Attributes[this.MaximumAttribute] * this.RecoverPercent / 100) + this.GetAdditionalRecover(player);
                 player.Attributes[this.CurrentAttribute] = (uint)Math.Min(player.Attributes[this.MaximumAttribute], player.Attributes[this.CurrentAttribute] + recabs);

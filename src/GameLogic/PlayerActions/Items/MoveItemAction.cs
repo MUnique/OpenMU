@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using System;
+    using System.ComponentModel;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.Interfaces;
     using static OpenMU.GameLogic.InventoryConstants;
 
@@ -39,6 +41,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var toItemStorage = toStorageInfo.Storage;
 
             var movement = this.CanMove(player, item, toSlot, fromSlot, toStorageInfo, fromStorageInfo);
+            if (movement != Movement.None)
+            {
+                var cancelEventArgs = new CancelEventArgs();
+                player.GameContext.PlugInManager.GetPlugInPoint<IItemMovingPlugIn>()?.ItemMoving(player, item, fromStorage, toSlot, cancelEventArgs);
+                if (cancelEventArgs.Cancel)
+                {
+                    movement = Movement.None;
+                }
+            }
+
             switch (movement)
             {
                 case Movement.Normal:
@@ -53,6 +65,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 default:
                     player.PlayerView.InventoryView.ItemMoveFailed(item);
                     break;
+            }
+
+            if (movement != Movement.None)
+            {
+                player.GameContext.PlugInManager.GetPlugInPoint<IItemMovedPlugIn>()?.ItemMoved(player, item);
             }
         }
 

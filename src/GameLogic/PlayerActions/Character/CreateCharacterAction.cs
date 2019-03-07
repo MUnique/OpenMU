@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlugIns;
 
     /// <summary>
     /// Action to create a new character in the character selection screen.
@@ -101,6 +102,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             character.PositionY = (byte)Rand.NextInt(randomSpawnGate.Y1, randomSpawnGate.Y2);
             character.Inventory = player.PersistenceContext.CreateNew<ItemStorage>();
             account.Characters.Add(character);
+            player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(player, character);
             Log.Debug("Creating Character Complete.");
             return character;
         }

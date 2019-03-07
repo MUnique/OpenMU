@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Threading;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
@@ -106,6 +107,8 @@ namespace MUnique.OpenMU.GameLogic
                 }
 
                 this.mapList.Add(mapId, createdMap);
+                createdMap.ObjectAdded += (sender, args) => this.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>()?.ObjectAddedToMap(args.Map, args.Object);
+                createdMap.ObjectRemoved += (sender, args) => this.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>()?.ObjectRemovedFromMap(args.Map, args.Object);
             }
 
             // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.

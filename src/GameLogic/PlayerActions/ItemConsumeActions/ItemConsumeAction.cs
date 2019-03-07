@@ -6,9 +6,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -56,7 +58,19 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return;
             }
 
-            if (!consumeHandler.ConsumeItem(player, inventorySlot, inventoryTargetSlot))
+            var targetItem = player.Inventory.GetItem(inventoryTargetSlot);
+
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IItemConsumingPlugIn>() is IItemConsumingPlugIn plugInPoint)
+            {
+                var eventArgs = new CancelEventArgs();
+                plugInPoint.ItemConsuming(player, item, targetItem, eventArgs);
+                if (eventArgs.Cancel)
+                {
+                    return;
+                }
+            }
+
+            if (!consumeHandler.ConsumeItem(player, item, targetItem))
             {
                 player.PlayerView.RequestedItemConsumptionFailed();
                 return;
@@ -70,6 +84,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             else
             {
                 player.PlayerView.InventoryView.ItemDurabilityChanged(item, true);
+            }
+
+            player.GameContext.PlugInManager.GetPlugInPoint<IItemConsumedPlugIn>()?.ItemConsumed(player, item, targetItem);
+            if (item.Durability == 0)
+            {
+                player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(item);
             }
         }
 

@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns
 {
     using System.Runtime.InteropServices;
-    using OpenMU.PlugIns;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A plugin interface for chat commands.

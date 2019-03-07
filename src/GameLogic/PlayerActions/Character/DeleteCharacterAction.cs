@@ -6,7 +6,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
     using System;
     using System.Linq;
-    using Views;
+    using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to delete a character in the character selection screen.
@@ -52,6 +53,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             }
 
             player.Account.Characters.Remove(character);
+            player.GameContext.PlugInManager.GetPlugInPoint<ICharacterDeletedPlugIn>()?.CharacterDeleted(player, character);
             player.PersistenceContext.Delete(character);
             return CharacterDeleteResult.Successful;
         }
