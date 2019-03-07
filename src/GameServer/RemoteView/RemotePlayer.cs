@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using MUnique.OpenMU.Network;
 
     /// <summary>
-    /// A player which is playing though a remote connection.
+    /// A player which is playing through a remote connection.
     /// </summary>
     public class RemotePlayer : Player
     {
