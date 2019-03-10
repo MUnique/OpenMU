@@ -2,15 +2,15 @@
 
 This project contains the building blocks for the plugin system of OpenMU and
 doesn't have any dependencies to other OpenMU projects - so it's reuseable, if required.
-It also contains unit tests with almost complete test coverage.
+It also contains unit tests with almost complete test coverage, which can help to
+understand how this all works.
 
 ## Plugin Manager
 A plugin manager takes care of discovering plugins and offers methods to retrieve,
 activate, deactivate and to manually register plugins.
 
 ## Plugin Types
-The system supports two kind of plugins: Regular ones and strategy plugins.
-They are used in different situations.
+The system supports the following kind of plugins. They are used in different situations.
 
 ### Regular Plugins
 The plugin manager collects plugins of the same type and puts them into a dynamically
@@ -25,6 +25,26 @@ Example:
 ```
 
 Note, that I use the ?. operator here, because if no plugin is defined, we might get null.
+
+### Regular Plugins, managed by custom plugin containers
+In this case, there is a custom plugin container which collects all plugins of a common plugin
+interface type. Additionally, there are specific plugin interfaces which derive from this
+common interface. A custom plugin container decides which one of the actual implementations
+are currently *effective*.
+
+Example:
+  * We have a ```ViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>``` which collects and manages all *IViewPlugIns*.
+    Depending of the client version, it provides the plugins which fit best.
+  * We have a plugin interface ```IChatViewPlugIn : IViewPlugIn```.
+  * We have several implementations for the *IChatViewPlugIn*, e.g. for different client versions.
+
+```csharp
+  // assume that we have a manager which has already some active implementations for IChatViewPlugIn available
+  var container = new ViewPlugInContainer(manager);
+  container.GetPlugIn<IChatViewPlugIn>()?.ShowMessage("Bob", "Hello World");
+```
+
+Note, that I use the ?. operator here, because if no *IChatViewPlugIn* is active, we might get null.
 
 ### Strategy Plugins
 Sometimes we just want to execute one specific plugin for one specific case.
@@ -102,8 +122,39 @@ public interface IExampleStrategyPlugIn : IStrategyPlugIn<string>
 }
 ```
 
+
+### Defining custom plugin containers and plugins
+This works slightly different from what you have seen above. Instead of using the ```PlugInPointAttribute```,
+the common interface has to be marked with the ```CustomPlugInContainerAttribute```.
+The more specialized plugin interfaces have to extend this interface.
+
+I'd like to pick up the previously mentioned example:
+```csharp
+using System.Runtime.InteropServices;
+
+/// <summary>
+/// Common interface for all plugins of a custom plugin container.
+/// </summary>
+[Guid("D6A56A13-AC5B-442B-B185-857587C59A32")]
+[CustomPlugInContainer("Example Custom PlugIn Container", "This plugin container is an example.")]
+public interface IViewPlugIn
+{
+}
+
+// we don't need additional attributes here, instead we extend IViewPlugIn.
+public interface IChatViewPlugIn : IViewPlugIn
+{
+    /// <summary>
+    /// Shows the message in the game client.
+    /// </summary>
+    /// <param name="sender">The name of the sender.</param>
+    /// <param name="message">The message.</param>
+    void ShowMessage(string sender, string message);
+}
+```
+
 ## Implementing Plugins
-To implement the actual plugins, we just implement the prevously defined interfaces.
+To implement the actual plugins, we just implement the previously defined interfaces.
 
 Example:
 ```csharp

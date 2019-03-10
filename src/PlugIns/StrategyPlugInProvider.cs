@@ -13,10 +13,9 @@ namespace MUnique.OpenMU.PlugIns
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
-    /// <seealso cref="MUnique.OpenMU.PlugIns.PlugInProxyBase{TPlugIn}" />
     /// <seealso cref="MUnique.OpenMU.PlugIns.IStrategyPlugInProvider{TKey, TPlugIn}" />
-    /// <seealso cref="MUnique.OpenMU.PlugIns.IPlugInPointProxy{TPlugIn}" />
-    public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInProxyBase<TPlugIn>, IStrategyPlugInProvider<TKey, TPlugIn>
+    /// <seealso cref="IPlugInContainer{TPlugIn}" />
+    public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInContainerBase<TPlugIn>, IStrategyPlugInProvider<TKey, TPlugIn>
         where TPlugIn : class, IStrategyPlugIn<TKey>
     {
         private readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
