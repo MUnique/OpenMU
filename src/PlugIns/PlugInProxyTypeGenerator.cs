@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.PlugIns
     using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
     /// <summary>
-    /// Generates the implementations of <see cref="IPlugInPointProxy{TPlugIn}"/> for specific plugin interface types.
+    /// Generates the implementations of <see cref="IPlugInContainer{TPlugIn}"/> for specific plugin interface types.
     /// </summary>
     internal class PlugInProxyTypeGenerator
     {
@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.PlugIns
         /// or
         /// </exception>
         /// <exception cref="T:System.Reflection.AmbiguousMatchException">More than one of the requested attributes was found.</exception>
-        public IPlugInPointProxy<TPlugIn> GenerateProxy<TPlugIn>(PlugInManager manager)
+        public IPlugInContainer<TPlugIn> GenerateProxy<TPlugIn>(PlugInManager manager)
         {
             var type = typeof(TPlugIn);
             if (!type.IsInterface)
@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.PlugIns
             syntaxFactory = syntaxFactory.AddMembers(namespaceSyntax).NormalizeWhitespace();
             var proxyAssembly = syntaxFactory.SyntaxTree.CompileAndLoad(typeSyntax.Identifier.Text);
             var proxyType = proxyAssembly.GetType(namespaceSyntax.Name + "." + typeSyntax.Identifier.Text);
-            return Activator.CreateInstance(proxyType, manager) as IPlugInPointProxy<TPlugIn>;
+            return Activator.CreateInstance(proxyType, manager) as IPlugInContainer<TPlugIn>;
         }
 
         private IEnumerable<string> GetReferencedNamespaces(Type type)
@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.PlugIns
             var typeSyntax = ClassDeclaration(proxyTypeName)
                             .AddModifiers(Token(SyntaxKind.PublicKeyword))
                             .AddBaseListTypes(
-                                SimpleBaseType(ParseTypeName($"PlugInProxyBase<{typeName}>")),
+                                SimpleBaseType(ParseTypeName($"{nameof(PlugInContainerBase<object>).Split('`').First()}<{typeName}>")),
                                 SimpleBaseType(ParseTypeName(typeName)));
             typeSyntax = typeSyntax.AddMembers(this.ImplementConstructor(proxyTypeName));
             foreach (var method in type.GetMethods().Where(m => m.ReturnType == typeof(void)))

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
 {
     using System;
     using System.Collections.Generic;
+    using log4net.Plugin;
     using MUnique.OpenMU.Tests;
     using NUnit.Framework;
 
@@ -26,7 +27,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
             Assert.That(point, Is.InstanceOf<IExamplePlugIn>());
-            Assert.That(point, Is.InstanceOf<IPlugInPointProxy<IExamplePlugIn>>());
+            Assert.That(point, Is.InstanceOf<IPlugInContainer<IExamplePlugIn>>());
         }
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         {
             var manager = new PlugInManager();
             var plugIn = new ExamplePlugIn();
-            manager.RegisterPlugIn<IExamplePlugIn>(plugIn);
+            manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
 
             var player = TestHelper.GetPlayer();
             var command = "test";
@@ -56,7 +57,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         {
             var manager = new PlugInManager();
             var plugIn = new ExamplePlugIn();
-            manager.RegisterPlugIn<IExamplePlugIn>(plugIn);
+            manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.DeactivatePlugIn<ExamplePlugIn>();
 
             var player = TestHelper.GetPlayer();
@@ -76,7 +77,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         {
             var manager = new PlugInManager();
             var plugIn = new ExamplePlugIn();
-            manager.RegisterPlugIn<IExamplePlugIn>(plugIn);
+            manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.DeactivatePlugIn<ExamplePlugIn>();
             manager.DeactivatePlugIn<ExamplePlugIn>();
 
@@ -97,7 +98,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         {
             var manager = new PlugInManager();
             var plugIn = new ExamplePlugIn();
-            manager.RegisterPlugIn<IExamplePlugIn>(plugIn);
+            manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.ActivatePlugIn<ExamplePlugIn>();
             manager.ActivatePlugIn<ExamplePlugIn>();
 
@@ -118,7 +119,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         {
             var manager = new PlugInManager();
             var plugIn = new ExamplePlugIn();
-            manager.RegisterPlugIn<IExamplePlugIn>(plugIn);
+            manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.RegisterPlugIn<IExamplePlugIn, ExamplePlugIn.NestedPlugIn>();
             manager.DeactivatePlugIn<ExamplePlugIn.NestedPlugIn>();
             manager.ActivatePlugIn<ExamplePlugIn.NestedPlugIn>();
@@ -258,7 +259,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         {
             var manager = new PlugInManager();
             var plugIn = new ExamplePlugIn();
-            manager.RegisterPlugIn<IExamplePlugIn>(plugIn);
+            manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.DeactivatePlugIn<ExamplePlugIn>();
             manager.ActivatePlugIn<ExamplePlugIn>();
 

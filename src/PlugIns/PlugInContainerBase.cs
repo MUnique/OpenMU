@@ -1,4 +1,4 @@
-﻿// <copyright file="PlugInProxyBase.cs" company="MUnique">
+﻿// <copyright file="PlugInContainerBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -16,17 +16,17 @@ namespace MUnique.OpenMU.PlugIns
     /// It is used by the <see cref="PlugInProxyTypeGenerator"/> to implement proxies with Roslyn.
     /// </remarks>
     /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
-    /// <seealso cref="MUnique.OpenMU.PlugIns.IPlugInPointProxy{TPlugIn}" />
-    public class PlugInProxyBase<TPlugIn> : IPlugInPointProxy<TPlugIn>
+    /// <seealso cref="IPlugInContainer{TPlugIn}" />
+    public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
         where TPlugIn : class
     {
         private readonly IList<TPlugIn> knownPlugIns = new List<TPlugIn>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlugInProxyBase{TPlugIn}" /> class.
+        /// Initializes a new instance of the <see cref="PlugInContainerBase{TPlugIn}" /> class.
         /// </summary>
         /// <param name="manager">The plugin manager which manages this instance.</param>
-        protected PlugInProxyBase(PlugInManager manager)
+        protected PlugInContainerBase(PlugInManager manager)
         {
             this.Manager = manager;
             if (this.Manager != null)
@@ -92,22 +92,21 @@ namespace MUnique.OpenMU.PlugIns
             this.ActivePlugIns.Remove(plugIn);
         }
 
-        private bool IsEventRelevant(PlugInEventArgs e) => typeof(TPlugIn).IsAssignableFrom(e.PlugInType);
-
-        private TPlugIn FindActivePlugin(Type plugInType)
+        /// <summary>
+        /// Is called before the plug in of the specified type gets activated.
+        /// </summary>
+        /// <param name="plugInType">Type of the plug in.</param>
+        protected virtual void BeforeActivatePlugInType(Type plugInType)
         {
-            this.LockSlim.EnterReadLock();
-            try
-            {
-                return this.ActivePlugIns.FirstOrDefault(p => p.GetType() == plugInType);
-            }
-            finally
-            {
-                this.LockSlim.ExitReadLock();
-            }
+            // can be overwritten to do additional stuff before activating the type.
         }
 
-        private TPlugIn FindKnownPlugin(Type plugInType)
+        /// <summary>
+        /// Finds the known plugin.
+        /// </summary>
+        /// <param name="plugInType">Type of the plug in.</param>
+        /// <returns>The known plugin, if found. Otherwise, null.</returns>
+        protected TPlugIn FindKnownPlugin(Type plugInType)
         {
             this.LockSlim.EnterReadLock();
             try
@@ -119,6 +118,21 @@ namespace MUnique.OpenMU.PlugIns
                 this.LockSlim.ExitReadLock();
             }
         }
+
+        private TPlugIn FindActivePlugin(Type plugInType)
+        {
+            this.LockSlim.EnterReadLock();
+            try
+            {
+                return this.ActivePlugIns.FirstOrDefault(plugInType.IsInstanceOfType);
+            }
+            finally
+            {
+                this.LockSlim.ExitReadLock();
+            }
+        }
+
+        private bool IsEventRelevant(PlugInEventArgs e) => typeof(TPlugIn).IsAssignableFrom(e.PlugInType);
 
         private void OnPlugInDeactivated(object sender, PlugInEventArgs e)
         {
@@ -151,6 +165,8 @@ namespace MUnique.OpenMU.PlugIns
                 return;
             }
 
+            this.BeforeActivatePlugInType(e.PlugInType);
+
             var plugIn = this.FindActivePlugin(e.PlugInType);
             if (plugIn != null)
             {
@@ -160,7 +176,7 @@ namespace MUnique.OpenMU.PlugIns
             plugIn = this.FindKnownPlugin(e.PlugInType);
             if (plugIn == null)
             {
-                throw new ArgumentException($"Unknown plugin {e.PlugInType}.", nameof(e));
+                return;
             }
 
             this.LockSlim.EnterWriteLock();

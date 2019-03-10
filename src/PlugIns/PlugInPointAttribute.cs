@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.PlugIns
     /// <summary>
     /// An attribute which describes a plugin interface and its point.
     /// May be helpful for debugging and the user interface.
+    /// A proxy class is automatically generated which executes all plugins which implement the marked interface.
     /// </summary>
     [AttributeUsage(AttributeTargets.Interface)]
     public class PlugInPointAttribute : Attribute
