@@ -103,8 +103,6 @@ namespace MUnique.OpenMU.Tests
         public void SelectLanguageSpecificOverInvariant()
         {
             var manager = new PlugInManager();
-
-
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInInvariant>();
             var containerForSeason9 = new ViewPlugInContainer(null, Season9E2English, manager);
