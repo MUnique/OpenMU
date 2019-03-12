@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// <summary>
     /// Attribute to mark an implemented <see cref="IViewPlugIn"/> with a specific client version.
     /// </summary>
-    public class ClientAttribute : Attribute, IComparable<ClientAttribute>, IComparable
+    public class ClientAttribute : Attribute, IComparable<ClientAttribute>, IComparable, IEquatable<ClientAttribute>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientAttribute"/> class.
@@ -87,6 +87,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public override bool Equals(object obj)
         {
             return this.CompareTo(obj) == 0;
+        }
+
+        /// <inheritdoc />
+        public bool Equals(ClientAttribute other)
+        {
+            return this.CompareTo(other) == 0;
         }
 
         /// <inheritdoc/>
