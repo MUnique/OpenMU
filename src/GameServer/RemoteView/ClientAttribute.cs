@@ -31,6 +31,46 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// </value>
         public ClientVersion Client { get; }
 
+        /// <summary>
+        /// Implements the operator &gt;.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator >(ClientAttribute left, ClientAttribute right) => Compare(left, right) > 0;
+
+        /// <summary>
+        /// Implements the operator &lt;.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator <(ClientAttribute left, ClientAttribute right) => Compare(left, right) < 0;
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator !=(ClientAttribute left, ClientAttribute right) => !(left == right);
+
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator ==(ClientAttribute left, ClientAttribute right) => Compare(left, right) == 0;
+
         /// <inheritdoc />
         public int CompareTo(ClientAttribute other)
         {
@@ -42,5 +82,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             return this.CompareTo(obj as ClientAttribute);
         }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return this.CompareTo(obj) == 0;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => this.Client.GetHashCode();
+
+        private static int Compare(ClientAttribute left, ClientAttribute right) => left.CompareTo(right);
     }
 }
