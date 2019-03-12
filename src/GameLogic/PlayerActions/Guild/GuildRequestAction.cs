@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -27,12 +28,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (guildMaster.LastGuildRequester != null)
             {
-                player.PlayerView.ShowMessage("The Guild Master is busy.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("The Guild Master is busy.", MessageType.BlueNormal);
                 return;
             }
 
             guildMaster.LastGuildRequester = player;
-            guildMaster.PlayerView.GuildView.ShowGuildJoinRequest(player);
+            guildMaster.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildJoinRequest(player);
         }
     }
 }

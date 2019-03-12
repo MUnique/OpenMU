@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
+    using MUnique.OpenMU.GameLogic.Views;
+
     /// <summary>
     /// Action to request the information (name, symbol) of a guild.
     /// </summary>
@@ -30,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             byte[] guildInfo = this.gameContext.GuildCache.GetGuildData(guildId);
             if (guildInfo != null)
             {
-                player.PlayerView.GuildView.ShowGuildInfo(guildInfo);
+                player.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildInfo(guildInfo);
             }
         }
     }

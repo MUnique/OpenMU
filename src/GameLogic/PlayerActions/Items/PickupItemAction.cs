@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var droppedItem = player.CurrentMap.GetDrop(dropId);
             if (droppedItem == null)
             {
-                player.PlayerView.InventoryView.ItemPickUpFailed(ItemPickFailReason.General);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemPickUpFailed(ItemPickFailReason.General);
                 return;
             }
 
@@ -30,17 +30,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             {
                 if (stackTarget != null)
                 {
-                    player.PlayerView.InventoryView.ItemPickUpFailed(ItemPickFailReason.ItemStacked);
-                    player.PlayerView.InventoryView.ItemDurabilityChanged(stackTarget, false);
+                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemPickUpFailed(ItemPickFailReason.ItemStacked);
+                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(stackTarget, false);
                 }
                 else
                 {
-                    player.PlayerView.InventoryView.ItemAppear(droppedItem.Item);
+                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemAppear(droppedItem.Item);
                 }
             }
             else
             {
-                player.PlayerView.InventoryView.ItemPickUpFailed(ItemPickFailReason.General);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemPickUpFailed(ItemPickFailReason.General);
             }
         }
 

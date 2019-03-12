@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to sell an item to a npc merchant.
@@ -40,14 +41,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             if (item == null)
             {
                 Log.WarnFormat("Player {0} requested to sell item at slot {1}, but item wasn't found.", player, slot);
-                player.PlayerView.InventoryView.ItemSoldToNpc(false);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemSoldToNpc(false);
                 return;
             }
 
             if (player.OpenedNpc?.Definition.MerchantStore == null)
             {
                 Log.WarnFormat("Player {0} requested to sell item at slot {1} to an npc, but no npc merchant store is currently opened.", player, slot);
-                player.PlayerView.InventoryView.ItemSoldToNpc(false);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemSoldToNpc(false);
                 return;
             }
 
@@ -62,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             {
                 Log.DebugFormat("Sold Item {0} for price: {1}", item, sellingPrice);
                 player.Inventory.RemoveItem(item);
-                player.PlayerView.InventoryView.ItemSoldToNpc(true);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemSoldToNpc(true);
 
                 player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToMerchantPlugIn>()?.ItemSold(player, item, player.OpenedNpc);
             }

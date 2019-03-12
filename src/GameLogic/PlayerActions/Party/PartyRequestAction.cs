@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
 {
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -44,14 +45,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
             }
 
             toRequest.LastPartyRequester = requester;
-            toRequest.PartyView.ShowPartyRequest(requester);
+            toRequest.ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.ShowPartyRequest(requester);
         }
 
         private void SendMessageToPlayer(IPartyMember partyMember, string message, MessageType type)
         {
             if (partyMember is Player player)
             {
-                player.PlayerView.ShowMessage(message, type);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage(message, type);
             }
         }
     }

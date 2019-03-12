@@ -40,19 +40,19 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (this.gameContext.GuildServer.GuildExists(guildName))
             {
-                creator.PlayerView.GuildView.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
+                creator.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
                 return;
             }
 
             creator.GuildStatus = this.gameContext.GuildServer.CreateGuild(guildName, creator.SelectedCharacter.Name, creator.SelectedCharacter.Id, guildEmblem, this.gameContext.Id);
             if (creator.GuildStatus == null)
             {
-                creator.PlayerView.GuildView.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
+                creator.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
                 return;
             }
 
-            creator.PlayerView.GuildView.ShowGuildCreateResult(GuildCreateErrorDetail.None);
-            creator.ForEachObservingPlayer(p => p.PlayerView.GuildView.AssignPlayerToGuild(creator, false), true);
+            creator.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildCreateResult(GuildCreateErrorDetail.None);
+            creator.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IGuildView>()?.AssignPlayerToGuild(creator, false), true);
 
             Log.InfoFormat("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);
         }

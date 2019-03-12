@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
 
@@ -26,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
             Player partner = player.GetObservingPlayerWithId(pid);
             if (partner == null)
             {
-                player.PlayerView.ShowMessage("Trade partner not found.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Trade partner not found.", MessageType.BlueNormal);
                 return;
             }
 

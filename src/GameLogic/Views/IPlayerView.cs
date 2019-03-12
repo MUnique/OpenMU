@@ -194,38 +194,8 @@ namespace MUnique.OpenMU.GameLogic.Views
     /// <summary>
     /// The main view of the player.
     /// </summary>
-    public interface IPlayerView : IChatView
+    public interface IPlayerView : IViewPlugIn
     {
-        /// <summary>
-        /// Gets the party view.
-        /// </summary>
-        IPartyView PartyView { get; }
-
-        /// <summary>
-        /// Gets the messenger view.
-        /// </summary>
-        IMessengerView MessengerView { get; }
-
-        /// <summary>
-        /// Gets the trade view.
-        /// </summary>
-        ITradeView TradeView { get; }
-
-        /// <summary>
-        /// Gets the guild view.
-        /// </summary>
-        IGuildView GuildView { get; }
-
-        /// <summary>
-        /// Gets the world view.
-        /// </summary>
-        IWorldView WorldView { get; }
-
-        /// <summary>
-        /// Gets the inventory view.
-        /// </summary>
-        IInventoryView InventoryView { get; }
-
         /// <summary>
         /// Shows the character list.
         /// </summary>

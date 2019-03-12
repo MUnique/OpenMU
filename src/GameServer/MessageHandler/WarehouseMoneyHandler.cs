@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -27,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 player.TryTakeVaultMoney(zen);
             }
 
-            player.PlayerView.UpdateVaultMoney();
+            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateVaultMoney();
         }
     }
 }

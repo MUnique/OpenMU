@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 {
                     // Client may be out of sync (or it's an hacker attempt),
                     // so we tell him the object is out of scope - this should prevent further attempts to attack it.
-                    player.WorldView.ObjectsOutOfScope(target.GetAsEnumerable());
+                    player.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectsOutOfScope(target.GetAsEnumerable());
                 }
             }
         }

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// The list of magic effects of a player instance. Automatically applies the power-ups of the effects to the player.
@@ -61,10 +62,10 @@ namespace MUnique.OpenMU.GameLogic
             if (added)
             {
                 effect.EffectTimeOut += this.OnEffectTimeOut;
-                (this.owner as Player)?.PlayerView.ActivateMagicEffect(effect, this.owner);
+                (this.owner as Player)?.ViewPlugIns.GetPlugIn<IPlayerView>()?.ActivateMagicEffect(effect, this.owner);
                 if (effect.Definition.InformObservers)
                 {
-                    (this.owner as IObservable)?.ForEachObservingPlayer(p => p.PlayerView.ActivateMagicEffect(effect, this.owner), false);
+                    (this.owner as IObservable)?.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerView>()?.ActivateMagicEffect(effect, this.owner), false);
                 }
             }
         }
@@ -104,10 +105,10 @@ namespace MUnique.OpenMU.GameLogic
                 this.owner.Attributes.RemoveElement(powerUp.Element, powerUp.Target);
             }
 
-            (this.owner as Player)?.PlayerView.DeactivateMagicEffect(effect, this.owner);
+            (this.owner as Player)?.ViewPlugIns.GetPlugIn<IPlayerView>()?.DeactivateMagicEffect(effect, this.owner);
             if (effect.Definition.InformObservers)
             {
-                (this.owner as IObservable)?.ForEachObservingPlayer(p => p.PlayerView.DeactivateMagicEffect(effect, this.owner), false);
+                (this.owner as IObservable)?.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerView>()?.DeactivateMagicEffect(effect, this.owner), false);
             }
         }
 

@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -68,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 foreach (Item jewel in jewels)
                 {
                     player.Inventory.RemoveItem(jewel);
-                    player.PlayerView.InventoryView.ItemConsumed(jewel.ItemSlot, true);
+                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemConsumed(jewel.ItemSlot, true);
                 }
 
                 var stacked = player.PersistenceContext.CreateNew<Item>();
@@ -76,11 +77,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 stacked.Level = (byte)(stackSize / 10);
                 stacked.Durability = 1;
                 player.Inventory.AddItem(stacked);
-                player.PlayerView.InventoryView.ItemAppear(stacked);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemAppear(stacked);
             }
             else
             {
-                player.PlayerView.ShowMessage("You are lacking of Jewels.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("You are lacking of Jewels.", MessageType.BlueNormal);
             }
         }
 
@@ -106,13 +107,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var stacked = player.Inventory.GetItem(slot);
             if (stacked == null)
             {
-                player.PlayerView.ShowMessage("Stacked Jewel not found.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Stacked Jewel not found.", MessageType.BlueNormal);
                 return;
             }
 
             if (stacked.Definition != mix.SingleJewel)
             {
-                player.PlayerView.ShowMessage("Selected Item is not a stacked Jewel.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Selected Item is not a stacked Jewel.", MessageType.BlueNormal);
                 return;
             }
 
@@ -121,12 +122,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var freeSlots = player.Inventory.FreeSlots.Take(pieces).ToList();
             if (freeSlots.Count < pieces)
             {
-                player.PlayerView.ShowMessage("Inventory got not enough Space.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Inventory got not enough Space.", MessageType.BlueNormal);
                 return;
             }
 
             player.Inventory.RemoveItem(stacked);
-            player.PlayerView.InventoryView.ItemConsumed(slot, true);
+            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemConsumed(slot, true);
             foreach (var freeSlot in freeSlots)
             {
                 var jewel = player.PersistenceContext.CreateNew<Item>();
@@ -134,7 +135,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 jewel.Durability = 1;
                 jewel.ItemSlot = freeSlot;
                 player.Inventory.AddItem(freeSlot, jewel);
-                player.PlayerView.InventoryView.ItemAppear(jewel);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemAppear(jewel);
             }
         }
 

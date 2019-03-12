@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 // target position might be out of sync so we send the current coordinates to the client again.
                 if (!(target is ISupportWalk walker && walker.IsWalking))
                 {
-                    player.WorldView.ObjectMoved(target, MoveType.Instant);
+                    player.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectMoved(target, MoveType.Instant);
                 }
 
                 return;
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            player.ForEachWorldObserver(obs => obs.WorldView.ShowSkillAnimation(player, target, skill), true);
+            player.ForEachWorldObserver(obs => obs.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowSkillAnimation(player, target, skill), true);
             if (skill.MovesToTarget)
             {
                 player.Move(target.Position);

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -61,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 return;
             }
 
-            player.PlayerView.ShowMessage(message, MessageType.BlueNormal);
+            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage(message, MessageType.BlueNormal);
         }
     }
 }

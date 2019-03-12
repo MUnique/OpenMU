@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -35,8 +36,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             player.OpenedNpc = npc;
             if (npcStats.MerchantStore != null && npcStats.MerchantStore.Items.Count > 0)
             {
-                player.PlayerView.OpenNpcWindow(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant);
-                player.PlayerView.ShowMerchantStoreItemList(npcStats.MerchantStore.Items);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.OpenNpcWindow(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMerchantStoreItemList(npcStats.MerchantStore.Items);
             }
             else
             {
@@ -54,7 +55,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>()?.PlayerTalksToNpc(player, player.OpenedNpc, eventArgs);
                     if (!eventArgs.HasBeenHandled)
                     {
-                        player.PlayerView.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
+                        player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
                         player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
                     }
                     else if (!eventArgs.LeavesDialogOpen)
@@ -70,12 +71,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     break;
                 case NpcWindow.VaultStorage:
                     player.Vault = new Storage(0, 0, InventoryConstants.WarehouseSize, player.Account.Vault);
-                    player.PlayerView.ShowVault();
+                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowVault();
                     break;
                 case NpcWindow.GuildMaster:
                     if (this.IsPlayedAllowedToCreateGuild(player))
                     {
-                        player.PlayerView.GuildView.ShowGuildMasterDialog();
+                        player.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildMasterDialog();
                     }
                     else
                     {
@@ -85,7 +86,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
                     break;
                 default:
-                    player.PlayerView.OpenNpcWindow(npcStats.NpcWindow);
+                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.OpenNpcWindow(npcStats.NpcWindow);
                     break;
             }
         }
@@ -94,13 +95,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             if (player.Level < 100)
             {
-                player.PlayerView.ShowMessageOfObject("Your level should be at least level 100", player.OpenedNpc);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessageOfObject("Your level should be at least level 100", player.OpenedNpc);
                 return false;
             }
 
             if (player.GuildStatus != null)
             {
-                player.PlayerView.ShowMessageOfObject("You already belong to a guild", player.OpenedNpc);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessageOfObject("You already belong to a guild", player.OpenedNpc);
                 return false;
             }
 

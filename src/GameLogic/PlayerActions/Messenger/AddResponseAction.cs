@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
+    using MUnique.OpenMU.GameLogic.Views;
+
     /// <summary>
     /// Action to respond to a friend request.
     /// </summary>
@@ -36,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 
             if (accepted)
             {
-                player.PlayerView.MessengerView.FriendAdded(requesterName);
+                player.ViewPlugIns.GetPlugIn<IMessengerView>()?.FriendAdded(requesterName);
             }
 
             this.gameContext.FriendServer.FriendResponse(player.SelectedCharacter.Name, requesterName, accepted);

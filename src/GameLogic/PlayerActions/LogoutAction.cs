@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
                 }
 
-                player.PlayerView.Logout(logoutType);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.Logout(logoutType);
             }
         }
     }

@@ -71,7 +71,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     sender.GameContext.PlugInManager.GetPlugInPoint<IWhisperMessageReceivedPlugIn>()?.WhisperMessageReceived(sender, whisperReceiver, message, eventArgs);
                     if (!eventArgs.Cancel)
                     {
-                        whisperReceiver.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
+                        whisperReceiver.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
                     }
                 }
             }
@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
                 default:
                     Log.DebugFormat("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
-                    sender.ForEachObservingPlayer(p => p.PlayerView.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true);
+                    sender.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true);
                     break;
             }
         }

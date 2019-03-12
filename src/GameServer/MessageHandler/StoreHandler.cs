@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
 
@@ -81,7 +82,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             if (requestedPlayer == null)
             {
                 Logger.DebugFormat("Player not found: {0}", reqPid);
-                player.PlayerView.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
                 return;
             }
 
@@ -89,7 +90,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             if (pname != requestedPlayer.SelectedCharacter.Name)
             {
                 Logger.DebugFormat("Player Names dont match: {0} != {1}", pname, requestedPlayer.SelectedCharacter.Name);
-                player.PlayerView.ShowMessage("Player Names don't match. " + pname + "<>" + requestedPlayer.SelectedCharacter.Name, MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Player Names don't match. " + pname + "<>" + requestedPlayer.SelectedCharacter.Name, MessageType.BlueNormal);
                 return;
             }
 
@@ -104,7 +105,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             var requestedPlayer = player.CurrentMap.GetObject(reqPid) as Player;
             if (requestedPlayer == null)
             {
-                player.PlayerView.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
                 return;
             }
 
@@ -112,7 +113,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
             if (pname != requestedPlayer.SelectedCharacter.Name)
             {
-                player.PlayerView.ShowMessage("Player Names don't match." + pname + "<>" + requestedPlayer.SelectedCharacter.Name, MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Player Names don't match." + pname + "<>" + requestedPlayer.SelectedCharacter.Name, MessageType.BlueNormal);
                 return;
             }
 

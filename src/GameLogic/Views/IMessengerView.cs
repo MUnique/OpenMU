@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic.Views
     /// <summary>
     /// The view for the messenger (MUssenger).
     /// </summary>
-    public interface IMessengerView
+    public interface IMessengerView : IViewPlugIn
     {
         /// <summary>
         /// Initializes the messenger. Adds the letters and the friends to the view.

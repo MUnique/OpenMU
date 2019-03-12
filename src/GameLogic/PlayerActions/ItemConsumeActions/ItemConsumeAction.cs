@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -48,13 +49,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             Item item = player.Inventory.GetItem(inventorySlot);
             if (item == null)
             {
-                player.PlayerView.RequestedItemConsumptionFailed();
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.RequestedItemConsumptionFailed();
                 return;
             }
 
             if (!this.consumeHandlers.TryGetValue(item.Definition, out var consumeHandler))
             {
-                player.PlayerView.RequestedItemConsumptionFailed();
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.RequestedItemConsumptionFailed();
                 return;
             }
 
@@ -72,18 +73,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
             if (!consumeHandler.ConsumeItem(player, item, targetItem))
             {
-                player.PlayerView.RequestedItemConsumptionFailed();
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.RequestedItemConsumptionFailed();
                 return;
             }
 
             if (item.Durability == 0)
             {
                 player.Inventory.RemoveItem(item);
-                player.PlayerView.InventoryView.ItemConsumed(inventorySlot, true);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemConsumed(inventorySlot, true);
             }
             else
             {
-                player.PlayerView.InventoryView.ItemDurabilityChanged(item, true);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(item, true);
             }
 
             player.GameContext.PlugInManager.GetPlugInPoint<IItemConsumedPlugIn>()?.ItemConsumed(player, item, targetItem);

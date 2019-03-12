@@ -28,13 +28,11 @@ namespace MUnique.OpenMU.GameServer
         public ConfigurableMainPacketHandler(MainPacketHandlerConfiguration configuration, IGameServerContext gameServer)
         {
             this.configuration = configuration;
-            var appearanceSerializer = this.GetAppearanceSerializer();
             using (var container = new UnityContainer())
             {
                 container.RegisterInstance(typeof(IGameServerContext), string.Empty, gameServer, new ExternallyControlledLifetimeManager());
                 container.RegisterInstance(typeof(IGameContext), string.Empty, gameServer, new ExternallyControlledLifetimeManager());
                 container.RegisterInstance(typeof(IFriendServer), string.Empty, gameServer.FriendServer, new ExternallyControlledLifetimeManager());
-                container.RegisterInstance(typeof(IAppearanceSerializer), string.Empty, appearanceSerializer, new ExternallyControlledLifetimeManager());
                 foreach (var handlerConfiguration in this.configuration.PacketHandlers)
                 {
                     this.CreateHandler(container, handlerConfiguration);
@@ -49,13 +47,6 @@ namespace MUnique.OpenMU.GameServer
             {
                 return this.configuration.ClientVersion;
             }
-        }
-
-        private IAppearanceSerializer GetAppearanceSerializer()
-        {
-            var appearanceSerializerType = Type.GetType(this.configuration.AppearanceSerializerClassName ?? string.Empty) ?? typeof(AppearanceSerializer);
-            var appearanceSerializer = Activator.CreateInstance(appearanceSerializerType) as IAppearanceSerializer;
-            return appearanceSerializer;
         }
     }
 }

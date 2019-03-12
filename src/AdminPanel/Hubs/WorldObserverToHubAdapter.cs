@@ -13,6 +13,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Pathfinding;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// An observer which can observe a whole map.
@@ -36,6 +37,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
             this.ServerId = serverId;
             this.MapId = mapId;
             this.adapterToWorldView = new ObserverToWorldViewAdapter(this, byte.MaxValue);
+            this.ViewPlugIns = new ViewContainer(this);
         }
 
         /// <inheritdoc/>
@@ -45,9 +47,6 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         /// Gets the server identifier on which the observer is observing
         /// </summary>
         public byte ServerId { get; }
-
-        /// <inheritdoc/>
-        public IWorldView WorldView => this;
 
         /// <summary>
         /// Gets the identifier of the map.
@@ -65,6 +64,9 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
 
         /// <inheritdoc/>
         public IList<Bucket<ILocateable>> ObservingBuckets => this.adapterToWorldView.ObservingBuckets;
+
+        /// <inheritdoc/>
+        public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns { get; }
 
         /// <inheritdoc/>
         public void ObjectGotKilled(IAttackable killedObject, IAttackable killerObject)
@@ -200,6 +202,27 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         public void Dispose()
         {
             this.adapterToWorldView.Dispose();
+        }
+
+        private class ViewContainer : ICustomPlugInContainer<IViewPlugIn>
+        {
+            private readonly WorldObserverToHubAdapter adapter;
+
+            public ViewContainer(WorldObserverToHubAdapter adapter)
+            {
+                this.adapter = adapter;
+            }
+
+            public T GetPlugIn<T>()
+                where T : IViewPlugIn
+            {
+                if (this.adapter is T t)
+                {
+                    return t;
+                }
+
+                return default;
+            }
         }
     }
 }

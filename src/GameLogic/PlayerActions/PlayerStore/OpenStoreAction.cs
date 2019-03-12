@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
     using System.Linq;
     using log4net;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to open a player store.
@@ -30,7 +31,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             player.ShopStorage.StoreName = storeName;
             player.ShopStorage.StoreOpen = true;
             Log.DebugFormat("OpenStore: Player: [{0}], StoreName: [{1}]", player.SelectedCharacter.Name, player.ShopStorage.StoreName);
-            player.ForEachObservingPlayer(p => p.PlayerView.PlayerShopOpened(player), true);
+            player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerView>()?.PlayerShopOpened(player), true);
         }
     }
 }

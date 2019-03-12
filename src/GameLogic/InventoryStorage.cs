@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.Views;
     using static OpenMU.GameLogic.InventoryConstants;
 
     /// <summary>
@@ -62,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic
         private void UpdateItemsOnChange(Item item)
         {
             this.player.OnAppearanceChanged();
-            this.player.ForEachObservingPlayer(p => p.PlayerView.AppearanceChanged(this.player), false); // in my tests it was not needed to send the appearance to the own players client.
+            this.player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerView>()?.AppearanceChanged(this.player), false); // in my tests it was not needed to send the appearance to the own players client.
             if (this.player.Attributes.ItemPowerUps.TryGetValue(item, out IReadOnlyList<PowerUpWrapper> itemPowerUps))
             {
                 this.player.Attributes.ItemPowerUps.Remove(item);

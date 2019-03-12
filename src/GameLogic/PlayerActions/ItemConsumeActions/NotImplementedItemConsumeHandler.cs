@@ -7,6 +7,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -17,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <inheritdoc/>
         public bool ConsumeItem(Player player, Item item, Item targetItem)
         {
-            player.PlayerView.ShowMessage("Using this item is not implemented yet.", MessageType.BlueNormal);
+            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Using this item is not implemented yet.", MessageType.BlueNormal);
             return false;
         }
     }

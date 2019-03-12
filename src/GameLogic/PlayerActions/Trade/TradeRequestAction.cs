@@ -17,6 +17,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         /// <returns>The success of sending the request to the <paramref name="partner"/>.</returns>
         public bool RequestTrade(ITrader player, ITrader partner)
         {
+            if (player.TradeView == null || partner.TradeView == null)
+            {
+                return false;
+            }
+
             if (!partner.PlayerState.TryAdvanceTo(PlayerState.TradeRequested))
             {
                 return false;

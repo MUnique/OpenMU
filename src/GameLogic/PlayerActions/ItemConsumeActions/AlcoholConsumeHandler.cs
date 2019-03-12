@@ -7,6 +7,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// The alcohol consume handler.
@@ -18,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         {
             if (base.ConsumeItem(player, item, targetItem))
             {
-                player.PlayerView.DrinkAlcohol();
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.DrinkAlcohol();
                 return true;
             }
 

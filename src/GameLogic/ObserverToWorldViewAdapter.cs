@@ -63,15 +63,15 @@ namespace MUnique.OpenMU.GameLogic
 
             if (item is Player player)
             {
-                this.adaptee.WorldView.NewPlayersInScope(player.GetAsEnumerable());
+                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.NewPlayersInScope(player.GetAsEnumerable());
             }
             else if (item is NonPlayerCharacter npc)
             {
-                this.adaptee.WorldView.NewNpcsInScope(npc.GetAsEnumerable());
+                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.NewNpcsInScope(npc.GetAsEnumerable());
             }
             else if (item is DroppedItem droppedItem)
             {
-                this.adaptee.WorldView.ShowDroppedItems(droppedItem.GetAsEnumerable(), sender != this);
+                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowDroppedItems(droppedItem.GetAsEnumerable(), sender != this);
             }
             else
             {
@@ -136,13 +136,13 @@ namespace MUnique.OpenMU.GameLogic
 
             if (item is DroppedItem)
             {
-                this.adaptee.WorldView.DroppedItemsDisappeared(item.GetAsEnumerable().Select(i => i.Id));
+                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.DroppedItemsDisappeared(item.GetAsEnumerable().Select(i => i.Id));
             }
             else
             {
                 if (item.IsActive())
                 {
-                    this.adaptee.WorldView.ObjectsOutOfScope(item.GetAsEnumerable());
+                    this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectsOutOfScope(item.GetAsEnumerable());
                 }
             }
         }
@@ -178,13 +178,13 @@ namespace MUnique.OpenMU.GameLogic
                 var nonItems = oldItems.OfType<ILocateable>().Where(item => !(item is DroppedItem)).WhereActive();
                 if (nonItems.Any())
                 {
-                    this.adaptee.WorldView.ObjectsOutOfScope(nonItems);
+                    this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectsOutOfScope(nonItems);
                 }
 
                 var droppedItems = oldItems.OfType<DroppedItem>();
                 if (droppedItems.Any())
                 {
-                    this.adaptee.WorldView.DroppedItemsDisappeared(droppedItems.Select(item => item.Id));
+                    this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.DroppedItemsDisappeared(droppedItems.Select(item => item.Id));
                 }
             }
         }
@@ -212,19 +212,19 @@ namespace MUnique.OpenMU.GameLogic
             var players = newItems.OfType<Player>().WhereActive();
             if (players.Any())
             {
-                this.adaptee.WorldView.NewPlayersInScope(players);
+                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.NewPlayersInScope(players);
             }
 
             var npcs = newItems.OfType<NonPlayerCharacter>().WhereActive();
             if (npcs.Any())
             {
-                this.adaptee.WorldView.NewNpcsInScope(npcs);
+                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.NewNpcsInScope(npcs);
             }
 
             var droppedItems = newItems.OfType<DroppedItem>();
             if (droppedItems.Any())
             {
-                this.adaptee.WorldView.ShowDroppedItems(droppedItems, false);
+                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowDroppedItems(droppedItems, false);
             }
 
             newItems.ForEach(item => item.AddObserver(this.adaptee));

@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
+    using MUnique.OpenMU.GameLogic.Views;
+
     /// <summary>
     /// Action to close the own player store.
     /// </summary>
@@ -16,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         public void CloseStore(Player player)
         {
             player.ShopStorage.StoreOpen = false;
-            player.ForEachObservingPlayer(p => p.PlayerView.PlayerShopClosed(player), true);
+            player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerView>()?.PlayerShopClosed(player), true);
         }
     }
 }

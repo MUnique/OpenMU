@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
@@ -28,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
             else
             {
-                player.PlayerView.InventoryView.ItemDropResult(slot, false);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDropResult(slot, false);
             }
         }
 
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var droppedItem = new DroppedItem(item, target, player.CurrentMap, player);
             player.CurrentMap.Add(droppedItem);
             player.Inventory.RemoveItem(item);
-            player.PlayerView.InventoryView.ItemDropResult(item.ItemSlot, true);
+            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDropResult(item.ItemSlot, true);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                 }
             }
 
-            player.PlayerView.InventoryView.ItemPriceSetResponse(slot, result);
+            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemPriceSetResponse(slot, result);
         }
     }
 }

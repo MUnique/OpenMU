@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// The implementation of the skill list, which automatically adds the passive skill power ups to the player.
@@ -81,7 +82,7 @@ namespace MUnique.OpenMU.GameLogic
             var skillRemoved = this.itemSkills.Remove(skillEntry);
             if (skillRemoved && this.itemSkills.All(s => s.Skill.Number != skillId))
             {
-                this.player.PlayerView.RemoveSkill(skillEntry.Skill);
+                this.player.ViewPlugIns.GetPlugIn<IPlayerView>()?.RemoveSkill(skillEntry.Skill);
                 this.availableSkills.Remove(skillId);
             }
 
@@ -105,7 +106,7 @@ namespace MUnique.OpenMU.GameLogic
             if (!this.ContainsSkill((ushort)skill.Number))
             {
                 this.availableSkills.Add(skill.Number.ToUnsigned(), skillEntry);
-                this.player.PlayerView.AddSkill(skill);
+                this.player.ViewPlugIns.GetPlugIn<IPlayerView>()?.AddSkill(skill);
             }
         }
 
@@ -114,7 +115,7 @@ namespace MUnique.OpenMU.GameLogic
             this.availableSkills.Add(skill.Skill.Number.ToUnsigned(), skill);
             this.learnedSkills.Add(skill);
 
-            this.player.PlayerView.AddSkill(skill.Skill);
+            this.player.ViewPlugIns.GetPlugIn<IPlayerView>()?.AddSkill(skill.Skill);
             if (skill.Skill.SkillType == SkillType.PassiveBoost)
             {
                 this.CreatePowerUpForPassiveSkill(skill);

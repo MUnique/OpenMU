@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
@@ -100,7 +101,7 @@ namespace MUnique.OpenMU.GameServer
                 player.GuildStatus = this.GuildServer.PlayerEnteredGame(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
                 if (player.GuildStatus != null)
                 {
-                    player.ForEachObservingPlayer(p => p.PlayerView.GuildView.AssignPlayerToGuild(player, true), true);
+                    player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IGuildView>()?.AssignPlayerToGuild(player, true), true);
                 }
             }
         }

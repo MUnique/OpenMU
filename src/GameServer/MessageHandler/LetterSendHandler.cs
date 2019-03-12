@@ -35,8 +35,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             var letterId = packet.MakeDwordBigEndian(4);
             if (packet.Length < 83)
             {
-                player.PlayerView.ShowMessage("Letter invalid.", MessageType.BlueNormal);
-                player.PlayerView.MessengerView.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Letter invalid.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IMessengerView>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
                 return;
             }
 

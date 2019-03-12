@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// The simple item crafting handler which can be configured to handle the most crafting requirements.
@@ -93,7 +94,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 resultItem.Definition = i.ItemDefinition;
                 resultItem.Level = (byte)Rand.NextInt(i.RandLvlMin, i.RandLvlMax);
                 resultItem.Durability = resultItem.GetMaximumDurabilityOfOnePiece(); // TODO: I think sometimes that's not correct, e.g. Potions of Bless/Soul!
-                player.PlayerView.InventoryView.ItemAppear(resultItem); // TODO: item appear needs to know in which storage the item appears
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemAppear(resultItem); // TODO: item appear needs to know in which storage the item appears
             }
         }
 

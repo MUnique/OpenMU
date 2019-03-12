@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.Views
     /// <summary>
     /// Interface for the world view. The world view shows the terrain, the objects and their visible (to other players) actions on the map.
     /// </summary>
-    public interface IWorldView
+    public interface IWorldView : IViewPlugIn
     {
         /// <summary>
         /// An object got killed by another object.
