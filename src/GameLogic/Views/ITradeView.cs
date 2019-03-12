@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.GameLogic.Views
     /// <summary>
     /// Interface for the trade view.
     /// </summary>
-    public interface ITradeView
+    public interface ITradeView : IViewPlugIn
     {
         /// <summary>
         /// An item has been removed from the trade window by the other player.

@@ -5,17 +5,19 @@
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Serializes the items into a byte array.
     /// </summary>
-    public interface IItemSerializer
+    public interface IItemSerializer : IViewPlugIn
     {
         /// <summary>
         /// Gets the needed space for a serialized item.
@@ -44,6 +46,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// At the moment, each item is serialized into a 12-byte long part of an array:
     /// Byte Order: ItemCode Options Dura Exe Ancient Kind/380Opt HarmonyOpt Socket1 Socket2 Socket3 Socket4 Socket5
     /// </summary>
+    [Guid("3607902F-C7A8-40D0-823A-186F3BF630C7")]
+    [PlugIn("Item Serializer", "The default item serializer. It's most likely only correct for season 6.")]
     public class ItemSerializer : IItemSerializer
     {
         private const byte LuckFlag = 4;

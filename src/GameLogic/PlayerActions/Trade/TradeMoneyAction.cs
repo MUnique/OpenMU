@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             // Check if Trade is open
             if (player.PlayerState.CurrentState != PlayerState.TradeOpened)
             {
-                player.PlayerView.ShowMessage("Uncheck trade accept button first", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Uncheck trade accept button first", MessageType.BlueNormal);
                 return;
             }
 
@@ -36,21 +36,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             player.TryAddMoney(player.TradingMoney);
             player.TryAddMoney((int)(-1 * moneyAmount));
             player.TradingMoney = (int)moneyAmount;
-            player.PlayerView.InventoryView.UpdateMoney();
-            player.PlayerView.TradeView.RequestedTradeMoneyHasBeenSet();
+            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateMoney();
+            player.ViewPlugIns.GetPlugIn<ITradeView>()?.RequestedTradeMoneyHasBeenSet();
 
             // Send the Money Packet to the Trading Partner
-            var tradingPartner = player.TradingPartner as Player;
-            if (tradingPartner != null)
-            {
-                tradingPartner.PlayerView.TradeView.SetTradeMoney(moneyAmount);
-            }
+            player.TradingPartner?.TradeView.SetTradeMoney(moneyAmount);
 
-            player.PlayerView.TradeView.ChangeTradeButtonState(TradeButtonState.Red);
-            if (tradingPartner != null)
+            player.ViewPlugIns.GetPlugIn<ITradeView>()?.ChangeTradeButtonState(TradeButtonState.Red);
+            if (player.TradingPartner != null)
             {
-                tradingPartner.PlayerState.TryAdvanceTo(PlayerState.TradeOpened);
-                tradingPartner.PlayerView.TradeView.ChangeTradeButtonState(TradeButtonState.Red);
+                player.TradingPartner.PlayerState.TryAdvanceTo(PlayerState.TradeOpened);
+                player.TradingPartner.TradeView.ChangeTradeButtonState(TradeButtonState.Red);
             }
         }
     }

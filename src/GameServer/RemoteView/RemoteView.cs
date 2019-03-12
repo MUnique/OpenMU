@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
 
     using MUnique.OpenMU.AttributeSystem;
@@ -18,6 +19,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Type of an attribute update.
@@ -43,19 +45,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// <summary>
     /// The default implementation of the remote view which is forwarding everything to the game client which specific data packets.
     /// </summary>
-    public class RemoteView : ChatView, IPlayerView
+    [PlugIn("Player View", "The default implementation of the player view which is forwarding everything to the game client which specific data packets.")]
+    [Guid("3D76F845-663A-45ED-A09C-3504BD12E5A7")]
+    public class RemoteView : IPlayerView
     {
         private readonly byte[] lowestClientVersion;
 
-        private readonly IConnection connection;
-
-        private readonly IGameServerContext context;
-
-        private readonly Player player;
-
-        private readonly IItemSerializer itemSerializer;
-
-        private readonly IAppearanceSerializer appearanceSerializer;
+        private readonly RemotePlayer player;
 
         /// <summary>
         /// This contains again all available skills. However, we need this to maintain the indexes. It can happen that the list contains holes after a skill got removed!
@@ -65,24 +61,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoteView"/> class.
         /// </summary>
-        /// <param name="connection">The connection.</param>
         /// <param name="player">The player.</param>
-        /// <param name="context">The context.</param>
-        /// <param name="appearanceSerializer">The appearance serializer.</param>
-        public RemoteView(IConnection connection, Player player, IGameServerContext context, IAppearanceSerializer appearanceSerializer)
-            : base(connection)
+        public RemoteView(RemotePlayer player)
         {
-            this.context = context;
-            this.itemSerializer = new ItemSerializer();
-            this.connection = connection;
             this.player = player;
-            this.PartyView = new PartyView(connection, player);
-            this.MessengerView = new MessengerView(connection, player, context.FriendServer, appearanceSerializer);
-            this.TradeView = new TradeView(connection, player, this.itemSerializer);
-            this.GuildView = new GuildView(connection, player);
-            this.WorldView = new WorldView(connection, player, this.itemSerializer, appearanceSerializer);
-            this.InventoryView = new InventoryView(connection, player, this.itemSerializer);
-            this.appearanceSerializer = appearanceSerializer;
             this.lowestClientVersion = this.GetLowestClientVersionOfConfiguration();
         }
 
@@ -148,31 +130,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             Triple = 0x80
         }
 
-        /// <inheritdoc/>
-        public IPartyView PartyView { get; }
-
-        /// <inheritdoc/>
-        public IMessengerView MessengerView { get; }
-
-        /// <inheritdoc/>
-        public ITradeView TradeView { get; }
-
-        /// <inheritdoc/>
-        public IGuildView GuildView { get; }
-
-        /// <inheritdoc/>
-        public IWorldView WorldView { get; }
-
-        /// <inheritdoc/>
-        public IInventoryView InventoryView { get; }
-
         private IList<Skill> SkillList => this.skillList ?? (this.skillList = new List<Skill>());
+
+        private IConnection Connection => this.player.Connection;
 
         /// <inheritdoc/>
         public void ShowCharacterList()
         {
-            const int characterSize = 34;
-            using (var writer = this.connection.StartSafeWrite(0xC1, (this.player.Account.Characters.Count * characterSize) + 8))
+            var appearanceSerializer = this.player.AppearanceSerializer;
+            int characterSize = appearanceSerializer.NeededSpace + 16;
+            using (var writer = this.Connection.StartSafeWrite(0xC1, (this.player.Account.Characters.Count * characterSize) + 8))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -196,7 +163,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     characterBlock[13] = level.GetHighByte();
                     characterBlock[14] = (byte)character.CharacterStatus; // | 0x10 for item block?
 
-                    this.appearanceSerializer.WriteAppearanceData(characterBlock.Slice(15), new CharacterAppearanceDataAdapter(character), false);
+                    appearanceSerializer.WriteAppearanceData(characterBlock.Slice(15), new CharacterAppearanceDataAdapter(character), false);
 
                     //// var guildStatusIndex = offset + 15 + 18;
                     //// TODO: characterBLock[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
@@ -211,7 +178,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowCharacterCreationFailed()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 5))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -224,7 +191,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowCreatedCharacter(Character character)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x2A))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x2A))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -252,7 +219,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void AddSkill(Skill skill)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0A))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -285,7 +252,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void RemoveSkill(Skill skill)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0A))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -302,7 +269,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void DrinkAlcohol()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC3, 0x06))
+            using (var writer = this.Connection.StartSafeWrite(0xC3, 0x06))
             {
                 var packet = writer.Span;
                 packet[2] = 0x29;
@@ -316,7 +283,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowCharacterDeleteResponse(CharacterDeleteResult result)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x05))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -332,7 +299,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var playerId = this.player.GetId(this.player);
             var characterHeroState = this.player.SelectedCharacter.State;
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x07))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x07))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -357,7 +324,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // C1 08 27 FE 00 16 00 21
             var mana = (ushort)this.player.Attributes[Stats.CurrentMana];
             var ag = (ushort)this.player.Attributes[Stats.CurrentAbility];
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x08))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x08))
             {
                 var packet = writer.Span;
                 packet[2] = 0x27;
@@ -376,7 +343,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // C1 09 26 FE 00 C3 00 00 85
             var hp = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f);
             var sd = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f);
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x09))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x09))
             {
                 var packet = writer.Span;
                 packet[2] = 0x26;
@@ -396,7 +363,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var hp = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f);
             var sd = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f);
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x09))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x09))
             {
                 var packet = writer.Span;
                 packet[2] = 0x26;
@@ -415,7 +382,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var mana = (ushort)this.player.Attributes[Stats.MaximumMana];
             var ag = (ushort)this.player.Attributes[Stats.MaximumAbility];
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x08))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x08))
             {
                 var packet = writer.Span;
                 packet[2] = 0x27;
@@ -433,7 +400,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             var hp = (ushort)this.player.Attributes[Stats.MaximumHealth];
             var sd = (ushort)this.player.Attributes[Stats.MaximumShield];
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x09))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x09))
             {
                 var packet = writer.Span;
                 packet[2] = 0x26;
@@ -466,7 +433,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var maxFruitPoints = selectedCharacter.GetMaximumFruitPoints();
             var negativeFruitPoints = (ushort)selectedCharacter.UsedNegFruitPoints;
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x18))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x18))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -485,7 +452,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 writer.Commit();
             }
 
-            this.player.PlayerView.ShowMessage($"Congratulations, you are Level {this.player.Attributes[Stats.Level]} now.", MessageType.BlueNormal);
+            this.player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage($"Congratulations, you are Level {this.player.Attributes[Stats.Level]} now.", MessageType.BlueNormal);
         }
 
         /// <inheritdoc/>
@@ -499,7 +466,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 // On a normal exp server this should never be an issue, but with higher settings, it fixes the problem that the exp bar
                 // shows less exp than the player actually gained.
                 ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
-                using (var writer = this.connection.StartSafeWrite(0xC3, 0x09))
+                using (var writer = this.Connection.StartSafeWrite(0xC3, 0x09))
                 {
                     var packet = writer.Span;
                     packet[2] = 0x16;
@@ -517,7 +484,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void PlayerShopClosed(Player playerWithClosedShop)
         {
             var playerId = playerWithClosedShop.GetId(this.player);
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x07))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x07))
             {
                 var packet = writer.Span;
                 packet[2] = 0x3F;
@@ -531,7 +498,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void CloseVault()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x03))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x03))
             {
                 var packet = writer.Span;
                 packet[2] = 0x82;
@@ -543,9 +510,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ShowVault()
         {
             (this as IPlayerView).OpenNpcWindow(NpcWindow.VaultStorage);
+            var itemSerializer = this.player.ItemSerializer;
             var itemsCount = this.player.Vault.ItemStorage.Items.Count;
-            var spacePerItem = this.itemSerializer.NeededSpace + 1;
-            using (var writer = this.connection.StartSafeWrite(0xC2, 6 + (itemsCount * spacePerItem)))
+            var spacePerItem = itemSerializer.NeededSpace + 1;
+            using (var writer = this.Connection.StartSafeWrite(0xC2, 6 + (itemsCount * spacePerItem)))
             {
                 var packet = writer.Span;
                 packet[3] = 0x31;
@@ -556,7 +524,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 {
                     var itemBlock = packet.Slice(6 + (i * spacePerItem), spacePerItem);
                     itemBlock[0] = item.ItemSlot;
-                    this.itemSerializer.SerializeItem(itemBlock.Slice(1), item);
+                    itemSerializer.SerializeItem(itemBlock.Slice(1), item);
                     i++;
                 }
 
@@ -565,7 +533,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             this.UpdateVaultMoney();
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 4))
             {
                 // vault password protection info
                 var packet = writer.Span;
@@ -578,7 +546,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void UpdateVaultMoney()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0C))
             {
                 uint zenPlayer = (uint)this.player.Money;
                 uint zenStorage = (uint)this.player.Account.Vault.Money;
@@ -594,7 +562,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void UpdateCharacterStats()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC3, 0x48))
+            using (var writer = this.Connection.StartSafeWrite(0xC3, 0x48))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -605,7 +573,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 packet[6] = unsignedMapNumber.GetLowByte();
                 packet[7] = unsignedMapNumber.GetHighByte();
                 packet.Slice(8).SetLongSmallEndian(this.player.SelectedCharacter.Experience);
-                packet.Slice(16).SetLongSmallEndian(this.context.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1]);
+                packet.Slice(16).SetLongSmallEndian(this.player.GameServerContext.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1]);
                 packet.Slice(24).SetShortBigEndian((ushort)this.player.SelectedCharacter.LevelUpPoints);
                 packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseStrength]);
                 packet.Slice(28).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseAgility]);
@@ -659,7 +627,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 var healthDamage = (ushort)(remainingHealthDamage & 0xFFFF);
                 var shieldDamage = (ushort)(remainingShieldDamage & 0xFFFF);
-                using (var writer = this.connection.StartSafeWrite(0xC1, 0x0A))
+                using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0A))
                 {
                     var packet = writer.Span;
                     packet[2] = (byte)PacketType.Hit;
@@ -693,7 +661,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const int headerSize = 6;
             const int skillBlockSize = 4;
             this.SkillList.Clear();
-            using (var writer = this.connection.StartSafeWrite(0xC1, headerSize + (skillBlockSize * this.player.SkillList.SkillCount)))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, headerSize + (skillBlockSize * this.player.SkillList.SkillCount)))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -731,7 +699,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             const string messagePrefix = "000000000";
             string content = messagePrefix + message;
-            using (var writer = this.connection.StartSafeWrite(0xC1, 5 + content.Length))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 5 + content.Length))
             {
                 var packet = writer.Span;
                 packet[2] = 13;
@@ -744,7 +712,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc />
         public void ShowMessageOfObject(string message, IIdentifiable sender)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 6 + message.Length))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 6 + message.Length))
             {
                 var packet = writer.Span;
                 packet[2] = 0x01;
@@ -763,12 +731,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const int maxCharacterNameLength = 10;
             const int maxStoreNameLength = 36;
             const int itemPriceSize = 4;
-            var sizePerItem = this.itemSerializer.NeededSpace + itemPriceSize + 4; // don't know yet, where the additional 4 bytes come from
+            var itemSerializer = this.player.ItemSerializer;
+            var sizePerItem = itemSerializer.NeededSpace + itemPriceSize + 4; // don't know yet, where the additional 4 bytes come from
 
             var playerId = requestedPlayer.GetId(this.player);
             var itemlist = requestedPlayer.ShopStorage.Items.ToList();
             var itemcount = itemlist.Count;
-            using (var writer = this.connection.StartSafeWrite(0xC2, 11 + maxCharacterNameLength + maxStoreNameLength + (itemcount * sizePerItem)))
+            using (var writer = this.Connection.StartSafeWrite(0xC2, 11 + maxCharacterNameLength + maxStoreNameLength + (itemcount * sizePerItem)))
             {
                 var packet = writer.Span;
                 packet[3] = 0x3F;
@@ -787,8 +756,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 {
                     var itemBlock = packet.Slice(9 + maxCharacterNameLength + maxStoreNameLength + (i * sizePerItem), sizePerItem);
                     itemBlock[0] = item.ItemSlot;
-                    this.itemSerializer.SerializeItem(itemBlock.Slice(1), item);
-                    itemBlock.Slice(1 + this.itemSerializer.NeededSpace).SetIntegerBigEndian((uint)(item.StorePrice ?? 0));
+                    itemSerializer.SerializeItem(itemBlock.Slice(1), item);
+                    itemBlock.Slice(1 + itemSerializer.NeededSpace).SetIntegerBigEndian((uint)(item.StorePrice ?? 0));
                 }
 
                 writer.Commit();
@@ -802,7 +771,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             if (this.player == playerWithShop)
             {
                 // Success of opening the own shop
-                using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+                using (var writer = this.Connection.StartSafeWrite(0xC1, 0x05))
                 {
                     var packet = writer.Span;
                     packet[2] = 0x3F;
@@ -819,7 +788,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             const int sizePerShop = 38;
             const int headerSize = 6;
             var shopCount = playersWithShop.Count;
-            using (var writer = this.connection.StartSafeWrite(0xC2, headerSize + (sizePerShop * shopCount)))
+            using (var writer = this.Connection.StartSafeWrite(0xC2, headerSize + (sizePerShop * shopCount)))
             {
                 var packet = writer.Span;
                 packet[3] = 0x3F;
@@ -845,7 +814,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc />
         public void Logout(LogoutType logoutType)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC3, 0x05))
+            using (var writer = this.Connection.StartSafeWrite(0xC3, 0x05))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF1;
@@ -858,7 +827,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void CharacterFocused(Character character)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0F))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0F))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -877,7 +846,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 successAndStatType += 1 << 4;
             }
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0C))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -909,7 +878,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void OpenNpcWindow(NpcWindow window)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC3, 0x0B))
+            using (var writer = this.Connection.StartSafeWrite(0xC3, 0x0B))
             {
                 var packet = writer.Span;
                 packet[2] = 0x30;
@@ -925,8 +894,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // for each item: [slot number] [item data....]
             const int slotNumberSize = 1;
             const int headerSize = 6;
-            int sizePerItem = this.itemSerializer.NeededSpace + slotNumberSize;
-            using (var writer = this.connection.StartSafeWrite(0xC2, headerSize + (storeItems.Count * sizePerItem)))
+            var itemSerializer = this.player.ItemSerializer;
+            int sizePerItem = itemSerializer.NeededSpace + slotNumberSize;
+            using (var writer = this.Connection.StartSafeWrite(0xC2, headerSize + (storeItems.Count * sizePerItem)))
             {
                 var packet = writer.Span;
                 packet[3] = 0x31;
@@ -938,7 +908,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     var offset = headerSize + (i * sizePerItem);
                     var itemBlock = packet.Slice(offset, sizePerItem);
                     itemBlock[0] = item.ItemSlot;
-                    this.itemSerializer.SerializeItem(itemBlock.Slice(slotNumberSize), item);
+                    itemSerializer.SerializeItem(itemBlock.Slice(slotNumberSize), item);
                     i++;
                 }
 
@@ -949,7 +919,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowLoginResult(LoginResult loginResult)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x05))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF1;
@@ -962,7 +932,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowLoginWindow()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0C))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0C))
             {
                 var message = writer.Span;
                 message[2] = 0xF1;
@@ -979,7 +949,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void MasterSkillLevelChanged(SkillEntry skillEntry)
         {
             var character = this.player.SelectedCharacter;
-            using (var writer = this.connection.StartSafeWrite(0xC1, 28))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 28))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -1000,7 +970,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private void SendMasterStats()
         {
             var character = this.player.SelectedCharacter;
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x20))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x20))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -1008,7 +978,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 var masterLevel = (ushort)this.player.Attributes[Stats.MasterLevel];
                 packet.Slice(4).SetShortBigEndian(masterLevel);
                 packet.Slice(6).SetLongSmallEndian(character.MasterExperience);
-                packet.Slice(14).SetLongSmallEndian(this.context.Configuration.MasterExperienceTable[masterLevel + 1]);
+                packet.Slice(14).SetLongSmallEndian(this.player.GameServerContext.Configuration.MasterExperienceTable[masterLevel + 1]);
                 packet.Slice(22).SetShortBigEndian((ushort)character.MasterLevelUpPoints);
                 packet.Slice(24).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth]);
                 packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
@@ -1025,7 +995,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var masterSkills = this.player.SkillList.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
 
             const int sizePerSkill = 12;
-            using (var writer = this.connection.StartSafeWrite(0xC2, 12 + (masterSkills.Count * sizePerSkill)))
+            using (var writer = this.Connection.StartSafeWrite(0xC2, 12 + (masterSkills.Count * sizePerSkill)))
             {
                 var packet = writer.Span;
                 packet[3] = 0xF3;
@@ -1056,7 +1026,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 4 + keyConfiguration.Length))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 4 + keyConfiguration.Length))
             {
                 var packet = writer.Span;
                 packet[2] = 0xF3;
@@ -1113,7 +1083,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             // TODO: Duration
             var playerId = affectedPlayer.GetId(this.player);
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x07))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x07))
             {
                 var packet = writer.Span;
                 packet[2] = 0x07;
@@ -1176,7 +1146,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private byte[] GetLowestClientVersionOfConfiguration()
         {
-            return this.context.ServerConfiguration.SupportedPacketHandlers.OrderBy(v => v.ClientVersion.MakeDwordSmallEndian(1)).First().ClientVersion;
+            return this.player.GameServerContext.ServerConfiguration.SupportedPacketHandlers.OrderBy(v => v.ClientVersion.MakeDwordSmallEndian(1)).First().ClientVersion;
         }
 
         private class CharacterAppearanceDataAdapter : IAppearanceData

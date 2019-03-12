@@ -6,11 +6,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Serializer of <see cref="IAppearanceData"/> objects.
     /// </summary>
-    public interface IAppearanceSerializer
+    public interface IAppearanceSerializer : IViewPlugIn
     {
         /// <summary>
         /// Gets the needed space for a serialized <see cref="IAppearanceData"/>.

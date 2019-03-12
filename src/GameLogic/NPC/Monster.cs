@@ -104,7 +104,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public void Attack(IAttackable player)
         {
             player.AttackBy(this, null);
-            this.ForEachWorldObserver(p => p.WorldView.ShowAnimation(this, MonsterAttackAnimation, player, this.GetDirectionTo(player)), true);
+            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowAnimation(this, MonsterAttackAnimation, player, this.GetDirectionTo(player)), true);
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             {
                 foreach (IWorldObserver o in this.Observers)
                 {
-                    o.WorldView.ObjectGotKilled(this, attacker);
+                    o.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectGotKilled(this, attacker);
                 }
 
                 this.Observers.Clear();
@@ -329,7 +329,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             var killed = this.TryHit(hitInfo.HealthDamage + hitInfo.ShieldDamage, attacker);
             if (attacker is Player player)
             {
-                player.PlayerView.ShowHit(this, hitInfo);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowHit(this, hitInfo);
                 player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
             }
 

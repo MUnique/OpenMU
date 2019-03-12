@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Consume handler for potions which refills the players attribute <see cref="Stats.CurrentMana"/>.
@@ -38,7 +39,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         {
             if (base.ConsumeItem(player, item, targetItem))
             {
-                player.PlayerView.UpdateCurrentMana();
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCurrentMana();
                 return true;
             }
 

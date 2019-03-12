@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.GameLogic
                 observable.ObserverLock.EnterReadLock();
                 try
                 {
-                    observable.Observers.ForEach(o => o.WorldView.ObjectMoved(obj, moveType));
+                    observable.Observers.ForEach(o => o.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectMoved(obj, moveType));
                 }
                 finally
                 {

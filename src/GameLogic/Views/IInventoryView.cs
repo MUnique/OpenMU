@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.GameLogic.Views
     /// <summary>
     /// The inventory view.
     /// </summary>
-    public interface IInventoryView
+    public interface IInventoryView : IViewPlugIn
     {
         /// <summary>
         /// An item got moved.

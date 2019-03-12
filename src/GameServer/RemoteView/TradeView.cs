@@ -5,38 +5,38 @@
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Text;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The default implementation of the trade view which is forwarding everything to the game client which specific data packets.
     /// </summary>
+    [Guid("719003CE-52E2-4F6B-9E1C-917F094BABDA")]
+    [PlugIn("Trade View PlugIn", "The default implementation of the trade view which is forwarding everything to the game client which specific data packets.")]
     public class TradeView : ITradeView
     {
-        private readonly IConnection connection;
-        private readonly ITrader trader;
-        private readonly IItemSerializer itemSerializer;
+        private readonly RemotePlayer trader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TradeView"/> class.
         /// </summary>
-        /// <param name="connection">The connection.</param>
         /// <param name="trader">The trader.</param>
-        /// <param name="itemSerializer">The item serializer.</param>
-        public TradeView(IConnection connection, ITrader trader, IItemSerializer itemSerializer)
+        public TradeView(RemotePlayer trader)
         {
-            this.connection = connection;
             this.trader = trader;
-            this.itemSerializer = itemSerializer;
         }
+
+        private IConnection Connection => this.trader.Connection;
 
         /// <inheritdoc/>
         public void TradeItemDisappear(byte slot, Item mi)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 4))
             {
                 var packet = writer.Span;
                 packet[2] = 0x38;
@@ -48,12 +48,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void TradeItemAppear(byte toSlot, Item item)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, this.itemSerializer.NeededSpace + 5))
+            var itemSerializer = this.trader.ItemSerializer;
+            using (var writer = this.Connection.StartSafeWrite(0xC1, itemSerializer.NeededSpace + 5))
             {
                 var packet = writer.Span;
                 packet[2] = 0x39;
                 packet[3] = toSlot;
-                this.itemSerializer.SerializeItem(packet.Slice(4), item);
+                itemSerializer.SerializeItem(packet.Slice(4), item);
                 writer.Commit();
             }
         }
@@ -61,7 +62,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowTradeRequest(ITrader requester)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC3, 13))
+            using (var writer = this.Connection.StartSafeWrite(0xC3, 13))
             {
                 var packet = writer.Span;
                 packet[2] = 0x36;
@@ -73,7 +74,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowTradeRequestAnswer(bool tradeAccepted)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x14))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x14))
             {
                 var packet = writer.Span;
                 packet[2] = 0x37;
@@ -105,7 +106,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// </remarks>
         public void ChangeTradeButtonState(TradeButtonState state)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 4))
             {
                 var packet = writer.Span;
                 packet[2] = 0x3C;
@@ -117,7 +118,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void SetTradeMoney(uint moneyAmount)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 8))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 8))
             {
                 var packet = writer.Span;
                 packet[2] = 0x3B;
@@ -130,7 +131,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc />
         public void RequestedTradeMoneyHasBeenSet()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 4))
             {
                 var packet = writer.Span;
                 packet[2] = 0x3A;
@@ -142,7 +143,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc />
         public void TradeFinished(TradeResult tradeResult)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 4))
             {
                 var packet = writer.Span;
                 packet[2] = 0x3D;
@@ -152,8 +153,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             if (tradeResult != TradeResult.TimedOut && this.trader is Player player)
             {
-                player.PlayerView.InventoryView.UpdateInventoryList();
-                player.PlayerView.InventoryView.UpdateMoney();
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateInventoryList();
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateMoney();
             }
         }
 

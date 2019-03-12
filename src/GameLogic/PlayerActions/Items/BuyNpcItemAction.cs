@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using System.Linq;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -33,22 +34,22 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             if (player.OpenedNpc == null)
             {
-                player.PlayerView.InventoryView.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
                 return;
             }
 
             var npcDefinition = player.OpenedNpc.Definition;
             if (npcDefinition.MerchantStore == null || npcDefinition.MerchantStore.Items.Count == 0)
             {
-                player.PlayerView.InventoryView.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
                 return;
             }
 
             Item storeItem = npcDefinition.MerchantStore.Items.FirstOrDefault(i => i.ItemSlot == slot);
             if (storeItem == null)
             {
-                player.PlayerView.ShowMessage("Item Unknown", MessageType.BlueNormal);
-                player.PlayerView.InventoryView.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Item Unknown", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
                 return;
             }
 
@@ -61,16 +62,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 }
 
                 targetItem.Durability += storeItem.Durability;
-                player.PlayerView.InventoryView.ItemDurabilityChanged(targetItem, false);
-                player.PlayerView.InventoryView.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(targetItem, false);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
             }
             else
             {
                 int toSlot = player.Inventory.CheckInvSpace(storeItem);
                 if (toSlot == -1)
                 {
-                    player.PlayerView.ShowMessage("Inventory Full", MessageType.BlueNormal);
-                    player.PlayerView.InventoryView.BuyNpcItemFailed();
+                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Inventory Full", MessageType.BlueNormal);
+                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
                     return;
                 }
 
@@ -82,12 +83,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 var newItem = player.PersistenceContext.CreateNew<Item>();
                 newItem.AssignValues(storeItem);
                 newItem.ItemSlot = (byte)toSlot;
-                player.PlayerView.InventoryView.NpcItemBought(newItem);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.NpcItemBought(newItem);
                 player.Inventory.AddItem(newItem.ItemSlot, newItem);
                 player.GameContext.PlugInManager.GetPlugInPoint<IItemBoughtFromMerchantPlugIn>()?.ItemBought(player, newItem, storeItem, player.OpenedNpc);
             }
 
-            player.PlayerView.InventoryView.UpdateMoney();
+            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateMoney();
         }
 
         private bool CheckMoney(Player player, Item item)
@@ -95,8 +96,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var price = this.priceCalculator.CalculateBuyingPrice(item);
             if (!player.TryRemoveMoney((int)price))
             {
-                player.PlayerView.ShowMessage("You don't have enough Money", MessageType.BlueNormal);
-                player.PlayerView.InventoryView.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("You don't have enough Money", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
                 return false;
             }
 

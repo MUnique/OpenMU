@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             }
             else
             {
-                (trader.TradingPartner as Player)?.PlayerView.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
+                trader.TradingPartner.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
             }
         }
 
@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     this.AttachItemsToPersistenceContext(tradePartnerItems, trader.PersistenceContext);
                     trader.Money += trader.TradingPartner.TradingMoney;
                     trader.TradingPartner.Money += trader.TradingMoney;
-                    (trader.TradingPartner as Player)?.PlayerView.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
+                    trader.TradingPartner.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
                     this.ResetTradeState(trader.TradingPartner);
                     this.ResetTradeState(trader);
                     this.CallPlugIn(traderItems, trader, tradingPartner);

@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to create a new character in the character selection screen.
@@ -51,12 +52,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 var character = this.CreateCharacter(player, characterName, characterClass);
                 if (character != null)
                 {
-                    player.PlayerView.ShowCreatedCharacter(character);
+                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowCreatedCharacter(character);
                 }
             }
             else
             {
-                player.PlayerView.ShowCharacterCreationFailed();
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowCharacterCreationFailed();
             }
         }
 

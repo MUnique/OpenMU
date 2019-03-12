@@ -7,32 +7,35 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The default implementation of the guild view which is forwarding everything to the game client which specific data packets.
     /// </summary>
+    [PlugIn("Guild View PlugIn", "The default implementation of the guild view which is forwarding everything to the game client which specific data packets.")]
+    [Guid("43D58FA0-DAAB-4837-B7E7-8FA8E9C1B333")]
     public class GuildView : IGuildView
     {
         private const int PlayerEntryLength = 13;
 
-        private readonly Player player;
-        private readonly IConnection connection;
+        private readonly RemotePlayer player;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildView" /> class.
         /// </summary>
-        /// <param name="connection">The connection.</param>
         /// <param name="player">The player.</param>
-        public GuildView(IConnection connection, Player player)
+        public GuildView(RemotePlayer player)
         {
             this.player = player;
-            this.connection = connection;
         }
+
+        private IConnection Connection => this.player.Connection;
 
         /// <inheritdoc/>
         public void PlayerLeftGuild(Player player)
@@ -43,7 +46,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 playerId |= 0x80;
             }
 
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x05))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x05))
             {
                 var packet = writer.Span;
                 packet[2] = 0x5D;
@@ -56,7 +59,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void GuildJoinResponse(GuildRequestAnswerResult result)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 4))
             {
                 var packet = writer.Span;
                 packet[2] = 0x51;
@@ -68,7 +71,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowGuildCreateResult(GuildCreateErrorDetail errorDetail)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 5))
             {
                 var packet = writer.Span;
                 packet[2] = 0x56;
@@ -86,7 +89,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ShowGuildInfo(byte[] guildInfo)
         {
             // guildInfo is the cached, serialized result of the GuildInformation-Class.
-            using (var writer = this.connection.StartSafeWrite(guildInfo[0], guildInfo.Length))
+            using (var writer = this.Connection.StartSafeWrite(guildInfo[0], guildInfo.Length))
             {
                 guildInfo.CopyTo(writer.Span);
                 writer.Commit();
@@ -102,7 +105,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // 34 4B 00 00 80 00 00
             // A4 F2 00 00 00
             const int sizePerPlayer = 12;
-            using (var writer = this.connection.StartSafeWrite(0xC2, (guildPlayers.Count * sizePerPlayer) + 5))
+            using (var writer = this.Connection.StartSafeWrite(0xC2, (guildPlayers.Count * sizePerPlayer) + 5))
             {
                 var packet = writer.Span;
                 packet[3] = 0x65;
@@ -127,7 +130,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             // 34 4B 00 00 80 00 00
             // A4 F2 00 00 00
             const int sizePerPlayer = 12;
-            using (var writer = this.connection.StartSafeWrite(0xC2, sizePerPlayer + 5))
+            using (var writer = this.Connection.StartSafeWrite(0xC2, sizePerPlayer + 5))
             {
                 var packet = writer.Span;
                 packet[3] = 0x65;
@@ -141,7 +144,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void GuildKickResult(GuildKickSuccess successCode)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 4))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 4))
             {
                 var packet = writer.Span;
 
@@ -156,7 +159,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ShowGuildList(IEnumerable<OpenMU.Interfaces.GuildListEntry> players)
         {
             var playerCount = players.Count();
-            using (var writer = this.connection.StartSafeWrite(0xC2, 6 + 18 + (playerCount * PlayerEntryLength)))
+            using (var writer = this.Connection.StartSafeWrite(0xC2, 6 + 18 + (playerCount * PlayerEntryLength)))
             {
                 var packet = writer.Span;
                 packet[3] = 0x52;
@@ -190,7 +193,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowGuildJoinRequest(Player requester)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 5))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 5))
             {
                 var packet = writer.Span;
                 packet[2] = 0x50;
@@ -203,7 +206,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowGuildCreationDialog()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 3))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 3))
             {
                 var packet = writer.Span;
                 packet[2] = 0x55;
@@ -214,7 +217,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowGuildMasterDialog()
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 3))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 3))
             {
                 var packet = writer.Span;
                 packet[2] = 0x54;

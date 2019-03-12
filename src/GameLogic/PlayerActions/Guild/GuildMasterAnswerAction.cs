@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to answer the dialog of the guild master npc.
@@ -36,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         {
             if (player.PlayerState.CurrentState == PlayerState.EnteredWorld && answer == Answer.ShowDialog)
             {
-                player.PlayerView.GuildView.ShowGuildCreationDialog();
+                player.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildCreationDialog();
             }
             else if (player.OpenedNpc?.Definition.NpcWindow == NpcWindow.GuildMaster && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
             {

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Interface of an world observer.
@@ -12,8 +13,11 @@ namespace MUnique.OpenMU.GameLogic
     public interface IWorldObserver
     {
         /// <summary>
-        /// Gets the world view of the observer.
+        /// Gets the view plug ins.
         /// </summary>
-        IWorldView WorldView { get; }
+        /// <value>
+        /// The view plug ins.
+        /// </value>
+        ICustomPlugInContainer<IViewPlugIn> ViewPlugIns { get; }
     }
 }

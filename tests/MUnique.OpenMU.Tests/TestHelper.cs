@@ -120,20 +120,31 @@ namespace MUnique.OpenMU.Tests
                 character.Attributes.Add(new StatAttribute(attributeDef.Attribute, attributeDef.BaseValue));
             }
 
-            var playerViewMock = new Mock<IPlayerView>();
-            playerViewMock.Setup(v => v.InventoryView).Returns(new Mock<IInventoryView>().Object);
-            playerViewMock.Setup(v => v.WorldView).Returns(new Mock<IWorldView>().Object);
-            playerViewMock.Setup(v => v.TradeView).Returns(new Mock<ITradeView>().Object);
-            playerViewMock.Setup(v => v.GuildView).Returns(new Mock<IGuildView>().Object);
-            playerViewMock.Setup(v => v.PartyView).Returns(new Mock<IPartyView>().Object);
-            playerViewMock.Setup(v => v.MessengerView).Returns(new Mock<IMessengerView>().Object);
-
-            var player = new Player(gameContext, playerViewMock.Object) { Account = new Account() };
+            var player = new TestPlayer(gameContext);
+            player.Account = new Account();
             player.PlayerState.TryAdvanceTo(PlayerState.LoginScreen);
             player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
             player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection);
             player.SelectedCharacter = character;
+
+            Mock.Get(player.ViewPlugIns).Setup(p => p.GetPlugIn<IPlayerView>()).Returns(new Mock<IPlayerView>().Object);
+            Mock.Get(player.ViewPlugIns).Setup(p => p.GetPlugIn<ITradeView>()).Returns(new Mock<ITradeView>().Object);
+            Mock.Get(player.ViewPlugIns).Setup(p => p.GetPlugIn<IGuildView>()).Returns(new Mock<IGuildView>().Object);
+            Mock.Get(player.ViewPlugIns).Setup(p => p.GetPlugIn<IInventoryView>()).Returns(new Mock<IInventoryView>().Object);
+
             return player;
+        }
+
+        private class TestPlayer : Player
+        {
+            public TestPlayer(IGameContext gameContext) : base(gameContext)
+            {
+            }
+
+            protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
+            {
+                return new Mock<ICustomPlugInContainer<IViewPlugIn>>().Object;
+            }
         }
     }
 }

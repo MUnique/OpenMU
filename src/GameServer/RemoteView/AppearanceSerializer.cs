@@ -6,16 +6,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Configuration;
+    using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Default serializer for the appearance of a player.
     /// </summary>
+    [Guid("54847CAF-7827-48FB-BF53-AF458A694FAF")]
+    [PlugIn("Default appearance serializer", "Default serializer for the appearance of a player. It will most likely only work correctly in season 6.")]
     public class AppearanceSerializer : IAppearanceSerializer
     {
         /// <summary>
@@ -83,7 +85,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             if (target.Length < this.NeededSpace)
             {
-                throw new ArgumentException("Target span too small. Actual size: {target.Length}; Required: {this.NeededSpace}.", nameof(target));
+                throw new ArgumentException($"Target span too small. Actual size: {target.Length}; Required: {this.NeededSpace}.", nameof(target));
             }
 
             if (useCache && Cache.TryGetValue(appearance, out var cached))

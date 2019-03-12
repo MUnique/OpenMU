@@ -48,11 +48,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             {
                 if (account.State == AccountState.Banned)
                 {
-                    player.PlayerView.ShowLoginResult(LoginResult.AccountBlocked);
+                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.AccountBlocked);
                 }
                 else if (account.State == AccountState.TemporarilyBanned)
                 {
-                    player.PlayerView.ShowLoginResult(LoginResult.TemporaryBlocked);
+                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.TemporaryBlocked);
                 }
                 else
                 {
@@ -62,12 +62,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                         {
                             player.Account = account;
                             Log.DebugFormat("Login successful, username: [{0}]", username);
-                            player.PlayerView.ShowLoginResult(LoginResult.OK);
+                            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.OK);
                         }
                         else
                         {
                             context.Allowed = false;
-                            player.PlayerView.ShowLoginResult(LoginResult.AccountAlreadyConnected);
+                            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.AccountAlreadyConnected);
                         }
                     }
                 }
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             else
             {
                 Log.InfoFormat($"Account not found or invalid password, username: [{username}]");
-                player.PlayerView.ShowLoginResult(LoginResult.InvalidPassword);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.InvalidPassword);
             }
         }
     }

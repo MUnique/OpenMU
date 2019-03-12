@@ -22,11 +22,6 @@ namespace MUnique.OpenMU.GameLogic
         IPartyMember LastPartyRequester { get; set; }
 
         /// <summary>
-        /// Gets the party view.
-        /// </summary>
-        IPartyView PartyView { get; }
-
-        /// <summary>
         /// Gets the maximum health.
         /// </summary>
         uint MaximumHealth { get; }

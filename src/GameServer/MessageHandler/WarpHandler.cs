@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System.Linq;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
 
@@ -45,7 +46,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
             else
             {
-                player.PlayerView.ShowMessage($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal);
             }
         }
     }

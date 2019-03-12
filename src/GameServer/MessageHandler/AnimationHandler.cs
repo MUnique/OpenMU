@@ -5,8 +5,9 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
-    using DataModel.Entities;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Handler for animation packets.
@@ -41,7 +42,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                     break;
             }
 
-            player.ForEachWorldObserver(o => o.WorldView.ShowAnimation(player, animation, null, rotation), false);
+            player.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<IWorldView>().ShowAnimation(player, animation, null, rotation), false);
         }
     }
 }

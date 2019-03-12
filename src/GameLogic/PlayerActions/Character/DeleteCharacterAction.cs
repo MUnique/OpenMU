@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         public void DeleteCharacter(Player player, string characterName, string securityCode)
         {
             var result = this.DeleteCharacterRequest(player, characterName, securityCode);
-            player.PlayerView.ShowCharacterDeleteResponse(result);
+            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowCharacterDeleteResponse(result);
         }
 
         private CharacterDeleteResult DeleteCharacterRequest(Player player, string characterName, string securityCode)

@@ -8,8 +8,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Buffers;
     using log4net;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A player which is playing through a remote connection.
@@ -27,9 +29,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <param name="packetHandler">The packet handler.</param>
         /// <param name="connection">The remote connection.</param>
         public RemotePlayer(IGameServerContext gameContext, IPacketHandler packetHandler, IConnection connection)
-            : base(gameContext, null)
+            : base(gameContext)
         {
-            this.PlayerView = new RemoteView(connection, this, gameContext, new AppearanceSerializer());
             this.Connection = connection;
             this.MainPacketHandler = packetHandler;
             this.Connection.PacketReceived += (sender, packet) => this.PacketReceived(packet);
@@ -47,9 +48,25 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         internal IConnection Connection { get; private set; }
 
         /// <summary>
+        /// Gets the currently effective appearance serializer.
+        /// </summary>
+        internal IAppearanceSerializer AppearanceSerializer => this.ViewPlugIns.GetPlugIn<IAppearanceSerializer>();
+
+        /// <summary>
+        /// Gets the currently effective item serializer.
+        /// </summary>
+        internal IItemSerializer ItemSerializer => this.ViewPlugIns.GetPlugIn<IItemSerializer>();
+
+        /// <summary>
         /// Gets or sets the main packet handler.
         /// </summary>
         internal IPacketHandler MainPacketHandler { get; set; }
+
+        /// <inheritdoc />
+        protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
+        {
+            return new ViewPlugInContainer(this, new ClientVersion(6, 4, ClientLanguage.English), this.GameContext.PlugInManager);
+        }
 
         /// <inheritdoc/>
         protected override void InternalDisconnect()

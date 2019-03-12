@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
 {
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to request the party list.
@@ -19,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
         {
             if (player.Party != null)
             {
-                player.PlayerView.PartyView.UpdatePartyList();
+                player.ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.UpdatePartyList();
             }
         }
     }

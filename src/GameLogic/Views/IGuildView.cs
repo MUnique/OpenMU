@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.GameLogic.Views
     /// <summary>
     /// The guild view.
     /// </summary>
-    public interface IGuildView
+    public interface IGuildView : IViewPlugIn
     {
         /// <summary>
         /// A Player the left his guild.

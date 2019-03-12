@@ -4,56 +4,47 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
-    using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
-    using System.Threading.Tasks;
-    using GameLogic.Views;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The default implementation of the messenger view which is forwarding everything to the game client which specific data packets.
     /// </summary>
+    [PlugIn("Messenger View", "The default implementation of the messenger view which is forwarding everything to the game client which specific data packets.")]
+    [Guid("2C98E3F9-E7B3-4BF9-9E1F-FFC3702D4211")]
     public class MessengerView : IMessengerView
     {
-        private readonly IConnection connection;
-
-        private readonly Player player;
-
-        private readonly IFriendServer friendServer;
-
-        private readonly IAppearanceSerializer appearanceSerializer;
+        private readonly RemotePlayer player;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessengerView"/> class.
         /// </summary>
-        /// <param name="connection">The connection.</param>
         /// <param name="player">The player.</param>
-        /// <param name="friendServer">The friend server.</param>
-        /// <param name="appearanceSerializer">The appearance serializer.</param>
-        public MessengerView(IConnection connection, Player player, IFriendServer friendServer, IAppearanceSerializer appearanceSerializer)
+        public MessengerView(RemotePlayer player)
         {
-            this.connection = connection;
             this.player = player;
-            this.friendServer = friendServer;
-            this.appearanceSerializer = appearanceSerializer;
         }
+
+        private IConnection Connection => this.player.Connection;
 
         /// <inheritdoc/>
         public void InitializeMessenger(int maxLetters)
         {
-            var friends = this.friendServer.GetFriendList(this.player.SelectedCharacter.Id);
+            var friendServer = player.GameServerContext.FriendServer;
+            var friends = friendServer.GetFriendList(this.player.SelectedCharacter.Id);
             var friendList = friends as ICollection<string> ?? friends.ToList();
 
             var letterCount = (byte)this.player.SelectedCharacter.Letters.Count;
             if (friendList.Count == 0)
             {
-                using (var writer = this.connection.StartSafeWrite(0xC2, 7))
+                using (var writer = this.Connection.StartSafeWrite(0xC2, 7))
                 {
                     var packet = writer.Span;
                     packet[3] = 0xC0;
@@ -69,7 +60,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 const byte sizePerFriend = 11;
                 ////C2 00 06 C0 06 32
                 var packetLength = (ushort)(7 + (sizePerFriend * friendListCount));
-                using (var writer = this.connection.StartSafeWrite(0xC2, packetLength))
+                using (var writer = this.Connection.StartSafeWrite(0xC2, packetLength))
                 {
                     var packet = writer.Span;
                     packet[3] = 0xC0;
@@ -90,7 +81,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 }
             }
 
-            foreach (var requesterName in this.friendServer.GetOpenFriendRequests(this.player.SelectedCharacter.Id))
+            foreach (var requesterName in friendServer.GetOpenFriendRequests(this.player.SelectedCharacter.Id))
             {
                 this.ShowFriendRequest(requesterName);
             }
@@ -105,7 +96,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void AddToLetterList(LetterHeader letter, ushort newLetterIndex, bool newLetter)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC3, 79))
+            using (var writer = this.Connection.StartSafeWrite(0xC3, 79))
             {
                 var result = writer.Span;
                 result[2] = 0xC6;
@@ -128,7 +119,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowFriendRequest(string requester)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0D))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0D))
             {
                 var packet = writer.Span;
                 packet[2] = 0xC2;
@@ -140,7 +131,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void FriendStateUpdate(string friend, int serverId)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0E))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0E))
             {
                 var packet = writer.Span;
                 packet[2] = 0xC4;
@@ -153,7 +144,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void FriendAdded(string friendName)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0F))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0F))
             {
                 var packet = writer.Span;
                 packet[2] = 0xC1;
@@ -167,7 +158,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void FriendDeleted(string deletingFriend)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0E))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 0x0E))
             {
                 var packet = writer.Span;
                 packet[2] = 0xC3;
@@ -180,9 +171,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC3, 0x24))
+            using (var writer = this.Connection.StartSafeWrite(0xC3, 0x24))
             {
-                var chatServerIp = this.friendServer.GetChatserverIP();
+                var chatServerIp = this.player.GameServerContext.FriendServer.GetChatserverIP();
                 var packet = writer.Span;
                 packet[2] = 0xCA;
                 packet.Slice(3, 15).WriteString(chatServerIp, Encoding.UTF8);
@@ -201,7 +192,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowFriendInvitationResult(bool success, uint requestId)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC3, 8))
+            using (var writer = this.Connection.StartSafeWrite(0xC3, 8))
             {
                 var packet = writer.Span;
                 packet[2] = 0xCB;
@@ -214,20 +205,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowLetter(LetterBody letter)
         {
+            var appearanceSerializer = this.player.AppearanceSerializer;
             var letterIndex = this.player.SelectedCharacter.Letters.IndexOf(letter.Header);
-            var len = (ushort)(Encoding.UTF8.GetByteCount(letter.Message) + 28);
-            using (var writer = this.connection.StartSafeWrite(0xC4, len))
+            var headerSize = appearanceSerializer.NeededSpace + 10;
+            var messageSize = Encoding.UTF8.GetByteCount(letter.Message);
+            var len = (ushort)(messageSize  + headerSize);
+            using (var writer = this.Connection.StartSafeWrite(0xC4, len))
             {
                 var result = writer.Span;
                 result[3] = 0xC7;
                 result[4] = ((ushort)letterIndex).GetLowByte();
                 result[5] = ((ushort)letterIndex).GetHighByte();
-                result[6] = ((ushort)(len - 28)).GetLowByte();
-                result[7] = ((ushort)(len - 28)).GetHighByte();
-                this.appearanceSerializer.WriteAppearanceData(result.Slice(8, this.appearanceSerializer.NeededSpace), letter.SenderAppearance, false);
-                result[8 + this.appearanceSerializer.NeededSpace] = letter.Rotation;
-                result[9 + this.appearanceSerializer.NeededSpace] = letter.Animation;
-                result.Slice(28).WriteString(letter.Message, Encoding.UTF8);
+                result[6] = ((ushort)messageSize).GetLowByte();
+                result[7] = ((ushort)messageSize).GetHighByte();
+                appearanceSerializer.WriteAppearanceData(result.Slice(8, appearanceSerializer.NeededSpace), letter.SenderAppearance, false);
+                result[8 + appearanceSerializer.NeededSpace] = letter.Rotation;
+                result[9 + appearanceSerializer.NeededSpace] = letter.Animation;
+                result.Slice(headerSize).WriteString(letter.Message, Encoding.UTF8);
                 writer.Commit();
             }
         }
@@ -235,7 +229,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void LetterDeleted(ushort letterIndex)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 6))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 6))
             {
                 var packet = writer.Span;
                 packet[2] = 0xC8;
@@ -249,7 +243,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void LetterSendResult(LetterSendSuccess success, uint letterId)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 8))
+            using (var writer = this.Connection.StartSafeWrite(0xC1, 8))
             {
                 var packet = writer.Span;
                 packet[2] = 0xC5;

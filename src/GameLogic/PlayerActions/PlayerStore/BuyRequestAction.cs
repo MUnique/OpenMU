@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
     using log4net;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -26,7 +27,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             if (!requestedPlayer.ShopStorage.StoreOpen)
             {
                 Log.DebugFormat("Store not open, Character {0}", requestedPlayer.SelectedCharacter.Name);
-                player.PlayerView.ShowMessage("Player's Store not open.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Player's Store not open.", MessageType.BlueNormal);
                 return;
             }
 
@@ -40,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             if (item == null || !item.StorePrice.HasValue)
             {
                 Log.DebugFormat("Item unavailable, Slot {0}", slot);
-                player.PlayerView.ShowMessage("Item unavailable.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Item unavailable.", MessageType.BlueNormal);
                 return;
             }
 
@@ -48,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 
             if (player.Money < itemPrice)
             {
-                player.PlayerView.ShowMessage("Not enough Zen.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Not enough Zen.", MessageType.BlueNormal);
                 return;
             }
 
@@ -56,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             int freeslot = player.Inventory.CheckInvSpace(item);
             if (freeslot == -1)
             {
-                player.PlayerView.ShowMessage("Not enough Space in your Inventory.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Not enough Space in your Inventory.", MessageType.BlueNormal);
                 return;
             }
 
@@ -65,7 +66,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                 item = requestedPlayer.ShopStorage.GetItem(slot);
                 if (item == null)
                 {
-                    player.PlayerView.ShowMessage("Sorry, Item was sold in the meantime.", MessageType.BlueNormal);
+                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Sorry, Item was sold in the meantime.", MessageType.BlueNormal);
                     return;
                 }
 
@@ -76,19 +77,19 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                     {
                         requestedPlayer.ShopStorage.RemoveItem(item);
 
-                        requestedPlayer.PlayerView.InventoryView.UpdateMoney();
-                        requestedPlayer.PlayerView.InventoryView.ItemSoldByPlayerShop(slot, player);
+                        requestedPlayer.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateMoney();
+                        requestedPlayer.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemSoldByPlayerShop(slot, player);
                         item.ItemSlot = (byte)freeslot;
                         item.StorePrice = null;
                         player.Inventory.AddItem(item.ItemSlot, item);
 
-                        player.PlayerView.InventoryView.ItemBoughtFromPlayerShop(item);
-                        player.PlayerView.InventoryView.UpdateMoney();
+                        player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemBoughtFromPlayerShop(item);
+                        player.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateMoney();
                         player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToOtherPlayerPlugIn>()?.ItemSold(requestedPlayer, item, player);
                     }
                     else
                     {
-                        player.PlayerView.ShowMessage("The inventory of the seller is full.", MessageType.BlueNormal);
+                        player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("The inventory of the seller is full.", MessageType.BlueNormal);
                         player.TryAddMoney(itemPrice);
                     }
                 }

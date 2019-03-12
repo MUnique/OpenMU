@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Pathfinding;
+    using MUnique.OpenMU.PlugIns;
     using NUnit.Framework;
 
     /// <summary>
@@ -27,7 +28,9 @@ namespace MUnique.OpenMU.Tests
         {
             var worldObserver = new Mock<IWorldObserver>();
             var view = new Mock<IWorldView>();
-            worldObserver.Setup(o => o.WorldView).Returns(view.Object);
+            var viewPlugIns = new Mock<ICustomPlugInContainer<IViewPlugIn>>();
+            viewPlugIns.Setup(v => v.GetPlugIn<IWorldView>()).Returns(view.Object);
+            worldObserver.Setup(o => o.ViewPlugIns).Returns(viewPlugIns.Object);
             var adapter = new ObserverToWorldViewAdapter(worldObserver.Object, 12);
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
             var nonPlayer = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
@@ -51,7 +54,9 @@ namespace MUnique.OpenMU.Tests
         {
             var worldObserver = new Mock<IWorldObserver>();
             var view = new Mock<IWorldView>();
-            worldObserver.Setup(o => o.WorldView).Returns(view.Object);
+            var viewPlugIns = new Mock<ICustomPlugInContainer<IViewPlugIn>>();
+            viewPlugIns.Setup(v => v.GetPlugIn<IWorldView>()).Returns(view.Object);
+            worldObserver.Setup(o => o.ViewPlugIns).Returns(viewPlugIns.Object);
             var adapter = new ObserverToWorldViewAdapter(worldObserver.Object, 12);
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
             var nonPlayer1 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)

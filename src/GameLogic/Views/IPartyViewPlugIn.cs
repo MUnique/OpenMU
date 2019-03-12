@@ -1,13 +1,13 @@
-﻿// <copyright file="IPartyView.cs" company="MUnique">
+﻿// <copyright file="IPartyViewPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.Views
 {
     /// <summary>
-    /// The view for party informations.
+    /// The view plugin for party information.
     /// </summary>
-    public interface IPartyView : IChatView
+    public interface IPartyViewPlugIn : IViewPlugIn
     {
         /// <summary>
         /// Shows the party request.
