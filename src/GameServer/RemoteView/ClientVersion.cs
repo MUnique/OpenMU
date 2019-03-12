@@ -52,6 +52,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public static bool operator >(ClientVersion left, ClientVersion right) => Compare(left, right) > 0;
 
         /// <summary>
+        /// Implements the operator &gt;=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator >=(ClientVersion left, ClientVersion right) => Compare(left, right) > 0;
+
+        /// <summary>
         /// Implements the operator &lt;.
         /// </summary>
         /// <param name="left">The left.</param>
@@ -60,6 +70,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// The result of the operator.
         /// </returns>
         public static bool operator <(ClientVersion left, ClientVersion right) => Compare(left, right) < 0;
+
+        /// <summary>
+        /// Implements the operator &lt;=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator <=(ClientVersion left, ClientVersion right) => Compare(left, right) < 0;
 
         /// <summary>
         /// Implements the operator !=.

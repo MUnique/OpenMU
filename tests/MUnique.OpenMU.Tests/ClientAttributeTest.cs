@@ -84,6 +84,42 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
+        /// Tests less than using the overloaded operator.
+        /// </summary>
+        [Test]
+        public void OperatorLessOrEqualThan()
+        {
+            Assert.That(Season6E3English <= Season9E2English, Is.True);
+        }
+
+        /// <summary>
+        /// Tests greater than using the overloaded operator.
+        /// </summary>
+        [Test]
+        public void OperatorGreaterOrEqualThan()
+        {
+            Assert.That(Season9E2English >= Season6E3English, Is.True);
+        }
+
+        /// <summary>
+        /// Tests less than using the overloaded operator.
+        /// </summary>
+        [Test]
+        public void OperatorLessOrEqualThanWhenEqual()
+        {
+            Assert.That(Season9E2EnglishOtherInstance <= Season9E2English, Is.True);
+        }
+
+        /// <summary>
+        /// Tests greater than using the overloaded operator.
+        /// </summary>
+        [Test]
+        public void OperatorGreaterOrEqualThanWhenEqual()
+        {
+            Assert.That(Season9E2English >= Season9E2EnglishOtherInstance, Is.True);
+        }
+
+        /// <summary>
         /// Tests equality using the overloaded operator.
         /// </summary>
         [Test]
