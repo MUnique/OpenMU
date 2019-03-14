@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void InitializeMessenger(int maxLetters)
         {
-            var friendServer = player.GameServerContext.FriendServer;
+            var friendServer = this.player.GameServerContext.FriendServer;
             var friends = friendServer.GetFriendList(this.player.SelectedCharacter.Id);
             var friendList = friends as ICollection<string> ?? friends.ToList();
 
@@ -209,7 +209,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var letterIndex = this.player.SelectedCharacter.Letters.IndexOf(letter.Header);
             var headerSize = appearanceSerializer.NeededSpace + 10;
             var messageSize = Encoding.UTF8.GetByteCount(letter.Message);
-            var len = (ushort)(messageSize  + headerSize);
+            var len = (ushort)(messageSize + headerSize);
             using (var writer = this.Connection.StartSafeWrite(0xC4, len))
             {
                 var result = writer.Span;
