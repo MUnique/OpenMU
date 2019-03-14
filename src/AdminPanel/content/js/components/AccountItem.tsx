@@ -13,7 +13,6 @@ class AccountItem extends React.Component<IAccountItemProps, {}> {
     public render() {
         return (
             <tr>
-                <td></td>
                 <td>{this.props.account.loginName}</td>
                 <td>{AccountState.getCaption(this.props.account.state)}</td>
                 <td>{this.props.account.eMail}</td>

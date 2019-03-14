@@ -29,23 +29,25 @@ class ServerList extends React.Component<ServerListProps, {}> {
         var serverList = this.props.servers.map((server: Server) => <ServerItem server={server} key={server.id}/>);
 
         return (
-            <table className="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th className="col-xs-7">Server Name</th>
-                    <th className="col-xs-1">Players</th>
-                    <th className="col-xs-2">Current State</th>
-                    <th className="col-xs-2">Action</th>
-                </tr>
-                </thead>
-                <tfoot>
-                    <TotalOnlineCounter servers={this.props.servers}/>
-                </tfoot>
-                <tbody>
-                {serverList}
-                </tbody>
-            </table>
+            <div>
+                <table className="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th className="col-xs-7">Server Name</th>
+                        <th className="col-xs-1">Players</th>
+                        <th className="col-xs-2">Current State</th>
+                        <th className="col-xs-2">Action</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                        <TotalOnlineCounter servers={this.props.servers}/>
+                    </tfoot>
+                    <tbody>
+                    {serverList}
+                    </tbody>
+                </table>
+            </div>
         );
     }
 }

@@ -56,6 +56,14 @@ namespace MUnique.OpenMU.PlugIns
         public event EventHandler<PlugInEventArgs> PlugInActivated;
 
         /// <summary>
+        /// Gets the known plug in types.
+        /// </summary>
+        /// <value>
+        /// The known plug in types.
+        /// </value>
+        public IEnumerable<Type> KnownPlugInTypes => this.knownPlugIns.Values;
+
+        /// <summary>
         /// Discovers and registers all plug ins of all loaded assemblies.
         /// </summary>
         public void DiscoverAndRegisterPlugIns()
@@ -350,10 +358,26 @@ namespace MUnique.OpenMU.PlugIns
                 {
                     this.DeactivatePlugIn(plugInType);
                 }
+
+                // When the IsActive property changed, we activate/deactivate accordingly.
+                // Currently, property changes are only fired for IsActive, so we don't need to check it.
+                configuration.PropertyChanged += (sender, args) => this.OnConfigurationChanged(configuration, plugInType);
             }
             else
             {
                 Log.Warn($"Unknown plugin type for id {configuration.TypeId}");
+            }
+        }
+
+        private void OnConfigurationChanged(PlugInConfiguration configuration, Type plugInType)
+        {
+            if (configuration.IsActive)
+            {
+                this.ActivatePlugIn(plugInType);
+            }
+            else
+            {
+                this.DeactivatePlugIn(plugInType);
             }
         }
 

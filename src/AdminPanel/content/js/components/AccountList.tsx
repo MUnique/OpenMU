@@ -9,14 +9,6 @@ import AccountItem from "./AccountItem";
 import CreateAccountModal from "./CreateAccountModal";
 
 
-interface IAccountListContainerProps {
-    accounts: Account[];
-    page: number;
-    pageSize: number;
-    createDialogVisible: boolean;
-    
-}
-
 interface IAccountListProps {
     accounts: Account[];
     page: number;
@@ -42,7 +34,6 @@ class AccountList extends React.Component<IAccountListProps, {}> {
                 <table className="table table-striped table-hover">
                     <thead>
                     <tr>
-                        <th className="col-xs-1"></th>
                         <th className="col-xs-1">Login Name</th>
                         <th className="col-xs-1">State</th>
                         <th className="col-xs-2">E-Mail</th>

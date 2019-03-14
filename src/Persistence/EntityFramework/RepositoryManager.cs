@@ -52,6 +52,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             this.RegisterRepository(new ConfigurationTypeRepository<MasterSkillRoot>(contextProvider, config => config.RawMasterSkillRoots));
             this.RegisterRepository(new ConfigurationTypeRepository<MonsterDefinition>(contextProvider, config => config.RawMonsters));
             this.RegisterRepository(new ConfigurationTypeRepository<Skill>(contextProvider, config => config.RawSkills));
+            this.RegisterRepository(new ConfigurationTypeRepository<PlugInConfiguration>(contextProvider, config => config.RawPlugInConfigurations));
 
             var registeredTypes = this.Repositories.Keys.ToList();
             using (var entityContext = new EntityDataContext())
