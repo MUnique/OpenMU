@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.ClientLauncher
     /// </summary>
     public partial class MainForm : Form
     {
-        private const string CONFIG_FILE_NAME = "launcher.config";
+        private const string ConfigFileName = "launcher.config";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
@@ -56,29 +56,30 @@ namespace MUnique.OpenMU.ClientLauncher
 
         private void LoadOptions()
         {
-            if (!File.Exists(CONFIG_FILE_NAME))
+            if (!File.Exists(ConfigFileName))
             {
                 return;
             }
 
             var reader = new XmlSerializer(typeof(Launcher));
-            var file = new StreamReader(CONFIG_FILE_NAME);
-            var launcher = (Launcher)reader.Deserialize(file);
-
-            file.Close();
-
-            this.ServerAddressTextBox.Text = launcher.HostAddress;
-            this.ServerPortControl.Value = launcher.HostPort;
-            this.MainExePathTextBox.Text = launcher.MainExePath;
+            using (var file = new StreamReader(ConfigFileName))
+            {
+                var launcher = (Launcher)reader.Deserialize(file);
+                this.ServerAddressTextBox.Text = launcher.HostAddress;
+                this.ServerPortControl.Value = launcher.HostPort;
+                this.MainExePathTextBox.Text = launcher.MainExePath;
+                file.Close();
+            }
         }
 
         private void SaveOptions(Launcher launcher)
         {
             var writer = new XmlSerializer(typeof(Launcher));
-            var file = File.Create(CONFIG_FILE_NAME);
-
-            writer.Serialize(file, launcher);
-            file.Close();
+            using (var file = File.Create(ConfigFileName))
+            {
+                writer.Serialize(file, launcher);
+                file.Close();
+            }
         }
 
         private void SearchMainExeButton_Click(object sender, EventArgs e)
