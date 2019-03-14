@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// The default implementation of the world view which is forwarding everything to the game client which specific data packets.
     /// </summary>
     [PlugIn("World View PlugIn", "View Plugin to send world update messages to the player by sending network packets")]
-    [Guid("F0B5BAD4-B97C-49F1-84E0-25EDC796B0E4")]
+    [Guid("043B3145-7237-4809-B6EF-997675975664")]
     public class WorldView : IWorldView
     {
         private readonly RemotePlayer player;
