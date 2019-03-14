@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.ClientLauncher
     /// <summary>
     /// The default launcher, which writes host and port into the registry before starting the main.exe.
     /// </summary>
-    internal class Launcher : ILauncher
+    public class Launcher : ILauncher
     {
         /// <summary>
         /// Gets or sets the host ip.
