@@ -7,9 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System;
     using System.Linq;
     using System.Reflection;
-    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.PlugIns;
     using Unity;
     using Unity.Lifetime;
@@ -74,7 +72,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         protected override void CreatePlugInIfSuitable(Type plugInType)
         {
             var clientAttribute = plugInType.GetCustomAttribute(typeof(ClientAttribute)) as ClientAttribute;
-            if (clientAttribute == null // if the plugin doesn't specify a version, we use it as well
+            if (ReferenceEquals(clientAttribute, null) // if the plugin doesn't specify a version, we use it as well
                 || this.Client.CompareTo(clientAttribute.Client) >= 0)
             {
                 using (var container = new UnityContainer())
