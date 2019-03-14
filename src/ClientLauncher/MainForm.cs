@@ -5,19 +5,24 @@
 namespace MUnique.OpenMU.ClientLauncher
 {
     using System;
+    using System.IO;
     using System.Windows.Forms;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// The main form of the launcher.
     /// </summary>
     public partial class MainForm : Form
     {
+        private const string CONFIG_FILE_NAME = "launcher.config";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
         /// </summary>
         public MainForm()
         {
             this.InitializeComponent();
+            this.LoadOptions();
         }
 
         /// <summary>
@@ -36,6 +41,8 @@ namespace MUnique.OpenMU.ClientLauncher
                     MainExePath = this.MainExePathTextBox.Text,
                 };
                 launcher.LaunchClient();
+
+                this.SaveOptions(launcher);
             }
             catch (UnauthorizedAccessException)
             {
@@ -45,6 +52,33 @@ namespace MUnique.OpenMU.ClientLauncher
             {
                 MessageBox.Show("Error Starting MU. Path correct?" + Environment.NewLine + ex.Message);
             }
+        }
+
+        private void LoadOptions()
+        {
+            if (!File.Exists(CONFIG_FILE_NAME))
+            {
+                return;
+            }
+
+            var reader = new XmlSerializer(typeof(Launcher));
+            var file = new StreamReader(CONFIG_FILE_NAME);
+            var launcher = (Launcher)reader.Deserialize(file);
+
+            file.Close();
+
+            this.ServerAddressTextBox.Text = launcher.HostAddress;
+            this.ServerPortControl.Value = launcher.HostPort;
+            this.MainExePathTextBox.Text = launcher.MainExePath;
+        }
+
+        private void SaveOptions(Launcher launcher)
+        {
+            var writer = new XmlSerializer(typeof(Launcher));
+            var file = File.Create(CONFIG_FILE_NAME);
+
+            writer.Serialize(file, launcher);
+            file.Close();
         }
 
         private void SearchMainExeButton_Click(object sender, EventArgs e)
