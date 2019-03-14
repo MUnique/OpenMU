@@ -24,9 +24,9 @@ namespace MUnique.OpenMU.Network.Tests
             var duplexPipe = new DuplexPipe();
             using (var connection = new Connection(duplexPipe, null, null))
             {
-#pragma warning disable 4014
-                connection.BeginReceive();
-#pragma warning restore 4014
+                var disconnected = false;
+                connection.Disconnected += (sender, args) => disconnected = true;
+                _ = connection.BeginReceive();
                 try
                 {
                     await duplexPipe.ReceivePipe.Writer.WriteAsync(malformedData);
@@ -34,6 +34,11 @@ namespace MUnique.OpenMU.Network.Tests
                 catch
                 {
                     // we need to swallow the exception for this test, so we can check the connected flag afterwards.
+                }
+
+                for (int i = 0; i < 10 && !disconnected; i++)
+                {
+                    await Task.Delay(10).ConfigureAwait(false);
                 }
 
                 Assert.That(connection.Connected, Is.False);
@@ -51,9 +56,10 @@ namespace MUnique.OpenMU.Network.Tests
             var duplexPipe = new DuplexPipe();
             using (var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output)))
             {
-#pragma warning disable 4014
-                connection.BeginReceive();
-#pragma warning restore 4014
+                var disconnected = false;
+                connection.Disconnected += (sender, args) => disconnected = true;
+                _ = connection.BeginReceive();
+
                 try
                 {
                     await connection.Output.WriteAsync(malformedData);
@@ -65,6 +71,12 @@ namespace MUnique.OpenMU.Network.Tests
                     // we need to swallow the exception for this test, so we can check the connected flag afterwards.
                 }
 
+                for (int i = 0; i < 10 && !disconnected; i++)
+                {
+                    await Task.Delay(10).ConfigureAwait(false);
+                }
+
+                Assert.That(disconnected, Is.True);
                 Assert.That(connection.Connected, Is.False);
             }
         }

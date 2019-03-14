@@ -108,6 +108,7 @@ namespace MUnique.OpenMU.Network.Tests
             var reading = decryptor.Reader.ReadAsync();
             pipe.Writer.Complete();
             var result = await reading;
+            await Task.Delay(10).ConfigureAwait(false);
             Assert.That(completed && result.IsCompleted, Is.True);
         }
 

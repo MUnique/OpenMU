@@ -60,21 +60,22 @@ namespace MUnique.OpenMU.Network.Tests
         private async ValueTask TestException(Action<InvalidPacketHeaderException> check)
         {
             bool thrown = false;
-            try
+            var duplexPipe = new DuplexPipe();
+            using (var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output)))
             {
-                var pipe = new Pipe();
-                var encryptor = new Xor.PipelinedXor32Encryptor(pipe.Writer);
-                await encryptor.Writer.WriteAsync(this.malformedData);
-                await encryptor.Writer.FlushAsync();
-                await pipe.Reader.ReadAsync();
-            }
-            catch (InvalidPacketHeaderException e)
-            {
-                thrown = true;
-                check(e);
-            }
+                _ = connection.BeginReceive();
+                try
+                {
+                    await duplexPipe.ReceivePipe.Writer.WriteAsync(this.malformedData);
+                }
+                catch (InvalidPacketHeaderException e)
+                {
+                    thrown = true;
+                    check(e);
+                }
 
-            Assert.That(thrown);
+                Assert.That(thrown);
+            }
         }
     }
 }
