@@ -151,7 +151,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             }
 
             var firstResultBlock = result.Slice(sizeCounter, EncryptedBlockSize);
-            var contentOfFirstBlockLength = Math.Min(DecryptedBlockSize, size - 1);
+            var contentOfFirstBlockLength = Math.Min(DecryptedBlockSize, size);
             this.EncryptBlock(firstResultBlock, contentOfFirstBlockLength);
             i += DecryptedBlockSize;
             sizeCounter += EncryptedBlockSize;
