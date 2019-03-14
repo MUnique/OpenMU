@@ -23,6 +23,9 @@ export class HeaderMenu extends React.Component<IHeaderMenuProps, {}> {
                         <li className={this.props.currentContent === Contents.ACCOUNT_LIST ? "active" : ""}>
                             <a onClick={() => this.props.setContent(Contents.ACCOUNT_LIST)}>Accounts</a>
                         </li>
+                        <li className={this.props.currentContent === Contents.PLUGINS ? "active" : ""}>
+                            <a onClick={() => this.props.setContent(Contents.PLUGINS)}>Plugins</a>
+                        </li>
                         <li className={this.props.currentContent === Contents.LOG_VIEW ? "active" : ""}>
                             <a onClick={() => this.props.setContent(Contents.LOG_VIEW)}>Log</a>
                             <LogNotifier />

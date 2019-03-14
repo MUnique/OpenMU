@@ -23,7 +23,8 @@ const store = configureStore(
         mapState: {
             players: {}
         },
-        systemState: { snapshots: [] }
+        systemState: { snapshots: [] },
+        plugInListState: { plugins: [], page: 1, pageSize: 20, createDialogVisible: false },
     }
 );
 

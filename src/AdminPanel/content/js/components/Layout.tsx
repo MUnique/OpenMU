@@ -7,6 +7,7 @@ import {HeaderMenu}  from "./HeaderMenu";
 import ServerList from "./ServerList";
 import LogTable from "./LogTable";
 import SystemMonitor from "./SystemMonitor";
+import PlugInList from "./PlugInList";
 
 interface LayoutState {
     currentContent: Contents;
@@ -18,6 +19,7 @@ export enum Contents  {
     ACCOUNT_LIST = 1,
     LOG_VIEW = 2,
     SYSTEM = 3,
+    PLUGINS = 4,
 };
 
 
@@ -45,7 +47,9 @@ export class Layout extends React.Component<{}, LayoutState>{
                             : this.state.currentContent === Contents.LOG_VIEW
                             ? <LogTable/>
                             : this.state.currentContent === Contents.SYSTEM
-                            ? <SystemMonitor/>
+                            ? <SystemMonitor />
+                            : this.state.currentContent === Contents.PLUGINS
+                            ? <PlugInList />
                             : null
                     }
                 </aside>

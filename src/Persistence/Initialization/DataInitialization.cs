@@ -27,6 +27,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using MUnique.OpenMU.Persistence.Initialization.Items;
     using MUnique.OpenMU.Persistence.Initialization.Maps;
     using MUnique.OpenMU.Persistence.Initialization.Skills;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Class to manage data initialization.
@@ -73,6 +74,16 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateTestAccounts(10);
                 this.CreateTestAccount("test300", 300);
                 this.CreateTestAccount("test400", 400);
+
+                var plugInManager = new PlugInManager();
+                plugInManager.DiscoverAndRegisterPlugIns();
+                plugInManager.KnownPlugInTypes.ForEach(plugInType =>
+                {
+                    var plugInConfiguration = this.context.CreateNew<PlugInConfiguration>();
+                    plugInConfiguration.TypeId = plugInType.GUID;
+                    plugInConfiguration.IsActive = true;
+                    this.gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
+                });
 
                 this.context.SaveChanges();
             }

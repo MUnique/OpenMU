@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         /// <param name="accountDto">The account.</param>
         /// <returns>The success of the operation.</returns>
         [HttpPost]
-        public IActionResult Save(AccountDto accountDto)
+        public IActionResult Save([FromBody] AccountDto accountDto)
         {
             try
             {

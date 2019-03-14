@@ -17,6 +17,7 @@ export const store = configureStore(
             players: { }
         },
         systemState: { snapshots: [] },
+        plugInListState: { plugins: [], page: 1, pageSize: 20, createDialogVisible: false },
     }
 );
 
