@@ -46,6 +46,20 @@ namespace MUnique.OpenMU.Network.Tests
         }
 
         /// <summary>
+        /// Tests the encryption of a C3 packet where the size is lower than the maximum block size.
+        /// </summary>
+        /// <remarks>
+        /// The test uses a real ping packet which was captured from a real game client.
+        /// </remarks>
+        /// <returns>The async task.</returns>
+        [Test]
+        public async Task ClientToServerC3WithSmallPacket()
+        {
+            var packet = new byte[] { 195, 5, 14, 0, 1 };
+            await this.EncryptDecryptFromClientToServer(packet).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Tests the encryption and decryption cycle of C1-packets from client to server.
         /// These packets get encrypted first by <see cref="PipelinedXor32Encryptor"/>, then <see cref="PipelinedSimpleModulusEncryptor"/> just forwards then as-is.
         /// Then the <see cref="PipelinedSimpleModulusDecryptor"/> forwards them as well and finally it gets decrypted by the <see cref="PipelinedXor32Decryptor"/>.
