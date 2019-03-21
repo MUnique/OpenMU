@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.PlugIns;
 
     /// <summary>
     /// Consume handler for items (e.g. scrolls, orbs) which add a skill when being consumed.

@@ -7,7 +7,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.PlugIns;
 
     /// <summary>
     /// Base class of an item consumption handler.
