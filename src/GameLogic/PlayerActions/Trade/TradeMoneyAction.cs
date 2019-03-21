@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
+    using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -22,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             // Check if Trade is open
             if (player.PlayerState.CurrentState != PlayerState.TradeOpened)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Uncheck trade accept button first", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Uncheck trade accept button first", MessageType.BlueNormal);
                 return;
             }
 
@@ -36,17 +38,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             player.TryAddMoney(player.TradingMoney);
             player.TryAddMoney((int)(-1 * moneyAmount));
             player.TradingMoney = (int)moneyAmount;
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateMoney();
-            player.ViewPlugIns.GetPlugIn<ITradeView>()?.RequestedTradeMoneyHasBeenSet();
+            player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+            player.ViewPlugIns.GetPlugIn<IRequestedTradeMoneyHasBeenSetPlugIn>()?.RequestedTradeMoneyHasBeenSet();
 
             // Send the Money Packet to the Trading Partner
-            player.TradingPartner?.TradeView.SetTradeMoney(moneyAmount);
+            player.TradingPartner?.ViewPlugIns.GetPlugIn<ISetTradeMoneyPlugIn>()?.SetTradeMoney(moneyAmount);
 
-            player.ViewPlugIns.GetPlugIn<ITradeView>()?.ChangeTradeButtonState(TradeButtonState.Red);
+            player.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()?.ChangeTradeButtonState(TradeButtonState.Red);
             if (player.TradingPartner != null)
             {
                 player.TradingPartner.PlayerState.TryAdvanceTo(PlayerState.TradeOpened);
-                player.TradingPartner.TradeView.ChangeTradeButtonState(TradeButtonState.Red);
+                player.TradingPartner.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()?.ChangeTradeButtonState(TradeButtonState.Red);
             }
         }
     }

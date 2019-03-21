@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
 
     /// <summary>
     /// Action to hit targets without a skill with pure melee damage.
@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             player.ObserverLock.EnterReadLock();
             try
             {
-                player.Observers.ForEach(observer => observer.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowAnimation(player, attackAnimation, target, lookingDirection));
+                player.Observers.ForEach(observer => observer.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(player, attackAnimation, target, lookingDirection));
             }
             finally
             {

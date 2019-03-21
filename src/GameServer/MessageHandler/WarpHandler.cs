@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
             else
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal);
             }
         }
     }

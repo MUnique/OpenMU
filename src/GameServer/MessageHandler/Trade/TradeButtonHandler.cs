@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     using System;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Trade;
 
     /// <summary>
     /// Handles the trade button packets.

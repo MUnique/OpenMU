@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
@@ -50,8 +51,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             var sendPrice = this.gameContext.Configuration.LetterSendPrice;
             if (player.Money < sendPrice)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Not enough Zen to send a letter.", MessageType.BlueNormal);
-                player.ViewPlugIns.GetPlugIn<IMessengerView>()?.LetterSendResult(LetterSendSuccess.NotEnoughMoney, letterId);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Not enough Zen to send a letter.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.NotEnoughMoney, letterId);
                 return;
             }
 
@@ -63,21 +64,21 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
                     letter = this.CreateLetter(context, player, receiver, message, title, rotation, animation);
                     if (!context.CanSaveLetter(letter))
                     {
-                        player.ViewPlugIns.GetPlugIn<IMessengerView>()?.LetterSendResult(LetterSendSuccess.ReceiverNotExists, letterId);
+                        player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.ReceiverNotExists, letterId);
                         return;
                     }
 
                     context.SaveChanges();
                 }
 
-                player.ViewPlugIns.GetPlugIn<IMessengerView>()?.LetterSendResult(LetterSendSuccess.Success, letterId);
+                player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.Success, letterId);
                 player.TryAddMoney(-sendPrice);
             }
             catch (Exception ex)
             {
                 Log.Error("Unexpected error when trying to send a letter", ex);
-                player.ViewPlugIns.GetPlugIn<IMessengerView>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Oops, some error happened during sending the Letter.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Oops, some error happened during sending the Letter.", MessageType.BlueNormal);
             }
 
             // Try to forward it to the player, if he is online
@@ -86,7 +87,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             {
                 receiverPlayer.PersistenceContext.Attach(letter);
                 receiverPlayer.SelectedCharacter.Letters.Add(letter);
-                receiverPlayer.ViewPlugIns.GetPlugIn<IMessengerView>()?.AddToLetterList(letter, (ushort)(receiverPlayer.SelectedCharacter.Letters.Count - 1), true);
+                receiverPlayer.ViewPlugIns.GetPlugIn<IAddToLetterListPlugIn>()?.AddToLetterList(letter, (ushort)(receiverPlayer.SelectedCharacter.Letters.Count - 1), true);
             }
             else
             {

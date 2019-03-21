@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Character;
 
     /// <summary>
     /// The consume handler for a potion that recovers health.
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             if (base.ConsumeItem(player, item, targetItem))
             {
                 // maybe instead of calling UpdateCurrentHealth etc. provide a more general method where we pass this.CurrentAttribute. The view can then decide what to do with it.
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCurrentHealth();
+                player.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
                 return true;
             }
 

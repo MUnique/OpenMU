@@ -8,9 +8,8 @@ namespace MUnique.OpenMU.GameServer
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.GameServer.MessageHandler;
-    using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
@@ -46,14 +45,15 @@ namespace MUnique.OpenMU.GameServer
             this.ServerConfiguration = gameServerDefinition.ServerConfiguration;
 
             this.PacketHandlers = gameServerDefinition.ServerConfiguration.SupportedPacketHandlers.Select(m => new ConfigurableMainPacketHandler(m, this)).ToArray<IMainPacketHandler>();
-            this.GuildCache = new GuildCache(this, new GuildInfoSerializer());
         }
+
+        /// <summary>
+        /// Occurs when a guild has been deleted.
+        /// </summary>
+        public event EventHandler<GuildDeletedEventArgs> GuildDeleted;
 
         /// <inheritdoc/>
         public byte Id { get; }
-
-        /// <inheritdoc/>
-        public GuildCache GuildCache { get; }
 
         /// <inheritdoc/>
         public IGuildServer GuildServer { get; }
@@ -93,6 +93,15 @@ namespace MUnique.OpenMU.GameServer
             base.RemovePlayer(player);
         }
 
+        /// <summary>
+        /// Raises the <see cref="GuildDeleted"/> event.
+        /// </summary>
+        /// <param name="guildId">The guild identifier.</param>
+        internal void RaiseGuildDeleted(uint guildId)
+        {
+            this.GuildDeleted?.Invoke(this, new GuildDeletedEventArgs(guildId));
+        }
+
         private void PlayerEnteredWorld(object sender, EventArgs e)
         {
             if (sender is Player player)
@@ -101,7 +110,7 @@ namespace MUnique.OpenMU.GameServer
                 player.GuildStatus = this.GuildServer.PlayerEnteredGame(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
                 if (player.GuildStatus != null)
                 {
-                    player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IGuildView>()?.AssignPlayerToGuild(player, true), true);
+                    player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayerToGuildPlugIn>()?.AssignPlayerToGuild(player, true), true);
                 }
             }
         }

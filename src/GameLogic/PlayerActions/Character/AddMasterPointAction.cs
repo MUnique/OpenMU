@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Character;
 
     /// <summary>
     /// Action to add a master skill point to learn or increase the level of a master skill.
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 Log.DebugFormat("Adding {0} points to skill, skillId: {1}, player {2}", requiredPoints, learnedSkill.Skill.Number, player);
                 learnedSkill.Level += requiredPoints;
                 player.SelectedCharacter.MasterLevelUpPoints -= requiredPoints;
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.MasterSkillLevelChanged(learnedSkill);
+                player.ViewPlugIns.GetPlugIn<IMasterSkillLevelChangedPlugIn>()?.MasterSkillLevelChanged(learnedSkill);
             }
             else
             {

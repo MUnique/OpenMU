@@ -10,10 +10,10 @@ namespace MUnique.OpenMU.GameLogic
     using System.Threading;
     using log4net;
     using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
 
     /// <summary>
-    /// Adapts the incoming calls from the <see cref="IBucketMapObserver"/> to the <see cref="IWorldView"/>.
+    /// Adapts the incoming calls from the <see cref="IBucketMapObserver"/> to the available view plugins.
     /// </summary>
     public sealed class ObserverToWorldViewAdapter : IBucketMapObserver, IDisposable
     {
@@ -63,15 +63,15 @@ namespace MUnique.OpenMU.GameLogic
 
             if (item is Player player)
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.NewPlayersInScope(player.GetAsEnumerable());
+                this.adaptee.ViewPlugIns.GetPlugIn<INewPlayersInScopePlugIn>()?.NewPlayersInScope(player.GetAsEnumerable());
             }
             else if (item is NonPlayerCharacter npc)
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.NewNpcsInScope(npc.GetAsEnumerable());
+                this.adaptee.ViewPlugIns.GetPlugIn<INewNpcsInScopePlugIn>()?.NewNpcsInScope(npc.GetAsEnumerable());
             }
             else if (item is DroppedItem droppedItem)
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowDroppedItems(droppedItem.GetAsEnumerable(), sender != this);
+                this.adaptee.ViewPlugIns.GetPlugIn<IShowDroppedItemsPlugIn>()?.ShowDroppedItems(droppedItem.GetAsEnumerable(), sender != this);
             }
             else
             {
@@ -136,13 +136,13 @@ namespace MUnique.OpenMU.GameLogic
 
             if (item is DroppedItem)
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.DroppedItemsDisappeared(item.GetAsEnumerable().Select(i => i.Id));
+                this.adaptee.ViewPlugIns.GetPlugIn<IDroppedItemsDisappearedPlugIn>()?.DroppedItemsDisappeared(item.GetAsEnumerable().Select(i => i.Id));
             }
             else
             {
                 if (item.IsActive())
                 {
-                    this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectsOutOfScope(item.GetAsEnumerable());
+                    this.adaptee.ViewPlugIns.GetPlugIn<IObjectsOutOfScopePlugIn>()?.ObjectsOutOfScope(item.GetAsEnumerable());
                 }
             }
         }
@@ -178,13 +178,13 @@ namespace MUnique.OpenMU.GameLogic
                 var nonItems = oldItems.OfType<ILocateable>().Where(item => !(item is DroppedItem)).WhereActive();
                 if (nonItems.Any())
                 {
-                    this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectsOutOfScope(nonItems);
+                    this.adaptee.ViewPlugIns.GetPlugIn<IObjectsOutOfScopePlugIn>()?.ObjectsOutOfScope(nonItems);
                 }
 
                 var droppedItems = oldItems.OfType<DroppedItem>();
                 if (droppedItems.Any())
                 {
-                    this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.DroppedItemsDisappeared(droppedItems.Select(item => item.Id));
+                    this.adaptee.ViewPlugIns.GetPlugIn<IDroppedItemsDisappearedPlugIn>()?.DroppedItemsDisappeared(droppedItems.Select(item => item.Id));
                 }
             }
         }
@@ -212,19 +212,19 @@ namespace MUnique.OpenMU.GameLogic
             var players = newItems.OfType<Player>().WhereActive();
             if (players.Any())
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.NewPlayersInScope(players);
+                this.adaptee.ViewPlugIns.GetPlugIn<INewPlayersInScopePlugIn>()?.NewPlayersInScope(players);
             }
 
             var npcs = newItems.OfType<NonPlayerCharacter>().WhereActive();
             if (npcs.Any())
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.NewNpcsInScope(npcs);
+                this.adaptee.ViewPlugIns.GetPlugIn<INewNpcsInScopePlugIn>()?.NewNpcsInScope(npcs);
             }
 
             var droppedItems = newItems.OfType<DroppedItem>();
             if (droppedItems.Any())
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowDroppedItems(droppedItems, false);
+                this.adaptee.ViewPlugIns.GetPlugIn<IShowDroppedItemsPlugIn>()?.ShowDroppedItems(droppedItems, false);
             }
 
             newItems.ForEach(item => item.AddObserver(this.adaptee));

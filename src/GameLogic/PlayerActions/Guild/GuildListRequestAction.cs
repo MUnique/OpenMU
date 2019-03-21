@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Guild;
 
     /// <summary>
     /// Action to request the guild list.
@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             }
 
             var players = this.gameContext.GuildServer.GetGuildList(player.GuildStatus.GuildId);
-            player.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildList(players);
+            player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()?.ShowGuildList(players);
         }
     }
 }

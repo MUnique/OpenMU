@@ -12,6 +12,9 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Guild;
+    using MUnique.OpenMU.GameLogic.Views.Login;
+    using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
@@ -201,7 +204,7 @@ namespace MUnique.OpenMU.GameServer
                 var newLetterIndex = player.SelectedCharacter.Letters.Count;
                 player.PersistenceContext.Attach(letter);
                 player.SelectedCharacter.Letters.Add(letter);
-                player.ViewPlugIns.GetPlugIn<IMessengerView>()?.AddToLetterList(letter, (ushort)newLetterIndex, true);
+                player.ViewPlugIns.GetPlugIn<IAddToLetterListPlugIn>()?.AddToLetterList(letter, (ushort)newLetterIndex, true);
             }
         }
 
@@ -223,7 +226,7 @@ namespace MUnique.OpenMU.GameServer
             var player = this.gameContext.GetPlayerByCharacterName(playerName);
             if (player != null)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("You got disconnected by a game master.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You got disconnected by a game master.", MessageType.BlueNormal);
                 player.Disconnect();
                 return true;
             }
@@ -238,7 +241,7 @@ namespace MUnique.OpenMU.GameServer
             if (player != null)
             {
                 player.Account.State = AccountState.TemporarilyBanned;
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Your account has been temporarily banned by a game master.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Your account has been temporarily banned by a game master.", MessageType.BlueNormal);
                 player.Disconnect();
                 return true;
             }
@@ -252,7 +255,7 @@ namespace MUnique.OpenMU.GameServer
             for (int i = this.gameContext.PlayerList.Count - 1; i >= 0; i--)
             {
                 var player = this.gameContext.PlayerList[i];
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage(message, messageType);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType);
             }
         }
 
@@ -260,21 +263,21 @@ namespace MUnique.OpenMU.GameServer
         public void FriendRequest(string requester, string receiver)
         {
             Player player = this.gameContext.GetPlayerByCharacterName(receiver);
-            player?.ViewPlugIns.GetPlugIn<IMessengerView>()?.ShowFriendRequest(requester);
+            player?.ViewPlugIns.GetPlugIn<IShowFriendRequestPlugIn>()?.ShowFriendRequest(requester);
         }
 
         /// <inheritdoc/>
         public void FriendOnlineStateChanged(string player, string friend, int serverId)
         {
             Player observerPlayer = this.gameContext.GetPlayerByCharacterName(player);
-            observerPlayer?.ViewPlugIns.GetPlugIn<IMessengerView>()?.FriendStateUpdate(friend, serverId);
+            observerPlayer?.ViewPlugIns.GetPlugIn<IFriendStateUpdatePlugIn>()?.FriendStateUpdate(friend, serverId);
         }
 
         /// <inheritdoc/>
         public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string creatorName)
         {
             Player player = this.gameContext.GetPlayerByCharacterName(authenticationInfo.ClientName);
-            player?.ViewPlugIns.GetPlugIn<IMessengerView>()?.ChatRoomCreated(authenticationInfo, creatorName, true);
+            player?.ViewPlugIns.GetPlugIn<IChatRoomCreatedPlugIn>()?.ChatRoomCreated(authenticationInfo, creatorName, true);
         }
 
         /// <inheritdoc/>
@@ -283,6 +286,7 @@ namespace MUnique.OpenMU.GameServer
             this.gameContext.PlayerList
                 .Where(player => player.GuildStatus?.GuildId == guildId)
                 .ForEach(RemovePlayerFromGuild);
+            this.gameContext.RaiseGuildDeleted(guildId);
             //// todo: alliance things?
         }
 
@@ -347,7 +351,7 @@ namespace MUnique.OpenMU.GameServer
 
         private static void RemovePlayerFromGuild(Player player)
         {
-            player.ForEachObservingPlayer(observer => observer.ViewPlugIns.GetPlugIn<IGuildView>()?.PlayerLeftGuild(player), true);
+            player.ForEachObservingPlayer(observer => observer.ViewPlugIns.GetPlugIn<IPlayerLeftGuildPlugIn>()?.PlayerLeftGuild(player), true);
             player.GuildStatus = null;
         }
 
@@ -355,7 +359,7 @@ namespace MUnique.OpenMU.GameServer
         {
             var player = e.ConntectedPlayer;
             this.gameContext.AddPlayer(player);
-            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginWindow();
+            player.ViewPlugIns.GetPlugIn<IShowLoginWindowPlugIn>()?.ShowLoginWindow();
             player.PlayerState.TryAdvanceTo(PlayerState.LoginScreen);
             e.ConntectedPlayer.PlayerDisconnected += (s, args) => this.OnPlayerDisconnected(player);
         }

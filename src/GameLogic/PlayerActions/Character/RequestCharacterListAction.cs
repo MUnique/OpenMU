@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Character;
 
     /// <summary>
     /// Action to request the character list.
@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         {
             if (player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection))
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowCharacterList();
+                player.ViewPlugIns.GetPlugIn<IShowCharacterListPlugIn>()?.ShowCharacterList();
             }
         }
     }

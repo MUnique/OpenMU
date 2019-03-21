@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -58,7 +59,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 {
                     // Client may be out of sync (or it's an hacker attempt),
                     // so we tell him the object is out of scope - this should prevent further attempts to attack it.
-                    player.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectsOutOfScope(target.GetAsEnumerable());
+                    player.ViewPlugIns.GetPlugIn<IObjectsOutOfScopePlugIn>()?.ObjectsOutOfScope(target.GetAsEnumerable());
                 }
             }
         }

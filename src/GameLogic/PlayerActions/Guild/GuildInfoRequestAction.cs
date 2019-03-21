@@ -4,24 +4,13 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Guild;
 
     /// <summary>
     /// Action to request the information (name, symbol) of a guild.
     /// </summary>
     public class GuildInfoRequestAction
     {
-        private readonly IGameServerContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildInfoRequestAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public GuildInfoRequestAction(IGameServerContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Requests the guild information.
         /// </summary>
@@ -29,11 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="guildId">The guild identifier.</param>
         public void RequestGuildInfo(Player player, uint guildId)
         {
-            byte[] guildInfo = this.gameContext.GuildCache.GetGuildData(guildId);
-            if (guildInfo != null)
-            {
-                player.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildInfo(guildInfo);
-            }
+            player.ViewPlugIns.GetPlugIn<IShowGuildInfoPlugIn>()?.ShowGuildInfo(guildId);
         }
     }
 }

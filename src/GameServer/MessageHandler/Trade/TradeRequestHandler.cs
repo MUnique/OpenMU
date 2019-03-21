@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
             Player partner = player.GetObservingPlayerWithId(pid);
             if (partner == null)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Trade partner not found.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Trade partner not found.", MessageType.BlueNormal);
                 return;
             }
 

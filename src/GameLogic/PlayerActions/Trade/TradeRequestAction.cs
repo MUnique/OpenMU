@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
+    using MUnique.OpenMU.GameLogic.Views.Trade;
+
     /// <summary>
     /// Action to request a trade with another player.
     /// </summary>
@@ -17,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         /// <returns>The success of sending the request to the <paramref name="partner"/>.</returns>
         public bool RequestTrade(ITrader player, ITrader partner)
         {
-            if (player.TradeView == null || partner.TradeView == null)
+            if (player.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>() == null || partner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>() == null)
             {
                 return false;
             }
@@ -35,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 
             player.TradingPartner = partner;
             partner.TradingPartner = player;
-            partner.TradeView.ShowTradeRequest(player);
+            partner.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()?.ShowTradeRequest(player);
             return true;
         }
     }

@@ -7,7 +7,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemUpgraded(targetItem);
+            player.ViewPlugIns.GetPlugIn<IItemUpgradedPlugIn>()?.ItemUpgraded(targetItem);
             return true;
         }
 

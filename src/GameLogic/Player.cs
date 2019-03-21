@@ -17,6 +17,10 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Character;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
+    using MUnique.OpenMU.GameLogic.Views.Messenger;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.Persistence;
@@ -95,7 +99,7 @@ namespace MUnique.OpenMU.GameLogic
                 if (this.SelectedCharacter != null && this.SelectedCharacter.Inventory.Money != value)
                 {
                     this.SelectedCharacter.Inventory.Money = value;
-                    this.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateMoney();
+                    this.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
                 }
             }
         }
@@ -302,30 +306,27 @@ namespace MUnique.OpenMU.GameLogic
         public Bucket<ILocateable> OldBucket { get; set; }
 
         /// <inheritdoc/>
-        ITradeView ITrader.TradeView => this.ViewPlugIns.GetPlugIn<ITradeView>();
-
-        /// <inheritdoc/>
         public void AttackBy(IAttackable attacker, SkillEntry skill)
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
 
             if (hitInfo.HealthDamage == 0)
             {
-                this.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowHit(this, hitInfo);
-                (attacker as Player)?.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowHit(this, hitInfo);
+                this.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
+                (attacker as Player)?.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
                 return;
             }
 
             if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
             {
                 this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
-                this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCurrentManaAndHp();
+                this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
             }
 
             if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]))
             {
                 this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
-                this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCurrentManaAndHp();
+                this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
             }
 
             this.Hit(hitInfo, attacker);
@@ -367,7 +368,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             this.selectedCharacter.PlayerKillCount += 1;
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCharacterHeroState();
+            this.ViewPlugIns.GetPlugIn<IUpdateCharacterHeroStatePlugIn>()?.UpdateCharacterHeroState();
         }
 
         /// <summary>
@@ -382,7 +383,8 @@ namespace MUnique.OpenMU.GameLogic
                 this.Attributes[recoverAfterMonsterKill.CurrentAttribute] = (uint)Math.Min(this.Attributes[recoverAfterMonsterKill.MaximumAttribute], this.Attributes[recoverAfterMonsterKill.CurrentAttribute] + additionalValue);
             }
 
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCurrentManaAndHp();
+            this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
+            this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
         }
 
         /// <summary>
@@ -506,7 +508,7 @@ namespace MUnique.OpenMU.GameLogic
             this.SelectedCharacter.CurrentMap = gate.Map;
             this.Rotation = gate.Direction;
             this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
-            this.ViewPlugIns.GetPlugIn<IWorldView>()?.MapChange();
+            this.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
             // the map and is ready to receive the new meet player/monster etc.
@@ -567,7 +569,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.SelectedCharacter.Experience += exp;
 
                 // Tell it to the Player
-                this.ViewPlugIns.GetPlugIn<IPlayerView>()?.AddExperience((int)exp, killedObject);
+                this.ViewPlugIns.GetPlugIn<IAddExperiencePlugIn>()?.AddExperience((int)exp, killedObject);
 
                 // Check the lvl up
                 if (lvlup)
@@ -576,12 +578,12 @@ namespace MUnique.OpenMU.GameLogic
                     this.SelectedCharacter.LevelUpPoints += this.SelectedCharacter.CharacterClass.PointsPerLevelUp;
                     this.SetReclaimableAttributesToMaximum();
                     Logger.DebugFormat("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
-                    this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateLevel();
+                    this.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()?.UpdateLevel();
                 }
             }
             else
             {
-                this.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("You already reached maximum Level.", MessageType.BlueNormal);
+                this.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You already reached maximum Level.", MessageType.BlueNormal);
             }
         }
 
@@ -639,7 +641,8 @@ namespace MUnique.OpenMU.GameLogic
                     this.Attributes[r.MaximumAttribute]);
             }
 
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCurrentManaAndHp();
+            this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
+            this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
         }
 
         /// <summary>
@@ -871,8 +874,8 @@ namespace MUnique.OpenMU.GameLogic
 
             this.Attributes[Stats.CurrentHealth] -= hitInfo.HealthDamage;
             this.LastReceivedDamage = hitInfo.HealthDamage;
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowHit(this, hitInfo);
-            (attacker as Player)?.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowHit(this, hitInfo);
+            this.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
+            (attacker as Player)?.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
             this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
 
             if (this.Attributes[Stats.CurrentHealth] < 1)
@@ -904,7 +907,7 @@ namespace MUnique.OpenMU.GameLogic
             this.walker.Stop();
             this.Alive = false;
             this.respawnAfterDeathToken = default(CancellationToken);
-            this.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectGotKilled(this, killer), true);
+            this.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IObjectGotKilledPlugIn>()?.ObjectGotKilled(this, killer), true);
 
             if (killer is Player killerAfterKilled)
             {
@@ -933,9 +936,9 @@ namespace MUnique.OpenMU.GameLogic
             this.Vault = null; // vault storage is getting set when vault npc is opened.
             this.SkillList = new SkillList(this);
             this.SetReclaimableAttributesBeforeEnterGame();
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateSkillList();
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCharacterStats();
-            this.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateInventoryList();
+            this.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.UpdateSkillList();
+            this.ViewPlugIns.GetPlugIn<IUpdateCharacterStatsPlugIn>()?.UpdateCharacterStats();
+            this.ViewPlugIns.GetPlugIn<IUpdateInventoryListPlugIn>()?.UpdateInventoryList();
 
             this.Attributes.GetOrCreateAttribute(Stats.MaximumMana).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumAbility).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
@@ -944,8 +947,8 @@ namespace MUnique.OpenMU.GameLogic
 
             this.ClientReadyAfterMapChange();
 
-            this.ViewPlugIns.GetPlugIn<IWorldView>()?.UpdateRotation();
-            Task.Delay(1000).ContinueWith(_ => this.ViewPlugIns.GetPlugIn<IMessengerView>()?.InitializeMessenger(this.GameContext.Configuration.MaximumLetters)).Wait();
+            this.ViewPlugIns.GetPlugIn<IUpdateRotationPlugIn>()?.UpdateRotation();
+            Task.Delay(1000).ContinueWith(_ => this.ViewPlugIns.GetPlugIn<IInitializeMessengerPlugIn>()?.InitializeMessenger(this.GameContext.Configuration.MaximumLetters)).Wait();
         }
 
         /// <summary>
@@ -974,16 +977,16 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
             this.Attributes[Stats.CurrentShield] = Math.Min(this.Attributes[Stats.CurrentShield], this.Attributes[Stats.MaximumShield]);
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateMaximumHealth();
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCurrentHealth();
+            this.ViewPlugIns.GetPlugIn<IUpdateMaximumHealthPlugIn>()?.UpdateMaximumHealth();
+            this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
         }
 
         private void OnMaximumManaOrAbilityChanged()
         {
             this.Attributes[Stats.CurrentMana] = Math.Min(this.Attributes[Stats.CurrentMana], this.Attributes[Stats.MaximumMana]);
             this.Attributes[Stats.CurrentAbility] = Math.Min(this.Attributes[Stats.CurrentAbility], this.Attributes[Stats.MaximumAbility]);
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateMaximumMana();
-            this.ViewPlugIns.GetPlugIn<IPlayerView>()?.UpdateCurrentMana();
+            this.ViewPlugIns.GetPlugIn<IUpdateMaximumManaPlugIn>()?.UpdateMaximumMana();
+            this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
         }
 
         private sealed class TemporaryItemStorage : ItemStorage

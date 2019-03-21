@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
 
@@ -35,8 +36,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             var letterId = packet.MakeDwordBigEndian(4);
             if (packet.Length < 83)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Letter invalid.", MessageType.BlueNormal);
-                player.ViewPlugIns.GetPlugIn<IMessengerView>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Letter invalid.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
                 return;
             }
 

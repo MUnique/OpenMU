@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Character;
 
     /// <summary>
     /// Action to increase stat attributes.
@@ -27,12 +27,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 {
                     player.Attributes[attributeDef.Attribute]++;
                     player.SelectedCharacter.LevelUpPoints--;
-                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.StatIncreaseResult(statAttributeDefinition, true);
+                    player.ViewPlugIns.GetPlugIn<IStatIncreaseResultPlugIn>()?.StatIncreaseResult(statAttributeDefinition, true);
                     return;
                 }
             }
 
-            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.StatIncreaseResult(statAttributeDefinition, false);
+            player.ViewPlugIns.GetPlugIn<IStatIncreaseResultPlugIn>()?.StatIncreaseResult(statAttributeDefinition, false);
         }
     }
 }

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
@@ -53,7 +54,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 this.PerformAutomaticHits(player, extraTargetId, targetAreaCenter, skillEntry, skill);
             }
 
-            player.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowAreaSkillAnimation(player, skill, targetAreaCenter, rotation), true);
+            player.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAreaSkillAnimationPlugIn>()?.ShowAreaSkillAnimation(player, skill, targetAreaCenter, rotation), true);
         }
 
         private void PerformAutomaticHits(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)

@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System.Collections.Generic;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>

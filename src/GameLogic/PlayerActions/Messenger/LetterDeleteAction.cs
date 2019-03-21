@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
     using log4net;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 
             var letterIndex = player.SelectedCharacter.Letters.IndexOf(letter);
             player.SelectedCharacter.Letters.RemoveAt(letterIndex);
-            player.ViewPlugIns.GetPlugIn<IMessengerView>()?.LetterDeleted((ushort)letterIndex);
+            player.ViewPlugIns.GetPlugIn<ILetterDeletedPlugIn>()?.LetterDeleted((ushort)letterIndex);
         }
     }
 }

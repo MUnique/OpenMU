@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (lastGuildRequester.GuildStatus != null)
             {
-                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildView>()?.GuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
+                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
                 return;
             }
 
@@ -55,10 +55,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 var guildStatus = this.gameContext.GuildServer.CreateGuildMember(player.GuildStatus.GuildId, player.LastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, this.gameContext.Id);
                 lastGuildRequester.GuildStatus = guildStatus;
 
-                lastGuildRequester.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IGuildView>()?.AssignPlayerToGuild(lastGuildRequester, false), true);
+                lastGuildRequester.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayerToGuildPlugIn>()?.AssignPlayerToGuild(lastGuildRequester, false), true);
             }
 
-            lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildView>()?.GuildJoinResponse(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused);
+            lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused);
             player.LastGuildRequester = null;
         }
     }

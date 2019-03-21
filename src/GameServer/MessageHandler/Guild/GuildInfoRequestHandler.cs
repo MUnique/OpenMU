@@ -19,10 +19,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildInfoRequestHandler"/> class.
         /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public GuildInfoRequestHandler(IGameServerContext gameContext)
+        public GuildInfoRequestHandler()
         {
-            this.requestAction = new GuildInfoRequestAction(gameContext);
+            this.requestAction = new GuildInfoRequestAction();
         }
 
         /// <inheritdoc/>

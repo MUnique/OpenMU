@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Persistence.InMemory;
     using MUnique.OpenMU.PlugIns;
     using NUnit.Framework;
@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.Tests
             Assert.AreSame(player, tradePartner.TradingPartner);
             Assert.AreEqual(PlayerState.TradeRequested, player.PlayerState.CurrentState);
             Assert.AreEqual(PlayerState.TradeRequested, tradePartner.PlayerState.CurrentState);
-            Mock.Get(tradePartner.TradeView).Verify(view => view.ShowTradeRequest(player), Times.Once);
+            Mock.Get(tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()).Verify(view => view.ShowTradeRequest(player), Times.Once);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.Tests
             responseHandler.HandleTradeAccept(responder, true);
             Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
             Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
-            Mock.Get(requester.TradeView).Verify(view => view.ShowTradeRequestAnswer(true), Times.Once);
+            Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()).Verify(view => view.ShowTradeRequestAnswer(true), Times.Once);
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace MUnique.OpenMU.Tests
             Assert.AreEqual(PlayerState.EnteredWorld, trader1.PlayerState.CurrentState);
             Assert.AreEqual(PlayerState.EnteredWorld, trader2.PlayerState.CurrentState);
 
-            Mock.Get(trader1.TradeView).Verify(view => view.TradeFinished(TradeResult.Cancelled), Times.Once);
-            Mock.Get(trader2.TradeView).Verify(view => view.TradeFinished(TradeResult.Cancelled), Times.Once);
+            Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view.TradeFinished(TradeResult.Cancelled), Times.Once);
+            Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view.TradeFinished(TradeResult.Cancelled), Times.Once);
         }
 
         /// <summary>
@@ -101,8 +101,8 @@ namespace MUnique.OpenMU.Tests
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.EnteredWorld);
             Assert.AreEqual(trader2.PlayerState.CurrentState, PlayerState.EnteredWorld);
-            Mock.Get(trader1.TradeView).Verify(view => view.TradeFinished(TradeResult.Success), Times.Once);
-            Mock.Get(trader2.TradeView).Verify(view => view.TradeFinished(TradeResult.Success), Times.Once);
+            Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view.TradeFinished(TradeResult.Success), Times.Once);
+            Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view.TradeFinished(TradeResult.Success), Times.Once);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace MUnique.OpenMU.Tests
             var temporaryStorage = new Mock<IStorage>();
             temporaryStorage.Setup(t => t.Items).Returns(new List<Item>());
             trader.Setup(t => t.TemporaryStorage).Returns(temporaryStorage.Object);
-            trader.Setup(t => t.TradeView).Returns(new Mock<ITradeView>().Object);
+            trader.Setup(t => t.ViewPlugIns).Returns(new MockViewPlugInContainer());
             return trader.Object;
         }
 

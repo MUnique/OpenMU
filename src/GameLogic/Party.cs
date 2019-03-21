@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic
 
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Party;
 
     /// <summary>
     /// The party object. Contains a group of players who can chat with each other, and get informations about the health status of their party mates.
@@ -186,7 +187,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 for (byte i = 0; i < this.PartyList.Count; i++)
                 {
-                    this.PartyList[i].ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.PartyMemberDelete(i);
+                    this.PartyList[i].ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()?.PartyMemberRemoved(i);
                     this.PartyList[i].Party = null;
                 }
 
@@ -206,7 +207,7 @@ namespace MUnique.OpenMU.GameLogic
 
             this.PartyList.Remove(player);
             player.Party = null;
-            player.ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.PartyMemberDelete(index);
+            player.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()?.PartyMemberRemoved(index);
             this.SendPartyList();
         }
 
@@ -218,16 +219,17 @@ namespace MUnique.OpenMU.GameLogic
                 return;
             }
 
-            bool updateNeeded = partyMaster.ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.IsHealthUpdateNeeded() ?? false;
+            bool updateNeeded = partyMaster.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>()?.IsHealthUpdateNeeded() ?? false;
             if (updateNeeded)
             {
-                partyMaster.ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.UpdatePartyHealth();
+                partyMaster.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>()?.UpdatePartyHealth();
                 for (var i = this.PartyList.Count - 1; i >= 1; i--)
                 {
                     var member = this.PartyList[i];
-                    if (member.ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.IsHealthUpdateNeeded() ?? false)
+                    var plugIn = member.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>();
+                    if (plugIn?.IsHealthUpdateNeeded() ?? false)
                     {
-                        member.ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.UpdatePartyHealth();
+                        plugIn.UpdatePartyHealth();
                     }
                 }
             }
@@ -242,7 +244,7 @@ namespace MUnique.OpenMU.GameLogic
 
             for (byte i = 0; i < this.PartyList.Count; i++)
             {
-                this.PartyList[i].ViewPlugIns.GetPlugIn<IPartyViewPlugIn>()?.UpdatePartyList();
+                this.PartyList[i].ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()?.UpdatePartyList();
             }
         }
     }

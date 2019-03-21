@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 return;
             }
 
-            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage(message, MessageType.BlueNormal);
+            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
         }
     }
 }
