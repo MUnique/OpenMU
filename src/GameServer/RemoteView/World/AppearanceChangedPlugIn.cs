@@ -38,17 +38,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 appearanceSerializer.WriteAppearanceData(packet.Slice(5), changedPlayer.AppearanceData, true);
                 writer.Commit();
             }
-
-            // PMSG_USEREQUIPMENTCHANGED, 0x25
-            /*
-             * struct PMSG_USEREQUIPMENTCHANGED
-                {
-                    PBMSG_HEAD h;
-                    BYTE NumberH;   // 3
-                    BYTE NumberL;   // 4
-                    BYTE ItemInfo[MAX_ITEM_INFO];   // 5
-                };
-             */
         }
     }
 }
