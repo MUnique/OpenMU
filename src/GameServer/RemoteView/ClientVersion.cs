@@ -141,8 +141,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             return $"{this.Season}.{this.Episode} {this.Language}";
         }
 
-        private static int Compare(ClientVersion left, ClientVersion right) => left.CompareTo(right);
-
         /// <inheritdoc/>
         public bool Equals(ClientVersion other)
         {
@@ -166,5 +164,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return hashCode;
             }
         }
+
+        private static int Compare(ClientVersion left, ClientVersion right) => left.CompareTo(right);
     }
 }
