@@ -38,12 +38,11 @@ export class MapApp {
         this.renderer.setSize(window.innerHeight, window.innerHeight);
         this.container.appendChild(this.renderer.domElement);
         this.onWindowResize();
-        window.addEventListener('resize', this.onWindowResize, false);
+        window.addEventListener('resize', () => this.onWindowResize(), true);
 
         this.picker = new WorldObjectPicker(mapContainer, this.world, this.camera, onPickObjectHandler);
 
         renderPlayerList(playerListContainer, this.world);
-
 
         this.animate(); //starts the rendering loop
     }
