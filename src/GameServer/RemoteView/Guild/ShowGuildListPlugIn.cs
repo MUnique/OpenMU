@@ -48,14 +48,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
                 packet.Slice(13).WriteString(rivalGuildName, Encoding.UTF8);
                 //// next 2 bytes are padding (22+23)
                 int i = 0;
-                foreach (var player in players)
+                foreach (var guildPlayer in players)
                 {
                     var playerBlock = packet.Slice(24 + (i * playerEntryLength), playerEntryLength);
-                    playerBlock.WriteString(player.PlayerName, Encoding.UTF8);
+                    playerBlock.WriteString(guildPlayer.PlayerName, Encoding.UTF8);
 
-                    playerBlock[10] = player.ServerId;
-                    playerBlock[11] = (byte)(player.ServerId == 0xFF ? 0x7F : 0x80 + player.ServerId);
-                    playerBlock[12] = player.PlayerPosition.GetViewValue();
+                    playerBlock[10] = guildPlayer.ServerId;
+                    playerBlock[11] = (byte)(guildPlayer.ServerId == 0xFF ? 0x7F : 0x80 + guildPlayer.ServerId);
+                    playerBlock[12] = guildPlayer.PlayerPosition.GetViewValue();
 
                     i++;
                 }
