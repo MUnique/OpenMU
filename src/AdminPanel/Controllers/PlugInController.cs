@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
                             ExternalAssemblyName = plugInConfiguration.ExternalAssemblyName,
                             IsActive = plugInConfiguration.IsActive,
                             TypeId = plugInConfiguration.TypeId,
-                            TypeName = plugInType?.FullName,
+                            TypeName = plugInType.FullName,
                             PlugInName = plugInAttribute?.Name,
                             PlugInDescription = plugInAttribute?.Description,
                         };
