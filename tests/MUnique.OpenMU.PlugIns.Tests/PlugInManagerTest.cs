@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.PlugIns.Tests
 {
     using System;
     using System.Collections.Generic;
-    using log4net.Plugin;
     using MUnique.OpenMU.Tests;
     using NUnit.Framework;
 
