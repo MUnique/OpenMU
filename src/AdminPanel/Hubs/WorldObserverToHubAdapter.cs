@@ -12,13 +12,14 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// An observer which can observe a whole map.
     /// </summary>
-    public sealed class WorldObserverToHubAdapter : IWorldObserver, IWorldView, ILocateable, IBucketMapObserver, IDisposable
+    public sealed class WorldObserverToHubAdapter : IWorldObserver, IObjectGotKilledPlugIn, IObjectMovedPlugIn, IShowDroppedItemsPlugIn, IDroppedItemsDisappearedPlugIn, IShowAnimationPlugIn, IObjectsOutOfScopePlugIn, INewPlayersInScopePlugIn, INewNpcsInScopePlugIn, IShowSkillAnimationPlugIn, IShowAreaSkillAnimationPlugIn, ILocateable, IBucketMapObserver, IDisposable
     {
         private readonly IClientProxy clientProxy;
         private readonly ObserverToWorldViewAdapter adapterToWorldView;
@@ -124,12 +125,6 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         }
 
         /// <inheritdoc/>
-        public void MapChange()
-        {
-            throw new NotImplementedException("WorldObserver can't change the map.");
-        }
-
-        /// <inheritdoc/>
         public void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
         {
             this.clientProxy.SendAsync("ObjectsOutOfScope", objects.Select(o => o.Id));
@@ -154,12 +149,6 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
         {
             this.clientProxy.SendAsync("NewNPCsInScope", newObjects.Select(o => new { id = o.Id, name = o.Definition.Designation, x = o.Position.X, y = o.Position.Y, rotation = o.Rotation, serverId = this.ServerId, mapId = this.MapId, isMonster = o is Monster }));
-        }
-
-        /// <inheritdoc/>
-        public void UpdateRotation()
-        {
-            throw new NotImplementedException("WorldObserver does not have an own rotation.");
         }
 
         /// <inheritdoc/>
@@ -214,7 +203,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
             }
 
             public T GetPlugIn<T>()
-                where T : IViewPlugIn
+                where T : class, IViewPlugIn
             {
                 if (this.adapter is T t)
                 {

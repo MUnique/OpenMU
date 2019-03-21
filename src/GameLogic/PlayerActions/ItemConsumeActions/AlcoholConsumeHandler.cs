@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         {
             if (base.ConsumeItem(player, item, targetItem))
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.DrinkAlcohol();
+                player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()?.DrinkAlcohol();
                 return true;
             }
 

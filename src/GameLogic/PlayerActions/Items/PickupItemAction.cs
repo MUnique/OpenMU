@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
 
     /// <summary>
     /// Action to pick up an item from the floor.
@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var droppedItem = player.CurrentMap.GetDrop(dropId);
             if (droppedItem == null)
             {
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemPickUpFailed(ItemPickFailReason.General);
+                player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.General);
                 return;
             }
 
@@ -30,17 +30,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             {
                 if (stackTarget != null)
                 {
-                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemPickUpFailed(ItemPickFailReason.ItemStacked);
-                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(stackTarget, false);
+                    player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.ItemStacked);
+                    player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(stackTarget, false);
                 }
                 else
                 {
-                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemAppear(droppedItem.Item);
+                    player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(droppedItem.Item);
                 }
             }
             else
             {
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemPickUpFailed(ItemPickFailReason.General);
+                player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.General);
             }
         }
 

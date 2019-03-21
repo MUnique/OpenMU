@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
     using NUnit.Framework;
@@ -21,15 +22,15 @@ namespace MUnique.OpenMU.Tests
     public class ObserverToWorldAdapterTest
     {
         /// <summary>
-        /// Tests if a <see cref="ILocateable"/> is only reported once to the <see cref="IWorldView"/> when it's already known to it.
+        /// Tests if a <see cref="ILocateable"/> is only reported once to the <see cref="INewNpcsInScopePlugIn"/> when it's already known to it.
         /// </summary>
         [Test]
         public void LocateableAddedAlreadyExists()
         {
             var worldObserver = new Mock<IWorldObserver>();
-            var view = new Mock<IWorldView>();
+            var view = new Mock<INewNpcsInScopePlugIn>();
             var viewPlugIns = new Mock<ICustomPlugInContainer<IViewPlugIn>>();
-            viewPlugIns.Setup(v => v.GetPlugIn<IWorldView>()).Returns(view.Object);
+            viewPlugIns.Setup(v => v.GetPlugIn<INewNpcsInScopePlugIn>()).Returns(view.Object);
             worldObserver.Setup(o => o.ViewPlugIns).Returns(viewPlugIns.Object);
             var adapter = new ObserverToWorldViewAdapter(worldObserver.Object, 12);
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
@@ -47,15 +48,19 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if a <see cref="ILocateable"/> is not reported as out of scope to the <see cref="IWorldView"/> when its new bucket is still observed.
+        /// Tests if a <see cref="ILocateable"/> is not reported as out of scope to the view plugins when its new bucket is still observed.
         /// </summary>
         [Test]
         public void LocateableNotOutOfScopeWhenMovedToObservedBucket()
         {
             var worldObserver = new Mock<IWorldObserver>();
-            var view = new Mock<IWorldView>();
+            var view1 = new Mock<INewNpcsInScopePlugIn>();
+            var view2 = new Mock<IObjectsOutOfScopePlugIn>();
+            var view3 = new Mock<IObjectMovedPlugIn>();
             var viewPlugIns = new Mock<ICustomPlugInContainer<IViewPlugIn>>();
-            viewPlugIns.Setup(v => v.GetPlugIn<IWorldView>()).Returns(view.Object);
+            viewPlugIns.Setup(v => v.GetPlugIn<INewNpcsInScopePlugIn>()).Returns(view1.Object);
+            viewPlugIns.Setup(v => v.GetPlugIn<IObjectsOutOfScopePlugIn>()).Returns(view2.Object);
+            viewPlugIns.Setup(v => v.GetPlugIn<IObjectMovedPlugIn>()).Returns(view3.Object);
             worldObserver.Setup(o => o.ViewPlugIns).Returns(viewPlugIns.Object);
             var adapter = new ObserverToWorldViewAdapter(worldObserver.Object, 12);
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
@@ -77,10 +82,10 @@ namespace MUnique.OpenMU.Tests
 
             map.Move(nonPlayer1, nonPlayer2.Position, nonPlayer1, MoveType.Instant);
 
-            view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1))), Times.Once);
-            view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2))), Times.Once);
-            view.Verify(v => v.ObjectsOutOfScope(It.IsAny<IEnumerable<IIdentifiable>>()), Times.Never);
-            view.Verify(v => v.ObjectMoved(It.Is<ILocateable>(arg => arg == nonPlayer1), MoveType.Instant), Times.Once);
+            view1.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1))), Times.Once);
+            view1.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2))), Times.Once);
+            view2.Verify(v => v.ObjectsOutOfScope(It.IsAny<IEnumerable<IIdentifiable>>()), Times.Never);
+            view3.Verify(v => v.ObjectMoved(It.Is<ILocateable>(arg => arg == nonPlayer1), MoveType.Instant), Times.Once);
         }
     }
 }

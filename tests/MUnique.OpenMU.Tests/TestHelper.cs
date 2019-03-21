@@ -127,23 +127,19 @@ namespace MUnique.OpenMU.Tests
             player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection);
             player.SelectedCharacter = character;
 
-            Mock.Get(player.ViewPlugIns).Setup(p => p.GetPlugIn<IPlayerView>()).Returns(new Mock<IPlayerView>().Object);
-            Mock.Get(player.ViewPlugIns).Setup(p => p.GetPlugIn<ITradeView>()).Returns(new Mock<ITradeView>().Object);
-            Mock.Get(player.ViewPlugIns).Setup(p => p.GetPlugIn<IGuildView>()).Returns(new Mock<IGuildView>().Object);
-            Mock.Get(player.ViewPlugIns).Setup(p => p.GetPlugIn<IInventoryView>()).Returns(new Mock<IInventoryView>().Object);
-
             return player;
         }
 
         private class TestPlayer : Player
         {
-            public TestPlayer(IGameContext gameContext) : base(gameContext)
+            public TestPlayer(IGameContext gameContext)
+                : base(gameContext)
             {
             }
 
             protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
             {
-                return new Mock<ICustomPlugInContainer<IViewPlugIn>>().Object;
+                return new MockViewPlugInContainer();
             }
         }
     }

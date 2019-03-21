@@ -9,6 +9,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
+    using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Interfaces;
     using static OpenMU.GameLogic.InventoryConstants;
 
@@ -34,7 +36,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             if (item == null)
             {
                 // Item not found
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemMoveFailed(null);
+                player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(null);
                 return;
             }
 
@@ -64,22 +66,22 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     this.FullStack(player, item, toItemStorage.GetItem(toSlot));
                     break;
                 default:
-                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemMoveFailed(item);
+                    player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(item);
                     break;
             }
 
             if (movement != Movement.None)
             {
-                player.GameContext.PlugInManager.GetPlugInPoint<IItemMovedPlugIn>()?.ItemMoved(player, item);
+                player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemMovedPlugIn>()?.ItemMoved(player, item);
             }
         }
 
         private void FullStack(Player player, Item sourceItem, Item targetItem)
         {
             targetItem.Durability += sourceItem.Durability;
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemMoveFailed(sourceItem);
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemConsumed(sourceItem.ItemSlot, true);
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(targetItem, false);
+            player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(sourceItem);
+            player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemConsumedPlugIn>()?.ItemConsumed(sourceItem.ItemSlot, true);
+            player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(targetItem, false);
         }
 
         private void PartiallyStack(Player player, Item sourceItem, Item targetItem)
@@ -87,9 +89,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var partialAmount = (byte)Math.Min(targetItem.Definition.Durability - targetItem.Durability, sourceItem.Durability);
             targetItem.Durability += partialAmount;
             sourceItem.Durability -= partialAmount;
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemMoveFailed(sourceItem);
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(sourceItem, false);
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(targetItem, false);
+            player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(sourceItem);
+            player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(sourceItem, false);
+            player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(targetItem, false);
         }
 
         private void MoveNormal(Player player, byte fromSlot, byte toSlot, Storages toStorage, IStorage fromItemStorage, Item item, IStorage toItemStorage)
@@ -99,11 +101,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             {
                 fromItemStorage.AddItem(item);
 
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemMoveFailed(item);
+                player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(item);
                 return;
             }
 
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemMoved(item, toSlot, toStorage);
+            player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemMovedPlugIn>()?.ItemMoved(item, toSlot, toStorage);
             var isTradeOngoing = player.PlayerState.CurrentState == PlayerState.TradeOpened
                                  || player.PlayerState.CurrentState == PlayerState.TradeButtonPressed;
             var isItemMovedToOrFromTrade = toItemStorage == player.TemporaryStorage || fromItemStorage == player.TemporaryStorage;
@@ -112,12 +114,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 // When Trading, send update to Trading-Partner
                 if (fromItemStorage == player.TemporaryStorage)
                 {
-                    tradingPartner.ViewPlugIns?.GetPlugIn<ITradeView>()?.TradeItemDisappear(fromSlot, item);
+                    tradingPartner.ViewPlugIns.GetPlugIn<ITradeItemDisappearPlugIn>()?.TradeItemDisappear(fromSlot, item);
                 }
 
                 if (toItemStorage == player.TemporaryStorage)
                 {
-                    tradingPartner.ViewPlugIns?.GetPlugIn<ITradeView>()?.TradeItemAppear(toSlot, item);
+                    tradingPartner.ViewPlugIns.GetPlugIn<ITradeItemAppearPlugIn>()?.TradeItemAppear(toSlot, item);
                 }
             }
         }
@@ -198,7 +200,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     return Movement.Normal;
                 }
 
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("You can't wear this Item.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You can't wear this Item.", MessageType.BlueNormal);
                 return Movement.None;
             }
 

@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
+    using MUnique.OpenMU.GameLogic.Views.Trade;
+
     /// <summary>
     /// Action to accept the trade.
     /// </summary>
@@ -24,8 +26,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     ////Something bad happend here...
                     this.CancelTrade(tradeAccepter);
                     this.CancelTrade(tradePartner);
-                    tradePartner.TradeView.ShowTradeRequestAnswer(false);
-                    tradeAccepter.TradeView.ShowTradeRequestAnswer(false);
+                    tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(false);
+                    tradeAccepter.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(false);
                 }
                 else
                 {
@@ -38,11 +40,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 if (tradePartner != null)
                 {
                     this.CancelTrade(tradePartner);
-                    tradePartner.TradeView.ShowTradeRequestAnswer(false);
+                    tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(false);
                 }
 
                 this.CancelTrade(tradeAccepter);
-                tradeAccepter.TradeView.ShowTradeRequestAnswer(false);
+                tradeAccepter.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(false);
             }
         }
 
@@ -54,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         {
             trader.BackupInventory = new BackupItemStorage(trader.Inventory.ItemStorage);
             trader.TradingMoney = 0;
-            trader.TradeView.ShowTradeRequestAnswer(true);
+            trader.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(true);
         }
     }
 }

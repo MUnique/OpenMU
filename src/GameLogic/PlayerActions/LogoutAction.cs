@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Login;
 
     /// <summary>
     /// Action to log the player out of the game.
@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
                 }
 
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.Logout(logoutType);
+                player.ViewPlugIns.GetPlugIn<ILogoutPlugIn>()?.Logout(logoutType);
             }
         }
     }

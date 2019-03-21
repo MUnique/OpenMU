@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
 
     /// <summary>
     /// Action to perform a skill which is explicitly aimed to a target.
@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 // target position might be out of sync so we send the current coordinates to the client again.
                 if (!(target is ISupportWalk walker && walker.IsWalking))
                 {
-                    player.ViewPlugIns.GetPlugIn<IWorldView>()?.ObjectMoved(target, MoveType.Instant);
+                    player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()?.ObjectMoved(target, MoveType.Instant);
                 }
 
                 return;
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            player.ForEachWorldObserver(obs => obs.ViewPlugIns.GetPlugIn<IWorldView>()?.ShowSkillAnimation(player, target, skill), true);
+            player.ForEachWorldObserver(obs => obs.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(player, target, skill), true);
             if (skill.MovesToTarget)
             {
                 player.Move(target.Position);

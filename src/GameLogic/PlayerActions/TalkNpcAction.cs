@@ -8,6 +8,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Guild;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
+    using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -36,8 +39,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             player.OpenedNpc = npc;
             if (npcStats.MerchantStore != null && npcStats.MerchantStore.Items.Count > 0)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.OpenNpcWindow(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant);
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMerchantStoreItemList(npcStats.MerchantStore.Items);
+                player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant);
+                player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(npcStats.MerchantStore.Items);
             }
             else
             {
@@ -55,7 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>()?.PlayerTalksToNpc(player, player.OpenedNpc, eventArgs);
                     if (!eventArgs.HasBeenHandled)
                     {
-                        player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
+                        player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
                         player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
                     }
                     else if (!eventArgs.LeavesDialogOpen)
@@ -71,12 +74,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     break;
                 case NpcWindow.VaultStorage:
                     player.Vault = new Storage(0, 0, InventoryConstants.WarehouseSize, player.Account.Vault);
-                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowVault();
+                    player.ViewPlugIns.GetPlugIn<IShowVaultPlugIn>()?.ShowVault();
                     break;
                 case NpcWindow.GuildMaster:
                     if (this.IsPlayedAllowedToCreateGuild(player))
                     {
-                        player.ViewPlugIns.GetPlugIn<IGuildView>()?.ShowGuildMasterDialog();
+                        player.ViewPlugIns.GetPlugIn<IShowGuildMasterDialogPlugIn>()?.ShowGuildMasterDialog();
                     }
                     else
                     {
@@ -86,7 +89,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
                     break;
                 default:
-                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.OpenNpcWindow(npcStats.NpcWindow);
+                    player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(npcStats.NpcWindow);
                     break;
             }
         }
@@ -95,13 +98,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             if (player.Level < 100)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessageOfObject("Your level should be at least level 100", player.OpenedNpc);
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject("Your level should be at least level 100", player.OpenedNpc);
                 return false;
             }
 
             if (player.GuildStatus != null)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessageOfObject("You already belong to a guild", player.OpenedNpc);
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject("You already belong to a guild", player.OpenedNpc);
                 return false;
             }
 

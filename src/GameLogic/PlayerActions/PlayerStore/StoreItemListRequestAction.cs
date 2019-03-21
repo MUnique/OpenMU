@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -21,11 +22,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         {
             if (!requestedPlayer.ShopStorage.StoreOpen)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Player's Store not open.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player's Store not open.", MessageType.BlueNormal);
                 return;
             }
 
-            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowShopItemList(requestedPlayer);
+            player.ViewPlugIns.GetPlugIn<IShowShopItemListPlugIn>()?.ShowShopItemList(requestedPlayer);
         }
     }
 }

@@ -4,8 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
-    using MUnique.OpenMU.GameLogic.Views;
-
     /// <summary>
     /// The interface for a party member.
     /// </summary>

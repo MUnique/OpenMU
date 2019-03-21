@@ -317,7 +317,7 @@ namespace MUnique.OpenMU.Tests
             var success = consumeHandler.ConsumeItem(player, null, null);
 
             Assert.That(success, Is.False);
-            Mock.Get(player.ViewPlugIns.GetPlugIn<IPlayerView>()).Verify(view => view.DrinkAlcohol(), Times.Never);
+            Mock.Get(player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()).Verify(view => view.DrinkAlcohol(), Times.Never);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace MUnique.OpenMU.Tests
 
             Assert.That(success, Is.True);
             Assert.That(player.Inventory.Items.Any(), Is.False);
-            Mock.Get(player.ViewPlugIns.GetPlugIn<IPlayerView>()).Verify(view => view.DrinkAlcohol(), Times.Once);
+            Mock.Get(player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()).Verify(view => view.DrinkAlcohol(), Times.Once);
         }
 
         /// <summary>

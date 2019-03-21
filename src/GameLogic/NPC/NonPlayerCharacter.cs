@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     using System.Threading;
 
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>

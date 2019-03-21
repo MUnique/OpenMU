@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Interface of a trader.
@@ -71,6 +72,6 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the trade view.
         /// </summary>
-        ITradeView TradeView { get; }
+        ICustomPlugInContainer<IViewPlugIn> ViewPlugIns { get; }
     }
 }

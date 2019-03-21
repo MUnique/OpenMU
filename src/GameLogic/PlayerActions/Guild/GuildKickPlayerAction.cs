@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -35,10 +36,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         {
             if (player.Account.SecurityCode != null && player.Account.SecurityCode != securityCode)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
                 Log.DebugFormat("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, player.Account.SecurityCode, player.SelectedCharacter.Name);
 
-                player.ViewPlugIns.GetPlugIn<IGuildView>()?.GuildKickResult(GuildKickSuccess.Failed);
+                player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.Failed);
                 return;
             }
 
@@ -46,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             if (!isKickingHimself && player.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
                 Log.WarnFormat("Suspicious kick request for player with name: {0} (player is not a guild master) to kick {1}, could be hack attempt.", player.Name, nickname);
-                player.ViewPlugIns.GetPlugIn<IGuildView>()?.GuildKickResult(GuildKickSuccess.Failed);
+                player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.Failed);
                 return;
             }
 
@@ -54,9 +55,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             {
                 var guildId = player.GuildStatus.GuildId;
                 this.gameContext.GuildServer.KickMember(guildId, nickname);
-                this.gameContext.GuildCache.Invalidate(guildId);
+
                 player.GuildStatus = null;
-                player.ViewPlugIns.GetPlugIn<IGuildView>()?.GuildKickResult(GuildKickSuccess.GuildDisband);
+                player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.GuildDisband);
                 return;
             }
 

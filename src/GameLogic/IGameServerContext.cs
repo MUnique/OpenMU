@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using System;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
 
@@ -12,6 +13,11 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public interface IGameServerContext : IGameContext
     {
+        /// <summary>
+        /// Occurs when a guild has been deleted.
+        /// </summary>
+        event EventHandler<GuildDeletedEventArgs> GuildDeleted;
+
         /// <summary>
         /// Gets the identifier of the server.
         /// </summary>
@@ -31,11 +37,6 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the friend server.
         /// </summary>
         IFriendServer FriendServer { get; }
-
-        /// <summary>
-        /// Gets the guild cache.
-        /// </summary>
-        GuildCache GuildCache { get; }
 
         /// <summary>
         /// Gets the server configuration.

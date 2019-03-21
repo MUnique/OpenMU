@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Login;
 
     /// <summary>
     /// Action to log in a player to the game.
@@ -48,11 +48,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             {
                 if (account.State == AccountState.Banned)
                 {
-                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.AccountBlocked);
+                    player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.AccountBlocked);
                 }
                 else if (account.State == AccountState.TemporarilyBanned)
                 {
-                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.TemporaryBlocked);
+                    player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.TemporaryBlocked);
                 }
                 else
                 {
@@ -62,12 +62,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                         {
                             player.Account = account;
                             Log.DebugFormat("Login successful, username: [{0}]", username);
-                            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.OK);
+                            player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.OK);
                         }
                         else
                         {
                             context.Allowed = false;
-                            player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.AccountAlreadyConnected);
+                            player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.AccountAlreadyConnected);
                         }
                     }
                 }
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             else
             {
                 Log.InfoFormat($"Account not found or invalid password, username: [{username}]");
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowLoginResult(LoginResult.InvalidPassword);
+                player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.InvalidPassword);
             }
         }
     }

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -34,22 +35,22 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             if (player.OpenedNpc == null)
             {
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return;
             }
 
             var npcDefinition = player.OpenedNpc.Definition;
             if (npcDefinition.MerchantStore == null || npcDefinition.MerchantStore.Items.Count == 0)
             {
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return;
             }
 
             Item storeItem = npcDefinition.MerchantStore.Items.FirstOrDefault(i => i.ItemSlot == slot);
             if (storeItem == null)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Item Unknown", MessageType.BlueNormal);
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Item Unknown", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return;
             }
 
@@ -62,16 +63,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 }
 
                 targetItem.Durability += storeItem.Durability;
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(targetItem, false);
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(targetItem, false);
+                player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
             }
             else
             {
                 int toSlot = player.Inventory.CheckInvSpace(storeItem);
                 if (toSlot == -1)
                 {
-                    player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("Inventory Full", MessageType.BlueNormal);
-                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
+                    player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Inventory Full", MessageType.BlueNormal);
+                    player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                     return;
                 }
 
@@ -83,12 +84,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 var newItem = player.PersistenceContext.CreateNew<Item>();
                 newItem.AssignValues(storeItem);
                 newItem.ItemSlot = (byte)toSlot;
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.NpcItemBought(newItem);
+                player.ViewPlugIns.GetPlugIn<INpcItemBoughtPlugIn>()?.NpcItemBought(newItem);
                 player.Inventory.AddItem(newItem.ItemSlot, newItem);
                 player.GameContext.PlugInManager.GetPlugInPoint<IItemBoughtFromMerchantPlugIn>()?.ItemBought(player, newItem, storeItem, player.OpenedNpc);
             }
 
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.UpdateMoney();
+            player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
         }
 
         private bool CheckMoney(Player player, Item item)
@@ -96,8 +97,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var price = this.priceCalculator.CalculateBuyingPrice(item);
             if (!player.TryRemoveMoney((int)price))
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("You don't have enough Money", MessageType.BlueNormal);
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.BuyNpcItemFailed();
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You don't have enough Money", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return false;
             }
 

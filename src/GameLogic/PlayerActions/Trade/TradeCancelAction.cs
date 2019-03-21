@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
     using log4net;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Trade;
 
     /// <summary>
     /// Action to cancel the trade.
@@ -25,8 +25,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             {
                 base.CancelTrade(tradingPartner);
                 base.CancelTrade(trader);
-                trader.TradeView.TradeFinished(TradeResult.Cancelled);
-                tradingPartner.TradeView.TradeFinished(TradeResult.Cancelled);
+                trader.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(TradeResult.Cancelled);
+                tradingPartner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(TradeResult.Cancelled);
             }
             else
             {

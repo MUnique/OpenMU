@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -31,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             Item item = player.Inventory.GetItem(slot);
             if (item == null)
             {
-                player.ViewPlugIns.GetPlugIn<IPlayerView>()?.ShowMessage("No Item there to repair.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("No Item there to repair.", MessageType.BlueNormal);
                 Log.WarnFormat("RepairItem: Player {0}, Itemslot {1} not filled", player.SelectedCharacter.Name, slot);
                 return;
             }
@@ -44,7 +45,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             if (IsMoneySufficient(player, item))
             {
                 item.Durability = item.GetMaximumDurabilityOfOnePiece();
-                player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(item, false);
+                player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(item, false);
             }
         }
 
@@ -87,7 +88,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 if (IsMoneySufficient(player, item))
                 {
                     item.Durability = item.GetMaximumDurabilityOfOnePiece();
-                    player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemDurabilityChanged(item, false);
+                    player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(item, false);
                 }
             }
         }

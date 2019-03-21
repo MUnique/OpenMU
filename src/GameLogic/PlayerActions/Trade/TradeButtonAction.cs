@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
     using log4net;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -59,12 +59,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     Log.Warn($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{tradingPartner.Name}");
                 }
 
-                trader.TradeView.TradeFinished(result);
-                tradingPartner.TradeView.TradeFinished(result);
+                trader.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(result);
+                tradingPartner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(result);
             }
             else
             {
-                trader.TradingPartner.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
+                trader.TradingPartner.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()?.ChangeTradeButtonState(TradeButtonState.Checked);
             }
         }
 
@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                     this.AttachItemsToPersistenceContext(tradePartnerItems, trader.PersistenceContext);
                     trader.Money += trader.TradingPartner.TradingMoney;
                     trader.TradingPartner.Money += trader.TradingMoney;
-                    trader.TradingPartner.TradeView.ChangeTradeButtonState(TradeButtonState.Checked);
+                    trader.TradingPartner.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()?.ChangeTradeButtonState(TradeButtonState.Checked);
                     this.ResetTradeState(trader.TradingPartner);
                     this.ResetTradeState(trader);
                     this.CallPlugIn(traderItems, trader, tradingPartner);

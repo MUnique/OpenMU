@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         public void DeleteFriend(Player player, string friendName)
         {
             this.friendServer.DeleteFriend(player.SelectedCharacter.Name, friendName);
-            player.ViewPlugIns.GetPlugIn<IMessengerView>()?.FriendDeleted(friendName);
+            player.ViewPlugIns.GetPlugIn<IFriendDeletedPlugIn>()?.FriendDeleted(friendName);
         }
     }
 }

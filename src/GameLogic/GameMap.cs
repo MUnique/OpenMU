@@ -13,6 +13,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.Persistence;

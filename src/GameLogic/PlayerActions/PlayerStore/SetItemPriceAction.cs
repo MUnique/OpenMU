@@ -5,7 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
     using System.Linq;
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
+    using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 
     /// <summary>
     /// Action to set the price of an item of the player store.
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                 }
             }
 
-            player.ViewPlugIns.GetPlugIn<IInventoryView>()?.ItemPriceSetResponse(slot, result);
+            player.ViewPlugIns.GetPlugIn<IItemPriceSetResponsePlugIn>()?.ItemPriceSetResponse(slot, result);
         }
     }
 }

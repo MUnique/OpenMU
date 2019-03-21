@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Messenger;
 
     /// <summary>
     /// Action to read a letter.
@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
                 if (letterBody != null)
                 {
                     letter.ReadFlag = true;
-                    player.ViewPlugIns.GetPlugIn<IMessengerView>()?.ShowLetter(letterBody);
+                    player.ViewPlugIns.GetPlugIn<IShowLetterPlugIn>()?.ShowLetter(letterBody);
                 }
             }
             else

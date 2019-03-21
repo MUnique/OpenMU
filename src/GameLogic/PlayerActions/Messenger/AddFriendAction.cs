@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
-    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.Messenger;
 
     /// <summary>
     /// Action to add a friend to the friendlist.
@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             bool isNewFriend = this.gameContext.FriendServer.FriendRequest(player.SelectedCharacter.Name, friendName);
             if (isNewFriend)
             {
-                player.ViewPlugIns.GetPlugIn<IMessengerView>()?.FriendAdded(friendName);
+                player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(friendName);
             }
         }
     }
