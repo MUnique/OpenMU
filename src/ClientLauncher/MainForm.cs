@@ -82,12 +82,20 @@ namespace MUnique.OpenMU.ClientLauncher
             }
         }
 
-        private void SearchMainExeButton_Click(object sender, EventArgs e)
+        private void SearchMainExeButtonClick(object sender, EventArgs e)
         {
             var dialogResult = this.openFileDialog.ShowDialog(this);
             if (dialogResult == DialogResult.OK)
             {
                 this.MainExePathTextBox.Text = this.openFileDialog.FileName;
+            }
+        }
+
+        private void ConfigurationDialogButtonClick(object sender, EventArgs e)
+        {
+            using (var configDialog = new ClientSettingsDialog())
+            {
+                configDialog.ShowDialog(this);
             }
         }
     }

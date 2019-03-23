@@ -36,6 +36,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.ServerAddressTextBox = new System.Windows.Forms.TextBox();
             this.ServerPortControl = new System.Windows.Forms.NumericUpDown();
+            this.configurationDialogButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPortControl)).BeginInit();
             this.SuspendLayout();
             // 
@@ -83,7 +84,7 @@
             this.SearchMainExeButton.TabIndex = 3;
             this.SearchMainExeButton.Text = "...";
             this.SearchMainExeButton.UseVisualStyleBackColor = true;
-            this.SearchMainExeButton.Click += new System.EventHandler(this.SearchMainExeButton_Click);
+            this.SearchMainExeButton.Click += new System.EventHandler(this.SearchMainExeButtonClick);
             // 
             // label2
             // 
@@ -124,11 +125,24 @@
             0,
             0});
             // 
+            // configurationDialogButton
+            // 
+            this.configurationDialogButton.AutoSize = true;
+            this.configurationDialogButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.configurationDialogButton.Image = global::MUnique.OpenMU.ClientLauncher.Properties.Resources.Settings_16x;
+            this.configurationDialogButton.Location = new System.Drawing.Point(298, 37);
+            this.configurationDialogButton.Name = "configurationDialogButton";
+            this.configurationDialogButton.Size = new System.Drawing.Size(22, 22);
+            this.configurationDialogButton.TabIndex = 8;
+            this.configurationDialogButton.UseVisualStyleBackColor = true;
+            this.configurationDialogButton.Click += new System.EventHandler(this.ConfigurationDialogButtonClick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(528, 71);
+            this.Controls.Add(this.configurationDialogButton);
             this.Controls.Add(this.ServerPortControl);
             this.Controls.Add(this.ServerAddressTextBox);
             this.Controls.Add(this.label2);
@@ -156,6 +170,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox ServerAddressTextBox;
         private System.Windows.Forms.NumericUpDown ServerPortControl;
+        private System.Windows.Forms.Button configurationDialogButton;
     }
 }
 
