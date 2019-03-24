@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>

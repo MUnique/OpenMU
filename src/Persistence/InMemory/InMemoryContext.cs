@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.InMemory
 {
     using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.BasicModel;
 
     /// <summary>
     /// An in-memory context which get it's data from the repositories of the <see cref="InMemoryPersistenceContextProvider"/>.

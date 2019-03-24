@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
     using System.Diagnostics;
     using System.Threading.Tasks;
     using System.Timers;
-    using log4net;
     using Microsoft.AspNetCore.SignalR;
     using Timer = System.Timers.Timer;
 

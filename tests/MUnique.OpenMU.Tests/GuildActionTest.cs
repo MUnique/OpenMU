@@ -12,7 +12,6 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
     using MUnique.OpenMU.GameLogic.Views.Guild;
-    using MUnique.OpenMU.GameServer.RemoteView.Guild;
     using MUnique.OpenMU.Interfaces;
     using NUnit.Framework;
 

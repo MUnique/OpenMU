@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Network
 {
     using System.Linq;
     using System.Net;
-    using log4net;
 
     /// <summary>
     /// Resolves the own ip address by resolving the local host name to get the local <see cref="IPAddress"/> over DNS.
