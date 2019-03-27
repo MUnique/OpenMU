@@ -430,7 +430,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             int j = 0;
             foreach (int number in socketOptions)
             {
-                target[j] = (byte)number;
+                target[j++] = (byte)number;
             }
         }
 
