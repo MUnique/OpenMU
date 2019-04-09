@@ -70,6 +70,11 @@ namespace MUnique.OpenMU.GameLogic
         IPlayerContext PersistenceContext { get; }
 
         /// <summary>
+        /// Gets the game context of the trader.
+        /// </summary>
+        IGameContext GameContext { get; }
+
+        /// <summary>
         /// Gets the trade view.
         /// </summary>
         ICustomPlugInContainer<IViewPlugIn> ViewPlugIns { get; }
