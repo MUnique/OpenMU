@@ -144,6 +144,7 @@ namespace MUnique.OpenMU.Tests
             /// <inheritdoc />
             public void HandlePacket(Player player, Span<byte> packet)
             {
+                // does nothing here
             }
         }
 
@@ -162,6 +163,7 @@ namespace MUnique.OpenMU.Tests
             /// <inheritdoc />
             public void HandlePacket(Player player, Span<byte> packet)
             {
+                // does nothing here
             }
         }
 
@@ -180,6 +182,7 @@ namespace MUnique.OpenMU.Tests
             /// <inheritdoc />
             public void HandlePacket(Player player, Span<byte> packet)
             {
+                // does nothing here
             }
         }
 
@@ -198,6 +201,7 @@ namespace MUnique.OpenMU.Tests
             /// <inheritdoc />
             public void HandlePacket(Player player, Span<byte> packet)
             {
+                // does nothing here
             }
         }
 
@@ -216,6 +220,7 @@ namespace MUnique.OpenMU.Tests
             /// <inheritdoc />
             public void HandlePacket(Player player, Span<byte> packet)
             {
+                // does nothing here
             }
         }
 
@@ -233,6 +238,7 @@ namespace MUnique.OpenMU.Tests
             /// <inheritdoc />
             public void HandlePacket(Player player, Span<byte> packet)
             {
+                // does nothing here
             }
         }
     }
