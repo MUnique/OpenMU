@@ -15,17 +15,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(LoginAction));
 
-        private readonly IGameServerContext gameServerContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoginAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public LoginAction(IGameServerContext gameContext)
-        {
-            this.gameServerContext = gameContext;
-        }
-
         /// <summary>
         /// Logins the specified player.
         /// </summary>
@@ -58,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 {
                     using (var context = player.PlayerState.TryBeginAdvanceTo(PlayerState.Authenticated))
                     {
-                        if (context.Allowed && this.gameServerContext.LoginServer.TryLogin(username, this.gameServerContext.Id))
+                        if (context.Allowed && player.GameContext is IGameServerContext gameServerContext && gameServerContext.LoginServer.TryLogin(username, gameServerContext.Id))
                         {
                             player.Account = account;
                             Log.DebugFormat("Login successful, username: [{0}]", username);

@@ -34,17 +34,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(ItemStackAction));
 
-        private readonly IDictionary<byte, JewelMix> mixes;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemStackAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public ItemStackAction(IGameContext gameContext)
-        {
-            this.mixes = gameContext.Configuration.JewelMixes?.ToDictionary(mix => mix.Number);
-        }
-
         /// <summary>
         /// Stacks several items to one stacked item.
         /// </summary>
@@ -154,8 +143,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private JewelMix GetJewelMix(byte mixId, Player player)
         {
-            JewelMix mix;
-            if (!this.mixes.TryGetValue(mixId, out mix))
+            JewelMix mix = player.GameContext.Configuration.JewelMixes.FirstOrDefault(m => m.Number == mixId);
+            if (mix == null)
             {
                 Log.WarnFormat($"Unkown mix type [{mixId}], Player Name: [{player.SelectedCharacter?.Name}], Account Name: [{player.Account?.LoginName}]");
             }

@@ -18,17 +18,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(AddMasterPointAction));
 
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddMasterPointAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public AddMasterPointAction(IGameContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Adds the master point.
         /// </summary>
@@ -48,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return;
             }
 
-            Skill skill = this.gameContext.Configuration.Skills.FirstOrDefault(s => s.Number == skillId);
+            Skill skill = player.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == skillId);
             if (skill == null)
             {
                 Log.WarnFormat("Skill {0} does not exist, player {1}", skillId, player);

@@ -19,24 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     /// </summary>
     public class ItemConsumeAction
     {
-        private readonly IDictionary<ItemDefinition, IItemConsumeHandler> consumeHandlers;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemConsumeAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public ItemConsumeAction(IGameContext gameContext)
-        {
-            this.consumeHandlers = new Dictionary<ItemDefinition, IItemConsumeHandler>();
-
-            // find all items with configured item consume handler
-            var items = gameContext.Configuration.Items.Where(def => !string.IsNullOrEmpty(def.ConsumeHandlerClass));
-            foreach (var item in items)
-            {
-                var consumeHandler = this.CreateConsumeHandler(gameContext, item.ConsumeHandlerClass);
-                this.consumeHandlers.Add(item, consumeHandler);
-            }
-        }
+        private IDictionary<ItemDefinition, IItemConsumeHandler> consumeHandlers;
 
         /// <summary>
         /// Handles the consume request.
@@ -53,6 +36,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return;
             }
 
+            this.InitializeConsumeHandlersIfRequired(player.GameContext);
             if (!this.consumeHandlers.TryGetValue(item.Definition, out var consumeHandler))
             {
                 player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
@@ -91,6 +75,24 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             if (item.Durability == 0)
             {
                 player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(item);
+            }
+        }
+
+        private void InitializeConsumeHandlersIfRequired(IGameContext gameContext)
+        {
+            if (this.consumeHandlers != null)
+            {
+                return;
+            }
+
+            this.consumeHandlers = new Dictionary<ItemDefinition, IItemConsumeHandler>();
+
+            // find all items with configured item consume handler
+            var items = gameContext.Configuration.Items.Where(def => !string.IsNullOrEmpty(def.ConsumeHandlerClass));
+            foreach (var item in items)
+            {
+                var consumeHandler = this.CreateConsumeHandler(gameContext, item.ConsumeHandlerClass);
+                this.consumeHandlers.Add(item, consumeHandler);
             }
         }
 

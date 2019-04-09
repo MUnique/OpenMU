@@ -15,17 +15,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(GuildKickPlayerAction));
 
-        private readonly IGameServerContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildKickPlayerAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public GuildKickPlayerAction(IGameServerContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Kicks the player out of the guild.
         /// </summary>
@@ -34,6 +23,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="securityCode">The security code.</param>
         public void KickPlayer(Player player, string nickname, string securityCode)
         {
+            var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
+            if (guildServer == null)
+            {
+                Log.Warn("No guild server available");
+                return;
+            }
+
             if (player.Account.SecurityCode != null && player.Account.SecurityCode != securityCode)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
@@ -54,14 +50,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             if (isKickingHimself && player.GuildStatus?.Position == GuildPosition.GuildMaster)
             {
                 var guildId = player.GuildStatus.GuildId;
-                this.gameContext.GuildServer.KickMember(guildId, nickname);
+                guildServer.KickMember(guildId, nickname);
 
                 player.GuildStatus = null;
                 player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.GuildDisband);
                 return;
             }
 
-            this.gameContext.GuildServer.KickMember(player.GuildStatus.GuildId, nickname);
+            guildServer.KickMember(player.GuildStatus.GuildId, nickname);
         }
     }
 }

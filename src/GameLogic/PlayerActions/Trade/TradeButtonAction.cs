@@ -20,17 +20,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(TradeButtonAction));
 
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TradeButtonAction" /> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public TradeButtonAction(IGameContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Tries to change the trade button change to the new <paramref name="tradeButtonState"/>.
         /// </summary>
@@ -82,7 +71,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         {
             using (var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
             using (var partnerContext = tradingPartner.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
-            using (var itemContext = this.gameContext.PersistenceContextProvider.CreateNewTradeContext())
+            using (var itemContext = trader.GameContext.PersistenceContextProvider.CreateNewTradeContext())
             {
                 if (!context.Allowed || !partnerContext.Allowed)
                 {
@@ -134,7 +123,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 
         private void CallPlugIn(IEnumerable<Item> items, ITrader source, ITrader target)
         {
-            var point = this.gameContext.PlugInManager.GetPlugInPoint<IItemTradedToOtherPlayerPlugIn>();
+            var point = target.GameContext.PlugInManager.GetPlugInPoint<IItemTradedToOtherPlayerPlugIn>();
             if (point == null)
             {
                 return;
