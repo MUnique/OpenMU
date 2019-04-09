@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="versionBytes">The version bytes.</param>
         /// <param name="clientVersion">The client version.</param>
         /// <param name="isDefaultForSeasonAndEpisode">if set to <c>true</c>, the version bytes are used as default for season and episode.</param>
-        public static void Register(Span<byte> versionBytes, ClientVersion clientVersion, bool isDefaultForSeasonAndEpisode = true)
+        public static void Register(Span<byte> versionBytes, ClientVersion clientVersion, bool isDefaultForSeasonAndEpisode)
         {
             Versions.Add(CalculateVersionValue(versionBytes), clientVersion);
             if (isDefaultForSeasonAndEpisode)

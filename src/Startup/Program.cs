@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Startup
                 this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"));
             }
 
-            ClientVersionResolver.Register(new byte[] { 0x31, 0x30, 0x34, 0x30, 0x34 }, new ClientVersion(6, 3, ClientLanguage.English));
+            ClientVersionResolver.Register(new byte[] { 0x31, 0x30, 0x34, 0x30, 0x34 }, new ClientVersion(6, 3, ClientLanguage.English), true);
             ClientVersionResolver.Register(new byte[] { 0x31, 0x30, 0x33, 0x34, 0x36 }, new ClientVersion(6, 3, ClientLanguage.English), false);
 
             var ipResolver = args.Contains("-local") ? (IIpAddressResolver)new LocalIpResolver() : new PublicIpResolver();
