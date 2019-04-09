@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Linq;
     using System.Reflection;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.PlugIns;
     using Unity;
     using Unity.Lifetime;
@@ -39,7 +40,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             this.player = player;
             this.Client = clientVersion;
-
+            this.player.ClientVersionChanged += this.OnClientVersionChanged;
             this.Initialize();
         }
 
@@ -49,7 +50,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <value>
         /// The client.
         /// </value>
-        public ClientVersion Client { get; }
+        public ClientVersion Client { get; private set; }
 
         /// <inheritdoc/>
         /// <remarks>We look if the activated plugin is rated at a higher client version than the current one.</remarks>
@@ -71,9 +72,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <remarks>We just take the plugins which have a equal or lower version than our target <see cref="Client"/>.</remarks>
         protected override void CreatePlugInIfSuitable(Type plugInType)
         {
-            var clientAttribute = plugInType.GetCustomAttribute(typeof(ClientAttribute)) as ClientAttribute;
-            if (ReferenceEquals(clientAttribute, null) // if the plugin doesn't specify a version, we use it as well
-                || this.Client.CompareTo(clientAttribute.Client) >= 0)
+            if (this.Client.IsPlugInSuitable(plugInType))
             {
                 using (var container = new UnityContainer())
                 {
@@ -82,6 +81,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     this.AddPlugIn(plugIn, true);
                 }
             }
+        }
+
+        private void OnClientVersionChanged(object sender, EventArgs e)
+        {
+            this.Client = this.player.ClientVersion;
+            foreach (var activePlugIn in this.ActivePlugIns)
+            {
+                if (!this.Client.IsPlugInSuitable(activePlugIn.GetType()))
+                {
+                    this.DeactivatePlugIn(activePlugIn);
+                }
+            }
+
+            this.Initialize();
         }
     }
 }

@@ -20,22 +20,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(LetterSendAction));
 
-        private readonly IGameContext gameContext;
-
-        private readonly IFriendServer friendServer;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LetterSendAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        /// <param name="friendServer">The friend server.</param>
-        /// <exception cref="System.ArgumentNullException">appearanceSerializer</exception>
-        public LetterSendAction(IGameContext gameContext, IFriendServer friendServer)
-        {
-            this.gameContext = gameContext;
-            this.friendServer = friendServer;
-        }
-
         /// <summary>
         /// Sends the letter.
         /// </summary>
@@ -48,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="letterId">The client side letter id.</param>
         public void SendLetter(Player player, string receiver, string message, string title, byte rotation, byte animation, uint letterId)
         {
-            var sendPrice = this.gameContext.Configuration.LetterSendPrice;
+            var sendPrice = player.GameContext.Configuration.LetterSendPrice;
             if (player.Money < sendPrice)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Not enough Zen to send a letter.", MessageType.BlueNormal);
@@ -59,7 +43,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             LetterHeader letter = null;
             try
             {
-                using (var context = this.gameContext.PersistenceContextProvider.CreateNewPlayerContext(this.gameContext.Configuration))
+                using (var context = player.GameContext.PersistenceContextProvider.CreateNewPlayerContext(player.GameContext.Configuration))
                 {
                     letter = this.CreateLetter(context, player, receiver, message, title, rotation, animation);
                     if (!context.CanSaveLetter(letter))
@@ -82,7 +66,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             }
 
             // Try to forward it to the player, if he is online
-            var receiverPlayer = this.gameContext.GetPlayerByCharacterName(receiver);
+            var receiverPlayer = player.GameContext.GetPlayerByCharacterName(receiver);
             if (receiverPlayer != null)
             {
                 receiverPlayer.PersistenceContext.Attach(letter);
@@ -91,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             }
             else
             {
-                this.friendServer.ForwardLetter(letter);
+                (player.GameContext as IGameServerContext)?.FriendServer?.ForwardLetter(letter);
             }
         }
 

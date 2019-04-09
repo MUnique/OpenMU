@@ -12,7 +12,10 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
     using MUnique.OpenMU.GameLogic.Views.Guild;
+    using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Persistence.BasicModel;
+    using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
 
     /// <summary>
@@ -32,11 +35,11 @@ namespace MUnique.OpenMU.Tests
             base.Setup();
 
             this.gameServerContext = this.CreateGameServer();
-            this.guildMasterPlayer = TestHelper.GetPlayer();
+            this.guildMasterPlayer = TestHelper.GetPlayer(this.gameServerContext);
             this.guildMasterPlayer.SelectedCharacter.Id = this.GuildMaster.Id;
             this.guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
             this.guildMasterPlayer.GuildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, 0);
-            this.player = TestHelper.GetPlayer();
+            this.player = TestHelper.GetPlayer(this.gameServerContext);
             this.player.CurrentMap.Add(this.guildMasterPlayer);
             this.player.SelectedCharacter.Name = "Player";
             this.player.SelectedCharacter.Id = Guid.NewGuid();
@@ -96,7 +99,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void GuildCreate()
         {
-            var action = new GuildCreateAction(this.gameServerContext);
+            var action = new GuildCreateAction();
             action.CreateGuild(this.player, "Foobar2", new byte[0]);
             Assert.That(this.player.GuildStatus, Is.Not.Null);
             Assert.That(this.player.GuildStatus.Position, Is.EqualTo(GuildPosition.GuildMaster));
@@ -112,7 +115,7 @@ namespace MUnique.OpenMU.Tests
         public void GetGuildList()
         {
             this.RequestGuildAndRespond(true);
-            var action = new GuildListRequestAction(this.gameServerContext);
+            var action = new GuildListRequestAction();
             action.RequestGuildList(this.player);
             var guildList = this.GuildServer.GetGuildList(this.player.GuildStatus.GuildId);
             Mock.Get(this.player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()).Verify(v => v.ShowGuildList(It.Is<IEnumerable<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this.player.SelectedCharacter.Name))), Times.Once());
@@ -123,17 +126,23 @@ namespace MUnique.OpenMU.Tests
         {
             var guildRequestAction = new GuildRequestAction();
             guildRequestAction.RequestGuild(this.player, this.guildMasterPlayer.Id);
-            var guildResponseAction = new GuildRequestAnswerAction(this.gameServerContext);
+            var guildResponseAction = new GuildRequestAnswerAction();
             guildResponseAction.AnswerRequest(this.guildMasterPlayer, acceptRequest);
         }
 
         private IGameServerContext CreateGameServer()
         {
-            var gameServer = new Mock<IGameServerContext>();
-            gameServer.Setup(g => g.Configuration).Returns(new OpenMU.DataModel.Configuration.GameConfiguration());
-            gameServer.Setup(g => g.GuildServer).Returns(this.GuildServer);
-
-            return gameServer.Object;
+            var gameConfiguration = new GameConfiguration();
+            gameConfiguration.Maps.Add(new GameMapDefinition());
+            var gameServer = new GameServerContext(
+                new GameServerDefinition { GameConfiguration = gameConfiguration },
+                this.GuildServer,
+                new Mock<ILoginServer>().Object,
+                new Mock<IFriendServer>().Object,
+                new InMemoryPersistenceContextProvider(),
+                null,
+                new MapInitializer(gameConfiguration, null));
+            return gameServer;
         }
     }
 }

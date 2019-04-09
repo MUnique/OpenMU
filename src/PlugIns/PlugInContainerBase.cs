@@ -54,6 +54,25 @@ namespace MUnique.OpenMU.PlugIns
         /// </value>
         protected IList<TPlugIn> ActivePlugIns { get; } = new List<TPlugIn>();
 
+        /// <summary>
+        /// Gets the known plug ins.
+        /// </summary>
+        protected IEnumerable<TPlugIn> KnownPlugIns
+        {
+            get
+            {
+                this.LockSlim.EnterReadLock();
+                try
+                {
+                    return this.knownPlugIns.ToList();
+                }
+                finally
+                {
+                    this.LockSlim.ExitReadLock();
+                }
+            }
+        }
+
         /// <inheritdoc />
         /// <exception cref="T:System.Threading.SynchronizationLockException">The current thread has not entered the lock in write mode.</exception>
         /// <exception cref="T:System.Threading.LockRecursionException">The <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy"></see> property is <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion"></see> and the current thread has already entered the lock in any mode.   -or-   The current thread has entered read mode, so trying to enter the lock in write mode would create the possibility of a deadlock.   -or-   The recursion number would exceed the capacity of the counter. The limit is so large that applications should never encounter it.</exception>
@@ -67,6 +86,23 @@ namespace MUnique.OpenMU.PlugIns
                 {
                     this.ActivatePlugIn(plugIn);
                 }
+            }
+            finally
+            {
+                this.LockSlim.ExitWriteLock();
+            }
+        }
+
+        /// <summary>
+        /// Removes the plug in from the <see cref="KnownPlugIns"/>.
+        /// </summary>
+        /// <param name="plugIn">The plug in.</param>
+        protected void RemovePlugIn(TPlugIn plugIn)
+        {
+            this.LockSlim.EnterWriteLock();
+            try
+            {
+                this.knownPlugIns.Remove(plugIn);
             }
             finally
             {

@@ -19,17 +19,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ChatMessageAction));
 
-        private readonly IGameContext gameContext;
-
         private readonly IDictionary<string, ChatMessageType> messagePrefixes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatMessageAction"/> class.
         /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public ChatMessageAction(IGameContext gameContext)
+        public ChatMessageAction()
         {
-            this.gameContext = gameContext;
             this.messagePrefixes = new SortedDictionary<string, ChatMessageType>(new ReverseComparer())
             {
                 { "~", ChatMessageType.Party },
@@ -64,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (messageType == ChatMessageType.Whisper)
             {
-                var whisperReceiver = this.gameContext.GetPlayerByCharacterName(playerName);
+                var whisperReceiver = sender.GameContext.GetPlayerByCharacterName(playerName);
                 if (whisperReceiver != null)
                 {
                     var eventArgs = new CancelEventArgs();
@@ -100,7 +96,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 {
                     if (sender.GuildStatus != null)
                     {
-                        var guildServer = (this.gameContext as IGameServerContext)?.GuildServer;
+                        var guildServer = (sender.GameContext as IGameServerContext)?.GuildServer;
                         guildServer?.AllianceMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
                     }
 
@@ -111,7 +107,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 {
                     if (sender.GuildStatus != null)
                     {
-                        var guildServer = (this.gameContext as IGameServerContext)?.GuildServer;
+                        var guildServer = (sender.GameContext as IGameServerContext)?.GuildServer;
                         guildServer?.GuildMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
                     }
 

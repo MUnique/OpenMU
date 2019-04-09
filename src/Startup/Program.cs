@@ -17,6 +17,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.ConnectServer;
     using MUnique.OpenMU.FriendServer;
     using MUnique.OpenMU.GameServer;
+    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.GuildServer;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.LoginServer;
@@ -56,6 +57,9 @@ namespace MUnique.OpenMU.Startup
                 this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"));
             }
 
+            ClientVersionResolver.Register(new byte[] { 0x31, 0x30, 0x34, 0x30, 0x34 }, new ClientVersion(6, 3, ClientLanguage.English), true);
+            ClientVersionResolver.Register(new byte[] { 0x31, 0x30, 0x33, 0x34, 0x36 }, new ClientVersion(6, 3, ClientLanguage.English), false);
+
             var ipResolver = args.Contains("-local") ? (IIpAddressResolver)new LocalIpResolver() : new PublicIpResolver();
 
             Log.Info("Start initializing sub-components");
@@ -76,13 +80,7 @@ namespace MUnique.OpenMU.Startup
                 using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
                 {
                     var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer, signalRServerObserver);
-                    foreach (var mainPacketHandler in gameServer.Context.PacketHandlers.Take(1))
-                    {
-                        // At the moment only one main packet handler should be used.
-                        // A TCP port can only be used for one TCP listener, so we have to introduce something to pair ports with main packets handlers.
-                        gameServer.AddListener(new DefaultTcpGameServerListener(gameServerDefinition.NetworkPort, gameServer.ServerInfo, gameServer.Context, connectServer, mainPacketHandler, ipResolver));
-                    }
-
+                    gameServer.AddListener(new DefaultTcpGameServerListener(gameServerDefinition.NetworkPort, gameServer.ServerInfo, gameServer.Context, connectServer, ipResolver));
                     this.servers.Add(gameServer);
                     this.gameServers.Add(gameServer.Id, gameServer);
                     Log.InfoFormat("Game Server {0} - [{1}] initialized", gameServer.Id, gameServer.Description);

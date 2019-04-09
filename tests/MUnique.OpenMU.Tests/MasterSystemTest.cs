@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.Tests
             context.Configuration.Skills.Add(this.skillRank1);
             context.Configuration.Skills.Add(this.skillRank2);
             context.Configuration.Skills.Add(this.skillRank3);
-            this.addAction = new AddMasterPointAction(context);
+            this.addAction = new AddMasterPointAction();
         }
 
         /// <summary>

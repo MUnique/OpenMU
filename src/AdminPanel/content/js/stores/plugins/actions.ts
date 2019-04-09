@@ -1,11 +1,13 @@
 ﻿import Redux from "redux";
 import Action = Redux.Action;
 import ActionCreator = Redux.ActionCreator;
-import { PlugInConfiguration } from "./types";
+import { PlugInConfiguration, PlugInExtensionPoint } from "./types";
 
 export enum Constants {
     PLUGINS_FETCH_OK = "PLUGINS_FETCH_OK",
     PLUGINS_FETCH_ERROR = "PLUGINS_FETCH_ERROR",
+    PLUGIN_POINTS_FETCH_OK = "PLUGINS_POINTS_FETCH_OK",
+    PLUGIN_POINTS_FETCH_ERROR = "PLUGINS_POINTS_FETCH_ERROR",
     PLUGIN_SAVE_OK = "PLUGIN_SAVE_OK",
     PLUGIN_SAVE_ERROR = "PLUGIN_SAVE_ERROR",
     PLUGIN_DELETE_OK = "PLUGIN_DELETE_OK",
@@ -17,12 +19,25 @@ export enum Constants {
 export interface FetchPlugInsSuccessAction extends Action {
     type: Constants.PLUGINS_FETCH_OK,
     response?: PlugInConfiguration[],
+    filterName: string,
+    filterType: string,
     page: number;
     pageSize: number;
+    selectedExtensionPointId: any;
 }
 
 export interface FetchPlugInsErrorAction extends Action {
     type: Constants.PLUGINS_FETCH_ERROR,
+    error: string,
+}
+
+export interface FetchPlugInPointsSuccessAction extends Action {
+    type: Constants.PLUGIN_POINTS_FETCH_OK,
+    response?: PlugInExtensionPoint[],
+}
+
+export interface FetchPlugInPointsErrorAction extends Action {
+    type: Constants.PLUGIN_POINTS_FETCH_ERROR,
     error: string,
 }
 
@@ -84,9 +99,12 @@ export const deletePlugInConfigurationError: ActionCreator<CustomPlugInDeleteErr
     error
 });
 
-export const fetchedPlugInConfigurationsSuccessfully: ActionCreator<FetchPlugInsSuccessAction> = (response: PlugInConfiguration[], page: number, pageSize: number) => ({
+export const fetchedPlugInConfigurationsSuccessfully: ActionCreator<FetchPlugInsSuccessAction> = (response: PlugInConfiguration[], selectedExtensionPointId: any, filterName: string, filterType: string, page: number, pageSize: number) => ({
     type: Constants.PLUGINS_FETCH_OK,
     response,
+    selectedExtensionPointId,
+    filterName,
+    filterType,
     page,
     pageSize,
 });
@@ -96,6 +114,17 @@ export const fetchPlugInConfigurationsFailed: ActionCreator<FetchPlugInsErrorAct
     error,
 });
 
+export const fetchedPlugInPointsSuccessfully: ActionCreator<FetchPlugInPointsSuccessAction> = (response: PlugInExtensionPoint[]) => ({
+    type: Constants.PLUGIN_POINTS_FETCH_OK,
+    response,
+});
+
+export const fetchPlugInPointsFailed: ActionCreator<FetchPlugInPointsErrorAction> = (error: string) => ({
+    type: Constants.PLUGIN_POINTS_FETCH_ERROR,
+    error,
+});
+
+
 export const showCreateDialog: ActionCreator<ShowCreateDialogAction> = () => ({
     type: Constants.PLUGIN_SHOW_CREATE
 });
@@ -104,17 +133,47 @@ export const hideCreateDialog: ActionCreator<HideCreateDialogAction> = () => ({
     type: Constants.PLUGIN_HIDE_CREATE
 });
 
-export function fetchPlugInConfigurations(page: number, entriesPerPage: number) {
+export function fetchPlugInConfigurations(extensionPoint: any, filterName: string, filterType: string, page: number, entriesPerPage: number) {
     return (dispatch: Redux.Dispatch) => {
         let offset = (page - 1) * entriesPerPage;
-        return fetch("/admin/plugin/list/" + offset + "/" + entriesPerPage)
+
+        var url = "/admin/plugin/list/" + extensionPoint + "/" + offset + "/" + entriesPerPage;
+        if (filterName != null && filterName.length > 0) {
+            url += "?name=" + filterName;
+        }
+
+        if (filterType != null && filterType.length > 0) {
+            if (filterName != null && filterName.length > 0) {
+                url += "&";
+            } else {
+                url += "?";
+            }
+
+            url += "type=" + filterType;
+        }
+
+        return fetch(url)
             .then(
                 response => response.json(),
                 error => {
                     dispatch(fetchPlugInConfigurationsFailed(error));
                 })
             .then(response => {
-                dispatch(fetchedPlugInConfigurationsSuccessfully(response, page, entriesPerPage));
+                dispatch(fetchedPlugInConfigurationsSuccessfully(response, extensionPoint, filterName, filterType, page, entriesPerPage));
+            });
+    }
+}
+
+export function fetchPlugInPoints() {
+    return (dispatch: Redux.Dispatch) => {
+        return fetch("/admin/plugin/extensionpoints")
+            .then(
+                response => response.json(),
+                error => {
+                    dispatch(fetchPlugInPointsFailed(error));
+                })
+            .then(response => {
+                dispatch(fetchedPlugInPointsSuccessfully(response));
             });
     }
 }

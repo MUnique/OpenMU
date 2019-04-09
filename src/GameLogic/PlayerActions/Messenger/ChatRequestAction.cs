@@ -11,17 +11,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     /// </summary>
     public class ChatRequestAction
     {
-        private readonly IGameServerContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRequestAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public ChatRequestAction(IGameServerContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Requests the chat.
         /// </summary>
@@ -29,7 +18,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="friendName">Name of the friend, with which the player wants to chat.</param>
         public void RequestChat(Player player, string friendName)
         {
-            var authenticationInfo = this.gameContext.FriendServer.CreateChatRoom(player.SelectedCharacter.Name, friendName);
+            var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
+
+            var authenticationInfo = friendServer?.CreateChatRoom(player.SelectedCharacter.Name, friendName);
             if (authenticationInfo != null)
             {
                 player.ViewPlugIns.GetPlugIn<IChatRoomCreatedPlugIn>()?.ChatRoomCreated(authenticationInfo, friendName, true);
@@ -45,8 +36,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="requestId">The request identifier.</param>
         public void InviteFriendToChat(Player player, string friendName, ushort roomId, uint requestId)
         {
-            var result = this.gameContext.FriendServer.InviteFriendToChatRoom(player.SelectedCharacter.Name, friendName, roomId);
-            player.ViewPlugIns.GetPlugIn<IShowFriendInvitationResultPlugIn>()?.ShowFriendInvitationResult(result, requestId);
+            var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
+            if (friendServer != null)
+            {
+                var result = friendServer.InviteFriendToChatRoom(player.SelectedCharacter.Name, friendName, roomId);
+                player.ViewPlugIns.GetPlugIn<IShowFriendInvitationResultPlugIn>()?.ShowFriendInvitationResult(result, requestId);
+            }
         }
     }
 }

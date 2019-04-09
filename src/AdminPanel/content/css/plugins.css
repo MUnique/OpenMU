@@ -1,0 +1,17 @@
+﻿select.extensions {
+    text-align: initial;
+    border-color: #ddd;
+}
+
+mark.plugin {
+    font-weight: bold;
+    background: #ff0;
+    padding: 0;
+}
+
+input.search {
+    text-align: initial;
+    border-color: #ddd;
+    cursor: text;
+    width: 80%;
+}

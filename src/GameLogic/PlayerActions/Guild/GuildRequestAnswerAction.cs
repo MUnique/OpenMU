@@ -14,17 +14,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(GuildRequestAnswerAction));
 
-        private readonly IGameServerContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildRequestAnswerAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public GuildRequestAnswerAction(IGameServerContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Answers the request.
         /// </summary>
@@ -32,6 +21,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="accept">If set to <c>true</c>, the membership has been accepted. Otherwise, not.</param>
         public void AnswerRequest(Player player, bool accept)
         {
+            var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
+            if (guildServer == null)
+            {
+                return;
+            }
+
             var lastGuildRequester = player.LastGuildRequester;
             if (lastGuildRequester == null)
             {
@@ -52,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (accept)
             {
-                var guildStatus = this.gameContext.GuildServer.CreateGuildMember(player.GuildStatus.GuildId, player.LastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, this.gameContext.Id);
+                var guildStatus = guildServer.CreateGuildMember(player.GuildStatus.GuildId, player.LastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id);
                 lastGuildRequester.GuildStatus = guildStatus;
 
                 lastGuildRequester.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayerToGuildPlugIn>()?.AssignPlayerToGuild(lastGuildRequester, false), true);

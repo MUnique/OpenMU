@@ -19,6 +19,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class MoveItemAction
     {
+        private enum Movement
+        {
+            None,
+
+            Normal,
+
+            PartiallyStack,
+
+            CompleteStack,
+        }
+
         /// <summary>
         /// Moves the item.
         /// </summary>
@@ -299,17 +310,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     usedSlots[r, c] = true;
                 }
             }
-        }
-
-        private enum Movement
-        {
-            None,
-
-            Normal,
-
-            PartiallyStack,
-
-            CompleteStack,
         }
 
         private class StorageInfo

@@ -12,11 +12,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
     public class GameServerConfiguration
     {
         /// <summary>
-        /// Gets or sets the supported packet handlers, for each version.
-        /// </summary>
-        public virtual ICollection<MainPacketHandlerConfiguration> SupportedPacketHandlers { get; protected set; }
-
-        /// <summary>
         /// Gets or sets the maximum number of players which can connect.
         /// </summary>
         public short MaximumPlayers

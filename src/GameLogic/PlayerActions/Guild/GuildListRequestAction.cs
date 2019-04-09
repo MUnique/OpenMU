@@ -11,17 +11,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     /// </summary>
     public class GuildListRequestAction
     {
-        private readonly IGameServerContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildListRequestAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public GuildListRequestAction(IGameServerContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Requests the guild list of the guild the player is currently part of.
         /// </summary>
@@ -33,8 +22,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 return;
             }
 
-            var players = this.gameContext.GuildServer.GetGuildList(player.GuildStatus.GuildId);
-            player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()?.ShowGuildList(players);
+            var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
+            if (guildServer != null)
+            {
+                var players = guildServer.GetGuildList(player.GuildStatus.GuildId);
+                player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()?.ShowGuildList(players);
+            }
         }
     }
 }

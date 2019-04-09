@@ -16,17 +16,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// </summary>
     public class AreaSkillAttackAction
     {
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AreaSkillAttackAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public AreaSkillAttackAction(IGameContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
         /// <summary>
         /// Performs the skill by the player at the specified area. Additionally to the target area, a target object can be specified.
         /// </summary>
@@ -61,7 +50,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             bool isExtraTargetDefined = extraTargetId == 0xFFFF;
             var attackablesInRange = player.CurrentMap.GetAttackablesInRange(targetAreaCenter, skill.Range);
-            if (!this.gameContext.Configuration.AreaSkillHitsPlayer)
+            if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
             {
                 attackablesInRange = attackablesInRange.Where(a => !(a is Player));
                 isExtraTargetDefined = false;

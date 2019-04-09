@@ -1,0 +1,40 @@
+﻿// <copyright file="TradeAcceptHandlerPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
+{
+    using System;
+    using System.Runtime.InteropServices;
+    using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+    using MUnique.OpenMU.PlugIns;
+
+    /// <summary>
+    /// Packet Handler which is called when a trade request gets answered by the player.
+    /// </summary>
+    [PlugIn("TradeAcceptHandlerPlugIn", "Packet Handler which is called when a trade request gets answered by the player.")]
+    [Guid("79014c54-17a3-4e5e-85be-3e9c6051dbef")]
+    internal class TradeAcceptHandlerPlugIn : IPacketHandlerPlugIn
+    {
+        private readonly TradeAcceptAction acceptAction = new TradeAcceptAction();
+
+        /// <inheritdoc/>
+        public bool IsEncryptionExpected => false;
+
+        /// <inheritdoc/>
+        public byte Key => (byte)PacketType.TradeAccept;
+
+        /// <inheritdoc/>
+        /// <summary>The packet looks like: 0xC1, 0x04, 0x37, 0x01.</summary>
+        public void HandlePacket(Player player, Span<byte> packet)
+        {
+            if (packet.Length < 4)
+            {
+                return;
+            }
+
+            this.acceptAction.HandleTradeAccept(player, packet[3] == 1);
+        }
+    }
+}

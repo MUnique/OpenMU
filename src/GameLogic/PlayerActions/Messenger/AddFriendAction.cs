@@ -7,32 +7,25 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     using MUnique.OpenMU.GameLogic.Views.Messenger;
 
     /// <summary>
-    /// Action to add a friend to the friendlist.
+    /// Action to add a friend to the friend list.
     /// </summary>
     public class AddFriendAction
     {
-        private readonly IGameServerContext gameContext;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddFriendAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public AddFriendAction(IGameServerContext gameContext)
-        {
-            this.gameContext = gameContext;
-        }
-
-        /// <summary>
-        /// Adds the friend to the friendlist.
+        /// Adds the friend to the friend list.
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="friendName">Name of the friend.</param>
         public void AddFriend(Player player, string friendName)
         {
-            bool isNewFriend = this.gameContext.FriendServer.FriendRequest(player.SelectedCharacter.Name, friendName);
-            if (isNewFriend)
+            var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
+            if (friendServer != null)
             {
-                player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(friendName);
+                bool isNewFriend = friendServer.FriendRequest(player.SelectedCharacter.Name, friendName);
+                if (isNewFriend)
+                {
+                    player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(friendName);
+                }
             }
         }
     }

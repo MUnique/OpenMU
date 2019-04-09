@@ -14,19 +14,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class ItemCraftAction
     {
-        private readonly IDictionary<ItemCrafting, IItemCraftingHandler> craftingHandlerCache;
-
-        private readonly IGameContext gameContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemCraftAction"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        public ItemCraftAction(IGameContext gameContext)
-        {
-            this.gameContext = gameContext;
-            this.craftingHandlerCache = new Dictionary<ItemCrafting, IItemCraftingHandler>();
-        }
+        private readonly IDictionary<ItemCrafting, IItemCraftingHandler> craftingHandlerCache = new Dictionary<ItemCrafting, IItemCraftingHandler>();
 
         /// <summary>
         /// Mixes the items at the currently opened Monster crafter.
@@ -46,14 +34,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             IItemCraftingHandler craftingHandler;
             if (!this.craftingHandlerCache.TryGetValue(crafting, out craftingHandler))
             {
-                craftingHandler = this.CreateCraftingHandler(crafting);
+                craftingHandler = this.CreateCraftingHandler(player, crafting);
                 this.craftingHandlerCache.Add(crafting, craftingHandler);
             }
 
             craftingHandler.DoMix(player);
         }
 
-        private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)
+        private IItemCraftingHandler CreateCraftingHandler(Player player, ItemCrafting crafting)
         {
             if (crafting.SimpleCraftingSettings != null)
             {
@@ -65,7 +53,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 var type = Type.GetType(crafting.ItemCraftingHandlerClassName);
                 if (type != null)
                 {
-                    return Activator.CreateInstance(type, this.gameContext) as IItemCraftingHandler;
+                    return Activator.CreateInstance(type, player.GameContext) as IItemCraftingHandler;
                 }
 
                 throw new ArgumentException($"Item crafting handler '{crafting.ItemCraftingHandlerClassName}' not found.", nameof(crafting));

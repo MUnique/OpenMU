@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests
 {
     using System;
+    using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.GameServer.RemoteView;
     using NUnit.Framework;
 

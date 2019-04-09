@@ -1174,26 +1174,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("MagicEffectDefinition","config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MainPacketHandlerConfiguration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AppearanceSerializerClassName");
-
-                    b.Property<byte[]>("ClientSerial");
-
-                    b.Property<byte[]>("ClientVersion");
-
-                    b.Property<Guid?>("GameServerConfigurationId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameServerConfigurationId");
-
-                    b.ToTable("MainPacketHandlerConfiguration","config");
-                });
-
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1366,30 +1346,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("MonsterDefinitionId");
 
                     b.ToTable("MonsterSpawnArea","config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PacketHandlerConfiguration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid?>("MainPacketHandlerConfigurationId");
-
-                    b.Property<bool>("NeedsToBeEncrypted");
-
-                    b.Property<string>("PacketHandlerClassName");
-
-                    b.Property<Guid?>("PacketHandlerConfigurationId");
-
-                    b.Property<byte>("PacketIdentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MainPacketHandlerConfigurationId");
-
-                    b.HasIndex("PacketHandlerConfigurationId");
-
-                    b.ToTable("PacketHandlerConfiguration","config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PlugInConfiguration", b =>
@@ -2187,13 +2143,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("PowerUpDefinitionId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MainPacketHandlerConfiguration", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration")
-                        .WithMany("RawSupportedPacketHandlers")
-                        .HasForeignKey("GameServerConfigurationId");
-                });
-
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawReplacedSkill")
@@ -2277,17 +2226,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonsterDefinition")
                         .WithMany()
                         .HasForeignKey("MonsterDefinitionId");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PacketHandlerConfiguration", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MainPacketHandlerConfiguration")
-                        .WithMany("RawPacketHandlers")
-                        .HasForeignKey("MainPacketHandlerConfigurationId");
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PacketHandlerConfiguration")
-                        .WithMany("RawSubPacketHandlers")
-                        .HasForeignKey("PacketHandlerConfigurationId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PlugInConfiguration", b =>

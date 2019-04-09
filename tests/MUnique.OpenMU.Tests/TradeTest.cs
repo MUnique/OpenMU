@@ -92,7 +92,11 @@ namespace MUnique.OpenMU.Tests
             var gameContext = new Mock<IGameContext>();
             gameContext.Setup(c => c.PlugInManager).Returns(new PlugInManager());
             gameContext.Setup(c => c.PersistenceContextProvider).Returns(new InMemoryPersistenceContextProvider());
-            var tradeButtonHandler = new TradeButtonAction(gameContext.Object);
+
+            Mock.Get(trader1).Setup(m => m.GameContext).Returns(gameContext.Object);
+            Mock.Get(trader2).Setup(m => m.GameContext).Returns(gameContext.Object);
+
+            var tradeButtonHandler = new TradeButtonAction();
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Unchecked);
             Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.TradeOpened);
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
@@ -127,9 +131,7 @@ namespace MUnique.OpenMU.Tests
             itemMoveAction.MoveItem(trader1, 21, Storages.Inventory, 2, Storages.Trade);
             Assert.That(trader1.TemporaryStorage.Items.First(), Is.SameAs(item1));
 
-            var gameContext = new Mock<IGameContext>();
-            gameContext.Setup(c => c.PersistenceContextProvider).Returns(new InMemoryPersistenceContextProvider());
-            var tradeButtonHandler = new TradeButtonAction(gameContext.Object);
+            var tradeButtonHandler = new TradeButtonAction();
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.That(trader1.Inventory.ItemStorage.Items, Is.Empty);

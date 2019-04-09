@@ -14,6 +14,7 @@ import {
 export type AccountListState = {
     readonly page: number,
     readonly pageSize: number,
+    readonly hasMoreEntries: boolean,
     readonly accounts: Account[],
     readonly createDialogVisible: boolean,
 };
@@ -22,6 +23,7 @@ const initialState: AccountListState =
 {
     page: 1,
     pageSize: 20,
+    hasMoreEntries: false,
     accounts: [],
     createDialogVisible: false,
 };
@@ -33,7 +35,11 @@ export const accountStateReducer: Redux.Reducer<AccountListState> =
         switch ((action as Redux.Action).type) {
             case Constants.ACCOUNTS_FETCH_OK:
                 let fetchSuccessAction = action as FetchAccountsSuccessAction;
-                return { ...state, pageSize: fetchSuccessAction.pageSize, page: fetchSuccessAction.page, accounts: fetchSuccessAction.response };
+                if (fetchSuccessAction.response.length === 0) {
+                    return { ...state, hasMoreEntries: false };
+                }
+
+                return { ...state, pageSize: fetchSuccessAction.pageSize, page: fetchSuccessAction.page, accounts: fetchSuccessAction.response, hasMoreEntries: fetchSuccessAction.response.length === fetchSuccessAction.pageSize };
             case Constants.ACCOUNTS_FETCH_ERROR:
                 let fetchErrorAction = action as FetchAccountsErrorAction;
                 console.log('An error occurred when fetching accounts.', fetchErrorAction.error);

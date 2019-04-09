@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return false;
             }
 
-            double dist = player.GetDistanceTo(droppedItem);
+            var dist = (int)player.GetDistanceTo(droppedItem);
             if (dist > 3)
             {
                 return false;

@@ -410,29 +410,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MainPacketHandlerConfiguration",
-                schema: "config",
-                columns: table => new
-                {
-                    ClientVersion = table.Column<byte[]>(nullable: true),
-                    ClientSerial = table.Column<byte[]>(nullable: true),
-                    AppearanceSerializerClassName = table.Column<string>(nullable: true),
-                    Id = table.Column<Guid>(nullable: false),
-                    GameServerConfigurationId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MainPacketHandlerConfiguration", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MainPacketHandlerConfiguration_GameServerConfiguration_Game~",
-                        column: x => x.GameServerConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameServerConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Account",
                 schema: "data",
                 columns: table => new
@@ -648,37 +625,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "GameServerConfiguration",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PacketHandlerConfiguration",
-                schema: "config",
-                columns: table => new
-                {
-                    NeedsToBeEncrypted = table.Column<bool>(nullable: false),
-                    PacketIdentifier = table.Column<byte>(nullable: false),
-                    PacketHandlerClassName = table.Column<string>(nullable: true),
-                    Id = table.Column<Guid>(nullable: false),
-                    MainPacketHandlerConfigurationId = table.Column<Guid>(nullable: true),
-                    PacketHandlerConfigurationId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PacketHandlerConfiguration", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PacketHandlerConfiguration_MainPacketHandlerConfiguration_M~",
-                        column: x => x.MainPacketHandlerConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "MainPacketHandlerConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PacketHandlerConfiguration_PacketHandlerConfiguration_Packe~",
-                        column: x => x.PacketHandlerConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "PacketHandlerConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -2448,12 +2394,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "PowerUpDefinitionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MainPacketHandlerConfiguration_GameServerConfigurationId",
-                schema: "config",
-                table: "MainPacketHandlerConfiguration",
-                column: "GameServerConfigurationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_MasterSkillDefinition_ReplacedSkillId",
                 schema: "config",
                 table: "MasterSkillDefinition",
@@ -2530,18 +2470,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "MonsterSpawnArea",
                 column: "MonsterDefinitionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PacketHandlerConfiguration_MainPacketHandlerConfigurationId",
-                schema: "config",
-                table: "PacketHandlerConfiguration",
-                column: "MainPacketHandlerConfigurationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PacketHandlerConfiguration_PacketHandlerConfigurationId",
-                schema: "config",
-                table: "PacketHandlerConfiguration",
-                column: "PacketHandlerConfigurationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PowerUpDefinition_BoostId",
@@ -3005,10 +2933,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "PacketHandlerConfiguration",
-                schema: "config");
-
-            migrationBuilder.DropTable(
                 name: "SkillCharacterClass",
                 schema: "config");
 
@@ -3074,10 +2998,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "MonsterDefinition",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "MainPacketHandlerConfiguration",
                 schema: "config");
 
             migrationBuilder.DropTable(

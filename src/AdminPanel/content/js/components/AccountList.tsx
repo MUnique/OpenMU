@@ -13,6 +13,7 @@ interface IAccountListProps {
     accounts: Account[];
     page: number;
     pageSize: number;
+    hasMoreEntries: boolean;
     createDialogVisible: boolean;
     showCreateDialog: () => void;
     fetchPage(newPage: number, entriesPerPage: number): Promise<void>;
@@ -31,6 +32,7 @@ class AccountList extends React.Component<IAccountListProps, {}> {
             : <span></span>;
         return (
             <div>
+                <button type="button" className={this.getPreviousButtonClass()} onClick={() => this.props.fetchPage(this.props.page - 1, this.props.pageSize)}>&lt;</button> Page {this.props.page} <button type="button" className={this.getNextButtonClass()} onClick={() => this.props.fetchPage(this.props.page + 1, this.props.pageSize)}>&gt;</button>
                 <table className="table table-striped table-hover">
                     <thead>
                     <tr>
@@ -46,7 +48,8 @@ class AccountList extends React.Component<IAccountListProps, {}> {
                     <tfoot>
                     <tr>
                         <td><button type="button" className="btn btn-xs btn-success" onClick={this.props.showCreateDialog}>Create</button></td>
-                            <td colSpan={3}><button type="button" className="btn btn-xs" onClick={() => this.props.fetchPage(this.props.page - 1, this.props.pageSize)}>&lt;</button> Page {this.props.page} <button type="button" className="btn btn-xs" onClick={() => this.props.fetchPage(this.props.page + 1, this.props.pageSize)}>&gt;</button></td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                     </tr>
                     </tfoot>
@@ -55,12 +58,34 @@ class AccountList extends React.Component<IAccountListProps, {}> {
             </div>
         );
     }
+
+    getPreviousButtonClass(): string {
+        const buttonClass = "btn btn-xs ";
+        if (this.props.page <= 1) {
+            return buttonClass + 'disabled';
+        }
+
+        return buttonClass;
+    }
+
+    getNextButtonClass() : string {
+        const buttonClass = "btn btn-xs ";
+        if (!this.props.hasMoreEntries) {
+            return buttonClass + 'disabled';
+        }
+
+        return buttonClass;
+    }
 }
 
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        fetchPage: (newPage: number, entriesPerPage: number) => dispatch(fetchAccounts(newPage, entriesPerPage)),
+        fetchPage: (newPage: number, entriesPerPage: number) => {
+            if (newPage > 0) {
+                dispatch(fetchAccounts(newPage, entriesPerPage));
+            }
+        },
         showCreateDialog: () => dispatch(showCreateDialog())
     };
 }
@@ -70,6 +95,7 @@ const mapStateToProps = (state: ApplicationState) => {
         accounts: state.accountListState.accounts,
         page: state.accountListState.page,
         pageSize: state.accountListState.pageSize,
+        hasMoreEntries: state.accountListState.hasMoreEntries,
         createDialogVisible: state.accountListState.createDialogVisible,
     };
 };
