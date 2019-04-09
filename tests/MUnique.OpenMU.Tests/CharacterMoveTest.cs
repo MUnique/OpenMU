@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Tests
     using NUnit.Framework;
 
     /// <summary>
-    /// Tests for the <see cref="CharacterMoveHandler"/>.
+    /// Tests for the <see cref="CharacterWalkHandlerPlugIn"/>.
     /// </summary>
     [TestFixture]
     public class CharacterMoveTest
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.Tests
         {
             var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, 147, 120, 0x44, 0x33, 0x44 };
             var player = TestHelper.GetPlayer();
-            var moveHandler = new CharacterMoveHandler();
+            var moveHandler = new CharacterWalkHandlerPlugIn();
             moveHandler.HandlePacket(player, packet);
 
             return player;
