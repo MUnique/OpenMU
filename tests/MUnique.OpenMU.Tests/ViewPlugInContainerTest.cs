@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Persistence;
@@ -42,7 +43,7 @@ namespace MUnique.OpenMU.Tests
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season9PlugIn>();
-            var containerForSeason6 = new ViewPlugInContainer(this.CreatePlayer(), Season6E3English, manager);
+            var containerForSeason6 = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
             Assert.That(containerForSeason6.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season6PlugIn)));
         }
 
@@ -56,7 +57,7 @@ namespace MUnique.OpenMU.Tests
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
-            var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(), Season9E2English, manager);
+            var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);
             Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season6PlugIn)));
         }
 
@@ -69,7 +70,7 @@ namespace MUnique.OpenMU.Tests
             var manager = new PlugInManager();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInOfSomeOtherLanguage>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
-            var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(), Season6E3English, manager);
+            var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
             Assert.That(containerForSeason6English.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season6PlugIn)));
         }
 
@@ -81,7 +82,7 @@ namespace MUnique.OpenMU.Tests
         {
             var manager = new PlugInManager();
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
-            var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(), Season6E3English, manager);
+            var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
             Assert.That(containerForSeason6English.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(InvariantSeasonPlugIn)));
         }
 
@@ -95,7 +96,7 @@ namespace MUnique.OpenMU.Tests
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
-            var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(), Season9E2English, manager);
+            var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);
 
             manager.DeactivatePlugIn<Season6PlugIn>();
             Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season1PlugIn)));
@@ -110,17 +111,18 @@ namespace MUnique.OpenMU.Tests
             var manager = new PlugInManager();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInInvariant>();
-            var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(), Season9E2English, manager);
+            var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);
 
             Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season6PlugIn)));
         }
 
-        private RemotePlayer CreatePlayer()
+        private RemotePlayer CreatePlayer(PlugInManager plugInManager)
         {
             var gameContext = new Mock<IGameServerContext>();
             gameContext.Setup(c => c.PersistenceContextProvider).Returns(new Mock<IPersistenceContextProvider>().Object);
             gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
-            return new RemotePlayer(gameContext.Object, null, new Mock<IConnection>().Object);
+            gameContext.Setup(c => c.PlugInManager).Returns(plugInManager);
+            return new RemotePlayer(gameContext.Object, new Mock<IConnection>().Object);
         }
 
         /// <summary>
