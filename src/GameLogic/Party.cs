@@ -23,6 +23,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly byte maxPartySize;
 
+        private readonly List<Player> experienceDistributionList;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Party"/> class.
         /// </summary>
@@ -32,6 +34,7 @@ namespace MUnique.OpenMU.GameLogic
             this.maxPartySize = maxPartySize;
 
             this.PartyList = new List<IPartyMember>(maxPartySize);
+            this.experienceDistributionList = new List<Player>(this.MaxPartySize);
             var updateInterval = new TimeSpan(0, 0, 0, 0, 500);
             this.healthUpdate = new Timer(this.HealthUpdate_Elapsed, null, updateInterval, updateInterval);
         }
@@ -142,41 +145,17 @@ namespace MUnique.OpenMU.GameLogic
         /// </returns>
         public int DistributeExperienceAfterKill(IAttackable killedObject, IObservable killer)
         {
-            IList<Player> partyMembersInRange;
-            if (killedObject is IObservable observable)
+            lock (this.experienceDistributionList)
             {
-                observable.ObserverLock.EnterReadLock();
                 try
                 {
-                    partyMembersInRange = this.PartyList.OfType<Player>().Where(p => killer.Observers.Contains(p)).ToList();
+                    return this.InternalDistributeExperienceAfterKill(killedObject, killer);
                 }
                 finally
                 {
-                    observable.ObserverLock.ExitReadLock();
+                    this.experienceDistributionList.Clear();
                 }
             }
-            else
-            {
-                partyMembersInRange = this.PartyList.OfType<Player>().ToList();
-            }
-
-            if (partyMembersInRange.Count == 0)
-            {
-                return 0;
-            }
-
-            var totalLevel = partyMembersInRange.Sum(p => (int)p.Attributes[Stats.Level]);
-            var averageLevel = totalLevel / partyMembersInRange.Count;
-            var averageExperience = killedObject.Attributes[Stats.Level] * 1000 / averageLevel;
-            var totalAverageExperience = averageExperience * partyMembersInRange.Count * Math.Pow(1.2, partyMembersInRange.Count - 1);
-            var randomizedTotalExperience = Rand.NextInt((int)(totalAverageExperience * 0.8), (int)(totalAverageExperience * 1.2));
-            var randomizedTotalExperiencePerLevel = randomizedTotalExperience / (float)totalLevel;
-            foreach (var player in partyMembersInRange)
-            {
-                player.AddExperience((int)(randomizedTotalExperiencePerLevel * player.Attributes[Stats.Level]), killedObject);
-            }
-
-            return randomizedTotalExperience;
         }
 
         /// <inheritdoc/>
@@ -194,6 +173,45 @@ namespace MUnique.OpenMU.GameLogic
                 this.PartyList = null;
                 this.healthUpdate.Dispose();
             }
+        }
+
+        private int InternalDistributeExperienceAfterKill(IAttackable killedObject, IObservable killer)
+        {
+            if (killedObject is IObservable observable)
+            {
+                observable.ObserverLock.EnterReadLock();
+                try
+                {
+                    this.experienceDistributionList.AddRange(this.PartyList.OfType<Player>().Where(p => killer.Observers.Contains(p)));
+                }
+                finally
+                {
+                    observable.ObserverLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                this.experienceDistributionList.AddRange(this.PartyList.OfType<Player>());
+            }
+
+            var count = this.experienceDistributionList.Count;
+            if (count == 0)
+            {
+                return count;
+            }
+
+            var totalLevel = this.experienceDistributionList.Sum(p => (int)p.Attributes[Stats.Level]);
+            var averageLevel = totalLevel / count;
+            var averageExperience = killedObject.Attributes[Stats.Level] * 1000 / averageLevel;
+            var totalAverageExperience = averageExperience * count * Math.Pow(1.2, count - 1);
+            var randomizedTotalExperience = Rand.NextInt((int)(totalAverageExperience * 0.8), (int)(totalAverageExperience * 1.2));
+            var randomizedTotalExperiencePerLevel = randomizedTotalExperience / (float)totalLevel;
+            foreach (var player in this.experienceDistributionList)
+            {
+                player.AddExperience((int)(randomizedTotalExperiencePerLevel * player.Attributes[Stats.Level] * player.Attributes[Stats.ExperienceRate]), killedObject);
+            }
+
+            return randomizedTotalExperience;
         }
 
         private void ExitParty(IPartyMember player, byte index)
