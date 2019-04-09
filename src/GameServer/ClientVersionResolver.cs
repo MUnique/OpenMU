@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameServer
     /// <summary>
     /// A resolver for client Versions.
     /// </summary>
-    public class ClientVersionResolver
+    public static class ClientVersionResolver
     {
         private static readonly IDictionary<long, ClientVersion> Versions = new Dictionary<long, ClientVersion>();
 
