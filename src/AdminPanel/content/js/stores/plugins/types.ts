@@ -11,3 +11,9 @@
     readonly customPlugInSource: string;
     readonly externalAssemblyName: string;    
 }
+
+export interface PlugInExtensionPoint {
+    readonly id: any;
+    readonly name: string;
+    readonly plugInCount: number;
+}

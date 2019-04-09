@@ -9,7 +9,7 @@ import configureStore from "../stores/store";
 const store = configureStore(
     {
         fetchState: { isFetching: false },
-        accountListState: { accounts: [], page: 1, pageSize: 20, createDialogVisible: false },
+        accountListState: { accounts: [], page: 1, pageSize: 20, hasMoreEntries: false, createDialogVisible: false },
         logTableState: {
             entries: [],
             characterFilter: null,
@@ -24,7 +24,7 @@ const store = configureStore(
             players: {}
         },
         systemState: { snapshots: [] },
-        plugInListState: { plugins: [], page: 1, pageSize: 20, createDialogVisible: false },
+        plugInListState: { plugins: [], page: 1, pageSize: 20, hasMoreEntries: false, selectedExtensionPointId: null, extensionPoints: [], createDialogVisible: false, filterName: "", filterType: "" },
     }
 );
 

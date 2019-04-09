@@ -41,10 +41,6 @@ class LogFilter extends React.Component<LogFilterProps, {}> {
         this.props.filterByLogger(loggerName);
     }
 
-    private changeActive(newValue: boolean) {
-        this.props.setAutoRefresh(newValue);
-    }
-
     render() {
         let loggerList = this.props.loggers.map((logger, index) => <option value={logger} key={index} />);
 
