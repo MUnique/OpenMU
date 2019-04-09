@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
 {
+    using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
     /// Initialization of character classes data.
@@ -72,6 +74,20 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
         private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute)
         {
             return this.Context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(this.GameConfiguration));
+        }
+
+        private void AddCommonBaseAttributeValues(ICollection<ConstValueAttribute> baseAttributeValues, bool isMaster)
+        {
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
+            if (isMaster)
+            {
+                baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MasterExperienceRate));
+            }
         }
     }
 }
