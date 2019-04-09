@@ -10,14 +10,13 @@ namespace MUnique.OpenMU.GameServer
     using System.Threading.Tasks;
     using log4net;
     using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using Pipelines.Sockets.Unofficial;
 
     /// <summary>
-    /// A game server listener that listens on a TCP port which uses the default packet handlers (<see cref="GameServerContext.PacketHandlers"/>).
+    /// A game server listener that listens on a TCP port.
     /// To be visible in the server list, this listener also registers the game server at the connect server.
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameServer.IGameServerListener" />
@@ -32,9 +31,8 @@ namespace MUnique.OpenMU.GameServer
         private readonly GameServerContext gameContext;
 
         private readonly IConnectServer connectServer;
-        private readonly IMainPacketHandler mainPacketHandler;
         private readonly IIpAddressResolver addressResolver;
-        private TcpListener gslistener;
+        private TcpListener listener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTcpGameServerListener" /> class.
@@ -43,15 +41,13 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="gameServerInfo">The game server information.</param>
         /// <param name="gameContext">The game context.</param>
         /// <param name="connectServer">The connect server.</param>
-        /// <param name="mainPacketHandler">The main packet handler which should be used by clients which connected through this listener.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
-        public DefaultTcpGameServerListener(int port, IGameServerInfo gameServerInfo, GameServerContext gameContext, IConnectServer connectServer, IMainPacketHandler mainPacketHandler, IIpAddressResolver addressResolver)
+        public DefaultTcpGameServerListener(int port, IGameServerInfo gameServerInfo, GameServerContext gameContext, IConnectServer connectServer, IIpAddressResolver addressResolver)
         {
             this.port = port;
             this.gameServerInfo = gameServerInfo;
             this.gameContext = gameContext;
             this.connectServer = connectServer;
-            this.mainPacketHandler = mainPacketHandler;
             this.addressResolver = addressResolver;
         }
 
@@ -61,15 +57,15 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void Start()
         {
-            if (this.gslistener != null && this.gslistener.Server.IsBound)
+            if (this.listener != null && this.listener.Server.IsBound)
             {
                 Logger.Debug("listener is already running.");
                 return;
             }
 
             Logger.InfoFormat("Starting Server Listener, port {0}", this.port);
-            this.gslistener = new TcpListener(IPAddress.Any, this.port);
-            this.gslistener.Start();
+            this.listener = new TcpListener(IPAddress.Any, this.port);
+            this.listener.Start();
             this.connectServer.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), this.port));
             Task.Run(this.BeginAccept);
             Logger.Info("Server listener started.");
@@ -80,13 +76,13 @@ namespace MUnique.OpenMU.GameServer
         {
             this.connectServer.UnregisterGameServer(this.gameServerInfo);
             Logger.Info($"Stopping listener on port {this.port}.");
-            if (this.gslistener == null || !this.gslistener.Server.IsBound)
+            if (this.listener == null || !this.listener.Server.IsBound)
             {
                 Logger.Debug("listener not running, nothing to shut down.");
                 return;
             }
 
-            this.gslistener.Stop();
+            this.listener.Stop();
 
             Logger.Info($"Stopped listener on port {this.port}.");
         }
@@ -97,7 +93,7 @@ namespace MUnique.OpenMU.GameServer
             Socket newClient;
             try
             {
-                newClient = await this.gslistener.AcceptSocketAsync();
+                newClient = await this.listener.AcceptSocketAsync();
             }
             catch (ObjectDisposedException ex)
             {
@@ -113,7 +109,7 @@ namespace MUnique.OpenMU.GameServer
             this.HandleNewSocket(newClient);
 
             // Accept the next Client:
-            if (this.gslistener.Server.IsBound)
+            if (this.listener.Server.IsBound)
             {
                 await this.BeginAccept().ConfigureAwait(false);
             }
@@ -140,7 +136,7 @@ namespace MUnique.OpenMU.GameServer
                 socket.NoDelay = true;
                 var socketConnection = SocketConnection.Create(socket);
                 var connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
-                var remotePlayer = new RemotePlayer(this.gameContext, this.mainPacketHandler, connection);
+                var remotePlayer = new RemotePlayer(this.gameContext, connection);
                 this.OnPlayerConnected(remotePlayer);
                 connection.Disconnected += (sender, e) => remotePlayer.Disconnect();
 

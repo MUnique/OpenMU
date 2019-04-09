@@ -1509,18 +1509,7 @@ public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<Monste
         /// </summary>
         public Guid Id { get; set; }
 
-public ICollection<MainPacketHandlerConfiguration> RawSupportedPacketHandlers { get; } = new List<MainPacketHandlerConfiguration>();        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration> SupportedPacketHandlers
-        {
-            get
-            {
-                return base.SupportedPacketHandlers ?? (base.SupportedPacketHandlers = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration, MainPacketHandlerConfiguration>(this.RawSupportedPacketHandlers)); 
-            }
-        }
-
-                
+        
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
@@ -1837,53 +1826,6 @@ public ICollection<MainPacketHandlerConfiguration> RawSupportedPacketHandlers { 
             {
                 base.PowerUpDefinition = value;
                 this.PowerUpDefinitionId = this.RawPowerUpDefinition?.Id;
-            }
-        }
-
-                
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-    }
-
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration"/>.
-    /// </summary>
-    [Table("MainPacketHandlerConfiguration", Schema = "config")]
-    internal partial class MainPacketHandlerConfiguration : MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration, IIdentifiable
-    {        
-
-        protected void InitJoinCollections()
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-
-public ICollection<PacketHandlerConfiguration> RawPacketHandlers { get; } = new List<PacketHandlerConfiguration>();        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration> PacketHandlers
-        {
-            get
-            {
-                return base.PacketHandlers ?? (base.PacketHandlers = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration, PacketHandlerConfiguration>(this.RawPacketHandlers)); 
             }
         }
 
@@ -2316,53 +2258,6 @@ public ICollection<PacketHandlerConfiguration> RawPacketHandlers { get; } = new 
             {
                 base.GameMap = value;
                 this.GameMapId = this.RawGameMap?.Id;
-            }
-        }
-
-                
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-    }
-
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration"/>.
-    /// </summary>
-    [Table("PacketHandlerConfiguration", Schema = "config")]
-    internal partial class PacketHandlerConfiguration : MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration, IIdentifiable
-    {        
-
-        protected void InitJoinCollections()
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-
-public ICollection<PacketHandlerConfiguration> RawSubPacketHandlers { get; } = new List<PacketHandlerConfiguration>();        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration> SubPacketHandlers
-        {
-            get
-            {
-                return base.SubPacketHandlers ?? (base.SubPacketHandlers = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration, PacketHandlerConfiguration>(this.RawSubPacketHandlers)); 
             }
         }
 
@@ -4452,13 +4347,11 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.JewelMix>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.LevelDependentDamage>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition>();
-            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea>();
-            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Skill>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.WarpInfo>();
@@ -4615,9 +4508,6 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition, MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition>()
                             .Include<MagicEffectDefinition, BasicModel.MagicEffectDefinition>();
 
-            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration, MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration>()
-                            .Include<MainPacketHandlerConfiguration, BasicModel.MainPacketHandlerConfiguration>();
-
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition, MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition>()
                             .Include<MasterSkillDefinition, BasicModel.MasterSkillDefinition>();
 
@@ -4632,9 +4522,6 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea, MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea>()
                             .Include<MonsterSpawnArea, BasicModel.MonsterSpawnArea>();
-
-            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration, MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration>()
-                            .Include<PacketHandlerConfiguration, BasicModel.PacketHandlerConfiguration>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Skill, MUnique.OpenMU.DataModel.Configuration.Skill>()
                             .Include<Skill, BasicModel.Skill>();

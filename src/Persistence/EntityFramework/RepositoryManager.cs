@@ -32,8 +32,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             this.RegisterRepository(new CachedRepository<GameConfiguration>(new GameConfigurationRepository(contextProvider)));
             this.RegisterRepository(new GenericRepository<GameServerConfiguration>(contextProvider));
             this.RegisterRepository(new GameServerDefinitionRepository(contextProvider));
-            this.RegisterRepository(new GenericRepository<MainPacketHandlerConfiguration>(contextProvider));
-            this.RegisterRepository(new GenericRepository<PacketHandlerConfiguration>(contextProvider));
 
             this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(contextProvider, config => config.RawItemOptions));
             this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(

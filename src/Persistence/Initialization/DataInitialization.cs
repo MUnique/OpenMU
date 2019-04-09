@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using System.Text;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -17,12 +16,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameServer;
-    using MUnique.OpenMU.GameServer.MessageHandler;
-    using MUnique.OpenMU.GameServer.MessageHandler.Friends;
-    using MUnique.OpenMU.GameServer.MessageHandler.Guild;
-    using MUnique.OpenMU.GameServer.MessageHandler.Items;
-    using MUnique.OpenMU.GameServer.MessageHandler.Party;
-    using MUnique.OpenMU.GameServer.MessageHandler.Trade;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.Persistence.Initialization.Items;
     using MUnique.OpenMU.Persistence.Initialization.Maps;
@@ -74,6 +67,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateTestAccounts(10);
                 this.CreateTestAccount("test300", 300);
                 this.CreateTestAccount("test400", 400);
+                if (!AppDomain.CurrentDomain.GetAssemblies().Contains(typeof(GameServer).Assembly))
+                {
+                    // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
+                }
 
                 var plugInManager = new PlugInManager();
                 plugInManager.DiscoverAndRegisterPlugIns();
@@ -665,16 +662,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             init.CreateNpcs();
         }
 
-        private PacketHandlerConfiguration CreatePacketConfig<THandler>(PacketType packetType, bool needsEncryption = false)
-            where THandler : IPacketHandler
-        {
-            var config = this.context.CreateNew<PacketHandlerConfiguration>();
-            config.PacketIdentifier = (byte)packetType;
-            config.PacketHandlerClassName = typeof(THandler).AssemblyQualifiedName;
-            config.NeedsToBeEncrypted = needsEncryption;
-            return config;
-        }
-
         private ItemOptionDefinition CreateLuckOptionDefinition()
         {
             var definition = this.context.CreateNew<ItemOptionDefinition>();
@@ -930,13 +917,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var gameServerConfiguration = this.context.CreateNew<GameServerConfiguration>();
             gameServerConfiguration.MaximumPlayers = 1000;
 
-            var mainPacketHandlerConfig = this.context.CreateNew<MainPacketHandlerConfiguration>();
-            mainPacketHandlerConfig.ClientVersion = new byte[] { 0x31, 0x30, 0x34, 0x30, 0x34 };
-            mainPacketHandlerConfig.ClientSerial = Encoding.UTF8.GetBytes("k1Pk2jcET48mxL3b");
-
-            this.CreatePacketHandlerConfiguration().ToList().ForEach(mainPacketHandlerConfig.PacketHandlers.Add);
-            gameServerConfiguration.SupportedPacketHandlers.Add(mainPacketHandlerConfig);
-
             // by default we add every map to a server configuration
             foreach (var map in maps)
             {
@@ -944,68 +924,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             }
 
             return gameServerConfiguration;
-        }
-
-        private IEnumerable<PacketHandlerConfiguration> CreatePacketHandlerConfiguration()
-        {
-            yield return this.CreatePacketConfig<ChatMessageHandler>(PacketType.Speak);
-            yield return this.CreatePacketConfig<ChatMessageHandler>(PacketType.Whisper);
-            yield return this.CreatePacketConfig<LoginHandler>(PacketType.LoginLogoutGroup);
-            yield return this.CreatePacketConfig<StoreHandler>(PacketType.PersonalShopGroup);
-            yield return this.CreatePacketConfig<PickupItemHandler>(PacketType.PickupItem);
-            yield return this.CreatePacketConfig<DropItemHandler>(PacketType.DropItem);
-            yield return this.CreatePacketConfig<ItemMoveHandler>(PacketType.InventoryMove);
-            yield return this.CreatePacketConfig<ConsumeItemHandler>(PacketType.ConsumeItem);
-            yield return this.CreatePacketConfig<TalkNpcHandler>(PacketType.TalkNPC);
-            yield return this.CreatePacketConfig<CloseNpcDialogHandler>(PacketType.CloseNPC);
-            yield return this.CreatePacketConfig<BuyNPCItemHandler>(PacketType.BuyNPCItem);
-            yield return this.CreatePacketConfig<SellItemToNpcHandler>(PacketType.SellNPCItem);
-            yield return this.CreatePacketConfig<WarpHandler>(PacketType.WarpCommand);
-            yield return this.CreatePacketConfig<WarpGateHandler>(PacketType.WarpGate);
-            yield return this.CreatePacketConfig<WarehouseCloseHandler>(PacketType.VaultClose);
-            yield return this.CreatePacketConfig<WarehouseMoneyHandler>(PacketType.VaultMoneyInOut);
-            yield return this.CreatePacketConfig<JewelMixHandler>(PacketType.JewelMix);
-
-            yield return this.CreatePacketConfig<PartyListRequestHandler>(PacketType.RequestPartyList);
-            yield return this.CreatePacketConfig<PartyKickHandler>(PacketType.PartyKick);
-            yield return this.CreatePacketConfig<PartyRequestHandler>(PacketType.PartyRequest);
-            yield return this.CreatePacketConfig<PartyResponseHandler>(PacketType.PartyRequestAnswer);
-
-            yield return this.CreatePacketConfig<CharacterMoveHandler>(PacketType.Walk);
-            yield return this.CreatePacketConfig<CharacterMoveHandler>(PacketType.Teleport);
-            yield return this.CreatePacketConfig<AnimationHandler>(PacketType.Animation);
-            yield return this.CreatePacketConfig<CharacterGroupHandler>(PacketType.CharacterGroup);
-
-            yield return this.CreatePacketConfig<HitHandler>(PacketType.Hit);
-            yield return this.CreatePacketConfig<TargetedSkillHandler>(PacketType.SkillAttack);
-            yield return this.CreatePacketConfig<AreaSkillAttackHandler>(PacketType.AreaSkill);
-            yield return this.CreatePacketConfig<AreaSkillHitHandler>(PacketType.AreaSkillHit);
-
-            yield return this.CreatePacketConfig<TradeCancelHandler>(PacketType.TradeCancel);
-            yield return this.CreatePacketConfig<TradeButtonHandler>(PacketType.TradeButton);
-            yield return this.CreatePacketConfig<TradeRequestHandler>(PacketType.TradeRequest);
-            yield return this.CreatePacketConfig<TradeAcceptHandler>(PacketType.TradeAccept);
-            yield return this.CreatePacketConfig<TradeMoneyHandler>(PacketType.TradeMoney);
-            yield return this.CreatePacketConfig<LetterDeleteHandler>(PacketType.FriendMemoDelete);
-            yield return this.CreatePacketConfig<LetterSendHandler>(PacketType.FriendMemoSend);
-            yield return this.CreatePacketConfig<LetterReadRequestHandler>(PacketType.FriendMemoReadRequest);
-            yield return this.CreatePacketConfig<GuildKickPlayerHandler>(PacketType.GuildKickPlayer);
-            yield return this.CreatePacketConfig<GuildRequestHandler>(PacketType.GuildJoinRequest);
-            yield return this.CreatePacketConfig<GuildRequestAnswerHandler>(PacketType.GuildJoinAnswer);
-            yield return this.CreatePacketConfig<GuildListRequestHandler>(PacketType.RequestGuildList);
-            yield return this.CreatePacketConfig<GuildCreateHandler>(PacketType.GuildMasterInfoSave);
-            yield return this.CreatePacketConfig<GuildMasterAnswerHandler>(PacketType.GuildMasterAnswer);
-            yield return this.CreatePacketConfig<GuildInfoRequestHandler>(PacketType.GuildInfoRequest);
-
-            yield return this.CreatePacketConfig<ItemRepairHandler>(PacketType.ItemRepair);
-            yield return this.CreatePacketConfig<ChaosMixHandler>(PacketType.ChaosMachineMix);
-            yield return this.CreatePacketConfig<ChaosMachineCloseHandler>(PacketType.ChaosMachineClose);
-            yield return this.CreatePacketConfig<AddFriendHandler>(PacketType.FriendAdd);
-            yield return this.CreatePacketConfig<DeleteFriendHandler>(PacketType.FriendDelete);
-            yield return this.CreatePacketConfig<ChatRequestHandler>(PacketType.ChatRoomCreate);
-            yield return this.CreatePacketConfig<ChatRoomInvitationRequest>(PacketType.ChatRoomInvitationReq);
-            yield return this.CreatePacketConfig<FriendAddResponseHandler>(PacketType.FriendAddReponse);
-            yield return this.CreatePacketConfig<ChangeOnlineStateHandler>(PacketType.FriendStateClient);
         }
 
         private void InitializeGameConfiguration()

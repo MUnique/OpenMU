@@ -10,37 +10,60 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameServer.MessageHandler;
+    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A player which is playing through a remote connection.
     /// </summary>
-    public class RemotePlayer : Player
+    public class RemotePlayer : Player, IClientVersionProvider
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RemotePlayer));
 
         private readonly byte[] packetBuffer = new byte[0xFF];
 
+        private ClientVersion clientVersion = new ClientVersion(6, 3, ClientLanguage.English);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RemotePlayer"/> class.
         /// </summary>
         /// <param name="gameContext">The game context.</param>
-        /// <param name="packetHandler">The packet handler.</param>
         /// <param name="connection">The remote connection.</param>
-        public RemotePlayer(IGameServerContext gameContext, IPacketHandler packetHandler, IConnection connection)
+        public RemotePlayer(IGameServerContext gameContext, IConnection connection)
             : base(gameContext)
         {
             this.Connection = connection;
-            this.MainPacketHandler = packetHandler;
+            this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager);
+            this.MainPacketHandler.Initialize();
             this.Connection.PacketReceived += (sender, packet) => this.PacketReceived(packet);
             this.Connection.Disconnected += (sender, packet) => this.Disconnect();
         }
+
+        /// <inheritdoc />
+        public event EventHandler ClientVersionChanged;
 
         /// <summary>
         /// Gets the game server context.
         /// </summary>
         public IGameServerContext GameServerContext => this.GameContext as IGameServerContext;
+
+        /// <inheritdoc />
+        public ClientVersion ClientVersion
+        {
+            get => this.clientVersion;
+
+            set
+            {
+                if (value == this.ClientVersion)
+                {
+                    return;
+                }
+
+                this.clientVersion = value;
+                this.ClientVersionChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         /// <summary>
         /// Gets the connection.
@@ -58,14 +81,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         internal IItemSerializer ItemSerializer => this.ViewPlugIns.GetPlugIn<IItemSerializer>();
 
         /// <summary>
-        /// Gets or sets the main packet handler.
+        /// Gets the main packet handler.
         /// </summary>
-        internal IPacketHandler MainPacketHandler { get; set; }
+        /// <value>
+        /// The main packet handler.
+        /// </value>
+        internal MainPacketHandlerPlugInContainer MainPacketHandler { get; }
 
         /// <inheritdoc />
         protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
         {
-            return new ViewPlugInContainer(this, new ClientVersion(6, 4, ClientLanguage.English), this.GameContext.PlugInManager);
+            return new ViewPlugInContainer(this, this.ClientVersion, this.GameContext.PlugInManager);
         }
 
         /// <inheritdoc/>
@@ -113,7 +139,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                             Logger.DebugFormat("[C->S] {0}", buffer.ToArray().AsString());
                         }
 
-                        this.MainPacketHandler?.HandlePacket(this, buffer);
+                        this.MainPacketHandler.HandlePacket(this, buffer);
                     }
                     finally
                     {

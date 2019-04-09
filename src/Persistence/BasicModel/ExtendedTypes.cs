@@ -1878,30 +1878,6 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets the raw collection of <see cref="SupportedPacketHandlers" />.
-        /// </summary>
-        [JsonProperty("SupportedPacketHandlers")]
-        public ICollection<MainPacketHandlerConfiguration> RawSupportedPacketHandlers { get; } = new List<MainPacketHandlerConfiguration>();
-        
-        /// <inheritdoc/>
-        [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration> SupportedPacketHandlers
-        {
-            get
-            {
-                return base.SupportedPacketHandlers ?? (base.SupportedPacketHandlers = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration, MainPacketHandlerConfiguration>(this.RawSupportedPacketHandlers)); 
-            }
-            protected set
-            {
-                this.SupportedPacketHandlers.Clear();
-                foreach (var item in value)
-                {
-                    this.SupportedPacketHandlers.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets the raw collection of <see cref="Maps" />.
         /// </summary>
         [JsonProperty("Maps")]
@@ -2230,62 +2206,6 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 
         /// <inheritdoc/>
         public MagicEffectDefinition Convert() => this;
-    }
-
-    /// <summary>
-    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration"/>.
-    /// </summary>
-    public partial class MainPacketHandlerConfiguration : MUnique.OpenMU.DataModel.Configuration.MainPacketHandlerConfiguration, IIdentifiable, IConvertibleTo<MainPacketHandlerConfiguration>
-    {
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="PacketHandlers" />.
-        /// </summary>
-        [JsonProperty("PacketHandlers")]
-        public ICollection<PacketHandlerConfiguration> RawPacketHandlers { get; } = new List<PacketHandlerConfiguration>();
-        
-        /// <inheritdoc/>
-        [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration> PacketHandlers
-        {
-            get
-            {
-                return base.PacketHandlers ?? (base.PacketHandlers = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration, PacketHandlerConfiguration>(this.RawPacketHandlers)); 
-            }
-            protected set
-            {
-                this.PacketHandlers.Clear();
-                foreach (var item in value)
-                {
-                    this.PacketHandlers.Add(item);
-                }
-            }
-        }
-        
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public MainPacketHandlerConfiguration Convert() => this;
     }
 
     /// <summary>
@@ -2737,62 +2657,6 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 
         /// <inheritdoc/>
         public MonsterSpawnArea Convert() => this;
-    }
-
-    /// <summary>
-    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration"/>.
-    /// </summary>
-    public partial class PacketHandlerConfiguration : MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration, IIdentifiable, IConvertibleTo<PacketHandlerConfiguration>
-    {
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="SubPacketHandlers" />.
-        /// </summary>
-        [JsonProperty("SubPacketHandlers")]
-        public ICollection<PacketHandlerConfiguration> RawSubPacketHandlers { get; } = new List<PacketHandlerConfiguration>();
-        
-        /// <inheritdoc/>
-        [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration> SubPacketHandlers
-        {
-            get
-            {
-                return base.SubPacketHandlers ?? (base.SubPacketHandlers = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.PacketHandlerConfiguration, PacketHandlerConfiguration>(this.RawSubPacketHandlers)); 
-            }
-            protected set
-            {
-                this.SubPacketHandlers.Clear();
-                foreach (var item in value)
-                {
-                    this.SubPacketHandlers.Add(item);
-                }
-            }
-        }
-        
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public PacketHandlerConfiguration Convert() => this;
     }
 
     /// <summary>

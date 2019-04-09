@@ -5,11 +5,9 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
-    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Guild;
-    using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
@@ -43,8 +41,6 @@ namespace MUnique.OpenMU.GameServer
             this.LoginServer = loginServer;
             this.FriendServer = friendServer;
             this.ServerConfiguration = gameServerDefinition.ServerConfiguration;
-
-            this.PacketHandlers = gameServerDefinition.ServerConfiguration.SupportedPacketHandlers.Select(m => new ConfigurableMainPacketHandler(m, this)).ToArray<IMainPacketHandler>();
         }
 
         /// <summary>
@@ -63,11 +59,6 @@ namespace MUnique.OpenMU.GameServer
 
         /// <inheritdoc/>
         public IFriendServer FriendServer { get; }
-
-        /// <summary>
-        /// Gets the main packet handlers.
-        /// </summary>
-        public IMainPacketHandler[] PacketHandlers { get; }
 
         /// <inheritdoc/>
         public GameServerConfiguration ServerConfiguration { get; }
