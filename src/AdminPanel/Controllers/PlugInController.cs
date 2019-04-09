@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
     using System.Reflection;
     using log4net;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
     using MUnique.OpenMU.AdminPanel.Models;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence;
@@ -40,7 +41,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         [HttpGet]
         public ActionResult<List<PlugInPointDto>> ExtensionPoints()
         {
-            var groupedPlugIns = this.GetPluginTypes().GroupBy(this.GetPlugInExtensionPointType);
+            var groupedPlugIns = this.GetPluginTypes().GroupBy(GetPlugInExtensionPointType);
 
             var result = groupedPlugIns.Select(group =>
             {
@@ -98,11 +99,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
                         break;
                     }
 
-                    var configurations = gameConfig.PlugInConfigurations
-                        .Where(c => allPlugIns.TryGetValue(c.TypeId, out var plugInType)
-                                && (pointId == Guid.Empty || pointId == this.GetPlugInExtensionPointType(plugInType)?.GUID)
-                                && (nameFilter.Count == 0 || this.GetPlugInName(plugInType).Contains(nameFilter[0], StringComparison.InvariantCultureIgnoreCase))
-                                && (typeFilter.Count == 0 || plugInType.FullName.Contains(typeFilter[0], StringComparison.InvariantCultureIgnoreCase)));
+                    var configurations = GetConfigurations(allPlugIns, pointId, gameConfig, nameFilter, typeFilter);
 
                     foreach (var plugInConfiguration in configurations.Skip(offset - skipped).Take(rest))
                     {
@@ -111,41 +108,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
                             continue;
                         }
 
-                        var plugInAttribute = plugInType.GetCustomAttribute<PlugInAttribute>();
-                        var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null)?.GetCustomAttribute<PlugInPointAttribute>();
-                        var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null)?.GetCustomAttribute<CustomPlugInContainerAttribute>();
-
-                        var dto = new PlugInConfigurationDto
-                        {
-                            Id = plugInConfiguration.GetId(),
-                            GameConfigurationId = gameConfig.GetId(),
-                            CustomPlugInSource = plugInConfiguration.CustomPlugInSource,
-                            ExternalAssemblyName = plugInConfiguration.ExternalAssemblyName,
-                            IsActive = plugInConfiguration.IsActive,
-                            TypeId = plugInConfiguration.TypeId,
-                            TypeName = plugInType.FullName,
-                            PlugInName = plugInAttribute?.Name,
-                            PlugInDescription = plugInAttribute?.Description,
-                        };
-
-                        if (plugInPoint != null)
-                        {
-                            dto.PlugInPointName = plugInPoint.Name;
-                            dto.PlugInPointDescription = plugInPoint.Description;
-                        }
-                        else if (customPlugInContainer != null)
-                        {
-                            var customPlugInInterface = plugInType.GetInterfaces().FirstOrDefault(intf => intf.GetInterfaces().Any(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null));
-                            dto.PlugInPointName = customPlugInInterface == null ? customPlugInContainer.Name : $"{customPlugInContainer.Name} - {customPlugInInterface.Name}";
-                            dto.PlugInPointDescription = customPlugInContainer.Description;
-                        }
-                        else
-                        {
-                            dto.PlugInPointName = "N/A";
-                            dto.PlugInPointDescription = "N/A";
-                        }
-
-                        result.Add(dto);
+                        result.Add(BuildConfigurationDto(plugInType, gameConfig, plugInConfiguration));
                     }
 
                     skipped += Math.Min(gameConfig.PlugInConfigurations.Count, offset);
@@ -224,16 +187,78 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
 
         private IEnumerable<Type> GetPluginTypes() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
 
-        private string GetPlugInName(Type plugInType)
+        private static bool FilterByTypeName(Type plugInType, StringValues typeFilter)
+        {
+            return typeFilter.Count == 0 || plugInType.FullName.Contains(typeFilter[0], StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static bool FilterByName(Type plugInType, StringValues nameFilter)
+        {
+            return nameFilter.Count == 0 || GetPlugInName(plugInType).Contains(nameFilter[0], StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static bool FilterByPoint(Type plugInType, Guid pointId)
+        {
+            return pointId == Guid.Empty || pointId == GetPlugInExtensionPointType(plugInType)?.GUID;
+        }
+
+        private static string GetPlugInName(Type plugInType)
         {
             return plugInType.GetCustomAttribute<PlugInAttribute>().Name;
         }
 
-        private Type GetPlugInExtensionPointType(Type plugInType)
+        private static Type GetPlugInExtensionPointType(Type plugInType)
         {
             var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null);
             var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null);
             return plugInPoint ?? customPlugInContainer;
+        }
+
+        private static PlugInConfigurationDto BuildConfigurationDto(Type plugInType, GameConfiguration gameConfiguration, PlugInConfiguration plugInConfiguration)
+        {
+            var plugInAttribute = plugInType.GetCustomAttribute<PlugInAttribute>();
+            var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null)?.GetCustomAttribute<PlugInPointAttribute>();
+            var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null)?.GetCustomAttribute<CustomPlugInContainerAttribute>();
+
+            var dto = new PlugInConfigurationDto
+            {
+                Id = plugInConfiguration.GetId(),
+                GameConfigurationId = gameConfiguration.GetId(),
+                CustomPlugInSource = plugInConfiguration.CustomPlugInSource,
+                ExternalAssemblyName = plugInConfiguration.ExternalAssemblyName,
+                IsActive = plugInConfiguration.IsActive,
+                TypeId = plugInConfiguration.TypeId,
+                TypeName = plugInType.FullName,
+                PlugInName = plugInAttribute?.Name,
+                PlugInDescription = plugInAttribute?.Description,
+            };
+
+            if (plugInPoint != null)
+            {
+                dto.PlugInPointName = plugInPoint.Name;
+                dto.PlugInPointDescription = plugInPoint.Description;
+            }
+            else if (customPlugInContainer != null)
+            {
+                var customPlugInInterface = plugInType.GetInterfaces().FirstOrDefault(intf => intf.GetInterfaces().Any(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null));
+                dto.PlugInPointName = customPlugInInterface == null ? customPlugInContainer.Name : $"{customPlugInContainer.Name} - {customPlugInInterface.Name}";
+                dto.PlugInPointDescription = customPlugInContainer.Description;
+            }
+            else
+            {
+                dto.PlugInPointName = "N/A";
+                dto.PlugInPointDescription = "N/A";
+            }
+
+            return dto;
+        }
+
+        private static IEnumerable<PlugInConfiguration> GetConfigurations(Dictionary<Guid, Type> allPlugIns, Guid pointId, GameConfiguration gameConfig, StringValues nameFilter, StringValues typeFilter)
+        {
+            return gameConfig.PlugInConfigurations.Where(c => allPlugIns.TryGetValue(c.TypeId, out var plugInType)
+                            && FilterByPoint(plugInType, pointId)
+                            && FilterByName(plugInType, nameFilter)
+                            && FilterByTypeName(plugInType, typeFilter));
         }
     }
 }
