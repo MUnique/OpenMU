@@ -55,7 +55,10 @@ namespace MUnique.OpenMU.PlugIns
         {
             foreach (var plugInType in this.Manager.GetKnownPlugInsOf<TPlugIn>().Where(this.Manager.IsPlugInActive))
             {
-                this.CreatePlugInIfSuitable(plugInType);
+                if (!this.currentlyEffectivePlugIns.ContainsKey(plugInType))
+                {
+                    this.CreatePlugInIfSuitable(plugInType);
+                }
             }
         }
 

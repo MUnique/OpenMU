@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.PlugIns
         where TPlugIn : class, IStrategyPlugIn<TKey>
     {
         private readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly IDictionary<TKey, TPlugIn> activeStrategies = new Dictionary<TKey, TPlugIn>();
+        private readonly IDictionary<TKey, TPlugIn> effectiveStrategies = new Dictionary<TKey, TPlugIn>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StrategyPlugInProvider{TKey, TPlugIn}"/> class.
@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.PlugIns
                 this.LockSlim.EnterReadLock();
                 try
                 {
-                    if (this.activeStrategies.TryGetValue(key, out var plugIn))
+                    if (this.TryGetPlugIn(key, out var plugIn))
                     {
                         return plugIn;
                     }
@@ -52,17 +52,25 @@ namespace MUnique.OpenMU.PlugIns
             }
         }
 
+        /// <summary>
+        /// Tries the get the plug in with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="plugIn">The plug in.</param>
+        /// <returns><c>True</c>, if the plugin has been found and returned; Otherwise, <c>false</c>.</returns>
+        protected bool TryGetPlugIn(TKey key, out TPlugIn plugIn) => this.effectiveStrategies.TryGetValue(key, out plugIn);
+
         /// <inheritdoc />
         protected override void ActivatePlugIn(TPlugIn plugIn)
         {
             base.ActivatePlugIn(plugIn);
-            if (this.activeStrategies.TryGetValue(plugIn.Key, out var registeredPlugIn))
+            if (this.effectiveStrategies.TryGetValue(plugIn.Key, out var registeredPlugIn))
             {
                 this.log.Warn($"Plugin {registeredPlugIn} with key {plugIn.Key} was already registered and is active.");
             }
             else
             {
-                this.activeStrategies.Add(plugIn.Key, plugIn);
+                this.SetEffectivePlugin(plugIn);
             }
         }
 
@@ -70,7 +78,20 @@ namespace MUnique.OpenMU.PlugIns
         protected override void DeactivatePlugIn(TPlugIn plugIn)
         {
             base.DeactivatePlugIn(plugIn);
-            this.activeStrategies.Remove(plugIn.Key);
+            if (this.effectiveStrategies.TryGetValue(plugIn.Key, out var effective) && effective == plugIn)
+            {
+                this.effectiveStrategies.Remove(plugIn.Key);
+            }
+        }
+
+        /// <summary>
+        /// Sets the effective plugin.
+        /// </summary>
+        /// <param name="plugIn">The plug in.</param>
+        protected void SetEffectivePlugin(TPlugIn plugIn)
+        {
+            this.effectiveStrategies.Remove(plugIn.Key);
+            this.effectiveStrategies.Add(plugIn.Key, plugIn);
         }
     }
 }

@@ -71,9 +71,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <remarks>We just take the plugins which have a equal or lower version than our target <see cref="Client"/>.</remarks>
         protected override void CreatePlugInIfSuitable(Type plugInType)
         {
-            var clientAttribute = plugInType.GetCustomAttribute(typeof(ClientAttribute)) as ClientAttribute;
-            if (ReferenceEquals(clientAttribute, null) // if the plugin doesn't specify a version, we use it as well
-                || this.Client.CompareTo(clientAttribute.Client) >= 0)
+            if (this.Client.IsPlugInSuitable(plugInType))
             {
                 using (var container = new UnityContainer())
                 {
