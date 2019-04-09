@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Login;
+    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.PlugIns;
 
@@ -17,10 +18,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
     /// </summary>
     [PlugIn("ShowLoginWindowPlugIn", "The default implementation of the IShowLoginWindowPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("c5240952-1870-4f09-a3e4-9f6413845a23")]
+    [Client(6, 3, ClientLanguage.English)]
     public class ShowLoginWindowPlugIn : IShowLoginWindowPlugIn
     {
         private readonly RemotePlayer player;
-        private readonly byte[] lowestClientVersion;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowLoginWindowPlugIn"/> class.
@@ -29,7 +30,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
         public ShowLoginWindowPlugIn(RemotePlayer player)
         {
             this.player = player;
-            this.lowestClientVersion = this.GetLowestClientVersionOfConfiguration();
         }
 
         /// <inheritdoc/>
@@ -43,14 +43,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
                 message[4] = 0x01; // Success
                 message[5] = ViewExtensions.ConstantPlayerId.GetHighByte();
                 message[6] = ViewExtensions.ConstantPlayerId.GetLowByte();
-                this.lowestClientVersion.CopyTo(message.Slice(7, 5));
+                ClientVersionResolver.Resolve(this.player.ClientVersion).CopyTo(message.Slice(7, 5));
                 writer.Commit();
             }
-        }
-
-        private byte[] GetLowestClientVersionOfConfiguration()
-        {
-            return this.player.GameServerContext.ServerConfiguration.SupportedPacketHandlers.OrderBy(v => v.ClientVersion.MakeDwordSmallEndian(1)).First().ClientVersion;
         }
     }
 }

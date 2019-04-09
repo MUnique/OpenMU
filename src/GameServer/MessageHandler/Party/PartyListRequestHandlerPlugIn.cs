@@ -1,0 +1,34 @@
+﻿// <copyright file="PartyListRequestHandlerPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.MessageHandler.Party
+{
+    using System;
+    using System.Runtime.InteropServices;
+    using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Party;
+    using MUnique.OpenMU.PlugIns;
+
+    /// <summary>
+    /// Handler for party list request packets.
+    /// </summary>
+    [PlugIn("PartyListRequestHandlerPlugIn", "Handler for party list request packets.")]
+    [Guid("2650e346-69ef-4a9e-82ba-5f0b9591a548")]
+    internal class PartyListRequestHandlerPlugIn : IPacketHandlerPlugIn
+    {
+        private readonly PartyListRequestAction action = new PartyListRequestAction();
+
+        /// <inheritdoc/>
+        public bool IsEncryptionExpected => false;
+
+        /// <inheritdoc/>
+        public byte Key => (byte)PacketType.RequestPartyList;
+
+        /// <inheritdoc/>
+        public void HandlePacket(Player player, Span<byte> packet)
+        {
+            this.action.RequestPartyList(player);
+        }
+    }
+}
