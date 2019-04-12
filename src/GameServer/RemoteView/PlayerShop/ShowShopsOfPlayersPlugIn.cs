@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
                 {
                     var shopPlayerId = shopPlayer.GetId(this.player);
                     var shopBlock = packet.Slice(offset, sizePerShop);
-                    shopBlock.SetShortBigEndian(shopPlayerId);
+                    shopBlock.SetShortSmallEndian(shopPlayerId);
                     shopBlock.Slice(2).WriteString(shopPlayer.ShopStorage.StoreName, Encoding.UTF8);
                     offset += sizePerShop;
                 }
