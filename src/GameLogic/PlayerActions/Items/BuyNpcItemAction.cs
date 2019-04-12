@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 newItem.AssignValues(storeItem);
                 newItem.ItemSlot = (byte)toSlot;
                 player.ViewPlugIns.GetPlugIn<INpcItemBoughtPlugIn>()?.NpcItemBought(newItem);
-                player.Inventory.AddItem(newItem.ItemSlot, newItem);
+                player.Inventory.AddItem(newItem);
                 player.GameContext.PlugInManager.GetPlugInPoint<IItemBoughtFromMerchantPlugIn>()?.ItemBought(player, newItem, storeItem, player.OpenedNpc);
             }
 
