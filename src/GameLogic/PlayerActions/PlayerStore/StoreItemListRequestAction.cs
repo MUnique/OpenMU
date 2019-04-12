@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                 return;
             }
 
-            player.ViewPlugIns.GetPlugIn<IShowShopItemListPlugIn>()?.ShowShopItemList(requestedPlayer);
+            player.ViewPlugIns.GetPlugIn<IShowShopItemListPlugIn>()?.ShowShopItemList(requestedPlayer, false);
         }
     }
 }
