@@ -28,12 +28,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc />
         public void ItemPriceSetResponse(byte itemSlot, ItemPriceResult result)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 5))
+            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 6))
             {
                 var packet = writer.Span;
                 packet[2] = 0x3F;
-                packet[3] = (byte)result;
-                packet[4] = itemSlot;
+                packet[3] = 0x01;
+                packet[4] = (byte)result;
+                packet[5] = itemSlot;
                 writer.Commit();
             }
         }
