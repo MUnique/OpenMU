@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
                     break;
                 case NpcWindow.VaultStorage:
-                    player.Vault = new Storage(0, 0, InventoryConstants.WarehouseSize, player.Account.Vault);
+                    player.Vault = new Storage(InventoryConstants.WarehouseSize, player.Account.Vault);
                     player.ViewPlugIns.GetPlugIn<IShowVaultPlugIn>()?.ShowVault();
                     break;
                 case NpcWindow.GuildMaster:
