@@ -345,7 +345,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     this.AddDarkLordItems(character.Inventory);
                     break;
                 default:
-                    character = this.CreateCharacter(name, CharacterClassNumber.DarkLord, level, 0);
+                    character = this.CreateCharacter(name, CharacterClassNumber.DarkLord, level, 3);
                     character.Inventory.Items.Add(this.CreateSmallAxe(0));
                     character.Inventory.Items.Add(this.CreateSetItem(52, 5, 8)); // Leather Armor
                     character.Inventory.Items.Add(this.CreateSetItem(49, 5, 9)); // Leather Pants
