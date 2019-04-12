@@ -46,11 +46,6 @@ namespace MUnique.OpenMU.GameLogic
     public interface IStorage
     {
         /// <summary>
-        /// Occurs when the equipped items changed.
-        /// </summary>
-        event EventHandler<ItemEventArgs> EquippedItemsChanged;
-
-        /// <summary>
         /// Gets the underlying item storage.
         /// </summary>
         ItemStorage ItemStorage { get; }
@@ -60,10 +55,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         IEnumerable<Item> Items { get; }
 
-        /// <summary>
-        /// Gets all items which are in the wearable slots.
-        /// </summary>
-        IEnumerable<Item> EquippedItems { get; }
+
 
         /// <summary>
         /// Gets an enumeration of all free item slot indexes.
@@ -138,6 +130,23 @@ namespace MUnique.OpenMU.GameLogic
         /// Clears this storage from all of its items.
         /// </summary>
         void Clear();
+    }
+
+    /// <summary>
+    /// Interface for the inventory storage, which may have equipped items.
+    /// </summary>
+    /// <seealso cref="MUnique.OpenMU.GameLogic.IStorage" />
+    public interface IInventoryStorage : IStorage
+    {
+        /// <summary>
+        /// Occurs when the equipped items changed.
+        /// </summary>
+        event EventHandler<ItemEventArgs> EquippedItemsChanged;
+
+        /// <summary>
+        /// Gets all items which are in the wearable slots.
+        /// </summary>
+        IEnumerable<Item> EquippedItems { get; }
     }
 
     /// <summary>

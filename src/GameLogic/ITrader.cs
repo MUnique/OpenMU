@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the inventory.
         /// </summary>
-        IStorage Inventory { get; }
+        IInventoryStorage Inventory { get; }
 
         /// <summary>
         /// Gets the temporary storage, which holds the items of the trade.

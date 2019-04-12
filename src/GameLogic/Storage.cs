@@ -15,41 +15,46 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class Storage : IStorage
     {
-        private readonly Item[] itemArray;
-
-        private readonly int firstEquippableSlot;
-
-        private readonly int lastEquippableSlot;
-
-        private readonly int firstStorageSlot; // 12
-
         private readonly bool[,] usedSlots;
 
         private readonly int rows;
+        private readonly int slotOffset;
 
-        private readonly ItemStorage itemStorage;
+        private readonly int boxOffset;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Storage"/> class.
         /// </summary>
-        /// <param name="firstEquippableSlot">The first equippable slot.</param>
-        /// <param name="lastEquippableSlot">The last equippable slot.</param>
         /// <param name="numberOfSlots">The number of slots.</param>
         /// <param name="itemStorage">The item storage.</param>
-        public Storage(int firstEquippableSlot, int lastEquippableSlot, int numberOfSlots, ItemStorage itemStorage)
+        public Storage(int numberOfSlots, ItemStorage itemStorage)
+            : this(numberOfSlots, 0, 0, itemStorage)
         {
-            this.firstEquippableSlot = firstEquippableSlot;
-            this.lastEquippableSlot = lastEquippableSlot;
-            this.itemArray = new Item[numberOfSlots];
-            this.firstStorageSlot = lastEquippableSlot > 0 ? lastEquippableSlot + 1 : 0;
-            this.rows = (numberOfSlots - this.firstStorageSlot) / InventoryConstants.RowSize;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Storage" /> class.
+        /// </summary>
+        /// <param name="numberOfSlots">The number of slots.</param>
+        /// <param name="boxOffset">The box offset, which is the first index where the 2-dimensional box starts.</param>
+        /// <param name="slotOffset">The slot offset, which means at which <see cref="Item.ItemSlot" /> this instance starts.</param>
+        /// <param name="itemStorage">The item storage.</param>
+        public Storage(int numberOfSlots, int boxOffset, int slotOffset, ItemStorage itemStorage)
+        {
+
+            this.ItemArray = new Item[numberOfSlots];
+            this.rows = (numberOfSlots - boxOffset) / InventoryConstants.RowSize;
             this.usedSlots = new bool[this.rows, InventoryConstants.RowSize];
-            this.itemStorage = itemStorage;
-            this.itemStorage?.Items
-                .Where(item => item.ItemSlot <= lastEquippableSlot + numberOfSlots)
+            this.ItemStorage = itemStorage;
+            this.slotOffset = slotOffset;
+            this.boxOffset = boxOffset;
+
+            var lastSlot = numberOfSlots + slotOffset;
+            this.ItemStorage?.Items
+                .Where(item => item.ItemSlot <= lastSlot && item.ItemSlot >= slotOffset)
                 .ForEach(item =>
                 {
-                    if (!this.AddItemInternal(item.ItemSlot, item))
+                    if (!this.AddItemInternal((byte)(item.ItemSlot - slotOffset), item))
                     {
                         throw new ArgumentException("item did not fit into the storage");
                     }
@@ -57,38 +62,14 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public event EventHandler<ItemEventArgs> EquippedItemsChanged;
-
-        /// <inheritdoc/>
-        public ItemStorage ItemStorage
-        {
-            get
-            {
-                return this.itemStorage;
-            }
-        }
+        public ItemStorage ItemStorage { get; }
 
         /// <inheritdoc/>
         public IEnumerable<Item> Items
         {
             get
             {
-                return this.itemArray.Where(i => i != null);
-            }
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<Item> EquippedItems
-        {
-            get
-            {
-                for (int i = this.firstEquippableSlot; i <= this.lastEquippableSlot; i++)
-                {
-                    if (this.itemArray[i] != null)
-                    {
-                        yield return this.itemArray[i];
-                    }
-                }
+                return this.ItemArray.Where(i => i != null);
             }
         }
 
@@ -113,19 +94,19 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public IEnumerable<IStorage> Extensions { get; set; }
 
+        /// <summary>
+        /// Gets the item array with the <see cref="Item.ItemSlot"/> minus <see cref="slotOffset"/> as index.
+        /// </summary>
+        protected Item[] ItemArray { get; }
+
         /// <inheritdoc/>
         public virtual bool AddItem(byte slot, Item item)
         {
-            var result = this.AddItemInternal(slot, item);
+            var result = this.AddItemInternal((byte)(slot - this.slotOffset), item);
             if (result)
             {
-                this.itemStorage.Items.Add(item);
-                this.SetItemSlot(item, slot);
-                var onEquippedItemsChanged = this.EquippedItemsChanged;
-                if (onEquippedItemsChanged != null && this.IsWearingSlot(slot))
-                {
-                    onEquippedItemsChanged(this, new ItemEventArgs(item));
-                }
+                this.ItemStorage.Items.Add(item);
+                item.ItemSlot = slot;
             }
 
             return result;
@@ -134,7 +115,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public bool AddItem(Item item)
         {
-            var freeSlot = (this as IStorage).CheckInvSpace(item);
+            var freeSlot = this.CheckInvSpace(item);
             if (freeSlot < 0)
             {
                 return false;
@@ -151,7 +132,7 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-            this.itemStorage.Money = this.ItemStorage.Money + value;
+            this.ItemStorage.Money = this.ItemStorage.Money + value;
             return true;
         }
 
@@ -163,19 +144,13 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-            this.itemStorage.Money = this.ItemStorage.Money - value;
+            this.ItemStorage.Money = this.ItemStorage.Money - value;
             return true;
         }
 
         /// <inheritdoc/>
         public int CheckInvSpace(Item item)
         {
-            if (item.Definition.Number == 0x0F && item.Definition.Group == 0xE)
-            {
-                // zen: index 0x0F, kind 0x0E
-                return 0xFF;
-            }
-
             // Find free Space in the Inventory and return the slot where the Item can be placed
             // Check every slot if it fits
             for (byte row = 0; row < this.rows; row++)
@@ -184,7 +159,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     if (this.FitsInside(row, column, item.Definition.Width, item.Definition.Height))
                     {
-                        return (row * InventoryConstants.RowSize) + column + this.firstStorageSlot;
+                        return (row * InventoryConstants.RowSize) + column + this.boxOffset + this.slotOffset;
                     }
                 }
             }
@@ -210,81 +185,79 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public Item GetItem(byte inventorySlot)
         {
-            if (inventorySlot < this.itemArray.Length)
+            var index = inventorySlot - this.slotOffset;
+            if (index < this.ItemArray.Length)
             {
-                return this.itemArray[inventorySlot - this.firstEquippableSlot];
+                return this.ItemArray[index];
             }
 
             return null;
         }
 
         /// <inheritdoc/>
-        public void RemoveItem(Item item)
+        public virtual void RemoveItem(Item item)
         {
-            this.itemArray[item.ItemSlot - this.firstEquippableSlot] = null;
-            if (!this.IsWearingSlot(item.ItemSlot))
+            var slot = item.ItemSlot - this.slotOffset;
+            this.ItemArray[slot] = null;
+            if (slot >= this.boxOffset)
             {
-                var columnIndex = this.GetColumnIndex(item.ItemSlot);
-                var rowIndex = this.GetRowIndex(item.ItemSlot);
+                var columnIndex = this.GetColumnIndex(slot);
+                var rowIndex = this.GetRowIndex(slot);
                 this.SetItemUsedSlots(item, columnIndex, rowIndex, false);
             }
 
-            this.itemStorage.Items.Remove(item);
-            var onEquippedItemsChanged = this.EquippedItemsChanged;
-            if (onEquippedItemsChanged != null && this.IsWearingSlot(item.ItemSlot))
-            {
-                onEquippedItemsChanged.Invoke(this, new ItemEventArgs(item));
-            }
+            this.ItemStorage.Items.Remove(item);
         }
 
         /// <inheritdoc/>
         public virtual void Clear()
         {
-            this.itemStorage.Items.Clear();
-            this.itemArray.ClearToDefaults();
+            this.ItemStorage.Items.Clear();
+            this.ItemArray.ClearToDefaults();
             this.usedSlots.ClearToDefaults();
         }
 
         /// <summary>
-        /// Sets the item slot at the item. Can be overwritten if there is some kind of slot offset.
+        /// Adds the item to the internal data structures.
         /// </summary>
-        /// <param name="item">The item.</param>
         /// <param name="slot">The slot.</param>
-        protected virtual void SetItemSlot(Item item, byte slot)
+        /// <param name="item">The item.</param>
+        /// <returns><c>True</c>, if successful; Otherwise, <c>false</c>.</returns>
+        protected bool AddItemInternal(byte slot, Item item)
         {
-            item.ItemSlot = slot;
-        }
-
-        private byte GetSlot(int column, int row)
-        {
-            byte result = (byte)(this.firstStorageSlot + column + (row * InventoryConstants.RowSize));
-            return result;
-        }
-
-        private bool AddItemInternal(byte slot, Item item)
-        {
-            if (this.itemArray[slot] != null)
+            if (this.ItemArray[slot] != null)
             {
                 return false;
             }
 
-            if (this.IsWearingSlot(slot))
+            if (slot < this.boxOffset)
             {
-                this.itemArray[slot] = item;
-                return true;
+                if (this.ItemArray[slot] == null)
+                {
+                    this.ItemArray[slot] = item;
+                    return true;
+                }
+
+                return false;
             }
 
-            var itemDef = item.Definition;
             var columnIndex = this.GetColumnIndex(slot);
             var rowIndex = this.GetRowIndex(slot);
+            var itemDef = item.Definition;
             if (!this.FitsInside((byte)rowIndex, (byte)columnIndex, itemDef.Width, itemDef.Height))
             {
                 return false;
             }
 
-            this.itemArray[slot] = item;
+            this.ItemArray[slot] = item;
             this.SetItemUsedSlots(item, columnIndex, rowIndex);
             return true;
+        }
+
+        private byte GetSlot(int column, int row)
+        {
+            byte result = (byte)(this.slotOffset + this.boxOffset + column + (row * InventoryConstants.RowSize));
+            return result;
         }
 
         private void SetItemUsedSlots(Item item, int columnIndex, int rowIndex, bool used = true)
@@ -303,22 +276,12 @@ namespace MUnique.OpenMU.GameLogic
 
         private int GetColumnIndex(int slot)
         {
-            return (slot - this.firstStorageSlot) % InventoryConstants.RowSize;
+            return (slot - this.boxOffset) % InventoryConstants.RowSize;
         }
 
         private int GetRowIndex(int slot)
         {
-            return (slot - this.firstStorageSlot) / InventoryConstants.RowSize;
-        }
-
-        private bool IsWearingSlot(int slot)
-        {
-            if (this.firstEquippableSlot == this.lastEquippableSlot)
-            {
-                return false;
-            }
-
-            return this.firstEquippableSlot <= slot && this.lastEquippableSlot >= slot;
+            return (slot - this.boxOffset) / InventoryConstants.RowSize;
         }
 
         private bool FitsInside(byte row, byte column, byte x, byte y)

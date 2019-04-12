@@ -252,7 +252,7 @@ namespace MUnique.OpenMU.GameLogic
         public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns => this.viewPlugIns ?? (this.viewPlugIns = this.CreateViewPlugInContainer());
 
         /// <inheritdoc/>
-        public IStorage Inventory { get; private set; }
+        public IInventoryStorage Inventory { get; private set; }
 
         /// <inheritdoc/>
         public IStorage TemporaryStorage { get; private set; }
@@ -932,7 +932,7 @@ namespace MUnique.OpenMU.GameLogic
             this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter);
             this.Inventory = new InventoryStorage(this, this.GameContext);
             this.ShopStorage = new ShopStorage(this);
-            this.TemporaryStorage = new Storage(0, 0, InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
+            this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
             this.Vault = null; // vault storage is getting set when vault npc is opened.
             this.SkillList = new SkillList(this);
             this.SetReclaimableAttributesBeforeEnterGame();
