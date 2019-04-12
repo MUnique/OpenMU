@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.World
 {
+    using System.Linq;
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
@@ -12,9 +14,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
-    /// The default implementation of the <see cref="IAppearanceChangedPlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// The default implementation of the <see cref="IAppearanceChangedPlugIn"/> which is forwarding appearance changes of other players to the game client with specific data packets.
     /// </summary>
-    [PlugIn("AppearanceChangedPlugIn", "The default implementation of the IAppearanceChangedPlugIn which is forwarding everything to the game client with specific data packets.")]
+    [PlugIn("Appearance changed", "The default implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.")]
     [Guid("1d097399-d5af-40de-a97d-a812f13c2f20")]
     public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
     {
@@ -27,15 +29,38 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public AppearanceChangedPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void AppearanceChanged(Player changedPlayer)
+        public void AppearanceChanged(Player changedPlayer, Item item)
         {
-            var appearanceSerializer = this.player.AppearanceSerializer;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 5 + appearanceSerializer.NeededSpace))
+            var itemSerializer = this.player.ItemSerializer;
+            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 5 + itemSerializer.NeededSpace))
             {
                 var packet = writer.Span;
                 packet[2] = 0x25;
-                packet.Slice(3).SetShortSmallEndian(this.player.GetId(changedPlayer));
-                appearanceSerializer.WriteAppearanceData(packet.Slice(5), changedPlayer.AppearanceData, true);
+                packet.Slice(3).SetShortSmallEndian(changedPlayer.GetId(this.player));
+                var itemBlock = packet.Slice(5);
+
+                if (changedPlayer.Inventory.EquippedItems.Contains(item))
+                {
+                    itemSerializer.SerializeItem(itemBlock, item);
+                }
+                else
+                {
+                    itemBlock.Fill(0xFF);
+                }
+
+                // The byte with index 1 usually now holds the item level and one part of the item option level.
+                // This full information is irrelevant. For this message, we just need the "glow" level, which means the one of the appearance serializer.
+                // In the available space, the item position is serialized.
+                // To summarize: The 4 higher bits hold the item position, the 4 lower bits hold the "glow" level
+                itemBlock[1] = (byte)(item.ItemSlot << 4);
+                itemBlock[1] |= item.GetGlowLevel();
+
+                // We could also continue to dumb down information here as this packet reveals all of the options of an item to
+                // other players - something which is probably not in interest of the players.
+                // However, for now we keep this logic close to the original server, which doesn't do a thing about it.
+
+                // Additionally, we could think of ignoring changes of rings and pendants, as they are usually not visible in the game client, except
+                // maybe transformation rings. So we'll leave it as it is, too.
                 writer.Commit();
             }
         }

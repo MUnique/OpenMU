@@ -107,7 +107,7 @@ namespace MUnique.OpenMU.GameLogic
         private void UpdateItemsOnChange(Item item)
         {
             this.player.OnAppearanceChanged();
-            this.player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAppearanceChangedPlugIn>()?.AppearanceChanged(this.player), false); // in my tests it was not needed to send the appearance to the own players client.
+            this.player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAppearanceChangedPlugIn>()?.AppearanceChanged(this.player, item), false); // in my tests it was not needed to send the appearance to the own players client.
             if (this.player.Attributes.ItemPowerUps.TryGetValue(item, out IReadOnlyList<PowerUpWrapper> itemPowerUps))
             {
                 this.player.Attributes.ItemPowerUps.Remove(item);

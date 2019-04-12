@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.Views.World
 {
+    using MUnique.OpenMU.DataModel.Entities;
+
     /// <summary>
     /// Interface of a view whose implementation informs about the changed appearance of a player.
     /// </summary>
@@ -13,6 +15,7 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// The appearance of a player changed.
         /// </summary>
         /// <param name="changedPlayer">The changed player.</param>
-        void AppearanceChanged(Player changedPlayer);
+        /// <param name="changedItem">The changed item.</param>
+        void AppearanceChanged(Player changedPlayer, Item changedItem);
     }
 }

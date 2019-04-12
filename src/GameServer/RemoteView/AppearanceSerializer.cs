@@ -228,7 +228,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 if (itemArray[i] != null)
                 {
-                    levelindex |= ((itemArray[i].Level - 1) / 2) << (i * 3);
+                    levelindex |= itemArray[i].GetGlowLevel() << (i * 3);
                 }
             }
 
