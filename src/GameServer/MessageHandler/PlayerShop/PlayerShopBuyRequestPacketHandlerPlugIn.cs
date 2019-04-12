@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
                 return;
             }
 
-            string playerName = packet.ExtractString(5, 10, Encoding.UTF8);
+            string playerName = packet.ExtractString(6, 10, Encoding.UTF8);
             if (playerName != requestedPlayer.SelectedCharacter.Name)
             {
                 Logger.DebugFormat("Player Names dont match: {0} != {1}", playerName, requestedPlayer.SelectedCharacter.Name);
