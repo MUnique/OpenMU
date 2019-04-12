@@ -39,6 +39,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
                 packet.Slice(5).SetShortSmallEndian(playerId);
                 writer.Commit();
             }
+
+            // The following usually just needs to be sent to all players which currently have the shop dialog open
+            // For the sake of simplicity, we send it to all players.
+            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x06))
+            {
+                var packet = writer.Span;
+                packet[2] = 0x3F;
+                packet[3] = 0x12;
+                packet.Slice(4).SetShortSmallEndian(playerId);
+                writer.Commit();
+            }
         }
     }
 }
