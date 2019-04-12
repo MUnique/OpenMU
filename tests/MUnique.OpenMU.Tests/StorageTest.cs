@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Tests
         public void AddItem1X1TopLeft()
         {
             var itemStorage = this.CreateItemStorage();
-            var storage = new Storage(0, 11, 12 + 64, itemStorage) as IStorage;
+            var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
             var item = this.GetItem(1, 1);
             var added = storage.AddItem(12, item);
             Assert.That(added, Is.True);
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.Tests
         public void AddItem2X2AtRightBottom()
         {
             var itemStorage = this.CreateItemStorage();
-            var storage = new Storage(0, 11, 12 + 64, itemStorage) as IStorage;
+            var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
             var item = this.GetItem(2, 2);
             byte slot = 12 + (6 * 8) + 6;
             var added = storage.AddItem(slot, item);
@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.Tests
         public void AddItemFailSpaceInUse()
         {
             var itemStorage = this.CreateItemStorage();
-            var storage = new Storage(0, 11, 12 + 64, itemStorage) as IStorage;
+            var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
             storage.AddItem(12, this.GetItem(1, 1));
             var item = this.GetItem(1, 1);
             var added = storage.AddItem(12, item);
@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.Tests
         public void AddItemFailSpaceInUseVertical()
         {
             var itemStorage = this.CreateItemStorage();
-            var storage = new Storage(0, 11, 12 + 64, itemStorage) as IStorage;
+            var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
             var addedItem = this.GetItem(2, 2);
             storage.AddItem(12, addedItem);
             var added = storage.AddItem(13, this.GetItem(1, 1));
@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.Tests
         public void AddItem2X1FailRightBorder()
         {
             var itemStorage = this.CreateItemStorage();
-            var storage = new Storage(0, 11, 12 + 64, itemStorage) as IStorage;
+            var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
             var added = storage.AddItem(12 + 7, this.GetItem(2, 1));
             Assert.That(added, Is.False);
             Assert.That(storage.FreeSlots.Contains((byte)(12 + 7)), Is.True);
@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.Tests
         public void AddItem1X2FailBottom()
         {
             var itemStorage = this.CreateItemStorage();
-            var storage = new Storage(0, 11, 12 + 64, itemStorage) as IStorage;
+            var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
             var added = storage.AddItem(12 + (7 * 8), this.GetItem(1, 2));
             Assert.That(added, Is.False);
             Assert.That(storage.FreeSlots.Contains((byte)(12 + (7 * 8))), Is.True);

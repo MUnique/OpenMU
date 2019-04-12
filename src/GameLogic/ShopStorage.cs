@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="player">The player.</param>
         public ShopStorage(Player player)
-            : base(0, 0, InventoryConstants.StoreSize, new ItemStorageAdapter(player.SelectedCharacter.Inventory, InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
+            : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(player.SelectedCharacter.Inventory, InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
         {
             this.StoreLock = new object();
         }
@@ -38,13 +38,7 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-            return base.AddItem((byte)(slot - InventoryConstants.FirstStoreItemSlotIndex), item);
-        }
-
-        /// <inheritdoc />
-        protected override void SetItemSlot(Item item, byte slot)
-        {
-            base.SetItemSlot(item, (byte)(slot + InventoryConstants.FirstStoreItemSlotIndex));
+            return base.AddItem(slot, item);
         }
     }
 }

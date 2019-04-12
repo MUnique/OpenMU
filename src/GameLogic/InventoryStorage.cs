@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using log4net;
@@ -15,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The storage of an inventory of a player, which also contains equippable slots. This class also manages the powerups which get created by equipped items.
     /// </summary>
-    public class InventoryStorage : Storage
+    public class InventoryStorage : Storage, IInventoryStorage
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(InventoryStorage));
 
@@ -30,15 +31,33 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="context">The game context.</param>
         public InventoryStorage(Player player, IGameContext context)
             : base(
-                FirstEquippableItemSlotIndex,
-                LastEquippableItemSlotIndex,
                 GetInventorySize(player),
+                EquippableSlotsCount,
+                0,
                 new ItemStorageAdapter(player.SelectedCharacter.Inventory, FirstEquippableItemSlotIndex, GetInventorySize(player)))
         {
             this.player = player;
             this.EquippedItemsChanged += (sender, eventArgs) => this.UpdateItemsOnChange(eventArgs.Item);
             this.gameContext = context;
             this.InitializePowerUps();
+        }
+
+        /// <inheritdoc/>
+        public event EventHandler<ItemEventArgs> EquippedItemsChanged;
+
+        /// <inheritdoc/>
+        public IEnumerable<Item> EquippedItems
+        {
+            get
+            {
+                for (int i = FirstEquippableItemSlotIndex; i <= LastEquippableItemSlotIndex; i++)
+                {
+                    if (this.ItemArray[i] != null)
+                    {
+                        yield return this.ItemArray[i];
+                    }
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -57,7 +76,32 @@ namespace MUnique.OpenMU.GameLogic
                 this.player.PersistenceContext.Delete(convertedItem);
             }
 
+            if (success)
+            {
+                var isEquippedItem = this.IsWearingSlot(slot);
+                if (isEquippedItem)
+                {
+                    this.EquippedItemsChanged?.Invoke(this, new ItemEventArgs(item));
+                }
+            }
+
             return success;
+        }
+
+        /// <inheritdoc />
+        public override void RemoveItem(Item item)
+        {
+            var isEquippedItem = this.IsWearingSlot(item.ItemSlot);
+            base.RemoveItem(item);
+            if (isEquippedItem)
+            {
+                this.EquippedItemsChanged?.Invoke(this, new ItemEventArgs(item));
+            }
+        }
+
+        private bool IsWearingSlot(int slot)
+        {
+            return slot >= FirstEquippableItemSlotIndex && slot <= LastEquippableItemSlotIndex;
         }
 
         private void UpdateItemsOnChange(Item item)

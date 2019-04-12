@@ -152,7 +152,7 @@ namespace MUnique.OpenMU.Tests
             var trader = new Mock<ITrader>();
             trader.SetupAllProperties();
             trader.Setup(t => t.PlayerState).Returns(new StateMachine(playerState));
-            var inventory = new Mock<IStorage>();
+            var inventory = new Mock<IInventoryStorage>();
             var itemStorage = new Mock<ItemStorage>();
             itemStorage.Setup(i => i.Items).Returns(new List<Item>());
             inventory.Setup(i => i.ItemStorage).Returns(itemStorage.Object);
