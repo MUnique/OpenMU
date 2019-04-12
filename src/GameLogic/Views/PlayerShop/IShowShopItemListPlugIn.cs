@@ -13,6 +13,7 @@ namespace MUnique.OpenMU.GameLogic.Views.PlayerShop
         /// Shows the shop item list of the requested players shop.
         /// </summary>
         /// <param name="requestedPlayer">The requested player.</param>
-        void ShowShopItemList(Player requestedPlayer);
+        /// <param name="isUpdate">If set to <c>true</c>, the sent list is an update of an already received list, e.g. after an item has been sold.</param>
+        void ShowShopItemList(Player requestedPlayer, bool isUpdate);
     }
 }

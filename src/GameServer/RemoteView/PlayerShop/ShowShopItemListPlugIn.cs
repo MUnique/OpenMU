@@ -32,13 +32,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
         /// <remarks>
         /// Maybe cache the result, because a lot of players could request the same list. However, this isn't critical.
         /// </remarks>
-        public void ShowShopItemList(Player requestedPlayer)
+        public void ShowShopItemList(Player requestedPlayer, bool isUpdate)
         {
             const int maxCharacterNameLength = 10;
             const int maxStoreNameLength = 36;
             const int itemPriceSize = 4;
+            const int itemSlotSize = 1;
+            const int itemPricePadding = 3;
             var itemSerializer = this.player.ItemSerializer;
-            var sizePerItem = itemSerializer.NeededSpace + itemPriceSize + 4; // don't know yet, where the additional 4 bytes come from
+            var sizePerItem = itemSerializer.NeededSpace + itemPriceSize + itemSlotSize + itemPricePadding;
 
             var playerId = requestedPlayer.GetId(this.player);
             var itemlist = requestedPlayer.ShopStorage.Items.ToList();
@@ -47,23 +49,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
             {
                 var packet = writer.Span;
                 packet[3] = 0x3F;
-                packet[4] = 0x05;
+                packet[4] = isUpdate ? (byte)0x13 : (byte)0x05;
                 packet[5] = 1;
-                packet[6] = playerId.GetHighByte();
-                packet[7] = playerId.GetLowByte();
+                packet.Slice(6).SetShortSmallEndian(playerId);
                 packet.Slice(8, maxCharacterNameLength).WriteString(this.player.SelectedCharacter.Name, Encoding.UTF8);
                 var storeName = requestedPlayer.ShopStorage.StoreName;
-                packet.Slice(18, maxStoreNameLength).WriteString(storeName, Encoding.UTF8);
+                packet.Slice(8 + maxCharacterNameLength, maxStoreNameLength).WriteString(storeName, Encoding.UTF8);
 
                 packet[8 + maxCharacterNameLength + maxStoreNameLength] = (byte)itemcount;
-                int i = 0;
 
+                int i = 0;
                 foreach (var item in itemlist)
                 {
                     var itemBlock = packet.Slice(9 + maxCharacterNameLength + maxStoreNameLength + (i * sizePerItem), sizePerItem);
                     itemBlock[0] = item.ItemSlot;
-                    itemSerializer.SerializeItem(itemBlock.Slice(1), item);
-                    itemBlock.Slice(1 + itemSerializer.NeededSpace).SetIntegerBigEndian((uint)(item.StorePrice ?? 0));
+                    itemSerializer.SerializeItem(itemBlock.Slice(itemSlotSize), item);
+                    itemBlock.Slice(itemSlotSize + itemSerializer.NeededSpace + itemPricePadding).SetIntegerBigEndian((uint)(item.StorePrice ?? 0));
+                    i++;
                 }
 
                 writer.Commit();
