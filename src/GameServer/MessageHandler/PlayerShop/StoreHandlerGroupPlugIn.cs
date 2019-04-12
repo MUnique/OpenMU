@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
 {
     using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
