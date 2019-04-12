@@ -17,7 +17,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         /// <param name="player">The player.</param>
         public void CloseStore(Player player)
         {
-            player.ShopStorage.StoreOpen = false;
+            lock (player.ShopStorage.StoreLock)
+            {
+                player.ShopStorage.StoreOpen = false;
+            }
+
             player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerShopClosedPlugIn>()?.PlayerShopClosed(player), true);
         }
     }
