@@ -305,7 +305,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte[]>("CurrentPatchVersion");
 
-                    b.Property<bool>("DcOnUnknownPacket");
+                    b.Property<bool>("DisconnectOnUnknownPacket");
 
                     b.Property<string>("Description");
 

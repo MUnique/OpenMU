@@ -842,7 +842,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 connectServer.Client = client;
                 connectServer.ClientListenerPort = 44405 + i;
                 connectServer.Description = $"Connect Server ({new ClientVersion(client.Season, client.Episode, client.Language)})";
-                connectServer.DcOnUnknownPacket = true;
+                connectServer.DisconnectOnUnknownPacket = true;
                 connectServer.MaxReceiveSize = 6;
                 connectServer.Timeout = new TimeSpan(0, 1, 0);
                 connectServer.CurrentPatchVersion = new byte[] { 1, 3, 0x2B };

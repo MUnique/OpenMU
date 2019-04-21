@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
             {
                 packetHandler.HandlePacket(client, packet);
             }
-            else if (this.connectServerSettings.DcOnUnknownPacket)
+            else if (this.connectServerSettings.DisconnectOnUnknownPacket)
             {
                 Log.InfoFormat("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
                 client.Connection.Disconnect();

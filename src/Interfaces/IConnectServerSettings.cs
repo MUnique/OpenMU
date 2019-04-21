@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <summary>
         /// Gets a value indicating whether the client should get disconnected when a unknown packet is getting received.
         /// </summary>
-        bool DcOnUnknownPacket { get; }
+        bool DisconnectOnUnknownPacket { get; }
 
         /// <summary>
         /// Gets the maximum size of the packets which should be received from the client. If this size is exceeded, the client will be disconnected.

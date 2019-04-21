@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets a value indicating whether the client should get disconnected when a unknown packet is getting received.
         /// </summary>
-        public bool DcOnUnknownPacket { get; set; }
+        public bool DisconnectOnUnknownPacket { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum size of the packets which should be received from the client. If this size is exceeded, the client will be disconnected.

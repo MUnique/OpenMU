@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
                 {
                     packetHandler.HandlePacket(client, packet);
                 }
-                else if (this.connectServerSettings.DcOnUnknownPacket)
+                else if (this.connectServerSettings.DisconnectOnUnknownPacket)
                 {
                     this.DisconnectClientUnknownPacket(client, packet);
                 }
