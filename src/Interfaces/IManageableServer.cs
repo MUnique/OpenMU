@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Interfaces
 {
     /// <summary>
-    /// General interface for a server which provides some informations and functions to manage it from outside.
+    /// General interface for a server which provides some information and functions to manage it from outside.
     /// </summary>
     public interface IManageableServer
     {

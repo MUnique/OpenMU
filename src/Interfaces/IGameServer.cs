@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.Interfaces
         Stopped,
 
         /// <summary>
-        /// The server is currenctly starting, but has not yet finished initialization.
+        /// The server is currently starting, but has not yet finished initialization.
         /// </summary>
         Starting,
 
