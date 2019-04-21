@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.ClientLauncher
         /// <summary>
         /// The language keys used in the registry.
         /// </summary>
-        private static readonly string[] LanguageKeys = new[] {"Eng", "Por", "Spn"};
+        private static readonly string[] LanguageKeys = { "Eng", "Por", "Spn" };
 
         /// <summary>
         /// Gets the string which should be set in the registry for the given <see cref="ClientLanguage"/>.
