@@ -972,12 +972,39 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Weapons(this.context, this.gameConfiguration).Initialize();
             new Potions(this.context, this.gameConfiguration).Initialize();
             new Jewels(this.context, this.gameConfiguration).Initialize();
+            new PackedJewels(this.context, this.gameConfiguration).Initialize();
             new Jewellery(this.context, this.gameConfiguration).Initialize();
+            this.CreateJewelMixes();
             this.CreateNpcs();
             this.CreateGameMapDefinitions();
             this.AssignCharacterClassHomeMaps();
             new Gates().Initialize(this.context, this.gameConfiguration);
             //// TODO: ItemSetGroups
+        }
+
+        private void CreateJewelMixes()
+        {
+            this.CreateJewelMix(0, 13, 0xE, 30); // Bless
+            this.CreateJewelMix(1, 14, 0xE, 31); // Soul
+            this.CreateJewelMix(2, 16, 0xE, 136); // Jewel of Life
+            this.CreateJewelMix(3, 22, 0xE, 137); // Jewel of Creation
+            this.CreateJewelMix(4, 31, 0xE, 138); // Jewel of Guardian
+            this.CreateJewelMix(5, 41, 0xE, 139); // Gemstone
+            this.CreateJewelMix(6, 42, 0xE, 140); // Jewel of Harmony
+            this.CreateJewelMix(7, 15, 0xC, 141); // Chaos
+            this.CreateJewelMix(8, 43, 0xE, 142); // Lower Refine Stone
+            this.CreateJewelMix(9, 44, 0xE, 143); // Higher Refine Stone
+        }
+
+        private void CreateJewelMix(byte mixNumber, int itemNumber, int itemGroup, int packedJewelId)
+        {
+            var singleJewel = this.gameConfiguration.Items.First(i => i.Group == itemGroup && i.Number == itemNumber);
+            var packedJewel = this.gameConfiguration.Items.First(i => i.Group == 0x0C & i.Number == packedJewelId);
+            var jewelMix = this.context.CreateNew<JewelMix>();
+            jewelMix.Number = mixNumber;
+            jewelMix.SingleJewel = singleJewel;
+            jewelMix.MixedJewel = packedJewel;
+            this.gameConfiguration.JewelMixes.Add(jewelMix);
         }
 
         private void AssignCharacterClassHomeMaps()
