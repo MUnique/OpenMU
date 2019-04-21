@@ -187,7 +187,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     ServerId = table.Column<byte>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    DcOnUnknownPacket = table.Column<bool>(nullable: false),
+                    DisconnectOnUnknownPacket = table.Column<bool>(nullable: false),
                     MaxReceiveSize = table.Column<byte>(nullable: false),
                     ClientListenerPort = table.Column<int>(nullable: false),
                     Timeout = table.Column<TimeSpan>(nullable: false),
