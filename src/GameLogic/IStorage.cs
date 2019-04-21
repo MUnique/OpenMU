@@ -55,8 +55,6 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         IEnumerable<Item> Items { get; }
 
-
-
         /// <summary>
         /// Gets an enumeration of all free item slot indexes.
         /// </summary>

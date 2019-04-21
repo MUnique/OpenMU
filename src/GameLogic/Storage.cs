@@ -41,7 +41,6 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="itemStorage">The item storage.</param>
         public Storage(int numberOfSlots, int boxOffset, int slotOffset, ItemStorage itemStorage)
         {
-
             this.ItemArray = new Item[numberOfSlots];
             this.rows = (numberOfSlots - boxOffset) / InventoryConstants.RowSize;
             this.usedSlots = new bool[this.rows, InventoryConstants.RowSize];
