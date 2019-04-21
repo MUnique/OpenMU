@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         [HttpGet]
         public ActionResult<List<PlugInPointDto>> ExtensionPoints()
         {
-            var groupedPlugIns = this.GetPluginTypes().GroupBy(GetPlugInExtensionPointType);
+            var groupedPlugIns = GetPluginTypes().GroupBy(GetPlugInExtensionPointType);
 
             var result = groupedPlugIns.Select(group =>
             {
@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         [HttpGet("{pointId}/{offset}/{count}")]
         public ActionResult<List<PlugInConfigurationDto>> List(Guid pointId, int offset, int count)
         {
-            var allPlugIns = this.GetPluginTypes().ToDictionary(t => t.GUID, t => t);
+            var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
             var skipped = 0;
             this.Request.Query.TryGetValue("name", out var nameFilter);
             this.Request.Query.TryGetValue("type", out var typeFilter);
@@ -185,7 +185,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
             }
         }
 
-        private IEnumerable<Type> GetPluginTypes() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
+        private static IEnumerable<Type> GetPluginTypes() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
 
         private static bool FilterByTypeName(Type plugInType, StringValues typeFilter)
         {
