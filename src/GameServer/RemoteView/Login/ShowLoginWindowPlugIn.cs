@@ -5,11 +5,10 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Login
 {
     using System;
-    using System.Linq;
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Login;
-    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.PlugIns;
 

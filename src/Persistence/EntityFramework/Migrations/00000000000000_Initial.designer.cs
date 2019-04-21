@@ -179,6 +179,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("CharacterSlot");
 
+                    b.Property<int>("CharacterStatus");
+
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -212,8 +214,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("PositionY");
 
                     b.Property<byte[]>("QuestInfo");
-
-                    b.Property<int>("CharacterStatus");
 
                     b.Property<int>("State");
 
@@ -290,6 +290,50 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("DropItemGroupId");
 
                     b.ToTable("CharacterDropItemGroup","data");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("CheckMaxConnectionsPerAddress");
+
+                    b.Property<Guid?>("ClientId");
+
+                    b.Property<int>("ClientListenerPort");
+
+                    b.Property<byte[]>("CurrentPatchVersion");
+
+                    b.Property<bool>("DcOnUnknownPacket");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("ListenerBacklog");
+
+                    b.Property<int>("MaxConnections");
+
+                    b.Property<int>("MaxConnectionsPerAddress");
+
+                    b.Property<int>("MaxFtpRequests");
+
+                    b.Property<int>("MaxIpRequests");
+
+                    b.Property<byte>("MaxReceiveSize");
+
+                    b.Property<int>("MaxServerListRequests");
+
+                    b.Property<string>("PatchAddress");
+
+                    b.Property<byte>("ServerId");
+
+                    b.Property<TimeSpan>("Timeout");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("ConnectServerDefinition","config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConstValueAttribute", b =>
@@ -419,6 +463,28 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("Friend","friend");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<byte>("Episode");
+
+                    b.Property<int>("Language");
+
+                    b.Property<byte>("Season");
+
+                    b.Property<byte[]>("Serial");
+
+                    b.Property<byte[]>("Version");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GameClientDefinition","config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", b =>
                 {
                     b.Property<Guid>("Id")
@@ -436,8 +502,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MaximumInventoryMoney");
 
-                    b.Property<int>("MaximumVaultMoney");
-
                     b.Property<int>("MaximumLetters");
 
                     b.Property<short>("MaximumLevel");
@@ -445,6 +509,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("MaximumPartySize");
 
                     b.Property<int>("MaximumPasswordLength");
+
+                    b.Property<int>("MaximumVaultMoney");
 
                     b.Property<int>("RecoveryInterval");
 
@@ -526,8 +592,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("GameConfigurationId");
 
-                    b.Property<int>("NetworkPort");
-
                     b.Property<Guid?>("ServerConfigurationId");
 
                     b.Property<byte>("ServerID");
@@ -539,6 +603,26 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("ServerConfigurationId");
 
                     b.ToTable("GameServerDefinition","config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerEndpoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid?>("ClientId");
+
+                    b.Property<Guid?>("GameServerDefinitionId");
+
+                    b.Property<int>("NetworkPort");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("GameServerDefinitionId");
+
+                    b.ToTable("GameServerEndpoint","config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Guild", b =>
@@ -1181,6 +1265,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("Aggregation");
 
+                    b.Property<string>("DisplayValueFormula");
+
                     b.Property<byte>("MaximumLevel");
 
                     b.Property<byte>("MinimumLevel");
@@ -1194,8 +1280,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("TargetAttributeId");
 
                     b.Property<string>("ValueFormula");
-
-                    b.Property<string>("DisplayValueFormula");
 
                     b.HasKey("Id");
 
@@ -1726,6 +1810,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConstValueAttribute", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
@@ -1822,6 +1913,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "RawServerConfiguration")
                         .WithMany()
                         .HasForeignKey("ServerConfigurationId");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerEndpoint", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition")
+                        .WithMany("RawEndpoints")
+                        .HasForeignKey("GameServerDefinitionId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Guild", b =>

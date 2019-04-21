@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>

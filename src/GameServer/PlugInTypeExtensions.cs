@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer
 {
     using System;
     using System.Reflection;
+    using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
     /// Extensions for plugin types.

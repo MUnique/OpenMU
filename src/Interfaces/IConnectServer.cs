@@ -12,6 +12,11 @@ namespace MUnique.OpenMU.Interfaces
     public interface IConnectServer : IManageableServer
     {
         /// <summary>
+        /// Gets the settings.
+        /// </summary>
+        IConnectServerSettings Settings { get; }
+
+        /// <summary>
         /// Registers the game server, so that it can be accessed through the connect server.
         /// </summary>
         /// <param name="gameServer">The game server.</param>

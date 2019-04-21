@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.ConnectServer
     using System.Threading.Tasks;
     using log4net;
     using MUnique.OpenMU.ConnectServer.PacketHandler;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using Pipelines.Sockets.Unofficial;
 
@@ -21,7 +22,7 @@ namespace MUnique.OpenMU.ConnectServer
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ClientListener));
         private readonly object clientListLock = new object();
-        private readonly Settings settings;
+        private readonly IConnectServerSettings connectServerSettings;
         private readonly IPacketHandler<Client> packetHandler;
         private TcpListener clientListener;
 
@@ -31,7 +32,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// <param name="connectServer">The connect server.</param>
         public ClientListener(IConnectServer connectServer)
         {
-            this.settings = connectServer.Settings;
+            this.connectServerSettings = connectServer.Settings;
             this.packetHandler = new ClientPacketHandler(connectServer);
             this.Clients = new List<Client>();
             this.ClientSocketAcceptPlugins = new List<IAfterSocketAcceptPlugin>();
@@ -63,10 +64,10 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         public void StartListener()
         {
-            this.clientListener = new TcpListener(IPAddress.Any, this.settings.ClientListenerPort);
-            this.clientListener.Start(this.settings.ListenerBacklog);
+            this.clientListener = new TcpListener(IPAddress.Any, this.connectServerSettings.ClientListenerPort);
+            this.clientListener.Start(this.connectServerSettings.ListenerBacklog);
             Task.Run(this.BeginAccept);
-            Logger.InfoFormat("Client Listener started, Port {0}", this.settings.ClientListenerPort);
+            Logger.InfoFormat("Client Listener started, Port {0}", this.connectServerSettings.ClientListenerPort);
         }
 
         /// <summary>
@@ -123,11 +124,11 @@ namespace MUnique.OpenMU.ConnectServer
 
         private void AddClient(Socket socket)
         {
-            var client = new Client(new Connection(SocketConnection.Create(socket), null, null), this.settings.Timeout, this.packetHandler, this.settings.MaxReceiveSize);
+            var client = new Client(new Connection(SocketConnection.Create(socket), null, null), this.connectServerSettings.Timeout, this.packetHandler, this.connectServerSettings.MaxReceiveSize);
             var ipEndpoint = (IPEndPoint)socket.RemoteEndPoint;
             client.Address = ipEndpoint.Address;
             client.Port = ipEndpoint.Port;
-            client.Timeout = this.settings.Timeout;
+            client.Timeout = this.connectServerSettings.Timeout;
 
             lock (this.clientListLock)
             {

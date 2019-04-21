@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System;
     using System.Linq;
     using System.Reflection;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.PlugIns;

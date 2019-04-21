@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
+    using System.Linq;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -42,6 +43,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 {
                     definition.ServerConfiguration = this.ContextProvider.RepositoryManager.GetRepository<GameServerConfiguration>()
                         .GetById(definition.ServerConfigurationId.Value);
+                }
+
+                var entityEntry = currentContext.Entry(obj);
+                foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded))
+                {
+                    this.LoadCollection(entityEntry, collection.Metadata, currentContext);
+                    collection.IsLoaded = true;
                 }
             }
         }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.ConnectServer
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// The internal interface of a connect server.
@@ -22,8 +23,8 @@ namespace MUnique.OpenMU.ConnectServer
         ServerList ServerList { get; }
 
         /// <summary>
-        /// Gets the settings.
+        /// Gets the connectServerSettings.
         /// </summary>
-        Settings Settings { get; }
+        IConnectServerSettings Settings { get; }
     }
 }

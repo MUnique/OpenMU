@@ -15,7 +15,6 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ServerInfoRequestHandler));
         private readonly IConnectServer connectServer;
-        private readonly Settings settings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerInfoRequestHandler"/> class.
@@ -24,7 +23,6 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         public ServerInfoRequestHandler(IConnectServer connectServer)
         {
             this.connectServer = connectServer;
-            this.settings = connectServer.Settings;
         }
 
         /// <inheritdoc/>
@@ -32,7 +30,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         {
             var serverId = (ushort)(packet[4] | packet[5] << 8);
             Log.DebugFormat("Client {0}:{1} requested Connection Info of ServerId {2}", client.Address, client.Port, serverId);
-            if (client.ServerInfoRequestCount >= this.settings.MaxIpRequests)
+            if (client.ServerInfoRequestCount >= this.connectServer.Settings.MaxIpRequests)
             {
                 Log.Debug($"Client {client.Address}:{client.Port} reached max ip requests.");
                 client.Connection.Disconnect();

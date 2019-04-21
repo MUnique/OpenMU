@@ -1003,6 +1003,70 @@ public ICollection<Item> RawItems { get; } = new List<Item>();
     }
 
     /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition"/>.
+    /// </summary>
+    [Table("ConnectServerDefinition", Schema = "config")]
+    internal partial class ConnectServerDefinition : MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Client"/>.
+        /// </summary>
+        public Guid? ClientId { get; set; }
+        
+        [ForeignKey("ClientId")]
+        public GameClientDefinition RawClient
+        { 
+            get { return base.Client as GameClientDefinition; }
+            set { base.Client = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.GameClientDefinition Client
+        {
+            get
+            {
+                return base.Client;
+            }
+            
+            set
+            {
+                base.Client = value;
+                this.ClientId = this.RawClient?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.DropItemGroup"/>.
     /// </summary>
     [Table("DropItemGroup", Schema = "config")]
@@ -1153,6 +1217,42 @@ public ICollection<Item> RawItems { get; } = new List<Item>();
         }
 
                 
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.GameClientDefinition"/>.
+    /// </summary>
+    [Table("GameClientDefinition", Schema = "config")]
+    internal partial class GameClientDefinition : MUnique.OpenMU.DataModel.Configuration.GameClientDefinition, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
@@ -1598,6 +1698,81 @@ public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<Monste
             {
                 base.GameConfiguration = value;
                 this.GameConfigurationId = this.RawGameConfiguration?.Id;
+            }
+        }
+
+        public ICollection<GameServerEndpoint> RawEndpoints { get; } = new List<GameServerEndpoint>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint> Endpoints
+        {
+            get
+            {
+                return base.Endpoints ?? (base.Endpoints = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint, GameServerEndpoint>(this.RawEndpoints)); 
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint"/>.
+    /// </summary>
+    [Table("GameServerEndpoint", Schema = "config")]
+    internal partial class GameServerEndpoint : MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Client"/>.
+        /// </summary>
+        public Guid? ClientId { get; set; }
+        
+        [ForeignKey("ClientId")]
+        public GameClientDefinition RawClient
+        { 
+            get { return base.Client as GameClientDefinition; }
+            set { base.Client = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.GameClientDefinition Client
+        {
+            get
+            {
+                return base.Client;
+            }
+            
+            set
+            {
+                base.Client = value;
+                this.ClientId = this.RawClient?.Id;
             }
         }
 
@@ -4336,13 +4511,16 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.DropItemGroup>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.EnterGate>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ExitGate>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameClientDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameConfiguration>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerDefinition>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Gate>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.JewelMix>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.LevelDependentDamage>();
@@ -4475,6 +4653,9 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CharacterClass, MUnique.OpenMU.DataModel.Configuration.CharacterClass>()
                             .Include<CharacterClass, BasicModel.CharacterClass>();
 
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition, MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition>()
+                            .Include<ConnectServerDefinition, BasicModel.ConnectServerDefinition>();
+
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, MUnique.OpenMU.DataModel.Configuration.DropItemGroup>()
                             .Include<DropItemGroup, BasicModel.DropItemGroup>();
 
@@ -4483,6 +4664,9 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ExitGate, MUnique.OpenMU.DataModel.Configuration.ExitGate>()
                             .Include<ExitGate, BasicModel.ExitGate>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.GameClientDefinition, MUnique.OpenMU.DataModel.Configuration.GameClientDefinition>()
+                            .Include<GameClientDefinition, BasicModel.GameClientDefinition>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.GameConfiguration, MUnique.OpenMU.DataModel.Configuration.GameConfiguration>()
                             .Include<GameConfiguration, BasicModel.GameConfiguration>();
@@ -4495,6 +4679,9 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.GameServerDefinition, MUnique.OpenMU.DataModel.Configuration.GameServerDefinition>()
                             .Include<GameServerDefinition, BasicModel.GameServerDefinition>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint, MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint>()
+                            .Include<GameServerEndpoint, BasicModel.GameServerEndpoint>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Gate, MUnique.OpenMU.DataModel.Configuration.Gate>()
                             .Include<Gate, BasicModel.Gate>();

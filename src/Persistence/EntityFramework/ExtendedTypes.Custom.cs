@@ -218,6 +218,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
     }
 
+    internal partial class ConnectServerDefinition : IConvertibleTo<BasicModel.ConnectServerDefinition>
+    {
+        public BasicModel.ConnectServerDefinition Convert()
+        {
+            MapsterConfigurator.EnsureConfigured();
+            return this.Adapt<BasicModel.ConnectServerDefinition>();
+        }
+    }
+
+    internal partial class GameClientDefinition : IConvertibleTo<BasicModel.GameClientDefinition>
+    {
+        public BasicModel.GameClientDefinition Convert()
+        {
+            MapsterConfigurator.EnsureConfigured();
+            return this.Adapt<BasicModel.GameClientDefinition>();
+        }
+    }
+
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.Interfaces.LetterHeader"/>.
     /// This implementation adds the receiver additionally as reference to <see cref="Character"/>.

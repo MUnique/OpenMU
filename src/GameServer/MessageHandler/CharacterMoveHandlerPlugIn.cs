@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

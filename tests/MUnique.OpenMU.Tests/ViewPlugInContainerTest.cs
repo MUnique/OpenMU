@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.Tests
             gameContext.Setup(c => c.PersistenceContextProvider).Returns(new Mock<IPersistenceContextProvider>().Object);
             gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
             gameContext.Setup(c => c.PlugInManager).Returns(plugInManager);
-            return new RemotePlayer(gameContext.Object, new Mock<IConnection>().Object);
+            return new RemotePlayer(gameContext.Object, new Mock<IConnection>().Object, default(ClientVersion));
         }
 
         /// <summary>

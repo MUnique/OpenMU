@@ -14,13 +14,13 @@ namespace MUnique.OpenMU.ConnectServer
         /// <summary>
         /// Creates a new connect server instance.
         /// </summary>
+        /// <param name="settings">The settings.</param>
         /// <param name="stateObserver">The state observer.</param>
         /// <returns>
         /// The new connect server instance.
         /// </returns>
-        public static OpenMU.Interfaces.IConnectServer CreateConnectServer(IServerStateObserver stateObserver)
+        public static OpenMU.Interfaces.IConnectServer CreateConnectServer(IConnectServerSettings settings, IServerStateObserver stateObserver)
         {
-            var settings = new Settings();
             return new ConnectServer(settings, stateObserver);
         }
     }

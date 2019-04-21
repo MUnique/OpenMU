@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
     using System;
     using System.Text;
     using log4net;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -21,17 +22,17 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
 
         private static readonly byte[] Xor3Keys = { 0xFC, 0xCF, 0xAB };
 
-        private readonly Settings settings;
+        private readonly IConnectServerSettings connectServerSettings;
 
         private byte[] patchPacket;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FtpRequestHandler"/> class.
         /// </summary>
-        /// <param name="settings">The settings.</param>
-        public FtpRequestHandler(Settings settings)
+        /// <param name="connectServerSettings">The settings.</param>
+        public FtpRequestHandler(IConnectServerSettings connectServerSettings)
         {
-            this.settings = settings;
+            this.connectServerSettings = connectServerSettings;
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
             }
 
             Log.DebugFormat("Client {0}:{1} version: {2}.{3}.{4}", client.Address, client.Port, packet[3], packet[4], packet[5]);
-            if (client.FtpRequestCount >= this.settings.MaxFtpRequests)
+            if (client.FtpRequestCount >= this.connectServerSettings.MaxFtpRequests)
             {
                 Log.DebugFormat("Client {0}:{1} reached maxFtpRequests", client.Address, client.Port);
                 client.Connection.Disconnect();
@@ -61,7 +62,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
             }
 
             byte[] response;
-            if (VersionCompare(this.settings.CurrentPatchVersion, 0, packet, 3, this.settings.CurrentPatchVersion.Length) == VersionCompareResult.VersionTooLow)
+            if (VersionCompare(this.connectServerSettings.CurrentPatchVersion, 0, packet, 3, this.connectServerSettings.CurrentPatchVersion.Length) == VersionCompareResult.VersionTooLow)
             {
                 response = this.GetPatchPacket();
             }
@@ -126,10 +127,10 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
             packet[1] = 0x8A;
             packet[2] = 0x05;
             packet[3] = 0x01;
-            packet[4] = this.settings.CurrentPatchVersion[2];
+            packet[4] = this.connectServerSettings.CurrentPatchVersion[2];
 
             // adress starting at 6
-            var adressBytes = Encoding.ASCII.GetBytes(this.settings.PatchAddress);
+            var adressBytes = Encoding.ASCII.GetBytes(this.connectServerSettings.PatchAddress);
             Xor3Bytes(adressBytes, adressBytes.Length);
             Buffer.BlockCopy(adressBytes, 0, packet, 6, adressBytes.Length);
             this.patchPacket = packet;

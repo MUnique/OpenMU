@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer
 {
     using System;
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -18,15 +19,20 @@ namespace MUnique.OpenMU.GameServer
         private static readonly IDictionary<ClientVersion, byte[]> VersionBytes = new Dictionary<ClientVersion, byte[]>();
 
         /// <summary>
+        /// Gets or sets the default version.
+        /// </summary>
+        public static ClientVersion DefaultVersion { get; set; } = new ClientVersion(6, 3, ClientLanguage.English);
+
+        /// <summary>
         /// Registers the specified version bytes.
         /// </summary>
         /// <param name="versionBytes">The version bytes.</param>
         /// <param name="clientVersion">The client version.</param>
-        /// <param name="isDefaultForSeasonAndEpisode">if set to <c>true</c>, the version bytes are used as default for season and episode.</param>
-        public static void Register(Span<byte> versionBytes, ClientVersion clientVersion, bool isDefaultForSeasonAndEpisode)
+        public static void Register(Span<byte> versionBytes, ClientVersion clientVersion)
         {
-            Versions.Add(CalculateVersionValue(versionBytes), clientVersion);
-            if (isDefaultForSeasonAndEpisode)
+            var key = CalculateVersionValue(versionBytes);
+            Versions[key] = clientVersion;
+            if (!VersionBytes.ContainsKey(clientVersion))
             {
                 VersionBytes.Add(clientVersion, versionBytes.ToArray());
             }
@@ -54,7 +60,7 @@ namespace MUnique.OpenMU.GameServer
                 return clientVersion;
             }
 
-            return new ClientVersion(6, 3, ClientLanguage.English);
+            return DefaultVersion;
         }
 
         private static long CalculateVersionValue(Span<byte> versionBytes) => (versionBytes.MakeDwordSmallEndian(0) * 0x100) + versionBytes[4];

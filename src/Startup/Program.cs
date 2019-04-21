@@ -15,9 +15,9 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.AdminPanel;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.ConnectServer;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.FriendServer;
     using MUnique.OpenMU.GameServer;
-    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.GuildServer;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.LoginServer;
@@ -57,9 +57,6 @@ namespace MUnique.OpenMU.Startup
                 this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"));
             }
 
-            ClientVersionResolver.Register(new byte[] { 0x31, 0x30, 0x34, 0x30, 0x34 }, new ClientVersion(6, 3, ClientLanguage.English), true);
-            ClientVersionResolver.Register(new byte[] { 0x31, 0x30, 0x33, 0x34, 0x36 }, new ClientVersion(6, 3, ClientLanguage.English), false);
-
             var ipResolver = args.Contains("-local") ? (IIpAddressResolver)new LocalIpResolver() : new PublicIpResolver();
 
             Log.Info("Start initializing sub-components");
@@ -70,8 +67,21 @@ namespace MUnique.OpenMU.Startup
             this.servers.Add(chatServer);
             var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
             var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
-            var connectServer = ConnectServerFactory.CreateConnectServer(signalRServerObserver);
-            this.servers.Add(connectServer);
+            var connectServers = new Dictionary<GameClientDefinition, IConnectServer>();
+
+            ClientVersionResolver.DefaultVersion = new ClientVersion(6, 3, ClientLanguage.English);
+            foreach (var gameClientDefinition in persistenceContext.Get<GameClientDefinition>())
+            {
+                ClientVersionResolver.Register(gameClientDefinition.Version, new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
+            }
+
+            foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
+            {
+                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, signalRServerObserver);
+                this.servers.Add(connectServer);
+                connectServers[connectServerDefinition.Client] = connectServer;
+            }
+
             Log.Info("Start initializing game servers");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -80,7 +90,11 @@ namespace MUnique.OpenMU.Startup
                 using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
                 {
                     var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer, signalRServerObserver);
-                    gameServer.AddListener(new DefaultTcpGameServerListener(gameServerDefinition.NetworkPort, gameServer.ServerInfo, gameServer.Context, connectServer, ipResolver));
+                    foreach (var endpoint in gameServerDefinition.Endpoints)
+                    {
+                        gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, connectServers[endpoint.Client], ipResolver));
+                    }
+
                     this.servers.Add(gameServer);
                     this.gameServers.Add(gameServer.Id, gameServer);
                     Log.InfoFormat("Game Server {0} - [{1}] initialized", gameServer.Id, gameServer.Description);
@@ -102,7 +116,10 @@ namespace MUnique.OpenMU.Startup
                     gameServer.Start();
                 }
 
-                connectServer.Start();
+                foreach (var connectServer in connectServers.Values)
+                {
+                    connectServer.Start();
+                }
             }
         }
 

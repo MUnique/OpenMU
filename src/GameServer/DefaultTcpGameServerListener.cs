@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using log4net;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
@@ -24,8 +25,7 @@ namespace MUnique.OpenMU.GameServer
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(GameServer));
 
-        private readonly int port;
-
+        private readonly GameServerEndpoint endPoint;
         private readonly IGameServerInfo gameServerInfo;
 
         private readonly GameServerContext gameContext;
@@ -37,14 +37,14 @@ namespace MUnique.OpenMU.GameServer
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTcpGameServerListener" /> class.
         /// </summary>
-        /// <param name="port">The tcp port.</param>
+        /// <param name="endPoint">The endpoint to which this listener is listening.</param>
         /// <param name="gameServerInfo">The game server information.</param>
         /// <param name="gameContext">The game context.</param>
         /// <param name="connectServer">The connect server.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
-        public DefaultTcpGameServerListener(int port, IGameServerInfo gameServerInfo, GameServerContext gameContext, IConnectServer connectServer, IIpAddressResolver addressResolver)
+        public DefaultTcpGameServerListener(GameServerEndpoint endPoint, IGameServerInfo gameServerInfo, GameServerContext gameContext, IConnectServer connectServer, IIpAddressResolver addressResolver)
         {
-            this.port = port;
+            this.endPoint = endPoint;
             this.gameServerInfo = gameServerInfo;
             this.gameContext = gameContext;
             this.connectServer = connectServer;
@@ -63,10 +63,11 @@ namespace MUnique.OpenMU.GameServer
                 return;
             }
 
-            Logger.InfoFormat("Starting Server Listener, port {0}", this.port);
-            this.listener = new TcpListener(IPAddress.Any, this.port);
+            var port = this.endPoint.NetworkPort;
+            Logger.InfoFormat("Starting Server Listener, port {0}", port);
+            this.listener = new TcpListener(IPAddress.Any, port);
             this.listener.Start();
-            this.connectServer.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), this.port));
+            this.connectServer.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), port));
             Task.Run(this.BeginAccept);
             Logger.Info("Server listener started.");
         }
@@ -74,8 +75,9 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void Stop()
         {
+            var port = this.endPoint.NetworkPort;
             this.connectServer.UnregisterGameServer(this.gameServerInfo);
-            Logger.Info($"Stopping listener on port {this.port}.");
+            Logger.Info($"Stopping listener on port {port}.");
             if (this.listener == null || !this.listener.Server.IsBound)
             {
                 Logger.Debug("listener not running, nothing to shut down.");
@@ -84,7 +86,7 @@ namespace MUnique.OpenMU.GameServer
 
             this.listener.Stop();
 
-            Logger.Info($"Stopped listener on port {this.port}.");
+            Logger.Info($"Stopped listener on port {port}.");
         }
 
         private async Task BeginAccept()
@@ -93,7 +95,7 @@ namespace MUnique.OpenMU.GameServer
             Socket newClient;
             try
             {
-                newClient = await this.listener.AcceptSocketAsync();
+                newClient = await this.listener.AcceptSocketAsync().ConfigureAwait(false);
             }
             catch (ObjectDisposedException ex)
             {
@@ -136,7 +138,7 @@ namespace MUnique.OpenMU.GameServer
                 socket.NoDelay = true;
                 var socketConnection = SocketConnection.Create(socket);
                 var connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
-                var remotePlayer = new RemotePlayer(this.gameContext, connection);
+                var remotePlayer = new RemotePlayer(this.gameContext, connection, new ClientVersion(this.endPoint.Client.Season, this.endPoint.Client.Episode, this.endPoint.Client.Language));
                 this.OnPlayerConnected(remotePlayer);
                 connection.Disconnected += (sender, e) => remotePlayer.Disconnect();
 

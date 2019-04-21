@@ -9,6 +9,8 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
     using System.Net.Sockets;
 
     using log4net;
+    using MUnique.OpenMU.Interfaces;
+    using IConnectServer = MUnique.OpenMU.ConnectServer.IConnectServer;
 
     /// <summary>
     /// The handler of packets coming from the client.
@@ -19,7 +21,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
 
         private readonly IDictionary<byte, IPacketHandler<Client>> packetHandlers = new Dictionary<byte, IPacketHandler<Client>>();
 
-        private readonly Settings settings;
+        private readonly IConnectServerSettings connectServerSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientPacketHandler"/> class.
@@ -27,7 +29,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         /// <param name="connectServer">The connect server.</param>
         public ClientPacketHandler(IConnectServer connectServer)
         {
-            this.settings = connectServer.Settings;
+            this.connectServerSettings = connectServer.Settings;
             this.packetHandlers.Add(0x05, new FtpRequestHandler(connectServer.Settings));
             this.packetHandlers.Add(0xF4, new ServerListHandler(connectServer));
         }
@@ -37,7 +39,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         {
             try
             {
-                if (packet[1] > this.settings.MaxReceiveSize || packet.Length < 4)
+                if (packet[1] > this.connectServerSettings.MaxReceiveSize || packet.Length < 4)
                 {
                     this.DisconnectClientUnknownPacket(client, packet);
                     return;
@@ -48,7 +50,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
                 {
                     packetHandler.HandlePacket(client, packet);
                 }
-                else if (this.settings.DcOnUnknownPacket)
+                else if (this.connectServerSettings.DcOnUnknownPacket)
                 {
                     this.DisconnectClientUnknownPacket(client, packet);
                 }

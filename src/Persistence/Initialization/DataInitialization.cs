@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Text;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -52,9 +53,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             using (this.context = this.persistenceContextProvider.CreateNewContext(this.gameConfiguration))
             {
+                this.CreateGameClientDefinitions();
                 this.InitializeGameConfiguration();
+
                 var gameServerConfiguration = this.CreateGameServerConfiguration(this.gameConfiguration.Maps);
                 this.CreateGameServerDefinitions(gameServerConfiguration, 3);
+                this.CreateConnectServerDefinitions();
                 this.context.SaveChanges();
 
                 var lorencia = this.gameConfiguration.Maps.First(map => map.Number == 0);
@@ -817,6 +821,43 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.ItemSlotTypes.Add(ring);
         }
 
+        private void CreateGameClientDefinitions()
+        {
+            var clientDefinition = this.context.CreateNew<GameClientDefinition>();
+            clientDefinition.Season = 6;
+            clientDefinition.Episode = 3;
+            clientDefinition.Language = ClientLanguage.English;
+            clientDefinition.Version = new byte[] { 0x31, 0x30, 0x34, 0x30, 0x34 };
+            clientDefinition.Serial = Encoding.ASCII.GetBytes("k1Pk2jcET48mxL3b");
+            clientDefinition.Description = "Season 6 Episode 3 GMO Client";
+        }
+
+        private void CreateConnectServerDefinitions()
+        {
+            var i = 0;
+            foreach (var client in this.context.Get<GameClientDefinition>().ToList())
+            {
+                var connectServer = this.context.CreateNew<ConnectServerDefinition>();
+                connectServer.ServerId = (byte)i;
+                connectServer.Client = client;
+                connectServer.ClientListenerPort = 44405 + i;
+                connectServer.Description = $"Connect Server ({new ClientVersion(client.Season, client.Episode, client.Language)})";
+                connectServer.DcOnUnknownPacket = true;
+                connectServer.MaxReceiveSize = 6;
+                connectServer.Timeout = new TimeSpan(0, 1, 0);
+                connectServer.CurrentPatchVersion = new byte[] { 1, 3, 0x2B };
+                connectServer.PatchAddress = "patch.muonline.webzen.com";
+                connectServer.MaxConnectionsPerAddress = 30;
+                connectServer.CheckMaxConnectionsPerAddress = true;
+                connectServer.MaxConnections = 10000;
+                connectServer.ListenerBacklog = 100;
+                connectServer.MaxFtpRequests = 1;
+                connectServer.MaxIpRequests = 5;
+                connectServer.MaxServerListRequests = 20;
+                i++;
+            }
+        }
+
         private void CreateGameServerDefinitions(GameServerConfiguration gameServerConfiguration, int numberOfServers)
         {
             for (int i = 0; i < numberOfServers; i++)
@@ -824,9 +865,18 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var server = this.context.CreateNew<GameServerDefinition>();
                 server.ServerID = (byte)i;
                 server.Description = $"Server {i}";
-                server.NetworkPort = 55901 + i;
                 server.GameConfiguration = this.gameConfiguration;
                 server.ServerConfiguration = gameServerConfiguration;
+
+                var j = 0;
+                foreach (var client in this.context.Get<GameClientDefinition>().ToList())
+                {
+                    var endPoint = this.context.CreateNew<GameServerEndpoint>();
+                    endPoint.Client = client;
+                    endPoint.NetworkPort = 55901 + i + j;
+                    server.Endpoints.Add(endPoint);
+                    j += 20;
+                }
             }
         }
 

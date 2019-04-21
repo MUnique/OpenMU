@@ -33,6 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Ignore<ConstantElement>();
             modelBuilder.Ignore<SimpleElement>();
             modelBuilder.Entity<AttributeDefinition>();
+            modelBuilder.Entity<ConnectServerDefinition>();
             modelBuilder.Entity<PowerUpDefinitionWithDuration>()
                 .HasOne(d => d.RawBoost)
                 .WithOne(v => v.ParentAsBoost)

@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
     using System;
     using System.Collections.Generic;
     using log4net;
+    using MUnique.OpenMU.Interfaces;
+    using IConnectServer = MUnique.OpenMU.ConnectServer.IConnectServer;
 
     /// <summary>
     /// Handles the requests of server data.
@@ -14,7 +16,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
     internal class ServerListHandler : IPacketHandler<Client>
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ServerListHandler));
-        private readonly Settings settings;
+        private readonly IConnectServerSettings connectServerSettings;
         private readonly IDictionary<byte, IPacketHandler<Client>> packetHandlers = new Dictionary<byte, IPacketHandler<Client>>();
 
         /// <summary>
@@ -23,7 +25,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         /// <param name="connectServer">The connect server.</param>
         public ServerListHandler(IConnectServer connectServer)
         {
-            this.settings = connectServer.Settings;
+            this.connectServerSettings = connectServer.Settings;
             this.packetHandlers.Add(0x03, new ServerInfoRequestHandler(connectServer));
             this.packetHandlers.Add(0x06, new ServerListRequestHandler(connectServer));
         }
@@ -36,7 +38,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
             {
                 packetHandler.HandlePacket(client, packet);
             }
-            else if (this.settings.DcOnUnknownPacket)
+            else if (this.connectServerSettings.DcOnUnknownPacket)
             {
                 Log.InfoFormat("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
                 client.Connection.Disconnect();

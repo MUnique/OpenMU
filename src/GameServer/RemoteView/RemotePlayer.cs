@@ -7,10 +7,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System;
     using System.Buffers;
     using log4net;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameServer.MessageHandler;
-    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.PlugIns;
 
@@ -23,17 +23,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private readonly byte[] packetBuffer = new byte[0xFF];
 
-        private ClientVersion clientVersion = new ClientVersion(6, 3, ClientLanguage.English);
+        private ClientVersion clientVersion;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RemotePlayer"/> class.
         /// </summary>
         /// <param name="gameContext">The game context.</param>
         /// <param name="connection">The remote connection.</param>
-        public RemotePlayer(IGameServerContext gameContext, IConnection connection)
+        /// <param name="clientVersion">The expected client version of the connected player.</param>
+        public RemotePlayer(IGameServerContext gameContext, IConnection connection, ClientVersion clientVersion)
             : base(gameContext)
         {
             this.Connection = connection;
+            this.clientVersion = clientVersion;
             this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager);
             this.MainPacketHandler.Initialize();
             this.Connection.PacketReceived += (sender, packet) => this.PacketReceived(packet);

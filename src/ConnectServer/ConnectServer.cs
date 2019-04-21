@@ -24,12 +24,12 @@ namespace MUnique.OpenMU.ConnectServer
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectServer" /> class.
         /// </summary>
-        /// <param name="settings">The settings.</param>
+        /// <param name="connectServerSettings">The settings.</param>
         /// <param name="stateObserver">The state observer.</param>
-        public ConnectServer(Settings settings, IServerStateObserver stateObserver)
+        public ConnectServer(IConnectServerSettings connectServerSettings, IServerStateObserver stateObserver)
         {
             this.stateObserver = stateObserver;
-            this.Settings = settings;
+            this.Settings = connectServerSettings;
 
             this.ConnectInfos = new Dictionary<ushort, byte[]>();
             this.ServerList = new ServerList();
@@ -55,10 +55,10 @@ namespace MUnique.OpenMU.ConnectServer
         }
 
         /// <inheritdoc/>
-        public string Description => "Connect Server";
+        public string Description => this.Settings.Description;
 
         /// <inheritdoc/>
-        public int Id => SpecialServerIds.ConnectServer;
+        public int Id => SpecialServerIds.ConnectServer + this.Settings.ServerId;
 
         /// <inheritdoc/>
         public IDictionary<ushort, byte[]> ConnectInfos { get; }
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.ConnectServer
         public ServerList ServerList { get; }
 
         /// <inheritdoc/>
-        public Settings Settings { get; }
+        public IConnectServerSettings Settings { get; }
 
         /// <summary>
         /// Gets the client listener.
