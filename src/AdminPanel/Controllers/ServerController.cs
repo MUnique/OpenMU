@@ -108,6 +108,11 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
                 return new GameServerInfo(gameServer);
             }
 
+            if (server is IConnectServer connectServer)
+            {
+                return new ConnectServerInfo(connectServer);
+            }
+
             return new ServerInfo(server);
         }
     }

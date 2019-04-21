@@ -100,7 +100,13 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
                 result.Add(serverInfo);
             }
 
-            foreach (var server in this.servers.Where(server => !(server is IGameServer)))
+            foreach (var connectServer in this.servers.OfType<IConnectServer>().OrderBy(s => s.Id))
+            {
+                var serverInfo = new ConnectServerInfo(connectServer);
+                result.Add(serverInfo);
+            }
+
+            foreach (var server in this.servers.Where(server => !(server is IGameServer) && !(server is IConnectServer)))
             {
                 var serverInfo = new ServerInfo(server);
                 result.Add(serverInfo);
