@@ -32,6 +32,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(this.CreateJewelOfGuardian());
             this.GameConfiguration.Items.Add(this.CreateJewelOfHarmony());
             this.GameConfiguration.Items.Add(this.CreateGemstone());
+            this.GameConfiguration.Items.Add(this.CreateJewelOfChaos());
             this.GameConfiguration.Items.Add(this.CreateLowerRefineStone());
             this.GameConfiguration.Items.Add(this.CreateHigherRefineStone());
         }
@@ -168,6 +169,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             itemDefinition.Width = 1;
             itemDefinition.Height = 1;
             itemDefinition.Value = 25;
+            return itemDefinition;
+        }
+
+        /// <summary>
+        /// Creates an <see cref="ItemDefinition"/> for the 'Jewel of Chaos'.
+        /// </summary>
+        /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Chaos'.</returns>
+        private ItemDefinition CreateJewelOfChaos()
+        {
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+            itemDefinition.Name = "Jewel of Chaos";
+            itemDefinition.Number = 15;
+            itemDefinition.Group = 12;
+            itemDefinition.DropsFromMonsters = true;
+            itemDefinition.DropLevel = 12;
+            itemDefinition.Durability = 1;
+            itemDefinition.Width = 1;
+            itemDefinition.Height = 1;
             return itemDefinition;
         }
 
