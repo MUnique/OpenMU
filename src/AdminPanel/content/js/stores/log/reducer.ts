@@ -20,7 +20,7 @@ export interface LogTableState {
     readonly serverFilter: string;
 }
 
-const initialState: LogTableState = {
+export const initialState: LogTableState = {
         entries: [],
         loggers: [],
         autoRefresh: true,

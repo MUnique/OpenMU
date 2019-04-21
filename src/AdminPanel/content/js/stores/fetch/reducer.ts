@@ -5,7 +5,7 @@ export type FetchState = {
     readonly isFetching: boolean,
 };
 
-const initialState: FetchState = {
+export const initialState: FetchState = {
     isFetching: false
 };
 

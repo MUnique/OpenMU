@@ -19,7 +19,7 @@ export type AccountListState = {
     readonly createDialogVisible: boolean,
 };
 
-const initialState: AccountListState =
+export const initialState: AccountListState =
 {
     page: 1,
     pageSize: 20,

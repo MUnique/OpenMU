@@ -24,7 +24,7 @@ export type PlugInListState = {
     readonly filterType: string,
 };
 
-const initialState: PlugInListState =
+export const initialState: PlugInListState =
 {
     page: 1,
     pageSize: 20,

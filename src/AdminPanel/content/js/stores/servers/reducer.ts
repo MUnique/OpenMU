@@ -8,7 +8,7 @@ export type ServerListState = {
     readonly servers: Server[];
 };
 
-const initialState: ServerListState =
+export const initialState: ServerListState =
 {
     servers: []
 };
