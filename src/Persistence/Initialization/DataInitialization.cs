@@ -1049,7 +1049,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private void CreateJewelMix(byte mixNumber, int itemNumber, int itemGroup, int packedJewelId)
         {
             var singleJewel = this.gameConfiguration.Items.First(i => i.Group == itemGroup && i.Number == itemNumber);
-            var packedJewel = this.gameConfiguration.Items.First(i => i.Group == 0x0C & i.Number == packedJewelId);
+            var packedJewel = this.gameConfiguration.Items.First(i => i.Group == 0x0C && i.Number == packedJewelId);
             var jewelMix = this.context.CreateNew<JewelMix>();
             jewelMix.Number = mixNumber;
             jewelMix.SingleJewel = singleJewel;
