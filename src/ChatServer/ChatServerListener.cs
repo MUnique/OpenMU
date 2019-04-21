@@ -73,6 +73,9 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public int Id => SpecialServerIds.ChatServer;
 
+        /// <inheritdoc />
+        public ServerType Type => ServerType.ChatServer;
+
         /// <inheritdoc/>
         public ServerState ServerState
         {

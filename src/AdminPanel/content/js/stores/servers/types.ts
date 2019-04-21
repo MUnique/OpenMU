@@ -3,6 +3,7 @@
 export interface Server {
     readonly id: number;
     readonly state: ServerState;
+    readonly type: ServerType;
     readonly description: string;
     readonly onlinePlayerCount: number;
     readonly maximumPlayers: number;
@@ -32,4 +33,11 @@ export namespace ServerState {
 
         return "";
     }
+}
+
+export enum ServerType {
+    Undefined = 0,
+    GameServer = 1,
+    ConnectServer = 2,
+    ChatServer = 3,
 }

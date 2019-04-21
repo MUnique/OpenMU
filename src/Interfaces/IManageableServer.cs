@@ -20,6 +20,11 @@ namespace MUnique.OpenMU.Interfaces
         string Description { get; }
 
         /// <summary>
+        /// Gets the type.
+        /// </summary>
+        ServerType Type { get; }
+
+        /// <summary>
         /// Gets the current state of the server.
         /// </summary>
         ServerState ServerState { get; }

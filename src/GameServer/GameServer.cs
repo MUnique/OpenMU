@@ -94,6 +94,9 @@ namespace MUnique.OpenMU.GameServer
             }
         }
 
+        /// <inheritdoc />
+        public ServerType Type => ServerType.GameServer;
+
         /// <inheritdoc/>
         public int MaximumConnections => this.ServerInfo.MaximumPlayers;
 

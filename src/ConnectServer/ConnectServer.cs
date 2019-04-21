@@ -54,6 +54,9 @@ namespace MUnique.OpenMU.ConnectServer
             }
         }
 
+        /// <inheritdoc />
+        public ServerType Type => ServerType.ConnectServer;
+
         /// <inheritdoc/>
         public string Description => this.Settings.Description;
 

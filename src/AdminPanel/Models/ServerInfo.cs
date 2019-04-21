@@ -52,5 +52,11 @@ namespace MUnique.OpenMU.AdminPanel.Models
         /// </summary>
         [JsonProperty("maximumPlayers")]
         public int MaximumPlayers => this.server.MaximumConnections;
+
+        /// <summary>
+        /// Gets the type of the server.
+        /// </summary>
+        [JsonProperty("type")]
+        public ServerType Type => this.server.Type;
     }
 }
