@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.ConnectServer
             Socket newClient;
             try
             {
-                newClient = await this.clientListener.AcceptSocketAsync();
+                newClient = await this.clientListener.AcceptSocketAsync().ConfigureAwait(false);
             }
             catch (ObjectDisposedException)
             {
