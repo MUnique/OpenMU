@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     /// <summary>
     /// A helper class which contains some convenient methods to create items.
     /// </summary>
-    public class ItemHelper
+    internal class ItemHelper
     {
         private readonly IContext context;
 
@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The orb.</returns>
         public Item CreateOrb(byte itemSlot, byte learnableId)
         {
-            return this.CreateLearnable(itemSlot, learnableId, 12); // 12 - Orb group
+            return this.CreateLearnable(itemSlot, learnableId, ItemGroups.Orbs);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The orb.</returns>
         public Item CreateSummonOrb(byte itemSlot, byte level)
         {
-            var orb = this.CreateLearnable(itemSlot, 11, 12); // 12 - Orb group
+            var orb = this.CreateLearnable(itemSlot, 11, ItemGroups.Orbs);
             orb.Level = level;
             return orb;
         }
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The scroll.</returns>
         public Item CreateScroll(byte itemSlot, byte learnableId)
         {
-            return this.CreateLearnable(itemSlot, learnableId, 15); // 15 - Scroll group
+            return this.CreateLearnable(itemSlot, learnableId, ItemGroups.Scrolls);
         }
 
         /// <summary>
@@ -72,10 +72,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <param name="learnableId">The learnable identifier.</param>
         /// <param name="group">The group.</param>
         /// <returns>The learnable.</returns>
-        public Item CreateLearnable(byte itemSlot, byte learnableId, byte group)
+        public Item CreateLearnable(byte itemSlot, byte learnableId, ItemGroups group)
         {
             var item = this.context.CreateNew<Item>();
-            item.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == learnableId);
+            item.Definition = this.gameConfiguration.Items.First(def => def.Group == (byte)group && def.Number == learnableId);
             item.ItemSlot = itemSlot;
 
             return item;
@@ -131,39 +131,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <param name="optionLevel">The option level.</param>
         /// <param name="luck">if set to <c>true</c>, the item has luck option.</param>
         /// <returns>The created armor set item.</returns>
-        public Item CreateSetItem(byte itemSlot, byte setNumber, byte group, AttributeDefinition targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
+        public Item CreateSetItem(byte itemSlot, byte setNumber, ItemGroups group, AttributeDefinition targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
         {
-            var item = this.context.CreateNew<Item>();
-            item.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == setNumber);
-            item.Level = level;
-            item.Durability = item.Definition.Durability;
-            item.ItemSlot = itemSlot;
-            var excellentOption = this.GetExcellentOption(targetExcellentOption, item);
-            if (excellentOption != null)
-            {
-                var optionLink = this.context.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = excellentOption;
-                item.ItemOptions.Add(optionLink);
-            }
-
-            if (optionLevel > 0)
-            {
-                var optionLink = this.context.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                    .First(o => o.OptionType == ItemOptionTypes.Option);
-                optionLink.Level = optionLevel;
-                item.ItemOptions.Add(optionLink);
-            }
-
-            if (luck)
-            {
-                var optionLink = this.context.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                    .First(o => o.OptionType == ItemOptionTypes.Luck);
-                item.ItemOptions.Add(optionLink);
-            }
-
-            return item;
+            return this.CreateEquippableItem(itemSlot, group, setNumber, level, optionLevel, luck, targetExcellentOption);
         }
 
         /// <summary>
@@ -179,12 +149,29 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The created shield.</returns>
         public Item CreateShield(byte itemSlot, byte setNumber, bool skill, AttributeDefinition targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
         {
-            var item = this.context.CreateNew<Item>();
-            item.Definition = this.gameConfiguration.Items.First(def => def.Group == 6 && def.Number == setNumber);
-            item.Level = level;
+            var item = this.CreateEquippableItem(itemSlot, ItemGroups.Shields, setNumber, level, optionLevel, luck, targetExcellentOption);
             item.HasSkill = skill;
+            return item;
+        }
+
+        /// <summary>
+        /// Creates an equippable item.
+        /// </summary>
+        /// <param name="itemSlot">The item slot.</param>
+        /// <param name="group">The group.</param>
+        /// <param name="number">The number.</param>
+        /// <param name="level">The level.</param>
+        /// <param name="optionLevel">The option level.</param>
+        /// <param name="luck">if set to <c>true</c>, the item has luck option.</param>
+        /// <param name="targetExcellentOption">The target excellent option.</param>
+        /// <returns>The created item.</returns>
+        public Item CreateEquippableItem(byte itemSlot, ItemGroups group, byte number, byte level, byte optionLevel, bool luck, AttributeDefinition targetExcellentOption)
+        {
+            var item = this.context.CreateNew<Item>();
+            item.Definition = this.gameConfiguration.Items.First(def => def.Group == (byte)group && def.Number == number);
             item.Durability = item.Definition.Durability;
             item.ItemSlot = itemSlot;
+            item.Level = level;
             var excellentOption = this.GetExcellentOption(targetExcellentOption, item);
             if (excellentOption != null)
             {
@@ -225,39 +212,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <param name="skill">if set to <c>true</c>, the item has skill.</param>
         /// <param name="targetExcellentOption">The target excellent option.</param>
         /// <returns>The created weapon.</returns>
-        public Item CreateWeapon(byte itemSlot, byte group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition targetExcellentOption)
+        public Item CreateWeapon(byte itemSlot, ItemGroups group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition targetExcellentOption)
         {
-            var weapon = this.context.CreateNew<Item>();
-            weapon.Definition = this.gameConfiguration.Items.First(def => def.Group == group && def.Number == number);
-            weapon.Durability = weapon.Definition.Durability;
-            weapon.ItemSlot = itemSlot;
-            weapon.Level = level;
+            var weapon = this.CreateEquippableItem(itemSlot, group, number, level, optionLevel, luck, targetExcellentOption);
             weapon.HasSkill = skill;
-            var excellentOption = this.GetExcellentOption(targetExcellentOption, weapon);
-            if (excellentOption != null)
-            {
-                var optionLink = this.context.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = excellentOption;
-                weapon.ItemOptions.Add(optionLink);
-            }
-
-            if (optionLevel > 0)
-            {
-                var optionLink = this.context.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                    .First(o => o.OptionType == ItemOptionTypes.Option);
-                optionLink.Level = optionLevel;
-                weapon.ItemOptions.Add(optionLink);
-            }
-
-            if (luck)
-            {
-                var optionLink = this.context.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                    .First(o => o.OptionType == ItemOptionTypes.Luck);
-                weapon.ItemOptions.Add(optionLink);
-            }
-
             return weapon;
         }
 

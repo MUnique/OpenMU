@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence.Initialization.Items;
 
     /// <summary>
     /// The initialization of all NPCs, which are no monsters.
@@ -48,13 +49,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.itemHelper.CreatePotion(7, 8, 1, 0),    // Antidote +0 x1
                 this.itemHelper.CreatePotion(15, 8, 3, 0),    // Antidote +0 x3
 
-                this.itemHelper.CreateWeapon(24, 4, 7, 0, 0, false, false, null), // Bolt
-                this.itemHelper.CreateWeapon(25, 4, 7, 1, 0, false, false, null), // Bolt +1
-                this.itemHelper.CreateWeapon(26, 4, 7, 2, 0, false, false, null), // Bolt +2
+                this.itemHelper.CreateWeapon(24, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
+                this.itemHelper.CreateWeapon(25, ItemGroups.Bows, 7, 1, 0, false, false, null), // Bolt +1
+                this.itemHelper.CreateWeapon(26, ItemGroups.Bows, 7, 2, 0, false, false, null), // Bolt +2
 
-                this.itemHelper.CreateWeapon(27, 4, 15, 0, 0, false, false, null), // Arrow
-                this.itemHelper.CreateWeapon(28, 4, 15, 1, 0, false, false, null), // Arrow +1
-                this.itemHelper.CreateWeapon(29, 4, 15, 2, 0, false, false, null), // Arrow +2
+                this.itemHelper.CreateWeapon(27, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
+                this.itemHelper.CreateWeapon(28, ItemGroups.Bows, 15, 1, 0, false, false, null), // Arrow +1
+                this.itemHelper.CreateWeapon(29, ItemGroups.Bows, 15, 2, 0, false, false, null), // Arrow +2
 
                 //// TODO: insert Archer and Spearman
 
@@ -68,35 +69,35 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             List<Item> itemList = new List<Item>
             {
-                this.itemHelper.CreateSetItem(0, 5, 7, null, 0, 1, true),     // Leather Helm     +0+4+L
-                this.itemHelper.CreateSetItem(16, 5, 8, null, 0, 1, true),    // Leather Armor    +0+4+L
-                this.itemHelper.CreateSetItem(40, 5, 9, null, 0, 1, true),    // Leather Pants    +0+4+L
-                this.itemHelper.CreateSetItem(56, 5, 11, null, 0, 1, true),   // Leather Boots    +0+4+L
-                this.itemHelper.CreateSetItem(72, 5, 10, null, 0, 1, true),   // Leather Gloves   +0+4+L
+                this.itemHelper.CreateSetItem(0, 5, ItemGroups.Helm, null, 0, 1, true),     // Leather Helm     +0+4+L
+                this.itemHelper.CreateSetItem(16, 5, ItemGroups.Armor, null, 0, 1, true),    // Leather Armor    +0+4+L
+                this.itemHelper.CreateSetItem(40, 5, ItemGroups.Pants, null, 0, 1, true),    // Leather Pants    +0+4+L
+                this.itemHelper.CreateSetItem(56, 5, ItemGroups.Boots, null, 0, 1, true),   // Leather Boots    +0+4+L
+                this.itemHelper.CreateSetItem(72, 5, ItemGroups.Gloves, null, 0, 1, true),   // Leather Gloves   +0+4+L
 
-                this.itemHelper.CreateSetItem(2, 0, 7, null, 2, 1, true),     // Bronze Helm    +2+4+L
-                this.itemHelper.CreateSetItem(18, 0, 8, null, 2, 1, true),    // Bronze Armor   +2+4+L
-                this.itemHelper.CreateSetItem(34, 0, 9, null, 2, 1, true),    // Bronze Pants   +2+4+L
-                this.itemHelper.CreateSetItem(50, 0, 11, null, 2, 1, true),   // Bronze Boots   +2+4+L
-                this.itemHelper.CreateSetItem(66, 0, 10, null, 2, 1, true),   // Bronze Gloves  +2+4+L
+                this.itemHelper.CreateSetItem(2, 0, ItemGroups.Helm, null, 2, 1, true),     // Bronze Helm    +2+4+L
+                this.itemHelper.CreateSetItem(18, 0, ItemGroups.Armor, null, 2, 1, true),    // Bronze Armor   +2+4+L
+                this.itemHelper.CreateSetItem(34, 0, ItemGroups.Pants, null, 2, 1, true),    // Bronze Pants   +2+4+L
+                this.itemHelper.CreateSetItem(50, 0, ItemGroups.Boots, null, 2, 1, true),   // Bronze Boots   +2+4+L
+                this.itemHelper.CreateSetItem(66, 0, ItemGroups.Gloves, null, 2, 1, true),   // Bronze Gloves  +2+4+L
 
-                this.itemHelper.CreateSetItem(4, 6, 7, null, 3, 1, true),     // Scale Helm      +3+4+L
-                this.itemHelper.CreateSetItem(20, 6, 8, null, 3, 1, true),    // Scale Armor     +3+4+L
-                this.itemHelper.CreateSetItem(36, 6, 9, null, 3, 1, true),    // Scale Pants     +3+4+L
-                this.itemHelper.CreateSetItem(52, 6, 11, null, 3, 1, true),   // Scale Boots     +3+4+L
-                this.itemHelper.CreateSetItem(68, 6, 10, null, 3, 1, true),   // Scale Gloves    +3+4+L
+                this.itemHelper.CreateSetItem(4, 6, ItemGroups.Helm, null, 3, 1, true),     // Scale Helm      +3+4+L
+                this.itemHelper.CreateSetItem(20, 6, ItemGroups.Armor, null, 3, 1, true),    // Scale Armor     +3+4+L
+                this.itemHelper.CreateSetItem(36, 6, ItemGroups.Pants, null, 3, 1, true),    // Scale Pants     +3+4+L
+                this.itemHelper.CreateSetItem(52, 6, ItemGroups.Boots, null, 3, 1, true),   // Scale Boots     +3+4+L
+                this.itemHelper.CreateSetItem(68, 6, ItemGroups.Gloves, null, 3, 1, true),   // Scale Gloves    +3+4+L
 
-                this.itemHelper.CreateSetItem(6, 8, 7, null, 3, 1, true),     // Brass Helm      +3+4+L
-                this.itemHelper.CreateSetItem(22, 8, 8, null, 3, 1, true),    // Brass Armor     +3+4+L
-                this.itemHelper.CreateSetItem(38, 8, 9, null, 3, 1, true),    // Brass Pants     +3+4+L
-                this.itemHelper.CreateSetItem(54, 8, 11, null, 3, 1, true),   // Brass Boots     +3+4+L
-                this.itemHelper.CreateSetItem(70, 8, 10, null, 3, 1, true),   // Brass Gloves    +3+4+L
+                this.itemHelper.CreateSetItem(6, 8, ItemGroups.Helm, null, 3, 1, true),     // Brass Helm      +3+4+L
+                this.itemHelper.CreateSetItem(22, 8, ItemGroups.Armor, null, 3, 1, true),    // Brass Armor     +3+4+L
+                this.itemHelper.CreateSetItem(38, 8, ItemGroups.Pants, null, 3, 1, true),    // Brass Pants     +3+4+L
+                this.itemHelper.CreateSetItem(54, 8, ItemGroups.Boots, null, 3, 1, true),   // Brass Boots     +3+4+L
+                this.itemHelper.CreateSetItem(70, 8, ItemGroups.Gloves, null, 3, 1, true),   // Brass Gloves    +3+4+L
 
-                this.itemHelper.CreateSetItem(88, 9, 7, null, 3, 1, true),    // Plate Helm      +3+4+L
-                this.itemHelper.CreateSetItem(104, 9, 8, null, 3, 1, true),   // Plate Armor     +3+4+L
-                this.itemHelper.CreateSetItem(82, 9, 9, null, 3, 1, true),    // Plate Pants     +3+4+L
-                this.itemHelper.CreateSetItem(98, 9, 11, null, 3, 1, true),   // Plate Boots     +3+4+L
-                this.itemHelper.CreateSetItem(84, 9, 10, null, 3, 1, true),   // Plate Gloves    +3+4+L
+                this.itemHelper.CreateSetItem(88, 9, ItemGroups.Helm, null, 3, 1, true),    // Plate Helm      +3+4+L
+                this.itemHelper.CreateSetItem(104, 9, ItemGroups.Armor, null, 3, 1, true),   // Plate Armor     +3+4+L
+                this.itemHelper.CreateSetItem(82, 9, ItemGroups.Pants, null, 3, 1, true),    // Plate Pants     +3+4+L
+                this.itemHelper.CreateSetItem(98, 9, ItemGroups.Boots, null, 3, 1, true),   // Plate Boots     +3+4+L
+                this.itemHelper.CreateSetItem(84, 9, ItemGroups.Gloves, null, 3, 1, true),   // Plate Gloves    +3+4+L
             };
 
             return this.CreateMerchantStore(itemList);
@@ -121,20 +122,20 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.itemHelper.CreateShield(36, 11, true, null, 3, 1, true), // Serpent Shield   +3+4+L+S
                 this.itemHelper.CreateShield(38, 12, true, null, 3, 1, true), // Bronze Shield    +3+4+L+S
 
-                this.itemHelper.CreateWeapon(48, 0, 1, 0, 1, true, false, null),  // Short Sword  +0+4+L
-                this.itemHelper.CreateWeapon(49, 1, 1, 1, 1, true, false, null),  // Hand Axe     +1+4+L
-                this.itemHelper.CreateWeapon(50, 2, 1, 2, 1, true, false, null),  // Mace         +2+4+L
-                this.itemHelper.CreateWeapon(51, 0, 2, 2, 1, true, false, null),  // Rapier       +2+4+L
-                this.itemHelper.CreateWeapon(52, 1, 2, 2, 1, true, false, null),  // Double Axe   +2+4+L
-                this.itemHelper.CreateWeapon(53, 0, 4, 3, 1, true, true, null),   // Assassin     +3+4+L
-                this.itemHelper.CreateWeapon(54, 2, 1, 3, 1, true, true, null),   // Morning Star +3+4+L
-                this.itemHelper.CreateWeapon(55, 1, 3, 3, 1, true, true, null),   // Tomahawk     +3+4+L
+                this.itemHelper.CreateWeapon(48, ItemGroups.Swords, 1, 0, 1, true, false, null),  // Short Sword  +0+4+L
+                this.itemHelper.CreateWeapon(49, ItemGroups.Axes, 1, 1, 1, true, false, null),  // Hand Axe     +1+4+L
+                this.itemHelper.CreateWeapon(50, ItemGroups.Scepters, 1, 2, 1, true, false, null),  // Mace         +2+4+L
+                this.itemHelper.CreateWeapon(51, ItemGroups.Swords, 2, 2, 1, true, false, null),  // Rapier       +2+4+L
+                this.itemHelper.CreateWeapon(52, ItemGroups.Axes, 2, 2, 1, true, false, null),  // Double Axe   +2+4+L
+                this.itemHelper.CreateWeapon(53, ItemGroups.Swords, 4, 3, 1, true, true, null),   // Assassin     +3+4+L
+                this.itemHelper.CreateWeapon(54, ItemGroups.Scepters, 1, 3, 1, true, true, null),   // Morning Star +3+4+L
+                this.itemHelper.CreateWeapon(55, ItemGroups.Axes, 3, 3, 1, true, true, null),   // Tomahawk     +3+4+L
 
-                this.itemHelper.CreateWeapon(72, 0, 0, 2, 1, true, false, null),  // Kris             +2+4+L
-                this.itemHelper.CreateWeapon(73, 0, 6, 3, 1, true, true, null),   // Gladius          +3+4+L+S
-                this.itemHelper.CreateWeapon(73, 0, 7, 3, 1, true, true, null),   // Falchion         +3+4+L+S
-                this.itemHelper.CreateWeapon(74, 0, 8, 3, 1, true, false, null),  // Serpent Sword    +3+4+L
-                this.itemHelper.CreateWeapon(75, 0, 5, 3, 1, true, true, null),   // Blade            +3+4+L+S
+                this.itemHelper.CreateWeapon(72, ItemGroups.Swords, 0, 2, 1, true, false, null),  // Kris             +2+4+L
+                this.itemHelper.CreateWeapon(73, ItemGroups.Swords, 6, 3, 1, true, true, null),   // Gladius          +3+4+L+S
+                this.itemHelper.CreateWeapon(73, ItemGroups.Swords, 7, 3, 1, true, true, null),   // Falchion         +3+4+L+S
+                this.itemHelper.CreateWeapon(74, ItemGroups.Swords, 8, 3, 1, true, false, null),  // Serpent Sword    +3+4+L
+                this.itemHelper.CreateWeapon(75, ItemGroups.Swords, 5, 3, 1, true, true, null),   // Blade            +3+4+L+S
             };
 
             return this.CreateMerchantStore(itemList);
@@ -155,28 +156,28 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.itemHelper.CreateOrb(7, 13),     // Orb of Impale
                 this.itemHelper.CreateOrb(15, 7),     // Orb of Twisting Slash
 
-                this.itemHelper.CreateSetItem(16, 2, 7, null, 0, 1, true),    // Pad Helm     +0+4+L
-                this.itemHelper.CreateSetItem(32, 2, 8, null, 0, 1, true),    // Pad Armor    +0+4+L
-                this.itemHelper.CreateSetItem(48, 2, 9, null, 0, 1, true),    // Pad Pants    +0+4+L
-                this.itemHelper.CreateSetItem(64, 2, 11, null, 0, 1, true),   // Pad Boots    +0+4+L
-                this.itemHelper.CreateSetItem(80, 2, 10, null, 0, 1, true),   // Pad Gloves   +0+4+L
+                this.itemHelper.CreateSetItem(16, 2, ItemGroups.Helm, null, 0, 1, true),    // Pad Helm     +0+4+L
+                this.itemHelper.CreateSetItem(32, 2, ItemGroups.Armor, null, 0, 1, true),    // Pad Armor    +0+4+L
+                this.itemHelper.CreateSetItem(48, 2, ItemGroups.Pants, null, 0, 1, true),    // Pad Pants    +0+4+L
+                this.itemHelper.CreateSetItem(64, 2, ItemGroups.Boots, null, 0, 1, true),   // Pad Boots    +0+4+L
+                this.itemHelper.CreateSetItem(80, 2, ItemGroups.Gloves, null, 0, 1, true),   // Pad Gloves   +0+4+L
 
-                this.itemHelper.CreateSetItem(18, 4, 7, null, 2, 1, true),    // Bone Helm    +2+4+L
-                this.itemHelper.CreateSetItem(34, 4, 8, null, 2, 1, true),    // Bone Armor   +2+4+L
-                this.itemHelper.CreateSetItem(50, 4, 9, null, 2, 1, true),    // Bone Pants   +2+4+L
-                this.itemHelper.CreateSetItem(66, 4, 11, null, 2, 1, true),   // Bone Boots   +2+4+L
-                this.itemHelper.CreateSetItem(82, 4, 10, null, 2, 1, true),   // Bone Gloves  +2+4+L
+                this.itemHelper.CreateSetItem(18, 4, ItemGroups.Helm, null, 2, 1, true),    // Bone Helm    +2+4+L
+                this.itemHelper.CreateSetItem(34, 4, ItemGroups.Armor, null, 2, 1, true),    // Bone Armor   +2+4+L
+                this.itemHelper.CreateSetItem(50, 4, ItemGroups.Pants, null, 2, 1, true),    // Bone Pants   +2+4+L
+                this.itemHelper.CreateSetItem(66, 4, ItemGroups.Boots, null, 2, 1, true),   // Bone Boots   +2+4+L
+                this.itemHelper.CreateSetItem(82, 4, ItemGroups.Gloves, null, 2, 1, true),   // Bone Gloves  +2+4+L
 
-                this.itemHelper.CreateSetItem(20, 7, 7, null, 3, 1, true),    // Sphinx Helm      +3+4+L
-                this.itemHelper.CreateSetItem(36, 7, 8, null, 3, 1, true),    // Sphinx Armor     +3+4+L
-                this.itemHelper.CreateSetItem(60, 7, 9, null, 3, 1, true),    // Sphinx Pants     +3+4+L
-                this.itemHelper.CreateSetItem(76, 7, 11, null, 3, 1, true),   // Sphinx Boots     +3+4+L
-                this.itemHelper.CreateSetItem(92, 7, 10, null, 3, 1, true),   // Sphinx Gloves    +3+4+L
+                this.itemHelper.CreateSetItem(20, 7, ItemGroups.Helm, null, 3, 1, true),    // Sphinx Helm      +3+4+L
+                this.itemHelper.CreateSetItem(36, 7, ItemGroups.Armor, null, 3, 1, true),    // Sphinx Armor     +3+4+L
+                this.itemHelper.CreateSetItem(60, 7, ItemGroups.Pants, null, 3, 1, true),    // Sphinx Pants     +3+4+L
+                this.itemHelper.CreateSetItem(76, 7, ItemGroups.Boots, null, 3, 1, true),   // Sphinx Boots     +3+4+L
+                this.itemHelper.CreateSetItem(92, 7, ItemGroups.Gloves, null, 3, 1, true),   // Sphinx Gloves    +3+4+L
 
-                this.itemHelper.CreateWeapon(22, 5, 0, 0, 1, true, false, null),  // Skull Staff      +0+4+L
-                this.itemHelper.CreateWeapon(46, 5, 1, 2, 1, true, false, null),  // Angelic Staff    +2+4+L
-                this.itemHelper.CreateWeapon(70, 5, 2, 3, 1, true, false, null),  // Serpent Staff    +3+4+L
-                this.itemHelper.CreateWeapon(94, 5, 3, 3, 1, true, false, null),  // Thunder Staff    +3+4+L
+                this.itemHelper.CreateWeapon(22, ItemGroups.Staff, 0, 0, 1, true, false, null),  // Skull Staff      +0+4+L
+                this.itemHelper.CreateWeapon(46, ItemGroups.Staff, 1, 2, 1, true, false, null),  // Angelic Staff    +2+4+L
+                this.itemHelper.CreateWeapon(70, ItemGroups.Staff, 2, 3, 1, true, false, null),  // Serpent Staff    +3+4+L
+                this.itemHelper.CreateWeapon(94, ItemGroups.Staff, 3, 3, 1, true, false, null),  // Thunder Staff    +3+4+L
             };
 
             return this.CreateMerchantStore(itemList);
@@ -242,34 +243,34 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.itemHelper.CreateSummonOrb(30, 3), // Orb of Summon + 3 "Elite Yeti"
                 this.itemHelper.CreateSummonOrb(31, 4), // Orb of Summon + 4 "Dark Knight"
 
-                this.itemHelper.CreateSetItem(32, 10, 7, null, 0, 1, true),    // Vine Helme +0+4+L
-                this.itemHelper.CreateSetItem(34, 10, 8, null, 0, 1, true),    // Vine Armor +0+4+L
-                this.itemHelper.CreateSetItem(36, 10, 9, null, 0, 1, true),    // Vine Pants +0+4+L
-                this.itemHelper.CreateSetItem(38, 10, 10, null, 3, 1, true),    // Vine Gloves +3+4+L
-                this.itemHelper.CreateSetItem(48, 10, 11, null, 3, 1, true),    // Vine Boots +3+4+L
+                this.itemHelper.CreateSetItem(32, 10, ItemGroups.Helm, null, 0, 1, true),    // Vine Helme +0+4+L
+                this.itemHelper.CreateSetItem(34, 10, ItemGroups.Armor, null, 0, 1, true),    // Vine Armor +0+4+L
+                this.itemHelper.CreateSetItem(36, 10, ItemGroups.Pants, null, 0, 1, true),    // Vine Pants +0+4+L
+                this.itemHelper.CreateSetItem(38, 10, ItemGroups.Gloves, null, 3, 1, true),    // Vine Gloves +3+4+L
+                this.itemHelper.CreateSetItem(48, 10, ItemGroups.Boots, null, 3, 1, true),    // Vine Boots +3+4+L
 
-                this.itemHelper.CreateSetItem(50, 11, 7, null, 2, 1, true),    // Silk Helme +2+4+L
-                this.itemHelper.CreateSetItem(52, 11, 8, null, 2, 1, true),    // Silk Armor +2+4+L
-                this.itemHelper.CreateSetItem(54, 11, 9, null, 2, 1, true),    // Silk Pants +2+4+L
-                this.itemHelper.CreateSetItem(64, 11, 10, null, 2, 1, true),    // Silk Gloves +2+4+L
-                this.itemHelper.CreateSetItem(66, 11, 11, null, 2, 1, true),    // Silk Boots +2+4+L
+                this.itemHelper.CreateSetItem(50, 11, ItemGroups.Helm, null, 2, 1, true),    // Silk Helme +2+4+L
+                this.itemHelper.CreateSetItem(52, 11, ItemGroups.Armor, null, 2, 1, true),    // Silk Armor +2+4+L
+                this.itemHelper.CreateSetItem(54, 11, ItemGroups.Pants, null, 2, 1, true),    // Silk Pants +2+4+L
+                this.itemHelper.CreateSetItem(64, 11, ItemGroups.Gloves, null, 2, 1, true),    // Silk Gloves +2+4+L
+                this.itemHelper.CreateSetItem(66, 11, ItemGroups.Boots, null, 2, 1, true),    // Silk Boots +2+4+L
 
-                this.itemHelper.CreateSetItem(68, 12, 7, null, 3, 1, true),    // Wind Helme +3+4+L
-                this.itemHelper.CreateSetItem(70, 12, 8, null, 3, 1, true),    // Wind Armor +3+4+L
-                this.itemHelper.CreateSetItem(80, 12, 9, null, 3, 1, true),    // Wind Pants +3+4+L
-                this.itemHelper.CreateSetItem(82, 12, 10, null, 3, 1, true),    // Wind Gloves +3+4+L
-                this.itemHelper.CreateSetItem(84, 12, 11, null, 3, 1, true),    // Wind Boots +3+4+L
+                this.itemHelper.CreateSetItem(68, 12, ItemGroups.Helm, null, 3, 1, true),    // Wind Helme +3+4+L
+                this.itemHelper.CreateSetItem(70, 12, ItemGroups.Armor, null, 3, 1, true),    // Wind Armor +3+4+L
+                this.itemHelper.CreateSetItem(80, 12, ItemGroups.Pants, null, 3, 1, true),    // Wind Pants +3+4+L
+                this.itemHelper.CreateSetItem(82, 12, ItemGroups.Gloves, null, 3, 1, true),    // Wind Gloves +3+4+L
+                this.itemHelper.CreateSetItem(84, 12, ItemGroups.Boots, null, 3, 1, true),    // Wind Boots +3+4+L
 
                 this.itemHelper.CreateItem(86, 29, 13, 1, 0), // Armor of Guardsman
                 this.itemHelper.CreateItem(96, 10, 14, 1, 0), // Town Portal Scroll
 
-                this.itemHelper.CreateWeapon(97, 4, 7, 0, 0, false, false, null), // Bolt
-                this.itemHelper.CreateWeapon(98, 4, 7, 1, 0, false, false, null), // Bolt +1
-                this.itemHelper.CreateWeapon(99, 4, 7, 2, 0, false, false, null), // Bolt +2
+                this.itemHelper.CreateWeapon(97, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
+                this.itemHelper.CreateWeapon(98, ItemGroups.Bows, 7, 1, 0, false, false, null), // Bolt +1
+                this.itemHelper.CreateWeapon(99, ItemGroups.Bows, 7, 2, 0, false, false, null), // Bolt +2
 
-                this.itemHelper.CreateWeapon(100, 4, 15, 0, 0, false, false, null), // Arrow
-                this.itemHelper.CreateWeapon(101, 4, 15, 1, 0, false, false, null), // Arrow +1
-                this.itemHelper.CreateWeapon(102, 4, 15, 2, 0, false, false, null), // Arrow +2
+                this.itemHelper.CreateWeapon(100, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
+                this.itemHelper.CreateWeapon(101, ItemGroups.Bows, 15, 1, 0, false, false, null), // Arrow +1
+                this.itemHelper.CreateWeapon(102, ItemGroups.Bows, 15, 2, 0, false, false, null), // Arrow +2
             };
 
             return this.CreateMerchantStore(itemList);
@@ -279,15 +280,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             List<Item> itemList = new List<Item>
             {
-                this.itemHelper.CreateWeapon(0, 3, 5, 3, 1, true, false, null), // Double Poleaxe +3+Luck+4
-                this.itemHelper.CreateWeapon(2, 3, 1, 3, 1, true, false, null), // Spear +3+Luck+4
-                this.itemHelper.CreateWeapon(4, 3, 3, 3, 1, true, false, null), // Giant Trident +3 + Luck + 4
-                this.itemHelper.CreateWeapon(6, 3, 7, 3, 1, true, true, null), // Berdysh +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(0, ItemGroups.Spears, 5, 3, 1, true, false, null), // Double Poleaxe +3+Luck+4
+                this.itemHelper.CreateWeapon(2, ItemGroups.Spears, 1, 3, 1, true, false, null), // Spear +3+Luck+4
+                this.itemHelper.CreateWeapon(4, ItemGroups.Spears, 3, 3, 1, true, false, null), // Giant Trident +3 + Luck + 4
+                this.itemHelper.CreateWeapon(6, ItemGroups.Spears, 7, 3, 1, true, true, null), // Berdysh +3+Skill+Luck+4
 
-                this.itemHelper.CreateWeapon(32, 3, 4, 3, 1, true, true, null), // Serpent Spear +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(34, 3, 0, 3, 1, true, true, null), // Light Spear +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(36, 0, 10, 3, 1, true, true, null), // Light Saber +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(38, 2, 3, 3, 1, true, true, null), // Great Hammer +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(32, ItemGroups.Spears, 4, 3, 1, true, true, null), // Serpent Spear +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(34, ItemGroups.Spears, 0, 3, 1, true, true, null), // Light Spear +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(36, ItemGroups.Swords, 10, 3, 1, true, true, null), // Light Saber +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(38, ItemGroups.Scepters, 3, 3, 1, true, true, null), // Great Hammer +3+Skill+Luck+4
             };
 
             return this.CreateMerchantStore(itemList);
@@ -329,25 +330,25 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.itemHelper.CreatePotion(7, 8, 1, 0),    // Antidote +0 x1
                 this.itemHelper.CreatePotion(15, 8, 3, 0),    // Antidote +0 x3
 
-                this.itemHelper.CreateSetItem(24, 3, 7, null, 3, 1, true), // Legendary Helm +3+Luck+4
-                this.itemHelper.CreateSetItem(26, 3, 8, null, 3, 1, true), // Legendary Armor +3+Luck+4
-                this.itemHelper.CreateSetItem(28, 3, 9, null, 3, 1, true), // Legendary Pants +3+Luck+4
-                this.itemHelper.CreateSetItem(30, 3, 10, null, 3, 1, true), // Legendary Glover +3+Luck+4
-                this.itemHelper.CreateSetItem(40, 3, 11, null, 3, 1, true), // Legendary Boots +3+Luck+4
+                this.itemHelper.CreateSetItem(24, 3, ItemGroups.Helm, null, 3, 1, true), // Legendary Helm +3+Luck+4
+                this.itemHelper.CreateSetItem(26, 3, ItemGroups.Armor, null, 3, 1, true), // Legendary Armor +3+Luck+4
+                this.itemHelper.CreateSetItem(28, 3, ItemGroups.Pants, null, 3, 1, true), // Legendary Pants +3+Luck+4
+                this.itemHelper.CreateSetItem(30, 3, ItemGroups.Gloves, null, 3, 1, true), // Legendary Glover +3+Luck+4
+                this.itemHelper.CreateSetItem(40, 3, ItemGroups.Boots, null, 3, 1, true), // Legendary Boots +3+Luck+4
                 this.itemHelper.CreateItem(42, 29, 13, 1, 0), // Armor of Guardsman
                 this.itemHelper.CreateItem(44, 10, 14, 1, 0), // Town Portal Scroll
 
-                this.itemHelper.CreateWeapon(45, 4, 7, 0, 0, false, false, null), // Bolt
-                this.itemHelper.CreateWeapon(46, 4, 7, 1, 0, false, false, null), // Bolt +1
-                this.itemHelper.CreateWeapon(47, 4, 7, 2, 0, false, false, null), // Bolt +2
+                this.itemHelper.CreateWeapon(45, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
+                this.itemHelper.CreateWeapon(46, ItemGroups.Bows, 7, 1, 0, false, false, null), // Bolt +1
+                this.itemHelper.CreateWeapon(47, ItemGroups.Bows, 7, 2, 0, false, false, null), // Bolt +2
 
-                this.itemHelper.CreateWeapon(53, 4, 15, 0, 0, false, false, null), // Arrow
-                this.itemHelper.CreateWeapon(54, 4, 15, 1, 0, false, false, null), // Arrow +1
-                this.itemHelper.CreateWeapon(55, 4, 15, 2, 0, false, false, null), // Arrow +2
+                this.itemHelper.CreateWeapon(53, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
+                this.itemHelper.CreateWeapon(54, ItemGroups.Bows, 15, 1, 0, false, false, null), // Arrow +1
+                this.itemHelper.CreateWeapon(55, ItemGroups.Bows, 15, 2, 0, false, false, null), // Arrow +2
 
-                this.itemHelper.CreateWeapon(56, 5, 4, 3, 1, true, false, null), // Gordon Staff +3+Luck+4
-                this.itemHelper.CreateWeapon(58, 5, 5, 3, 1, true, false, null), // Legendary Staff +3+Luck+4
-                this.itemHelper.CreateWeapon(59, 6, 14, 3, 2, true, false, null), // Legendary Shield +3+Luck+5
+                this.itemHelper.CreateWeapon(56, ItemGroups.Staff, 4, 3, 1, true, false, null), // Gordon Staff +3+Luck+4
+                this.itemHelper.CreateWeapon(58, ItemGroups.Staff, 5, 3, 1, true, false, null), // Legendary Staff +3+Luck+4
+                this.itemHelper.CreateWeapon(59, ItemGroups.Shields, 14, 3, 2, true, false, null), // Legendary Shield +3+Luck+5
 
                 this.itemHelper.CreateScroll(61, 4), // Scroll of Flame
                 this.itemHelper.CreateScroll(62, 7), // Scroll of Twister
@@ -360,29 +361,29 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             List<Item> itemList = new List<Item>
             {
-                this.itemHelper.CreateSetItem(0, 13, 7, null, 3, 1, true), // Spirit Helm +3+Luck+4
-                this.itemHelper.CreateSetItem(2, 13, 8, null, 3, 1, true), // Spirit Armor +3+Luck+4
-                this.itemHelper.CreateSetItem(4, 13, 9, null, 3, 1, true), // Spirit Pants +3+Luck+4
-                this.itemHelper.CreateSetItem(6, 13, 10, null, 3, 1, true), // Spirit Gloves +3+Luck+4
-                this.itemHelper.CreateSetItem(16, 13, 11, null, 3, 1, true), // Spirit Boots +3+Luck+4
+                this.itemHelper.CreateSetItem(0, 13, ItemGroups.Helm, null, 3, 1, true), // Spirit Helm +3+Luck+4
+                this.itemHelper.CreateSetItem(2, 13, ItemGroups.Armor, null, 3, 1, true), // Spirit Armor +3+Luck+4
+                this.itemHelper.CreateSetItem(4, 13, ItemGroups.Pants, null, 3, 1, true), // Spirit Pants +3+Luck+4
+                this.itemHelper.CreateSetItem(6, 13, ItemGroups.Gloves, null, 3, 1, true), // Spirit Gloves +3+Luck+4
+                this.itemHelper.CreateSetItem(16, 13, ItemGroups.Boots, null, 3, 1, true), // Spirit Boots +3+Luck+4
 
-                this.itemHelper.CreateSetItem(18, 14, 7, null, 3, 1, true), // Guardian Helm +3+Luck+4
-                this.itemHelper.CreateSetItem(20, 14, 8, null, 3, 1, true), // Guardian Armor +3+Luck+4
-                this.itemHelper.CreateSetItem(22, 14, 9, null, 3, 1, true), // Guardian Pants +3+Luck+4
-                this.itemHelper.CreateSetItem(32, 14, 10, null, 3, 1, true), // Guardian Gloves +3+Luck+4
-                this.itemHelper.CreateSetItem(34, 14, 11, null, 3, 1, true), // Guardian Boots +3+Luck+4
+                this.itemHelper.CreateSetItem(18, 14, ItemGroups.Helm, null, 3, 1, true), // Guardian Helm +3+Luck+4
+                this.itemHelper.CreateSetItem(20, 14, ItemGroups.Armor, null, 3, 1, true), // Guardian Armor +3+Luck+4
+                this.itemHelper.CreateSetItem(22, 14, ItemGroups.Pants, null, 3, 1, true), // Guardian Pants +3+Luck+4
+                this.itemHelper.CreateSetItem(32, 14, ItemGroups.Gloves, null, 3, 1, true), // Guardian Gloves +3+Luck+4
+                this.itemHelper.CreateSetItem(34, 14, ItemGroups.Boots, null, 3, 1, true), // Guardian Boots +3+Luck+4
 
-                this.itemHelper.CreateWeapon(36, 4, 8, 1, 1, true, true, null), // Crossbow +1+Skill+Luck+4
-                this.itemHelper.CreateWeapon(38, 4, 9, 3, 1, true, true, null), // Golden Crossbow +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(36, ItemGroups.Bows, 8, 1, 1, true, true, null), // Crossbow +1+Skill+Luck+4
+                this.itemHelper.CreateWeapon(38, ItemGroups.Bows, 9, 3, 1, true, true, null), // Golden Crossbow +3+Skill+Luck+4
 
-                this.itemHelper.CreateWeapon(48, 4, 0, 0, 1, true, true, null), // Short Bow +0+Skill+Luck+4
-                this.itemHelper.CreateWeapon(50, 4, 1, 0, 1, true, true, null), // bow +0+Skill+Luck+4
-                this.itemHelper.CreateWeapon(52, 4, 2, 2, 1, true, true, null), // Elven Bow +2+Skill+Luck+4
-                this.itemHelper.CreateWeapon(54, 4, 3, 3, 1, true, true, null), // Battle Bow +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(48, ItemGroups.Bows, 0, 0, 1, true, true, null), // Short Bow +0+Skill+Luck+4
+                this.itemHelper.CreateWeapon(50, ItemGroups.Bows, 1, 0, 1, true, true, null), // bow +0+Skill+Luck+4
+                this.itemHelper.CreateWeapon(52, ItemGroups.Bows, 2, 2, 1, true, true, null), // Elven Bow +2+Skill+Luck+4
+                this.itemHelper.CreateWeapon(54, ItemGroups.Bows, 3, 3, 1, true, true, null), // Battle Bow +3+Skill+Luck+4
 
-                this.itemHelper.CreateWeapon(72, 4, 11, 3, 1, true, true, null), // Light Crossbow +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(74, 4, 4, 3, 1, true, true, null), // Tiger Bow +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(76, 4, 10, 3, 1, true, true, null), // Arquebus +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(72, ItemGroups.Bows, 11, 3, 1, true, true, null), // Light Crossbow +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(74, ItemGroups.Bows, 4, 3, 1, true, true, null), // Tiger Bow +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(76, ItemGroups.Bows, 10, 3, 1, true, true, null), // Arquebus +3+Skill+Luck+4
 
                 this.itemHelper.CreateShield(78, 3, false, null, 3, 2, true), // Elven Shield +3+Luck+5
             };
@@ -394,30 +395,30 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             List<Item> itemList = new List<Item>
             {
-                this.itemHelper.CreateSetItem(0, 39, 7, null, 2, 1, true), // Violent Wind Helm +2+Luck+4
-                this.itemHelper.CreateSetItem(2, 39, 8, null, 2, 1, true), // Violent Wind Armor +2+Luck+4
-                this.itemHelper.CreateSetItem(4, 39, 9, null, 2, 1, true), // Violent Wind Pants +2+Luck+4
-                this.itemHelper.CreateSetItem(6, 39, 10, null, 2, 1, true), // Violent Wind Gloves +2+Luck+4
-                this.itemHelper.CreateSetItem(16, 39, 11, null, 2, 1, true), // Violent Wind Boots +2+Luck+4
+                this.itemHelper.CreateSetItem(0, 39, ItemGroups.Helm, null, 2, 1, true), // Violent Wind Helm +2+Luck+4
+                this.itemHelper.CreateSetItem(2, 39, ItemGroups.Armor, null, 2, 1, true), // Violent Wind Armor +2+Luck+4
+                this.itemHelper.CreateSetItem(4, 39, ItemGroups.Pants, null, 2, 1, true), // Violent Wind Pants +2+Luck+4
+                this.itemHelper.CreateSetItem(6, 39, ItemGroups.Gloves, null, 2, 1, true), // Violent Wind Gloves +2+Luck+4
+                this.itemHelper.CreateSetItem(16, 39, ItemGroups.Boots, null, 2, 1, true), // Violent Wind Boots +2+Luck+4
 
-                this.itemHelper.CreateSetItem(18, 40, 7, null, 3, 1, true), // Red Wing Helm +3+Luck+4
-                this.itemHelper.CreateSetItem(20, 40, 8, null, 3, 1, true), // Red Wing Armor +3+Luck+4
-                this.itemHelper.CreateSetItem(22, 40, 9, null, 3, 1, true), // Red Wing Pants +3+Luck+4
-                this.itemHelper.CreateSetItem(32, 40, 10, null, 3, 1, true), // Red Wing Gloves +3+Luck+4
-                this.itemHelper.CreateSetItem(34, 40, 11, null, 3, 1, true), // Red Wing Pants +3+Luck+4
+                this.itemHelper.CreateSetItem(18, 40, ItemGroups.Helm, null, 3, 1, true), // Red Wing Helm +3+Luck+4
+                this.itemHelper.CreateSetItem(20, 40, ItemGroups.Armor, null, 3, 1, true), // Red Wing Armor +3+Luck+4
+                this.itemHelper.CreateSetItem(22, 40, ItemGroups.Pants, null, 3, 1, true), // Red Wing Pants +3+Luck+4
+                this.itemHelper.CreateSetItem(32, 40, ItemGroups.Gloves, null, 3, 1, true), // Red Wing Gloves +3+Luck+4
+                this.itemHelper.CreateSetItem(34, 40, ItemGroups.Boots, null, 3, 1, true), // Red Wing Pants +3+Luck+4
 
-                this.itemHelper.CreateWeapon(36, 1, 0, 1, 1, true, false, null), // Small Axe +1+Luck+4
-                this.itemHelper.CreateWeapon(37, 0, 1, 0, 1, true, false, null), // Short Sword +0+Luck+4
-                this.itemHelper.CreateWeapon(38, 1, 1, 1, 1, true, false, null), // Hand Axe +1+Luck+4
-                this.itemHelper.CreateWeapon(39, 0, 2, 2, 1, true, false, null), // Rapier +2+Luck+4
+                this.itemHelper.CreateWeapon(36, ItemGroups.Axes, 0, 1, 1, true, false, null), // Small Axe +1+Luck+4
+                this.itemHelper.CreateWeapon(37, ItemGroups.Swords, 1, 0, 1, true, false, null), // Short Sword +0+Luck+4
+                this.itemHelper.CreateWeapon(38, ItemGroups.Axes, 1, 1, 1, true, false, null), // Hand Axe +1+Luck+4
+                this.itemHelper.CreateWeapon(39, ItemGroups.Swords, 2, 2, 1, true, false, null), // Rapier +2+Luck+4
 
-                this.itemHelper.CreateWeapon(48, 1, 4, 1, 1, true, false, null), // Elven Axe +1+Luck+4
-                this.itemHelper.CreateWeapon(49, 0, 0, 1, 1, true, false, null), // Kris +1+Luck+4
-                this.itemHelper.CreateWeapon(50, 5, 0, 1, 1, true, false, null), // Skull Staff +1+Luck+4
-                this.itemHelper.CreateWeapon(51, 5, 14, 1, 1, true, false, null), // Mystery Stick +1+Luck+4
+                this.itemHelper.CreateWeapon(48, ItemGroups.Axes, 4, 1, 1, true, false, null), // Elven Axe +1+Luck+4
+                this.itemHelper.CreateWeapon(49, ItemGroups.Swords, 0, 1, 1, true, false, null), // Kris +1+Luck+4
+                this.itemHelper.CreateWeapon(50, ItemGroups.Staff, 0, 1, 1, true, false, null), // Skull Staff +1+Luck+4
+                this.itemHelper.CreateWeapon(51, ItemGroups.Staff, 14, 1, 1, true, false, null), // Mystery Stick +1+Luck+4
 
-                this.itemHelper.CreateWeapon(60, 5, 15, 2, 1, true, false, null), // Violent Wind Stick +2+Luck+4
-                this.itemHelper.CreateWeapon(61, 5, 16, 3, 1, true, false, null), // Red Wing Stick +3+Luck+4
+                this.itemHelper.CreateWeapon(60, ItemGroups.Staff, 15, 2, 1, true, false, null), // Violent Wind Stick +2+Luck+4
+                this.itemHelper.CreateWeapon(61, ItemGroups.Staff, 16, 3, 1, true, false, null), // Red Wing Stick +3+Luck+4
             };
 
             return this.CreateMerchantStore(itemList);
@@ -427,27 +428,27 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             List<Item> itemList = new List<Item>
             {
-                this.itemHelper.CreateSetItem(0, 1, 7, null, 3, 1, true), // Dragon Helm +3+Luck+4
-                this.itemHelper.CreateSetItem(2, 1, 8, null, 3, 1, true), // Dragon Armor +3+Luck+4
-                this.itemHelper.CreateSetItem(4, 1, 9, null, 3, 1, true), // Dragon Pants +3+Luck+4
-                this.itemHelper.CreateSetItem(6, 1, 10, null, 3, 1, true), // Dragon Gloves +3+Luck+4
-                this.itemHelper.CreateSetItem(16, 1, 11, null, 3, 1, true), // Dragon Boots +3+Luck+4
+                this.itemHelper.CreateSetItem(0, 1, ItemGroups.Helm, null, 3, 1, true), // Dragon Helm +3+Luck+4
+                this.itemHelper.CreateSetItem(2, 1, ItemGroups.Armor, null, 3, 1, true), // Dragon Armor +3+Luck+4
+                this.itemHelper.CreateSetItem(4, 1, ItemGroups.Pants, null, 3, 1, true), // Dragon Pants +3+Luck+4
+                this.itemHelper.CreateSetItem(6, 1, ItemGroups.Gloves, null, 3, 1, true), // Dragon Gloves +3+Luck+4
+                this.itemHelper.CreateSetItem(16, 1, ItemGroups.Boots, null, 3, 1, true), // Dragon Boots +3+Luck+4
 
-                this.itemHelper.CreateWeapon(20, 0, 9, 3, 1, true, true, null), // Sword of Salamander +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(22, 0, 11, 3, 1, true, true, null), // Legendary Sword +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(20, ItemGroups.Swords, 9, 3, 1, true, true, null), // Sword of Salamander +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(22, ItemGroups.Swords, 11, 3, 1, true, true, null), // Legendary Sword +3+Skill+Luck+4
 
-                this.itemHelper.CreateWeapon(32, 0, 13, 3, 1, true, true, null), // Double Blade +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(33, 0, 14, 3, 1, true, true, null), // Lighting Sword +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(26, 0, 15, 3, 1, true, true, null), // Giant Sword +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(44, 0, 12, 3, 1, true, true, null), // Heliacal Sword +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(32, ItemGroups.Swords, 13, 3, 1, true, true, null), // Double Blade +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(33, ItemGroups.Swords, 14, 3, 1, true, true, null), // Lighting Sword +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(26, ItemGroups.Swords, 15, 3, 1, true, true, null), // Giant Sword +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(44, ItemGroups.Swords, 12, 3, 1, true, true, null), // Heliacal Sword +3+Skill+Luck+4
 
-                this.itemHelper.CreateWeapon(46, 4, 12, 3, 1, true, true, null), // Serpent Crossbow +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(46, ItemGroups.Bows, 12, 3, 1, true, true, null), // Serpent Crossbow +3+Skill+Luck+4
 
-                this.itemHelper.CreateWeapon(56, 3, 9, 3, 1, true, true, null), // Bill of Balrog +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(50, 3, 8, 3, 1, true, true, null), // Great Scythe +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(56, ItemGroups.Spears, 9, 3, 1, true, true, null), // Bill of Balrog +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(50, ItemGroups.Spears, 8, 3, 1, true, true, null), // Great Scythe +3+Skill+Luck+4
 
-                this.itemHelper.CreateWeapon(68, 4, 5, 3, 1, true, true, null), // Silver Bow +3+Skill+Luck+4
-                this.itemHelper.CreateWeapon(70, 4, 13, 3, 1, true, true, null), // Bluewing Crossbow +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(68, ItemGroups.Bows, 5, 3, 1, true, true, null), // Silver Bow +3+Skill+Luck+4
+                this.itemHelper.CreateWeapon(70, ItemGroups.Bows, 13, 3, 1, true, true, null), // Bluewing Crossbow +3+Skill+Luck+4
             };
 
             return this.CreateMerchantStore(itemList);
@@ -457,12 +458,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             List<Item> itemList = new List<Item>
             {
-                this.itemHelper.CreateWeapon(0, 0, 16, 3, 3, true, false, null), // Sword of Destruction +3+Luck+12
-                this.itemHelper.CreateWeapon(1, 2, 8, 3, 3, true, true, null), // Battle Scepter +3+Skill+Luck+12
-                this.itemHelper.CreateWeapon(2, 2, 9, 3, 3, true, true, null), // Master Scepter +3+Skill+Luck+12
-                this.itemHelper.CreateWeapon(3, 4, 14, 3, 3, true, true, null), // Aquagold Crossbow +3+Skill+Luck+12
-                this.itemHelper.CreateWeapon(5, 4, 16, 3, 3, true, true, null), // Saint's Crossbow +3+Skill+Luck+12
-                this.itemHelper.CreateWeapon(7, 5, 6, 3, 3, true, false, null), // Staff of Resurrection +3+Luck+12
+                this.itemHelper.CreateWeapon(0, ItemGroups.Swords, 16, 3, 3, true, false, null), // Sword of Destruction +3+Luck+12
+                this.itemHelper.CreateWeapon(1, ItemGroups.Scepters, 8, 3, 3, true, true, null), // Battle Scepter +3+Skill+Luck+12
+                this.itemHelper.CreateWeapon(2, ItemGroups.Scepters, 9, 3, 3, true, true, null), // Master Scepter +3+Skill+Luck+12
+                this.itemHelper.CreateWeapon(3, ItemGroups.Bows, 14, 3, 3, true, true, null), // Aquagold Crossbow +3+Skill+Luck+12
+                this.itemHelper.CreateWeapon(5, ItemGroups.Bows, 16, 3, 3, true, true, null), // Saint's Crossbow +3+Skill+Luck+12
+                this.itemHelper.CreateWeapon(7, ItemGroups.Staff, 6, 3, 3, true, false, null), // Staff of Resurrection +3+Luck+12
             };
 
             return this.CreateMerchantStore(itemList);
