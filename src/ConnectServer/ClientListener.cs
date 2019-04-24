@@ -124,7 +124,7 @@ namespace MUnique.OpenMU.ConnectServer
 
         private void AddClient(Socket socket)
         {
-            var client = new Client(new Connection(SocketConnection.Create(socket), null, null), this.connectServerSettings.Timeout, this.packetHandler, this.connectServerSettings.MaximumReceiveSize);
+            var client = new Client(new Connection(SocketConnection.Create(socket), null, null), this.connectServerSettings.Timeout, this.packetHandler, this.connectServerSettings.MaxReceiveSize);
             var ipEndpoint = (IPEndPoint)socket.RemoteEndPoint;
             client.Address = ipEndpoint.Address;
             client.Port = ipEndpoint.Port;
