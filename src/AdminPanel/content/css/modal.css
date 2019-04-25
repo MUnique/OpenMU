@@ -13,3 +13,25 @@
 .modal-content-fullpage {
     height: 100%;
 }
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #AAA;
+    padding: 50px;
+}
+
+.modal-window {
+    background-color: #FFF;
+    -ms-border-radius: 5px;
+    border-radius: 5px;
+    max-width: 500px;
+    min-height: 300px;
+    max-height: 100%;
+    overflow-y: scroll;
+    margin: 0 auto;
+    padding: 30px;
+}
