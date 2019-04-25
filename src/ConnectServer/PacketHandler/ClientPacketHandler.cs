@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         {
             try
             {
-                if (packet[1] > this.connectServerSettings.MaxReceiveSize || packet.Length < 4)
+                if (packet[1] > this.connectServerSettings.MaximumReceiveSize || packet.Length < 4)
                 {
                     this.DisconnectClientUnknownPacket(client, packet);
                     return;

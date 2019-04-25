@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the maximum size of the packets which should be received from the client. If this size is exceeded, the client will be disconnected.
         /// </summary>
         /// <remarks>DOS protection.</remarks>
-        public byte MaxReceiveSize { get; set; }
+        public byte MaximumReceiveSize { get; set; }
 
         /// <summary>
         /// Gets or sets the network port on which the server is listening.

@@ -319,7 +319,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MaxIpRequests");
 
-                    b.Property<byte>("MaxReceiveSize");
+                    b.Property<byte>("MaximumReceiveSize");
 
                     b.Property<int>("MaxServerListRequests");
 

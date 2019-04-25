@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Interfaces
         /// Gets the maximum size of the packets which should be received from the client. If this size is exceeded, the client will be disconnected.
         /// </summary>
         /// <remarks>DOS protection.</remarks>
-        byte MaxReceiveSize { get; }
+        byte MaximumReceiveSize { get; }
 
         /// <summary>
         /// Gets the client listener port.
