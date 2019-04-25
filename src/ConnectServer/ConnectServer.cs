@@ -96,15 +96,12 @@ namespace MUnique.OpenMU.ConnectServer
             try
             {
                 this.ClientListener.StartListener();
+                this.ServerState = OpenMU.Interfaces.ServerState.Started;
             }
             catch (Exception ex)
             {
-                Logger.Error("Error while starting", ex);
+                Logger.Error(ex.Message, ex);
                 this.ServerState = oldState;
-            }
-            finally
-            {
-                this.ServerState = OpenMU.Interfaces.ServerState.Started;
             }
 
             Logger.Info("Finished starting");
