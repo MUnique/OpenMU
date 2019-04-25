@@ -78,10 +78,6 @@ class CreateAccountModal extends React.Component<ICreateAccountModalProps, ICrea
         this.props.save(newAccount);
         event.preventDefault();
     }
-
-    private cancel() {
-        this.props.cancel();
-    }
 }
 
 
