@@ -37,6 +37,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         /// <param name="servers">The servers.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="serverListHubContext">The server list hub context.</param>
+        /// <param name="changeListener">The change listener.</param>
         public ConnectServerController(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IHubContext<ServerListHub> serverListHubContext, IServerConfigurationChangeListener changeListener)
         {
             this.servers = servers;
