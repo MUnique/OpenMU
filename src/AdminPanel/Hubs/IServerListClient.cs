@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using MUnique.OpenMU.AdminPanel.Models;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -76,7 +77,10 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         /// Initializes the client with the specified servers.
         /// </summary>
         /// <param name="servers">The servers.</param>
-        /// <returns>The task.</returns>
-        Task Initialize(IList<ServerInfo> servers);
+        /// <param name="clients">The clients.</param>
+        /// <returns>
+        /// The task.
+        /// </returns>
+        Task Initialize(IList<ServerInfo> servers, IList<GameClientDefinition> clients);
     }
 }

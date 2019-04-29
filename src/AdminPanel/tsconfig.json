@@ -12,7 +12,7 @@
     "sourceMap": true,
     "jsx": "react",
     "target": "es5",
-    "lib": [ "es2015", "es6", "dom" ],
+    "lib": [ "es2017", "es2015", "es6", "dom" ],
     "baseUrl": ".",
     "paths": {
       "*": [ "*" ],

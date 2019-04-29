@@ -1,12 +1,12 @@
 ﻿import React from "react";
 import { connect } from "react-redux";
 import { MapList } from "./MapList";
+import ConnectServerConfiguration from "./ConnectServerConfiguration";
 
 import { ApplicationState } from "../stores/index";
 
-import {Server, ServerState} from "../stores/servers/types";
-import {startServer, shutdownServer} from "../stores/servers/actions";
-
+import {Server, ServerState, ServerType, ConnectServer } from "../stores/servers/types";
+import {startServer, shutdownServer } from "../stores/servers/actions";
 
 
 interface IServerItemProps {
@@ -63,8 +63,10 @@ class ServerItem extends React.Component<IServerItemProps, ServerItemState> {
         var buttonClass = "btn btn-default btn-xs ";
         if (this.state.expanded) {
             return buttonClass + 'glyphicon glyphicon-minus';
-        } else {
+        } else if (this.props.server.type === ServerType.GameServer) {
             return buttonClass + 'glyphicon glyphicon-plus';
+        } else {
+            return buttonClass + 'glyphicon glyphicon-cog';
         }
     }
 
@@ -72,20 +74,19 @@ class ServerItem extends React.Component<IServerItemProps, ServerItemState> {
         return (
             <tr className={this.props.server.state === ServerState.Started ? 'success' : 'warning'}>
                 <td>
-                    <button type="button" className={this.getExpandItemClass()} onClick={() => this.expand()}>
-                    </button>
+                    {(this.props.server.type === ServerType.GameServer || this.props.server.type === ServerType.ConnectServer)
+                        ? (<button type="button" className={this.getExpandItemClass()} onClick={() => this.expand()}></button>)
+                        : null }
                 </td>
                 <td>
-                    <table>
-                        <thead>
-                        <tr>
-                            <td>{this.props.server.description}</td>
-                        </tr>
-                        </thead>
+
+                            <div>{this.props.server.description}</div>
+ 
                         {this.state.expanded
-                            ? <tbody><tr><td><MapList maps={this.props.server.maps}/></td></tr></tbody>
+                        ? this.props.server.type === ServerType.GameServer
+                            ? <MapList maps={this.props.server.maps} />
+                            : <ConnectServerConfiguration serverSettings={(this.props.server as ConnectServer).settings} onSaveSuccess={() => this.setState({ expanded: false })} onCancel={() => this.setState({ expanded: false })}/>
                             : null}
-                    </table>
                 </td>
                 <td>
                     <div>{this.props.server.onlinePlayerCount} / {this.props.server.maximumPlayers < 2000000 ? this.props.server.maximumPlayers : "∞"}</div>

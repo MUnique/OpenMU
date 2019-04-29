@@ -1,5 +1,5 @@
 ﻿import Redux from "redux";
-import { Server } from "./types";
+import { Server, ConnectServerSettings, GameClientDefinition } from "./types";
 import { Map } from "../map/types";
 
 export enum Constants {
@@ -56,6 +56,7 @@ export interface ServerRemoveMapAction extends ServerAction {
 export interface ServerListInitAction extends Redux.Action {
     type: Constants.SERVERLIST_INIT,
     servers: Server[],
+    clients: GameClientDefinition[],
 }
 
 
@@ -94,6 +95,7 @@ export const serverRemoveMap: Redux.ActionCreator<ServerRemoveMapAction> =
         mapId,
     });
 
+
 export const serverListSubscribe: Redux.ActionCreator<ServerListSubscribeAction> =
     (subscriber: any) => ({ type: Constants.SERVERLIST_SUBSCRIBE, subscriber });
 
@@ -101,9 +103,10 @@ export const serverListUnsubscribe: Redux.ActionCreator<ServerListUnsubscribeAct
     (subscriber: any) => ({ type: Constants.SERVERLIST_UNSUBSCRIBE, subscriber });
 
 export const serverListInit: Redux.ActionCreator<ServerListInitAction> =
-    (servers: Server[]) => ({
+    (servers: Server[], clients: GameClientDefinition[]) => ({
         type: Constants.SERVERLIST_INIT,
         servers: servers,
+        clients: clients,
     });
 
 export function startServer(serverId: number) {
@@ -118,5 +121,41 @@ function serverAction(serverId: number, actionName: string) {
     return (dispatch: Redux.Dispatch) => {
         return fetch("/admin/server/" + actionName + "/" + serverId)
             .catch(error => { console.error("something went wrong during " + actionName + " of server " + serverId, error) });
+    }
+}
+
+export function saveConnectServerConfiguration(configuration: ConnectServerSettings, successCallback: () => void, errorCallback: (error: any) => void) {
+    return (dispatch: Redux.Dispatch) => {
+        return fetch("/admin/connectServer",
+                {
+                    body: JSON.stringify(configuration),
+                    cache: 'no-cache',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    method: 'POST',
+            })
+            .then(response => {
+                // configuration.id = response;
+                if (successCallback) {
+                    successCallback();
+                }               
+            })
+            .catch(error => {
+                console.error("something went wrong during saving connect server " + configuration.id, error);
+                if (errorCallback) {
+                    errorCallback(error);
+                }
+            });
+    }
+}
+
+export function deleteConnectServerConfiguration(configuration: ConnectServerSettings) {
+    return (dispatch: Redux.Dispatch) => {
+        return fetch("/admin/connectServer/" + configuration.id,
+                {
+                    method: 'DELETE',
+                })
+            .catch(error => { console.error("something went wrong during deleting connect server " + configuration.id, error) });
     }
 }

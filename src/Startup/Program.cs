@@ -61,13 +61,14 @@ namespace MUnique.OpenMU.Startup
 
             Log.Info("Start initializing sub-components");
             var signalRServerObserver = new SignalRGameServerStateObserver();
+            var serverConfigListener = new ServerConfigurationChangeListener(this.servers, signalRServerObserver);
             var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
             var loginServer = new LoginServer();
             var chatServer = new ChatServerListener(55980, signalRServerObserver, ipResolver);
             this.servers.Add(chatServer);
             var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
             var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
-            var connectServers = new Dictionary<GameClientDefinition, IConnectServer>();
+            var connectServers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
 
             ClientVersionResolver.DefaultVersion = new ClientVersion(6, 3, ClientLanguage.English);
             foreach (var gameClientDefinition in persistenceContext.Get<GameClientDefinition>())
@@ -79,7 +80,21 @@ namespace MUnique.OpenMU.Startup
             {
                 var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, signalRServerObserver);
                 this.servers.Add(connectServer);
-                connectServers[connectServerDefinition.Client] = connectServer;
+                if (!connectServers.TryGetValue(connectServerDefinition.Client, out var observer))
+                {
+                    connectServers[connectServerDefinition.Client] = connectServer;
+                }
+                else
+                {
+                    Log.WarnFormat($"Multiple connect servers for game client '{connectServerDefinition.Client.Description}' configured. Only one per client makes sense.");
+                    if (!(observer is MulticastConnectionServerStateObserver))
+                    {
+                        var multicastObserver = new MulticastConnectionServerStateObserver();
+                        multicastObserver.AddObserver(observer);
+                        multicastObserver.AddObserver(connectServer);
+                        connectServers[connectServerDefinition.Client] = multicastObserver;
+                    }
+                }
             }
 
             Log.Info("Start initializing game servers");
@@ -105,7 +120,7 @@ namespace MUnique.OpenMU.Startup
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
             Log.Info("Start initializing admin panel");
 
-            this.adminPanel = new AdminPanel(1234, this.servers, this.persistenceContextProvider, Log4NetConfigFilePath);
+            this.adminPanel = new AdminPanel(1234, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
             Log.Info("Admin panel initialized");
 
             if (args.Contains("-autostart"))
@@ -116,7 +131,7 @@ namespace MUnique.OpenMU.Startup
                     gameServer.Start();
                 }
 
-                foreach (var connectServer in connectServers.Values)
+                foreach (var connectServer in this.servers.OfType<IConnectServer>())
                 {
                     connectServer.Start();
                 }

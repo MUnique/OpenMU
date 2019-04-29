@@ -9,13 +9,20 @@ namespace MUnique.OpenMU.Interfaces
     /// <summary>
     /// The interface for a connect server.
     /// </summary>
-    public interface IConnectServer : IManageableServer
+    public interface IConnectServer : IManageableServer, IGameServerStateObserver
     {
         /// <summary>
         /// Gets the settings.
         /// </summary>
         IConnectServerSettings Settings { get; }
 
+    }
+
+    /// <summary>
+    /// An interface for an object which observes the state of game servers.
+    /// </summary>
+    public interface IGameServerStateObserver
+    {
         /// <summary>
         /// Registers the game server, so that it can be accessed through the connect server.
         /// </summary>

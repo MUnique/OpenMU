@@ -1,16 +1,18 @@
 ﻿import Redux from "redux";
-import { Server } from "./types";
+import { Server, GameClientDefinition } from "./types";
 import { Constants, ServerAction as ServerStateAction, ServerUpdateStateAction, ServerUpdatePlayerCountAction,
     ServerUpdateMapPlayerCountAction, ServerListInitAction, ServerAddMapAction, ServerRemoveMapAction } from
     "./actions";
 
 export type ServerListState = {
     readonly servers: Server[];
+    readonly clients: GameClientDefinition[];
 };
 
 export const initialState: ServerListState =
 {
-    servers: []
+    servers: [],
+    clients: [],
 };
 
 // This reducer handles the server actions and returns the new server list state.
@@ -63,7 +65,7 @@ export const serverStateReducer: Redux.Reducer<ServerListState> =
         }
         case Constants.SERVERLIST_INIT:
             let serverInitAction = action as ServerListInitAction;
-            return { ...state, servers: serverInitAction.servers };
+            return { ...state, servers: serverInitAction.servers, clients: serverInitAction.clients };
         default:
             return state;
 

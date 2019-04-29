@@ -24,8 +24,9 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="port">The port.</param>
         /// <param name="servers">All manageable servers, including game servers, connect servers etc.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        /// <param name="changeListener">The change listener.</param>
         /// <param name="loggingConfigurationPath">The logging configuration file path.</param>
-        public AdminPanel(ushort port, IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, string loggingConfigurationPath)
+        public AdminPanel(ushort port, IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IServerConfigurationChangeListener changeListener, string loggingConfigurationPath)
         {
             // you might need to allow it first with netsh:
             // netsh http add urlacl http://+:1234/ user=[Username]
@@ -41,6 +42,7 @@ namespace MUnique.OpenMU.AdminPanel
                 {
                     serviceCollection.AddSingleton(servers);
                     serviceCollection.AddSingleton(persistenceContextProvider);
+                    serviceCollection.AddSingleton(changeListener);
                 })
                 .UseKestrel(options =>
                 {

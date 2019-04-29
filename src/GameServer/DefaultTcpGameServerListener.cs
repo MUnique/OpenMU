@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer
 
         private readonly GameServerContext gameContext;
 
-        private readonly IConnectServer connectServer;
+        private readonly IGameServerStateObserver stateObserver;
         private readonly IIpAddressResolver addressResolver;
         private TcpListener listener;
 
@@ -40,14 +40,14 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="endPoint">The endpoint to which this listener is listening.</param>
         /// <param name="gameServerInfo">The game server information.</param>
         /// <param name="gameContext">The game context.</param>
-        /// <param name="connectServer">The connect server.</param>
+        /// <param name="stateObserver">The connect server.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
-        public DefaultTcpGameServerListener(GameServerEndpoint endPoint, IGameServerInfo gameServerInfo, GameServerContext gameContext, IConnectServer connectServer, IIpAddressResolver addressResolver)
+        public DefaultTcpGameServerListener(GameServerEndpoint endPoint, IGameServerInfo gameServerInfo, GameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver)
         {
             this.endPoint = endPoint;
             this.gameServerInfo = gameServerInfo;
             this.gameContext = gameContext;
-            this.connectServer = connectServer;
+            this.stateObserver = stateObserver;
             this.addressResolver = addressResolver;
         }
 
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.GameServer
             Logger.InfoFormat("Starting Server Listener, port {0}", port);
             this.listener = new TcpListener(IPAddress.Any, port);
             this.listener.Start();
-            this.connectServer.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), port));
+            this.stateObserver.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), port));
             Task.Run(this.BeginAccept);
             Logger.Info("Server listener started.");
         }
@@ -76,7 +76,7 @@ namespace MUnique.OpenMU.GameServer
         public void Stop()
         {
             var port = this.endPoint.NetworkPort;
-            this.connectServer.UnregisterGameServer(this.gameServerInfo);
+            this.stateObserver.UnregisterGameServer(this.gameServerInfo);
             Logger.Info($"Stopping listener on port {port}.");
             if (this.listener == null || !this.listener.Server.IsBound)
             {
