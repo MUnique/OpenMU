@@ -8,6 +8,7 @@ import ServerList from "./ServerList";
 import LogTable from "./LogTable";
 import SystemMonitor from "./SystemMonitor";
 import PlugInList from "./PlugInList";
+import Modal from "./Modal";
 
 interface LayoutState {
     currentContent: Contents;
@@ -52,8 +53,9 @@ export class Layout extends React.Component<{}, LayoutState>{
                             ? <PlugInList />
                             : null
                     }
-                </aside>
 
+                    <Modal />
+                </aside>
                 <footer>
                 </footer>
             </div>

@@ -2,6 +2,7 @@
 import Action = Redux.Action;
 import ActionCreator = Redux.ActionCreator;
 import { PlugInConfiguration, PlugInExtensionPoint } from "./types";
+import { hideModal } from "content/js/stores/modal/actions";
 
 export enum Constants {
     PLUGINS_FETCH_OK = "PLUGINS_FETCH_OK",
@@ -12,8 +13,6 @@ export enum Constants {
     PLUGIN_SAVE_ERROR = "PLUGIN_SAVE_ERROR",
     PLUGIN_DELETE_OK = "PLUGIN_DELETE_OK",
     PLUGIN_DELETE_ERROR = "PLUGIN_DELETE_ERROR",
-    PLUGIN_SHOW_CREATE = "PLUGIN_SHOW_CREATE",
-    PLUGIN_HIDE_CREATE = "PLUGIN_HIDE_CREATE",
 };
 
 export interface FetchPlugInsSuccessAction extends Action {
@@ -68,14 +67,6 @@ export interface CustomPlugInDeleteErrorAction extends PlugInConfigurationErrorA
     type: Constants.PLUGIN_DELETE_ERROR
 }
 
-export interface ShowCreateDialogAction extends Action {
-    type: Constants.PLUGIN_SHOW_CREATE
-}
-
-export interface HideCreateDialogAction extends Action {
-    type: Constants.PLUGIN_HIDE_CREATE
-}
-
 
 export const savePlugInConfigurationSuccess: ActionCreator<PlugInSaveSuccessAction> = (plugin: PlugInConfiguration) => ({
     type: Constants.PLUGIN_SAVE_OK,
@@ -122,15 +113,6 @@ export const fetchedPlugInPointsSuccessfully: ActionCreator<FetchPlugInPointsSuc
 export const fetchPlugInPointsFailed: ActionCreator<FetchPlugInPointsErrorAction> = (error: string) => ({
     type: Constants.PLUGIN_POINTS_FETCH_ERROR,
     error,
-});
-
-
-export const showCreateDialog: ActionCreator<ShowCreateDialogAction> = () => ({
-    type: Constants.PLUGIN_SHOW_CREATE
-});
-
-export const hideCreateDialog: ActionCreator<HideCreateDialogAction> = () => ({
-    type: Constants.PLUGIN_HIDE_CREATE
 });
 
 export function fetchPlugInConfigurations(extensionPoint: any, filterName: string, filterType: string, page: number, entriesPerPage: number) {
@@ -213,6 +195,7 @@ export function savePlugInConfiguration(plugin: PlugInConfiguration) {
                 }
 
                 dispatch(savePlugInConfigurationSuccess(plugin));
+                dispatch(hideModal());
             })
             .catch(error => {
                 dispatch(savePlugInConfigurationError(plugin, error.toString()));

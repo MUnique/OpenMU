@@ -3,10 +3,11 @@ import { connect } from "react-redux";
 
 import { ApplicationState } from "../stores/index";
 import { PlugInConfiguration, PlugInExtensionPoint } from "../stores/plugins/types";
-import { fetchPlugInConfigurations, showCreateDialog } from "../stores/plugins/actions";
+import { fetchPlugInConfigurations } from "../stores/plugins/actions";
 
 import PlugInItem from "./PlugInItem";
 import PlugInExtensionPointSelection from "./PlugInExtensionPointSelection";
+import { showModal } from "content/js/stores/modal/actions";
 
 interface IPlugInListState {
     filterName: string;
@@ -21,7 +22,6 @@ interface IPlugInListProps {
     page: number;
     pageSize: number;
     hasMoreEntries: boolean;
-    createDialogVisible: boolean;
     selectedExtensionPointId: any;
     showCreateDialog: () => void;
     fetchPage(selectedExtensionPointId: any, filterName: string, filterType: string, newPage: number, entriesPerPage: number): Promise<void>;
@@ -41,9 +41,6 @@ class PlugInList extends React.Component<IPlugInListProps, IPlugInListState> {
     public render() {
         let pluginList = this.props.plugins.map(
             plugin => <PlugInItem plugin={plugin} key={plugin.id} markedName={this.props.filterName} markedType={this.props.filterType}/>);
-        let createDialog = this.props.createDialogVisible
-            ? <span>Creating is not supported yet.</span>
-            : <span></span>;
         return (
             <div>
                 <div>
@@ -76,7 +73,6 @@ class PlugInList extends React.Component<IPlugInListProps, IPlugInListState> {
                         </tr>
                     </tfoot>
                 </table>
-                {createDialog}
             </div>
         );
     }
@@ -126,7 +122,7 @@ const mapDispatchToProps = (dispatch: any) => {
                 dispatch(fetchPlugInConfigurations(extensionPoint, filterName, filterType, newPage, entriesPerPage));
             }
         },
-        showCreateDialog: () => dispatch(showCreateDialog())
+        showCreateDialog: () => dispatch(showModal((<span>Creating is not supported yet.</span>)))
     };
 }
 
@@ -140,7 +136,6 @@ const mapStateToProps = (state: ApplicationState) => {
         hasMoreEntries: state.plugInListState.hasMoreEntries,
         extensionPoints: state.plugInListState.extensionPoints,
         selectedExtensionPointId: state.plugInListState.selectedExtensionPointId,
-        createDialogVisible: state.plugInListState.createDialogVisible,
     };
 };
 

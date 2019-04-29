@@ -6,10 +6,12 @@ import { LogTableState, logTableStateReducer } from "./log/reducer";
 import { MapState, mapStateReducer } from "./map/reducer";
 import { SystemState, systemStateReducer } from "./system/reducer";
 import { PlugInListState, plugInListStateReducer } from "./plugins/reducer";
+import { ModalState, modalStateReducer } from "./modal/reducer";
 
 
 export type ApplicationState = {
     fetchState: FetchState;
+    modalState: ModalState;
     accountListState: AccountListState;
     serverListState: ServerListState;
     logTableState: LogTableState;
@@ -20,6 +22,7 @@ export type ApplicationState = {
 
 export const reducers: Redux.Reducer<ApplicationState> = Redux.combineReducers<ApplicationState>({
     fetchState: fetchStateReducer,
+    modalState: modalStateReducer,
     accountListState: accountStateReducer,
     serverListState: serverStateReducer,
     logTableState: logTableStateReducer,

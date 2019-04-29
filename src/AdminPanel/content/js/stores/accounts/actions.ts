@@ -2,6 +2,7 @@
 import Action = Redux.Action;
 import ActionCreator = Redux.ActionCreator;
 import { Account } from "./types";
+import { hideModal } from "content/js/stores/modal/actions";
 
 export enum Constants {
     ACCOUNTS_FETCH_OK = "ACCOUNTS_FETCH_OK",
@@ -10,8 +11,6 @@ export enum Constants {
     ACCOUNT_SAVE_ERROR = "ACCOUNT_SAVE_ERROR",
     ACCOUNT_DELETE_OK = "ACCOUNT_DELETE_OK",
     ACCOUNT_DELETE_ERROR = "ACCOUNT_DELETE_ERROR",
-    ACCOUNT_SHOW_CREATE = "ACCOUNT_SHOW_CREATE",
-    ACCOUNT_HIDE_CREATE = "ACCOUNT_HIDE_CREATE",
 };
 
 export interface FetchAccountsSuccessAction extends Action {
@@ -53,14 +52,6 @@ export interface AccountDeleteErrorAction extends AccountErrorAction {
     type: Constants.ACCOUNT_DELETE_ERROR
 }
 
-export interface ShowCreateDialogAction extends Action {
-    type: Constants.ACCOUNT_SHOW_CREATE
-}
-
-export interface HideCreateDialogAction extends Action {
-    type: Constants.ACCOUNT_HIDE_CREATE
-}
-
 
 export const saveAccountSuccess: ActionCreator<AccountSaveSuccessAction> = (account: Account) => ({
     type: Constants.ACCOUNT_SAVE_OK,
@@ -96,18 +87,11 @@ export const fetchAccountsFailed: ActionCreator<FetchAccountsErrorAction> = (err
     error,
 });
 
-export const showCreateDialog: ActionCreator<ShowCreateDialogAction> = () => ({
-    type: Constants.ACCOUNT_SHOW_CREATE
-});
-
-export const hideCreateDialog: ActionCreator<HideCreateDialogAction> = () => ({
-    type: Constants.ACCOUNT_HIDE_CREATE
-});
 
 export function fetchAccounts(page: number, entriesPerPage: number) {
     return (dispatch: Redux.Dispatch) => {
         let offset = (page - 1) * entriesPerPage;
-        return fetch("/admin/account/list/" + offset + "/" + entriesPerPage)
+        return fetch("/admin/account/" + offset + "/" + entriesPerPage)
             .then(
                 response => response.json(),
                 error => {
@@ -154,6 +138,7 @@ export function saveAccount(account: Account) {
                 }
 
                 dispatch(saveAccountSuccess(account));
+                dispatch(hideModal());
             })
             .catch(error => {
                 dispatch(saveAccountError(account, error.toString()));

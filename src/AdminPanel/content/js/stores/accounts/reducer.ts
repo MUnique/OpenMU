@@ -16,7 +16,6 @@ export type AccountListState = {
     readonly pageSize: number,
     readonly hasMoreEntries: boolean,
     readonly accounts: Account[],
-    readonly createDialogVisible: boolean,
 };
 
 export const initialState: AccountListState =
@@ -25,7 +24,6 @@ export const initialState: AccountListState =
     pageSize: 20,
     hasMoreEntries: false,
     accounts: [],
-    createDialogVisible: false,
 };
 
 
@@ -57,22 +55,18 @@ export const accountStateReducer: Redux.Reducer<AccountListState> =
                 } else {
                     newAccounts.push(savedAccount);
                 }
-                return { ...state, accounts: newAccounts, createDialogVisible: false };
+
+                return { ...state, accounts: newAccounts};
             case Constants.ACCOUNT_SAVE_ERROR:
                 let accountSaveErrorAction = action as AccountSaveErrorAction;
                 console.log('An error occurred when saving an account.', accountSaveErrorAction.error);
-
+                alert(accountSaveErrorAction.error);
                 return state;
             case Constants.ACCOUNT_DELETE_OK:
                 let accountDeleteAction = action as AccountDeleteSuccessAction;
                     return { ...state, accounts: state.accounts.filter(account => account !== accountDeleteAction.account) };
             case Constants.ACCOUNT_DELETE_ERROR:
                 console.log('An error occurred when deleting an account.', (action as AccountDeleteErrorAction).error);
-            case Constants.ACCOUNT_SHOW_CREATE:
-                return { ...state, createDialogVisible: true };
-            case Constants.ACCOUNT_HIDE_CREATE:
-                console.log('ACCOUNT_HIDE_CREATE');
-                return { ...state, createDialogVisible: false };
             default:
                 return state;
         }

@@ -19,7 +19,6 @@ export type PlugInListState = {
     readonly plugins: PlugInConfiguration[],
     readonly extensionPoints: PlugInExtensionPoint[],
     readonly selectedExtensionPointId: any,
-    readonly createDialogVisible: boolean,
     readonly filterName: string,
     readonly filterType: string,
 };
@@ -32,7 +31,6 @@ export const initialState: PlugInListState =
     plugins: [],
     extensionPoints: [],
     selectedExtensionPointId: null,
-    createDialogVisible: false,
     filterName: "",
     filterType: "",
 };
@@ -102,11 +100,6 @@ export const plugInListStateReducer: Redux.Reducer<PlugInListState> =
                 return { ...state, plugins: state.plugins.filter(plugin => plugin !== pluginDeleteAction.plugin) };
             case Constants.PLUGIN_DELETE_ERROR:
                 console.log('An error occurred when deleting an plugin.', (action as CustomPlugInDeleteErrorAction).error);
-            case Constants.PLUGIN_SHOW_CREATE:
-                return { ...state, createDialogVisible: true };
-            case Constants.PLUGIN_HIDE_CREATE:
-                console.log('PLUGIN_HIDE_CREATE');
-                return { ...state, createDialogVisible: false };
             default:
                 return state;
         }
