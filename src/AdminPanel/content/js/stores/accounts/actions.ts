@@ -105,10 +105,10 @@ export function fetchAccounts(page: number, entriesPerPage: number) {
 
 export function deleteAccount(account: Account) {
     return (dispatch: Redux.Dispatch) => {
-        return fetch("/admin/account/delete/" + account.id,
+        return fetch("/admin/account/" + account.id,
                 {
                     cache: 'no-cache',
-                    method: 'POST',
+                    method: 'DELETE',
                 })
             .then(() => {
                 dispatch(deleteAccountSuccess(account));
@@ -122,7 +122,7 @@ export function deleteAccount(account: Account) {
 export function saveAccount(account: Account) {
     return (dispatch: Redux.Dispatch) => {
 
-        return fetch("/admin/account/save",
+        return fetch("/admin/account",
                 {
                     body: JSON.stringify(account),
                     cache: 'no-cache',

@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
     /// <summary>
     /// Controller for the account list.
     /// </summary>
-    [Route("admin/[controller]/[action]")]
+    [Route("admin/[controller]")]
     public class AccountController : ControllerBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(AccountController));
@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         /// <param name="accountDto">The account.</param>
         /// <returns>The success of the operation.</returns>
         [HttpPost]
-        public IActionResult Save([FromBody] AccountDto accountDto)
+        public ActionResult<Guid> Save([FromBody]AccountDto accountDto)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         /// </summary>
         /// <param name="accountId">The account id.</param>
         /// <returns>The success of the operation.</returns>
-        [HttpPost]
+        [HttpDelete("{accountId}")]
         public IActionResult Delete(Guid accountId)
         {
             try
