@@ -85,7 +85,7 @@ class ServerItem extends React.Component<IServerItemProps, ServerItemState> {
                         {this.state.expanded
                         ? this.props.server.type === ServerType.GameServer
                             ? <MapList maps={this.props.server.maps} />
-                            : <ConnectServerConfiguration serverSettings={(this.props.server as ConnectServer).settings} onSaveSuccess={() => this.setState({ expanded: false })} onCancel={() => this.setState({ expanded: false })}/>
+                            : <div className="panel panel-body"><ConnectServerConfiguration id="edit-connect-server" serverSettings={(this.props.server as ConnectServer).settings} onSaveSuccess={() => this.setState({ expanded: false })} onCancel={() => this.setState({ expanded: false })}/></div>
                             : null}
                 </td>
                 <td>

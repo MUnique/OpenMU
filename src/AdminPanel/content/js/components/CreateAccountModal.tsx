@@ -19,7 +19,7 @@ class CreateAccountModal extends React.Component<ICreateAccountModalProps, ICrea
 
     public render() {
         return (
-            <div className="panel panel-body panel-default">
+            <div>
                 <h2>Create Account</h2>
                 <form onSubmit={(event: any) => this.submit(event)}>
                     <table>

@@ -32,7 +32,15 @@
     max-width: 500px;
     min-height: 300px;
     max-height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
     margin: 0 auto;
     padding: 30px;
+    position: relative;
+}
+
+
+#modal-close-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
 }

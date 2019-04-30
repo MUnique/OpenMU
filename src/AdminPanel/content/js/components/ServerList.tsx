@@ -67,6 +67,7 @@ class ServerList extends React.Component<ServerListProps, { }> {
 
     showConnectionServerConfig() {
         var modalContent = (<ConnectServerConfiguration
+            id="create-connect-server"
             serverSettings={ConnectServerSettings.createNew(this.props.clients[0])}
             onSaveSuccess={() => this.props.hideModal()}
             onCancel={() => this.props.hideModal()} />);

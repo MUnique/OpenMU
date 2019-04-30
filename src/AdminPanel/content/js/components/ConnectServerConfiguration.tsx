@@ -5,6 +5,7 @@ import { ConnectServerSettings, GameClientDefinition } from "content/js/stores/s
 import { saveConnectServerConfiguration } from "content/js/stores/servers/actions";
 
 export interface IConnectServerConfigurationProps {
+    id: string;
     serverSettings: ConnectServerSettings;
     clients: GameClientDefinition[];
     save: (settings: ConnectServerSettings, onSaveSuccess: () => void, onSaveError: (error: any) => void) => Promise<void>;
@@ -32,9 +33,7 @@ class ConnectServerConfiguration extends React.Component<IConnectServerConfigura
     public render() {
         let clients: JSX.Element[] = this.props.clients.map(c => (<option value={c.id} selected={this.state.gameClient !== null && this.state.gameClient.id === c.id}>{c.description}</option>));
         return (
-        <div className="panel panel-body panel-default">
-            <form onSubmit={(event: any) => this.submit(event)}>
-
+            <form id={this.props.id} onSubmit={(event: any) => this.submit(event)}>
                 <div className="form-group">
                     <label htmlFor="descriptionInput">Description</label>
                     <input id="descriptionInput" className="form-control" type="text" placeholder="Enter Description" value={this.state.description} onChange={(e: InputFormEvent) => this.setState({description: e.target.value})}/>
@@ -118,11 +117,10 @@ class ConnectServerConfiguration extends React.Component<IConnectServerConfigura
                     <input id="timeoutSecondsInput" className="form-control" type="number" min="1" value={ConnectServerSettings.timeoutSeconds(this.state)} onChange={(e: any) => this.setState({ timeout: ConnectServerSettings.toTimeSpanString(e.target.value) })}/>
                 </div>
 
-                    <button type="submit" className="btn btn-xs btn-success btn-primary">Save</button>
-                    {this.props.onCancel ? <button type="button" className="btn btn-xs" onClick={() => this.props.onCancel()}>Cancel</button> : null }
+                <button type="submit" className="btn btn-xs btn-success btn-primary">Save</button>
+                {this.props.onCancel ? <button type="button" className="btn btn-xs" onClick={() => this.props.onCancel()}>Cancel</button> : null }
 
-            </form>
-        </div>);
+            </form>);
     }
 
     private copyArrayAndChangeIndex(source: string, index: number, newValue: number) : string {

@@ -1,3 +1,7 @@
 ﻿.version-addon {
     width: 30%
 }
+
+#create-connect-server {
+    padding-bottom: 30px;
+}
