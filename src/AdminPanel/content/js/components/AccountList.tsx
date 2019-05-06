@@ -8,18 +8,16 @@ import { fetchAccounts } from "../stores/accounts/actions";
 import AccountItem from "./AccountItem";
 import CreateAccountModal from "./CreateAccountModal";
 import { showModal } from "content/js/stores/modal/actions";
+import { ListComponent, IListProps } from "./ListComponent";
 
 
-interface IAccountListProps {
+interface IAccountListProps extends IListProps {
     accounts: Account[];
-    page: number;
-    pageSize: number;
-    hasMoreEntries: boolean;
     showModal: (content: any) => void;
     fetchPage(newPage: number, entriesPerPage: number): Promise<void>;
 }
 
-class AccountList extends React.Component<IAccountListProps, {}> {
+class AccountList extends ListComponent<IAccountListProps, {}> {
     public componentDidMount() {
         this.props.fetchPage(this.props.page, this.props.pageSize);
     }
@@ -30,7 +28,7 @@ class AccountList extends React.Component<IAccountListProps, {}> {
 
         return (
             <div>
-                <button type="button" className={this.getPreviousButtonClass()} onClick={() => this.props.fetchPage(this.props.page - 1, this.props.pageSize)}>&lt;</button> Page {this.props.page} <button type="button" className={this.getNextButtonClass()} onClick={() => this.props.fetchPage(this.props.page + 1, this.props.pageSize)}>&gt;</button>
+                {this.getToolbar()}
                 <table className="table table-striped table-hover">
                     <thead>
                     <tr>
@@ -56,26 +54,16 @@ class AccountList extends React.Component<IAccountListProps, {}> {
         );
     }
 
+    fetchNextPage() {
+        this.props.fetchPage(this.props.page + 1, this.props.pageSize);
+    }
+
+    fetchPreviousPage() {
+        this.props.fetchPage(this.props.page - 1, this.props.pageSize);
+    }
+
     showCreateDialog() {
         this.props.showModal((<CreateAccountModal/>));
-    }
-
-    getPreviousButtonClass(): string {
-        const buttonClass = "btn btn-xs ";
-        if (this.props.page <= 1) {
-            return buttonClass + 'disabled';
-        }
-
-        return buttonClass;
-    }
-
-    getNextButtonClass() : string {
-        const buttonClass = "btn btn-xs ";
-        if (!this.props.hasMoreEntries) {
-            return buttonClass + 'disabled';
-        }
-
-        return buttonClass;
     }
 }
 

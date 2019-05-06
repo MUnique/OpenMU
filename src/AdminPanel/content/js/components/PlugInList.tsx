@@ -8,26 +8,24 @@ import { fetchPlugInConfigurations } from "../stores/plugins/actions";
 import PlugInItem from "./PlugInItem";
 import PlugInExtensionPointSelection from "./PlugInExtensionPointSelection";
 import { showModal } from "content/js/stores/modal/actions";
+import { IListProps, ListComponent } from "./ListComponent";
 
 interface IPlugInListState {
     filterName: string;
     filterType: string;
 }
 
-interface IPlugInListProps {
+interface IPlugInListProps extends IListProps{
     plugins: PlugInConfiguration[];
     extensionPoints: PlugInExtensionPoint[];
     filterName: string;
     filterType: string;
-    page: number;
-    pageSize: number;
-    hasMoreEntries: boolean;
     selectedExtensionPointId: any;
     showCreateDialog: () => void;
     fetchPage(selectedExtensionPointId: any, filterName: string, filterType: string, newPage: number, entriesPerPage: number): Promise<void>;
 }
 
-class PlugInList extends React.Component<IPlugInListProps, IPlugInListState> {
+class PlugInList extends ListComponent<IPlugInListProps, IPlugInListState> {
     constructor(props: IPlugInListProps) {
         super(props);
         this.state = { filterName: props.filterName, filterType: props.filterType }
@@ -43,9 +41,7 @@ class PlugInList extends React.Component<IPlugInListProps, IPlugInListState> {
             plugin => <PlugInItem plugin={plugin} key={plugin.id} markedName={this.props.filterName} markedType={this.props.filterType}/>);
         return (
             <div>
-                <div>
-                    <button type="button" className={this.getPreviousButtonClass()} onClick={() => this.fetchPreviousPage()}>&lt;</button> Page {this.props.page} <button type="button" className={this.getNextButtonClass()} onClick={() => this.fetchNextPage()}>&gt;</button>
-                </div>
+                {this.getToolbar()}
                 <table className="table table-striped table-hover">
                     <thead>
                         <tr>
@@ -93,24 +89,6 @@ class PlugInList extends React.Component<IPlugInListProps, IPlugInListState> {
 
     fetchPreviousPage() {
         this.props.fetchPage(this.props.selectedExtensionPointId, this.props.filterName, this.props.filterType, this.props.page - 1, this.props.pageSize);
-    }
-
-    getPreviousButtonClass(): string {
-        const buttonClass = "btn btn-xs ";
-        if (this.props.page <= 1) {
-            return buttonClass + 'disabled';
-        }
-
-        return buttonClass;
-    }
-
-    getNextButtonClass(): string {
-        const buttonClass = "btn btn-xs ";
-        if (!this.props.hasMoreEntries) {
-            return buttonClass + 'disabled';
-        }
-
-        return buttonClass;
     }
 }
 
