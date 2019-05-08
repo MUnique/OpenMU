@@ -203,7 +203,7 @@ namespace MUnique.OpenMU.ChatServer
                         var message = packet.ExtractString(5, int.MaxValue, Encoding.UTF8);
                         if (Log.IsDebugEnabled)
                         {
-                            Log.Debug($"Message reveived from {this.Index}: \"{message}\"");
+                            Log.Debug($"Message received from {this.Index}: \"{message}\"");
                         }
 
                         this.room.SendMessage(this.Index, message);
