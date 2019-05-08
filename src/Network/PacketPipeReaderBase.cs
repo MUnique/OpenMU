@@ -25,6 +25,7 @@ namespace MUnique.OpenMU.Network
         /// Reads the mu online packet.
         /// </summary>
         /// <param name="packet">The mu online packet.</param>
+        /// <returns>The async task.</returns>
         protected abstract Task ReadPacket(ReadOnlySequence<byte> packet);
 
         /// <summary>
