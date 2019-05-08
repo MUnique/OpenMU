@@ -140,6 +140,10 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             {
                 return false;
             }
+            catch (InvalidPacketCounterException)
+            {
+                return false;
+            }
         }
 
         private bool TryFindKey(uint modulusKey, uint knownKey, out uint unknownKey)
