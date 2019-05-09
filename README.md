@@ -61,8 +61,8 @@ Have a look at the [quick start guide](QuickStart.md).
 
 ## Gameplay differences to the original server ##
 This project doesn't have the goal to copy the original MU Online server behavior to 100 %. This is not entirely
-possible, because the original server is written in another programming language and has a complete different architecture.
-With some points we make our live easier in this project, with other points we try to improve the gameplay.
+possible, because the original server is written in another programming language and has a completely different architecture.
+With some points we make our life easier in this project, with other points we try to improve the gameplay.
 
 ### Calculations ###
 The calculations of attribute values (like character damage decrement etc.) is done with 32 bit float numbers and without rounding off, like the original server does at some places.
@@ -70,7 +70,7 @@ The calculations of attribute values (like character damage decrement etc.) is d
 ### Money drops ###
 The original server drops money (zen) on the ground when a player kills a monster.
 The serialization of it is a bit strange, because it's sent as 'item drop' and misuses item fields to represent the money value.
-We make our live here easier, because we don't drop money. Instead, we directly add it to the inventory of the
+We make our life here easier, because we don't drop money. Instead, we directly add it to the inventory of the
 player(s).
 Benefits:
   * More performance, as we don't create a ton of new "Item" objects which are actually no items. Money drops really often on the original server.
