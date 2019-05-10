@@ -45,4 +45,8 @@
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
+  </ItemGroup>
+
 </Project>
