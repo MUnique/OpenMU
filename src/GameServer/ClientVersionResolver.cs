@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.GameServer
 {
     using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// A resolver for client Versions.

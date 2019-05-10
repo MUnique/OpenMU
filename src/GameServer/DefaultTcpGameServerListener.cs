@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
     using Pipelines.Sockets.Unofficial;
 
     /// <summary>

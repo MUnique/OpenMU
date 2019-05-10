@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
     using NUnit.Framework;

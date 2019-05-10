@@ -22,6 +22,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.LoginServer;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.Initialization;

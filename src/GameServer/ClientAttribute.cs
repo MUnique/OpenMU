@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// Attribute to mark an implemented <see cref="IViewPlugIn"/> with a specific client version.

@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.Tests
 {
     using System;
     using Moq;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.GameServer.MessageHandler;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
     using NUnit.Framework;
 
