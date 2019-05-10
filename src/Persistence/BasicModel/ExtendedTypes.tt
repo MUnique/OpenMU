@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 
 <#
 Assembly assembly = typeof(Account).Assembly;
-var customTypes = assembly.GetTypes().Where(type => type.IsClass && type.IsPublic && !type.IsSealed && !type.IsAbstract).ToList();
+var customTypes = assembly.GetTypes().Where(type => type.IsClass && type.IsPublic && !type.IsSealed && !type.IsAbstract && type.GetConstructor(System.Array.Empty<System.Type>()) != null).ToList();
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeDefinition));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.StatAttribute));
 customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstValueAttribute));

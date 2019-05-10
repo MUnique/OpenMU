@@ -7,8 +7,15 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// <summary>
     /// Defines an endpoint of a server.
     /// </summary>
-    public abstract class ServerEndpoint
+    public class ServerEndpoint
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerEndpoint"/> class.
+        /// </summary>
+        protected ServerEndpoint()
+        {
+        }
+
         /// <summary>
         /// Gets or sets the network port on which the server is listening.
         /// </summary>
