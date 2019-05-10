@@ -54,6 +54,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             using (this.context = this.persistenceContextProvider.CreateNewContext(this.gameConfiguration))
             {
                 this.CreateGameClientDefinitions();
+                this.CreateChatServerDefinition();
                 this.InitializeGameConfiguration();
 
                 var gameServerConfiguration = this.CreateGameServerConfiguration(this.gameConfiguration.Maps);
@@ -877,6 +878,24 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     server.Endpoints.Add(endPoint);
                     j += 20;
                 }
+            }
+        }
+
+        private void CreateChatServerDefinition()
+        {
+            var server = this.context.CreateNew<ChatServerDefinition>();
+            server.ServerId = 0;
+            server.Description = "Chat Server";
+
+            var i = 0;
+            foreach (var client in this.context.Get<GameClientDefinition>()
+                .OrderByDescending(c => c.Season) // Season 6 should get the standard port
+                .ToList())
+            {
+                var endPoint = this.context.CreateNew<ChatServerEndpoint>();
+                endPoint.Client = client;
+                endPoint.NetworkPort = 55980 + i++;
+                server.Endpoints.Add(endPoint);
             }
         }
 

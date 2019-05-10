@@ -1003,6 +1003,117 @@ public ICollection<Item> RawItems { get; } = new List<Item>();
     }
 
     /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition"/>.
+    /// </summary>
+    [Table("ChatServerDefinition", Schema = "config")]
+    internal partial class ChatServerDefinition : MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+public ICollection<ChatServerEndpoint> RawEndpoints { get; } = new List<ChatServerEndpoint>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint> Endpoints
+        {
+            get
+            {
+                return base.Endpoints ?? (base.Endpoints = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint, ChatServerEndpoint>(this.RawEndpoints)); 
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint"/>.
+    /// </summary>
+    [Table("ChatServerEndpoint", Schema = "config")]
+    internal partial class ChatServerEndpoint : MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Client"/>.
+        /// </summary>
+        public Guid? ClientId { get; set; }
+        
+        [ForeignKey("ClientId")]
+        public GameClientDefinition RawClient
+        { 
+            get { return base.Client as GameClientDefinition; }
+            set { base.Client = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.GameClientDefinition Client
+        {
+            get
+            {
+                return base.Client;
+            }
+            
+            set
+            {
+                base.Client = value;
+                this.ClientId = this.RawClient?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition"/>.
     /// </summary>
     [Table("ConnectServerDefinition", Schema = "config")]
@@ -4511,6 +4622,8 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.DropItemGroup>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.EnterGate>();
@@ -4652,6 +4765,12 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CharacterClass, MUnique.OpenMU.DataModel.Configuration.CharacterClass>()
                             .Include<CharacterClass, BasicModel.CharacterClass>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition, MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>()
+                            .Include<ChatServerDefinition, BasicModel.ChatServerDefinition>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint, MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint>()
+                            .Include<ChatServerEndpoint, BasicModel.ChatServerEndpoint>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition, MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition>()
                             .Include<ConnectServerDefinition, BasicModel.ConnectServerDefinition>();
