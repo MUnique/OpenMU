@@ -290,6 +290,46 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("CharacterDropItemGroup","data");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<TimeSpan>("ClientCleanUpInterval");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("MaximumConnections");
+
+                    b.Property<TimeSpan>("RoomCleanUpInterval");
+
+                    b.Property<byte>("ServerId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChatServerDefinition","config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerEndpoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid?>("ChatServerDefinitionId");
+
+                    b.Property<Guid?>("ClientId");
+
+                    b.Property<int>("NetworkPort");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatServerDefinitionId");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("ChatServerEndpoint","config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
                 {
                     b.Property<Guid>("Id")
@@ -303,9 +343,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte[]>("CurrentPatchVersion");
 
-                    b.Property<bool>("DisconnectOnUnknownPacket");
-
                     b.Property<string>("Description");
+
+                    b.Property<bool>("DisconnectOnUnknownPacket");
 
                     b.Property<int>("ListenerBacklog");
 
@@ -317,9 +357,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MaxIpRequests");
 
-                    b.Property<byte>("MaximumReceiveSize");
-
                     b.Property<int>("MaxServerListRequests");
+
+                    b.Property<byte>("MaximumReceiveSize");
 
                     b.Property<string>("PatchAddress");
 
@@ -1806,6 +1846,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("DropItemGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerEndpoint", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ChatServerDefinition")
+                        .WithMany("RawEndpoints")
+                        .HasForeignKey("ChatServerDefinitionId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>

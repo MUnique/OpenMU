@@ -33,6 +33,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             this.RegisterRepository(new GenericRepository<GameServerConfiguration>(contextProvider));
             this.RegisterRepository(new GenericRepository<GameClientDefinition>(contextProvider));
             this.RegisterRepository(new GenericRepository<ConnectServerDefinition>(contextProvider));
+            this.RegisterRepository(new GenericRepository<ChatServerDefinition>(contextProvider));
+            this.RegisterRepository(new GenericRepository<ChatServerEndpoint>(contextProvider));
             this.RegisterRepository(new GenericRepository<GameServerEndpoint>(contextProvider));
             this.RegisterRepository(new GameServerDefinitionRepository(contextProvider));
 

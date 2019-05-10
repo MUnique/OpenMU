@@ -1129,6 +1129,119 @@ namespace MUnique.OpenMU.Persistence.BasicModel
     }
 
     /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition"/>.
+    /// </summary>
+    public partial class ChatServerDefinition : MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition, IIdentifiable, IConvertibleTo<ChatServerDefinition>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="Endpoints" />.
+        /// </summary>
+        [JsonProperty("Endpoints")]
+        public ICollection<ChatServerEndpoint> RawEndpoints { get; } = new List<ChatServerEndpoint>();
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint> Endpoints
+        {
+            get
+            {
+                return base.Endpoints ?? (base.Endpoints = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint, ChatServerEndpoint>(this.RawEndpoints)); 
+            }
+            protected set
+            {
+                this.Endpoints.Clear();
+                foreach (var item in value)
+                {
+                    this.Endpoints.Add(item);
+                }
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public ChatServerDefinition Convert() => this;
+    }
+
+    /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint"/>.
+    /// </summary>
+    public partial class ChatServerEndpoint : MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint, IIdentifiable, IConvertibleTo<ChatServerEndpoint>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="Client" />.
+        /// </summary>
+        [JsonProperty("Client")]
+        public GameClientDefinition RawClient
+        { 
+            get { return base.Client as GameClientDefinition; }
+            set { base.Client = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.GameClientDefinition Client
+        {
+            get
+            {
+                return base.Client;
+            }
+            
+            set
+            {
+                base.Client = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public ChatServerEndpoint Convert() => this;
+    }
+
+    /// <summary>
     /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition"/>.
     /// </summary>
     public partial class ConnectServerDefinition : MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition, IIdentifiable, IConvertibleTo<ConnectServerDefinition>
