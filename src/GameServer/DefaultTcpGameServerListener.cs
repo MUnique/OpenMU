@@ -138,8 +138,21 @@ namespace MUnique.OpenMU.GameServer
             {
                 socket.NoDelay = true;
                 var socketConnection = SocketConnection.Create(socket);
-                var connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
-                var remotePlayer = new RemotePlayer(this.gameContext, connection, new ClientVersion(this.endPoint.Client.Season, this.endPoint.Client.Episode, this.endPoint.Client.Language));
+                var clientVersion = new ClientVersion(this.endPoint.Client.Season, this.endPoint.Client.Episode, this.endPoint.Client.Language);
+                var encryptionFactoryPlugIn = this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(clientVersion)
+                                                ?? this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
+                IConnection connection;
+                if (encryptionFactoryPlugIn == null)
+                {
+                    this.Log(l => l.WarnFormat("No network encryption plugin for version {0} available. It falls back to default ecnryption.", clientVersion));
+                    connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
+                }
+                else
+                {
+                    connection = new Connection(socketConnection, encryptionFactoryPlugIn.CreateDecryptor(socketConnection.Input), encryptionFactoryPlugIn.CreateEncryptor(socketConnection.Output));
+                }
+
+                var remotePlayer = new RemotePlayer(this.gameContext, connection, clientVersion);
                 this.OnPlayerConnected(remotePlayer);
                 connection.Disconnected += (sender, e) => remotePlayer.Disconnect();
 
@@ -171,9 +184,20 @@ namespace MUnique.OpenMU.GameServer
             return log4net.ThreadContext.Stacks["gameserver"].Push(this.gameContext.Id.ToString());
         }
 
+        private IDisposable PushEndpointContext()
+        {
+            if (log4net.ThreadContext.Stacks["endpoint"].Count > 0)
+            {
+                return null;
+            }
+
+            return log4net.ThreadContext.Stacks["endpoint"].Push(this.endPoint.ToString());
+        }
+
         private void Log(Action<ILog> logAction)
         {
             using (this.PushServerLogContext())
+            using (this.PushEndpointContext())
             {
                 logAction(Logger);
             }
