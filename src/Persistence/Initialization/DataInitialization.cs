@@ -17,6 +17,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameServer;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.Persistence.Initialization.Items;
     using MUnique.OpenMU.Persistence.Initialization.Maps;

@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration
 {
+    using MUnique.OpenMU.Network.PlugIns;
+
     /// <summary>
     /// Defines a game client.
     /// </summary>

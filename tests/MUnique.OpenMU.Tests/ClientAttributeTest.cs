@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.Tests
 {
     using System;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameServer;
+    using MUnique.OpenMU.Network.PlugIns;
     using NUnit.Framework;
 
     /// <summary>

@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
-    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// Interface for an object which can provide its client version.
