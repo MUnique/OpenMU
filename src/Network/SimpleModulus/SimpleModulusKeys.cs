@@ -7,10 +7,32 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     using System.Linq;
 
     /// <summary>
-    /// Class to hold encryptions keys for the simple modulus algorithm.
+    /// Class to hold encryption keys for the simple modulus algorithm.
     /// </summary>
     public class SimpleModulusKeys
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleModulusKeys"/> class.
+        /// </summary>
+        /// <param name="modulusKey">The modulus key.</param>
+        /// <param name="xorKey">The xor key.</param>
+        /// <param name="encryptKey">The encrypt key.</param>
+        /// <param name="decryptKey">The decrypt key.</param>
+        public SimpleModulusKeys(uint[] modulusKey, uint[] xorKey, uint[] encryptKey, uint[] decryptKey)
+        {
+            this.ModulusKey = modulusKey;
+            this.XorKey = xorKey;
+            this.EncryptKey = encryptKey;
+            this.DecryptKey = decryptKey;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleModulusKeys"/> class.
+        /// </summary>
+        public SimpleModulusKeys()
+        {
+        }
+
         /// <summary>
         /// Gets the modulus key. These values are used for the modulus operation in the encryption/decryption process.
         /// </summary>
