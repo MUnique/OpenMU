@@ -98,6 +98,16 @@ namespace MUnique.OpenMU.PlugIns
         }
 
         /// <summary>
+        /// Discovers the and register plug ins of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the plugins which should be discovered.</typeparam>
+        public void DiscoverAndRegisterPlugInsOf<T>()
+        {
+            var plugIns = this.DiscoverAllPlugIns().Where(type => typeof(T).IsAssignableFrom(type));
+            this.RegisterPlugIns(plugIns);
+        }
+
+        /// <summary>
         /// Deactivates the plug in of type <typeparamref name="TPlugIn"/>.
         /// </summary>
         /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>

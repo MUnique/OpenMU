@@ -42,6 +42,7 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
     <ProjectReference Include="..\MUnique.OpenMU.ChatServer.csproj" />
     <ProjectReference Include="..\..\Network\MUnique.OpenMU.Network.csproj" />
   </ItemGroup>
