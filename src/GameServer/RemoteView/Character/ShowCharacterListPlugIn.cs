@@ -47,8 +47,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                                 .Aggregate(maxClass, (current, flag) => (byte)(current | flag)) ?? 0;
                 packet[5] = 0; // MoveCnt
                 packet[6] = (byte)this.player.Account.Characters.Count;
-
-                // packet[7] ??? new in season 6 - probably vault extension
+                packet[7] = this.player.Account.IsVaultExtended ? (byte)1 : (byte)0;
                 int i = 0;
                 foreach (var character in this.player.Account.Characters.OrderBy(c => c.CharacterSlot))
                 {
