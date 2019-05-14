@@ -65,7 +65,9 @@ namespace MUnique.OpenMU.Startup
             var serverConfigListener = new ServerConfigurationChangeListener(this.servers, signalRServerObserver);
             var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
             var loginServer = new LoginServer();
-            var chatServer = new ChatServerListener(55980, signalRServerObserver, ipResolver);
+
+            var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
+            var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), signalRServerObserver, ipResolver);
             this.servers.Add(chatServer);
             var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
             var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network
 {
     using System;
+    using System.ComponentModel;
     using System.IO.Pipelines;
     using System.Net;
     using System.Net.Sockets;
@@ -39,6 +40,11 @@ namespace MUnique.OpenMU.Network
         /// Occurs when a client has been accepted by the tcp listener.
         /// </summary>
         public event EventHandler<ClientAcceptEventArgs> ClientAccepted;
+
+        /// <summary>
+        /// Occurs when a client has been accepted by the tcp listener, but before a <see cref="Connection"/> is created.
+        /// </summary>
+        public event CancelEventHandler ClientAccepting;
 
         /// <summary>
         /// Starts the tcp listener and begins to accept connections.
@@ -88,8 +94,13 @@ namespace MUnique.OpenMU.Network
                 this.clientListener.BeginAcceptSocket(this.OnAccept, null);
             }
 
-            var connection = this.CreateConnection(socket);
-            this.ClientAccepted?.Invoke(this, new ClientAcceptEventArgs(connection));
+            var cancel = new CancelEventArgs();
+            this.ClientAccepting?.Invoke(this, cancel);
+            if (!cancel.Cancel)
+            {
+                var connection = this.CreateConnection(socket);
+                this.ClientAccepted?.Invoke(this, new ClientAcceptEventArgs(connection));
+            }
         }
     }
 }
