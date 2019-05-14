@@ -10,7 +10,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System.Reflection;
     using log4net;
     using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.PlugIns;
