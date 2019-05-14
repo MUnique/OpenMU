@@ -30,8 +30,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             using (var writer = this.player.Connection.StartSafeWrite(0xC1, 4))
             {
                 var packet = writer.Span;
-
-                packet[1] = 0x04;
                 packet[2] = 0x53;
                 packet[3] = (byte)successCode;
                 writer.Commit();
