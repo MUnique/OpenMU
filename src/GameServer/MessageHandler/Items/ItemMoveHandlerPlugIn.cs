@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+    using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,12 +29,19 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            byte fromID = packet[3];
+            byte fromStorage = packet[3];
             byte fromSlot = packet[4];
-            byte toID = packet[17];
-            byte toSlot = packet[18];
 
-            this.moveAction.MoveItem(player, fromSlot, (Storages)fromID, toSlot, (Storages)toID);
+            var itemSize = 12;
+            if (player is RemotePlayer remotePlayer)
+            {
+                itemSize = remotePlayer.ItemSerializer.NeededSpace;
+            }
+
+            byte toStorage = packet[5 + itemSize];
+            byte toSlot = packet[6 + itemSize];
+
+            this.moveAction.MoveItem(player, fromSlot, (Storages)fromStorage, toSlot, (Storages)toStorage);
         }
     }
 }
