@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
-    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
 
@@ -20,16 +19,29 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="guildMasterId">The guild master identifier.</param>
         public void RequestGuild(Player player, ushort guildMasterId)
         {
+            if (player.Level < 6)
+            {
+                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.MinimumLevel6);
+                return;
+            }
+
+            if (player.GuildStatus != null)
+            {
+                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
+                return;
+            }
+
             Player guildMaster = player.CurrentMap.GetObject(guildMasterId) as Player;
 
             if (guildMaster?.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
+                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
                 return; // targeted player not in a guild or not the guild master
             }
 
-            if (guildMaster.LastGuildRequester != null)
+            if (guildMaster.LastGuildRequester != null || player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("The Guild Master is busy.", MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy);
                 return;
             }
 

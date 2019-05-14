@@ -58,6 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             }
 
             guildServer.KickMember(player.GuildStatus.GuildId, nickname);
+            player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.KickSucceeded);
         }
     }
 }
