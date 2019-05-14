@@ -248,6 +248,16 @@ namespace MUnique.OpenMU.GuildServer
             }
         }
 
+        /// <inheritdoc />
+        public GuildPosition? GetGuildPosition(Guid characterId)
+        {
+            using (var tempContext = this.persistenceContextProvider.CreateNewGuildContext())
+            {
+                var guildMember = tempContext.GetById<GuildMember>(characterId); // we use the same id for Character.Id and GuildMemberInfo.Id
+                return guildMember?.Status;
+            }
+        }
+
         /// <summary>
         /// Removes a guild from the server and the database.
         /// First we are trying to get the guild out of our dictionary.

@@ -14,6 +14,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
+    using MUnique.OpenMU.GameServer.RemoteView.Guild;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.PlugIns;
 
@@ -62,9 +64,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
 
                     appearanceSerializer.WriteAppearanceData(characterBlock.Slice(15), new CharacterAppearanceDataAdapter(character), false);
 
-                    //// var guildStatusIndex = offset + 15 + 18;
-                    //// TODO: characterBLock[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
-
+                    var guildPosition = this.player.GameServerContext.GuildServer?.GetGuildPosition(character.Id);
+                    characterBlock[15 + appearanceSerializer.NeededSpace] = guildPosition?.GetViewValue() ?? (byte)0xFF;
                     i++;
                 }
 
