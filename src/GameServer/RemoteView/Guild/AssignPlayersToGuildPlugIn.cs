@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     /// </summary>
     [PlugIn("AssignPlayersToGuildPlugIn", "The default implementation of the IAssignPlayersToGuildPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("f42f571e-0cd1-4c22-ba53-8344848ba998")]
-    public class AssignPlayersToGuildPlugIn : IAssignPlayersToGuildPlugIn, IAssignPlayerToGuildPlugIn
+    public class AssignPlayersToGuildPlugIn : IAssignPlayersToGuildPlugIn
     {
         private readonly RemotePlayer player;
 
