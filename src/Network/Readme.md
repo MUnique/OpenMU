@@ -64,12 +64,27 @@ using (var writer = connection.StartSafeWrite(0xC1, 5))
 
 
 ## Encryption
-This project contains the encryption algorithms and client and server keys (as static properties in their implementations)
-which were used a few years ago at Season 6 Episode 3: *SimpleModulus* and a XOR-Encryption with a 32 byte long key.
+This project contains the encryption algorithms and client and server keys which were used from 0.75 until Season 6 Episode 3.
 Please note, that these are not up-to-date and are known to the MU Online server (and cheater) community since over 10 years,
 so they're not secure at all. The keys can be calculated based on known packet content or bruteforced in a fraction of a second.
 
-So if you want to use this project for your own server, please consider to change the encryption algorithms and keys.
+So, if you want to use this project for your own server, please consider to change the encryption algorithms and keys.
 The used encryption algorithms are encapsulated by interfaces (IPipelinedDecryptor, IPipelinedEncryptor), so it shouldn't be difficult on server-side.
 
-It also contains the PacketTwister algorithm which was introduced with MU Online Version/Season ex700, but it's unknown if it's complete and how long it was in use in this form.
+### History
+#### Below version 0.74
+As far as we know, there wasn't a packet encryption in the earliest versions below 0.74.
+
+#### Version 0.74.01 and higher
+According to a korean change log, SimpleModulus got added with version **0.74.01**.
+The first variant used 16 encryption keys which were used to encrypt blocks of 32 bytes size.
+
+#### Somehwere between 0.75 and 0.97
+* A counter got added to the first encrypted payload byte, so that every encrypted packet looked different and replay attacks were prevented (at least if you couldn't count ;-)).
+* The XOR encryption with the 32 byte long key got added.
+* The block size got reduced from 32 bytes to 8 bytes (unencrypted). That also means, each block is only encrypted by 4 instead of previously 16 keys.
+#### Season 6
+The algorithms of SimpleModulus and the Xor32 encryption were still used. However, they desperately changed the keys of the Xor32 encryption during maintenances.
+
+#### ex700 (Season 7) and higher
+The packet twister algorithm got added. This project also contains the PacketTwister algorithm but it's unknown if it's complete and how long it was in use in this form.

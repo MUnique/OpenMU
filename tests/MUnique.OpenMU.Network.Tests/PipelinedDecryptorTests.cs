@@ -7,7 +7,10 @@ namespace MUnique.OpenMU.Network.Tests
     using System;
     using System.Buffers;
     using System.IO.Pipelines;
+    using System.Text;
     using System.Threading.Tasks;
+    using MUnique.OpenMU.Network.PlugIns;
+    using MUnique.OpenMU.Network.Xor;
     using NUnit.Framework;
 
     /// <summary>
@@ -77,6 +80,33 @@ namespace MUnique.OpenMU.Network.Tests
             var decrypted = new byte[] { 195, 12, 14, 0, 1, 51, 254, 39, 0, 0, 0, 0 };
             var encrypted = new byte[] { 0xC3, 0x18, 0xBC, 0x9D, 0x35, 0xE2, 0xA2, 0x21, 0x22, 0x91, 0x5C, 0x2B, 0x1E, 0x18, 0x63, 0x47, 0x28, 0xC3, 0x10, 0x20, 0xF1, 0xC4, 0x2A, 0x14 };
             await this.Decrypt(encrypted, decrypted).ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task DecryptVersion075LoginPacket()
+        {
+            var encrypted = new byte[]
+            {
+                0xC3, 0x4E, 0x38, 0x08, 0x6C, 0x49, 0x4A, 0x27, 0xE7, 0x63, 0xC4, 0x55, 0xD1, 0x24, 0x44, 0x06, 0x0B, 0xF3, 0x0A, 0xD1, 0x79, 0xEC, 0x65, 0xA6, 0x8F, 0xD4, 0x51, 0x7C, 0xA0, 0x33, 0x2C, 0x24, 0xF0, 0xC6, 0x29, 0xC3, 0x28,
+                0x15, 0x7A, 0x67, 0x0A, 0xF8, 0x3B, 0xFA, 0xD7, 0x50, 0xA7, 0x03, 0x84, 0x92, 0xC0, 0x57, 0xBD, 0xDA, 0x3D, 0x60, 0x30, 0xFD, 0xD7, 0xB5, 0x80, 0x43, 0x09, 0xDA, 0x74, 0x99, 0x74, 0xE1, 0xC9, 0x09, 0x5B, 0xA3, 0x23, 0x13,
+                0x94, 0xEC, 0xFA, 0xC9
+            };
+
+            var pipe = new Pipe();
+            var plugin = new Version075NetworkEncryptionFactoryPlugIn();
+            var decryptor = plugin.CreateDecryptor(pipe.Reader);
+            pipe.Writer.Write(encrypted);
+            await pipe.Writer.FlushAsync().ConfigureAwait(false);
+            var readResult = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
+            var result = readResult.Buffer.ToArray();
+
+            var xor3Decryptor = new Xor3Decryptor(0);
+            xor3Decryptor.Decrypt(result.AsSpan(4, 10));
+            xor3Decryptor.Decrypt(result.AsSpan(14, 10));
+            Assert.That(result[2], Is.EqualTo(0xF1));
+            Assert.That(result[3], Is.EqualTo(0x01));
+            Assert.That(result.ExtractString(4, 10, Encoding.ASCII), Is.EqualTo("test2"));
+            Assert.That(result.ExtractString(14, 10, Encoding.ASCII), Is.EqualTo("test2"));
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(PipelinedSimpleModulusDecryptor));
         private readonly SimpleModulusKeys decryptionKeys;
-        private readonly byte[] inputBuffer = new byte[EncryptedBlockSize];
+        private readonly byte[] inputBuffer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PipelinedSimpleModulusDecryptor"/> class with standard keys.
@@ -55,9 +55,11 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <param name="source">The source.</param>
         /// <param name="decryptionKeys">The decryption keys.</param>
         public PipelinedSimpleModulusDecryptor(PipeReader source, SimpleModulusKeys decryptionKeys)
+            : base(decryptionKeys.DecryptKey.Length == 4 ? Variant.New : Variant.Old)
         {
             this.Source = source;
             this.decryptionKeys = decryptionKeys;
+            this.inputBuffer = new byte[this.EncryptedBlockSize];
             this.ReadSource().ConfigureAwait(false);
         }
 
@@ -97,10 +99,10 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             else
             {
                 var contentSize = this.GetContentSize(this.HeaderBuffer, false);
-                if ((contentSize % EncryptedBlockSize) != 0)
+                if ((contentSize % this.EncryptedBlockSize) != 0)
                 {
                     throw new ArgumentException(
-                        $"The packet has an unexpected content size. It must be a multiple of ${EncryptedBlockSize}",
+                        $"The packet has an unexpected content size. It must be a multiple of {this.EncryptedBlockSize}",
                         nameof(packet));
                 }
 
@@ -112,15 +114,16 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         private void DecryptAndWrite(ReadOnlySequence<byte> packet)
         {
             var maximumDecryptedSize = this.GetMaximumDecryptedSize(this.HeaderBuffer);
-            var encryptedHeaderSize = this.HeaderBuffer.GetPacketHeaderSize();
-            var decryptedHeaderSize = encryptedHeaderSize - 1;
+            var headerSize = this.HeaderBuffer.GetPacketHeaderSize();
+            var counterSize = this.Counter == null ? 0 : 1;
+
             var span = this.Pipe.Writer.GetSpan(maximumDecryptedSize);
 
             // we just want to work on a span with the exact size of the packet.
             var decrypted = span.Slice(0, maximumDecryptedSize);
-            var decryptedContentSize = this.DecryptPacketContent(packet.Slice(encryptedHeaderSize), decrypted.Slice(decryptedHeaderSize));
+            var decryptedContentSize = this.DecryptPacketContent(packet.Slice(headerSize), decrypted.Slice(headerSize - counterSize)); // if we have a counter, we trick a bit by passing in a bigger span
             decrypted[0] = this.HeaderBuffer[0];
-            decrypted = decrypted.Slice(0, decryptedContentSize + decryptedHeaderSize);
+            decrypted = decrypted.Slice(0, decryptedContentSize + headerSize - counterSize);
             decrypted.SetPacketSize();
 
             this.Pipe.Writer.Advance(decrypted.Length);
@@ -132,10 +135,10 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             var rest = input;
             do
             {
-                rest.Slice(0, EncryptedBlockSize).CopyTo(this.inputBuffer);
-                var outputBlock = output.Slice(sizeCounter, DecryptedBlockSize);
+                rest.Slice(0, this.EncryptedBlockSize).CopyTo(this.inputBuffer);
+                var outputBlock = output.Slice(sizeCounter, this.DecryptedBlockSize);
                 var blockSize = this.DecryptBlock(outputBlock);
-                if (sizeCounter == 0 && outputBlock[0] != this.Counter.Count)
+                if (this.Counter != null && sizeCounter == 0 && outputBlock[0] != this.Counter.Count)
                 {
                     throw new InvalidPacketCounterException(outputBlock[0], (byte)this.Counter.Count);
                 }
@@ -145,11 +148,11 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                     sizeCounter += blockSize;
                 }
 
-                rest = rest.Slice(EncryptedBlockSize);
+                rest = rest.Slice(this.EncryptedBlockSize);
             }
             while (rest.Length > 0);
 
-            this.Counter.Increase();
+            this.Counter?.Increase();
             return sizeCounter;
         }
 
@@ -160,10 +163,10 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <returns>The decrypted length of the block.</returns>
         private int DecryptBlock(Span<byte> outputBuffer)
         {
-            this.EncryptionResult[0] = this.ReadInputBuffer(0);
-            this.EncryptionResult[1] = this.ReadInputBuffer(1);
-            this.EncryptionResult[2] = this.ReadInputBuffer(2);
-            this.EncryptionResult[3] = this.ReadInputBuffer(3);
+            for (int i = 0; i < this.EncryptionResult.Length; i++)
+            {
+                this.EncryptionResult[i] = this.ReadInputBuffer(i);
+            }
 
             this.DecryptContent(outputBuffer);
 
@@ -173,15 +176,22 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         private void DecryptContent(Span<byte> outputBuffer)
         {
             var keys = this.decryptionKeys;
-            this.EncryptionResult[2] = this.EncryptionResult[2] ^ keys.XorKey[2] ^ (this.EncryptionResult[3] & 0xFFFF);
-            this.EncryptionResult[1] = this.EncryptionResult[1] ^ keys.XorKey[1] ^ (this.EncryptionResult[2] & 0xFFFF);
-            this.EncryptionResult[0] = this.EncryptionResult[0] ^ keys.XorKey[0] ^ (this.EncryptionResult[1] & 0xFFFF);
+            for (int i = this.EncryptionResult.Length - 1; i > 0; i--)
+            {
+                 this.EncryptionResult[i - 1] = this.EncryptionResult[i - 1] ^ keys.XorKey[i - 1] ^ (this.EncryptionResult[i] & 0xFFFF);
+            }
 
             var output = MemoryMarshal.Cast<byte, ushort>(outputBuffer);
-            output[0] = (ushort)(keys.XorKey[0] ^ ((this.EncryptionResult[0] * keys.DecryptKey[0]) % keys.ModulusKey[0]));
-            output[1] = (ushort)(keys.XorKey[1] ^ ((this.EncryptionResult[1] * keys.DecryptKey[1]) % keys.ModulusKey[1]) ^ (this.EncryptionResult[0] & 0xFFFF));
-            output[2] = (ushort)(keys.XorKey[2] ^ ((this.EncryptionResult[2] * keys.DecryptKey[2]) % keys.ModulusKey[2]) ^ (this.EncryptionResult[1] & 0xFFFF));
-            output[3] = (ushort)(keys.XorKey[3] ^ ((this.EncryptionResult[3] * keys.DecryptKey[3]) % keys.ModulusKey[3]) ^ (this.EncryptionResult[2] & 0xFFFF));
+            for (int i = 0; i < this.EncryptionResult.Length; i++)
+            {
+                uint result = keys.XorKey[i] ^ ((this.EncryptionResult[i] * keys.DecryptKey[i]) % keys.ModulusKey[i]);
+                if (i > 0)
+                {
+                    result ^= this.EncryptionResult[i - 1] & 0xFFFF;
+                }
+
+                output[i] = (ushort)result;
+            }
         }
 
         private uint ReadInputBuffer(int resultIndex)
@@ -209,13 +219,19 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <returns>The decrypted length of the block.</returns>
         private int DecodeFinal(Span<byte> outputBuffer)
         {
-            var blockSuffix = this.inputBuffer.AsSpan(EncryptedBlockSize - 2, 2);
+            var blockSuffix = this.inputBuffer.AsSpan(this.EncryptedBlockSize - 2, 2);
             // blockSuffix[0] -> block size (encrypted)
             // blockSuffix[1] -> checksum
 
             byte blockSize = (byte)(blockSuffix[0] ^ blockSuffix[1] ^ BlockSizeXorKey);
+
+            if (blockSize > this.DecryptedBlockSize)
+            {
+                throw new InvalidBlockSizeException(blockSize, this.DecryptedBlockSize);
+            }
+
             byte checksum = BlockCheckSumXorKey;
-            for (int i = 0; i < DecryptedBlockSize; i++)
+            for (int i = 0; i < this.DecryptedBlockSize; i++)
             {
                 checksum ^= outputBuffer[i];
             }
@@ -245,7 +261,14 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <returns>The maximum packet size of the packet in decrypted state.</returns>
         private int GetMaximumDecryptedSize(Span<byte> packet)
         {
-            return ((this.GetContentSize(packet, false) / EncryptedBlockSize) * DecryptedBlockSize) + packet.GetPacketHeaderSize() - 1;
+            int contentSize = packet.GetPacketSize() - packet.GetPacketHeaderSize();
+            if (this.Counter != null)
+            {
+                // as we don't forward the counter value, we can subtract one
+                contentSize--;
+            }
+
+            return (contentSize * this.DecryptedBlockSize / this.EncryptedBlockSize) + packet.GetPacketHeaderSize();
         }
     }
 }

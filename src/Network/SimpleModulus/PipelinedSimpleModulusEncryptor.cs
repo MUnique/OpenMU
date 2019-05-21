@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         public static readonly SimpleModulusKeys DefaultClientKey = SimpleModulusKeys.CreateEncryptionKeys(new uint[] { 128079, 164742, 70235, 106898, 23489, 11911, 19816, 13647, 48413, 46165, 15171, 37433 });
 
         private readonly PipeWriter target;
-        private readonly byte[] inputBuffer = new byte[DecryptedBlockSize];
+        private readonly byte[] inputBuffer;
         private readonly SimpleModulusKeys encryptionKeys;
 
         /// <summary>
@@ -55,10 +55,12 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <param name="target">The target pipe writer.</param>
         /// <param name="encryptionKeys">The encryption keys.</param>
         public PipelinedSimpleModulusEncryptor(PipeWriter target, SimpleModulusKeys encryptionKeys)
+          : base(encryptionKeys.DecryptKey.Length == 4 ? Variant.New : Variant.Old)
         {
             this.target = target;
             this.encryptionKeys = encryptionKeys;
             this.Source = this.Pipe.Reader;
+            this.inputBuffer = new byte[this.DecryptedBlockSize];
             this.ReadSource().ConfigureAwait(false);
         }
 
@@ -129,56 +131,62 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         private int GetEncryptedSize(Span<byte> data)
         {
             var contentSize = this.GetContentSize(data, true);
-            return (((contentSize / DecryptedBlockSize) + (((contentSize % DecryptedBlockSize) > 0) ? 1 : 0)) * EncryptedBlockSize) + data.GetPacketHeaderSize();
+            return (((contentSize / this.DecryptedBlockSize) + (((contentSize % this.DecryptedBlockSize) > 0) ? 1 : 0)) * this.EncryptedBlockSize) + data.GetPacketHeaderSize();
         }
 
         private void EncryptPacketContent(ReadOnlySequence<byte> input, Span<byte> result)
         {
-            var i = 0;
-            var sizeCounter = 0;
-            var size = (int)input.Length + 1; // plus one for the counter
+            var sourceOffset = 0;
+            var resultOffset = 0;
+            var totalDecryptedSize = (int)input.Length;
 
-            // we process the first input block out of the loop, because we need to add the counter as prefix
-            this.inputBuffer[0] = (byte)this.Counter.Count;
-            if (size >= DecryptedBlockSize)
+            if (this.Counter != null)
             {
-                input.Slice(0, DecryptedBlockSize - 1).CopyTo(this.inputBuffer.AsSpan(1));
-            }
-            else
-            {
-                input.Slice(0, input.Length).CopyTo(this.inputBuffer.AsSpan(1));
-                this.inputBuffer.AsSpan(size).Clear();
-            }
+                totalDecryptedSize++; // plus one for the counter
 
-            var firstResultBlock = result.Slice(sizeCounter, EncryptedBlockSize);
-            var contentOfFirstBlockLength = Math.Min(DecryptedBlockSize, size);
-            this.EncryptBlock(firstResultBlock, contentOfFirstBlockLength);
-            i += DecryptedBlockSize;
-            sizeCounter += EncryptedBlockSize;
+                // we process the first input block out of the loop, because we need to add the counter as prefix
+                this.inputBuffer[0] = (byte)this.Counter.Count;
+                if (totalDecryptedSize >= this.DecryptedBlockSize)
+                {
+                    input.Slice(0, this.DecryptedBlockSize - 1).CopyTo(this.inputBuffer.AsSpan(1));
+                }
+                else
+                {
+                    input.Slice(0, input.Length).CopyTo(this.inputBuffer.AsSpan(1));
+                    this.inputBuffer.AsSpan(totalDecryptedSize).Clear();
+                }
+
+                var firstResultBlock = result.Slice(resultOffset, this.EncryptedBlockSize);
+                var contentOfFirstBlockLength = Math.Min(this.DecryptedBlockSize, totalDecryptedSize);
+                this.EncryptBlock(firstResultBlock, contentOfFirstBlockLength);
+                sourceOffset += this.DecryptedBlockSize;
+                resultOffset += this.EncryptedBlockSize;
+            }
 
             // encrypt the rest of the blocks.
-            while (i < size)
+            while (sourceOffset < totalDecryptedSize)
             {
-                var contentOfBlockLength = Math.Min(DecryptedBlockSize, size - i);
-                input.Slice(i - 1, contentOfBlockLength).CopyTo(this.inputBuffer);
+                var contentOfBlockLength = Math.Min(this.DecryptedBlockSize, totalDecryptedSize - sourceOffset);
+                input.Slice(sourceOffset - 1, contentOfBlockLength).CopyTo(this.inputBuffer);
                 this.inputBuffer.AsSpan(contentOfBlockLength).Clear();
-                var resultBlock = result.Slice(sizeCounter, EncryptedBlockSize);
+                var resultBlock = result.Slice(resultOffset, this.EncryptedBlockSize);
                 this.EncryptBlock(resultBlock, contentOfBlockLength);
-                i += DecryptedBlockSize;
-                sizeCounter += EncryptedBlockSize;
+                sourceOffset += this.DecryptedBlockSize;
+                resultOffset += this.EncryptedBlockSize;
             }
 
-            this.Counter.Increase();
+            this.Counter?.Increase();
         }
 
         private void EncryptBlock(Span<byte> outputBuffer, int blockSize)
         {
             outputBuffer.Clear(); // since the memory comes from the shared memory pool, it might not be initialized yet
             this.EncryptContent();
-            WriteResultToTarget(outputBuffer, 0, this.EncryptionResult[0]);
-            WriteResultToTarget(outputBuffer, 1, this.EncryptionResult[1]);
-            WriteResultToTarget(outputBuffer, 2, this.EncryptionResult[2]);
-            WriteResultToTarget(outputBuffer, 3, this.EncryptionResult[3]);
+            for (int i = 0; i < this.EncryptionResult.Length; i++)
+            {
+                WriteResultToTarget(outputBuffer, i, this.EncryptionResult[i]);
+            }
+
             this.EncryptFinalBlockByte(blockSize, outputBuffer);
         }
 
@@ -207,13 +215,15 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             var input = MemoryMarshal.Cast<byte, ushort>(this.inputBuffer);
 
             this.EncryptionResult[0] = ((keys.XorKey[0] ^ input[0]) * keys.EncryptKey[0]) % keys.ModulusKey[0];
-            this.EncryptionResult[1] = ((keys.XorKey[1] ^ (input[1] ^ (this.EncryptionResult[0] & 0xFFFF))) * keys.EncryptKey[1]) % keys.ModulusKey[1];
-            this.EncryptionResult[2] = ((keys.XorKey[2] ^ (input[2] ^ (this.EncryptionResult[1] & 0xFFFF))) * keys.EncryptKey[2]) % keys.ModulusKey[2];
-            this.EncryptionResult[3] = ((keys.XorKey[3] ^ (input[3] ^ (this.EncryptionResult[2] & 0xFFFF))) * keys.EncryptKey[3]) % keys.ModulusKey[3];
+            for (int i = 1; i < this.EncryptionResult.Length; i++)
+            {
+                this.EncryptionResult[i] = ((keys.XorKey[i] ^ (input[i] ^ (this.EncryptionResult[i - 1] & 0xFFFF))) * keys.EncryptKey[i]) % keys.ModulusKey[i];
+            }
 
-            this.EncryptionResult[0] = this.EncryptionResult[0] ^ keys.XorKey[0] ^ (this.EncryptionResult[1] & 0xFFFF);
-            this.EncryptionResult[1] = this.EncryptionResult[1] ^ keys.XorKey[1] ^ (this.EncryptionResult[2] & 0xFFFF);
-            this.EncryptionResult[2] = this.EncryptionResult[2] ^ keys.XorKey[2] ^ (this.EncryptionResult[3] & 0xFFFF);
+            for (int i = 0; i < this.EncryptionResult.Length - 1; i++)
+            {
+                this.EncryptionResult[i] = this.EncryptionResult[i] ^ keys.XorKey[i] ^ (this.EncryptionResult[i + 1] & 0xFFFF);
+            }
         }
     }
 }
