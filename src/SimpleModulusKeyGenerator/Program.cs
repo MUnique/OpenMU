@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using MUnique.OpenMU.Network.SimpleModulus;
 
@@ -37,15 +38,18 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
 
             if (serializer.TryDeserialize(keyFilePath, out uint[] modulusKey, out uint[] cryptKey, out uint[] xorKey))
             {
-                Console.WriteLine($"Loaded Key: {modulusKey[0]}, {modulusKey[1]}, {modulusKey[2]}, {modulusKey[3]}, {cryptKey[0]}, {cryptKey[1]}, {cryptKey[2]}, {cryptKey[3]}, {xorKey[0]}, {xorKey[1]}, {xorKey[2]}, {xorKey[3]}");
+                Console.WriteLine($"Loaded Key:");
+                Console.WriteLine($"   Modulus: {string.Join(", ", modulusKey.Select(k => k.ToString()))}");
+                Console.WriteLine($"     Crypt: {string.Join(", ", cryptKey.Select(k => k.ToString()))}");
+                Console.WriteLine($"       XOR: {string.Join(", ", xorKey.Select(k => k.ToString()))}");
                 var generator = new SimpleModulusKeyGenerator();
                 var otherCryptKey = generator.FindOtherKey(modulusKey, cryptKey);
                 var file = new FileInfo(keyFilePath);
                 var otherFileName = GetOtherFileName(file.Name);
                 var otherFilePath = Path.Combine(file.DirectoryName, otherFileName);
 
-                Console.WriteLine($"Calculated Key: {modulusKey[0]}, {modulusKey[1]}, {modulusKey[2]}, {modulusKey[3]}, {otherCryptKey[0]}, {otherCryptKey[1]}, {otherCryptKey[2]}, {otherCryptKey[3]}, {xorKey[0]}, {xorKey[1]}, {xorKey[2]}, {xorKey[3]}");
-                Console.WriteLine($"Calculation successful. To save the calculated key to file '{otherFilePath}' press any key");
+                Console.WriteLine($"Calculated Crypt Key: {string.Join(", ", otherCryptKey.Select(k => k.ToString()))}");
+                Console.WriteLine($"To save the calculated key file '{otherFilePath}' press any key");
                 Console.ReadKey(true);
                 serializer.Serialize(otherFilePath, modulusKey, otherCryptKey, xorKey);
                 Console.WriteLine("Key saved");

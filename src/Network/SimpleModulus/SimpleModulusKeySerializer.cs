@@ -11,8 +11,23 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     /// </summary>
     public class SimpleModulusKeySerializer
     {
-        private readonly uint[] encryptionKeys = { 0x3F08A79B, 0xE25CC287, 0x93D27AB9, 0x20DEA7BF }; // They're used to "encrypt" and "decrypt" (XOR) the encryption keys to dat files.
-        private readonly byte[] header = { 0x12, 0x11, 0x36, 0, 0, 0 }; // file header, always the same
+        /// <summary>
+        /// The xor encryption keys which used to "encrypt" and "decrypt" (XOR) the encryption keys to dat files.
+        /// In newer versions, only the first 4 keys are in use.
+        /// Older versions use a slightly different SimpleModulus algorithm with 16 keys.
+        /// </summary>
+        private readonly uint[] encryptionKeys =
+        {
+            0x3F08A79B, 0xE25CC287, 0x93D27AB9, 0x20DEA7BF,
+            0x837A9BC7, 0x1FFEA89B, 0xE836579C, 0xD89A0924,
+            0x9D8A73CF, 0x4DEA98CE, 0x4DC9EF0F, 0x2BAC890A,
+            0xF32AFE54, 0xD8902A1E, 0x3FDEF8F9, 0x5A827990,
+        };
+
+        /// <summary>
+        /// The header for key files which contain just one side of the key (encryption or decryption).
+        /// </summary>
+        private readonly byte[] headerOneKey = { 0x12, 0x11 };
 
         /// <summary>
         /// Serializes (saves) the specified keys to the specified file name.
@@ -25,20 +40,22 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         {
             using (var fileStream = File.OpenWrite(fileName))
             {
-                fileStream.Write(this.header, 0, this.header.Length);
-                for (int i = 0; i < 4; i++)
+                var length = (uint)(modKey.Length * sizeof(uint) * 3);
+                fileStream.Write(this.headerOneKey, 0, this.headerOneKey.Length);
+                fileStream.Write(length.ToBytesBigEndian(), 0, 4);
+                for (int i = 0; i < modKey.Length; i++)
                 {
                     var value = modKey[i] ^ this.encryptionKeys[i];
                     fileStream.Write(value.ToBytesBigEndian(), 0, 4);
                 }
 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < key.Length; i++)
                 {
                     var value = key[i] ^ this.encryptionKeys[i];
                     fileStream.Write(value.ToBytesBigEndian(), 0, 4);
                 }
 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < xorKey.Length; i++)
                 {
                     var value = xorKey[i] ^ this.encryptionKeys[i];
                     fileStream.Write(value.ToBytesBigEndian(), 0, 4);
@@ -58,42 +75,49 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <returns><c>True</c>, if successful; Otherwise, <c>false</c>.</returns>
         public bool TryDeserialize(string fileName, out uint[] modulusKey, out uint[] key, out uint[] xorKey)
         {
-            var buffer = new byte[(12 * sizeof(uint)) + this.header.Length];
+            modulusKey = null;
+            key = null;
+            xorKey = null;
             using (var fileStream = File.OpenRead(fileName))
             {
-                if (fileStream.Read(buffer, 0, buffer.Length) != buffer.Length)
+                var first = fileStream.ReadByte();
+                var second = fileStream.ReadByte();
+                if (first != 0x12 && second != 0x11)
                 {
-                    modulusKey = null;
-                    key = null;
-                    xorKey = null;
                     return false;
                 }
-            }
 
-            var offset = this.header.Length;
-            modulusKey = new[]
-            {
-                buffer.MakeDwordBigEndian(offset) ^ this.encryptionKeys[0],
-                buffer.MakeDwordBigEndian(offset + 4) ^ this.encryptionKeys[1],
-                buffer.MakeDwordBigEndian(offset + 8) ^ this.encryptionKeys[2],
-                buffer.MakeDwordBigEndian(offset + 12) ^ this.encryptionKeys[3]
-            };
-            offset += 16;
-            key = new[]
-            {
-                buffer.MakeDwordBigEndian(offset) ^ this.encryptionKeys[0],
-                buffer.MakeDwordBigEndian(offset + 4) ^ this.encryptionKeys[1],
-                buffer.MakeDwordBigEndian(offset + 8) ^ this.encryptionKeys[2],
-                buffer.MakeDwordBigEndian(offset + 12) ^ this.encryptionKeys[3]
-            };
-            offset += 16;
-            xorKey = new[]
-            {
-                buffer.MakeDwordBigEndian(offset) ^ this.encryptionKeys[0],
-                buffer.MakeDwordBigEndian(offset + 4) ^ this.encryptionKeys[1],
-                buffer.MakeDwordBigEndian(offset + 8) ^ this.encryptionKeys[2],
-                buffer.MakeDwordBigEndian(offset + 12) ^ this.encryptionKeys[3]
-            };
+                var intBuffer = new byte[4];
+                fileStream.Read(intBuffer, 0, 4);
+                var length = intBuffer.MakeDwordBigEndian(0);
+                if (length > fileStream.Length + fileStream.Position)
+                {
+                    return false;
+                }
+
+                var keyCount = length / (sizeof(uint) * 3);
+                modulusKey = new uint[keyCount];
+                key = new uint[keyCount];
+                xorKey = new uint[keyCount];
+
+                for (int i = 0; i < keyCount; i++)
+                {
+                    fileStream.Read(intBuffer, 0, 4);
+                    modulusKey[i] = intBuffer.MakeDwordBigEndian(0) ^ this.encryptionKeys[i];
+                }
+
+                for (int i = 0; i < keyCount; i++)
+                {
+                    fileStream.Read(intBuffer, 0, 4);
+                    key[i] = intBuffer.MakeDwordBigEndian(0) ^ this.encryptionKeys[i];
+                }
+
+                for (int i = 0; i < keyCount; i++)
+                {
+                    fileStream.Read(intBuffer, 0, 4);
+                    xorKey[i] = intBuffer.MakeDwordBigEndian(0) ^ this.encryptionKeys[i];
+                }
+            }
 
             return true;
         }

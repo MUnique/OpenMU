@@ -50,8 +50,8 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <returns>The other crypt key.</returns>
         public uint[] FindOtherKey(uint[] modulusKey, uint[] cryptKey)
         {
-            var result = new uint[4];
-            for (int i = 0; i < 4; i++)
+            var result = new uint[modulusKey.Length];
+            for (int i = 0; i < modulusKey.Length; i++)
             {
                 if (this.TryFindKey(modulusKey[i], cryptKey[i], out uint otherKey))
                 {
