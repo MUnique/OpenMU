@@ -82,6 +82,10 @@ namespace MUnique.OpenMU.Network.Tests
             await this.Decrypt(encrypted, decrypted).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Decrypts a login packet which was captured from a version 0.75 game client.
+        /// </summary>
+        /// <returns>The task.</returns>
         [Test]
         public async Task DecryptVersion075LoginPacket()
         {
