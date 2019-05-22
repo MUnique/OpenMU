@@ -159,7 +159,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                 var firstResultBlock = result.Slice(resultOffset, this.EncryptedBlockSize);
                 var contentOfFirstBlockLength = Math.Min(this.DecryptedBlockSize, totalDecryptedSize);
                 this.EncryptBlock(firstResultBlock, contentOfFirstBlockLength);
-                sourceOffset += this.DecryptedBlockSize;
+                sourceOffset += this.DecryptedBlockSize - 1;
                 resultOffset += this.EncryptedBlockSize;
             }
 
@@ -167,7 +167,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             while (sourceOffset < totalDecryptedSize)
             {
                 var contentOfBlockLength = Math.Min(this.DecryptedBlockSize, totalDecryptedSize - sourceOffset);
-                input.Slice(sourceOffset - 1, contentOfBlockLength).CopyTo(this.inputBuffer);
+                input.Slice(sourceOffset, contentOfBlockLength).CopyTo(this.inputBuffer);
                 this.inputBuffer.AsSpan(contentOfBlockLength).Clear();
                 var resultBlock = result.Slice(resultOffset, this.EncryptedBlockSize);
                 this.EncryptBlock(resultBlock, contentOfBlockLength);
