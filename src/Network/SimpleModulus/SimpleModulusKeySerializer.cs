@@ -87,9 +87,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                     return false;
                 }
 
-                var intBuffer = new byte[4];
-                fileStream.Read(intBuffer, 0, 4);
-                var length = intBuffer.MakeDwordBigEndian(0);
+                var length = fileStream.ReadInteger();
                 if (length > fileStream.Length + fileStream.Position)
                 {
                     return false;
@@ -102,20 +100,17 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
                 for (int i = 0; i < keyCount; i++)
                 {
-                    fileStream.Read(intBuffer, 0, 4);
-                    modulusKey[i] = intBuffer.MakeDwordBigEndian(0) ^ this.encryptionKeys[i];
+                    modulusKey[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
                 }
 
                 for (int i = 0; i < keyCount; i++)
                 {
-                    fileStream.Read(intBuffer, 0, 4);
-                    key[i] = intBuffer.MakeDwordBigEndian(0) ^ this.encryptionKeys[i];
+                    key[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
                 }
 
                 for (int i = 0; i < keyCount; i++)
                 {
-                    fileStream.Read(intBuffer, 0, 4);
-                    xorKey[i] = intBuffer.MakeDwordBigEndian(0) ^ this.encryptionKeys[i];
+                    xorKey[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
                 }
             }
 
