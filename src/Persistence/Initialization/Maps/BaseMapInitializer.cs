@@ -65,7 +65,35 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 this.mapDefinition.MonsterSpawns.Add(spawn);
             }
 
+            foreach (var drop in this.CreateDropItemGroups())
+            {
+                this.mapDefinition.DropItemGroups.Add(drop);
+            }
+
             this.GameConfiguration.Maps.Add(this.mapDefinition);
+        }
+
+        /// <summary>
+        /// Creates the drop item groups for this map.
+        /// Contains the default drop groups in this base class. Can be overwritten to change it in certain maps.
+        /// </summary>
+        /// <returns>The drop item groups.</returns>
+        protected virtual IEnumerable<DropItemGroup> CreateDropItemGroups()
+        {
+            var money = this.Context.CreateNew<DropItemGroup>();
+            money.Chance = 0.5f;
+            money.ItemType = SpecialItemType.Money;
+            yield return money;
+
+            var item = this.Context.CreateNew<DropItemGroup>();
+            item.Chance = 0.1f;
+            item.ItemType = SpecialItemType.RandomItem;
+            yield return item;
+
+            var excellent = this.Context.CreateNew<DropItemGroup>();
+            excellent.Chance = 0.001f;
+            excellent.ItemType = SpecialItemType.Excellent;
+            yield return excellent;
         }
 
         /// <summary>
