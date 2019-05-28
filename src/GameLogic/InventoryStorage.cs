@@ -70,7 +70,7 @@ namespace MUnique.OpenMU.GameLogic
                 convertedItem = temporaryItem.MakePersistent(this.player.PersistenceContext);
             }
 
-            var success = base.AddItem(slot, item);
+            var success = base.AddItem(slot, convertedItem ?? item);
             if (!success && convertedItem != null)
             {
                 this.player.PersistenceContext.Delete(convertedItem);
@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.GameLogic
                 var isEquippedItem = this.IsWearingSlot(slot);
                 if (isEquippedItem)
                 {
-                    this.EquippedItemsChanged?.Invoke(this, new ItemEventArgs(item));
+                    this.EquippedItemsChanged?.Invoke(this, new ItemEventArgs(convertedItem ?? item));
                 }
             }
 
