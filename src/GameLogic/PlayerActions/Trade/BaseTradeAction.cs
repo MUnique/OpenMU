@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 {
                     trader.Inventory.Clear();
                     trader.BackupInventory.RestoreItemStates();
-                    trader.BackupInventory.Items.ForEach(item => trader.Inventory.AddItem(item));
+                    trader.BackupInventory.Items.ForEach(item => trader.Inventory.AddItem(item.ItemSlot, item));
                     trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
                 }
             }
