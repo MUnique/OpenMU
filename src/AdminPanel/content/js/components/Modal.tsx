@@ -13,8 +13,8 @@ class Modal extends React.Component<IModalProps, { }> {
     public render() {
         if (this.props.modalContent) {
             return (
-                <div className="modal-backdrop" onClick={() => this.props.onClose()}>
-                    <div className="modal-window panel panel-body panel-default" onClick={(e: React.MouseEvent<HTMLDivElement>) => this.onModalClick(e)}>
+                <div className="modal-backdrop">
+                    <div className="modal-window panel panel-body panel-default">
                         <button className="btn btn-default btn-xs" id="modal-close-button" title="Close Dialog" onClick={() => this.props.onClose()}>
                             <span className="glyphicon glyphicon-remove" aria-hidden={true}/>
                         </button>
@@ -24,12 +24,6 @@ class Modal extends React.Component<IModalProps, { }> {
         }
 
         return null;
-    }
-
-    private onModalClick(e: React.MouseEvent<HTMLDivElement>) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
     }
 }
 
