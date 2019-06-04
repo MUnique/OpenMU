@@ -242,6 +242,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 item.QualifiedCharacters.Add(characterClass);
             }
 
+            // Added for test purposes wasn`t able to add real Moonstone Pendant
+            if (name == "Pendant of Lighting")
+            {
+                var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+                powerUp.TargetAttribute = Stats.MoonstonePendantEquipped.GetPersistent(this.GameConfiguration);
+                powerUp.BaseValue = 1;
+                item.BasePowerUpAttributes.Add(powerUp);
+            }
+
             return item;
         }
     }

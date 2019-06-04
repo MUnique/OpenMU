@@ -5,7 +5,10 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Maps
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Base class for a map initializer which provides some common basic functionality.
@@ -63,6 +66,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             foreach (var spawn in this.CreateSpawns())
             {
                 this.mapDefinition.MonsterSpawns.Add(spawn);
+            }
+
+            foreach (var requirement in this.CreateMapAttributeRequirements())
+            {
+                requirement.MapsWithThisRequirement.Add(this.mapDefinition);
+                this.mapDefinition.MapRequirements.Add(requirement);
             }
 
             this.GameConfiguration.Maps.Add(this.mapDefinition);
@@ -130,5 +139,50 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <returns>The created monster spawn area.</returns>
         protected MonsterSpawnArea CreateMonsterSpawn(MonsterDefinition monsterDefinition, byte x, byte y, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic)
             => this.CreateMonsterSpawn(monsterDefinition, x, x, y, y, 1, direction, spawnTrigger);
+
+        /// <summary>
+        /// Can be used to add additional map requirements
+        /// </summary>
+        /// <returns>Collection of requirements per map</returns>
+        protected virtual ICollection<AttributeRequirement> CreateMapAttributeRequirements()
+        {
+            return new List<AttributeRequirement>();
+        }
+
+        /// <summary>
+        /// Retrives or creates an attribute requirement with the specified minimum value.
+        /// </summary>
+        /// <param name="attribute">The attribute.</param>
+        /// <param name="minimumValue">The minimum value.</param>
+        /// <returns>The created requirement.</returns>
+        protected AttributeRequirement GetOrCreateRequirement(AttributeDefinition attribute, int minimumValue)
+        {
+            var requirement = this.Context?.Get<AttributeRequirement>()?
+                .Where(req => req.Attribute == attribute)
+                .SingleOrDefault();
+
+            if (requirement != null)
+            {
+                return requirement;
+            }
+            else
+            {
+                return this.CreateRequirement(attribute, minimumValue);
+            }
+        }
+
+        /// <summary>
+        /// Creates an attribute requirement with the specified minimum value.
+        /// </summary>
+        /// <param name="attribute">The attribute.</param>
+        /// <param name="minimumValue">The minimum value.</param>
+        /// <returns>The created requirement.</returns>
+        private AttributeRequirement CreateRequirement(AttributeDefinition attribute, int minimumValue)
+        {
+            var requirement = this.Context.CreateNew<AttributeRequirement>();
+            requirement.Attribute = attribute.GetPersistent(this.GameConfiguration);
+            requirement.MinimumValue = minimumValue;
+            return requirement;
+        }
     }
 }

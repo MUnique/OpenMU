@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
+    using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
 
     /// <summary>
@@ -20,5 +21,10 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the minimum value the attribute needs to have.
         /// </summary>
         public int MinimumValue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maps with this requirement
+        /// </summary>
+        public virtual ICollection<GameMapDefinition> MapsWithThisRequirement { get; protected set; }
     }
 }

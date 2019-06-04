@@ -2023,6 +2023,30 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
+        /// Gets the raw collection of <see cref="MapRequirements" />.
+        /// </summary>
+        [JsonProperty("MapRequirements")]
+        public ICollection<AttributeRequirement> RawMapRequirements { get; } = new List<AttributeRequirement>();
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> MapRequirements
+        {
+            get
+            {
+                return base.MapRequirements ?? (base.MapRequirements = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawMapRequirements)); 
+            }
+            protected set
+            {
+                this.MapRequirements.Clear();
+                foreach (var item in value)
+                {
+                    this.MapRequirements.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the raw object of <see cref="SafezoneMap" />.
         /// </summary>
         [JsonProperty("SafezoneMap")]
@@ -3254,6 +3278,30 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// Gets or sets the identifier of this instance.
         /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="MapsWithThisRequirement" />.
+        /// </summary>
+        [JsonProperty("MapsWithThisRequirement")]
+        public ICollection<GameMapDefinition> RawMapsWithThisRequirement { get; } = new List<GameMapDefinition>();
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition> MapsWithThisRequirement
+        {
+            get
+            {
+                return base.MapsWithThisRequirement ?? (base.MapsWithThisRequirement = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition, GameMapDefinition>(this.RawMapsWithThisRequirement)); 
+            }
+            protected set
+            {
+                this.MapsWithThisRequirement.Clear();
+                foreach (var item in value)
+                {
+                    this.MapsWithThisRequirement.Add(item);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the raw object of <see cref="Attribute" />.
