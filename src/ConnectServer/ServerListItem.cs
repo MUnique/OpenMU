@@ -13,8 +13,9 @@ namespace MUnique.OpenMU.ConnectServer
     /// </summary>
     internal class ServerListItem
     {
-        private readonly byte[] data = new byte[4];
         private readonly ServerList owner;
+
+        private byte serverLoad;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerListItem"/> class.
@@ -41,23 +42,18 @@ namespace MUnique.OpenMU.ConnectServer
         /// <value>
         /// The server identifier.
         /// </value>
-        public ushort ServerId
-        {
-            get => this.data.MakeWordBigEndian(0);
-
-            set => this.data.SetShortBigEndian(value, 0);
-        }
+        public ushort ServerId { get; set; }
 
         /// <summary>
         /// Gets or sets the server load (usage rate).
         /// </summary>
         public byte ServerLoad
         {
-            get => this.data[2];
+            get => this.serverLoad;
 
             set
             {
-                this.data[2] = value;
+                this.serverLoad = value;
                 var cache = this.owner.Cache;
                 if (cache != null && this.LoadIndex != -1)
                 {
@@ -96,11 +92,6 @@ namespace MUnique.OpenMU.ConnectServer
                 this.ConnectInfo.SetShortBigEndian((ushort)value.Port, this.ConnectInfo.Length - 2);
             }
         }
-
-        /// <summary>
-        /// Gets the serialized data of server id and server load.
-        /// </summary>
-        public byte[] Data => this.data;
 
         /// <inheritdoc/>
         public override string ToString()

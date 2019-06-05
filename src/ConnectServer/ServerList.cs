@@ -6,17 +6,23 @@ namespace MUnique.OpenMU.ConnectServer
 {
     using System;
     using System.Collections.Generic;
+    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// The server list.
     /// </summary>
     internal class ServerList
     {
+        private readonly ClientVersion clientVersion;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerList"/> class.
+        /// Initializes a new instance of the <see cref="ServerList" /> class.
         /// </summary>
-        public ServerList()
+        /// <param name="clientVersion">The client version.</param>
+        public ServerList(Network.PlugIns.ClientVersion clientVersion)
         {
+            this.clientVersion = clientVersion;
             this.Servers = new SortedSet<ServerListItem>(new ServerListItemComparer());
             this.ConnectInfos = new Dictionary<ushort, byte[]>();
         }
@@ -45,23 +51,52 @@ namespace MUnique.OpenMU.ConnectServer
             var result = this.Cache;
             if (result != null)
             {
-                return result;
+                // return result;
             }
 
-            byte[] packet = new byte[(this.Servers.Count * 4) + 7];
-            packet[0] = 0xC2;
-            packet[1] = (byte)((packet.Length >> 8) & 0xFF);
-            packet[2] = (byte)(packet.Length & 0xFF);
-            packet[3] = 0xF4;
-            packet[4] = 0x06;
-            packet[5] = (byte)((this.Servers.Count >> 8) & 0xFF);
-            packet[6] = (byte)(this.Servers.Count & 0xFF);
-            var i = 0;
-            foreach (var server in this.Servers)
+            byte[] packet;
+            if (this.clientVersion.Season == 0)
             {
-                Buffer.BlockCopy(server.Data, 0, packet, 7 + (i * 4), 4);
-                server.LoadIndex = 7 + 2 + (i * 4);
-                i++;
+                const int serverBlockSize = 2;
+                const int headerSize = 6;
+                packet = new byte[(this.Servers.Count * serverBlockSize) + headerSize];
+                packet[0] = 0xC2;
+                packet[1] = (byte)((packet.Length >> 8) & 0xFF);
+                packet[2] = (byte)(packet.Length & 0xFF);
+                packet[3] = 0xF4;
+                packet[4] = 0x02;
+                packet[5] = (byte)this.Servers.Count;
+                var i = 0;
+                foreach (var server in this.Servers)
+                {
+                    packet[headerSize + (i * serverBlockSize)] = (byte)server.ServerId;
+                    var loadIndex = headerSize + 1 + (i * serverBlockSize);
+                    packet[loadIndex] = (byte)server.ServerLoad;
+                    server.LoadIndex = loadIndex;
+                    i++;
+                }
+            }
+            else
+            {
+                const int serverBlockSize = 4;
+                const int headerSize = 7;
+                packet = new byte[(this.Servers.Count * serverBlockSize) + headerSize];
+                packet[0] = 0xC2;
+                packet[1] = (byte)((packet.Length >> 8) & 0xFF);
+                packet[2] = (byte)(packet.Length & 0xFF);
+                packet[3] = 0xF4;
+                packet[4] = 0x06;
+                packet[5] = (byte)((this.Servers.Count >> 8) & 0xFF);
+                packet[6] = (byte)(this.Servers.Count & 0xFF);
+                var i = 0;
+                foreach (var server in this.Servers)
+                {
+                    packet.SetShortBigEndian(server.ServerId, headerSize + (i * serverBlockSize));
+                    var loadIndex = headerSize + 2 + (i * serverBlockSize);
+                    packet[loadIndex] = (byte)server.ServerLoad;
+                    server.LoadIndex = loadIndex;
+                    i++;
+                }
             }
 
             this.Cache = packet;
