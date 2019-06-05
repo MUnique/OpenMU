@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
 {
+    using System;
     using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -31,7 +32,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
             // C4 00 00 00 F3 10 ...
             const int slotNumberSize = sizeof(byte);
             var itemSerializer = this.player.ItemSerializer;
-            var lengthPerItem = itemSerializer.NeededSpace + slotNumberSize;
+            var lengthPerItem = Math.Max(itemSerializer.NeededSpace + slotNumberSize, 8);
             const int headerLength = 6;
             var itemCount = this.player.SelectedCharacter.Inventory.Items.Count();
             ushort length = (ushort)((itemCount * lengthPerItem) + headerLength);
