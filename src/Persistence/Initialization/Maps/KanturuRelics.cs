@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
@@ -32,16 +31,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
 
         /// <inheritdoc/>
         protected override string MapName => "Kanturu_III"; // Kanturu Relics, Kanturu Remain
-
-        /// <inheritdoc/>
-        protected override ICollection<AttributeRequirement> CreateMapAttributeRequirements()
-        {
-            var result = new List<AttributeRequirement>();
-            var requirement = this.GetOrCreateRequirement(Stats.MoonstonePendantEquipped, 1);
-            result.Add(requirement);
-
-            return result;
-        }
 
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateSpawns()

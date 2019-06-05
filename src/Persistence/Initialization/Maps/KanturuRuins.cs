@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
@@ -34,13 +33,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Kanturu_I"; // Kanturu Ruins (1, 2), Kanturu Ruins (3) Island
 
         /// <inheritdoc/>
-        protected override ICollection<AttributeRequirement> CreateMapAttributeRequirements()
+        protected override void CreateMapAttributeRequirements()
         {
-            var result = new List<AttributeRequirement>();
-            var requirement = this.GetOrCreateRequirement(Stats.MoonstonePendantEquipped, 1);
-            result.Add(requirement);
-
-            return result;
+            // for testing - to be removed
+            this.CreateRequirement(Stats.MoonstonePendantEquipped, 1);
         }
 
         /// <inheritdoc/>

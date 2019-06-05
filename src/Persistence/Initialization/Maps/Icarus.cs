@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
@@ -34,13 +33,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Icarus";
 
         /// <inheritdoc/>
-        protected override ICollection<AttributeRequirement> CreateMapAttributeRequirements()
+        protected override void CreateMapAttributeRequirements()
         {
-            var result = new List<AttributeRequirement>();
-            var requirement = this.GetOrCreateRequirement(Stats.CanFly, 1);
-            result.Add(requirement);
-
-            return result;
+            this.CreateRequirement(Stats.CanFly, 1);
         }
 
         /// <inheritdoc/>

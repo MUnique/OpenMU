@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
     /// Initialization for the Kanturu event map.
@@ -28,6 +29,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
 
         /// <inheritdoc/>
         protected override string MapName => "Kanturu Event";
+
+        /// <inheritdoc/>
+        protected override void CreateMapAttributeRequirements()
+        {
+            // It's only required during the event. Events are not implemented yet - probably we need multiple GameMapDefinitions, for each state of a map.
+            this.CreateRequirement(Stats.MoonstonePendantEquipped, 1);
+        }
 
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateSpawns()

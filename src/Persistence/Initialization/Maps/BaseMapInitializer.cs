@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Maps
 {
     using System.Collections.Generic;
-    using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -68,11 +67,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 this.mapDefinition.MonsterSpawns.Add(spawn);
             }
 
-            foreach (var requirement in this.CreateMapAttributeRequirements())
-            {
-                this.mapDefinition.MapRequirements.Add(requirement);
-            }
-
+            this.CreateMapAttributeRequirements();
             this.GameConfiguration.Maps.Add(this.mapDefinition);
         }
 
@@ -142,32 +137,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// Can be used to add additional map requirements
         /// </summary>
-        /// <returns>Collection of requirements per map</returns>
-        protected virtual ICollection<AttributeRequirement> CreateMapAttributeRequirements()
+        protected virtual void CreateMapAttributeRequirements()
         {
-            return new List<AttributeRequirement>();
-        }
-
-        /// <summary>
-        /// Retrives or creates an attribute requirement with the specified minimum value.
-        /// </summary>
-        /// <param name="attribute">The attribute.</param>
-        /// <param name="minimumValue">The minimum value.</param>
-        /// <returns>The created requirement.</returns>
-        protected AttributeRequirement GetOrCreateRequirement(AttributeDefinition attribute, int minimumValue)
-        {
-            var requirement = this.Context?.Get<AttributeRequirement>()?
-                .Where(req => req.Attribute == attribute)
-                .SingleOrDefault();
-
-            if (requirement != null)
-            {
-                return requirement;
-            }
-            else
-            {
-                return this.CreateRequirement(attribute, minimumValue);
-            }
+            // needs to be overwritten if a requirement needs to be added.
         }
 
         /// <summary>
@@ -175,13 +147,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// </summary>
         /// <param name="attribute">The attribute.</param>
         /// <param name="minimumValue">The minimum value.</param>
-        /// <returns>The created requirement.</returns>
-        private AttributeRequirement CreateRequirement(AttributeDefinition attribute, int minimumValue)
+        protected void CreateRequirement(AttributeDefinition attribute, int minimumValue)
         {
             var requirement = this.Context.CreateNew<AttributeRequirement>();
             requirement.Attribute = attribute.GetPersistent(this.GameConfiguration);
             requirement.MinimumValue = minimumValue;
-            return requirement;
+            this.mapDefinition.MapRequirements.Add(requirement);
         }
     }
 }
