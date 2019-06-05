@@ -135,7 +135,7 @@ namespace MUnique.OpenMU.ConnectServer
             }
 
             sequence.CopyTo(this.receiveBuffer);
-            this.packetHandler.HandlePacket(this, this.receiveBuffer);
+            this.packetHandler.HandlePacket(this, this.receiveBuffer.AsSpan(0, this.receiveBuffer.GetPacketSize()));
         }
     }
 }
