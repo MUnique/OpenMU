@@ -70,7 +70,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
 
             foreach (var requirement in this.CreateMapAttributeRequirements())
             {
-                requirement.MapsWithThisRequirement.Add(this.mapDefinition);
                 this.mapDefinition.MapRequirements.Add(requirement);
             }
 

@@ -36,7 +36,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             this.RegisterRepository(new GenericRepository<ChatServerDefinition>(contextProvider));
             this.RegisterRepository(new GenericRepository<ChatServerEndpoint>(contextProvider));
             this.RegisterRepository(new GenericRepository<GameServerEndpoint>(contextProvider));
-            this.RegisterRepository(new GenericRepository<AttributeRequirement>(contextProvider));
             this.RegisterRepository(new GameServerDefinitionRepository(contextProvider));
 
             this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(contextProvider, config => config.RawItemOptions));

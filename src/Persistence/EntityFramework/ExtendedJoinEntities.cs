@@ -164,21 +164,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public ICollection<SkillCharacterClass> JoinedQualifiedCharacters { get; } = new List<SkillCharacterClass>();
     }
 
-    [Table("AttributeRequirementGameMapDefinition", Schema = "config")]
-    internal partial class AttributeRequirementGameMapDefinition 
-    {
-        public Guid AttributeRequirementId { get; set; }
-        public AttributeRequirement AttributeRequirement { get; set; }
-
-        public Guid GameMapDefinitionId { get; set; }
-        public GameMapDefinition GameMapDefinition { get; set; }
-    }
-
-    internal partial class AttributeRequirement
-    {
-        public ICollection<AttributeRequirementGameMapDefinition> JoinedMapsWithThisRequirement { get; } = new List<AttributeRequirementGameMapDefinition>();
-    }
-
     [Table("ItemDefinitionCharacterClass", Schema = "config")]
     internal partial class ItemDefinitionCharacterClass 
     {

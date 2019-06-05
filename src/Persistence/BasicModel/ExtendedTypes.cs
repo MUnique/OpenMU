@@ -3280,30 +3280,6 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets the raw collection of <see cref="MapsWithThisRequirement" />.
-        /// </summary>
-        [JsonProperty("MapsWithThisRequirement")]
-        public ICollection<GameMapDefinition> RawMapsWithThisRequirement { get; } = new List<GameMapDefinition>();
-        
-        /// <inheritdoc/>
-        [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition> MapsWithThisRequirement
-        {
-            get
-            {
-                return base.MapsWithThisRequirement ?? (base.MapsWithThisRequirement = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition, GameMapDefinition>(this.RawMapsWithThisRequirement)); 
-            }
-            protected set
-            {
-                this.MapsWithThisRequirement.Clear();
-                foreach (var item in value)
-                {
-                    this.MapsWithThisRequirement.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets the raw object of <see cref="Attribute" />.
         /// </summary>
         [JsonProperty("Attribute")]

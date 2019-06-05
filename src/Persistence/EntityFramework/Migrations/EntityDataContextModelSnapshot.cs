@@ -169,19 +169,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("AttributeRequirement","config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRequirementGameMapDefinition", b =>
-                {
-                    b.Property<Guid>("AttributeRequirementId");
-
-                    b.Property<Guid>("GameMapDefinitionId");
-
-                    b.HasKey("AttributeRequirementId", "GameMapDefinitionId");
-
-                    b.HasIndex("GameMapDefinitionId");
-
-                    b.ToTable("AttributeRequirementGameMapDefinition","config");
-                });
-
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Character", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1818,19 +1805,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill")
                         .WithMany("RawRequirements")
                         .HasForeignKey("SkillId1");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRequirementGameMapDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeRequirement", "AttributeRequirement")
-                        .WithMany("JoinedMapsWithThisRequirement")
-                        .HasForeignKey("AttributeRequirementId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "GameMapDefinition")
-                        .WithMany()
-                        .HasForeignKey("GameMapDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Character", b =>

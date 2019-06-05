@@ -2869,16 +2869,10 @@ public ICollection<AttributeRequirement> RawRequirements { get; } = new List<Att
     /// </summary>
     [Table("AttributeRequirement", Schema = "config")]
     internal partial class AttributeRequirement : MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, IIdentifiable
-    {
-        public AttributeRequirement()
-        {
-            this.InitJoinCollections();
-        }         
+    {        
 
         protected void InitJoinCollections()
         {
-          
-            this.MapsWithThisRequirement = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition, AttributeRequirementGameMapDefinition>(this.JoinedMapsWithThisRequirement, joinEntity => joinEntity.GameMapDefinition, entity => new AttributeRequirementGameMapDefinition { AttributeRequirement = this, AttributeRequirementId = this.Id, GameMapDefinition = (GameMapDefinition)entity, GameMapDefinitionId = ((GameMapDefinition)entity).Id});
         }
 
         /// <summary>
@@ -4717,8 +4711,6 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Entity<MonsterDefinitionDropItemGroup>().HasKey(join => new { join.MonsterDefinitionId, join.DropItemGroupId });
             modelBuilder.Entity<Skill>().HasMany(entity => entity.JoinedQualifiedCharacters).WithOne(join => join.Skill);
             modelBuilder.Entity<SkillCharacterClass>().HasKey(join => new { join.SkillId, join.CharacterClassId });
-            modelBuilder.Entity<AttributeRequirement>().HasMany(entity => entity.JoinedMapsWithThisRequirement).WithOne(join => join.AttributeRequirement);
-            modelBuilder.Entity<AttributeRequirementGameMapDefinition>().HasKey(join => new { join.AttributeRequirementId, join.GameMapDefinitionId });
             modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedQualifiedCharacters).WithOne(join => join.ItemDefinition);
             modelBuilder.Entity<ItemDefinitionCharacterClass>().HasKey(join => new { join.ItemDefinitionId, join.CharacterClassId });
             modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedPossibleItemSetGroups).WithOne(join => join.ItemDefinition);
