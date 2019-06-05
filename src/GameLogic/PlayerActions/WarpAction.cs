@@ -78,14 +78,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             return false;
         }
 
-        // TODO buggy doesn`t work the first time.
         private bool CheckWarpRequirements(Player player, WarpInfo warpInfo, out string errorMessage)
         {
             errorMessage = null;
 
             if (warpInfo.Gate.Map.MapRequirements != null && warpInfo.Gate.Map.MapRequirements.Any())
             {
-                foreach (var requirement in player.CurrentMap.Definition.MapRequirements)
+                foreach (var requirement in warpInfo.Gate.Map.MapRequirements)
                 {
                     var floatDiff = player.Attributes[requirement.Attribute] - requirement.MinimumValue;
                     if (Math.Abs(floatDiff) > 0.01)
