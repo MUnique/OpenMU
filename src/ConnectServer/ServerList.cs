@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.ConnectServer
             var result = this.Cache;
             if (result != null)
             {
-                // return result;
+                return result;
             }
 
             byte[] packet;
