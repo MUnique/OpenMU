@@ -469,12 +469,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the CanFly attribute for warping to icarus
         /// </summary>
-        public static AttributeDefinition CanFly { get; } = new AttributeDefinition(new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement for entering Icarus.", "Equip wings.");
+        public static AttributeDefinition CanFly { get; } = new AttributeDefinition(new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement of the Icarus map.", "You can enter Icarus only with wings, dinorant, fenrir.");
 
         /// <summary>
         /// Gets the MoonstonePendantEquipped attribute for warping to Karutan
         /// </summary>
-        public static AttributeDefinition MoonstonePendantEquipped { get; } = new AttributeDefinition(new Guid("4BC010D0-9E75-4ECB-8963-08A3697278C3"), "Requirement for entering Karutan.", "Equip Moonstone Pendant.");
+        public static AttributeDefinition MoonstonePendantEquipped { get; } = new AttributeDefinition(new Guid("4BC010D0-9E75-4ECB-8963-08A3697278C3"), "Requirement of the Kanturu Event Map during the event.", "You can enter the Kanturu Event only with an equipped Moonstone Pendant.");
 
         /// <summary>
         /// Gets the attributes which are regenerated in an interval.

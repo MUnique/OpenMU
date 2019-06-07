@@ -53,6 +53,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return false;
             }
 
+            if (!enterGate.TargetGate.Map.CheckRequirements(player, out var errorMessage))
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(errorMessage, Interfaces.MessageType.BlueNormal);
+                return false;
+            }
+
             var currentPosition = player.IsWalking ? player.WalkTarget : player.Position;
             var inaccuracy = player.GameContext.Configuration.InfoRange;
             if (player.CurrentMap.Definition.EnterGates.Contains(enterGate)

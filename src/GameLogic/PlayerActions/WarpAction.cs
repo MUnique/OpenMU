@@ -4,8 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
-    using System;
-    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views;
@@ -42,13 +40,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return false;
             }
 
-            if (!this.CheckWarpRequirements(player, warpInfo, out string message))
+            if (!warpInfo.Gate.Map.CheckRequirements(player, out string message))
             {
                 errorMessage = message;
                 return false;
             }
 
-            // Money check should be last to avoid geting zen when other checks failed
+            // Money check should be last to avoid getting zen when other checks failed
             if (!this.CheckMoneyRequirement(player, warpInfo))
             {
                 errorMessage = $"You need {warpInfo.Costs} in order to warp";
@@ -76,26 +74,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             }
 
             return false;
-        }
-
-        private bool CheckWarpRequirements(Player player, WarpInfo warpInfo, out string errorMessage)
-        {
-            errorMessage = null;
-
-            if (warpInfo.Gate.Map.MapRequirements != null && warpInfo.Gate.Map.MapRequirements.Any())
-            {
-                foreach (var requirement in warpInfo.Gate.Map.MapRequirements)
-                {
-                    var floatDiff = player.Attributes[requirement.Attribute] - requirement.MinimumValue;
-                    if (Math.Abs(floatDiff) > 0.01)
-                    {
-                        errorMessage = $"{requirement.Attribute.Designation} {requirement.Attribute.Description}";
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
     }
 }
