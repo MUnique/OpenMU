@@ -145,7 +145,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.AbolishMagic, "Abolish Magic", 0, 0, 90, 70, 0, 0, 0, -1, -1, 1, 8, 0, 0, 0, 0, 1, 0, 0);
             this.CreateSkill(SkillNumber.ManaRays, "Mana Rays", 0, 85, 130, 7, 6, 0, 0, -1, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0);
             this.CreateSkill(SkillNumber.FireBlast, "Fire Blast", 0, 150, 30, 10, 6, 0, 0, -1, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-            this.CreateSkill(SkillNumber.PlasmaStorm, "Plasma Storm", 110, 60, 50, 20, 6, 0, 0, -1, 0, 0, 0, 2, 2, 2, 1, 1, 2, 1);
+            this.CreateSkill(SkillNumber.PlasmaStorm, "Plasma Storm", 110, 60, 50, 20, 6, 0, 0, -1, 0, 0, 0, 2, 2, 2, 1, 1, 2, 1, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.InfinityArrow, "Infinity Arrow", 220, 0, 50, 10, 6, 0, 0, -1, -1, 0, 0, 0, 0, 2, 0, 0, 0, 0, SkillType.Buff);
             this.CreateSkill(SkillNumber.FireScream, "Fire Scream", 102, 130, 45, 10, 6, 32, 70, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.Explosion79, "Explosion", 0, 0, 0, 0, 2, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0);
