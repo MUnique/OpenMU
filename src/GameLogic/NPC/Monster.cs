@@ -237,6 +237,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.CurrentMap.Move(this, target, this.moveLock, type);
             if (type == MoveType.Instant)
             {
+                this.walker.Stop();
                 this.Position = target;
             }
         }
