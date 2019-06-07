@@ -33,6 +33,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Icarus";
 
         /// <inheritdoc/>
+        protected override void CreateMapAttributeRequirements()
+        {
+            this.CreateRequirement(Stats.CanFly, 1);
+        }
+
+        /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
             var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);

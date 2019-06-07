@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Configuration of a map. Contains all information to create an instance of a GameMap.
@@ -75,6 +76,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Some maps contain different drops. Examples: land of trials drops ancient items, kanturu drops gemstones.
         /// </summary>
         public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the map requirements for player to use this map
+        /// </summary>
+        public virtual ICollection<AttributeRequirement> MapRequirements { get; protected set; }
 
         /// <inheritdoc/>
         public override string ToString()

@@ -467,6 +467,16 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition HealthLossAfterHit { get; } = new AttributeDefinition(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings");
 
         /// <summary>
+        /// Gets the CanFly attribute for warping to icarus
+        /// </summary>
+        public static AttributeDefinition CanFly { get; } = new AttributeDefinition(new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement of the Icarus map.", "You can enter Icarus only with wings, dinorant, fenrir.");
+
+        /// <summary>
+        /// Gets the MoonstonePendantEquipped attribute for warping to Karutan
+        /// </summary>
+        public static AttributeDefinition MoonstonePendantEquipped { get; } = new AttributeDefinition(new Guid("4BC010D0-9E75-4ECB-8963-08A3697278C3"), "Requirement of the Kanturu Event Map during the event.", "You can enter the Kanturu Event only with an equipped Moonstone Pendant.");
+
+        /// <summary>
         /// Gets the attributes which are regenerated in an interval.
         /// </summary>
         public static IEnumerable<Regeneration> IntervalRegenerationAttributes

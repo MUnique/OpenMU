@@ -1678,6 +1678,17 @@ public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<Monste
             }
         }
 
+        public ICollection<AttributeRequirement> RawMapRequirements { get; } = new List<AttributeRequirement>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> MapRequirements
+        {
+            get
+            {
+                return base.MapRequirements ?? (base.MapRequirements = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawMapRequirements)); 
+            }
+        }
+
                 
         /// <inheritdoc/>
         public override bool Equals(object obj)

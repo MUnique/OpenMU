@@ -33,6 +33,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected override string MapName => "Kanturu_I"; // Kanturu Ruins (1, 2), Kanturu Ruins (3) Island
 
         /// <inheritdoc/>
+        protected override void CreateMapAttributeRequirements()
+        {
+            // for testing - to be removed
+            this.CreateRequirement(Stats.MoonstonePendantEquipped, 1);
+        }
+
+        /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {
             var npcDictionary = this.GameConfiguration.Monsters.ToDictionary(npc => npc.Number, npc => npc);

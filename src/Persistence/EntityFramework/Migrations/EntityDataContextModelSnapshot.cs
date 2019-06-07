@@ -144,6 +144,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("AttributeId");
 
+                    b.Property<Guid?>("GameMapDefinitionId");
+
                     b.Property<Guid?>("ItemDefinitionId");
 
                     b.Property<int>("MinimumValue");
@@ -155,6 +157,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AttributeId");
+
+                    b.HasIndex("GameMapDefinitionId");
 
                     b.HasIndex("ItemDefinitionId");
 
@@ -1785,6 +1789,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttribute")
                         .WithMany()
                         .HasForeignKey("AttributeId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition")
+                        .WithMany("RawMapRequirements")
+                        .HasForeignKey("GameMapDefinitionId");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition")
                         .WithMany("RawRequirements")
