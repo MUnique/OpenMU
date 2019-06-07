@@ -243,6 +243,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 wing.QualifiedCharacters.Add(characterClass);
             }
 
+            // add CanFly Attribute to all wings
+            var canFlyPowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+            canFlyPowerUp.TargetAttribute = Stats.CanFly.GetPersistent(this.GameConfiguration);
+            canFlyPowerUp.BaseValue = 1;
+            wing.BasePowerUpAttributes.Add(canFlyPowerUp);
+
             return wing;
         }
 

@@ -2023,6 +2023,30 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
+        /// Gets the raw collection of <see cref="MapRequirements" />.
+        /// </summary>
+        [JsonProperty("MapRequirements")]
+        public ICollection<AttributeRequirement> RawMapRequirements { get; } = new List<AttributeRequirement>();
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> MapRequirements
+        {
+            get
+            {
+                return base.MapRequirements ?? (base.MapRequirements = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawMapRequirements)); 
+            }
+            protected set
+            {
+                this.MapRequirements.Clear();
+                foreach (var item in value)
+                {
+                    this.MapRequirements.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the raw object of <see cref="SafezoneMap" />.
         /// </summary>
         [JsonProperty("SafezoneMap")]
