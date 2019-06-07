@@ -1016,10 +1016,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     .ToArray();
             this.gameConfiguration.MasterExperienceTable =
                 Enumerable.Range(0, 201).Select(level => this.CalcNeededMasterExp(level)).ToArray();
-            var moneyDropItemGroup = this.context.CreateNew<DropItemGroup>();
-            moneyDropItemGroup.Chance = 0.5;
-            moneyDropItemGroup.ItemType = SpecialItemType.Money;
-            this.gameConfiguration.BaseDropItemGroups.Add(moneyDropItemGroup);
             this.CreateStatAttributes();
 
             this.CreateItemSlotTypes();

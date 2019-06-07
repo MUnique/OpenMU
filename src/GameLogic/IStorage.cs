@@ -76,7 +76,7 @@ namespace MUnique.OpenMU.GameLogic
         bool AddItem(byte slot, Item item);
 
         /// <summary>
-        /// Adds the item to the storage.
+        /// Adds the item to the next free slot of the storage.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>True, if successful.</returns>
