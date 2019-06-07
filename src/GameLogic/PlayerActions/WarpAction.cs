@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return false;
             }
 
-            if (!warpInfo.Gate.Map.CheckRequirements(player, out string message))
+            if (warpInfo.Gate.Map.TryGetRequirementError(player, out string message))
             {
                 errorMessage = message;
                 return false;

@@ -18,9 +18,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// </summary>
         /// <param name="gameMapDefinition">The game map definition.</param>
         /// <param name="player">The player.</param>
-        /// <param name="errorMessage">The error message.</param>
-        /// <returns><c>True</c>, if the requirements are fulfilled; Otherwise, <c>false</c>.</returns>
-        public static bool CheckRequirements(this GameMapDefinition gameMapDefinition, Player player, out string errorMessage)
+        /// <param name="errorMessage">The error message, which is available when this method returns <c>true</c>.</param>
+        /// <returns><c>False</c>, if the requirements are fulfilled; Otherwise, <c>true</c>.</returns>
+        public static bool TryGetRequirementError(this GameMapDefinition gameMapDefinition, Player player, out string errorMessage)
         {
             errorMessage = null;
 
@@ -32,12 +32,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     if (Math.Abs(floatDiff) > 0.01)
                     {
                         errorMessage = $"Missing requirement to enter the map: {requirement.Attribute.Description}";
-                        return false;
+                        return true;
                     }
                 }
             }
 
-            return true;
+            return false;
         }
     }
 }
