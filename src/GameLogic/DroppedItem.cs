@@ -172,7 +172,10 @@ namespace MUnique.OpenMU.GameLogic
                 this.dropper.PersistenceContext.Detach(this.Item);
             }
 
-            player.PersistenceContext.Attach(this.Item);
+            if (!(this.Item is TemporaryItem))
+            {
+                player.PersistenceContext.Attach(this.Item);
+            }
 
             return true;
         }
