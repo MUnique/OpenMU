@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.GameLogic
                 r.CurrentAttribute == skill.MagicEffectDef.PowerUpDefinition.TargetAttribute);
             if (regeneration != null)
             {
-                var value = skillEntry.Level > 0 ? regenerationValue.Value : regenerationValue.Value + skillEntry.CalculateValue();
+                var value = skillEntry.Level == 0 ? regenerationValue.Value : regenerationValue.Value + skillEntry.CalculateValue();
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
                     target.Attributes[regeneration.CurrentAttribute] + value,
                     target.Attributes[regeneration.MaximumAttribute]);
