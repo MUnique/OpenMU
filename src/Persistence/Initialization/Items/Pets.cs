@@ -45,6 +45,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true, (Stats.CanFly, 1.0f));
             this.AddFenrirOptions(fenrir);
+
+            this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true, (Stats.AttackDamageIncrease, 0.4f), (Stats.AttackSpeed, 10f));
+            this.CreatePet(65, 0, 1, 1, "Spirit of Guardian", 1, false, true, (Stats.DamageReceiveDecrement, 0.3f), (Stats.MaximumHealth, 50f));
+            this.CreatePet(67, 0, 1, 1, "Pet Rudolf", 28, false, true);
+            this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true, (Stats.MoneyAmountRate, 0.5f), (Stats.DefenseBase, 50f));
+            this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true, (Stats.MoneyAmountRate, 0.5f), (Stats.DefenseBase, 50f));
+            this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true, (Stats.AttackDamageIncrease, 0.2f), (Stats.AttackSpeed, 10f), (Stats.ExperienceRate, 0.3f));
         }
 
         private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, byte width, byte height, string name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, bool addAllCharacterClasses, params (AttributeDefinition, float)[] basePowerUps)
