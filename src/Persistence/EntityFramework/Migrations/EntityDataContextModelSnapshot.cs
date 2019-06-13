@@ -1893,7 +1893,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration")
-                        .WithMany("RawBaseDropItemGroups")
+                        .WithMany("RawDropItemGroups")
                         .HasForeignKey("GameConfigurationId");
                 });
 
