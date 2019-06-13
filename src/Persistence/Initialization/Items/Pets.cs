@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <inheritdoc />
         public override void Initialize()
         {
-            this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true, (Stats.DamageReceiveDecrement, 0.2f));
+            this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true, (Stats.DamageReceiveDecrement, 0.2f), (Stats.MaximumHealth, 50f));
             this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true, (Stats.AttackDamageIncrease, 0.3f));
             this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
             var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.DamageReceiveDecrement, 0.1f), (Stats.AttackDamageIncrease, 0.15f), (Stats.CanFly, 1.0f));
