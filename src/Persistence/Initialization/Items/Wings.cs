@@ -222,6 +222,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             wing.Height = height;
             wing.Name = name;
             wing.DropLevel = dropLevel;
+            wing.MaximumItemLevel = 15;
             wing.DropsFromMonsters = false;
             wing.Durability = durability;
             wing.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));

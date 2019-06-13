@@ -407,6 +407,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<double>("Chance");
 
+                    b.Property<string>("Description");
+
                     b.Property<Guid?>("GameConfigurationId");
 
                     b.Property<int>("ItemType");
@@ -945,6 +947,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("Height");
 
                     b.Property<Guid?>("ItemSlotId");
+
+                    b.Property<byte>("MaximumItemLevel");
 
                     b.Property<int>("MaximumSockets");
 

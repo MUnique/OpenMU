@@ -49,7 +49,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreatePendant(28, "Pendant of Ability", 50, 50, DamageType.Physical, Stats.MaximumAbility, null);
 
             // Requirement for Kanturu Event:
-            this.CreateJewelery(38, 10, false, "Moonstone Pendant", 21, 120, null, null, null);
+            var moonStonePendant = this.CreateJewelery(38, 10, false, "Moonstone Pendant", 21, 120, null, null, null);
+            {
+                var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+                powerUp.TargetAttribute = Stats.MoonstonePendantEquipped.GetPersistent(this.GameConfiguration);
+                powerUp.BaseValue = 1;
+                moonStonePendant.BasePowerUpAttributes.Add(powerUp);
+            }
 
             this.CreateWizardsRing();
 
@@ -118,6 +124,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
             this.GameConfiguration.ItemOptions.Add(optionDefinition);
             ring.PossibleItemOptions.Add(optionDefinition);
+            ring.MaximumItemLevel = 0;
             optionDefinition.Name = "Wizard Ring Options";
 
             var increaseDamage = this.Context.CreateNew<IncreasableItemOption>();
@@ -188,6 +195,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             item.DropsFromMonsters = dropsFromMonsters;
             item.Name = name;
             item.DropLevel = level;
+            item.MaximumItemLevel = 4;
             item.Width = 1;
             item.Height = 1;
 
@@ -240,15 +248,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             foreach (var characterClass in this.GameConfiguration.CharacterClasses)
             {
                 item.QualifiedCharacters.Add(characterClass);
-            }
-
-            // Added for test purposes wasn`t able to add real Moonstone Pendant
-            if (name == "Pendant of Lighting")
-            {
-                var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUp.TargetAttribute = Stats.MoonstonePendantEquipped.GetPersistent(this.GameConfiguration);
-                powerUp.BaseValue = 1;
-                item.BasePowerUpAttributes.Add(powerUp);
             }
 
             return item;

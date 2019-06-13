@@ -1071,6 +1071,24 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     .ToArray();
             this.gameConfiguration.MasterExperienceTable =
                 Enumerable.Range(0, 201).Select(level => this.CalcNeededMasterExp(level)).ToArray();
+            var moneyDropItemGroup = this.context.CreateNew<DropItemGroup>();
+            moneyDropItemGroup.Chance = 0.5;
+            moneyDropItemGroup.ItemType = SpecialItemType.Money;
+            moneyDropItemGroup.Description = "The common money drop item group (50 % drop chance)";
+            this.gameConfiguration.DropItemGroups.Add(moneyDropItemGroup);
+
+            var randomItemDropItemGroup = this.context.CreateNew<DropItemGroup>();
+            randomItemDropItemGroup.Chance = 0.3;
+            randomItemDropItemGroup.ItemType = SpecialItemType.RandomItem;
+            randomItemDropItemGroup.Description = "The common drop item group for random items (30 % drop chance)";
+            this.gameConfiguration.DropItemGroups.Add(randomItemDropItemGroup);
+
+            var excellentItemDropItemGroup = this.context.CreateNew<DropItemGroup>();
+            excellentItemDropItemGroup.Chance = 0.0001;
+            excellentItemDropItemGroup.ItemType = SpecialItemType.Excellent;
+            excellentItemDropItemGroup.Description = "The common drop item group for random excellent items (0.01 % drop chance)";
+            this.gameConfiguration.DropItemGroups.Add(excellentItemDropItemGroup);
+
             this.CreateStatAttributes();
 
             this.CreateItemSlotTypes();

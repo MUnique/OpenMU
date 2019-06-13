@@ -47,10 +47,14 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// Idea: append several "drop item groups" with its certain probability.
     /// In the drop generator sort all DropItemGroups by its chance.
     /// Classes which can have DropItemGroups: Maps, Monsters(for example the kundun drops), Players(for quest items)
-    /// The game server configuration also got the basic drop groups (for example for random items and jewels).
     /// </summary>
     public class DropItemGroup
     {
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        public string Description { get; set; }
+
         /// <summary>
         /// Gets or sets the chance of the item drop group to apply. From 0.0 to 1.0.
         /// </summary>

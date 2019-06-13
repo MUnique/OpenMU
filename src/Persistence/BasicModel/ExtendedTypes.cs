@@ -1559,25 +1559,25 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
-        /// Gets the raw collection of <see cref="BaseDropItemGroups" />.
+        /// Gets the raw collection of <see cref="DropItemGroups" />.
         /// </summary>
-        [JsonProperty("BaseDropItemGroups")]
-        public ICollection<DropItemGroup> RawBaseDropItemGroups { get; } = new List<DropItemGroup>();
+        [JsonProperty("DropItemGroups")]
+        public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
         
         /// <inheritdoc/>
         [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> BaseDropItemGroups
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
         {
             get
             {
-                return base.BaseDropItemGroups ?? (base.BaseDropItemGroups = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawBaseDropItemGroups)); 
+                return base.DropItemGroups ?? (base.DropItemGroups = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawDropItemGroups)); 
             }
             protected set
             {
-                this.BaseDropItemGroups.Clear();
+                this.DropItemGroups.Clear();
                 foreach (var item in value)
                 {
-                    this.BaseDropItemGroups.Add(item);
+                    this.DropItemGroups.Add(item);
                 }
             }
         }

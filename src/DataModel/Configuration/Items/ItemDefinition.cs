@@ -49,6 +49,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         public byte DropLevel { get; set; }
 
         /// <summary>
+        /// Gets or sets the maximum item level.
+        /// </summary>
+        public byte MaximumItemLevel { get; set; }
+
+        /// <summary>
         /// Gets or sets the maximum durability of this item at Level 0.
         /// </summary>
         public byte Durability { get; set; }

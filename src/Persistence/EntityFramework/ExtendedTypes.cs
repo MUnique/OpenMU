@@ -1421,14 +1421,14 @@ public ICollection<JewelMix> RawJewelMixes { get; } = new List<JewelMix>();
             }
         }
 
-        public ICollection<DropItemGroup> RawBaseDropItemGroups { get; } = new List<DropItemGroup>();        
+        public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();        
         /// <inheritdoc/>
         [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> BaseDropItemGroups
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
         {
             get
             {
-                return base.BaseDropItemGroups ?? (base.BaseDropItemGroups = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawBaseDropItemGroups)); 
+                return base.DropItemGroups ?? (base.DropItemGroups = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawDropItemGroups)); 
             }
         }
 

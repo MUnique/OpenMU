@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Maps
 {
     using System.Collections.Generic;
+    using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -69,35 +70,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
 
             this.CreateMapAttributeRequirements();
 
-            foreach (var drop in this.CreateDropItemGroups())
-            {
-                this.mapDefinition.DropItemGroups.Add(drop);
-            }
-
+            this.InitializeDropItemGroups();
             this.GameConfiguration.Maps.Add(this.mapDefinition);
         }
 
         /// <summary>
-        /// Creates the drop item groups for this map.
-        /// Contains the default drop groups in this base class. Can be overwritten to change it in certain maps.
+        /// Initializes the drop item groups for this map.
+        /// By default, we add money and random items. On event or special maps, this can be overwritten.
         /// </summary>
-        /// <returns>The drop item groups.</returns>
-        protected virtual IEnumerable<DropItemGroup> CreateDropItemGroups()
+        protected virtual void InitializeDropItemGroups()
         {
-            var money = this.Context.CreateNew<DropItemGroup>();
-            money.Chance = 0.5f;
-            money.ItemType = SpecialItemType.Money;
-            yield return money;
-
-            var item = this.Context.CreateNew<DropItemGroup>();
-            item.Chance = 0.1f;
-            item.ItemType = SpecialItemType.RandomItem;
-            yield return item;
-
-            var excellent = this.Context.CreateNew<DropItemGroup>();
-            excellent.Chance = 0.001f;
-            excellent.ItemType = SpecialItemType.Excellent;
-            yield return excellent;
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.Money));
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.RandomItem));
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.Excellent));
         }
 
         /// <summary>

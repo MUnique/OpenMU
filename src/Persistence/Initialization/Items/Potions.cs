@@ -70,6 +70,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             apple.Group = 14;
             apple.DropsFromMonsters = true;
             apple.DropLevel = 1;
+            apple.MaximumItemLevel = 1;
             apple.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.AppleConsumeHandler).FullName;
             apple.Durability = 3;
             apple.Value = 5;
@@ -89,6 +90,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             potion.Number = 1;
             potion.Group = 14;
             potion.DropsFromMonsters = true;
+            potion.MaximumItemLevel = 1;
             potion.DropLevel = 10;
             potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SmallHealthPotionConsumeHandler).FullName;
             potion.Durability = 3;
@@ -109,6 +111,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             potion.Number = 2;
             potion.Group = 14;
             potion.DropsFromMonsters = true;
+            potion.MaximumItemLevel = 1;
             potion.DropLevel = 25;
             potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.MiddleHealthPotionConsumeHandler).FullName;
             potion.Durability = 3;
@@ -129,6 +132,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Number = 3;
             definition.Group = 14;
             definition.DropsFromMonsters = true;
+            definition.MaximumItemLevel = 1;
             definition.DropLevel = 40;
             definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.BigHealthPotionConsumeHandler).FullName;
             definition.Durability = 3;
@@ -149,6 +153,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             potion.Number = 4;
             potion.Group = 14;
             potion.DropsFromMonsters = true;
+            potion.MaximumItemLevel = 1;
             potion.DropLevel = 10;
             potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SmallManaPotionConsumeHandler).FullName;
             potion.Durability = 3;
@@ -169,6 +174,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             potion.Number = 5;
             potion.Group = 14;
             potion.DropsFromMonsters = true;
+            potion.MaximumItemLevel = 1;
             potion.DropLevel = 25;
             potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.MiddleManaPotionConsumeHandler).FullName;
             potion.Durability = 3;
@@ -189,6 +195,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Number = 6;
             definition.Group = 14;
             definition.DropsFromMonsters = true;
+            definition.MaximumItemLevel = 1;
             definition.DropLevel = 40;
             definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.BigManaPotionConsumeHandler).FullName;
             definition.Durability = 3;

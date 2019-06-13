@@ -290,6 +290,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Chance = table.Column<double>(nullable: false),
                     ItemType = table.Column<int>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
                     Id = table.Column<Guid>(nullable: false),
                     GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
@@ -512,15 +513,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
+                    TimeZone = table.Column<short>(nullable: false),
+                    VaultPassword = table.Column<string>(nullable: true),
                     IsVaultExtended = table.Column<bool>(nullable: false),
                     RegistrationDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     State = table.Column<int>(nullable: false),
-                    TimeZone = table.Column<short>(nullable: false),
                     LoginName = table.Column<string>(maxLength: 10, nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
                     SecurityCode = table.Column<string>(nullable: true),
                     EMail = table.Column<string>(nullable: true),
-                    VaultPassword = table.Column<string>(nullable: true),
                     Id = table.Column<Guid>(nullable: false),
                     VaultId = table.Column<Guid>(nullable: true)
                 },
@@ -1462,6 +1463,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Durability = table.Column<byte>(nullable: false),
                     Group = table.Column<byte>(nullable: false),
                     Height = table.Column<byte>(nullable: false),
+                    MaximumItemLevel = table.Column<byte>(nullable: false),
                     MaximumSockets = table.Column<int>(nullable: false),
                     Number = table.Column<short>(nullable: false),
                     Value = table.Column<int>(nullable: false),

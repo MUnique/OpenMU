@@ -487,6 +487,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             armor.Height = height;
             armor.Name = name;
             armor.DropLevel = dropLevel;
+            armor.MaximumItemLevel = 15;
             armor.DropsFromMonsters = true;
             armor.Durability = durability;
             armor.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(slot));
