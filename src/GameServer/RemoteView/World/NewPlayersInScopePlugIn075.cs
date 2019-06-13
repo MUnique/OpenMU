@@ -129,6 +129,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                     case 0x38:
                         effectFlags |= SkillEffects.Iced;
                         break;
+                    default:
+                        // others are not supported, so we ignore them.
+                        break;
                 }
             }
 
