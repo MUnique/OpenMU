@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public NewPlayersInScopePlugIn075(RemotePlayer player) => this.player = player;
 
         [Flags]
-        private enum SkillEffect
+        private enum SkillEffects
         {
             Undefined = 0,
 
@@ -110,24 +110,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
         }
 
-        private static SkillEffect GetSkillFlags(IList<MagicEffect> visibleEffects)
+        private static SkillEffects GetSkillFlags(IList<MagicEffect> visibleEffects)
         {
-            SkillEffect effectFlags = SkillEffect.Undefined;
+            SkillEffects effectFlags = SkillEffects.Undefined;
             foreach (var visibleEffect in visibleEffects)
             {
                 switch (visibleEffect.Id)
                 {
                     case 0x01:
-                        effectFlags |= SkillEffect.DamageBuff;
+                        effectFlags |= SkillEffects.DamageBuff;
                         break;
                     case 0x02:
-                        effectFlags |= SkillEffect.DefenseBuff;
+                        effectFlags |= SkillEffects.DefenseBuff;
                         break;
                     case 0x37:
-                        effectFlags |= SkillEffect.Poisoned;
+                        effectFlags |= SkillEffects.Poisoned;
                         break;
                     case 0x38:
-                        effectFlags |= SkillEffect.Iced;
+                        effectFlags |= SkillEffects.Iced;
                         break;
                 }
             }
