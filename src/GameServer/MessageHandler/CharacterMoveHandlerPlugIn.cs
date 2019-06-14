@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -18,5 +19,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     {
         /// <inheritdoc/>
         public override byte Key => (int)PacketType.Teleport;
+
+        /// <inheritdoc/>
+        public override MoveType MoveType => MoveType.Instant;
     }
 }

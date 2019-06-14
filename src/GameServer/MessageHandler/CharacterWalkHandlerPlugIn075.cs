@@ -1,4 +1,4 @@
-﻿// <copyright file="CharacterWalkHandlerPlugIn.cs" company="MUnique">
+﻿// <copyright file="CharacterWalkHandlerPlugIn075.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,12 +13,12 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// Packet handler for walk packets.
     /// </summary>
     [PlugIn("Character walk handler", "Packet handler for walk packets.")]
-    [Guid("19056DEB-4321-4D25-8615-EE49A453DF03")]
-    [Client(0, 97, ClientLanguage.Invariant)]
-    internal class CharacterWalkHandlerPlugIn : CharacterMoveBaseHandlerPlugIn
+    [Guid("9FD41038-39D9-4D3D-A1DD-A87DB6388248")]
+    [Client(0, 75, ClientLanguage.Invariant)]
+    internal class CharacterWalkHandlerPlugIn075 : CharacterMoveBaseHandlerPlugIn
     {
         /// <inheritdoc/>
-        public override byte Key => (int)PacketType.Walk;
+        public override byte Key => 0x10;
 
         /// <inheritdoc/>
         public override MoveType MoveType => MoveType.Walk;

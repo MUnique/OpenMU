@@ -21,6 +21,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         public abstract byte Key { get; }
 
+        /// <summary>
+        /// Gets the type of the move.
+        /// </summary>
+        /// <value>
+        /// The type of the move.
+        /// </value>
+        public abstract MoveType MoveType { get; }
+
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
@@ -29,11 +37,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            var moveType = this.GetMoveType(packet[2]);
-
             var x = packet[3];
             var y = packet[4];
-            if (moveType == MoveType.Walk)
+            if (this.MoveType == MoveType.Walk)
             {
                 this.Walk(player, packet, new Point(x, y));
             }
@@ -122,16 +128,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
 
             return result.AsSpan(0, i);
-        }
-
-        private MoveType GetMoveType(byte value)
-        {
-            if (value == (byte)PacketType.Walk)
-            {
-                return MoveType.Walk;
-            }
-
-            return MoveType.Instant;
         }
     }
 }
