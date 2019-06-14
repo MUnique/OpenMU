@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.World
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
@@ -32,20 +31,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// </summary>
         /// <param name="player">The player.</param>
         public NewPlayersInScopePlugIn075(RemotePlayer player) => this.player = player;
-
-        [Flags]
-        private enum SkillEffects
-        {
-            Undefined = 0,
-
-            Poisoned = 1,
-
-            Iced = 2,
-
-            DamageBuff = 4,
-
-            DefenseBuff = 8,
-        }
 
         /// <inheritdoc/>
         public void NewPlayersInScope(IEnumerable<Player> newPlayers)
@@ -79,7 +64,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
                     var appearanceBlock = playerBlock.Slice(4, appearanceSerializer.NeededSpace);
                     appearanceSerializer.WriteAppearanceData(appearanceBlock, newPlayer.AppearanceData, true); // 4 ... 12
-                    playerBlock[4 + appearanceBlock.Length] = (byte)GetSkillFlags(newPlayer.MagicEffectList.GetVisibleEffects());
+                    playerBlock[4 + appearanceBlock.Length] = (byte)newPlayer.MagicEffectList.GetVisibleEffects().GetSkillFlags();
                     playerBlock.Slice(5 + appearanceBlock.Length, 10).WriteString(newPlayer.SelectedCharacter.Name, Encoding.UTF8); // 14 ... 23
                     if (newPlayer.IsWalking)
                     {
@@ -108,34 +93,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 this.player.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayersToGuild(guildPlayers, true);
             }
-        }
-
-        private static SkillEffects GetSkillFlags(IList<MagicEffect> visibleEffects)
-        {
-            SkillEffects effectFlags = SkillEffects.Undefined;
-            foreach (var visibleEffect in visibleEffects)
-            {
-                switch (visibleEffect.Id)
-                {
-                    case 0x01:
-                        effectFlags |= SkillEffects.DamageBuff;
-                        break;
-                    case 0x02:
-                        effectFlags |= SkillEffects.DefenseBuff;
-                        break;
-                    case 0x37:
-                        effectFlags |= SkillEffects.Poisoned;
-                        break;
-                    case 0x38:
-                        effectFlags |= SkillEffects.Iced;
-                        break;
-                    default:
-                        // others are not supported, so we ignore them.
-                        break;
-                }
-            }
-
-            return effectFlags;
         }
     }
 }

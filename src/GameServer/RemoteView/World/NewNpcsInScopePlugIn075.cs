@@ -1,4 +1,4 @@
-﻿// <copyright file="NewNpcsInScopePlugIn.cs" company="MUnique">
+﻿// <copyright file="NewNpcsInScopePlugIn075.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,25 +15,25 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
-    /// The default implementation of the <see cref="INewNpcsInScopePlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// The default implementation of the <see cref="T:MUnique.OpenMU.GameLogic.Views.World.INewNpcsInScopePlugIn" /> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn("NPCs in scope PlugIn", "The default implementation of the INewNpcsInScopePlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("35449477-0fba-48cb-9371-f337433b0f9d")]
-    [Client(6, 3, ClientLanguage.Invariant)]
-    public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
+    [PlugIn("NPCs in scope PlugIn 0.75", "The default implementation of the INewNpcsInScopePlugIn which is forwarding everything to the game client with specific data packets for version 0.75.")]
+    [Guid("7E9CE800-E59F-4E90-A6F1-28214483213C")]
+    [Client(0, 75, ClientLanguage.Invariant)]
+    public class NewNpcsInScopePlugIn075 : INewNpcsInScopePlugIn
     {
         private readonly RemotePlayer player;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewNpcsInScopePlugIn"/> class.
+        /// Initializes a new instance of the <see cref="NewNpcsInScopePlugIn075"/> class.
         /// </summary>
         /// <param name="player">The player.</param>
-        public NewNpcsInScopePlugIn(RemotePlayer player) => this.player = player;
+        public NewNpcsInScopePlugIn075(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
         public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
         {
-            const int NpcDataSize = 10;
+            const int NpcDataSize = 9;
 
             if (newObjects == null || !newObjects.Any())
             {
@@ -50,17 +50,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 foreach (var npc in newObjectList)
                 {
                     var npcBlock = packet.Slice(5 + (i * NpcDataSize));
-                    ////Npc Id:
                     npcBlock[0] = npc.Id.GetHighByte();
                     npcBlock[1] = npc.Id.GetLowByte();
 
-                    ////Npc Type:
-                    var npcStats = npc.Definition;
-                    if (npcStats != null)
-                    {
-                        npcBlock[2] = (byte)((npcStats.Number >> 8) & 0xFF);
-                        npcBlock[3] = (byte)(npcStats.Number & 0xFF);
-                    }
+                    npcBlock[2] = (byte)(npc.Definition.Number & 0xFF);
+                    npcBlock[3] = (byte)((npc as Monster)?.MagicEffectList.GetVisibleEffects().GetSkillFlags() ?? 0);
 
                     ////Coords:
                     npcBlock[4] = npc.Position.X;
@@ -78,7 +72,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                     }
 
                     npcBlock[8] = (byte)(npc.Rotation.ToPacketByte() << 4);
-                    ////9 = offset byte for magic effects - currently we don't show them for NPCs
                     i++;
                 }
 
