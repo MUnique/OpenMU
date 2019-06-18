@@ -144,11 +144,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 case ClientLanguage.Vietnamese:
                     return 0xDC;
                 case ClientLanguage.Filipino:
+                case ClientLanguage.Korean:
                     return 0xDF;
                 case ClientLanguage.Chinese:
                     return 0xD0;
-                case ClientLanguage.Korean:
-                    return 0xDF;
                 case ClientLanguage.Thai:
                     return 0xD2;
                 default:
