@@ -1,4 +1,4 @@
-﻿// <copyright file="PickupItemHandlerPlugIn.cs" company="MUnique">
+﻿// <copyright file="PickupItemHandlerPlugIn075.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,12 +11,12 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     /// <summary>
     /// Handler for item pickup packets.
     /// </summary>
-    [PlugIn("PickupItemHandlerPlugIn", "Handler for item pickup packets.")]
-    [Guid("8bcb9d85-95ae-4611-ae64-e9cc801ec647")]
-    [Client(0, 97, ClientLanguage.Invariant)]
-    internal class PickupItemHandlerPlugIn : PickupItemHandlerPlugInBase
+    [PlugIn("PickupItemHandlerPlugIn 0.75", "Handler for item pickup packets for version 0.75.")]
+    [Guid("185512C3-F5B7-489F-A1C1-DF07146560A4")]
+    [Client(0, 75, ClientLanguage.Invariant)]
+    internal class PickupItemHandlerPlugIn075 : PickupItemHandlerPlugInBase
     {
         /// <inheritdoc />
-        public override bool IsEncryptionExpected => true;
+        public override bool IsEncryptionExpected => false;
     }
 }
