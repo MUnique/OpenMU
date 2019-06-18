@@ -45,7 +45,12 @@ namespace MUnique.OpenMU.Interfaces
         /// <summary>
         /// The message is shown as blue entry.
         /// </summary>
-        BlueNormal = 1
+        BlueNormal = 1,
+
+        /// <summary>
+        /// The message is a guild notice (green center).
+        /// </summary>
+        GuildNotice = 2,
     }
 
     /// <summary>
