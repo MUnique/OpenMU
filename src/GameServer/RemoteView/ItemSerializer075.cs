@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
     /// <summary>
     /// This item serializer is used to serialize the item data to the data packets for version 0.75.
-    /// Each item is serialized into a 4-byte long part of an array.
+    /// Each item is serialized into a 3-byte long part of an array.
     /// </summary>
     [Guid("A97F30CF-A189-43A2-9271-D3E5A24CC3FD")]
     [PlugIn("Item Serializer 0.75", "The item serializer for game client version 0.75")]
@@ -30,12 +30,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private const byte LevelMask = 0x78;
 
         /// <inheritdoc/>
-        public int NeededSpace => 4;
+        public int NeededSpace => 3;
 
         /// <inheritdoc/>
         public void SerializeItem(Span<byte> target, Item item)
         {
-            target[0] = (byte)item.Definition.Number;
+            target[0] = (byte)(item.Definition.Number & 0x0F);
             target[0] |= (byte)(item.Definition.Group << 4);
 
             target[1] = (byte)((item.Level << 3) & LevelMask);
@@ -57,27 +57,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
 
             target[2] = item.Durability;
-
-            target[3] |= GetExcellentByte(item);
         }
 
         /// <inheritdoc />
         public Item DeserializeItem(Span<byte> array, GameConfiguration gameConfiguration, IContext persistenceContext)
         {
             return null;
-        }
-
-        private static byte GetExcellentByte(Item item)
-        {
-            byte result = 0;
-            var excellentOptions = item.ItemOptions.Where(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent || o.ItemOption.OptionType == ItemOptionTypes.Wing);
-
-            foreach (var option in excellentOptions)
-            {
-                result |= (byte)(1 << (option.ItemOption.Number - 1));
-            }
-
-            return result;
         }
     }
 }

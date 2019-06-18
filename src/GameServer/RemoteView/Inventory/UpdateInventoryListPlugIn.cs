@@ -32,22 +32,22 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
             // C4 00 00 00 F3 10 ...
             const int slotNumberSize = sizeof(byte);
             var itemSerializer = this.player.ItemSerializer;
-            var lengthPerItem = Math.Max(itemSerializer.NeededSpace + slotNumberSize, 8);
+            var lengthPerItem = itemSerializer.NeededSpace + slotNumberSize;
             const int headerLength = 6;
-            var itemCount = this.player.SelectedCharacter.Inventory.Items.Count();
-            ushort length = (ushort)((itemCount * lengthPerItem) + headerLength);
+            var items = this.player.SelectedCharacter.Inventory.Items.OrderBy(i => i.ItemSlot).ToList();
+            var length = (items.Count * lengthPerItem) + headerLength;
             using (var writer = this.player.Connection.StartSafeWrite(0xC4, length))
             {
                 var packet = writer.Span;
                 packet[3] = 0xF3;
                 packet[4] = 0x10;
-                packet[5] = (byte)itemCount;
+                packet[5] = (byte)items.Count;
                 int i = 0;
-                foreach (var item in this.player.SelectedCharacter.Inventory.Items)
+                foreach (var item in items)
                 {
                     var offset = headerLength + (i * lengthPerItem);
                     packet[offset] = item.ItemSlot;
-                    itemSerializer.SerializeItem(packet.Slice(offset + 1), item);
+                    itemSerializer.SerializeItem(packet.Slice(offset + 1, itemSerializer.NeededSpace), item);
                     i++;
                 }
 
