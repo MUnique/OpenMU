@@ -22,6 +22,7 @@ namespace MUnique.OpenMU.Startup
         {
             var result = new ChatServerSettings();
             result.MaximumConnections = definition.MaximumConnections;
+            result.ClientTimeout = definition.ClientTimeout;
             result.ClientCleanUpInterval = definition.ClientCleanUpInterval;
             result.RoomCleanUpInterval = definition.RoomCleanUpInterval;
             result.Description = definition.Description;
