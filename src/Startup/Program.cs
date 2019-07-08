@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Startup
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using log4net;
     using log4net.Config;
     using MUnique.OpenMU.AdminPanel;
@@ -162,6 +163,9 @@ namespace MUnique.OpenMU.Startup
                             break;
                         case "gc":
                             GC.Collect();
+                            break;
+                        case null:
+                            Thread.Sleep(1000);
                             break;
                         default:
                             Console.WriteLine("Unknown command");
