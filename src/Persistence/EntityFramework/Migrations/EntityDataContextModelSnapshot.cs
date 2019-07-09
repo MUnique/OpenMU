@@ -305,6 +305,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MaximumConnections");
 
+                    b.Property<TimeSpan>("ClientTimeout");
+
                     b.Property<TimeSpan>("RoomCleanUpInterval");
 
                     b.Property<byte>("ServerId");
