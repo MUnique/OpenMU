@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Maps
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -61,7 +63,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             this.mapDefinition = this.Context.CreateNew<GameMapDefinition>();
             this.mapDefinition.Number = this.MapNumber;
             this.mapDefinition.Name = this.MapName;
-            this.mapDefinition.TerrainData = Terrains.ResourceManager.GetObject("Terrain" + (this.MapNumber + 1)) as byte[];
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = assembly.GetName().Name + ".Resources.Terrain" + (this.MapNumber + 1) + ".att";
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        this.mapDefinition.TerrainData = reader.ReadBytes((int)stream.Length);
+                    }
+                }
+            }
+
             this.mapDefinition.ExpMultiplier = 1;
             foreach (var spawn in this.CreateSpawns())
             {
