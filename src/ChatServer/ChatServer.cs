@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.ChatServer
         public string Description => this.settings.Description;
 
         /// <inheritdoc/>
-        public int Id => SpecialServerIds.ChatServer + this.settings.ServerId;
+        public int Id => this.settings.ServerId;
 
         /// <inheritdoc />
         public ServerType Type => ServerType.ChatServer;

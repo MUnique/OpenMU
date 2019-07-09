@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Startup
 {
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
@@ -26,7 +27,7 @@ namespace MUnique.OpenMU.Startup
             result.ClientCleanUpInterval = definition.ClientCleanUpInterval;
             result.RoomCleanUpInterval = definition.RoomCleanUpInterval;
             result.Description = definition.Description;
-            result.ServerId = definition.ServerId;
+            result.ServerId = definition.ServerId + SpecialServerIds.ChatServer;
             foreach (var endpoint in definition.Endpoints)
             {
                 result.Endpoints.Add(new OpenMU.ChatServer.ChatServerEndpoint
