@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <value>
         /// The client timeout.
         /// </value>
-        public TimeSpan ClientTimeout { get; } = TimeSpan.FromMinutes(1);
+        public TimeSpan ClientTimeout { get; set; } = TimeSpan.FromMinutes(1);
 
         /// <summary>
         /// Gets or sets the interval in which a client clean up takes place.
