@@ -35,6 +35,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     ServerId = table.Column<byte>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     MaximumConnections = table.Column<int>(nullable: false),
+                    ClientTimeout = table.Column<TimeSpan>(nullable: false),
                     ClientCleanUpInterval = table.Column<TimeSpan>(nullable: false),
                     RoomCleanUpInterval = table.Column<TimeSpan>(nullable: false),
                     Id = table.Column<Guid>(nullable: false)
