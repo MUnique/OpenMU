@@ -12,6 +12,8 @@ namespace MUnique.OpenMU.AdminPanel
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using SixLabors.ImageSharp;
+    using SixLabors.Memory;
 
     /// <summary>
     /// The admin panel host class which provides a web server over ASP.NET Core Kestrel.
@@ -28,6 +30,8 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="loggingConfigurationPath">The logging configuration file path.</param>
         public AdminPanel(ushort port, IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IServerConfigurationChangeListener changeListener, string loggingConfigurationPath)
         {
+            Configuration.Default.MemoryAllocator = ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
+
             // you might need to allow it first with netsh:
             // netsh http add urlacl http://+:1234/ user=[Username]
             var host = WebHost.CreateDefaultBuilder()
