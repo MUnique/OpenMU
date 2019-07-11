@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.ChatServer
         public int MaximumConnections { get; set; } = int.MaxValue;
 
         /// <summary>
-        /// Gets the client timeout. When a client did not send any data in this timespan, it's automatically disconnected.
+        /// Gets or sets the client timeout. When a client did not send any data in this timespan, it's automatically disconnected.
         /// </summary>
         /// <value>
         /// The client timeout.
