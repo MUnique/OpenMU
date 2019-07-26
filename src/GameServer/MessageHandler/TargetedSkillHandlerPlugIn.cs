@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -17,6 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     [PlugIn("TargetedSkillHandlerPlugIn", "Handler for targeted skill packets.")]
     [Guid("5b07d03c-509c-4aec-972c-a99db77561f2")]
+    [MinimumClient(3, 0, ClientLanguage.Invariant)]
     internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly TargetedSkillAction attackAction = new TargetedSkillAction();
@@ -28,19 +30,23 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public byte Key => (byte)PacketType.SkillAttack;
 
         /// <inheritdoc/>
-        public void HandlePacket(Player player, Span<byte> packet)
+        public virtual void HandlePacket(Player player, Span<byte> packet)
         {
             ////          skill target
             ////C3 len 19 XX XX TT TT
             ushort skillId = packet.MakeWordSmallEndian(3);
+            ushort targetId = packet.MakeWordSmallEndian(5);
+            this.Handle(player, skillId, targetId);
+        }
 
+        protected void Handle(Player player, ushort skillId, ushort targetId)
+        {
             if (!player.SkillList.ContainsSkill(skillId))
             {
                 return;
             }
 
             // The target can be the own player too, for example when using buff skills.
-            ushort targetId = packet.MakeWordSmallEndian(5);
             if (player.GetObject(targetId) is IAttackable target)
             {
                 this.attackAction.PerformSkill(player, target, skillId);

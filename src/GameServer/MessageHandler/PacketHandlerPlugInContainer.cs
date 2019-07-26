@@ -148,7 +148,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             // find available replacement if the plugin was effective before
             var replacement = this.ActivePlugIns
                 .Where(p => p.Key == plugIn.Key)
-                .OrderByDescending(p => p.GetType().GetCustomAttribute(typeof(ClientAttribute)))
+                .OrderByDescending(p => p.GetType().GetCustomAttribute(typeof(MinimumClientAttribute)))
                 .FirstOrDefault();
             if (replacement != null)
             {

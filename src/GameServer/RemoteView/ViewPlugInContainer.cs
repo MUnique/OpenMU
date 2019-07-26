@@ -56,8 +56,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <remarks>We look if the activated plugin is rated at a higher client version than the current one.</remarks>
         protected override bool IsNewPlugInReplacingOld(IViewPlugIn currentEffectivePlugIn, IViewPlugIn activatedPlugIn)
         {
-            var currentPlugInClient = currentEffectivePlugIn.GetType().GetCustomAttribute<ClientAttribute>()?.Client ?? default;
-            var activatedPluginClient = activatedPlugIn.GetType().GetCustomAttribute<ClientAttribute>()?.Client ?? default;
+            var currentPlugInClient = currentEffectivePlugIn.GetType().GetCustomAttribute<MinimumClientAttribute>()?.Client ?? default;
+            var activatedPluginClient = activatedPlugIn.GetType().GetCustomAttribute<MinimumClientAttribute>()?.Client ?? default;
             return currentPlugInClient.CompareTo(activatedPluginClient) < 0;
         }
 
@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <remarks>We sort by version and choose the highest one.</remarks>
         protected override IViewPlugIn DetermineEffectivePlugIn(Type interfaceType)
         {
-            return this.ActivePlugIns.OrderByDescending(p => p.GetType().GetCustomAttribute(typeof(ClientAttribute))).FirstOrDefault(interfaceType.IsInstanceOfType);
+            return this.ActivePlugIns.OrderByDescending(p => p.GetType().GetCustomAttribute(typeof(MinimumClientAttribute))).FirstOrDefault(interfaceType.IsInstanceOfType);
         }
 
         /// <inheritdoc />

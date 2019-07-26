@@ -14,7 +14,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     [PlugIn("Character move handler (0.75)", "Packet handler for move packets, version 0.75.")]
     [Guid("C1F633E1-3A15-45C6-9235-7B78520D3CC5")]
-    [Client(0, 75, ClientLanguage.Invariant)]
+    [MinimumClient(0, 75, ClientLanguage.Invariant)]
+    [MaximumClient(0, 89, ClientLanguage.Invariant)]
     internal class CharacterMoveHandlerPlugIn075 : CharacterMoveBaseHandlerPlugIn
     {
         /// <inheritdoc/>

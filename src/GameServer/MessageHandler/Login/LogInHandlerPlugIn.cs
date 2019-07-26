@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
     [PlugIn("Login", "Packet handler for login packets.")]
     [Guid("4A816FE5-809B-4D42-AF9F-1929FABD3295")]
     [BelongsToGroup(LogInOutGroup.GroupKey)]
-    [Client(0, 97, ClientLanguage.Invariant)]
+    [MinimumClient(0, 97, ClientLanguage.Invariant)]
     public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn
     {
         private readonly ISpanDecryptor decryptor = new Xor3Decryptor(0);

@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// </summary>
     [Guid("A97F30CF-A189-43A2-9271-D3E5A24CC3FD")]
     [PlugIn("Item Serializer 0.75", "The item serializer for game client version 0.75")]
-    [Client(0, 75, ClientLanguage.Invariant)]
+    [MinimumClient(0, 75, ClientLanguage.Invariant)]
     public class ItemSerializer075 : IItemSerializer
     {
         private const byte LuckFlag = 4;

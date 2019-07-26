@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -43,7 +44,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x08))
                 {
                     var packet = writer.Span;
-                    packet[2] = (byte)PacketType.Teleport;
+                    packet[2] = this.GetInstantMoveCode();
                     packet[3] = objectId.GetHighByte();
                     packet[4] = objectId.GetLowByte();
                     packet[5] = obj.Position.X;
@@ -80,29 +81,73 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 }
 
                 var stepsSize = steps == null ? 1 : (steps.Length / 2) + 2;
-                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 7 + stepsSize))
+                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 8 + stepsSize))
                 {
                     var walkPacket = writer.Span;
-                    walkPacket[2] = (byte)PacketType.Walk;
+                    walkPacket[2] = this.GetWalkCode();
                     walkPacket[3] = objectId.GetHighByte();
                     walkPacket[4] = objectId.GetLowByte();
                     walkPacket[5] = point.X;
                     walkPacket[6] = point.Y;
                     walkPacket[7] = (byte)(stepsLength | rotation.ToPacketByte() << 4);
-                    if (steps != null)
+                    if (steps != null && stepsLength > 0)
                     {
-                        walkPacket[7] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
+                        walkPacket[8] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
                         for (int i = 0; i < stepsSize; i += 2)
                         {
-                            var index = 8 + (i / 2);
+                            var index = 9 + (i / 2);
                             var firstStep = steps[i].ToPacketByte();
-                            var secondStep = stepsSize > i + 2 ? steps[i + 2].ToPacketByte() : 0;
+                            var secondStep = steps.Length > i + 1 ? steps[i + 1].ToPacketByte() : 0;
                             walkPacket[index] = (byte)(firstStep << 4 | secondStep);
                         }
                     }
 
                     writer.Commit();
                 }
+            }
+        }
+
+        private byte GetInstantMoveCode()
+        {
+            if (this.player.ClientVersion.Season == 0 && this.player.ClientVersion.Episode <= 80)
+            {
+                return 0x11;
+            }
+
+            switch (this.player.ClientVersion.Language)
+            {
+                case ClientLanguage.Japanese: return 0xDC;
+                case ClientLanguage.English:
+                case ClientLanguage.Vietnamese:
+                    return 0x15;
+                case ClientLanguage.Filipino: return 0xD6;
+                case ClientLanguage.Chinese:
+                case ClientLanguage.Korean: return 0xD7;
+                case ClientLanguage.Thai: return 0xD9;
+                default:
+                    return (byte)PacketType.Teleport;
+            }
+        }
+
+        private byte GetWalkCode()
+        {
+            if (this.player.ClientVersion.Season == 0 && this.player.ClientVersion.Episode <= 80)
+            {
+                return 0x10;
+            }
+
+            switch (this.player.ClientVersion.Language)
+            {
+                case ClientLanguage.English: return 0xD4;
+                case ClientLanguage.Japanese: return 0x1D;
+                case ClientLanguage.Chinese:
+                case ClientLanguage.Vietnamese:
+                    return 0xD9;
+                case ClientLanguage.Filipino: return 0xDD;
+                case ClientLanguage.Korean: return 0xD3;
+                case ClientLanguage.Thai: return 0xD7;
+                default:
+                    return (byte)PacketType.Walk;
             }
         }
     }

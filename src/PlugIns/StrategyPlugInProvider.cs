@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.PlugIns
             base.ActivatePlugIn(plugIn);
             if (this.effectiveStrategies.TryGetValue(plugIn.Key, out var registeredPlugIn))
             {
-                this.log.Warn($"Plugin {registeredPlugIn} with key {plugIn.Key} was already registered and is active.");
+                this.log.Warn($"Plugin {registeredPlugIn} with key {plugIn.Key} was already registered and is active. Plugin {plugIn} will not be effective.");
             }
             else
             {

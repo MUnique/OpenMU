@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// </summary>
     [PlugIn("NPCs in scope PlugIn", "The default implementation of the INewNpcsInScopePlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("35449477-0fba-48cb-9371-f337433b0f9d")]
-    [Client(6, 3, ClientLanguage.Invariant)]
+    [MinimumClient(6, 3, ClientLanguage.Invariant)]
     public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
     {
         private readonly RemotePlayer player;

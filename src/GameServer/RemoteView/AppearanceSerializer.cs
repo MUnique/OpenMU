@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
     [Guid("D20EEBFA-12C1-4A86-B202-63121EB2A95B")]
     [PlugIn("Appearance Serializer 0.75", "Serializer for the appearance of a player, compatible with the client of version 0.75.")]
-    [Client(0, 75, ClientLanguage.Invariant)]
+    [MinimumClient(0, 75, ClientLanguage.Invariant)]
     public class AppearanceSerializer075 : IAppearanceSerializer
     {
         /// <summary>
@@ -150,7 +150,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// </summary>
     [Guid("54847CAF-7827-48FB-BF53-AF458A694FAF")]
     [PlugIn("Default appearance serializer", "Default serializer for the appearance of a player. It will most likely only work correctly in season 6.")]
-    [Client(6, 3, ClientLanguage.Invariant)]
+    [MinimumClient(6, 3, ClientLanguage.Invariant)]
     public class AppearanceSerializer : IAppearanceSerializer
     {
         /// <summary>

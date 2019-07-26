@@ -14,7 +14,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     [PlugIn("Character walk handler", "Packet handler for walk packets.")]
     [Guid("9FD41038-39D9-4D3D-A1DD-A87DB6388248")]
-    [Client(0, 75, ClientLanguage.Invariant)]
+    [MinimumClient(0, 75, ClientLanguage.Invariant)]
+    [MaximumClient(0, 89, ClientLanguage.Invariant)]
     internal class CharacterWalkHandlerPlugIn075 : CharacterMoveBaseHandlerPlugIn
     {
         /// <inheritdoc/>

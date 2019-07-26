@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     /// </summary>
     [PlugIn("UpdateCharacterStatsPlugIn", "The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("6eb967c2-b5a2-4510-9d88-5eccc963a6ea")]
-    [Client(6, 3, ClientLanguage.Invariant)]
+    [MinimumClient(6, 3, ClientLanguage.Invariant)]
     public class UpdateCharacterStatsPlugIn : IUpdateCharacterStatsPlugIn
     {
         private readonly RemotePlayer player;

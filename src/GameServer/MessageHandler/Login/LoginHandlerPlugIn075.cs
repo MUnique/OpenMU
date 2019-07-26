@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
     [PlugIn("Login 0.75", "Packet handler for login packets of version 0.75.")]
     [Guid("D2BA04C4-6730-4CF1-B4B9-EBFEA9443FFB")]
     [BelongsToGroup(LogInOutGroup.GroupKey)]
-    [Client(0, 75, ClientLanguage.Invariant)]
+    [MinimumClient(0, 75, ClientLanguage.Invariant)]
     public class LoginHandlerPlugIn075 : ISubPacketHandlerPlugIn
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(LoginHandlerPlugIn075));

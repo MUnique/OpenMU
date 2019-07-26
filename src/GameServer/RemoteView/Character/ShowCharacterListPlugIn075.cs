@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     /// </summary>
     [PlugIn("ShowCharacterListPlugIn v0.75", "The implementation of the IShowCharacterListPlugIn which is forwarding everything to the game client with specific data packets for version 0.75.")]
     [Guid("650A3478-729E-4995-ADAF-BDEB829A92E5")]
-    [Client(0, 75, ClientLanguage.Invariant)]
+    [MinimumClient(0, 75, ClientLanguage.Invariant)]
     public class ShowCharacterListPlugIn075 : IShowCharacterListPlugIn
     {
         private readonly RemotePlayer player;

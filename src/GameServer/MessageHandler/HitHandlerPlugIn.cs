@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     [PlugIn("HitHandlerPlugIn", "Handler for hit packets.")]
     [Guid("698b8db9-472a-42dd-bdfe-f6b4ba45595e")]
-    [Client(0, 97, ClientLanguage.English)]
+    [MinimumClient(0, 90, ClientLanguage.English)]
     internal class HitHandlerPlugIn : HitHandlerPlugInBase
     {
         /// <inheritdoc/>
