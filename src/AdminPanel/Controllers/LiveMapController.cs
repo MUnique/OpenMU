@@ -11,7 +11,8 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
     using Microsoft.AspNetCore.Mvc;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.Interfaces;
-    using SkiaSharp;
+    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.PixelFormats;
 
     /// <summary>
     /// Controller for all map related functions.
@@ -70,39 +71,34 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         private Stream RenderMap(IGameMapInfo map)
         {
             var terrain = new GameMapTerrain(map.MapName, map.TerrainData);
-            using (var bitmap = new SkiaSharp.SKBitmap(0x100, 0x100))
+            using (var bitmap = new Image<Rgba32>(0x100, 0x100))
             {
                 for (int y = 0; y < 0x100; y++)
                 {
                     for (int x = 0; x < 0x100; x++)
                     {
-                        var color = SKColors.Black;
+                        var color = Rgba32.Black;
                         if (terrain.SafezoneMap[y, x])
                         {
-                            color = SKColors.Gray;
+                            color = Rgba32.Gray;
                         }
                         else if (terrain.WalkMap[y, x])
                         {
-                            color = SKColors.SpringGreen;
+                            color = Rgba32.SpringGreen;
                         }
                         else
                         {
                             // we use the default color.
                         }
 
-                        bitmap.SetPixel(x, y, color);
+                        bitmap[x, y] = color;
                     }
                 }
 
-                using (var memoryStream = new SKDynamicMemoryWStream())
-                {
-                    if (SKPixmap.Encode(memoryStream, bitmap, SKEncodedImageFormat.Png, 100))
-                    {
-                        return memoryStream.DetachAsData().AsStream();
-                    }
-                }
-
-                return null;
+                var memoryStream = new MemoryStream();
+                bitmap.SaveAsPng(memoryStream);
+                memoryStream.Position = 0;
+                return memoryStream;
             }
         }
     }

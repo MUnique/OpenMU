@@ -30,6 +30,20 @@ namespace MUnique.OpenMU.GameLogic
         };
 
         /// <summary>
+        /// Determines whether the item level can be upgraded by using jewels of bless or soul.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the item level can be upgraded by using jewels of bless or soul; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool CanLevelBeUpgraded(this Item item)
+        {
+            return item.IsWearable()
+                   && item.Definition.ItemSlot.ItemSlots.Any(slot => slot <= InventoryConstants.WingsSlot)
+                   && item.Level < item.Definition.MaximumItemLevel;
+        }
+
+        /// <summary>
         /// Gets the maximum durability of the item.
         /// </summary>
         /// <param name="item">The item.</param>

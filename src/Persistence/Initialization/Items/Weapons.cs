@@ -315,6 +315,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             item.Height = height;
             item.Width = width;
             item.DropLevel = dropLevel;
+            item.MaximumItemLevel = MaximumItemLevel;
             item.DropsFromMonsters = dropsFromMonsters;
             if (slot == 0 && knightClass > 0 && width == 1)
             {

@@ -35,6 +35,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     ServerId = table.Column<byte>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     MaximumConnections = table.Column<int>(nullable: false),
+                    ClientTimeout = table.Column<TimeSpan>(nullable: false),
                     ClientCleanUpInterval = table.Column<TimeSpan>(nullable: false),
                     RoomCleanUpInterval = table.Column<TimeSpan>(nullable: false),
                     Id = table.Column<Guid>(nullable: false)
@@ -120,14 +121,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 columns: table => new
                 {
-                    ExcOptionChance = table.Column<byte>(nullable: false),
-                    LuckOptionChance = table.Column<byte>(nullable: false),
-                    MaxExcOptions = table.Column<byte>(nullable: false),
                     Money = table.Column<int>(nullable: false),
+                    SuccessPercent = table.Column<byte>(nullable: false),
                     MultipleAllowed = table.Column<bool>(nullable: false),
                     ResultItemSelect = table.Column<int>(nullable: false),
+                    LuckOptionChance = table.Column<byte>(nullable: false),
                     SkillOptionChance = table.Column<byte>(nullable: false),
-                    SuccessPercent = table.Column<byte>(nullable: false),
+                    ExcOptionChance = table.Column<byte>(nullable: false),
+                    MaxExcOptions = table.Column<byte>(nullable: false),
                     Id = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
@@ -290,6 +291,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Chance = table.Column<double>(nullable: false),
                     ItemType = table.Column<int>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
                     Id = table.Column<Guid>(nullable: false),
                     GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
@@ -512,15 +514,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
+                    TimeZone = table.Column<short>(nullable: false),
+                    VaultPassword = table.Column<string>(nullable: true),
+                    IsVaultExtended = table.Column<bool>(nullable: false),
+                    RegistrationDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    State = table.Column<int>(nullable: false),
                     LoginName = table.Column<string>(maxLength: 10, nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
                     SecurityCode = table.Column<string>(nullable: true),
                     EMail = table.Column<string>(nullable: true),
-                    RegistrationDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    State = table.Column<int>(nullable: false),
-                    TimeZone = table.Column<short>(nullable: false),
-                    VaultPassword = table.Column<string>(nullable: true),
-                    IsVaultExtended = table.Column<bool>(nullable: false),
                     Id = table.Column<Guid>(nullable: false),
                     VaultId = table.Column<Guid>(nullable: true)
                 },
@@ -993,6 +995,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data",
                 columns: table => new
                 {
+                    CharacterSlot = table.Column<byte>(nullable: false),
+                    CharacterStatus = table.Column<int>(nullable: false),
+                    CreateDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    Experience = table.Column<long>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    InventoryExtensions = table.Column<int>(nullable: false),
                     LevelUpPoints = table.Column<int>(nullable: false),
                     MasterExperience = table.Column<long>(nullable: false),
                     MasterLevelUpPoints = table.Column<int>(nullable: false),
@@ -1004,14 +1012,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     StateRemainingSeconds = table.Column<int>(nullable: false),
                     UsedFruitPoints = table.Column<int>(nullable: false),
                     UsedNegFruitPoints = table.Column<int>(nullable: false),
-                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 10, nullable: false),
-                    CharacterSlot = table.Column<byte>(nullable: false),
-                    CreateDate = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    Experience = table.Column<long>(nullable: false),
-                    CharacterStatus = table.Column<int>(nullable: false),
                     QuestInfo = table.Column<byte[]>(nullable: true),
-                    InventoryExtensions = table.Column<int>(nullable: false),
                     KeyConfiguration = table.Column<byte[]>(nullable: true),
                     CharacterClassId = table.Column<Guid>(nullable: false),
                     CurrentMapId = table.Column<Guid>(nullable: true),
@@ -1294,6 +1296,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MinimumValue = table.Column<int>(nullable: false),
                     Id = table.Column<Guid>(nullable: false),
                     AttributeId = table.Column<Guid>(nullable: true),
+                    GameMapDefinitionId = table.Column<Guid>(nullable: true),
                     ItemDefinitionId = table.Column<Guid>(nullable: true),
                     SkillId = table.Column<Guid>(nullable: true),
                     SkillId1 = table.Column<Guid>(nullable: true)
@@ -1306,6 +1309,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.AttributeId,
                         principalSchema: "config",
                         principalTable: "AttributeDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AttributeRequirement_GameMapDefinition_GameMapDefinitionId",
+                        column: x => x.GameMapDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1454,6 +1464,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Durability = table.Column<byte>(nullable: false),
                     Group = table.Column<byte>(nullable: false),
                     Height = table.Column<byte>(nullable: false),
+                    MaximumItemLevel = table.Column<byte>(nullable: false),
                     MaximumSockets = table.Column<int>(nullable: false),
                     Number = table.Column<short>(nullable: false),
                     Value = table.Column<int>(nullable: false),
@@ -2201,6 +2212,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "AttributeRequirement",
                 column: "AttributeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AttributeRequirement_GameMapDefinitionId",
+                schema: "config",
+                table: "AttributeRequirement",
+                column: "GameMapDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AttributeRequirement_ItemDefinitionId",

@@ -1421,14 +1421,14 @@ public ICollection<JewelMix> RawJewelMixes { get; } = new List<JewelMix>();
             }
         }
 
-        public ICollection<DropItemGroup> RawBaseDropItemGroups { get; } = new List<DropItemGroup>();        
+        public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();        
         /// <inheritdoc/>
         [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> BaseDropItemGroups
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
         {
             get
             {
-                return base.BaseDropItemGroups ?? (base.BaseDropItemGroups = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawBaseDropItemGroups)); 
+                return base.DropItemGroups ?? (base.DropItemGroups = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawDropItemGroups)); 
             }
         }
 
@@ -1675,6 +1675,17 @@ public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<Monste
             get
             {
                 return base.ExitGates ?? (base.ExitGates = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ExitGate, ExitGate>(this.RawExitGates)); 
+            }
+        }
+
+        public ICollection<AttributeRequirement> RawMapRequirements { get; } = new List<AttributeRequirement>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> MapRequirements
+        {
+            get
+            {
+                return base.MapRequirements ?? (base.MapRequirements = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawMapRequirements)); 
             }
         }
 

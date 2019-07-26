@@ -32,23 +32,6 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if the drop of the item succeeds.
-        /// </summary>
-        [Test]
-        public void TestBaseItemDropItem()
-        {
-            var config = this.GetGameConfig();
-            var generator = new DefaultDropGenerator(config, this.GetRandomizer(0));
-            var item = generator.GetItemDropsOrAddMoney(this.GetMonster(1), 0, TestHelper.GetPlayer()).FirstOrDefault();
-
-            var possibleItemDefinition = config.BaseDropItemGroups.First().PossibleItems.First();
-            Assert.That(item, Is.Not.Null);
-
-            // ReSharper disable once PossibleNullReferenceException
-            Assert.That(item.Definition, Is.SameAs(possibleItemDefinition));
-        }
-
-        /// <summary>
         /// Tests if the drop of money succeeds.
         /// </summary>
         [Test]
@@ -58,7 +41,7 @@ namespace MUnique.OpenMU.Tests
             var experience = 1;
             var moneyDrop = experience + DefaultDropGenerator.BaseMoneyDrop;
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.GetPlayer().WithBasicDropItemGroups();
             player.GameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
             player.Money = startMoney;
             var config = this.GetGameConfig();
@@ -77,14 +60,16 @@ namespace MUnique.OpenMU.Tests
         {
             var config = this.GetGameConfig();
             var monster = this.GetMonster(1);
-            monster.DropItemGroups.Add(this.GetDropItemGroup(3000, SpecialItemType.Ancient, true));
+            monster.DropItemGroups.AddBasicDropItemGroups();
+            monster.DropItemGroups.Add(3000, SpecialItemType.Ancient, true);
+
             var generator = new DefaultDropGenerator(config, this.GetRandomizer2(0, 0.5));
             var item = generator.GetItemDropsOrAddMoney(monster, 1, TestHelper.GetPlayer()).FirstOrDefault();
 
             Assert.That(item, Is.Not.Null);
 
             // ReSharper disable once PossibleNullReferenceException
-            Assert.That(item.Definition, Is.SameAs(monster.DropItemGroups.First().PossibleItems.First()));
+            Assert.That(item.Definition, Is.EqualTo(monster.DropItemGroups.Last().PossibleItems.First()));
         }
 
         /// <summary>
@@ -134,37 +119,8 @@ namespace MUnique.OpenMU.Tests
         private GameConfiguration GetGameConfig()
         {
             var gameConfiguration = new Mock<GameConfiguration>();
-            var itemGroups = new List<DropItemGroup>
-            {
-                this.GetDropItemGroup(1, SpecialItemType.RandomItem, true),
-                this.GetDropItemGroup(1000, SpecialItemType.Excellent, true),
-                this.GetDropItemGroup(3000, SpecialItemType.Money, true)
-            };
-            gameConfiguration.Setup(c => c.BaseDropItemGroups).Returns(itemGroups);
-            gameConfiguration.Setup(c => c.Items)
-                .Returns(gameConfiguration.Object.BaseDropItemGroups.SelectMany(g => g.PossibleItems).ToList());
+            gameConfiguration.Setup(c => c.Items).Returns(new List<ItemDefinition>());
             return gameConfiguration.Object;
-        }
-
-        private DropItemGroup GetDropItemGroup(int chance, SpecialItemType itemType, bool addItem)
-        {
-            var dropItemGroup = new Mock<DropItemGroup>();
-            dropItemGroup.SetupAllProperties();
-            dropItemGroup.Object.Chance = chance / 10000.0;
-            dropItemGroup.Object.ItemType = itemType;
-            var itemList = new List<ItemDefinition>();
-            dropItemGroup.Setup(g => g.PossibleItems).Returns(itemList);
-            if (addItem)
-            {
-                var itemDefinition = new Mock<ItemDefinition>();
-                itemDefinition.SetupAllProperties();
-                itemDefinition.Object.DropsFromMonsters = true;
-                itemDefinition.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
-                itemDefinition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());
-                itemList.Add(itemDefinition.Object);
-            }
-
-            return dropItemGroup.Object;
         }
     }
 }

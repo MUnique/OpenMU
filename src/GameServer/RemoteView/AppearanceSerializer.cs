@@ -492,7 +492,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     preview[10] |= 0x01;
                     break;
                 case PetIndex.DarkHorse:
-                    preview[5] = 0x03;
+                    preview[5] |= 0x03;
                     preview[12] |= 0x01;
                     break;
                 case PetIndex.Fenrir:

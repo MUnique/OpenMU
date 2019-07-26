@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 contextProvider,
                 config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).Concat(config.RawItemSetGroups.SelectMany(g => g.RawOptions)).Distinct().ToList()));
             this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(contextProvider, config => config.RawAttributes));
-            this.RegisterRepository(new ConfigurationTypeRepository<DropItemGroup>(contextProvider, config => config.RawBaseDropItemGroups));
+            this.RegisterRepository(new ConfigurationTypeRepository<DropItemGroup>(contextProvider, config => config.RawDropItemGroups));
             this.RegisterRepository(new ConfigurationTypeRepository<CharacterClass>(contextProvider, config => config.RawCharacterClasses));
             this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionType>(contextProvider, config => config.RawItemOptionTypes));
             this.RegisterRepository(new ConfigurationTypeRepository<ItemSetGroup>(contextProvider, config => config.RawItemSetGroups));

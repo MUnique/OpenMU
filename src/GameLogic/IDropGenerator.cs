@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -39,8 +40,6 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public static readonly int BaseMoneyDrop = 7;
 
-        private readonly IEnumerable<DropItemGroup> baseGroups;
-
         private readonly IRandomizer randomizer;
 
         private readonly IList<ItemDefinition> ancientItems;
@@ -56,7 +55,6 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="randomizer">The randomizer.</param>
         public DefaultDropGenerator(GameConfiguration config, IRandomizer randomizer)
         {
-            this.baseGroups = config.BaseDropItemGroups;
             this.randomizer = randomizer;
             this.droppableItems = config.Items.Where(i => i.DropsFromMonsters).ToList();
             this.ancientItems = this.droppableItems.Where(i => i.PossibleItemSetGroups.Any(o => o.Items.Any(n => n.BonusOption.OptionType == ItemOptionTypes.AncientBonus))).ToList();
@@ -123,7 +121,8 @@ namespace MUnique.OpenMU.GameLogic
             var itemDef = possible.ElementAt(this.randomizer.NextInt(0, possible.Count));
             var item = new TemporaryItem();
             item.Definition = itemDef;
-            item.Level = (byte)((monsterLvl - itemDef.DropLevel) / 3);
+            item.Level = Math.Min((byte)((monsterLvl - itemDef.DropLevel) / 3), item.Definition.MaximumItemLevel);
+
             this.ApplyRandomOptions(item);
             return item;
         }
@@ -252,7 +251,7 @@ namespace MUnique.OpenMU.GameLogic
             IEnumerable<DropItemGroup> characterGroup,
             IEnumerable<DropItemGroup> mapGroup)
         {
-            IEnumerable<DropItemGroup> dropGroups = this.baseGroups ?? Enumerable.Empty<DropItemGroup>();
+            IEnumerable<DropItemGroup> dropGroups = Enumerable.Empty<DropItemGroup>();
             if (monsterGroup != null)
             {
                 dropGroups = dropGroups.Concat(monsterGroup);

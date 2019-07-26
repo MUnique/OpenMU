@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
@@ -59,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             IAttackable extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
             foreach (var target in attackablesInRange)
             {
-                this.ApplySkill(player, skillEntry, skill, target);
+                this.ApplySkill(player, skillEntry, target, targetAreaCenter);
 
                 if (target == extraTarget)
                 {
@@ -70,16 +71,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (isExtraTargetDefined)
             {
-                this.ApplySkill(player, skillEntry, skill, extraTarget);
+                this.ApplySkill(player, skillEntry, extraTarget, targetAreaCenter);
             }
         }
 
-        private void ApplySkill(Player player, SkillEntry skillEntry, Skill skill, IAttackable target)
+        private void ApplySkill(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter)
         {
-            if (target.CheckSkillTargetRestrictions(player, skill))
+            if (target.CheckSkillTargetRestrictions(player, skillEntry.Skill))
             {
                 target.AttackBy(player, skillEntry);
                 target.ApplyElementalEffects(player, skillEntry);
+                player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number)?.AfterTargetGotAttacked(player, target, skillEntry, targetAreaCenter);
             }
         }
     }

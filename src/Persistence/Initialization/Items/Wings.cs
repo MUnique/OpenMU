@@ -222,6 +222,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             wing.Height = height;
             wing.Name = name;
             wing.DropLevel = dropLevel;
+            wing.MaximumItemLevel = 15;
             wing.DropsFromMonsters = false;
             wing.Durability = durability;
             wing.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
@@ -242,6 +243,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 wing.QualifiedCharacters.Add(characterClass);
             }
+
+            // add CanFly Attribute to all wings
+            var canFlyPowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+            canFlyPowerUp.TargetAttribute = Stats.CanFly.GetPersistent(this.GameConfiguration);
+            canFlyPowerUp.BaseValue = 1;
+            wing.BasePowerUpAttributes.Add(canFlyPowerUp);
 
             return wing;
         }

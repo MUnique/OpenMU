@@ -27,9 +27,9 @@ namespace MUnique.OpenMU.GameLogic
                 case Direction.Undefined:
                     return origin;
                 case Direction.North:
-                    return new Point((byte)(origin.X + 1), (byte)(origin.Y - 1));
-                case Direction.South:
                     return new Point((byte)(origin.X - 1), (byte)(origin.Y + 1));
+                case Direction.South:
+                    return new Point((byte)(origin.X + 1), (byte)(origin.Y - 1));
                 case Direction.East:
                     return new Point((byte)(origin.X + 1), (byte)(origin.Y + 1));
                 case Direction.West:

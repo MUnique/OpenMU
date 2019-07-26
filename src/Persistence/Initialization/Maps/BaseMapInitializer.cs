@@ -5,7 +5,12 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Maps
 {
     using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Base class for a map initializer which provides some common basic functionality.
@@ -58,14 +63,40 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             this.mapDefinition = this.Context.CreateNew<GameMapDefinition>();
             this.mapDefinition.Number = this.MapNumber;
             this.mapDefinition.Name = this.MapName;
-            this.mapDefinition.TerrainData = Terrains.ResourceManager.GetObject("Terrain" + (this.MapNumber + 1)) as byte[];
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = assembly.GetName().Name + ".Resources.Terrain" + (this.MapNumber + 1) + ".att";
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        this.mapDefinition.TerrainData = reader.ReadBytes((int)stream.Length);
+                    }
+                }
+            }
+
             this.mapDefinition.ExpMultiplier = 1;
             foreach (var spawn in this.CreateSpawns())
             {
                 this.mapDefinition.MonsterSpawns.Add(spawn);
             }
 
+            this.CreateMapAttributeRequirements();
+
+            this.InitializeDropItemGroups();
             this.GameConfiguration.Maps.Add(this.mapDefinition);
+        }
+
+        /// <summary>
+        /// Initializes the drop item groups for this map.
+        /// By default, we add money and random items. On event or special maps, this can be overwritten.
+        /// </summary>
+        protected virtual void InitializeDropItemGroups()
+        {
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.Money));
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.RandomItem));
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.Excellent));
         }
 
         /// <summary>
@@ -130,5 +161,26 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <returns>The created monster spawn area.</returns>
         protected MonsterSpawnArea CreateMonsterSpawn(MonsterDefinition monsterDefinition, byte x, byte y, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic)
             => this.CreateMonsterSpawn(monsterDefinition, x, x, y, y, 1, direction, spawnTrigger);
+
+        /// <summary>
+        /// Can be used to add additional map requirements
+        /// </summary>
+        protected virtual void CreateMapAttributeRequirements()
+        {
+            // needs to be overwritten if a requirement needs to be added.
+        }
+
+        /// <summary>
+        /// Creates an attribute requirement with the specified minimum value.
+        /// </summary>
+        /// <param name="attribute">The attribute.</param>
+        /// <param name="minimumValue">The minimum value.</param>
+        protected void CreateRequirement(AttributeDefinition attribute, int minimumValue)
+        {
+            var requirement = this.Context.CreateNew<AttributeRequirement>();
+            requirement.Attribute = attribute.GetPersistent(this.GameConfiguration);
+            requirement.MinimumValue = minimumValue;
+            this.mapDefinition.MapRequirements.Add(requirement);
+        }
     }
 }

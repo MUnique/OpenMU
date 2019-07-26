@@ -1559,25 +1559,25 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
-        /// Gets the raw collection of <see cref="BaseDropItemGroups" />.
+        /// Gets the raw collection of <see cref="DropItemGroups" />.
         /// </summary>
-        [JsonProperty("BaseDropItemGroups")]
-        public ICollection<DropItemGroup> RawBaseDropItemGroups { get; } = new List<DropItemGroup>();
+        [JsonProperty("DropItemGroups")]
+        public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
         
         /// <inheritdoc/>
         [JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> BaseDropItemGroups
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
         {
             get
             {
-                return base.BaseDropItemGroups ?? (base.BaseDropItemGroups = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawBaseDropItemGroups)); 
+                return base.DropItemGroups ?? (base.DropItemGroups = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawDropItemGroups)); 
             }
             protected set
             {
-                this.BaseDropItemGroups.Clear();
+                this.DropItemGroups.Clear();
                 foreach (var item in value)
                 {
-                    this.BaseDropItemGroups.Add(item);
+                    this.DropItemGroups.Add(item);
                 }
             }
         }
@@ -2018,6 +2018,30 @@ namespace MUnique.OpenMU.Persistence.BasicModel
                 foreach (var item in value)
                 {
                     this.DropItemGroups.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="MapRequirements" />.
+        /// </summary>
+        [JsonProperty("MapRequirements")]
+        public ICollection<AttributeRequirement> RawMapRequirements { get; } = new List<AttributeRequirement>();
+        
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> MapRequirements
+        {
+            get
+            {
+                return base.MapRequirements ?? (base.MapRequirements = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawMapRequirements)); 
+            }
+            protected set
+            {
+                this.MapRequirements.Clear();
+                foreach (var item in value)
+                {
+                    this.MapRequirements.Add(item);
                 }
             }
         }

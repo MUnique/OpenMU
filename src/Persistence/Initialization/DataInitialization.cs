@@ -154,6 +154,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 7, 10, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 7, 11, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 4, 13)); // Wings of Soul +13
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.BlackFenrir));
                     break;
                 case 400:
                     character = this.CreateCharacter(name, CharacterClassNumber.GrandMaster, level, 1);
@@ -173,6 +174,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 30, 10, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 30, 11, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 37, 15)); // Wing of Eternal +15
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.BlackFenrir));
                     break;
                 default:
                     character = this.CreateCharacter(name, CharacterClassNumber.DarkWizard, level, 1);
@@ -208,6 +210,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 12, 10, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 12, 11, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 3, 13)); // Wings of Spirits +13
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.BlueFenrir));
                     break;
                 case 400:
                     character = this.CreateCharacter(name, CharacterClassNumber.HighElf, level, 2);
@@ -225,6 +228,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 31, 10, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 31, 11, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 38, 15)); // Wing of Illusion +15
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.BlueFenrir));
                     break;
                 default:
                     character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
@@ -266,6 +270,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 6, 10, Stats.MaximumMana, 13, 4, true)); // Exc Scale Gloves+13+16+L
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 6, 11, Stats.DamageReflection, 13, 4, true)); // Exc Scale Boots+13+16+L
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 5, 13)); // Dragon Wings +13
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot));
 
                     this.AddDarkKnightItems(character.Inventory);
                     break;
@@ -289,6 +294,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 29, 11, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 36, 15)); // Wing of Storm +15
 
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.GoldFenrir));
+
                     this.AddDarkKnightItems(character.Inventory);
                     break;
                 default:
@@ -303,6 +310,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             }
 
             this.AddTestJewelsAndPotions(character.Inventory);
+            this.AddPets(character.Inventory);
 
             return character;
         }
@@ -326,6 +334,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 26, 10, Stats.MaximumMana, 13, 4, true)); // Exc Ada Gloves+13+16+L
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 26, 11, Stats.DamageReflection, 13, 4, true)); // Exc Ada Boots+13+16+L
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 30, 13, 13)); // Cape +13
+                    character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
 
                     this.AddDarkLordItems(character.Inventory);
                     break;
@@ -347,6 +356,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 33, 10, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 33, 11, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 40, 15)); // Cape of Emperor +15
+
+                    character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
 
                     this.AddDarkLordItems(character.Inventory);
                     break;
@@ -456,6 +467,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
             inventory.Items.Add(this.CreateFullOptionJewellery(62, 8)); // Ring of Ice
             inventory.Items.Add(this.CreateFullOptionJewellery(63, 9)); // Ring of Poison
             inventory.Items.Add(this.CreateFullOptionJewellery(64, 12)); // Pendant of Lightning
+            inventory.Items.Add(this.CreatePet(53, 5)); // Raven
+        }
+
+        private void AddPets(ItemStorage inventory)
+        {
+            inventory.Items.Add(this.CreatePet(62, 0)); // Guardian Angel
+            inventory.Items.Add(this.CreatePet(67, 1)); // Imp
+            inventory.Items.Add(this.CreatePet(70, 2)); // Uniria
+            inventory.Items.Add(this.CreatePet(59, 3)); // Dinorant
         }
 
         private Item CreateFullOptionJewellery(byte itemSlot, int number)
@@ -626,6 +646,40 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return jewel;
         }
 
+        private Item CreateFenrir(byte itemSlot, ItemOptionType color = null)
+        {
+            var fenrir = this.CreatePet(itemSlot, 37);
+
+            if (color == null)
+            {
+                return fenrir;
+            }
+
+            var options = fenrir.Definition.PossibleItemOptions.First().PossibleOptions.Where(p => p.OptionType == color);
+            foreach (var option in options)
+            {
+                var optionLink = this.context.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = option;
+                fenrir.ItemOptions.Add(optionLink);
+            }
+
+            return fenrir;
+        }
+
+        private Item CreatePet(byte itemSlot, byte itemNumber)
+        {
+            var pet = this.context.CreateNew<Item>();
+            pet.Definition = this.gameConfiguration.Items.First(def => def.Group == 13 && def.Number == itemNumber);
+            pet.Durability = 255;
+            pet.ItemSlot = itemSlot;
+            if (pet.Definition?.Skill != null)
+            {
+                pet.HasSkill = true;
+            }
+
+            return pet;
+        }
+
         private Item CreateSmallAxe(byte itemSlot)
         {
             var smallAxe = this.context.CreateNew<Item>();
@@ -735,6 +789,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 persistentOptionType.Description = optionType.Description;
                 persistentOptionType.Id = optionType.Id;
                 persistentOptionType.Name = optionType.Name;
+                persistentOptionType.IsVisible = optionType.IsVisible;
                 this.gameConfiguration.ItemOptionTypes.Add(persistentOptionType);
             }
         }
@@ -1027,7 +1082,21 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var moneyDropItemGroup = this.context.CreateNew<DropItemGroup>();
             moneyDropItemGroup.Chance = 0.5;
             moneyDropItemGroup.ItemType = SpecialItemType.Money;
-            this.gameConfiguration.BaseDropItemGroups.Add(moneyDropItemGroup);
+            moneyDropItemGroup.Description = "The common money drop item group (50 % drop chance)";
+            this.gameConfiguration.DropItemGroups.Add(moneyDropItemGroup);
+
+            var randomItemDropItemGroup = this.context.CreateNew<DropItemGroup>();
+            randomItemDropItemGroup.Chance = 0.3;
+            randomItemDropItemGroup.ItemType = SpecialItemType.RandomItem;
+            randomItemDropItemGroup.Description = "The common drop item group for random items (30 % drop chance)";
+            this.gameConfiguration.DropItemGroups.Add(randomItemDropItemGroup);
+
+            var excellentItemDropItemGroup = this.context.CreateNew<DropItemGroup>();
+            excellentItemDropItemGroup.Chance = 0.0001;
+            excellentItemDropItemGroup.ItemType = SpecialItemType.Excellent;
+            excellentItemDropItemGroup.Description = "The common drop item group for random excellent items (0.01 % drop chance)";
+            this.gameConfiguration.DropItemGroups.Add(excellentItemDropItemGroup);
+
             this.CreateStatAttributes();
 
             this.CreateItemSlotTypes();
@@ -1044,6 +1113,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Scrolls(this.context, this.gameConfiguration).Initialize();
             new EventTicketItems(this.context, this.gameConfiguration).Initialize();
             new Wings(this.context, this.gameConfiguration).Initialize();
+            new Pets(this.context, this.gameConfiguration).Initialize();
             new ExcellentOptions(this.context, this.gameConfiguration).Initialize();
             new GuardianOptions(this.context, this.gameConfiguration).Initialize();
             new Armors(this.context, this.gameConfiguration).Initialize();

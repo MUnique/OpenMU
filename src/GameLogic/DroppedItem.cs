@@ -147,6 +147,7 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
+            var itemWasTemporary = this.Item is TemporaryItem;
             lock (this.pickupLock)
             {
                 if (!this.availableToPick)
@@ -161,6 +162,14 @@ namespace MUnique.OpenMU.GameLogic
                     return false;
                 }
 
+                if (itemWasTemporary)
+                {
+                    // We set the item slot in a temporary item manually, so the further logic can report to the client where the item has been added.
+                    // If it's temporary, it has been converted into a persistent item before it was added to the inventory. So it's not the same instance.
+                    // If it's not temporary, this step is not required, because the inventory already set the ItemSlot in the same instance we're holding here.
+                    this.Item.ItemSlot = (byte)slot;
+                }
+
                 this.availableToPick = false;
             }
 
@@ -172,7 +181,10 @@ namespace MUnique.OpenMU.GameLogic
                 this.dropper.PersistenceContext.Detach(this.Item);
             }
 
-            player.PersistenceContext.Attach(this.Item);
+            if (!itemWasTemporary)
+            {
+                player.PersistenceContext.Attach(this.Item);
+            }
 
             return true;
         }

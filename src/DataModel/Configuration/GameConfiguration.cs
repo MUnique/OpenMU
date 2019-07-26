@@ -102,9 +102,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public virtual ICollection<WarpInfo> WarpList { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the base drop item groups which are valid for the whole game.
+        /// Gets or sets the drop item groups which can be assigned to maps and characters.
         /// </summary>
-        public virtual ICollection<DropItemGroup> BaseDropItemGroups { get; protected set; }
+        public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
 
         /// <summary>
         /// Gets or sets the skills of this game configuration.

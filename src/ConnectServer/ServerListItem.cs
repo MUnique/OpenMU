@@ -13,6 +13,8 @@ namespace MUnique.OpenMU.ConnectServer
     /// </summary>
     internal class ServerListItem
     {
+        private const byte IpStartIndex = 4;
+        private readonly byte[] data = new byte[4];
         private readonly ServerList owner;
 
         private byte serverLoad;
@@ -74,7 +76,7 @@ namespace MUnique.OpenMU.ConnectServer
         {
             get
             {
-                var ip = IPAddress.Parse(this.ConnectInfo.ExtractString(5, 16, Encoding.UTF8));
+                var ip = IPAddress.Parse(this.ConnectInfo.ExtractString(IpStartIndex, 16, Encoding.UTF8));
                 var port = this.ConnectInfo.MakeWordBigEndian(this.ConnectInfo.Length - 2);
 
                 return new IPEndPoint(ip, port);
@@ -82,13 +84,13 @@ namespace MUnique.OpenMU.ConnectServer
 
             set
             {
-                for (int i = 5; i < this.ConnectInfo.Length; i++)
+                for (int i = IpStartIndex; i < this.ConnectInfo.Length; i++)
                 {
                     this.ConnectInfo[i] = 0;
                 }
 
                 var ip = value.Address.ToString();
-                Encoding.ASCII.GetBytes(ip, 0, ip.Length, this.ConnectInfo, 5);
+                Encoding.ASCII.GetBytes(ip, 0, ip.Length, this.ConnectInfo, IpStartIndex);
                 this.ConnectInfo.SetShortBigEndian((ushort)value.Port, this.ConnectInfo.Length - 2);
             }
         }

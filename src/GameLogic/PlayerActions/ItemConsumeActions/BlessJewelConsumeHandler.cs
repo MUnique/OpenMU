@@ -26,6 +26,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <inheritdoc/>
         protected override bool ModifyItem(Item item, IContext persistenceContext)
         {
+            if (!item.CanLevelBeUpgraded())
+            {
+                return false;
+            }
+
             byte level = item.Level;
             if (level > 5)
             {

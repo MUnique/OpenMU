@@ -14,6 +14,73 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
     <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Persistence.Initialization.xml</DocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Resources\Terrain1.att" />
+    <None Remove="Resources\Terrain10.att" />
+    <None Remove="Resources\Terrain11.att" />
+    <None Remove="Resources\Terrain12.att" />
+    <None Remove="Resources\Terrain19.att" />
+    <None Remove="Resources\Terrain2.att" />
+    <None Remove="Resources\Terrain25.att" />
+    <None Remove="Resources\Terrain3.att" />
+    <None Remove="Resources\Terrain31.att" />
+    <None Remove="Resources\Terrain32.att" />
+    <None Remove="Resources\Terrain33.att" />
+    <None Remove="Resources\Terrain34.att" />
+    <None Remove="Resources\Terrain34_Close.att" />
+    <None Remove="Resources\Terrain35.att" />
+    <None Remove="Resources\Terrain35_OCCUPIED.att" />
+    <None Remove="Resources\Terrain35_PEACE.att" />
+    <None Remove="Resources\Terrain35_WAR.att" />
+    <None Remove="Resources\Terrain36.att" />
+    <None Remove="Resources\Terrain37.att" />
+    <None Remove="Resources\Terrain38.att" />
+    <None Remove="Resources\Terrain39.att" />
+    <None Remove="Resources\Terrain4.att" />
+    <None Remove="Resources\Terrain40.att" />
+    <None Remove="Resources\Terrain40_CLOSE.att" />
+    <None Remove="Resources\Terrain40_OPEN.att" />
+    <None Remove="Resources\Terrain41.att" />
+    <None Remove="Resources\Terrain42.att" />
+    <None Remove="Resources\Terrain43.att" />
+    <None Remove="Resources\Terrain44.att" />
+    <None Remove="Resources\Terrain46.att" />
+    <None Remove="Resources\Terrain47.att" />
+    <None Remove="Resources\Terrain5.att" />
+    <None Remove="Resources\Terrain51.att" />
+    <None Remove="Resources\Terrain52.att" />
+    <None Remove="Resources\Terrain53.att" />
+    <None Remove="Resources\Terrain54.att" />
+    <None Remove="Resources\Terrain55.att" />
+    <None Remove="Resources\Terrain56.att" />
+    <None Remove="Resources\Terrain57.att" />
+    <None Remove="Resources\Terrain58.att" />
+    <None Remove="Resources\Terrain59.att" />
+    <None Remove="Resources\Terrain6.att" />
+    <None Remove="Resources\Terrain61.att" />
+    <None Remove="Resources\Terrain62.att" />
+    <None Remove="Resources\Terrain63.att" />
+    <None Remove="Resources\Terrain64.att" />
+    <None Remove="Resources\Terrain65.att" />
+    <None Remove="Resources\Terrain66.att" />
+    <None Remove="Resources\Terrain67.att" />
+    <None Remove="Resources\Terrain68.att" />
+    <None Remove="Resources\Terrain69.att" />
+    <None Remove="Resources\Terrain7.att" />
+    <None Remove="Resources\Terrain70.att" />
+    <None Remove="Resources\Terrain71.att" />
+    <None Remove="Resources\Terrain72.att" />
+    <None Remove="Resources\Terrain73.att" />
+    <None Remove="Resources\terrain74.att" />
+    <None Remove="Resources\terrain75.att" />
+    <None Remove="Resources\Terrain78.att" />
+    <None Remove="Resources\Terrain79.att" />
+    <None Remove="Resources\Terrain8.att" />
+    <None Remove="Resources\terrain80.att" />
+    <None Remove="Resources\Terrain81.att" />
+    <None Remove="Resources\Terrain82.att" />
+    <None Remove="Resources\Terrain9.att" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
@@ -21,6 +88,74 @@
 
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Terrain1.att" />
+    <EmbeddedResource Include="Resources\Terrain10.att" />
+    <EmbeddedResource Include="Resources\Terrain11.att" />
+    <EmbeddedResource Include="Resources\Terrain12.att" />
+    <EmbeddedResource Include="Resources\Terrain19.att" />
+    <EmbeddedResource Include="Resources\Terrain2.att" />
+    <EmbeddedResource Include="Resources\Terrain25.att" />
+    <EmbeddedResource Include="Resources\Terrain3.att" />
+    <EmbeddedResource Include="Resources\Terrain31.att" />
+    <EmbeddedResource Include="Resources\Terrain32.att" />
+    <EmbeddedResource Include="Resources\Terrain33.att" />
+    <EmbeddedResource Include="Resources\Terrain34.att" />
+    <EmbeddedResource Include="Resources\Terrain34_Close.att" />
+    <EmbeddedResource Include="Resources\Terrain35.att" />
+    <EmbeddedResource Include="Resources\Terrain35_OCCUPIED.att" />
+    <EmbeddedResource Include="Resources\Terrain35_PEACE.att" />
+    <EmbeddedResource Include="Resources\Terrain35_WAR.att" />
+    <EmbeddedResource Include="Resources\Terrain36.att" />
+    <EmbeddedResource Include="Resources\Terrain37.att" />
+    <EmbeddedResource Include="Resources\Terrain38.att" />
+    <EmbeddedResource Include="Resources\Terrain39.att" />
+    <EmbeddedResource Include="Resources\Terrain4.att" />
+    <EmbeddedResource Include="Resources\Terrain40.att" />
+    <EmbeddedResource Include="Resources\Terrain40_CLOSE.att" />
+    <EmbeddedResource Include="Resources\Terrain40_OPEN.att" />
+    <EmbeddedResource Include="Resources\Terrain41.att" />
+    <EmbeddedResource Include="Resources\Terrain42.att" />
+    <EmbeddedResource Include="Resources\Terrain43.att" />
+    <EmbeddedResource Include="Resources\Terrain44.att" />
+    <EmbeddedResource Include="Resources\Terrain46.att" />
+    <EmbeddedResource Include="Resources\Terrain47.att" />
+    <EmbeddedResource Include="Resources\Terrain5.att" />
+    <EmbeddedResource Include="Resources\Terrain51.att" />
+    <EmbeddedResource Include="Resources\Terrain52.att" />
+    <EmbeddedResource Include="Resources\Terrain53.att" />
+    <EmbeddedResource Include="Resources\Terrain54.att" />
+    <EmbeddedResource Include="Resources\Terrain55.att" />
+    <EmbeddedResource Include="Resources\Terrain56.att" />
+    <EmbeddedResource Include="Resources\Terrain57.att" />
+    <EmbeddedResource Include="Resources\Terrain58.att" />
+    <EmbeddedResource Include="Resources\Terrain59.att" />
+    <EmbeddedResource Include="Resources\Terrain6.att" />
+    <EmbeddedResource Include="Resources\Terrain61.att" />
+    <EmbeddedResource Include="Resources\Terrain62.att" />
+    <EmbeddedResource Include="Resources\Terrain63.att" />
+    <EmbeddedResource Include="Resources\Terrain64.att" />
+    <EmbeddedResource Include="Resources\Terrain65.att" />
+    <EmbeddedResource Include="Resources\Terrain66.att" />
+    <EmbeddedResource Include="Resources\Terrain67.att" />
+    <EmbeddedResource Include="Resources\Terrain68.att" />
+    <EmbeddedResource Include="Resources\Terrain69.att" />
+    <EmbeddedResource Include="Resources\Terrain7.att" />
+    <EmbeddedResource Include="Resources\Terrain70.att" />
+    <EmbeddedResource Include="Resources\Terrain71.att" />
+    <EmbeddedResource Include="Resources\Terrain72.att" />
+    <EmbeddedResource Include="Resources\Terrain73.att" />
+    <EmbeddedResource Include="Resources\terrain74.att" />
+    <EmbeddedResource Include="Resources\terrain75.att" />
+    <EmbeddedResource Include="Resources\Terrain78.att" />
+    <EmbeddedResource Include="Resources\Terrain79.att" />
+    <EmbeddedResource Include="Resources\Terrain8.att" />
+    <EmbeddedResource Include="Resources\terrain80.att" />
+    <EmbeddedResource Include="Resources\Terrain81.att" />
+    <EmbeddedResource Include="Resources\Terrain82.att" />
+    <EmbeddedResource Include="Resources\Terrain9.att" />
   </ItemGroup>
 
   <ItemGroup>
