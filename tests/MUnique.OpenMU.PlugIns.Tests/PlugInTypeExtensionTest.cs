@@ -53,6 +53,16 @@ namespace MUnique.OpenMU.PlugIns.Tests
             Assert.That(new ClientVersion(0, 255, ClientLanguage.English).IsPlugInSuitable(typeof(PlugInTypeAtExactlySeason1)), Is.False);
         }
 
+        /// <summary>
+        /// Tests if minimum and maximum client version requirements are not inherited from base classes.
+        /// </summary>
+        [Test]
+        public void DontConsiderInheritedAttributes()
+        {
+            Assert.That(new ClientVersion(1, 1, ClientLanguage.English).IsPlugInSuitable(typeof(PlugInWithInheritedAttribute)), Is.True);
+            Assert.That(new ClientVersion(0, 255, ClientLanguage.English).IsPlugInSuitable(typeof(PlugInWithInheritedAttribute)), Is.True);
+        }
+
         [MaximumClient(1, 0, ClientLanguage.Invariant)]
         private class PlugInTypeUntilSeason1
         {
@@ -72,6 +82,10 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [MaximumClient(1, 0, ClientLanguage.Invariant)]
         [MinimumClient(1, 0, ClientLanguage.Invariant)]
         private class PlugInTypeAtExactlySeason1
+        {
+        }
+
+        private class PlugInWithInheritedAttribute : PlugInTypeAtExactlySeason1
         {
         }
     }

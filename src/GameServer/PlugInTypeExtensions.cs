@@ -23,8 +23,8 @@ namespace MUnique.OpenMU.GameServer
         /// </returns>
         public static bool IsPlugInSuitable(this ClientVersion clientVersion, Type plugInType)
         {
-            var minimumClientAttribute = plugInType.GetCustomAttribute(typeof(MinimumClientAttribute)) as MinimumClientAttribute;
-            var maximumClientAttribute = plugInType.GetCustomAttribute(typeof(MaximumClientAttribute)) as MaximumClientAttribute;
+            var minimumClientAttribute = plugInType.GetCustomAttribute(typeof(MinimumClientAttribute), false) as MinimumClientAttribute;
+            var maximumClientAttribute = plugInType.GetCustomAttribute(typeof(MaximumClientAttribute), false) as MaximumClientAttribute;
             return (ReferenceEquals(minimumClientAttribute, null) // if the plugin doesn't specify a version, it always suits us
                         || clientVersion.CompareTo(minimumClientAttribute.Client) >= 0)
                    && (ReferenceEquals(maximumClientAttribute, null)
