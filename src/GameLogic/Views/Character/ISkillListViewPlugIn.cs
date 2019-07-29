@@ -27,5 +27,12 @@ namespace MUnique.OpenMU.GameLogic.Views.Character
         /// Updates the skill list.
         /// </summary>
         void UpdateSkillList();
+
+        /// <summary>
+        /// Gets the skill by its index in the internal skill list.
+        /// </summary>
+        /// <param name="skillIndex">Index of the skill.</param>
+        /// <returns>The skill by its index in the internal skill list.</returns>
+        Skill GetSkillByIndex(byte skillIndex);
     }
 }

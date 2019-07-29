@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         private readonly TargetedSkillAction attackAction = new TargetedSkillAction();
 
         /// <inheritdoc/>
-        public bool IsEncryptionExpected => true;
+        public virtual bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
         public byte Key => (byte)PacketType.SkillAttack;
@@ -39,6 +39,12 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             this.Handle(player, skillId, targetId);
         }
 
+        /// <summary>
+        /// Handles the skill request of the specified player.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="skillId">The skill identifier.</param>
+        /// <param name="targetId">The target identifier.</param>
         protected void Handle(Player player, ushort skillId, ushort targetId)
         {
             if (!player.SkillList.ContainsSkill(skillId))

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
@@ -20,17 +21,25 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [MaximumClient(2, 255, ClientLanguage.Invariant)]
     internal class TargetedSkillHandlerPlugIn075 : TargetedSkillHandlerPlugIn
     {
+        /// <inheritdoc />
+        public override bool IsEncryptionExpected => false;
+
         /// <inheritdoc/>
+        /// <remarks>
+        /// In early versions, the index of the skill is used as identifier. Later it was the skill id.
+        /// This may have changed earlier than season 2!
+        /// </remarks>
         public override void HandlePacket(Player player, Span<byte> packet)
         {
-            byte skillId = packet[3];
-            if (!player.SkillList.ContainsSkill(skillId))
+            byte skillIndex = packet[3];
+            var skill = player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.GetSkillByIndex(skillIndex);
+            if (skill == null)
             {
                 return;
             }
 
             ushort targetId = packet.MakeWordSmallEndian(4);
-            this.Handle(player, skillId, targetId);
+            this.Handle(player, (ushort)skill.Number, targetId);
         }
     }
 }
