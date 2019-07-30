@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration
 {
-    using Items;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Defines a jewel mix.

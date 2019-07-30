@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 {
-    using Items;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Defines the resulting item of a crafting.

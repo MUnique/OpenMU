@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System.Collections.Generic;
-    using DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
     /// Extension methods regarding master skills.

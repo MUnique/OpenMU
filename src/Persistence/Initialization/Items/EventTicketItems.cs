@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
-    using DataModel.Configuration;
-    using DataModel.Configuration.Items;
+    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Initializer for event related items.

@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
 {
     using System.Linq;
-    using AttributeSystem;
-    using DataModel.Configuration;
-    using GameLogic.Attributes;
+    using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
     /// Initialization of character classes data.

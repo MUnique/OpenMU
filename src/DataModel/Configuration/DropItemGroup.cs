@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
-    using Items;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Enumeration of special item types.

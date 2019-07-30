@@ -5,11 +5,11 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
     using System.Linq;
-    using AttributeSystem;
-    using DataModel.Attributes;
-    using DataModel.Configuration;
-    using DataModel.Configuration.Items;
-    using GameLogic.Attributes;
+    using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Attributes;
+    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
     /// Initializer for the Level 380 Options which can be added to Level 380 Set Items

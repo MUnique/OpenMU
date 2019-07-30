@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 {
     using System.Collections.Generic;
-    using Items;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Describes an required item for a crafting.
