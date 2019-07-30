@@ -107,6 +107,13 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="guildId">The guild identifier.</param>
         /// <param name="playerName">Name of the player which is getting kicked.</param>
         void KickMember(uint guildId, string playerName);
+
+        /// <summary>
+        /// Gets the guild position of a specific character.
+        /// </summary>
+        /// <param name="characterId">The character identifier.</param>
+        /// <returns>The guild position.</returns>
+        GuildPosition? GetGuildPosition(Guid characterId);
     }
 
     /// <summary>

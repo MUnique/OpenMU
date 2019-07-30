@@ -21,6 +21,21 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
+        /// Converts 4 bytes to an 32bit unsigned Integer.
+        /// </summary>
+        /// <param name="lowest">The lowest.</param>
+        /// <param name="lower">The lower.</param>
+        /// <param name="higher">The higher.</param>
+        /// <param name="highest">The highest.</param>
+        /// <returns>
+        /// The unsigned integer.
+        /// </returns>
+        public static uint MakeDword(byte lowest, byte lower, byte higher, byte highest)
+        {
+            return (uint)(MakeWord(lowest, lower) + (MakeWord(higher, highest) << 0x10));
+        }
+
+        /// <summary>
         /// Converts 2 bytes to one 16bit unsigned short
         /// </summary>
         /// <param name="lowByte">The low byte.</param>

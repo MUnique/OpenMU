@@ -15,17 +15,6 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     public abstract class PipelinedSimpleModulusBase : PacketPipeReaderBase
     {
         /// <summary>
-        /// The decrypted block size.
-        /// </summary>
-        protected const int DecryptedBlockSize = 8;
-
-        /// <summary>
-        /// The encrypted block size.
-        /// It is bigger than the decrypted size, because it contains the length of the actual data of the block and a checksum.
-        /// </summary>
-        protected const int EncryptedBlockSize = 11;
-
-        /// <summary>
         /// The xor key which is used as to 'encrypt' the size of each block.
         /// </summary>
         protected const byte BlockSizeXorKey = 0x3D;
@@ -40,14 +29,66 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         private const int BitsPerValue = (BitsPerByte * 2) + 2;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="PipelinedSimpleModulusBase"/> class.
+        /// </summary>
+        /// <param name="variant">Variant of the algorithm.</param>
+        protected PipelinedSimpleModulusBase(Variant variant)
+        {
+            if (variant == Variant.New)
+            {
+                // newer versions
+                this.DecryptedBlockSize = 8;
+                this.EncryptedBlockSize = 11;
+                this.EncryptionResult = new uint[4];
+                this.Counter = new Counter();
+            }
+            else
+            {
+                this.DecryptedBlockSize = 32;
+                this.EncryptedBlockSize = 38;
+                this.EncryptionResult = new uint[16];
+            }
+        }
+
+        /// <summary>
+        /// The variant of the algorithm.
+        /// </summary>
+        protected enum Variant
+        {
+            /// <summary>
+            /// The newer variant, where the unencrypted block size is 8 bytes, and encrypted is 11 bytes.
+            /// Uses a counter.
+            /// </summary>
+            New,
+
+            /// <summary>
+            /// The older variant, where the unencrypted block size is 32 bytes and encrypted is 38 bytes.
+            /// Doesn't use a counter.
+            /// </summary>
+            Old,
+        }
+
+        /// <summary>
+        /// Gets the decrypted block size in bytes.
+        /// </summary>
+        protected int DecryptedBlockSize { get; }
+
+        /// <summary>
+        /// Gets the encrypted block size in bytes.
+        /// It's bigger than the decrypted size, because it contains the length of the actual data of the block and a checksum.
+        /// Basically, you can calculate it by <see cref="DecryptedBlockSize"/> / 8 bits * 10 bits + 2 bytes.
+        /// </summary>
+        protected int EncryptedBlockSize { get; }
+
+        /// <summary>
         /// Gets the counter.
         /// </summary>
-        protected Counter Counter { get; } = new Counter();
+        protected Counter Counter { get; }
 
         /// <summary>
         /// Gets the ring buffer.
         /// </summary>
-        protected uint[] EncryptionResult { get; } = new uint[4];
+        protected uint[] EncryptionResult { get; }
 
         /// <summary>
         /// Gets the header buffer of the currently read packet.
@@ -64,7 +105,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// </summary>
         public void Reset()
         {
-            this.Counter.Reset();
+            this.Counter?.Reset();
         }
 
         /// <summary>
@@ -121,7 +162,14 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <returns>The size of the actual content.</returns>
         protected int GetContentSize(Span<byte> packet, bool decrypted)
         {
-            return packet.GetPacketSize() - packet.GetPacketHeaderSize() + (decrypted ? 1 : 0);
+            var contentSize = packet.GetPacketSize() - packet.GetPacketHeaderSize();
+
+            if (this.Counter != null && decrypted)
+            {
+                contentSize++;
+            }
+
+            return contentSize;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

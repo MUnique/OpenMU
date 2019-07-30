@@ -17,7 +17,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
     /// </summary>
     [PlugIn("ShowLoginWindowPlugIn", "The default implementation of the IShowLoginWindowPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("c5240952-1870-4f09-a3e4-9f6413845a23")]
-    [Client(6, 3, ClientLanguage.English)]
     public class ShowLoginWindowPlugIn : IShowLoginWindowPlugIn
     {
         private readonly RemotePlayer player;

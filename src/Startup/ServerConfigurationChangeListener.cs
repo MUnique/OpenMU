@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.ConnectServer;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// Implementation of a <see cref="IServerConfigurationChangeListener"/> which creates and updates server instances after
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.Startup
         /// <param name="configuration">The configuration.</param>
         public void ConnectionServerAdded(ConnectServerDefinition configuration)
         {
-            var connectServer = ConnectServerFactory.CreateConnectServer(configuration, this.stateObserver);
+            var connectServer = ConnectServerFactory.CreateConnectServer(configuration, this.stateObserver, new ClientVersion(configuration.Client.Season, configuration.Client.Episode, configuration.Client.Language));
             this.servers.Add(connectServer);
         }
 

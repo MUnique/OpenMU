@@ -4,17 +4,14 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Text;
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
+    using MUnique.OpenMU.GameServer.RemoteView.Guild;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -22,6 +19,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     /// </summary>
     [PlugIn("ShowCharacterListPlugIn", "The default implementation of the IShowCharacterListPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("9563dd2c-85cc-4b23-aa95-9d1a18582032")]
+    [MinimumClient(6, 3, ClientLanguage.Invariant)]
     public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
     {
         private readonly RemotePlayer player;
@@ -47,8 +45,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                                 .Aggregate(maxClass, (current, flag) => (byte)(current | flag)) ?? 0;
                 packet[5] = 0; // MoveCnt
                 packet[6] = (byte)this.player.Account.Characters.Count;
-
-                // packet[7] ??? new in season 6 - probably vault extension
+                packet[7] = this.player.Account.IsVaultExtended ? (byte)1 : (byte)0;
                 int i = 0;
                 foreach (var character in this.player.Account.Characters.OrderBy(c => c.CharacterSlot))
                 {
@@ -56,58 +53,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                     characterBlock[0] = character.CharacterSlot;
                     characterBlock.Slice(1, 10).WriteString(character.Name, Encoding.UTF8);
                     characterBlock[11] = 1; // unknown
-                    var level = (ushort)character.Attributes.First(s => s.Definition == Stats.Level).Value;
+                    var level = (ushort)(character.Attributes.FirstOrDefault(s => s.Definition == Stats.Level)?.Value ?? 1);
                     characterBlock[12] = level.GetLowByte();
                     characterBlock[13] = level.GetHighByte();
                     characterBlock[14] = (byte)character.CharacterStatus; // | 0x10 for item block?
 
                     appearanceSerializer.WriteAppearanceData(characterBlock.Slice(15), new CharacterAppearanceDataAdapter(character), false);
 
-                    //// var guildStatusIndex = offset + 15 + 18;
-                    //// TODO: characterBLock[guildStatusIndex] = this.GetGuildMemberStatusCode(character.GuildMemberInfo?.Status);
-
+                    var guildPosition = this.player.GameServerContext.GuildServer?.GetGuildPosition(character.Id);
+                    characterBlock[15 + appearanceSerializer.NeededSpace] = guildPosition?.GetViewValue() ?? (byte)0xFF;
                     i++;
                 }
 
                 writer.Commit();
-            }
-        }
-
-        private class CharacterAppearanceDataAdapter : IAppearanceData
-        {
-            private readonly Character character;
-
-            public CharacterAppearanceDataAdapter(Character character)
-            {
-                this.character = character;
-            }
-
-            /// <summary>
-            /// Occurs when the appearance of the player changed.
-            /// </summary>
-            /// <remarks>This never happens in this implementation.</remarks>
-            public event EventHandler AppearanceChanged;
-
-            public CharacterClass CharacterClass => this.character?.CharacterClass;
-
-            /// <inheritdoc />
-            public CharacterPose Pose => CharacterPose.Standing;
-
-            public bool FullAncientSetEquipped => this.character.HasFullAncientSetEquipped();
-
-            public IEnumerable<ItemAppearance> EquippedItems
-            {
-                get
-                {
-                    if (this.character.Inventory != null)
-                    {
-                        return this.character.Inventory.Items
-                            .Where(item => item.ItemSlot <= InventoryConstants.LastEquippableItemSlotIndex)
-                            .Select(item => item.GetAppearance());
-                    }
-
-                    return Enumerable.Empty<ItemAppearance>();
-                }
             }
         }
     }

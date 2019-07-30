@@ -82,7 +82,8 @@ namespace MUnique.OpenMU.Startup
 
             foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
             {
-                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, signalRServerObserver);
+                var clientVersion = new ClientVersion(connectServerDefinition.Client.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
+                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, signalRServerObserver, clientVersion);
                 this.servers.Add(connectServer);
                 if (!connectServers.TryGetValue(connectServerDefinition.Client, out var observer))
                 {

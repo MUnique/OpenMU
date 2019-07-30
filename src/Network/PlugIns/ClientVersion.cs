@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.Network.PlugIns
 
             var result = this.CombinedVersion - other.CombinedVersion;
             result *= 10;
-            if (other.Language == ClientLanguage.Invariant)
+            if (this.Language != ClientLanguage.Invariant && other.Language == ClientLanguage.Invariant)
             {
                 result++;
             }

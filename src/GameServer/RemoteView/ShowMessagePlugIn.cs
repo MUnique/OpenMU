@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         public void ShowMessage(string message, OpenMU.Interfaces.MessageType messageType)
         {
             const string messagePrefix = "000000000";
-            string content = messagePrefix + message;
+            string content = player.ClientVersion.Season > 0 ? messagePrefix + message : message;
             using (var writer = this.player.Connection.StartSafeWrite(0xC1, 5 + content.Length))
             {
                 var packet = writer.Span;

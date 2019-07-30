@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
 
@@ -48,6 +49,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// </summary>
     [Guid("3607902F-C7A8-40D0-823A-186F3BF630C7")]
     [PlugIn("Item Serializer", "The default item serializer. It's most likely only correct for season 6.")]
+    [MinimumClient(6, 3, ClientLanguage.Invariant)]
     public class ItemSerializer : IItemSerializer
     {
         private const byte LuckFlag = 4;

@@ -31,7 +31,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
             {
                 var packet = writer.Span;
                 packet[2] = 0x3B;
-                packet[3] = 0x15;
+
+                // 3rd byte is padding
                 packet.Slice(4).SetIntegerBigEndian(moneyAmount);
                 writer.Commit();
             }

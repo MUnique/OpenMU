@@ -887,6 +887,14 @@ namespace MUnique.OpenMU.Persistence.Initialization
             clientDefinition.Version = new byte[] { 0x31, 0x30, 0x34, 0x30, 0x34 };
             clientDefinition.Serial = Encoding.ASCII.GetBytes("k1Pk2jcET48mxL3b");
             clientDefinition.Description = "Season 6 Episode 3 GMO Client";
+
+            var version075Definition = this.context.CreateNew<GameClientDefinition>();
+            version075Definition.Season = 0;
+            version075Definition.Episode = 75;
+            version075Definition.Language = ClientLanguage.Invariant; // it doesn't fit into any available category - maybe it's so old that it didn't have differences in the protocol yet.
+            version075Definition.Version = new byte[] { 0x30, 0x37, 0x35, 0x30, 0x30 }; // the last two bytes are not relevant as te 0.75 does only use the first 3 bytes.
+            version075Definition.Serial = Encoding.ASCII.GetBytes("sudv(*40ds7lkN2n");
+            version075Definition.Description = "Version 0.75 Client";
         }
 
         private void CreateConnectServerDefinitions()

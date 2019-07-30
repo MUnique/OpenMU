@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -20,11 +21,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     {
         private readonly RemotePlayer player;
 
+        private readonly byte operation;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowHitPlugIn"/> class.
         /// </summary>
         /// <param name="player">The player.</param>
-        public ShowHitPlugIn(RemotePlayer player) => this.player = player;
+        public ShowHitPlugIn(RemotePlayer player)
+        {
+            this.player = player;
+            this.operation = this.DetermineOperation();
+        }
 
         /// <summary>
         /// The color of the damage.
@@ -107,7 +114,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0A))
                 {
                     var packet = writer.Span;
-                    packet[2] = (byte)PacketType.Hit;
+                    packet[2] = this.operation;
                     packet.Slice(3).SetShortSmallEndian(targetId);
                     packet.Slice(5).SetShortSmallEndian(healthDamage);
                     packet[7] = this.GetDamageColor(hitInfo.Attributes);
@@ -117,6 +124,34 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
                 remainingShieldDamage -= shieldDamage;
                 remainingHealthDamage -= healthDamage;
+            }
+        }
+
+        private byte DetermineOperation()
+        {
+            if (this.player.ClientVersion.Season == 0
+                && this.player.ClientVersion.Episode < 80)
+            {
+                return 0x15;
+            }
+
+            switch (this.player.ClientVersion.Language)
+            {
+                case ClientLanguage.English:
+                    return 0x11;
+                case ClientLanguage.Japanese:
+                    return 0xD6;
+                case ClientLanguage.Vietnamese:
+                    return 0xDC;
+                case ClientLanguage.Filipino:
+                case ClientLanguage.Korean:
+                    return 0xDF;
+                case ClientLanguage.Chinese:
+                    return 0xD0;
+                case ClientLanguage.Thai:
+                    return 0xD2;
+                default:
+                    return (byte)PacketType.Hit;
             }
         }
 

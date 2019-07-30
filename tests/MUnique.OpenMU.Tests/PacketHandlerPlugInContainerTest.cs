@@ -132,7 +132,7 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Test packet handler implementation for season 1.
         /// </summary>
-        [Client(1, 0, ClientLanguage.Invariant)]
+        [MinimumClient(1, 0, ClientLanguage.Invariant)]
         public class PacketHandlerSeason1 : IPacketHandlerPlugIn
         {
             /// <inheritdoc />
@@ -151,7 +151,7 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Test packet handler implementation for season 6.
         /// </summary>
-        [Client(6, 3, ClientLanguage.Invariant)]
+        [MinimumClient(6, 3, ClientLanguage.Invariant)]
         public class PacketHandlerSeason6 : IPacketHandlerPlugIn
         {
             /// <inheritdoc />
@@ -170,7 +170,7 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Test packet handler implementation for season 6 english.
         /// </summary>
-        [Client(6, 3, ClientLanguage.English)]
+        [MinimumClient(6, 3, ClientLanguage.English)]
         public class PacketHandlerSeason6English : IPacketHandlerPlugIn
         {
             /// <inheritdoc />
@@ -189,7 +189,7 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Test packet handler implementation for season 6 chinese.
         /// </summary>
-        [Client(6, 3, ClientLanguage.Chinese)]
+        [MinimumClient(6, 3, ClientLanguage.Chinese)]
         public class PacketHandlerSeason6Chinese : IPacketHandlerPlugIn
         {
             /// <inheritdoc />
@@ -208,7 +208,7 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Test packet handler implementation for season 9.
         /// </summary>
-        [Client(9, 2, ClientLanguage.Invariant)]
+        [MinimumClient(9, 2, ClientLanguage.Invariant)]
         public class PacketHandlerSeason9 : IPacketHandlerPlugIn
         {
             /// <inheritdoc />

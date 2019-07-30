@@ -397,6 +397,10 @@ namespace MUnique.OpenMU.Tests
             definition.SetupAllProperties();
             definition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());
             definition.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+            definition.Object.MaximumItemLevel = 15;
+            var itemSlot = new Mock<ItemSlotType>();
+            itemSlot.Setup(s => s.ItemSlots).Returns(new List<int> { InventoryConstants.LeftHandSlot });
+            definition.Object.ItemSlot = itemSlot.Object;
             item.Object.Definition = definition.Object;
             item.Object.Durability = 1;
             item.Object.Definition.Width = 1;

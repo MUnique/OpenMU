@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.GameServer
                 player.GuildStatus = this.GuildServer.PlayerEnteredGame(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
                 if (player.GuildStatus != null)
                 {
-                    player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayerToGuildPlugIn>()?.AssignPlayerToGuild(player, true), true);
+                    player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(player, true), true);
                 }
             }
         }

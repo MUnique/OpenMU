@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.GameLogic.Views.World;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -12,9 +14,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     [PlugIn("Character walk handler", "Packet handler for walk packets.")]
     [Guid("19056DEB-4321-4D25-8615-EE49A453DF03")]
+    [MinimumClient(0, 97, ClientLanguage.Invariant)]
     internal class CharacterWalkHandlerPlugIn : CharacterMoveBaseHandlerPlugIn
     {
         /// <inheritdoc/>
         public override byte Key => (int)PacketType.Walk;
+
+        /// <inheritdoc/>
+        public override MoveType MoveType => MoveType.Walk;
     }
 }

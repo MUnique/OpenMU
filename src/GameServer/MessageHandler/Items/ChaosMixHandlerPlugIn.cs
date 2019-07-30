@@ -28,17 +28,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < 4)
-            {
-                return;
-            }
-
-            if (packet[2] != 0x86)
-            {
-                return;
-            }
-
-            byte mixId = packet[2];
+            byte mixId = packet.Length > 3 ? packet[3] : (byte)1;
             this.mixAction.MixItems(player, mixId);
         }
     }

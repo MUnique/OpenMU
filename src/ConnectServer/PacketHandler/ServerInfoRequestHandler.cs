@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         /// <inheritdoc/>
         public void HandlePacket(Client client, Span<byte> packet)
         {
-            var serverId = (ushort)(packet[4] | packet[5] << 8);
+            var serverId = packet.Length > 5 ? (ushort)(packet[4] | packet[5] << 8) : packet[4];
             Log.DebugFormat("Client {0}:{1} requested Connection Info of ServerId {2}", client.Address, client.Port, serverId);
             if (client.ServerInfoRequestCount >= this.connectServer.Settings.MaxIpRequests)
             {

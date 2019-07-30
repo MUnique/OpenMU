@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     [PlugIn("Character - Create", "Packet handler for character creation packets (0xF3, 0x01 identifier).")]
     [Guid("A26831DE-4D67-44CD-9434-12BDC4B07F47")]
     [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
-    internal class CharacterCreatePacketHandlerPlugIn : IPacketHandlerPlugIn
+    internal class CharacterCreatePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
         private readonly CreateCharacterAction createCharacterAction = new CreateCharacterAction();
 

@@ -7,7 +7,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     using System;
     using System.Linq;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Character;
+    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// Action to delete a character in the character selection screen.
@@ -50,6 +52,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             if (player.Account.SecurityCode != null && player.Account.SecurityCode != securityCode)
             {
                 return CharacterDeleteResult.WrongSecurityCode;
+            }
+
+            if (player.GameContext is IGameServerContext gameServerContext && gameServerContext.GuildServer.GetGuildPosition(character.Id) != null)
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Can't delete a guild member. Remove the character from guild first.", MessageType.BlueNormal);
+                return CharacterDeleteResult.Unsuccessful;
             }
 
             player.Account.Characters.Remove(character);

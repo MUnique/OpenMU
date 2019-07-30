@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.ConnectServer
     using System.Net;
     using log4net;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// The connect server.
@@ -26,13 +27,15 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         /// <param name="connectServerSettings">The settings.</param>
         /// <param name="stateObserver">The state observer.</param>
-        public ConnectServer(IConnectServerSettings connectServerSettings, IServerStateObserver stateObserver)
+        /// <param name="clientVersion">The client version.</param>
+        public ConnectServer(IConnectServerSettings connectServerSettings, IServerStateObserver stateObserver, ClientVersion clientVersion)
         {
             this.stateObserver = stateObserver;
+            this.ClientVersion = clientVersion;
             this.Settings = connectServerSettings;
 
             this.ConnectInfos = new Dictionary<ushort, byte[]>();
-            this.ServerList = new ServerList();
+            this.ServerList = new ServerList(this.ClientVersion);
 
             this.ClientListener = new ClientListener(this);
             this.ClientListener.ConnectedClientsChanged += (sender, args) =>
@@ -71,6 +74,9 @@ namespace MUnique.OpenMU.ConnectServer
 
         /// <inheritdoc/>
         public IConnectServerSettings Settings { get; }
+
+        /// <inheritdoc />
+        public ClientVersion ClientVersion { get; }
 
         /// <summary>
         /// Gets the client listener.

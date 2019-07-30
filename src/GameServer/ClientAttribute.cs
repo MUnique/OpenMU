@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="season">The minimum season of compatible clients.</param>
         /// <param name="episode">The minimum episode of compatible clients.</param>
         /// <param name="language">The language of compatible clients.</param>
-        public ClientAttribute(byte season, byte episode, ClientLanguage language)
+        protected ClientAttribute(byte season, byte episode, ClientLanguage language)
         {
             this.Client = new ClientVersion(season, episode, language);
         }

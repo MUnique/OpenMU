@@ -42,7 +42,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             if (player.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
                 Log.WarnFormat("Suspicious request for player with name: {0} (player is not a guild master), could be hack attempt.", player.Name);
+                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
                 return;
+            }
+
+            if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
+                || lastGuildRequester.PlayerState.CurrentState != PlayerState.EnteredWorld)
+            {
+                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy);
             }
 
             if (accept)
@@ -50,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 var guildStatus = guildServer.CreateGuildMember(player.GuildStatus.GuildId, player.LastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id);
                 lastGuildRequester.GuildStatus = guildStatus;
 
-                lastGuildRequester.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayerToGuildPlugIn>()?.AssignPlayerToGuild(lastGuildRequester, false), true);
+                lastGuildRequester.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(lastGuildRequester, false), true);
             }
 
             lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused);

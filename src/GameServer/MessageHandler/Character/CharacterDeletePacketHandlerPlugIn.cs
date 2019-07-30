@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
         public void HandlePacket(Player player, Span<byte> packet)
         {
             string characterName = packet.ExtractString(4, 10, Encoding.UTF8);
-            string securityCode = packet.ExtractString(14, 7, Encoding.UTF8);
+            string securityCode = packet.ExtractString(14, packet.Length - 14, Encoding.UTF8);
             this.deleteCharacterAction.DeleteCharacter(player, characterName, securityCode);
         }
     }
