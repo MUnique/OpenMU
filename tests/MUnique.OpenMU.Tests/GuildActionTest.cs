@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Tests
     using System.Linq;
     using Moq;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
     using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -39,10 +40,12 @@ namespace MUnique.OpenMU.Tests
             this.guildMasterPlayer.SelectedCharacter.Id = this.GuildMaster.Id;
             this.guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
             this.guildMasterPlayer.GuildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, 0);
+            this.guildMasterPlayer.Attributes[Stats.Level] = 100;
             this.player = TestHelper.GetPlayer(this.gameServerContext);
             this.player.CurrentMap.Add(this.guildMasterPlayer);
             this.player.SelectedCharacter.Name = "Player";
             this.player.SelectedCharacter.Id = Guid.NewGuid();
+            this.player.Attributes[Stats.Level] = 20;
         }
 
         /// <summary>
