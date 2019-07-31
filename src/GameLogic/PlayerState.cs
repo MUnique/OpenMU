@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic
                 PossibleTransitions = new List<State>
                 {
                     Disconnected,
-                    EnteredWorld
+                    EnteredWorld,
                 },
             };
             this.tradeOpened = new State(new Guid("F4367C99-1F11-4D42-9ADF-AD4655F022A0"))
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic
                     Disconnected,
                     Dead,
                     EnteredWorld,
-                    this.tradeButtonPressed
+                    this.tradeButtonPressed,
                 },
             };
             this.tradeButtonPressed.PossibleTransitions.Add(this.tradeOpened);
@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     Disconnected,
                     this.tradeOpened,
-                    EnteredWorld
+                    EnteredWorld,
                 },
             };
             EnteredWorld.PossibleTransitions.Add(TradeRequested);
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic
                 PossibleTransitions = new List<State>
                 {
                     Disconnected,
-                    EnteredWorld
+                    EnteredWorld,
                 },
             };
             EnteredWorld.PossibleTransitions.Add(this.npcDialogOpened);
@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.GameLogic
                 PossibleTransitions = new List<State>
                 {
                     Disconnected,
-                    EnteredWorld
+                    EnteredWorld,
                 },
             };
             EnteredWorld.PossibleTransitions.Add(this.partyRequest);
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.GameLogic
                 PossibleTransitions = new List<State>
                 {
                     Disconnected,
-                    EnteredWorld
+                    EnteredWorld,
                 },
             };
             EnteredWorld.PossibleTransitions.Add(this.guildRequest);
@@ -108,7 +108,7 @@ namespace MUnique.OpenMU.GameLogic
             Name = "Disconnected",
             PossibleTransitions = new List<State>
             {
-                Finished
+                Finished,
             },
         };
 
@@ -133,7 +133,7 @@ namespace MUnique.OpenMU.GameLogic
             PossibleTransitions = new List<State>
             {
                 Disconnected,
-                EnteredWorld
+                EnteredWorld,
             },
         };
 
@@ -146,7 +146,7 @@ namespace MUnique.OpenMU.GameLogic
             PossibleTransitions = new List<State>
             {
                 Disconnected,
-                EnteredWorld
+                EnteredWorld,
             },
         };
 
@@ -159,7 +159,7 @@ namespace MUnique.OpenMU.GameLogic
             PossibleTransitions = new List<State>
             {
                 Disconnected,
-                CharacterSelection
+                CharacterSelection,
             },
         };
 
@@ -172,7 +172,7 @@ namespace MUnique.OpenMU.GameLogic
             PossibleTransitions = new List<State>
             {
                 Disconnected,
-                Authenticated
+                Authenticated,
             },
         };
 
@@ -184,7 +184,7 @@ namespace MUnique.OpenMU.GameLogic
             Name = "Initial State",
             PossibleTransitions = new List<State>
             {
-                LoginScreen
+                LoginScreen,
             },
         };
 
@@ -197,7 +197,7 @@ namespace MUnique.OpenMU.GameLogic
             PossibleTransitions = new List<State>
             {
                 Disconnected,
-                EnteredWorld
+                EnteredWorld,
             },
         };
 
