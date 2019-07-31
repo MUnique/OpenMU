@@ -400,7 +400,7 @@ namespace MUnique.OpenMU.Tests
             definition.Object.MaximumItemLevel = 15;
             var itemSlot = new Mock<ItemSlotType>();
             itemSlot.Setup(s => s.ItemSlots).Returns(new List<int> { InventoryConstants.LeftHandSlot });
-            definition.Object.ItemSlot = itemSlot.Object;
+            definition.Setup(d => d.ItemSlot).Returns(itemSlot.Object);
             item.Object.Definition = definition.Object;
             item.Object.Durability = 1;
             item.Object.Definition.Width = 1;

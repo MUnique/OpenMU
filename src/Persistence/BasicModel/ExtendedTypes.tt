@@ -7,7 +7,7 @@
 <#@ assembly name="System.Core" #>
 
 // fixes error: Compiling transformation: The type Type is defined in an assembly that is not referenced. You must add a reference to assembly netstandard, Version=2.0.0.0 ...
-<#@ assembly Name="C:\Program Files\dotnet\sdk\2.1.4\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll" #>
+<#@ assembly Name="C:\Program Files\dotnet\sdk\2.2.108\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.DataModel.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.AttributeSystem.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.Interfaces.dll" #>

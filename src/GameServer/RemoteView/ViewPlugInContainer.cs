@@ -76,7 +76,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 using (var container = new UnityContainer())
                 {
-                    container.RegisterInstance(typeof(RemotePlayer), string.Empty, this.player, new ExternallyControlledLifetimeManager());
+                    container.RegisterInstance(typeof(RemotePlayer), this.player, new ExternallyControlledLifetimeManager());
                     var plugIn = container.Resolve(plugInType) as IViewPlugIn;
                     this.AddPlugIn(plugIn, true);
                 }

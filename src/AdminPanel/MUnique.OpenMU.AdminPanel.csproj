@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>7.3</LangVersion>
@@ -80,7 +80,7 @@
 
   <ItemGroup>
     <PackageReference Include="apache.log4net.Extensions.Logging" Version="2.0.0.12" />
-    <PackageReference Include="BCrypt.Net-Next" Version="3.1.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="3.1.3" />
     <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Mapster" Version="3.2.0" />

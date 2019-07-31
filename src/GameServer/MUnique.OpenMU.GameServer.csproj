@@ -30,7 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Unity" Version="5.8.6" />
+    <PackageReference Include="Unity" Version="5.11.1" />
   </ItemGroup>
 
   <ItemGroup>

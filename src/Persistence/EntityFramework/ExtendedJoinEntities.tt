@@ -5,7 +5,7 @@
 #>
 <#@ template debug="true" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly Name="C:\Program Files\dotnet\sdk\2.1.4\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll" #>
+<#@ assembly Name="C:\Program Files\dotnet\sdk\2.2.108\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll" #>
 <#@ assembly name="$(TargetDir)\MUnique.OpenMU.DataModel.dll" #>
 <#@ assembly name="$(TargetPath)" #>
 <#@ import namespace="System.Text" #>
