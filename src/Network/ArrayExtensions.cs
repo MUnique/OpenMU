@@ -241,7 +241,7 @@ namespace MUnique.OpenMU.Network
         /// <returns>An unsigned short.</returns>
         public static ushort TryMakeWordSmallEndian(this byte[] array, int startIndex)
         {
-            return array.Length > startIndex + 1 ? array.MakeWordSmallEndian(startIndex) : default(ushort);
+            return array.Length > startIndex + 1 ? array.MakeWordSmallEndian(startIndex) : default;
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace MUnique.OpenMU.Network
         /// <returns>An unsigned short.</returns>
         public static ushort TryMakeWordBigEndian(this byte[] array, int startIndex)
         {
-            return array.Length > startIndex + 1 ? array.MakeWordBigEndian(startIndex) : default(ushort);
+            return array.Length > startIndex + 1 ? array.MakeWordBigEndian(startIndex) : default;
         }
 
         /// <summary>

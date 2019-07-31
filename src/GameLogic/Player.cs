@@ -906,7 +906,7 @@ namespace MUnique.OpenMU.GameLogic
 
             this.walker.Stop();
             this.Alive = false;
-            this.respawnAfterDeathToken = default(CancellationToken);
+            this.respawnAfterDeathToken = default;
             this.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IObjectGotKilledPlugIn>()?.ObjectGotKilled(this, killer), true);
 
             if (killer is Player killerAfterKilled)
