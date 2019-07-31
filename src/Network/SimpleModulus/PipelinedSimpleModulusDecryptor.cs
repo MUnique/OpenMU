@@ -220,8 +220,8 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         private int DecodeFinal(Span<byte> outputBuffer)
         {
             var blockSuffix = this.inputBuffer.AsSpan(this.EncryptedBlockSize - 2, 2);
-            // blockSuffix[0] -> block size (encrypted)
-            // blockSuffix[1] -> checksum
+            //// blockSuffix[0] -> block size (encrypted)
+            //// blockSuffix[1] -> checksum
 
             byte blockSize = (byte)(blockSuffix[0] ^ blockSuffix[1] ^ BlockSizeXorKey);
 

@@ -24,8 +24,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         {
         }
 
-        /// <summary>
-        /// </summary>
         /// <inheritdoc />
         public override void Initialize()
         {

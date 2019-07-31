@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Tests
         /// Adds the basic drop item groups to the player.
         /// </summary>
         /// <param name="player">The player.</param>
-        /// <returns>The player.</returns>
+        /// <returns>The same player.</returns>
         public static Player WithBasicDropItemGroups(this Player player)
         {
             player.CurrentMap.Definition.DropItemGroups.AddBasicDropItemGroups();

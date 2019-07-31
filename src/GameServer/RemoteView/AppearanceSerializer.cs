@@ -14,6 +14,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
+    /// <summary>
+    /// Serializer for the appearance of a player, compatible with the client of version 0.75.
+    /// </summary>
     [Guid("D20EEBFA-12C1-4A86-B202-63121EB2A95B")]
     [PlugIn("Appearance Serializer 0.75", "Serializer for the appearance of a player, compatible with the client of version 0.75.")]
     [MinimumClient(0, 75, ClientLanguage.Invariant)]
