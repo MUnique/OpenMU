@@ -252,25 +252,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.AddGuardianOptions();
         }
 
-        private void AddGuardianOptions()
-        {
-            var weaponOption = this.GameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.GuardianOption && po.Number == (int)ItemGroups.Weapon));
-
-            var boneBlade = this.GameConfiguration.Items.First(i => i.Number == 22 && i.Group == (int)ItemGroups.Swords);
-            var explosionBlade = this.GameConfiguration.Items.First(i => i.Number == 23 && i.Group == (int)ItemGroups.Swords);
-            var soleilScepter = this.GameConfiguration.Items.First(i => i.Number == 14 && i.Group == (int)ItemGroups.Scepters);
-            var sylphWindBow = this.GameConfiguration.Items.First(i => i.Number == 21 && i.Group == (int)ItemGroups.Bows);
-            var viperStaff = this.GameConfiguration.Items.First(i => i.Number == 12 && i.Group == (int)ItemGroups.Staff);
-            var stormBlitzStick = this.GameConfiguration.Items.First(i => i.Number == 19 && i.Group == (int)ItemGroups.Staff);
-
-            boneBlade.PossibleItemOptions.Add(weaponOption);
-            explosionBlade.PossibleItemOptions.Add(weaponOption);
-            soleilScepter.PossibleItemOptions.Add(weaponOption);
-            sylphWindBow.PossibleItemOptions.Add(weaponOption);
-            viperStaff.PossibleItemOptions.Add(weaponOption);
-            stormBlitzStick.PossibleItemOptions.Add(weaponOption);
-        }
-
         /// <summary>
         /// Creates the item with the specified parameters.
         /// </summary>
@@ -395,6 +376,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                     item.BasePowerUpAttributes.Add(staffRisePowerUpMaxDmg);
                 }
             }
+        }
+
+        private void AddGuardianOptions()
+        {
+            var weaponOption = this.GameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.GuardianOption && po.Number == (int)ItemGroups.Weapon));
+
+            var boneBlade = this.GameConfiguration.Items.First(i => i.Number == 22 && i.Group == (int)ItemGroups.Swords);
+            var explosionBlade = this.GameConfiguration.Items.First(i => i.Number == 23 && i.Group == (int)ItemGroups.Swords);
+            var soleilScepter = this.GameConfiguration.Items.First(i => i.Number == 14 && i.Group == (int)ItemGroups.Scepters);
+            var sylphWindBow = this.GameConfiguration.Items.First(i => i.Number == 21 && i.Group == (int)ItemGroups.Bows);
+            var viperStaff = this.GameConfiguration.Items.First(i => i.Number == 12 && i.Group == (int)ItemGroups.Staff);
+            var stormBlitzStick = this.GameConfiguration.Items.First(i => i.Number == 19 && i.Group == (int)ItemGroups.Staff);
+
+            boneBlade.PossibleItemOptions.Add(weaponOption);
+            explosionBlade.PossibleItemOptions.Add(weaponOption);
+            soleilScepter.PossibleItemOptions.Add(weaponOption);
+            sylphWindBow.PossibleItemOptions.Add(weaponOption);
+            viperStaff.PossibleItemOptions.Add(weaponOption);
+            stormBlitzStick.PossibleItemOptions.Add(weaponOption);
         }
     }
 }
