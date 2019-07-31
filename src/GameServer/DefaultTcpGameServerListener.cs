@@ -144,12 +144,12 @@ namespace MUnique.OpenMU.GameServer
                 IConnection connection;
                 if (encryptionFactoryPlugIn == null)
                 {
-                    this.Log(l => l.WarnFormat("No network encryption plugin for version {0} available. It falls back to default ecnryption.", clientVersion));
+                    this.Log(l => l.WarnFormat("No network encryption plugin for version {0} available. It falls back to default encryption.", clientVersion));
                     connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
                 }
                 else
                 {
-                    connection = new Connection(socketConnection, encryptionFactoryPlugIn.CreateDecryptor(socketConnection.Input), encryptionFactoryPlugIn.CreateEncryptor(socketConnection.Output));
+                    connection = new Connection(socketConnection, encryptionFactoryPlugIn.CreateDecryptor(socketConnection.Input, DataDirection.ClientToServer), encryptionFactoryPlugIn.CreateEncryptor(socketConnection.Output, DataDirection.ServerToClient));
                 }
 
                 var remotePlayer = new RemotePlayer(this.gameContext, connection, clientVersion);

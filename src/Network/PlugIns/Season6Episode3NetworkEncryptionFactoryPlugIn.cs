@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Network.PlugIns
     using System.IO.Pipelines;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.SimpleModulus;
+    using MUnique.OpenMU.Network.Xor;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -20,9 +22,25 @@ namespace MUnique.OpenMU.Network.PlugIns
         public ClientVersion Key { get; } = new ClientVersion(6, 3, ClientLanguage.English);
 
         /// <inheritdoc />
-        public IPipelinedEncryptor CreateEncryptor(PipeWriter target) => new PipelinedEncryptor(target);
+        public IPipelinedEncryptor CreateEncryptor(PipeWriter target, DataDirection direction)
+        {
+            if (direction == DataDirection.ServerToClient)
+            {
+                return new PipelinedEncryptor(target);
+            }
+
+            return new PipelinedXor32Encryptor(new PipelinedSimpleModulusEncryptor(target, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer);
+        }
 
         /// <inheritdoc />
-        public IPipelinedDecryptor CreateDecryptor(PipeReader source) => new PipelinedDecryptor(source);
+        public IPipelinedDecryptor CreateDecryptor(PipeReader source, DataDirection direction)
+        {
+            if (direction == DataDirection.ClientToServer)
+            {
+                return new PipelinedDecryptor(source);
+            }
+
+            return new PipelinedSimpleModulusDecryptor(source, PipelinedSimpleModulusDecryptor.DefaultClientKey);
+        }
     }
 }

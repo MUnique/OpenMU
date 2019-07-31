@@ -124,6 +124,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             var dataAsArray = data.ToArray();
             this.clientConnection.Output.Write(dataAsArray);
+            this.clientConnection.Output.FlushAsync();
             var packet = new Packet(dataAsArray, false);
             this.log.Info(packet.ToString());
             this.invokeAction((Action)(() => this.PacketList.Add(packet)));
@@ -135,6 +136,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             var packet = new Packet(dataAsArray, true);
             this.log.Info(packet.ToString());
             this.serverConnection.Output.Write(dataAsArray);
+            this.serverConnection.Output.FlushAsync();
             this.invokeAction((Action)(() => this.PacketList.Add(packet)));
         }
     }

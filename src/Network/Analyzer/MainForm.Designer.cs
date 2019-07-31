@@ -50,6 +50,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.txtOtherServer = new System.Windows.Forms.TextBox();
             this.numGSPort = new System.Windows.Forms.NumericUpDown();
             this.btnStartProxy = new System.Windows.Forms.Button();
@@ -57,6 +58,7 @@
             this.connectedClientsListBox = new System.Windows.Forms.ListBox();
             this.connectionContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clientVersionComboBox = new System.Windows.Forms.ComboBox();
             this.clientBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.trafficGroup = new System.Windows.Forms.GroupBox();
             this.leftPanel = new System.Windows.Forms.Panel();
@@ -217,13 +219,15 @@
             this.settingsGroup.Controls.Add(this.label6);
             this.settingsGroup.Controls.Add(this.label7);
             this.settingsGroup.Controls.Add(this.label4);
+            this.settingsGroup.Controls.Add(this.label8);
             this.settingsGroup.Controls.Add(this.txtOtherServer);
             this.settingsGroup.Controls.Add(this.numGSPort);
             this.settingsGroup.Controls.Add(this.btnStartProxy);
+            this.settingsGroup.Controls.Add(this.clientVersionComboBox);
             this.settingsGroup.Dock = System.Windows.Forms.DockStyle.Top;
             this.settingsGroup.Location = new System.Drawing.Point(0, 0);
             this.settingsGroup.Name = "settingsGroup";
-            this.settingsGroup.Size = new System.Drawing.Size(200, 135);
+            this.settingsGroup.Size = new System.Drawing.Size(200, 160);
             this.settingsGroup.TabIndex = 32;
             this.settingsGroup.TabStop = false;
             this.settingsGroup.Text = "Settings";
@@ -280,6 +284,16 @@
             this.label4.TabIndex = 2;
             this.label4.Text = "Local Port:";
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label8.Location = new System.Drawing.Point(6, 99);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(58, 13);
+            this.label8.TabIndex = 2;
+            this.label8.Text = "MU Version:";
+            // 
             // txtOtherServer
             // 
             this.txtOtherServer.Location = new System.Drawing.Point(73, 19);
@@ -311,13 +325,21 @@
             0,
             0});
             // 
+            // clientVersionComboBox
+            //
+            this.clientVersionComboBox.Location = new System.Drawing.Point(73, 97);
+            this.clientVersionComboBox.Name = "clientVersionComboBox";
+            this.clientVersionComboBox.Size = new System.Drawing.Size(100, 20);
+            this.clientVersionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.clientVersionComboBox.TabIndex = 4;
+            // 
             // btnStartProxy
             // 
             this.btnStartProxy.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnStartProxy.Location = new System.Drawing.Point(73, 97);
+            this.btnStartProxy.Location = new System.Drawing.Point(73, 123);
             this.btnStartProxy.Name = "btnStartProxy";
             this.btnStartProxy.Size = new System.Drawing.Size(79, 23);
-            this.btnStartProxy.TabIndex = 4;
+            this.btnStartProxy.TabIndex = 5;
             this.btnStartProxy.Text = "Start Proxy";
             this.btnStartProxy.UseVisualStyleBackColor = true;
             this.btnStartProxy.Click += new System.EventHandler(this.StartProxy);
@@ -425,6 +447,7 @@
         private System.Windows.Forms.NumericUpDown numRealGSPort;
         private System.Windows.Forms.NumericUpDown numGSPort;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button btnStartProxy;
         private System.Windows.Forms.GroupBox connectedClientsGroup;
         private System.Windows.Forms.ListBox connectedClientsListBox;
@@ -440,6 +463,7 @@
         private System.Windows.Forms.Panel leftPanel;
         private System.Windows.Forms.ContextMenuStrip connectionContextMenu;
         private System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
+        private System.Windows.Forms.ComboBox clientVersionComboBox;
     }
 }
 

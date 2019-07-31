@@ -20,14 +20,16 @@ namespace MUnique.OpenMU.Network.PlugIns
         /// Creates a <see cref="IPipelinedDecryptor"/> for the specified source.
         /// </summary>
         /// <param name="source">The source.</param>
+        /// <param name="direction">The direction of the data flow.</param>
         /// <returns>The created decryptor.</returns>
-        IPipelinedDecryptor CreateDecryptor(PipeReader source);
+        IPipelinedDecryptor CreateDecryptor(PipeReader source, DataDirection direction);
 
         /// <summary>
         /// Creates a <see cref="IPipelinedEncryptor"/> for the specified target.
         /// </summary>
         /// <param name="target">The target.</param>
+        /// /// <param name="direction">The direction of the data flow.</param>
         /// <returns>The created encryptor.</returns>
-        IPipelinedEncryptor CreateEncryptor(PipeWriter target);
+        IPipelinedEncryptor CreateEncryptor(PipeWriter target, DataDirection direction);
     }
 }

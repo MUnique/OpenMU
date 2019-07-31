@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.ChatServer
         {
             var encryptionFactoryPlugIn = this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(this.endpoint.ClientVersion)
                                           ?? this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
-            return encryptionFactoryPlugIn.CreateDecryptor(pipeReader);
+            return encryptionFactoryPlugIn.CreateDecryptor(pipeReader, DataDirection.ClientToServer);
         }
     }
 }

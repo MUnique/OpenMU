@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Network.PlugIns
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.SimpleModulus;
+    using MUnique.OpenMU.Network.Xor;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -15,7 +16,7 @@ namespace MUnique.OpenMU.Network.PlugIns
     /// </summary>
     /// <remarks>
     /// The simple modulus keys were never changed, so the default keys of season 6 work here without changes.
-    /// For the Xor32 key it's different. During season 6´on GMO, Webzen desperately changed them in a regular manner - sometimes
+    /// For the Xor32 key it's different. During season 6 on GMO, Webzen desperately changed them in a regular manner - sometimes
     /// every weekly maintenance. Needless to say, calculating the new key was a matter of seconds and provided no protection from skilled hackers at all.
     /// </remarks>
     [PlugIn("Network Encryption - Before Season 6", "A plugin which provides network encryptors and decryptors for game clients before season 6.")]
@@ -34,9 +35,25 @@ namespace MUnique.OpenMU.Network.PlugIns
         public ClientVersion Key { get; } = default;
 
         /// <inheritdoc />
-        public IPipelinedEncryptor CreateEncryptor(PipeWriter target) => new PipelinedEncryptor(target);
+        public IPipelinedEncryptor CreateEncryptor(PipeWriter target, DataDirection direction)
+        {
+            if (direction == DataDirection.ServerToClient)
+            {
+                return new PipelinedEncryptor(target);
+            }
+
+            return new PipelinedXor32Encryptor(new PipelinedSimpleModulusEncryptor(target, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer, Xor32Key);
+        }
 
         /// <inheritdoc />
-        public IPipelinedDecryptor CreateDecryptor(PipeReader source) => new PipelinedDecryptor(source, PipelinedSimpleModulusDecryptor.DefaultServerKey, Xor32Key);
+        public IPipelinedDecryptor CreateDecryptor(PipeReader source, DataDirection direction)
+        {
+            if (direction == DataDirection.ClientToServer)
+            {
+                return new PipelinedDecryptor(source, PipelinedSimpleModulusDecryptor.DefaultServerKey, Xor32Key);
+            }
+
+            return new PipelinedSimpleModulusDecryptor(source, PipelinedSimpleModulusDecryptor.DefaultClientKey);
+        }
     }
 }

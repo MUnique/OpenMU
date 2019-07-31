@@ -57,9 +57,9 @@ namespace MUnique.OpenMU.Network.PlugIns
         public ClientVersion Key { get; } = new ClientVersion(0, 75, ClientLanguage.Invariant);
 
         /// <inheritdoc />
-        public IPipelinedEncryptor CreateEncryptor(PipeWriter target) => new PipelinedSimpleModulusEncryptor(target, ServerToClientKeys);
+        public IPipelinedEncryptor CreateEncryptor(PipeWriter target, DataDirection direction) => new PipelinedSimpleModulusEncryptor(target, direction == DataDirection.ClientToServer ? ClientToServerKeys : ServerToClientKeys);
 
         /// <inheritdoc />
-        public IPipelinedDecryptor CreateDecryptor(PipeReader source) => new PipelinedSimpleModulusDecryptor(source, ClientToServerKeys);
+        public IPipelinedDecryptor CreateDecryptor(PipeReader source, DataDirection direction) => new PipelinedSimpleModulusDecryptor(source, direction == DataDirection.ClientToServer ? ClientToServerKeys : ServerToClientKeys);
     }
 }
