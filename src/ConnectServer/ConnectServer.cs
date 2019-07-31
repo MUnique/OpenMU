@@ -191,8 +191,7 @@ namespace MUnique.OpenMU.ConnectServer
                 return;
             }
 
-            var server = sender as IGameServerInfo;
-            if (server == null)
+            if (!(sender is IGameServerInfo server))
             {
                 return;
             }
