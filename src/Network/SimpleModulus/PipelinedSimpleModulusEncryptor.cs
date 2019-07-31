@@ -142,7 +142,6 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
             if (this.Counter != null)
             {
-
                 // we process the first input block out of the loop, because we need to add the counter as prefix
                 this.inputBuffer[0] = (byte)this.Counter.Count;
                 if (totalDecryptedSize + 1 >= this.DecryptedBlockSize)
