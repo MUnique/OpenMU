@@ -40,6 +40,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             magicEffect.PowerUpDefinition.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
             magicEffect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
             magicEffect.PowerUpDefinition.Duration.ConstantValue.Value = 1; // 1 Second
+
             // Always a 50 % damage reduction
             magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = 0.50f;

@@ -23,6 +23,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// A cache which holds the results of the serializer.
         /// </summary>
         private static readonly ConcurrentDictionary<IAppearanceData, byte[]> Cache = new ConcurrentDictionary<IAppearanceData, byte[]>();
+
         /// <inheritdoc/>
         public int NeededSpace => 9;
 

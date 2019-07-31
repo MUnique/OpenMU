@@ -31,7 +31,6 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
 
             // old protocol:
             this.packetHandlers.Add(0x02, new ServerListRequestHandler(connectServer));
-
         }
 
         /// <inheritdoc/>
