@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.AdminPanel
     /// The main entry point of the web app, if the admin panel is started on an IIS (Express).
     /// </summary>
     /// <remarks>
-    /// Currently, that's NOT supported!
+    /// Currently, that's NOT supported!.
     /// </remarks>
     public static class Program
     {

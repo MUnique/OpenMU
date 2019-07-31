@@ -15,14 +15,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// Gets the glow level of the item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <returns>The glow level of the item</returns>
+        /// <returns>The glow level of the item.</returns>
         public static byte GetGlowLevel(this Item item) => GetGlowLevel(item.Level);
 
         /// <summary>
         /// Gets the glow level of the item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <returns>The glow level of the item</returns>
+        /// <returns>The glow level of the item.</returns>
         public static byte GetGlowLevel(this ItemAppearance item) => GetGlowLevel(item.Level);
 
         private static byte GetGlowLevel(int itemLevel) => (byte)((itemLevel - 1) / 2);

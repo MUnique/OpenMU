@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence
         /// Gets an identifier which is unique within this generator instance.
         /// </summary>
         /// <returns>An identifier which is unique within this generator instance.</returns>
-        /// <exception cref="InvalidOperationException">Maximum object id exceeded</exception>
+        /// <exception cref="InvalidOperationException">Maximum object id exceeded.</exception>
         public int GetId()
         {
             if (this.givenBack.TryTake(out int next))

@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The array which values should be set.</param>
         /// <param name="values">The values which should be set.</param>
         /// <returns>The <paramref name="array"/>.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">args.Length > array.Length</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">args.Length > array.Length.</exception>
         public static T[] SetValues<T>(this T[] array, params T[] values)
         {
             if (values.Length > array.Length)
@@ -273,7 +273,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The target array.</param>
         /// <param name="value">The integer value.</param>
         /// <param name="startIndex">The start index.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">startIndex.</exception>
         public static void SetIntegerSmallEndian(this byte[] array, uint value, int startIndex)
         => array.AsSpan(startIndex, 4).SetIntegerSmallEndian(value);
 
@@ -302,7 +302,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The target array.</param>
         /// <param name="value">The integer value.</param>
         /// <param name="startIndex">The start index.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">startIndex.</exception>
         public static void SetIntegerBigEndian(this byte[] array, uint value, int startIndex) =>
             array.AsSpan(startIndex, 4).SetIntegerBigEndian(value);
 
@@ -311,7 +311,7 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="span">The target span.</param>
         /// <param name="value">The integer value.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">startIndex.</exception>
         public static void SetIntegerBigEndian(this Span<byte> span, uint value)
         {
             if (span.Length < 4)
@@ -331,7 +331,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The target array.</param>
         /// <param name="value">The long value.</param>
         /// <param name="startIndex">The start index.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">startIndex</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">startIndex.</exception>
         public static void SetLongBigEndian(this byte[] array, long value, int startIndex)
             => SetLongBigEndian(array.AsSpan(startIndex), value);
 

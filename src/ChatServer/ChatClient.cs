@@ -27,12 +27,12 @@ namespace MUnique.OpenMU.ChatServer
         private static readonly ISpanDecryptor TokenDecryptor = new Xor3Decryptor(TokenOffset);
 
         /// <summary>
-        /// <see cref="ISpanDecryptor"/> for chat messages. The incoming chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;)
+        /// <see cref="ISpanDecryptor"/> for chat messages. The incoming chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;).
         /// </summary>
         private static readonly ISpanDecryptor MessageDecryptor = new Xor3Decryptor(MessageOffset);
 
         /// <summary>
-        /// <see cref="ISpanEncryptor"/> for chat messages. The outgoing chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;)
+        /// <see cref="ISpanEncryptor"/> for chat messages. The outgoing chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;).
         /// </summary>
         private static readonly ISpanEncryptor MessageEncryptor = new Xor3Encryptor(MessageOffset);
 

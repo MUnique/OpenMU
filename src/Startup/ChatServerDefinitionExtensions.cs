@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Startup
         /// Converts the <see cref="ChatServerDefinition"/> into corresponding <see cref="ChatServerSettings"/>.
         /// </summary>
         /// <param name="definition">The definition.</param>
-        /// <returns>The settings</returns>
+        /// <returns>The settings.</returns>
         public static ChatServerSettings ConvertToSettings(this ChatServerDefinition definition)
         {
             var result = new ChatServerSettings();

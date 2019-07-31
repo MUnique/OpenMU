@@ -10,11 +10,11 @@ namespace MUnique.OpenMU.GameLogic.Views
     public interface IChatViewPlugIn : IViewPlugIn
     {
         /// <summary>
-        /// Sends a Chat Message to the Player
+        /// Sends a Chat Message to the Player.
         /// </summary>
         /// <param name="message">The message which should be shown in the view.</param>
         /// <param name="sender">The character name of the sender.</param>
-        /// <param name="type">The type of the chat message</param>
+        /// <param name="type">The type of the chat message.</param>
         void ChatMessage(string message, string sender, ChatMessageType type);
     }
 }

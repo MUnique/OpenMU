@@ -78,7 +78,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the map requirements for player to use this map
+        /// Gets or sets the map requirements for player to use this map.
         /// </summary>
         public virtual ICollection<AttributeRequirement> MapRequirements { get; protected set; }
 

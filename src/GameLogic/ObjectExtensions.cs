@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets a single object as enumerable.
         /// </summary>
-        /// <typeparam name="T">The type of the object</typeparam>
+        /// <typeparam name="T">The type of the object.</typeparam>
         /// <param name="obj">The object.</param>
         /// <returns>The enumerable with <paramref name="obj"/> as the only result.</returns>
         public static IEnumerable<T> GetAsEnumerable<T>(this T obj)

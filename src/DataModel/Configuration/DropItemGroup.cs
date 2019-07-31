@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// <summary>
     /// Idea: append several "drop item groups" with its certain probability.
     /// In the drop generator sort all DropItemGroups by its chance.
-    /// Classes which can have DropItemGroups: Maps, Monsters(for example the kundun drops), Players(for quest items)
+    /// Classes which can have DropItemGroups: Maps, Monsters(for example the kundun drops), Players(for quest items).
     /// </summary>
     public class DropItemGroup
     {

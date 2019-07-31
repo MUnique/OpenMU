@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// Gets or sets the service provider.
         /// </summary>
         /// <remarks>
-        /// Unfortunately, this looks like an ugly hack :-(
+        /// Unfortunately, this looks like an ugly hack :-(.
         /// </remarks>
         internal static IServiceProvider Services { get; set; }
 

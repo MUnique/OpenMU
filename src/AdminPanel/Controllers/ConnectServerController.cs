@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         /// Gets the he connect server definition of the specified id.
         /// </summary>
         /// <param name="serverId">The server identifier.</param>
-        /// <returns>The connect server definition of the specified id</returns>
+        /// <returns>The connect server definition of the specified id.</returns>
         [HttpGet("{serverId}")]
         public ActionResult<ConnectServerDefinitionDto> Get(int serverId)
         {

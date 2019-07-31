@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.Views.Party
         /// <summary>
         /// Delete Member from Party.
         /// </summary>
-        /// <param name="index">index of the player</param>
+        /// <param name="index">index of the player.</param>
         void PartyMemberRemoved(byte index);
     }
 }

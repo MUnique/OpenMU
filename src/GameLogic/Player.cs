@@ -350,7 +350,7 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <summary>
         /// Is called after the player killed a <see cref="Player"/>.
-        /// Increment PK Level
+        /// Increment PK Level.
         /// </summary>
         public void AfterKilledPlayer()
         {

@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Network.Xor
         /// Reads the mu online packet.
         /// Decrypts the packet and writes it into our pipe.
         /// </summary>
-        /// <param name="packet">The mu online packet</param>
+        /// <param name="packet">The mu online packet.</param>
         /// <returns>The async task.</returns>
         protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
         {

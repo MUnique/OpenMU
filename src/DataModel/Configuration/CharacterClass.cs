@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// 1 = Summoner
         /// 2 = Dark Lord
         /// 4 = Magic Gladiator
-        /// 8 = Rage Fighter
+        /// 8 = Rage Fighter.
         /// </remarks>
         public byte CreationAllowedFlag { get; set; }
 

@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         private readonly RemotePlayer player;
 
         /// <summary>
-        /// This contains again all available skills. However, we need this to maintain the indexes. It can happen that the list contains holes after a skill got removed!
+        /// This contains again all available skills. However, we need this to maintain the indexes. It can happen that the list contains holes after a skill got removed!.
         /// </summary>
         private IList<Skill> skillList;
 

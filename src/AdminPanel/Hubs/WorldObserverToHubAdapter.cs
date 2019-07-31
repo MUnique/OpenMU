@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         public int InfoRange => byte.MaxValue;
 
         /// <summary>
-        /// Gets the server identifier on which the observer is observing
+        /// Gets the server identifier on which the observer is observing.
         /// </summary>
         public byte ServerId { get; }
 

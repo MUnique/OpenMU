@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.GameLogic
         /// Index of the first personal store slot.
         /// 12 = number of wearable item slots
         /// 64 = number of inventory slots
-        /// 128 = number of extended inventory slots (64 are hidden in game, S6E3)
+        /// 128 = number of extended inventory slots (64 are hidden in game, S6E3).
         /// </summary>
         public static readonly byte FirstStoreItemSlotIndex = (byte)(
             EquippableSlotsCount + // 12

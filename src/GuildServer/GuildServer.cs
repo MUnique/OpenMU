@@ -266,7 +266,7 @@ namespace MUnique.OpenMU.GuildServer
         /// So this method is only called usefully from the gameserver itself,
         /// by player interaction.
         /// </summary>
-        /// <param name="guildContainer">The container of the guild which should be deleted</param>
+        /// <param name="guildContainer">The container of the guild which should be deleted.</param>
         private void DeleteGuild(GuildContainer guildContainer)
         {
             guildContainer.DatabaseContext.Delete(guildContainer.Guild);

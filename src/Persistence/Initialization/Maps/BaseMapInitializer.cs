@@ -163,7 +163,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             => this.CreateMonsterSpawn(monsterDefinition, x, x, y, y, 1, direction, spawnTrigger);
 
         /// <summary>
-        /// Can be used to add additional map requirements
+        /// Can be used to add additional map requirements.
         /// </summary>
         protected virtual void CreateMapAttributeRequirements()
         {

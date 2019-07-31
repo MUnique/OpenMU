@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
     ///   - double wear bonus of single swords
     ///   - set bonus for defense rate
     ///   - set bonus for defense, if level is greater than 9
-    ///   - ancient sets
+    ///   - ancient sets.
     /// </remarks>
     public class ItemSetGroup
     {

@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     internal interface ILoadByProperty
     {
         /// <summary>
-        /// Loads objects by property
+        /// Loads objects by property.
         /// </summary>
         /// <param name="property">The property of the object which should be compared.</param>
         /// <param name="propertyValue">The value of the property.</param>

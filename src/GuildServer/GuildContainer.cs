@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <summary>
-        /// Gets the database context of the guild
+        /// Gets the database context of the guild.
         /// </summary>
         /// <remarks>Each guild holds its own database context.</remarks>
         public IGuildServerContext DatabaseContext { get; }

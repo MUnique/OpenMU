@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Creates the player and performs the example walk.
         /// By example: walking from 147, 120 to 151, 122: C1 08 D4 93 78 44 33 44
-        /// The packet contains the starting coordinates and the target is determined by the given path
+        /// The packet contains the starting coordinates and the target is determined by the given path.
         /// </summary>
         /// <returns>The player which walked.</returns>
         private Player DoTheWalk()

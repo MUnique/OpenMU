@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// Gets the view value.
         /// </summary>
         /// <param name="playerPosition">The player position.</param>
-        /// <returns>The value which is used in the message for the corresponding enum value</returns>
+        /// <returns>The value which is used in the message for the corresponding enum value.</returns>
         public static byte GetViewValue(this GuildPosition playerPosition)
         {
             switch (playerPosition)

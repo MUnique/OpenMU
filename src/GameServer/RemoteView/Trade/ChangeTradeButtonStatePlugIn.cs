@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// Examples:
         /// C1 04 3C 00 Partner unpressed
         /// C1 04 3C 01 Partner pressed
-        /// C1 04 3C 02 Button is red for x seconds
+        /// C1 04 3C 02 Button is red for x seconds.
         /// </remarks>
         public void ChangeTradeButtonState(TradeButtonState state)
         {

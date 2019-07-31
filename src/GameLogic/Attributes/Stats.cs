@@ -250,7 +250,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         /// <summary>
         /// Gets the combo bonus attribute definition.
-        /// TODO
+        /// TODO.
         /// </summary>
         public static AttributeDefinition ComboBonus { get; } = new AttributeDefinition(new Guid("53A479FE-8A73-4A45-AACA-5B1AA4362CF9"), "comboBonus", string.Empty);
 
@@ -291,7 +291,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         /// <summary>
         /// Gets the shield block damage decrement attribute definition.
-        /// TODO: Usage in a shield skill handler
+        /// TODO: Usage in a shield skill handler.
         /// </summary>
         public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new AttributeDefinition(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "shieldBlockDamageDecrement", string.Empty);
 
@@ -467,12 +467,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition HealthLossAfterHit { get; } = new AttributeDefinition(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings");
 
         /// <summary>
-        /// Gets the CanFly attribute for warping to icarus
+        /// Gets the CanFly attribute for warping to icarus.
         /// </summary>
         public static AttributeDefinition CanFly { get; } = new AttributeDefinition(new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement of the Icarus map.", "You can enter Icarus only with wings, dinorant, fenrir.");
 
         /// <summary>
-        /// Gets the MoonstonePendantEquipped attribute for warping to Karutan
+        /// Gets the MoonstonePendantEquipped attribute for warping to Karutan.
         /// </summary>
         public static AttributeDefinition MoonstonePendantEquipped { get; } = new AttributeDefinition(new Guid("4BC010D0-9E75-4ECB-8963-08A3697278C3"), "Requirement of the Kanturu Event Map during the event.", "You can enter the Kanturu Event only with an equipped Moonstone Pendant.");
 

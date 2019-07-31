@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.ClientLauncher
     using System.Windows.Forms;
 
     /// <summary>
-    /// <see cref="ClientSettingsDialog"/>
+    /// <see cref="ClientSettingsDialog"/>.
     /// </summary>
     internal partial class ClientSettingsDialog : Form
     {

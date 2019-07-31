@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the character name regex.
         /// </summary>
         /// <remarks>
-        /// "^[a-zA-Z0-9]{3,10}$";
+        /// "^[a-zA-Z0-9]{3,10}$";.
         /// </remarks>
         public string CharacterNameRegex { get; set; }
 

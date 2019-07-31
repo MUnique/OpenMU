@@ -205,7 +205,7 @@ namespace MUnique.OpenMU.Tests
         /// Here is tested if the notifications between players in the friend list are working properly.
         /// Is is tested with 2 players in 2 different gameservers.
         /// player1 on gameServer1
-        /// player2 on gameServer2
+        /// player2 on gameServer2.
         /// </summary>
         [Test]
         public void TestOnlineList()

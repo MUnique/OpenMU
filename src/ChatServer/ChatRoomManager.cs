@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.ChatServer
         /// Returns the chat room with the corresponding Room-ID.
         /// Returns null, if ChatRoom wasn't found.
         /// </summary>
-        /// <param name="roomId">Room-ID</param>
+        /// <param name="roomId">Room-ID.</param>
         /// <returns>ChatRoom or null.</returns>
         internal ChatRoom GetChatRoom(ushort roomId)
         {

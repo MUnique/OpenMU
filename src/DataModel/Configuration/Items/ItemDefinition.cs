@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the item drop level, which indicates the minimum monster lvl of which this item can be dropped
+        /// Gets or sets the item drop level, which indicates the minimum monster lvl of which this item can be dropped.
         /// </summary>
         public byte DropLevel { get; set; }
 
@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
 
         /// <summary>
         /// Gets or sets the skill which this items adds to the skill list while wearing or which can be learned by consuming this item.
-        /// TODO: Split these two usages into different properties?
+        /// TODO: Split these two usages into different properties?.
         /// </summary>
         public virtual Skill Skill { get; set; }
 
@@ -97,7 +97,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         ///   - double wear bonus of single swords
         ///   - set bonus for defense rate
         ///   - set bonus for defense, if level is greater than 9
-        ///   - ancient sets
+        ///   - ancient sets.
         /// </remarks>
         public virtual ICollection<ItemSetGroup> PossibleItemSetGroups { get; protected set; }
 

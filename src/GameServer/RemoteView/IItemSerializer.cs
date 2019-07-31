@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// <summary>
     /// This item serializer is used to serialize the item data to the data packets.
     /// At the moment, each item is serialized into a 12-byte long part of an array:
-    /// Byte Order: ItemCode Options Dura Exe Ancient Kind/380Opt HarmonyOpt Socket1 Socket2 Socket3 Socket4 Socket5
+    /// Byte Order: ItemCode Options Dura Exe Ancient Kind/380Opt HarmonyOpt Socket1 Socket2 Socket3 Socket4 Socket5.
     /// </summary>
     [Guid("3607902F-C7A8-40D0-823A-186F3BF630C7")]
     [PlugIn("Item Serializer", "The default item serializer. It's most likely only correct for season 6.")]

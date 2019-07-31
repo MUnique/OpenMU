@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
     public class ItemOptionDefinition
     {
         /// <summary>
-        /// Gets or sets the name of the option, for example "Luck", "Skill", "Normal Option"
+        /// Gets or sets the name of the option, for example "Luck", "Skill", "Normal Option".
         /// </summary>
         public string Name { get; set; }
 

@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// Dragon       0x10    0x00
         /// Darkness     0x10            0x00
         /// Warrior Cl   0x10    0x00
-        /// Despair              0x00               0x10
+        /// Despair              0x00               0x10.
         /// </remarks>
         public override void Initialize()
         {

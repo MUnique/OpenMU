@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.Interfaces
         public int Score { get; set; }
 
         /// <summary>
-        /// Gets or sets the guild notice which can be set by the guild master
+        /// Gets or sets the guild notice which can be set by the guild master.
         /// </summary>
         /// <remarks>Visible in green color after a character entered the game.</remarks>
         public string Notice { get; set; }

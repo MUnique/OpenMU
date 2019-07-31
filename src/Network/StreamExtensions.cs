@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <returns>The integer from the stream.</returns>
-        /// <exception cref="EndOfStreamException">Length: {stream.Length}; Position: {stream.Position}</exception>
+        /// <exception cref="EndOfStreamException">Length: {stream.Length}; Position: {stream.Position}.</exception>
         public static uint ReadInteger(this Stream stream)
         {
             if (stream.Length < stream.Position + sizeof(uint))

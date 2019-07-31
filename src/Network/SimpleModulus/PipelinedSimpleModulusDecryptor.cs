@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// Reads the mu online packet.
         /// Decrypts the packet and writes it into our pipe.
         /// </summary>
-        /// <param name="packet">The mu online packet</param>
+        /// <param name="packet">The mu online packet.</param>
         /// <returns>The async task.</returns>
         protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
         {
@@ -255,7 +255,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 
         /// <summary>
         /// Returns the maximum packet size of the packet in decrypted state.
-        /// (The exact size needs to be decrypted first)
+        /// (The exact size needs to be decrypted first).
         /// </summary>
         /// <param name="packet">The encrypted packet.</param>
         /// <returns>The maximum packet size of the packet in decrypted state.</returns>

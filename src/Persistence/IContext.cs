@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.Persistence
             where T : class;
 
         /// <summary>
-        /// Gets all objects of the specified type. Use with caution!
+        /// Gets all objects of the specified type. Use with caution!.
         /// </summary>
         /// <typeparam name="T">The type of the requested objects.</typeparam>
         /// <returns>All objects of the specified type.</returns>

@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         ///       -- additional subqueries which return json
         ///       ...)
         ///     from config."GameConfiguration" a
-        /// ) result;
+        /// ) result;.
         /// </remarks>
         /// <param name="entityType">Type of the entity.</param>
         /// <returns>The query which returns the objects of the given type as json string.</returns>
@@ -97,10 +97,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// Gets the navigations of the entity type.
         /// </summary>
         /// <param name="entityType">Type of the entity.</param>
-        /// <returns>The navigations of the entity type</returns>
+        /// <returns>The navigations of the entity type.</returns>
         /// <remarks>
         /// Can be overwritten to apply sorting.
-        /// TODO: Can sorting based on dependencies be done automatically?
+        /// TODO: Can sorting based on dependencies be done automatically?.
         /// </remarks>
         protected virtual IEnumerable<INavigation> GetNavigations(IEntityType entityType)
         {

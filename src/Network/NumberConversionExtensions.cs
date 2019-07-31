@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <summary>
-        /// Converts 2 bytes to one 16bit unsigned short
+        /// Converts 2 bytes to one 16bit unsigned short.
         /// </summary>
         /// <param name="lowByte">The low byte.</param>
         /// <param name="highByte">The high byte.</param>
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.Network
         /// Swaps the bytes of an unsigned short value.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <returns>The value with swapped bytes</returns>
+        /// <returns>The value with swapped bytes.</returns>
         public static ushort SwapBytes(this ushort value)
         {
             return (ushort)(((value & 0xFF) << 8) + ((value >> 8) & 0xFF));

@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         /// <remarks>
         /// In early versions, the index of the skill is used as identifier. Later it was the skill id.
-        /// This may have changed earlier than season 2!
+        /// This may have changed earlier than season 2!.
         /// </remarks>
         public override void HandlePacket(Player player, Span<byte> packet)
         {

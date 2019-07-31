@@ -228,7 +228,7 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <summary>
         /// Gets the guild request state. When this state is active, the player has requested for guild.
-        /// TODO: set this state
+        /// TODO: set this state.
         /// </summary>
         public static State GuildRequest => Instance.guildRequest;
 

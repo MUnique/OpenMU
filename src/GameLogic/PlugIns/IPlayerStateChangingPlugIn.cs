@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
     /// - Player Left Game
     /// - Before saving player data
     /// - Player Authenticated
-    /// - Trade finished
+    /// - Trade finished.
     /// </remarks>
     [Guid("DF9A11EE-6494-48BD-9B04-9413A24DF0D7")]
     [PlugInPoint("Player state changing", "Is called when a player state changes.")]

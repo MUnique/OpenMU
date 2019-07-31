@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         /// <remarks>
         /// This needs to take into account, that the <see cref="Walker"/> might change the <see cref="ILocateable.Position"/>,
-        /// but not updating the buckets. So accessing the bucket of the current coordinates might not be the current bucket!
+        /// but not updating the buckets. So accessing the bucket of the current coordinates might not be the current bucket!.
         /// </remarks>
         public void RemoveObject(ILocateable obj)
         {

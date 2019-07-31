@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.Pathfinding
     /// <summary>
     /// A binary min heap which implements <see cref="IPriorityQueue{T}"/>.
     /// Objects with the lowest index values appear at the top of the heap, and will be retrieved when calling <see cref="Pop"/>.
-    /// Please note: This class is not thread safe! Push/Pop should not be executed by two different threads at the same time!
+    /// Please note: This class is not thread safe! Push/Pop should not be executed by two different threads at the same time!.
     /// </summary>
     /// <remarks>
     /// This class contains some optimizations which do not make the code nicer. However,
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.Pathfinding
         /// <summary>
         /// Get the smallest object without removing it.
         /// </summary>
-        /// <returns>The smallest object</returns>
+        /// <returns>The smallest object.</returns>
         public T Peek()
         {
             if (this.innerList.Count > 0)

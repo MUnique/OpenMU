@@ -140,7 +140,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// Example: C1 15 A1 00 00 00 61 62 63 64 65 66 67 68 69 6F 20 01 00 01 57
         /// Index 4 and 5 is the room id, the next 10 bytes is the client name, after that the player id, game server id and a "type".
         /// The chat server answers this with the same packets as above(ticket 96862210):
-        /// C1 2C A0 01 00 00 61 62 63 64 65 66 67 68 69 6F CC CC CC CC CC CC CC CC CC CC 53 54 55 56 CC CC 02 00 C6 05 CC CC CC CC 57 CC CC CC
+        /// C1 2C A0 01 00 00 61 62 63 64 65 66 67 68 69 6F CC CC CC CC CC CC CC CC CC CC 53 54 55 56 CC CC 02 00 C6 05 CC CC CC CC 57 CC CC CC.
         /// </remarks>
         private void ReadChatRoomInvitation(byte[] packet)
         {
@@ -165,7 +165,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// The server should then send the following data back to the exDB-Server:
         ///           s | rid ||-----client name-----------||---------other client name-||plid| |svid||---| |-ticket--| |--------???----------|
         /// C1 2C A0 01 00 00 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59 00 00 00 00 CC CC 00 00 11 04 CC CC CC CC 00 CC CC CC
-        /// C1 2C A0 01 00 00 50 51 52 53 54 55 56 57 58 59 41 42 43 44 45 46 47 48 49 4A 00 00 00 00 CC CC 01 00 BB 05 CC CC CC CC 01 CC CC CC
+        /// C1 2C A0 01 00 00 50 51 52 53 54 55 56 57 58 59 41 42 43 44 45 46 47 48 49 4A 00 00 00 00 CC CC 01 00 BB 05 CC CC CC CC 01 CC CC CC.
         /// </remarks>
         private void ReadChatRoomCreation(byte[] packet)
         {

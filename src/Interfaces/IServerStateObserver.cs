@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Interfaces
         /// Gets the map state observer for the specified server identifier.
         /// </summary>
         /// <param name="serverId">The server identifier.</param>
-        /// <returns>The map state observer for the specified server identifier</returns>
+        /// <returns>The map state observer for the specified server identifier.</returns>
         IMapStateObserver GetMapStateObserver(int serverId);
 
         /// <summary>

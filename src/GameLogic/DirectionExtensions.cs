@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="origin">From point.</param>
         /// <param name="direction">The direction.</param>
         /// <returns>The target point based on the origin and the specified direction.</returns>
-        /// <exception cref="ArgumentException">direction</exception>
+        /// <exception cref="ArgumentException">direction.</exception>
         public static Point CalculateTargetPoint(this Point origin, Direction direction)
         {
             switch (direction)

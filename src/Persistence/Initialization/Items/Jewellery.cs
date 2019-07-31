@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <remarks>
         /// Options:
         /// Increase Damage 10%
-        /// Increase Attacking(Wizardry) Speed+10
+        /// Increase Attacking(Wizardry) Speed+10.
         /// </remarks>
         private void CreateWizardsRing()
         {

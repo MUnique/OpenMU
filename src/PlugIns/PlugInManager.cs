@@ -178,7 +178,7 @@ namespace MUnique.OpenMU.PlugIns
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
         /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
-        /// <returns>The strategy plug in</returns>
+        /// <returns>The strategy plug in.</returns>
         public IStrategyPlugInProvider<TKey, TStrategy> GetStrategyProvider<TKey, TStrategy>()
             where TStrategy : class, IStrategyPlugIn<TKey>
         {
@@ -263,7 +263,7 @@ namespace MUnique.OpenMU.PlugIns
         /// </summary>
         /// <typeparam name="TPlugInInterface">The type of the plug in interface.</typeparam>
         /// <param name="instance">The instance.</param>
-        /// <exception cref="ArgumentException">Plugin Type {instance.GetType()} - instance</exception>
+        /// <exception cref="ArgumentException">Plugin Type {instance.GetType()} - instance.</exception>
         public void RegisterPlugInAtPlugInPoint<TPlugInInterface>(TPlugInInterface instance)
             where TPlugInInterface : class
         {
@@ -449,7 +449,7 @@ namespace MUnique.OpenMU.PlugIns
             /// <summary>
             /// Initializes a new instance of the <see cref="InvalidPlugInProxyException"/> class.
             /// </summary>
-            /// <param name="type">The actual class type of the proxy</param>
+            /// <param name="type">The actual class type of the proxy.</param>
             /// <param name="expectedType">The expected interface type of the proxy.</param>
             public InvalidPlugInProxyException(Type type, Type expectedType)
             {

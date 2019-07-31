@@ -305,7 +305,7 @@ namespace MUnique.OpenMU.Tests
         /// buckler+1+5+s+l      2300
         /// horn+2+5+l       2600
         /// kite+3+5+l       5500
-        /// skull+3+5+s+l        18800
+        /// skull+3+5+s+l        18800.
         /// </remarks>
         [TestCase(0, 0, 3, 22, 2, 2, false, 230, Description = "small shield+0+5+l")]
         [TestCase(4, 1, 6, 24, 2, 2, true, 2300, Description = "buckler+1+5+s+l")]

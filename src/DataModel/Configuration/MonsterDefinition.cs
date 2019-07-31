@@ -207,14 +207,14 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the attribute.
         /// Not sure what this is.
         /// Maybe the maximum numbers of concurrent additional attributes / magic effects?
-        /// TODO
+        /// TODO.
         /// </summary>
         public byte Attribute { get; set; }
 
         /// <summary>
         /// Gets or sets the skill.
         /// TODO Not sure what this means yet.
-        /// I guess it is the magic effect, like stunning (skill 23 @ Dark Elf)
+        /// I guess it is the magic effect, like stunning (skill 23 @ Dark Elf).
         /// </summary>
         public short Skill { get; set; }
 
