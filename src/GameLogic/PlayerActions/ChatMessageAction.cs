@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 { "@", ChatMessageType.Guild },
                 { "@@", ChatMessageType.Alliance },
                 { "$", ChatMessageType.Gens },
-                { "/", ChatMessageType.Command }
+                { "/", ChatMessageType.Command },
             };
         }
 

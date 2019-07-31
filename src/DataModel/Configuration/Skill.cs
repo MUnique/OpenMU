@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// All damage types.
         /// </summary>
-        All = 4
+        All = 4,
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Other skill type.
         /// </summary>
-        Other = 8
+        Other = 8,
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// The primary target is stated explicitly, additional targets are all objects in the <see cref="Skill.ImplicitTargetRange"/> of the primary target.
         /// </summary>
-        ExplicitWithImplicitInRange = 6
+        ExplicitWithImplicitInRange = 6,
     }
 
     /// <summary>

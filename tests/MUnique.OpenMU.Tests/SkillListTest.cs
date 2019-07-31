@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.Tests
             definition.SetupAllProperties();
             definition.Object.Skill = new OpenMU.DataModel.Configuration.Skill
             {
-                Number = ItemSkillId.ToSigned()
+                Number = ItemSkillId.ToSigned(),
             };
 
             definition.Object.Height = 1;

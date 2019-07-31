@@ -141,7 +141,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
                 y = o.Position.Y,
                 rotation = o.Rotation,
                 serverId = this.ServerId,
-                mapId = this.MapId
+                mapId = this.MapId,
             }));
         }
 

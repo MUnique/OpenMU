@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             /// <summary>
             /// The guild master npc dialog should be shown.
             /// </summary>
-            ShowDialog = 1
+            ShowDialog = 1,
         }
 
         /// <summary>

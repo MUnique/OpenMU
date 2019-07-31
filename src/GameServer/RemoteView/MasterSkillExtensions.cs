@@ -350,7 +350,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                     { 607, 90 },
                     { 608, 92 },
                 }
-            }
+            },
         };
 
         /// <summary>

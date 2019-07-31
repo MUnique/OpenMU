@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 IgnoreWhitespace = true,
                 DtdProcessing = DtdProcessing.Ignore,
                 CloseInput = true,
-                XmlResolver = null
+                XmlResolver = null,
             };
             var result = new Dictionary<Type, ConnectionSetting>();
 

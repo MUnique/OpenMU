@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.ClientLauncher
                 WorkingDirectory = info.Parent.FullName,
                 UseShellExecute = true,
                 LoadUserProfile = true,
-                Verb = "open"
+                Verb = "open",
             };
             Process.Start(startInfo);
         }

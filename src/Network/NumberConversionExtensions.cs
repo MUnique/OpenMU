@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.Network
                 (byte)(value / 0x1000000000000),
                 (byte)(value / 0x10000000000),
                 (byte)(value / 0x100000000),
-                (byte)(value >> 24 & 0xFF), (byte)(value >> 16 & 0xFF), (byte)(value >> 8 & 0xFF), (byte)(value & 0xFF)
+                (byte)(value >> 24 & 0xFF), (byte)(value >> 16 & 0xFF), (byte)(value >> 8 & 0xFF), (byte)(value & 0xFF),
             };
         }
 

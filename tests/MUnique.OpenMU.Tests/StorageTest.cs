@@ -121,7 +121,7 @@ namespace MUnique.OpenMU.Tests
             {
                 Durability = 100,
                 Width = width,
-                Height = heigth
+                Height = heigth,
             };
             return itemDefinition;
         }

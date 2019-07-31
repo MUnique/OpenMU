@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     Disconnected,
                     EnteredWorld
-                }
+                },
             };
             this.tradeOpened = new State(new Guid("F4367C99-1F11-4D42-9ADF-AD4655F022A0"))
             {
@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic
                     Dead,
                     EnteredWorld,
                     this.tradeButtonPressed
-                }
+                },
             };
             this.tradeButtonPressed.PossibleTransitions.Add(this.tradeOpened);
             TradeRequested = new State(new Guid("E15623A1-D125-4327-AE6A-9F36C5744BC0"))
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.GameLogic
                     Disconnected,
                     this.tradeOpened,
                     EnteredWorld
-                }
+                },
             };
             EnteredWorld.PossibleTransitions.Add(TradeRequested);
             this.npcDialogOpened = new State(new Guid("B0DFD9AC-009C-496C-A1B9-C8D6C6BFE23F"))
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     Disconnected,
                     EnteredWorld
-                }
+                },
             };
             EnteredWorld.PossibleTransitions.Add(this.npcDialogOpened);
             this.partyRequest = new State(new Guid("FD96D6EC-88F3-4B0C-ADFB-D5DDF1554C48"))
@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     Disconnected,
                     EnteredWorld
-                }
+                },
             };
             EnteredWorld.PossibleTransitions.Add(this.partyRequest);
             this.guildRequest = new State(new Guid("B8C69D28-4CEF-45CE-9D11-37576A97E116"))
@@ -83,7 +83,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     Disconnected,
                     EnteredWorld
-                }
+                },
             };
             EnteredWorld.PossibleTransitions.Add(this.guildRequest);
 
@@ -97,7 +97,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public static State Finished { get; } = new State(new Guid("AB24C7C4-4F37-40ED-B874-0F6C7984C471"))
         {
-            Name = "Finished"
+            Name = "Finished",
         };
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.GameLogic
             PossibleTransitions = new List<State>
             {
                 Finished
-            }
+            },
         };
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace MUnique.OpenMU.GameLogic
             PossibleTransitions = new List<State>
             {
                 Disconnected,
-            }
+            },
         };
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 Disconnected,
                 EnteredWorld
-            }
+            },
         };
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 Disconnected,
                 EnteredWorld
-            }
+            },
         };
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 Disconnected,
                 CharacterSelection
-            }
+            },
         };
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 Disconnected,
                 Authenticated
-            }
+            },
         };
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace MUnique.OpenMU.GameLogic
             PossibleTransitions = new List<State>
             {
                 LoginScreen
-            }
+            },
         };
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 Disconnected,
                 EnteredWorld
-            }
+            },
         };
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
             /// <summary>
             /// The normal format. Every point uses exactly 2 bytes.
             /// </summary>
-            Normal
+            Normal,
         }
 
         /// <summary>

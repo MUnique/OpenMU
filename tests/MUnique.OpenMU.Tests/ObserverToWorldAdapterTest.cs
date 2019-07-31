@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Tests
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
             var nonPlayer = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
             {
-                Position = new Point(128, 128)
+                Position = new Point(128, 128),
             };
             map.Add(nonPlayer);
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
@@ -66,12 +66,12 @@ namespace MUnique.OpenMU.Tests
             var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8, null);
             var nonPlayer1 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
             {
-                Position = new Point(128, 128)
+                Position = new Point(128, 128),
             };
             map.Add(nonPlayer1);
             var nonPlayer2 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
             {
-                Position = new Point(100, 128)
+                Position = new Point(100, 128),
             };
             map.Add(nonPlayer2);
             adapter.ObservingBuckets.Add(nonPlayer1.NewBucket);

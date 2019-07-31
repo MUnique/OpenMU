@@ -108,7 +108,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.OnStateChanged();
             })
             {
-                Allowed = this.CurrentState.PossibleTransitions.Contains(nextState) && this.OnStateChanging(nextState)
+                Allowed = this.CurrentState.PossibleTransitions.Contains(nextState) && this.OnStateChanging(nextState),
             };
 
             return context;

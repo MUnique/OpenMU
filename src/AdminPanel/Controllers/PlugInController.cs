@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
                 var dto = new PlugInPointDto
                 {
                     PlugInCount = group.Count(),
-                    Id = group.Key?.GUID ?? default
+                    Id = group.Key?.GUID ?? default,
                 };
 
                 var plugInPoint = group.Key?.GetCustomAttribute<PlugInPointAttribute>();

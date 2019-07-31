@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             /// <summary>
             /// The triple damage.
             /// </summary>
-            Triple = 0x80
+            Triple = 0x80,
         }
 
         /// <remarks>

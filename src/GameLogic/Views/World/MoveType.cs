@@ -17,6 +17,6 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// <summary>
         /// Moving by instantly moving the object on the map, without animations.
         /// </summary>
-        Instant
+        Instant,
     }
 }

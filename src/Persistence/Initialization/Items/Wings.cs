@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             PhysDamage,
             WizDamage,
             CurseDamage,
-            Defense
+            Defense,
         }
 
         /// <summary>

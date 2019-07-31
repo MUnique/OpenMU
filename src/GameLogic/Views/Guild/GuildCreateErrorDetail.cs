@@ -17,6 +17,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Guild
         /// <summary>
         /// The guild already exists.
         /// </summary>
-        GuildAlreadyExist = 0xB3
+        GuildAlreadyExist = 0xB3,
     }
 }

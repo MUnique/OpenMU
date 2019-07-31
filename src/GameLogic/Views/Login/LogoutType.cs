@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Login
         /// <summary>
         /// This is sent by the client when the player wants to go back to the server selection screen.
         /// </summary>
-        BackToServerSelection
+        BackToServerSelection,
     }
 }

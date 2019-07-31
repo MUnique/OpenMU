@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// The money special item type.
         /// </summary>
-        Money
+        Money,
     }
 
     /// <summary>

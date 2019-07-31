@@ -133,7 +133,7 @@ namespace MUnique.OpenMU.ConnectServer
                 {
                     ServerId = gameServer.Id,
                     EndPoint = publicEndPoint,
-                    ServerLoad = (byte)(gameServer.OnlinePlayerCount * 100f / gameServer.MaximumPlayers)
+                    ServerLoad = (byte)(gameServer.OnlinePlayerCount * 100f / gameServer.MaximumPlayers),
                 };
                 if (gameServer is INotifyPropertyChanged notifier)
                 {

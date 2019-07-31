@@ -213,7 +213,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 {
                     From = current,
                     To = target,
-                    Direction = current.GetDirectionTo(target)
+                    Direction = current.GetDirectionTo(target),
                 };
                 this.WalkTo(target, steps);
             }

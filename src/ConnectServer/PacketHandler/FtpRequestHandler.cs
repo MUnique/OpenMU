@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         {
             VersionTooLow = -1,
             VersionMatch = 0,
-            VersionHigher = 1
+            VersionHigher = 1,
         }
 
         /// <inheritdoc/>

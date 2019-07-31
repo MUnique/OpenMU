@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Guild
         /// <summary>
         /// Kicking succeeded and guild got disbanded.
         /// </summary>
-        GuildDisband = 4
+        GuildDisband = 4,
     }
 }

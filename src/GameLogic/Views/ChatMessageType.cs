@@ -42,6 +42,6 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// <summary>
         /// A command message.
         /// </summary>
-        Command
+        Command,
     }
 }

@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     Accepted = friend.Accepted,
                     RequestOpen = friend.RequestOpen,
                     CharacterName = character.Name,
-                    FriendName = friendCharacter.Name
+                    FriendName = friendCharacter.Name,
                 };
         }
 

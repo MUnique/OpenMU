@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Trade
         /// <summary>
         /// This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.
         /// </summary>
-        Red = 2
+        Red = 2,
     }
 }

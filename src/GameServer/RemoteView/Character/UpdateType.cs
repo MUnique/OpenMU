@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <summary>
         /// The current value is updated.
         /// </summary>
-        Current = 0xFF
+        Current = 0xFF,
     }
 }

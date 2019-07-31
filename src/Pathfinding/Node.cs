@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Pathfinding
         /// <summary>
         /// The node is on the closed list.
         /// </summary>
-        Closed
+        Closed,
     }
 
     /// <summary>

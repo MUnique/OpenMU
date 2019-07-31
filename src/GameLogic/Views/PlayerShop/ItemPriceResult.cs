@@ -44,6 +44,6 @@ namespace MUnique.OpenMU.GameLogic.Views.PlayerShop
         /// <summary>
         /// Failed because the character level is too low (below level 6).
         /// </summary>
-        CharacterLevelTooLow = 6
+        CharacterLevelTooLow = 6,
     }
 }

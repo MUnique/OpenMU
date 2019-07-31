@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.Tests
             this.gameServers = new Dictionary<int, IGameServer>
             {
                 { this.gameServer1.Object.Id, this.gameServer1.Object },
-                { this.gameServer2.Object.Id, this.gameServer2.Object }
+                { this.gameServer2.Object.Id, this.gameServer2.Object },
             };
             this.persistenceContextProvider = new InMemoryPersistenceContextProvider();
             this.friendServer = new FriendServer.FriendServer(this.gameServers, null, this.persistenceContextProvider);

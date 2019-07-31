@@ -83,6 +83,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Login
         /// <summary>
         /// The client connected from a blocked country.
         /// </summary>
-        BadCountry = 0xD2
+        BadCountry = 0xD2,
     }
 }

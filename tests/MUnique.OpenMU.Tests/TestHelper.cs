@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.Tests
                     new StatAttributeDefinition(Stats.BaseEnergy, 10, true),
                     new StatAttributeDefinition(Stats.CurrentHealth, 0, false),
                     new StatAttributeDefinition(Stats.CurrentMana, 0, false),
-                    new StatAttributeDefinition(Stats.CurrentShield, 0, false)
+                    new StatAttributeDefinition(Stats.CurrentShield, 0, false),
                 });
             characterClassMock.Setup(c => c.AttributeCombinations).Returns(new List<AttributeRelationship>
             {
@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.Tests
                 new ConstValueAttribute(2, Stats.AbilityRecoveryMultiplier),
                 new ConstValueAttribute(1, Stats.DamageReceiveDecrement),
                 new ConstValueAttribute(1, Stats.AttackDamageIncrease),
-                new ConstValueAttribute(1, Stats.MoneyAmountRate)
+                new ConstValueAttribute(1, Stats.MoneyAmountRate),
             });
             character.CharacterClass = characterClassMock.Object;
 

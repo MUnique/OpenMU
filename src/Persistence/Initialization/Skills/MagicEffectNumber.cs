@@ -222,6 +222,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         /// <summary>
         /// The wiz enhance effect.
         /// </summary>
-        WizEnhance = 0x52
+        WizEnhance = 0x52,
     }
 }

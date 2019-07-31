@@ -27,6 +27,6 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// The item will be downgraded to a random level.
         /// </summary>
-        DowngradedRandom = 4
+        DowngradedRandom = 4,
     }
 }

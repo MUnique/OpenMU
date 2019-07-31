@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.PlugIns
                                     TokenList(),
                                     ParseTypeName(nameof(PlugInManager)),
                                     ParseToken("manager"),
-                                    null)
+                                    null),
                             })))
                 .WithInitializer(
                     ConstructorInitializer(SyntaxKind.BaseConstructorInitializer)

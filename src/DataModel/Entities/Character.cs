@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// The character killed more than two characters, and has hard restrictions.
         /// </summary>
-        PlayerKiller2ndStage
+        PlayerKiller2ndStage,
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// The character is a GameMaster (have mu logo on the head)
         /// </summary>
-        GameMaster = 32
+        GameMaster = 32,
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// The character is hanging on something.
         /// </summary>
-        Hanging = 4
+        Hanging = 4,
     }
 
     /// <summary>

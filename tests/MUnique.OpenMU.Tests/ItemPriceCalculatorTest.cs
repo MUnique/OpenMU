@@ -413,7 +413,7 @@ namespace MUnique.OpenMU.Tests
                     ItemOption = new IncreasableItemOption
                     {
                         OptionType = ItemOptionTypes.Luck
-                    }
+                    },
                 };
                 item.ItemOptions.Add(optionLink);
             }
@@ -425,7 +425,7 @@ namespace MUnique.OpenMU.Tests
                     ItemOption = new IncreasableItemOption
                     {
                         OptionType = ItemOptionTypes.Option
-                    }
+                    },
                 };
                 item.ItemOptions.Add(optionLink);
             }

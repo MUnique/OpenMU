@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <remarks>
         /// For example blood castle gates, statues. Also golden monsters.
         /// </remarks>
-        OnceAtEventStart
+        OnceAtEventStart,
     }
 
     /// <summary>

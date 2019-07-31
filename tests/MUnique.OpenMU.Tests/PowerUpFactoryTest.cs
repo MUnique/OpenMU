@@ -170,7 +170,7 @@ namespace MUnique.OpenMU.Tests
                 {
                     TargetAttribute = targetAttribute,
                     Boost = new TestPowerUpDefinitionValue(new SimpleElement { Value = value })
-                }
+                },
             };
             return new ItemOptionLink { ItemOption = option, Level = 1 };
         }

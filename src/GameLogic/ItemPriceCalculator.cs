@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic
             36, 37, 38, 39, 40,
             41, 42, 43, // sum wings
             49, 50, // Rf Capes
-            130, 131, 132, 133, 134, 135 // mini wings? -> All worth 240, remove here!
+            130, 131, 132, 133, 134, 135, // mini wings? -> All worth 240, remove here!
         };
 
         private static readonly IDictionary<int, Func<Item, long>> SpecialItemDictionary

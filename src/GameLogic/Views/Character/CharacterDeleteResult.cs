@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Character
         /// <summary>
         /// Deleting was not successful because a wrong security code was entered.
         /// </summary>
-        WrongSecurityCode = 2
+        WrongSecurityCode = 2,
     }
 }

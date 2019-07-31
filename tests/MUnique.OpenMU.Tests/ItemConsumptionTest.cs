@@ -372,7 +372,7 @@ namespace MUnique.OpenMU.Tests
             return new Item
             {
                 Definition = new DataModel.Configuration.Items.ItemDefinition { Width = 1, Height = 1 },
-                Durability = 1
+                Durability = 1,
             };
         }
 

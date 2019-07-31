@@ -146,7 +146,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                         Rows = InventoryRows,
                         StartIndex = EquippableSlotsCount,
                         EndIndex = (byte)(EquippableSlotsCount + GetInventorySize(player)),
-                        Storage = player.Inventory
+                        Storage = player.Inventory,
                     };
                     break;
                 case Storages.PersonalStore:
@@ -155,7 +155,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                         Rows = StoreRows,
                         StartIndex = FirstStoreItemSlotIndex,
                         EndIndex = (byte)(FirstStoreItemSlotIndex + StoreSize),
-                        Storage = player.ShopStorage
+                        Storage = player.ShopStorage,
                     };
                     break;
                 case Storages.Vault:
@@ -164,7 +164,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                         Rows = WarehouseRows,
                         EndIndex = WarehouseSize,
                         Storage = player.Vault,
-                        StartIndex = 0
+                        StartIndex = 0,
                     };
                     break;
                 case Storages.Trade:
@@ -174,7 +174,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                         Storage = player.TemporaryStorage,
                         Rows = TemporaryStorageRows,
                         EndIndex = TemporaryStorageSize,
-                        StartIndex = 0
+                        StartIndex = 0,
                     };
                     break;
                 default:

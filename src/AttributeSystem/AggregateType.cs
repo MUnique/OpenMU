@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <summary>
         /// Adds the value to the final value.
         /// </summary>
-        AddFinal
+        AddFinal,
     }
 }

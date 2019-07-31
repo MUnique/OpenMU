@@ -189,7 +189,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                                 args.Text = ""CustomPlugIn"";
                             }
                         }
-                    }"
+                    }",
             };
             var manager = new PlugInManager(new List<PlugInConfiguration> { configuration });
             var player = TestHelper.GetPlayer();

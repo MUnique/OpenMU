@@ -23,13 +23,13 @@ namespace MUnique.OpenMU.GameLogic.Attributes
                 { Stats.CurrentHealth, m => m.Health },
                 { Stats.DamageReceiveDecrement, m => 1.0f },
                 { Stats.AttackDamageIncrease, m => 1.0f },
-                { Stats.ShieldBypassChance, m => 1.0f }
+                { Stats.ShieldBypassChance, m => 1.0f },
             };
 
         private static readonly IDictionary<AttributeDefinition, Action<Monster, float>> SetterMapping =
             new Dictionary<AttributeDefinition, Action<Monster, float>>
             {
-                { Stats.CurrentHealth, (m, v) => m.Health = (int)v }
+                { Stats.CurrentHealth, (m, v) => m.Health = (int)v },
             };
 
         private static readonly IDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new Dictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>>();

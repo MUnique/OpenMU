@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             { Stats.BaseEnergy, CharacterStatType.Energy },
             { Stats.BaseStrength, CharacterStatType.Strength },
             { Stats.BaseVitality, CharacterStatType.Vitality },
-            { Stats.BaseLeadership, CharacterStatType.Leadership }
+            { Stats.BaseLeadership, CharacterStatType.Leadership },
         };
 
         private static readonly Dictionary<CharacterStatType, AttributeDefinition> StatTypesToAttributes = new Dictionary<CharacterStatType, AttributeDefinition>
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             { CharacterStatType.Energy, Stats.BaseEnergy },
             { CharacterStatType.Strength, Stats.BaseStrength },
             { CharacterStatType.Vitality, Stats.BaseVitality },
-            { CharacterStatType.Leadership, Stats.BaseLeadership }
+            { CharacterStatType.Leadership, Stats.BaseLeadership },
         };
 
         /// <summary>

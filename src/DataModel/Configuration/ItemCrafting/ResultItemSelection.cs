@@ -17,6 +17,6 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// All items are selected as result from the result items.
         /// </summary>
-        All = 1
+        All = 1,
     }
 }

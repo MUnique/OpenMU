@@ -220,7 +220,7 @@ namespace MUnique.OpenMU.FriendServer
                 observer = new OnlineFriend(gameServer)
                 {
                     PlayerName = characterName,
-                    ServerId = (byte)gameServer.Id
+                    ServerId = (byte)gameServer.Id,
                 };
                 this.OnlineFriends.Add(characterName, observer);
 
