@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 var packet = writer.Span;
                 packet[3] = 0x12;
-                packet[4] = (byte) newPlayerList.Count;
+                packet[4] = (byte)newPlayerList.Count;
                 var actualSize = 5;
 
                 foreach (var newPlayer in newPlayerList)
