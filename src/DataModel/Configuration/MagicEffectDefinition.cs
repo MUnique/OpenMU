@@ -54,48 +54,4 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </summary>
         public virtual PowerUpDefinitionWithDuration PowerUpDefinition { get; set; }
     }
-
-    /* IDs:
-     * public enum Effects
-    {
-        //Not Complete!
-        DmgBuff = 1,
-        DefBuff = 2,
-        NPCBuff = 3,
-        SoulBarrier = 4,
-        CritDmgDL = 5,
-        InfiniteArrow = 6,
-        AGrecoverSpeedInc = 7,
-        HPFortitude = 8,
-        EliteManaPotion = 9,
-        PotionOfBless = 10,
-        PotionOfSoul = 11,
-        GateOpenCloseStatus = 0x0D,
-        Watchtower = 0x0E,
-        Transperency = 0x12,
-        GM = 0x1C,
-        SealAscension = 0x1D,
-        SealWealth = 0x1E,
-        SealSustenance = 0x1F,
-        SpellOfQuickness = 0x20,
-        SpellOfProtection = 0x22,
-        JackOlanternBlessing = 0x23,
-        JackOlanternWrath = 0x24,
-        JackOlanternCry = 0x25,
-        JackOlanternFood = 0x26,
-        JackOlanternDrink = 0x27,
-        ScrollOfQuickness = 0x2C,
-        ScrollOfDefense = 0x2D,
-        //....
-        Poisoned = 0x37,
-        Iced = 0x38,
-        IcedArrowed = 0x39,
-        DefenseReduction = 0x3A,
-        Stunned = 0x3D,
-        SpellOfRestriction = 0x41,
-        Reflection = 0x47,
-        Sleep = 0x48,
-        Blind = 0x49,
-        WizEnhance = 0x52
-    }*/
 }

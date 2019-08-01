@@ -199,7 +199,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 if (itemDefinition.ItemSlot.ItemSlots.Contains(toSlot) &&
                     player.CompliesRequirements(item))
                 {
-                    // UpdatePreviewCharSet();
                     if (itemDefinition.ItemSlot.ItemSlots.Contains(RightHandSlot)
                         && itemDefinition.ItemSlot.ItemSlots.Contains(LeftHandSlot)
                         && toSlot == RightHandSlot
