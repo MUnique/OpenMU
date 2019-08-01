@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Tests
     using NUnit.Framework;
 
     /// <summary>
-    /// Tests the power up factory which is creating powerups based on the items a player has equipped.
+    /// Tests the power up factory which is creating power ups based on the items a player has equipped.
     /// </summary>
     [TestFixture]
     public class PowerUpFactoryTest
@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.Tests
         private readonly float[] levelBonus = new float[] { 0, 1, 3, 7, 14 };
 
         /// <summary>
-        /// Tests if the item option results in an corresponding powerup.
+        /// Tests if the item option results in an corresponding power up.
         /// </summary>
         [Test]
         public void ItemOptions()
@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if the powerups don't get created if the item has no more durability.
+        /// Tests if the power ups don't get created if the item has no more durability.
         /// </summary>
         [Test]
         public void NoPowerUpsWhenItemBroken()
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if the powerups don't get created if the item is not equipped at the player.
+        /// Tests if the power ups don't get created if the item is not equipped at the player.
         /// </summary>
         [Test]
         public void NoPowerUpsWhenItemUnwearable()
@@ -96,7 +96,7 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if the powerups don't get created when the item has no options.
+        /// Tests if the power ups don't get created when the item has no options.
         /// </summary>
         [Test]
         public void NoPowerUpsInItem()
@@ -108,16 +108,143 @@ namespace MUnique.OpenMU.Tests
             Assert.That(result.Sum(p => p.Value), Is.EqualTo(0));
         }
 
+        /// <summary>
+        /// Tests if a complete set of level 11, gives the power up defined for level 11.
+        /// </summary>
+        [Test]
+        public void SetCompleteGivesPowerUp()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetDefenseBonusSet(true, 10, 11, 11, 11, 11);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.Not.EqualTo(0));
+        }
+
+        /// <summary>
+        /// Tests if a complete set of level 11, gives the power up defined for level 11 even if one item has a higher level.
+        /// </summary>
+        [Test]
+        public void SetCompleteGivesPowerUpWhenItemIsHigherLevel()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetDefenseBonusSet(true, 10, 11, 12, 11, 11);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.Not.EqualTo(0));
+        }
+
+        /// <summary>
+        /// Tests if an incomplete set of level 11 gives no power up, because at least one item has not the required level.
+        /// </summary>
+        [Test]
+        public void SetIncompleteDueLowerLevelItemsGivesNoPowerUp()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetDefenseBonusSet(true, 10, 11, 11, 15, 9);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.EqualTo(0));
+        }
+
+        /// <summary>
+        /// Tests if no items give no power ups.
+        /// </summary>
+        [Test]
+        public void NoItemsGiveNoSetPowerUps()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = Enumerable.Empty<Item>();
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.EqualTo(0));
+        }
+
+        /// <summary>
+        /// Tests if an incomplete set (=not all required items equipped) gives also no power up.
+        /// </summary>
+        [Test]
+        public void SetIncompleteGivesNoPowerUp()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetDefenseBonusSet(false, 30, 15, 15, 15);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.EqualTo(0));
+        }
+
+        /// <summary>
+        /// Tests if the correct value is set in the power up, as defined.
+        /// </summary>
+        [Test]
+        public void SetBonusDefSetValueCorrect()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetDefenseBonusSet(true, 5, 10, 10, 15, 10);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem()).ToList();
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Value, Is.EqualTo(5.0));
+        }
+
+        /// <summary>
+        /// Tests if no power up is given for a specific level, when all of the items are of a higher level.
+        /// This is the expected behavior, because otherwise, multiple level-dependent set bonuses would take effect.
+        /// </summary>
+        [Test]
+        public void SetBonusNotAppliedWhenFullSetOfHigherLevel()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetDefenseBonusSet(true, 5, 10, 15, 15, 15);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.EqualTo(0));
+        }
+
+        /// <summary>
+        /// Tests if one ancient item gives just the bonus option.
+        /// </summary>
+        [Test]
+        public void OneAncientItemGivesJustBonusOption()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetAncientSet(5, 1);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.EqualTo(1));
+        }
+
+        /// <summary>
+        /// Tests if a partially complete ancient set gives just the bonus option plus the number of unlocked options (item count - 1).
+        /// </summary>
+        /// <param name="itemCount">The item count.</param>
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(4)]
+        public void AncientSetPartiallyComplete(int itemCount)
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetAncientSet(5, itemCount);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.EqualTo(itemCount + (itemCount - 1)));
+        }
+
+        /// <summary>
+        /// Tests if a complete ancient set unlocks all options.
+        /// In case of 5 items in a set, there are 9 power ups (4 unlocked options + 5 bonus options).
+        /// </summary>
+        [Test]
+        public void AncientSetComplete()
+        {
+            var factory = this.GetPowerUpFactory();
+            var items = this.GetAncientSet(5, 5);
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            Assert.That(result.Count(), Is.EqualTo(5 + 4));
+        }
+
         private IItemPowerUpFactory GetPowerUpFactory()
         {
             return new ItemPowerUpFactory();
         }
 
-        private ItemDefinition GetItemDefintion()
+        private ItemDefinition GetItemDefinition()
         {
             var itemDefinition = new Mock<ItemDefinition>();
             itemDefinition.Object.Durability = 100;
             itemDefinition.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+            itemDefinition.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
             return itemDefinition.Object;
         }
 
@@ -125,10 +252,11 @@ namespace MUnique.OpenMU.Tests
         {
             var item = new Mock<Item>();
             item.SetupAllProperties();
-            item.Object.Definition = this.GetItemDefintion();
+            item.Object.Definition = this.GetItemDefinition();
             item.Object.ItemSlot = 0;
             item.Object.Durability = item.Object.Definition.Durability;
             item.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+            item.Setup(i => i.ItemSetGroups).Returns(new List<ItemSetGroup>());
             return item.Object;
         }
 
@@ -175,164 +303,51 @@ namespace MUnique.OpenMU.Tests
             return new ItemOptionLink { ItemOption = option, Level = 1 };
         }
 
-        // TODO: Sets / Dual wield
-        // There is a attributesystem to be defined for the outcommented tests.
-        /*
-        [Test]
-        public void SetBonusDefSetComplete()
+        private IEnumerable<Item> GetDefenseBonusSet(bool complete, float setBonusDefense, byte minimumLevel, params byte[] levels)
         {
-            var factory = GetPowerUpFactory();
-            var items = GetSet(true, 10, 15, 10);
-            var result = factory.GetSetPowerUps(items);
-            Assert.That(result.Count(), Is.EqualTo(1));
-        }
-
-        [Test]
-        public void SetBonusDefSetIncomplete()
-        {
-            var factory = GetPowerUpFactory();
-            var items = GetSet(true, 10, 15, 9);
-            var result = factory.GetSetPowerUps(items);
-            Assert.That(result.Count(), Is.EqualTo(0));
-        }
-
-        [Test]
-        public void SetBonusDefSetIncomplete2()
-        {
-            var factory = GetPowerUpFactory();
-            var items = Enumerable.Empty<Item>();
-            var result = factory.GetSetPowerUps(items);
-            Assert.That(result.Count(), Is.EqualTo(0));
-        }
-
-        [Test]
-        public void SetBonusDefSetIncomplete3()
-        {
-            var factory = GetPowerUpFactory();
-            var items = GetSet(false, 15, 15);
-            var result = factory.GetSetPowerUps(items);
-            Assert.That(result.Count(), Is.EqualTo(0));
-        }
-
-        [Test]
-        public void SetBonusDefSetValueCorrect1()
-        {
-            var factory = GetPowerUpFactory();
-            var items = GetSet(true, 10, 15, 10);
-            var result = factory.GetSetPowerUps(items);
-            Assert.That(result.Count(), Is.EqualTo(1));
-            Assert.That(result.First().Value, Is.EqualTo(5.0));
-        }
-
-        [Test]
-        public void SetBonusDefSetValueCorrect2()
-        {
-            var factory = GetPowerUpFactory();
-            var items = GetSet(true, 15, 15, 15);
-            var result = factory.GetSetPowerUps(items,);
-            Assert.That(result.Count(), Is.EqualTo(1));
-            Assert.That(result.First().Value, Is.EqualTo(30.0));
-        }
-
-        [Test]
-        public void DualWieldBonus()
-        {
-            var factory = GetPowerUpFactory();
-            var result = factory.GetSetPowerUps(new[]{this.GetItemWithDamage(), GetItemWithDamage()})
-                .Where(powerUp => powerUp.Stage == Stage.Always)
-                .Where(powerUp => powerUp.PowerUpType == PowerUpProperty.BaseDmg)
-                .Where(powerUp => powerUp.DamageType == DamageType.Physical)
-                .Where(powerUp => powerUp.AddStrategy == AddStrategy.Relative);
-            Assert.That(result.Count(), Is.EqualTo(1));
-            Assert.That(result.First().Value, Is.EqualTo(10));
-        }
-
-        private IEnumerable<Item> GetSet(bool complete, params byte[] levels)
-        {
-            var armorSet = new Mock<IArmorSet>();
-            if (!complete)
-                armorSet.Setup(a => a.NumberOfPieces).Returns(levels.Length + 1);
-            else
-                armorSet.Setup(a => a.NumberOfPieces).Returns(levels.Length);
-            foreach(var level in levels)
+            var armorSet = new Mock<ItemSetGroup>();
+            armorSet.Setup(a => a.Items).Returns(new List<ItemOfItemSet>());
+            armorSet.Setup(a => a.Options).Returns(new List<IncreasableItemOption>());
+            armorSet.Object.MinimumItemCount = complete ? levels.Length : levels.Length + 1;
+            armorSet.Object.SetLevel = minimumLevel;
+            armorSet.Object.Options.Add(this.GetOption(Stats.DefenseBase, setBonusDefense).ItemOption);
+            foreach (var level in levels)
             {
-                var item = GetItem();
-                item.Definition.Set = armorSet;
+                var item = this.GetItem();
+                item.Definition.PossibleItemSetGroups.Add(armorSet.Object);
+                item.ItemSetGroups.Add(armorSet.Object);
+                armorSet.Object.Items.Add(new ItemOfItemSet { ItemDefinition = item.Definition });
                 item.Level = level;
                 yield return item;
             }
         }
-        /*
-        /// <summary>
-        /// Returns an ancient group which contains 3 different items with 5 options.
-        /// </summary>
-        /// <returns>the ancient group.</returns>
-        private IAncientGroup GetAncientGroup()
+
+        private IEnumerable<Item> GetAncientSet(int setItemCount, int itemCount)
         {
-            var result = new Mock<IAncientGroup>();
-            result.Setup(link => link.Items).Returns(new List<IAncientOptionLink>());
-            for(int i=0;i<3;i++)
+            var ancientSet = new Mock<ItemSetGroup>();
+            ancientSet.Setup(a => a.Items).Returns(new List<ItemOfItemSet>());
+            ancientSet.Setup(a => a.Options).Returns(new List<IncreasableItemOption>());
+            ancientSet.Object.MinimumItemCount = 2;
+            for (int i = 0; i < setItemCount; i++)
             {
-                var optionLink = new Mock<IAncientOptionLink>();
-                optionLink.Setup(o => o.ItemDefinition).Returns(GetItemDefintion());
-                optionLink.Setup(o => o.PowerUp).Returns(new Mock<IPowerUp>()); //this is the +5/10 vit/str etc bonus
-                result.Items.Add(optionLink);
+                var setOption = this.GetOption(Stats.DefenseBase, i + 10).ItemOption;
+                setOption.Number = i + 1;
+                ancientSet.Object.Options.Add(setOption);
             }
 
-            //full set got 5 options:
-            result.Setup(link => link.Options).Returns(new List<IPowerUp>());
-            for (int i = 0; i < 5; i++)
+            var bonusOption = this.GetOption(Stats.TotalStrength, 5).ItemOption;
+            for (int i = 0; i < itemCount; i++)
             {
-                result.Options.Add(new Mock<IPowerUp>());
-            }
+                var item = this.GetItem();
+                item.Definition.PossibleItemSetGroups.Add(ancientSet.Object);
+                item.ItemSetGroups.Add(ancientSet.Object);
 
-            return result;
-        }*/
-        /*
-        [Test]
-        public void NoAncientSet()
-        {
-            var factory = GetPowerUpFactory();
-            var items = new List<Item>();
-            items.Add(GetItem());
-            items.Add(GetItem());
-            var result = factory.GetSetPowerUps(items);
-            Assert.That(result.Any(), Is.False);
+                ancientSet.Object.Items.Add(new ItemOfItemSet { BonusOption = bonusOption, ItemDefinition = item.Definition });
+                yield return item;
+            }
         }
 
-        [Test]
-        public void AncientSetIncomplete()
-        {
-            var factory = GetPowerUpFactory();
-            var ancientGroup = GetAncientGroup();
-            var items = new List<Item>();
-            foreach (var ancientLink in ancientGroup.Items.Skip(1))
-            {
-                var item = GetItem();
-                item.AncientGroup = ancientGroup;
-                item.Setup(i => i.Definition).Returns(ancientLink.ItemDefinition);
-                items.Add(item);
-            }
-            var result = factory.GetSetPowerUps(items);
-            Assert.That(result.Count(), Is.EqualTo(items.Count - 1));
-        }
-
-        [Test]
-        public void AncientSetComplete()
-        {
-            var factory = GetPowerUpFactory();
-            var ancientGroup = GetAncientGroup();
-            var items = new List<Item>();
-            foreach (var ancientLink in ancientGroup.Items)
-            {
-                var item = GetItem();
-                item.AncientGroup = ancientGroup;
-                item.Setup(i => i.Definition).Returns(ancientLink.ItemDefinition);
-                items.Add(item);
-            }
-            var result = factory.GetSetPowerUps(items);
-            Assert.That(result.Count(), Is.EqualTo(ancientGroup.Options.Count));
-        }*/
+        private AttributeSystem GetAttributeSystem() => new AttributeSystem(Enumerable.Empty<IAttribute>(), Enumerable.Empty<IAttribute>(), Enumerable.Empty<AttributeRelationship>());
 
         private class TestPowerUpDefinitionValue : PowerUpDefinitionValue
         {
