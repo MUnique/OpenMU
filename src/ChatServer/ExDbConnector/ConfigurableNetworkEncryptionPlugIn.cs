@@ -38,13 +38,13 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         public ClientVersion Key => Version;
 
         /// <inheritdoc />
-        public IPipelinedDecryptor CreateDecryptor(PipeReader source)
+        public IPipelinedDecryptor CreateDecryptor(PipeReader source, DataDirection direction)
         {
             return new PipelinedXor32Decryptor(source, this.xor32Key);
         }
 
         /// <inheritdoc />
-        public IPipelinedEncryptor CreateEncryptor(PipeWriter target)
+        public IPipelinedEncryptor CreateEncryptor(PipeWriter target, DataDirection direction)
         {
             // At least until season 6, there is no encryption from server to client.
             // ex700 may require packet twister here.
