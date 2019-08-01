@@ -70,7 +70,7 @@ namespace MUnique.OpenMU.Tests
             item.Definition = new ItemDefinition();
             item.Definition.DropLevel = 6;
             item.Definition.Group = 7;
-            item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption() { OptionType = ItemOptionTypes.Option } });
+            item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
             var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
             var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 60 };
 
