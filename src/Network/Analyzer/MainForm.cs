@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private readonly IList<Proxy> proxiedConnections = new BindingList<Proxy>();
 
-        private readonly Dictionary<ClientVersion, string> clientVersions = new Dictionary<ClientVersion, string>()
+        private readonly Dictionary<ClientVersion, string> clientVersions = new Dictionary<ClientVersion, string>
         {
             { new ClientVersion(6, 3, ClientLanguage.English), "S6E3 (1.04d)" },
             { new ClientVersion(0, 0, ClientLanguage.Invariant), "Season 0 - 6" },
