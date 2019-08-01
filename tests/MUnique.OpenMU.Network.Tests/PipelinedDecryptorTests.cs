@@ -98,7 +98,7 @@ namespace MUnique.OpenMU.Network.Tests
 
             var pipe = new Pipe();
             var plugin = new Version075NetworkEncryptionFactoryPlugIn();
-            var decryptor = plugin.CreateDecryptor(pipe.Reader);
+            var decryptor = plugin.CreateDecryptor(pipe.Reader, DataDirection.ClientToServer);
             pipe.Writer.Write(encrypted);
             await pipe.Writer.FlushAsync().ConfigureAwait(false);
             var readResult = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
