@@ -40,6 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\.travis.yml = ..\.travis.yml
+		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\LICENSE = ..\LICENSE
 		..\QuickStart.md = ..\QuickStart.md
 		..\Readme.md = ..\Readme.md
@@ -72,7 +73,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.ChatServer.E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.SimpleModulusKeyGenerator", "SimpleModulusKeyGenerator\MUnique.OpenMU.SimpleModulusKeyGenerator.csproj", "{F4FB8089-880E-43C3-A1B3-0B1B73B24729}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Network.Analyzer", "Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj", "{2D35FBDD-5636-466D-9D6B-9FCEBD017E80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Analyzer", "Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj", "{2D35FBDD-5636-466D-9D6B-9FCEBD017E80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence.InMemory", "Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj", "{23B216A0-B407-4A76-A387-0B9E72B15363}"
 EndProject
@@ -80,9 +81,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AttributeSys
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Benchmarks", "..\tests\MUnique.OpenMU.Network.Benchmarks\MUnique.OpenMU.Network.Benchmarks.csproj", "{F9871781-EC97-4570-A165-6FFF6CAC7004}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.PlugIns", "PlugIns\MUnique.OpenMU.PlugIns.csproj", "{5AB17B80-021D-4898-9750-0C26B2AF1A39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.PlugIns", "PlugIns\MUnique.OpenMU.PlugIns.csproj", "{5AB17B80-021D-4898-9750-0C26B2AF1A39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.PlugIns.Tests", "..\tests\MUnique.OpenMU.PlugIns.Tests\MUnique.OpenMU.PlugIns.Tests.csproj", "{89669CA5-E5C8-4854-B318-3903459236A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.PlugIns.Tests", "..\tests\MUnique.OpenMU.PlugIns.Tests\MUnique.OpenMU.PlugIns.Tests.csproj", "{89669CA5-E5C8-4854-B318-3903459236A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
