@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.PlugIns;
+    using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -54,56 +55,65 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
             else
             {
-                Span<Direction> steps = this.SendWalkDirections ? stackalloc Direction[16] : null;
-                var stepsLength = 0;
-                var point = obj.Position;
-                Direction rotation = Direction.Undefined;
-                if (obj is ISupportWalk supportWalk)
+                this.ObjectWalked(obj);
+            }
+        }
+
+        private void ObjectWalked(ILocateable obj)
+        {
+            var objectId = obj.GetId(this.player);
+            Span<Direction> steps = this.SendWalkDirections ? stackalloc Direction[16] : null;
+            var stepsLength = 0;
+            Point targetPoint;
+            var rotation = Direction.Undefined;
+            if (obj is ISupportWalk supportWalk)
+            {
+                if (this.SendWalkDirections)
                 {
-                    if (this.SendWalkDirections)
+                    stepsLength = supportWalk.GetDirections(steps);
+                    if (stepsLength > 0)
                     {
-                        stepsLength = supportWalk.GetDirections(steps);
-                        if (stepsLength > 0)
-                        {
-                            // The last one is the rotation
-                            rotation = steps[stepsLength - 1];
-                            steps = steps.Slice(0, stepsLength - 1);
-                            stepsLength--;
-                        }
+                        // The last one is the rotation
+                        rotation = steps[stepsLength - 1];
+                        steps = steps.Slice(0, stepsLength - 1);
+                        stepsLength--;
                     }
-
-                    if (obj is IRotatable rotatable)
-                    {
-                        rotation = rotatable.Rotation;
-                    }
-
-                    point = supportWalk.WalkTarget;
                 }
 
-                var stepsSize = steps == null ? 1 : (steps.Length / 2) + 2;
-                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 8 + stepsSize))
+                targetPoint = supportWalk.WalkTarget;
+            }
+            else
+            {
+                targetPoint = obj.Position;
+                if (obj is IRotatable rotatable)
                 {
-                    var walkPacket = writer.Span;
-                    walkPacket[2] = this.GetWalkCode();
-                    walkPacket[3] = objectId.GetHighByte();
-                    walkPacket[4] = objectId.GetLowByte();
-                    walkPacket[5] = point.X;
-                    walkPacket[6] = point.Y;
-                    walkPacket[7] = (byte)(stepsLength | rotation.ToPacketByte() << 4);
-                    if (steps != null && stepsLength > 0)
-                    {
-                        walkPacket[8] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
-                        for (int i = 0; i < stepsSize; i += 2)
-                        {
-                            var index = 9 + (i / 2);
-                            var firstStep = steps[i].ToPacketByte();
-                            var secondStep = steps.Length > i + 1 ? steps[i + 1].ToPacketByte() : 0;
-                            walkPacket[index] = (byte)(firstStep << 4 | secondStep);
-                        }
-                    }
-
-                    writer.Commit();
+                    rotation = rotatable.Rotation;
                 }
+            }
+
+            var stepsSize = steps == null ? 1 : (steps.Length / 2) + 2;
+            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 8 + stepsSize))
+            {
+                var walkPacket = writer.Span;
+                walkPacket[2] = this.GetWalkCode();
+                walkPacket[3] = objectId.GetHighByte();
+                walkPacket[4] = objectId.GetLowByte();
+                walkPacket[5] = targetPoint.X;
+                walkPacket[6] = targetPoint.Y;
+                walkPacket[7] = (byte)(stepsLength | rotation.ToPacketByte() << 4);
+                if (steps != null && stepsLength > 0)
+                {
+                    walkPacket[8] = (byte) (steps[0].ToPacketByte() << 4 | stepsSize);
+                    for (int i = 0; i < stepsSize; i += 2)
+                    {
+                        var index = 9 + (i / 2);
+                        var firstStep = steps[i].ToPacketByte();
+                        var secondStep = steps.Length > i + 1 ? steps[i + 1].ToPacketByte() : 0;
+                        walkPacket[index] = (byte)(firstStep << 4 | secondStep);
+                    }
+                }
+
+                writer.Commit();
             }
         }
 
