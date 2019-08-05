@@ -7,11 +7,8 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.IO;
     using System.IO.Pipelines;
-    using System.Linq;
     using System.Net.Sockets;
-    using System.Text;
     using System.Windows.Forms;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
@@ -22,10 +19,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     /// </summary>
     public partial class MainForm : Form
     {
-        private const string ClientToServerPacketsFile = "ClientToServerPackets.xml";
-        private const string ServerToClientPacketsFile = "ServerToClientPackets.xml";
-
-        private readonly IList<Proxy> proxiedConnections = new BindingList<Proxy>();
+        private readonly IList<ICapturedConnection> proxiedConnections = new BindingList<ICapturedConnection>();
 
         private readonly Dictionary<ClientVersion, string> clientVersions = new Dictionary<ClientVersion, string>
         {
@@ -36,9 +30,7 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private readonly PlugInManager plugInManager;
 
-        private PacketDefinitions clientPacketDefinitions;
-
-        private PacketDefinitions serverPacketDefinitions;
+        private readonly PacketAnalyzer analyzer;
 
         private Listener clientListener;
 
@@ -51,7 +43,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             this.InitializeComponent();
             this.clientBindingSource.DataSource = this.proxiedConnections;
-            this.connectedClientsListBox.DisplayMember = nameof(Proxy.Name);
+            this.connectedClientsListBox.DisplayMember = nameof(ICapturedConnection.Name);
             this.connectedClientsListBox.Update();
 
             this.plugInManager = new PlugInManager();
@@ -61,8 +53,8 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.clientVersionComboBox.DisplayMember = "Value";
             this.clientVersionComboBox.ValueMember = "Key";
 
-            this.LoadAndWatchConfiguration(def => this.serverPacketDefinitions = def, ServerToClientPacketsFile);
-            this.LoadAndWatchConfiguration(def => this.clientPacketDefinitions = def, ClientToServerPacketsFile);
+            this.analyzer = new PacketAnalyzer();
+            this.Disposed += (_, __) => this.analyzer.Dispose();
         }
 
         private INetworkEncryptionFactoryPlugIn NetworkEncryptionPlugIn =>
@@ -79,35 +71,6 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
 
             base.OnClosed(e);
-        }
-
-        private void LoadAndWatchConfiguration(Action<PacketDefinitions> assignAction, string fileName)
-        {
-            assignAction(PacketDefinitions.Load(fileName));
-            var watcher = new FileSystemWatcher(Environment.CurrentDirectory, fileName);
-
-            watcher.Changed += (sender, args) =>
-            {
-                PacketDefinitions definitions;
-                try
-                {
-                    definitions = PacketDefinitions.Load(fileName);
-                }
-                catch
-                {
-                    // I know, bad practice... but when it fails, because of some invalid xml file, we just don't assign it.
-                    return;
-                }
-
-                if (definitions != null)
-                {
-                    assignAction(definitions);
-                }
-            };
-
-            watcher.EnableRaisingEvents = true;
-
-            this.components.Add(watcher);
         }
 
         private IPipelinedEncryptor GetEncryptor(PipeWriter pipeWriter, DataDirection direction) => this.NetworkEncryptionPlugIn.CreateEncryptor(pipeWriter, direction);
@@ -143,7 +106,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             var decryptor = this.GetDecryptor(socketConnection.Input, DataDirection.ServerToClient);
             var encryptor = this.GetEncryptor(socketConnection.Output, DataDirection.ClientToServer);
             var serverConnection = new Connection(socketConnection, decryptor, encryptor);
-            var proxy = new Proxy(clientConnection, serverConnection, this.InvokeByProxy);
+            var proxy = new LiveConnection(clientConnection, serverConnection, this.InvokeByProxy);
             this.InvokeByProxy(new Action(() =>
             {
                 this.proxiedConnections.Add(proxy);
@@ -174,40 +137,27 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private void PacketSelected(object sender, System.EventArgs e)
         {
-            var rows = this.packetGridView.SelectedRows;
-            if (rows.Count > 0)
+            this.SuspendLayout();
+            try
             {
-                var packet = this.packetGridView.SelectedRows[0].DataBoundItem as Packet;
-                this.rawDataTextBox.Text = packet?.PacketData;
-                this.extractedInfoTextBox.Text = this.ExtractInformations(packet);
-                this.packetInfoGroup.Enabled = true;
-            }
-            else
-            {
-                this.packetInfoGroup.Enabled = false;
-                this.rawDataTextBox.Text = string.Empty;
-                this.extractedInfoTextBox.Text = string.Empty;
-            }
-        }
-
-        private string ExtractInformations(Packet packet)
-        {
-            var definitions = packet.ToServer ? this.clientPacketDefinitions : this.serverPacketDefinitions;
-            var definition = definitions.Packets.FirstOrDefault(p => (byte)p.Type == packet.Type && p.Code == packet.Code && (!p.SubCodeSpecified || p.SubCode == packet.SubCode));
-            if (definition != null)
-            {
-                var stringBuilder = new StringBuilder()
-                    .Append(definition.Name);
-                foreach (var field in definition.Fields)
+                var rows = this.packetGridView.SelectedRows;
+                if (rows.Count > 0 && this.packetGridView.SelectedRows[0].DataBoundItem is Packet packet)
                 {
-                    stringBuilder.Append(Environment.NewLine)
-                        .Append(field.Name).Append(": ").Append(packet.ExtractFieldValue(field));
+                    this.rawDataTextBox.Text = packet.PacketData;
+                    this.extractedInfoTextBox.Text = this.analyzer.ExtractInformation(packet);
+                    this.packetInfoGroup.Enabled = true;
                 }
-
-                return stringBuilder.ToString();
+                else
+                {
+                    this.packetInfoGroup.Enabled = false;
+                    this.rawDataTextBox.Text = string.Empty;
+                    this.extractedInfoTextBox.Text = string.Empty;
+                }
             }
-
-            return string.Empty;
+            finally
+            {
+                this.ResumeLayout();
+            }
         }
 
         private void ConnectionSelected(object sender, System.EventArgs e)
@@ -236,13 +186,58 @@ namespace MUnique.OpenMU.Network.Analyzer
                 return;
             }
 
-            var proxy = this.proxiedConnections[index];
-            proxy.Disconnect();
+            var proxy = this.proxiedConnections[index] as LiveConnection;
+            proxy?.Disconnect();
+        }
+
+        private void LoadFromFile(object sender, EventArgs e)
+        {
+            using (var loadFileDialog = new OpenFileDialog())
+            {
+                loadFileDialog.Filter = "Analyzer files (*.mucap)|*.mucap";
+                if (loadFileDialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    var loadedConnection = new SavedConnection(loadFileDialog.FileName);
+                    if (loadedConnection.PacketList.Count == 0)
+                    {
+                        MessageBox.Show("The file couldn't be loaded. It was either empty or in a wrong format.", this.loadToolStripMenuItem.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        this.proxiedConnections.Add(loadedConnection);
+                        this.connectedClientsListBox.SelectedItem = loadedConnection;
+                        this.ConnectionSelected(this, EventArgs.Empty);
+                    }
+                }
+            }
+        }
+
+        private void SaveToFile(object sender, EventArgs e)
+        {
+            var index = this.connectedClientsListBox.SelectedIndex;
+            if (index < 0 || !(this.proxiedConnections[index] is ICapturedConnection capturedConnection))
+            {
+                return;
+            }
+
+            using (var saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.DefaultExt = "mucap";
+                saveFileDialog.Filter = "Analyzer files (*.mucap)|*.mucap";
+                saveFileDialog.AddExtension = true;
+                if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    capturedConnection.SaveToFile(saveFileDialog.FileName);
+                }
+            }
         }
 
         private void BeforeContextMenuOpens(object sender, CancelEventArgs e)
         {
-            e.Cancel = this.connectedClientsListBox.SelectedIndex < 0;
+            var index = this.connectedClientsListBox.SelectedIndex;
+            var selectedConnection = index < 0 ? null : this.proxiedConnections[index];
+            this.disconnectToolStripMenuItem.Enabled = selectedConnection is LiveConnection;
+            this.saveToolStripMenuItem.Enabled = selectedConnection != null;
         }
     }
 }

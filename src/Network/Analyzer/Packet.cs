@@ -22,9 +22,14 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <param name="data">The data.</param>
         /// <param name="toServer">If set to <c>true</c>, the packet was sent to server; Otherwise it was sent to the client.</param>
         public Packet(byte[] data, bool toServer)
+            : this(DateTime.Now, data, toServer)
+        {
+        }
+
+        public Packet(DateTime timestamp, byte[] data, bool toServer)
         {
             this.innerData = data;
-            this.Timestamp = DateTime.Now;
+            this.Timestamp = timestamp;
             this.ToServer = toServer;
             this.Direction = this.ToServer ? "C->S" : "S->C";
         }

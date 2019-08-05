@@ -58,6 +58,8 @@
             this.connectedClientsListBox = new System.Windows.Forms.ListBox();
             this.connectionContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clientVersionComboBox = new System.Windows.Forms.ComboBox();
             this.clientBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.trafficGroup = new System.Windows.Forms.GroupBox();
@@ -371,7 +373,7 @@
             // connectionContextMenu
             // 
             this.connectionContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.disconnectToolStripMenuItem});
+            this.disconnectToolStripMenuItem, this.loadToolStripMenuItem, this.saveToolStripMenuItem});
             this.connectionContextMenu.Name = "connectionContextMenu";
             this.connectionContextMenu.Size = new System.Drawing.Size(153, 48);
             this.connectionContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.BeforeContextMenuOpens);
@@ -382,6 +384,20 @@
             this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.disconnectToolStripMenuItem.Text = "Disconnect";
             this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.DisconnectClient);
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadToolStripMenuItem.Text = "Load from file";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.LoadFromFile);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Text = "Save to file";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToFile);
             // 
             // trafficGroup
             // 
@@ -463,6 +479,8 @@
         private System.Windows.Forms.Panel leftPanel;
         private System.Windows.Forms.ContextMenuStrip connectionContextMenu;
         private System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ComboBox clientVersionComboBox;
     }
 }

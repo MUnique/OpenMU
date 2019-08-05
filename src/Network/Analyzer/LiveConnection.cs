@@ -1,4 +1,4 @@
-// <copyright file="Proxy.cs" company="MUnique">
+// <copyright file="LiveConnection.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     /// A proxy which is a man-in-the-middle between a client and server connection.
     /// It allows to capture the unencrypted network traffic.
     /// </summary>
-    public class Proxy : INotifyPropertyChanged
+    public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     {
         /// <summary>
         /// The connection to the client.
@@ -41,12 +41,12 @@ namespace MUnique.OpenMU.Network.Analyzer
         private string name;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Proxy"/> class.
+        /// Initializes a new instance of the <see cref="LiveConnection"/> class.
         /// </summary>
         /// <param name="clientConnection">The client connection.</param>
         /// <param name="serverConnection">The server connection.</param>
         /// <param name="invokeAction">The invoke action to run an action on the UI thread.</param>
-        public Proxy(IConnection clientConnection, IConnection serverConnection, Action<Delegate> invokeAction)
+        public LiveConnection(IConnection clientConnection, IConnection serverConnection, Action<Delegate> invokeAction)
         {
             this.clientConnection = clientConnection;
             this.serverConnection = serverConnection;
@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.serverConnection.PacketReceived += this.ServerPacketReceived;
             this.clientConnection.Disconnected += this.ClientDisconnected;
             this.serverConnection.Disconnected += this.ServerDisconnected;
-            this.log.Info("Proxy initialized.");
+            this.log.Info("LiveConnection initialized.");
             this.clientConnection.BeginReceive();
             this.serverConnection.BeginReceive();
         }
