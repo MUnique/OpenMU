@@ -1,9 +1,11 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 
 # Requirements for the typescript compiler
-RUN apt-get update && apt-get install curl -y
+RUN apt-get update
+RUN apt-get install curl -y
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install nodejs npm && npm i -g typescript
+RUN apt-get install nodejs npm
+RUN npm i -g typescript
 
 RUN mkdir app
 
