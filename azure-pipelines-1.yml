@@ -1,0 +1,15 @@
+# Build and Push Docker Container
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Docker@2
+  inputs:
+    containerRegistry: 'munique docker hub'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    repository: 'openmu'
