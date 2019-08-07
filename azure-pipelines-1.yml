@@ -9,6 +9,10 @@ pool:
 steps:
 - task: Docker@2
   inputs:
+   containerRegistry: 'munique docker hub'
+   command: 'login'
+- task: Docker@2
+  inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
