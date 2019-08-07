@@ -16,4 +16,7 @@ steps:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
-    repository: 'openmu'
+    repository: 'munique/openmu'
+    tags: |
+      $(Build.BuildId)
+      latest
