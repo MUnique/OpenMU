@@ -12,17 +12,18 @@
 
 Welcome to the OpenMU project. 
 
-This project aims to create an easy to use, extendable and customizable server for a MMORPG called "MU Online"
-in the version of Season 6 Episode 3 using the ENG (english) protocol. 
+This project aims to create an easy to use, extendable and customizable server for a MMORPG called "MU Online".
+The server supports multiple versions of the game, but the main focus is version of Season 6 Episode 3 using the ENG (english) protocol. 
 However, parts of the software can also be suitable for the development of other games, even for other kind of games.
 
 The code is a complete rewrite from scratch - it's not based on any pre-existing projects, and it's also explicitly
-not based on the well-known decompiled server source of "Deathway" or one of its countless derivates.
+not based on decompiled server sources or their countless derivates.
 
 There also exists a [blog](https://munique.net) which may contain some valuable information about this development.
 
 ## Current project state ##
 This project is currently under development without any release.
+You can try the current state by using the available docker image, also mentioned in the [quick start guide](QuickStart.md).
 
 ## Licensing ##
 This project is released under the MIT license (see LICENSE file).
@@ -34,7 +35,7 @@ The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel
 and uses the [React](https://reactjs.org) framework for the user interface.
 
 At the moment the persistence layer uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
-and [PostgreSQL](https://www.postgresql.org) as database.
+and [PostgreSQL](https://www.postgresql.org) as database. Additionally, it's also possible to start it in a non-persistent in-memory mode.
 
 ## Contributions ##
 Contributions are welcome if they meet the following criteria:
@@ -62,7 +63,7 @@ If you want to contribute code, please do the following steps:
 5. lean back, wait for the code review and merge :)
 
 ## How to use ##
-Have a look at the [quick start guide](QuickStart.md).
+Please have a look at the [quick start guide](QuickStart.md).
 
 ## Gameplay differences to the original server ##
 This project doesn't have the goal to copy the original MU Online server behavior to 100 %. This is not entirely
