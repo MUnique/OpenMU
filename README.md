@@ -1,9 +1,14 @@
 # OpenMU Project #
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://travis-ci.org/MUnique/OpenMU.svg?branch=master)](https://travis-ci.org/MUnique/OpenMU)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/eee4aebcd9fd46888013530bd8f96a17)](https://www.codacy.com/project/sven-n/OpenMU/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MUnique/OpenMU&amp;utm_campaign=Badge_Grade_Dashboard)
 [![Gitter chat](https://badges.gitter.im/OpenMU-Project/gitter.svg)](https://gitter.im/OpenMU-Project/Lobby)
+
+| Platform       |Build Status          |
+|----------------|----------------------|
+| Windows        | ![Windows Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU?branchName=master) |
+| Linux (Docker) | [![Docker Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU%20Docker?branchName=master)](https://hub.docker.com/r/munique/openmu)  |
+
 
 Welcome to the OpenMU project. 
 
