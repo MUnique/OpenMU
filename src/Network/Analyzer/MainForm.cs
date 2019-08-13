@@ -7,12 +7,8 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.IO.Pipelines;
-    using System.Net.Sockets;
     using System.Windows.Forms;
     using MUnique.OpenMU.Network.PlugIns;
-    using MUnique.OpenMU.PlugIns;
-    using Pipelines.Sockets.Unofficial;
 
     /// <summary>
     /// The main form of the analyzer.
@@ -28,13 +24,9 @@ namespace MUnique.OpenMU.Network.Analyzer
             { new ClientVersion(0, 75, ClientLanguage.Invariant), "0.75" },
         };
 
-        private readonly PlugInManager plugInManager;
-
         private readonly PacketAnalyzer analyzer;
 
-        private Listener clientListener;
-
-        private ClientVersion clientVersion;
+        private LiveConnectionListener clientListener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
@@ -46,20 +38,38 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.connectedClientsListBox.DisplayMember = nameof(ICapturedConnection.Name);
             this.connectedClientsListBox.Update();
 
-            this.plugInManager = new PlugInManager();
-            this.plugInManager.DiscoverAndRegisterPlugIns();
-            this.clientVersionComboBox.SelectedIndexChanged += (sender, args) => this.clientVersion = ((KeyValuePair<ClientVersion, string>)this.clientVersionComboBox.SelectedItem).Key;
+            this.clientVersionComboBox.SelectedIndexChanged += (_, __) =>
+            {
+                var listener = this.clientListener;
+                if (listener != null && this.clientVersionComboBox.SelectedItem is KeyValuePair<ClientVersion, string> selectedItem)
+                {
+                    listener.ClientVersion = selectedItem.Key;
+                }
+            };
             this.clientVersionComboBox.DataSource = new BindingSource(this.clientVersions, null);
             this.clientVersionComboBox.DisplayMember = "Value";
             this.clientVersionComboBox.ValueMember = "Key";
 
             this.analyzer = new PacketAnalyzer();
             this.Disposed += (_, __) => this.analyzer.Dispose();
-        }
 
-        private INetworkEncryptionFactoryPlugIn NetworkEncryptionPlugIn =>
-            this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(this.clientVersion)
-            ?? this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
+            this.targetHostTextBox.TextChanged += (_, __) =>
+            {
+                var listener = this.clientListener;
+                if (listener != null)
+                {
+                    listener.TargetHost = this.targetHostTextBox.Text;
+                }
+            };
+            this.targetPortNumericUpDown.ValueChanged += (_, __) =>
+            {
+                var listener = this.clientListener;
+                if (listener != null)
+                {
+                    listener.TargetPort = (int)this.targetPortNumericUpDown.Value;
+                }
+            };
+        }
 
         /// <inheritdoc />
         protected override void OnClosed(EventArgs e)
@@ -73,10 +83,6 @@ namespace MUnique.OpenMU.Network.Analyzer
             base.OnClosed(e);
         }
 
-        private IPipelinedEncryptor GetEncryptor(PipeWriter pipeWriter, DataDirection direction) => this.NetworkEncryptionPlugIn.CreateEncryptor(pipeWriter, direction);
-
-        private IPipelinedDecryptor GetDecryptor(PipeReader pipeReader, DataDirection direction) => this.NetworkEncryptionPlugIn.CreateDecryptor(pipeReader, direction);
-
         private void StartProxy(object sender, System.EventArgs e)
         {
             if (this.clientListener != null)
@@ -87,32 +93,20 @@ namespace MUnique.OpenMU.Network.Analyzer
                 return;
             }
 
-            this.clientListener = new Listener(
-                (int)this.numGSPort.Value,
-                reader => this.GetDecryptor(reader, DataDirection.ClientToServer),
-                writer => this.GetEncryptor(writer, DataDirection.ServerToClient));
-            this.clientListener.ClientAccepted += this.ClientConnected;
+            this.clientListener = new LiveConnectionListener((int)this.listenerPortNumericUpDown.Value, this.targetHostTextBox.Text, (int)this.targetPortNumericUpDown.Value, this.InvokeByProxy);
+            this.clientListener.ClientConnected += this.ClientListenerOnClientConnected;
             this.clientListener.Start();
             this.btnStartProxy.Text = "Stop Proxy";
         }
 
-        private void ClientConnected(object sender, ClientAcceptEventArgs e)
+        private void ClientListenerOnClientConnected(object sender, ClientConnectedEventArgs e)
         {
-            var clientConnection = e.AcceptedConnection;
-            var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            serverSocket.Connect(this.txtOtherServer.Text, (int)this.numRealGSPort.Value);
-            var socketConnection = SocketConnection.Create(serverSocket);
-
-            var decryptor = this.GetDecryptor(socketConnection.Input, DataDirection.ServerToClient);
-            var encryptor = this.GetEncryptor(socketConnection.Output, DataDirection.ClientToServer);
-            var serverConnection = new Connection(socketConnection, decryptor, encryptor);
-            var proxy = new LiveConnection(clientConnection, serverConnection, this.InvokeByProxy);
             this.InvokeByProxy(new Action(() =>
             {
-                this.proxiedConnections.Add(proxy);
+                this.proxiedConnections.Add(e.Connection);
                 if (this.proxiedConnections.Count == 1)
                 {
-                    this.connectedClientsListBox.SelectedItem = proxy;
+                    this.connectedClientsListBox.SelectedItem = e.Connection;
                     this.ConnectionSelected(this, EventArgs.Empty);
                 }
             }));

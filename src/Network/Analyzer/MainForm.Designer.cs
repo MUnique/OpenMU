@@ -46,13 +46,13 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.settingsGroup = new System.Windows.Forms.GroupBox();
-            this.numRealGSPort = new System.Windows.Forms.NumericUpDown();
+            this.targetPortNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.txtOtherServer = new System.Windows.Forms.TextBox();
-            this.numGSPort = new System.Windows.Forms.NumericUpDown();
+            this.targetHostTextBox = new System.Windows.Forms.TextBox();
+            this.listenerPortNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.btnStartProxy = new System.Windows.Forms.Button();
             this.connectedClientsGroup = new System.Windows.Forms.GroupBox();
             this.connectedClientsListBox = new System.Windows.Forms.ListBox();
@@ -60,6 +60,7 @@
             this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openPacketSenderStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clientVersionComboBox = new System.Windows.Forms.ComboBox();
             this.clientBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.trafficGroup = new System.Windows.Forms.GroupBox();
@@ -68,8 +69,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.packetBindingSource)).BeginInit();
             this.packetInfoGroup.SuspendLayout();
             this.settingsGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numRealGSPort)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numGSPort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.targetPortNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.listenerPortNumericUpDown)).BeginInit();
             this.connectedClientsGroup.SuspendLayout();
             this.connectionContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.clientBindingSource)).BeginInit();
@@ -217,13 +218,13 @@
             // 
             // settingsGroup
             // 
-            this.settingsGroup.Controls.Add(this.numRealGSPort);
+            this.settingsGroup.Controls.Add(this.targetPortNumericUpDown);
             this.settingsGroup.Controls.Add(this.label6);
             this.settingsGroup.Controls.Add(this.label7);
             this.settingsGroup.Controls.Add(this.label4);
             this.settingsGroup.Controls.Add(this.label8);
-            this.settingsGroup.Controls.Add(this.txtOtherServer);
-            this.settingsGroup.Controls.Add(this.numGSPort);
+            this.settingsGroup.Controls.Add(this.targetHostTextBox);
+            this.settingsGroup.Controls.Add(this.listenerPortNumericUpDown);
             this.settingsGroup.Controls.Add(this.btnStartProxy);
             this.settingsGroup.Controls.Add(this.clientVersionComboBox);
             this.settingsGroup.Dock = System.Windows.Forms.DockStyle.Top;
@@ -234,23 +235,23 @@
             this.settingsGroup.TabStop = false;
             this.settingsGroup.Text = "Settings";
             // 
-            // numRealGSPort
+            // targetPortNumericUpDown
             // 
-            this.numRealGSPort.Location = new System.Drawing.Point(73, 45);
-            this.numRealGSPort.Maximum = new decimal(new int[] {
+            this.targetPortNumericUpDown.Location = new System.Drawing.Point(73, 45);
+            this.targetPortNumericUpDown.Maximum = new decimal(new int[] {
             65536,
             0,
             0,
             0});
-            this.numRealGSPort.Minimum = new decimal(new int[] {
+            this.targetPortNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numRealGSPort.Name = "numRealGSPort";
-            this.numRealGSPort.Size = new System.Drawing.Size(79, 20);
-            this.numRealGSPort.TabIndex = 3;
-            this.numRealGSPort.Value = new decimal(new int[] {
+            this.targetPortNumericUpDown.Name = "targetPortNumericUpDown";
+            this.targetPortNumericUpDown.Size = new System.Drawing.Size(79, 20);
+            this.targetPortNumericUpDown.TabIndex = 3;
+            this.targetPortNumericUpDown.Value = new decimal(new int[] {
             55901,
             0,
             0,
@@ -296,32 +297,32 @@
             this.label8.TabIndex = 2;
             this.label8.Text = "MU Version:";
             // 
-            // txtOtherServer
+            // targetHostTextBox
             // 
-            this.txtOtherServer.Location = new System.Drawing.Point(73, 19);
-            this.txtOtherServer.MaxLength = 15;
-            this.txtOtherServer.Name = "txtOtherServer";
-            this.txtOtherServer.Size = new System.Drawing.Size(95, 20);
-            this.txtOtherServer.TabIndex = 1;
-            this.txtOtherServer.Text = "127.127.127.127";
+            this.targetHostTextBox.Location = new System.Drawing.Point(73, 19);
+            this.targetHostTextBox.MaxLength = 15;
+            this.targetHostTextBox.Name = "targetHostTextBox";
+            this.targetHostTextBox.Size = new System.Drawing.Size(95, 20);
+            this.targetHostTextBox.TabIndex = 1;
+            this.targetHostTextBox.Text = "127.127.127.127";
             // 
-            // numGSPort
+            // listenerPortNumericUpDown
             // 
-            this.numGSPort.Location = new System.Drawing.Point(73, 71);
-            this.numGSPort.Maximum = new decimal(new int[] {
+            this.listenerPortNumericUpDown.Location = new System.Drawing.Point(73, 71);
+            this.listenerPortNumericUpDown.Maximum = new decimal(new int[] {
             65536,
             0,
             0,
             0});
-            this.numGSPort.Minimum = new decimal(new int[] {
+            this.listenerPortNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numGSPort.Name = "numGSPort";
-            this.numGSPort.Size = new System.Drawing.Size(79, 20);
-            this.numGSPort.TabIndex = 3;
-            this.numGSPort.Value = new decimal(new int[] {
+            this.listenerPortNumericUpDown.Name = "listenerPortNumericUpDown";
+            this.listenerPortNumericUpDown.Size = new System.Drawing.Size(79, 20);
+            this.listenerPortNumericUpDown.TabIndex = 3;
+            this.listenerPortNumericUpDown.Value = new decimal(new int[] {
             55900,
             0,
             0,
@@ -437,8 +438,8 @@
             this.packetInfoGroup.PerformLayout();
             this.settingsGroup.ResumeLayout(false);
             this.settingsGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numRealGSPort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numGSPort)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.targetPortNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.listenerPortNumericUpDown)).EndInit();
             this.connectedClientsGroup.ResumeLayout(false);
             this.connectionContextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.clientBindingSource)).EndInit();
@@ -457,11 +458,11 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox settingsGroup;
-        private System.Windows.Forms.TextBox txtOtherServer;
+        private System.Windows.Forms.TextBox targetHostTextBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.NumericUpDown numRealGSPort;
-        private System.Windows.Forms.NumericUpDown numGSPort;
+        private System.Windows.Forms.NumericUpDown targetPortNumericUpDown;
+        private System.Windows.Forms.NumericUpDown listenerPortNumericUpDown;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button btnStartProxy;

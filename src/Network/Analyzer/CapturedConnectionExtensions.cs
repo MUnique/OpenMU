@@ -71,11 +71,24 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
+        /// <summary>
+        /// Tries to parse the byte array string.
+        /// </summary>
+        /// <param name="arrayString">The array string.</param>
+        /// <param name="data">The resulting byte array.</param>
+        /// <returns>The success of the parsing.</returns>
+        public static bool TryParseArray(string arrayString, out byte[] data)
+        {
+            return TryParseArray(arrayString, 0, out data);
+        }
+
         private static bool TryParseArray(string arrayString, int specifiedLength, out byte[] data)
         {
-            data = new byte[specifiedLength];
             var bytesAsString = arrayString.Split(' ');
-            if (bytesAsString.Length != specifiedLength)
+            var arrayLength = specifiedLength == 0 ? bytesAsString.Length : specifiedLength;
+            data = new byte[arrayLength];
+
+            if (bytesAsString.Length != arrayLength)
             {
                 return false;
             }

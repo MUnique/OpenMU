@@ -64,10 +64,30 @@ namespace MUnique.OpenMU.Network
             this.clientListener?.Stop();
         }
 
+        /// <summary>
+        /// Creates the decryptor for the specified reader.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <returns>The created decryptor.</returns>
+        protected virtual IPipelinedDecryptor CreateDecryptor(PipeReader reader)
+        {
+            return this.decryptorCreator?.Invoke(reader);
+        }
+
+        /// <summary>
+        /// Creates the encryptor for the specified writer.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <returns>The created encryptor.</returns>
+        protected virtual IPipelinedEncryptor CreateEncryptor(PipeWriter writer)
+        {
+            return this.encryptorCreator?.Invoke(writer);
+        }
+
         private IConnection CreateConnection(Socket clientSocket)
         {
             var socketConnection = SocketConnection.Create(clientSocket);
-            return new Connection(socketConnection, this.decryptorCreator(socketConnection.Input), this.encryptorCreator(socketConnection.Output));
+            return new Connection(socketConnection, this.CreateDecryptor(socketConnection.Input), this.CreateEncryptor(socketConnection.Output));
         }
 
         private void OnAccept(IAsyncResult result)
