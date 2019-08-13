@@ -226,12 +226,27 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
+        private void SendPacket(object sender, EventArgs e)
+        {
+            var index = this.connectedClientsListBox.SelectedIndex;
+            if (index < 0
+                || !(this.proxiedConnections[index] is LiveConnection liveConnection)
+                || !liveConnection.IsConnected)
+            {
+                return;
+            }
+
+            var packetSender = new PacketSenderForm(liveConnection);
+            packetSender.Show(this);
+        }
+
         private void BeforeContextMenuOpens(object sender, CancelEventArgs e)
         {
             var index = this.connectedClientsListBox.SelectedIndex;
             var selectedConnection = index < 0 ? null : this.proxiedConnections[index];
             this.disconnectToolStripMenuItem.Enabled = selectedConnection is LiveConnection;
             this.saveToolStripMenuItem.Enabled = selectedConnection != null;
+            this.openPacketSenderStripMenuItem.Enabled = selectedConnection is LiveConnection liveConnection && liveConnection.IsConnected;
         }
     }
 }

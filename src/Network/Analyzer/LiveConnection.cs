@@ -91,11 +91,45 @@ namespace MUnique.OpenMU.Network.Analyzer
         }
 
         /// <summary>
+        /// Gets a value indicating whether this instance is connected to the client and server.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is connected; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsConnected => this.clientConnection.Connected && this.serverConnection.Connected;
+
+        /// <summary>
         /// Disconnects the connection to the server and therefore indirectly also to the client.
         /// </summary>
         public void Disconnect()
         {
             this.serverConnection.Disconnect();
+        }
+
+        /// <summary>
+        /// Sends data to the server.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        public void SendToServer(byte[] data)
+        {
+            var packet = new Packet(data, true);
+            this.log.Info(packet.ToString());
+            this.serverConnection.Output.Write(data);
+            this.serverConnection.Output.FlushAsync();
+            this.invokeAction((Action)(() => this.PacketList.Add(packet)));
+        }
+
+        /// <summary>
+        /// Sends data to the client.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        public void SendToClient(byte[] data)
+        {
+            this.clientConnection.Output.Write(data);
+            this.clientConnection.Output.FlushAsync();
+            var packet = new Packet(data, false);
+            this.log.Info(packet.ToString());
+            this.invokeAction((Action)(() => this.PacketList.Add(packet)));
         }
 
         /// <summary>
@@ -111,6 +145,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             this.log.Info("The server connection closed.");
             this.clientConnection.Disconnect();
+            this.Name = this.clientName + " [Disconnected]";
         }
 
         private void ClientDisconnected(object sender, EventArgs e)
@@ -123,21 +158,13 @@ namespace MUnique.OpenMU.Network.Analyzer
         private void ServerPacketReceived(object sender, ReadOnlySequence<byte> data)
         {
             var dataAsArray = data.ToArray();
-            this.clientConnection.Output.Write(dataAsArray);
-            this.clientConnection.Output.FlushAsync();
-            var packet = new Packet(dataAsArray, false);
-            this.log.Info(packet.ToString());
-            this.invokeAction((Action)(() => this.PacketList.Add(packet)));
+            this.SendToClient(dataAsArray);
         }
 
         private void ClientPacketReceived(object sender, ReadOnlySequence<byte> data)
         {
             var dataAsArray = data.ToArray();
-            var packet = new Packet(dataAsArray, true);
-            this.log.Info(packet.ToString());
-            this.serverConnection.Output.Write(dataAsArray);
-            this.serverConnection.Output.FlushAsync();
-            this.invokeAction((Action)(() => this.PacketList.Add(packet)));
+            this.SendToServer(dataAsArray);
         }
     }
 }
