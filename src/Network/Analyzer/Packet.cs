@@ -26,6 +26,12 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Packet"/> class.
+        /// </summary>
+        /// <param name="timestamp">The timestamp.</param>
+        /// <param name="data">The data.</param>
+        /// <param name="toServer">If set to <c>true</c>, the packet was sent to server; Otherwise it was sent to the client.</param>
         public Packet(DateTime timestamp, byte[] data, bool toServer)
         {
             this.innerData = data;
