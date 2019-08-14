@@ -41,9 +41,9 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.clientVersionComboBox.SelectedIndexChanged += (_, __) =>
             {
                 var listener = this.clientListener;
-                if (listener != null && this.clientVersionComboBox.SelectedItem is KeyValuePair<ClientVersion, string> selectedItem)
+                if (listener != null)
                 {
-                    listener.ClientVersion = selectedItem.Key;
+                    listener.ClientVersion = this.SelectedClientVersion;
                 }
             };
             this.clientVersionComboBox.DataSource = new BindingSource(this.clientVersions, null);
@@ -71,6 +71,19 @@ namespace MUnique.OpenMU.Network.Analyzer
             };
         }
 
+        private ClientVersion SelectedClientVersion
+        {
+            get
+            {
+                if (this.clientVersionComboBox.SelectedItem is KeyValuePair<ClientVersion, string> selectedItem)
+                {
+                    return selectedItem.Key;
+                }
+
+                return default;
+            }
+        }
+
         /// <inheritdoc />
         protected override void OnClosed(EventArgs e)
         {
@@ -94,6 +107,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
 
             this.clientListener = new LiveConnectionListener((int)this.listenerPortNumericUpDown.Value, this.targetHostTextBox.Text, (int)this.targetPortNumericUpDown.Value, this.InvokeByProxy);
+            this.clientListener.ClientVersion = this.SelectedClientVersion;
             this.clientListener.ClientConnected += this.ClientListenerOnClientConnected;
             this.clientListener.Start();
             this.btnStartProxy.Text = "Stop Proxy";
