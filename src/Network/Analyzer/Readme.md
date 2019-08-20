@@ -32,6 +32,7 @@ The connection list has the following context menu items:
   * *Disconnect*: Disconnects a connected client
   * *Save to file*: Saves the captured traffic into a file (*.mucap).
   * *Load from file*: Loads the captured traffic from the file, so you can continue your work.
+  * *Packet Sender*: Opens a new window with a simple packet sender.
 
 ## Known limitations
 
