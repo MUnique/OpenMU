@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.2.0</Version>
+    <Authors>MUnique</Authors>
+    <Description>This package contains message structs for the MMORPG "MU Online", which primarily focused on the english version of Season 6 Episode 3.</Description>
+    <PackageLicense>MIT</PackageLicense>
+    <PackageProjectUrl>https://github.com/MUnique/OpenMU/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MUnique/OpenMU/</RepositoryUrl>
+    <PackageTags />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Memory" Version="4.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Buffers">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.2.0\ref\netcoreapp2.2\System.Buffers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <XslTransformation OutputPaths="PacketHeaders.cs" XmlInputPaths="PacketHeaders.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='PacketHeaders.cs'/&gt;" />
+    <XslTransformation OutputPaths="ClientToServer\ClientToServerPackets.cs" XmlInputPaths="ClientToServer\ClientToServerPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ClientToServerPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ClientToServer'/&gt;" />
+    <XslTransformation OutputPaths="ServerToClient\ServerToClientPackets.cs" XmlInputPaths="ServerToClient\ServerToClientPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ServerToClientPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ServerToClient'/&gt;" />
+  </Target>
+
+</Project>
