@@ -33,6 +33,7 @@
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <XslTransformation OutputPaths="PacketHeaders.cs" XmlInputPaths="PacketHeaders.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='PacketHeaders.cs'/&gt;" />
+    <XslTransformation OutputPaths="CommonEnums.cs" XmlInputPaths="CommonEnums.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='CommonEnums.cs'/&gt;" />
     <XslTransformation OutputPaths="ClientToServer\ClientToServerPackets.cs" XmlInputPaths="ClientToServer\ClientToServerPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ClientToServerPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ClientToServer'/&gt;" />
     <XslTransformation OutputPaths="ServerToClient\ServerToClientPackets.cs" XmlInputPaths="ServerToClient\ServerToClientPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ServerToClientPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ServerToClient'/&gt;" />
   </Target>

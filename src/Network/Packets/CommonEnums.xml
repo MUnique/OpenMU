@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
+  <Description>This file contains common enum definitions which are used by server and client messages.</Description>
+  <Structures />
+  <Packets />
+  <Enums>
+    <Enum>
+      <Name>ItemStorageKind</Name>
+      <Description>Defines from or to which item storage an item is moved.</Description>
+      <Values>
+        <EnumValue>
+          <Value>0</Value>
+          <Name>Inventory</Name>
+          <Description>The inventory storage</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>1</Value>
+          <Name>Trade</Name>
+          <Description>The trade storage</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>2</Value>
+          <Name>Vault</Name>
+          <Description>The vault storage</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>3</Value>
+          <Name>ChaosMachine</Name>
+          <Description>The chaos machine storage</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>4</Value>
+          <Name>PlayerShop</Name>
+          <Description>The player shop storage</Description>
+        </EnumValue>
+      </Values>
+    </Enum>
+  </Enums>
+</PacketDefinitions>
