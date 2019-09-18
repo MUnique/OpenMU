@@ -1443,10 +1443,10 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the from storage.
         /// </summary>
-        public byte FromStorage
+        public ItemStorageKind FromStorage
         {
-            get => this.data[3];
-            set => this.data[3] = value;
+            get => (ItemStorageKind)this.data.Slice(3).GetByteValue();
+            set => this.data.Slice(3).SetByteValue((byte)value);
         }
 
         /// <summary>
@@ -1459,12 +1459,20 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Gets or sets the item data.
+        /// </summary>
+        public Span<byte> ItemData
+        {
+            get => this.data.Slice(5, 12);
+        }
+
+        /// <summary>
         /// Gets or sets the to storage.
         /// </summary>
-        public byte ToStorage
+        public ItemStorageKind ToStorage
         {
-            get => this.data[17];
-            set => this.data[17] = value;
+            get => (ItemStorageKind)this.data.Slice(17).GetByteValue();
+            set => this.data.Slice(17).SetByteValue((byte)value);
         }
 
         /// <summary>
@@ -1493,28 +1501,28 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
+    /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
     /// </summary>
-    public ref struct ConsumeItem
+    public ref struct ConsumeItemRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConsumeItem"/> struct.
+        /// Initializes a new instance of the <see cref="ConsumeItemRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public ConsumeItem(Span<byte> data)
+        public ConsumeItemRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConsumeItem"/> struct.
+        /// Initializes a new instance of the <see cref="ConsumeItemRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private ConsumeItem(Span<byte> data, bool initialize)
+        private ConsumeItemRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -1542,7 +1550,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C3Header Header => new C3Header(this.data);
 
         /// <summary>
-        /// Gets or sets the item slot.
+        /// Gets or sets the inventory slot index of the item which should be consumed.
         /// </summary>
         public byte ItemSlot
         {
@@ -1551,7 +1559,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Gets or sets the target slot.
+        /// Gets or sets if the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.
         /// </summary>
         public byte TargetSlot
         {
@@ -1560,44 +1568,53 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="ConsumeItem"/>.
+        /// Gets or sets unknown field, we don't know what it's good for.
+        /// </summary>
+        public byte ItemUseType
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ConsumeItemRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ConsumeItem(Span<byte> packet) => new ConsumeItem(packet, false);
+        public static implicit operator ConsumeItemRequest(Span<byte> packet) => new ConsumeItemRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="ConsumeItem"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="ConsumeItemRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(ConsumeItem packet) => packet.data; 
+        public static implicit operator Span<byte>(ConsumeItemRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player wants to talk to an NPC.
+    /// Causes reaction on server side: Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.
     /// </summary>
-    public ref struct TalkToNpc
+    public ref struct TalkToNpcRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TalkToNpc"/> struct.
+        /// Initializes a new instance of the <see cref="TalkToNpcRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public TalkToNpc(Span<byte> data)
+        public TalkToNpcRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TalkToNpc"/> struct.
+        /// Initializes a new instance of the <see cref="TalkToNpcRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private TalkToNpc(Span<byte> data, bool initialize)
+        private TalkToNpcRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -1634,44 +1651,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="TalkToNpc"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TalkToNpcRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TalkToNpc(Span<byte> packet) => new TalkToNpc(packet, false);
+        public static implicit operator TalkToNpcRequest(Span<byte> packet) => new TalkToNpcRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="TalkToNpc"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="TalkToNpcRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(TalkToNpc packet) => packet.data; 
+        public static implicit operator Span<byte>(TalkToNpcRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player closes the dialog which was opened by an interaction with a NPC.
+    /// Causes reaction on server side: The server updates the state of the player accordingly.
     /// </summary>
-    public ref struct CloseNpc
+    public ref struct CloseNpcRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloseNpc"/> struct.
+        /// Initializes a new instance of the <see cref="CloseNpcRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public CloseNpc(Span<byte> data)
+        public CloseNpcRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloseNpc"/> struct.
+        /// Initializes a new instance of the <see cref="CloseNpcRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private CloseNpc(Span<byte> data, bool initialize)
+        private CloseNpcRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -1699,24 +1716,24 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new C1Header(this.data);
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="CloseNpc"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CloseNpcRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator CloseNpc(Span<byte> packet) => new CloseNpc(packet, false);
+        public static implicit operator CloseNpcRequest(Span<byte> packet) => new CloseNpcRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CloseNpc"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="CloseNpcRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(CloseNpc packet) => packet.data; 
+        public static implicit operator Span<byte>(CloseNpcRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player wants to buy an item from an opened NPC merchant.
+    /// Causes reaction on server side: If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.
     /// </summary>
     public ref struct BuyItemFromNpcRequest
     {
@@ -1789,28 +1806,28 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player wants to sell an item of his inventory to the opened NPC merchant.
+    /// Causes reaction on server side: The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.
     /// </summary>
-    public ref struct SellItemToNpc
+    public ref struct SellItemToNpcRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SellItemToNpc"/> struct.
+        /// Initializes a new instance of the <see cref="SellItemToNpcRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public SellItemToNpc(Span<byte> data)
+        public SellItemToNpcRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SellItemToNpc"/> struct.
+        /// Initializes a new instance of the <see cref="SellItemToNpcRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private SellItemToNpc(Span<byte> data, bool initialize)
+        private SellItemToNpcRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -1847,44 +1864,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="SellItemToNpc"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SellItemToNpcRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator SellItemToNpc(Span<byte> packet) => new SellItemToNpc(packet, false);
+        public static implicit operator SellItemToNpcRequest(Span<byte> packet) => new SellItemToNpcRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="SellItemToNpc"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="SellItemToNpcRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(SellItemToNpc packet) => packet.data; 
+        public static implicit operator Span<byte>(SellItemToNpcRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player wants to repair an item of his inventory.
+    /// Causes reaction on server side: The item is repaired if the player has enough money in its inventory. A corresponding response is sent.
     /// </summary>
-    public ref struct WarpCommand
+    public ref struct RepairItemRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WarpCommand"/> struct.
+        /// Initializes a new instance of the <see cref="RepairItemRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public WarpCommand(Span<byte> data)
+        public RepairItemRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WarpCommand"/> struct.
+        /// Initializes a new instance of the <see cref="RepairItemRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private WarpCommand(Span<byte> data, bool initialize)
+        private RepairItemRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -1904,7 +1921,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the operation code of this data packet.
         /// </summary>
-        public static byte Code => 0x8E;
+        public static byte Code => 0x34;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -1912,53 +1929,134 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new C1Header(this.data);
 
         /// <summary>
-        /// Gets or sets the warp info id.
+        /// Gets or sets inventory item slot of the target item. If it's 0xFF, the player wants to repair all items - this is only possible with some opened NPC dialogs. Repairing the pet item slot (8) is only possible when the pet trainer npc is opened.
         /// </summary>
-        public ushort WarpInfoId
+        public byte ItemSlot
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="RepairItemRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator RepairItemRequest(Span<byte> packet) => new RepairItemRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="RepairItemRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(RepairItemRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: A player selected to warp by selecting an entry in the warp list (configured in game client files).
+    /// Causes reaction on server side: If the player has enough money and is allowed to enter the map, it's getting moved to there.
+    /// </summary>
+    public ref struct WarpCommandRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WarpCommandRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public WarpCommandRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WarpCommandRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private WarpCommandRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x8E;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x02;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the index of the entry in the warp list.
+        /// </summary>
+        public ushort WarpInfoIndex
         {
             get => this.data.Slice(8).GetShortBigEndian();
             set => this.data.Slice(8).SetShortBigEndian(value);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="WarpCommand"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="WarpCommandRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator WarpCommand(Span<byte> packet) => new WarpCommand(packet, false);
+        public static implicit operator WarpCommandRequest(Span<byte> packet) => new WarpCommandRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WarpCommand"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="WarpCommandRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(WarpCommand packet) => packet.data; 
+        public static implicit operator Span<byte>(WarpCommandRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: When the player enters an area on the game map which is configured as gate at the client data files.
+    /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
     /// </summary>
-    public ref struct EnterGate
+    public ref struct EnterGateRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EnterGate"/> struct.
+        /// Initializes a new instance of the <see cref="EnterGateRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public EnterGate(Span<byte> data)
+        public EnterGateRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EnterGate"/> struct.
+        /// Initializes a new instance of the <see cref="EnterGateRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private EnterGate(Span<byte> data, bool initialize)
+        private EnterGateRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -1995,44 +2093,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="EnterGate"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="EnterGateRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator EnterGate(Span<byte> packet) => new EnterGate(packet, false);
+        public static implicit operator EnterGateRequest(Span<byte> packet) => new EnterGateRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="EnterGate"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="EnterGateRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(EnterGate packet) => packet.data; 
+        public static implicit operator Span<byte>(EnterGateRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: The player closed an opened vault dialog.
+    /// Causes reaction on server side: The state on the server is updated.
     /// </summary>
-    public ref struct VaultClose
+    public ref struct VaultClosed
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VaultClose"/> struct.
+        /// Initializes a new instance of the <see cref="VaultClosed"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public VaultClose(Span<byte> data)
+        public VaultClosed(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VaultClose"/> struct.
+        /// Initializes a new instance of the <see cref="VaultClosed"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private VaultClose(Span<byte> data, bool initialize)
+        private VaultClosed(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2060,31 +2158,31 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new C1Header(this.data);
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="VaultClose"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="VaultClosed"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator VaultClose(Span<byte> packet) => new VaultClose(packet, false);
+        public static implicit operator VaultClosed(Span<byte> packet) => new VaultClosed(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="VaultClose"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="VaultClosed"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(VaultClose packet) => packet.data; 
+        public static implicit operator Span<byte>(VaultClosed packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
+    /// Causes reaction on server side: If successful, the inventory is updated and the game client gets corresponding responses.
     /// </summary>
-    public ref struct LahapJewelMix
+    public ref struct LahapJewelMixRequest
     {
         /// <summary>
         /// Describes what kind of operation is requested.
         /// </summary>
-        public enum MixOrUnmix
+        public enum MixType
         {
             /// <summary>
             /// The player wants to mix single jewels into a bundle.
@@ -2097,23 +2195,70 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             Unmix = 1,
         }
 
+        /// <summary>
+        /// Describes the size of a mixed stack.
+        /// </summary>
+        public enum StackSize
+        {
+            /// <summary>
+            /// A stack of 10 items.
+            /// </summary>
+            Ten = 0,
+
+            /// <summary>
+            /// A stack of 20 items.
+            /// </summary>
+            Twenty = 1,
+
+            /// <summary>
+            /// A stack of 30 items.
+            /// </summary>
+            Thirty = 2,
+        }
+
+        /// <summary>
+        /// Describes the type of item which is mixed or unmixed.
+        /// </summary>
+        public enum ItemType
+        {
+            JewelOfBless = 0,
+
+            JewelOfSoul = 1,
+
+            JewelOfLife = 2,
+
+            JewelOfCreation = 3,
+
+            JewelOfGuardian = 4,
+
+            Gemstone = 5,
+
+            JewelOfHarmony = 6,
+
+            JewelOfChaos = 7,
+
+            LowerRefineStone = 8,
+
+            HigherRefineStone = 9,
+        }
+
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LahapJewelMix"/> struct.
+        /// Initializes a new instance of the <see cref="LahapJewelMixRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public LahapJewelMix(Span<byte> data)
+        public LahapJewelMixRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LahapJewelMix"/> struct.
+        /// Initializes a new instance of the <see cref="LahapJewelMixRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private LahapJewelMix(Span<byte> data, bool initialize)
+        private LahapJewelMixRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2141,30 +2286,30 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new C1Header(this.data);
 
         /// <summary>
-        /// Gets or sets the mix type.
+        /// Gets or sets the operation.
         /// </summary>
-        public MixOrUnmix MixType
+        public MixType Operation
         {
-            get => (MixOrUnmix)this.data.Slice(3).GetByteValue();
+            get => (MixType)this.data.Slice(3).GetByteValue();
             set => this.data.Slice(3).SetByteValue((byte)value);
         }
 
         /// <summary>
-        /// Gets or sets the jewel type.
+        /// Gets or sets the item.
         /// </summary>
-        public byte JewelType
+        public ItemType Item
         {
-            get => this.data[4];
-            set => this.data[4] = value;
+            get => (ItemType)this.data.Slice(4).GetByteValue();
+            set => this.data.Slice(4).SetByteValue((byte)value);
         }
 
         /// <summary>
         /// Gets or sets the mixing stack size.
         /// </summary>
-        public byte MixingStackSize
+        public StackSize MixingStackSize
         {
-            get => this.data[5];
-            set => this.data[5] = value;
+            get => (StackSize)this.data.Slice(5).GetByteValue();
+            set => this.data.Slice(5).SetByteValue((byte)value);
         }
 
         /// <summary>
@@ -2177,44 +2322,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="LahapJewelMix"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LahapJewelMixRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LahapJewelMix(Span<byte> packet) => new LahapJewelMix(packet, false);
+        public static implicit operator LahapJewelMixRequest(Span<byte> packet) => new LahapJewelMixRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="LahapJewelMix"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="LahapJewelMixRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(LahapJewelMix packet) => packet.data; 
+        public static implicit operator Span<byte>(LahapJewelMixRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: When the player opens the party menu in the game client.
+    /// Causes reaction on server side: If the player is in a party, the server sends back a list with information about all players of the party.
     /// </summary>
-    public ref struct RequestPartyList
+    public ref struct PartyListRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RequestPartyList"/> struct.
+        /// Initializes a new instance of the <see cref="PartyListRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public RequestPartyList(Span<byte> data)
+        public PartyListRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RequestPartyList"/> struct.
+        /// Initializes a new instance of the <see cref="PartyListRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private RequestPartyList(Span<byte> data, bool initialize)
+        private PartyListRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2242,44 +2387,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new C1Header(this.data);
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="RequestPartyList"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyListRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator RequestPartyList(Span<byte> packet) => new RequestPartyList(packet, false);
+        public static implicit operator PartyListRequest(Span<byte> packet) => new PartyListRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="RequestPartyList"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="PartyListRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(RequestPartyList packet) => packet.data; 
+        public static implicit operator Span<byte>(PartyListRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
+    /// Causes reaction on server side: If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.
     /// </summary>
-    public ref struct PartyPlayerKick
+    public ref struct PartyPlayerKickRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartyPlayerKick"/> struct.
+        /// Initializes a new instance of the <see cref="PartyPlayerKickRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public PartyPlayerKick(Span<byte> data)
+        public PartyPlayerKickRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartyPlayerKick"/> struct.
+        /// Initializes a new instance of the <see cref="PartyPlayerKickRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private PartyPlayerKick(Span<byte> data, bool initialize)
+        private PartyPlayerKickRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2316,44 +2461,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyPlayerKick"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyPlayerKickRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PartyPlayerKick(Span<byte> packet) => new PartyPlayerKick(packet, false);
+        public static implicit operator PartyPlayerKickRequest(Span<byte> packet) => new PartyPlayerKickRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="PartyPlayerKick"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="PartyPlayerKickRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(PartyPlayerKick packet) => packet.data; 
+        public static implicit operator Span<byte>(PartyPlayerKickRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A party master wants to invite another player to his party.
+    /// Causes reaction on server side: If the requesting player has no party, or is the party master, a request is sent to the target player.
     /// </summary>
-    public ref struct PartyRequest
+    public ref struct PartyInviteRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartyRequest"/> struct.
+        /// Initializes a new instance of the <see cref="PartyInviteRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public PartyRequest(Span<byte> data)
+        public PartyInviteRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartyRequest"/> struct.
+        /// Initializes a new instance of the <see cref="PartyInviteRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private PartyRequest(Span<byte> data, bool initialize)
+        private PartyInviteRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2390,44 +2535,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyRequest"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyInviteRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PartyRequest(Span<byte> packet) => new PartyRequest(packet, false);
+        public static implicit operator PartyInviteRequest(Span<byte> packet) => new PartyInviteRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="PartyRequest"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="PartyInviteRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(PartyRequest packet) => packet.data; 
+        public static implicit operator Span<byte>(PartyInviteRequest packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player was invited by another player to join a party and this player sent the response back.
+    /// Causes reaction on server side: If the sender accepts the request, it's added to the party.
     /// </summary>
-    public ref struct PartyResponse
+    public ref struct PartyInviteResponse
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartyResponse"/> struct.
+        /// Initializes a new instance of the <see cref="PartyInviteResponse"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public PartyResponse(Span<byte> data)
+        public PartyInviteResponse(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartyResponse"/> struct.
+        /// Initializes a new instance of the <see cref="PartyInviteResponse"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private PartyResponse(Span<byte> data, bool initialize)
+        private PartyInviteResponse(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2464,44 +2609,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyResponse"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyInviteResponse"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PartyResponse(Span<byte> packet) => new PartyResponse(packet, false);
+        public static implicit operator PartyInviteResponse(Span<byte> packet) => new PartyInviteResponse(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="PartyResponse"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="PartyInviteResponse"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(PartyResponse packet) => packet.data; 
+        public static implicit operator Span<byte>(PartyInviteResponse packet) => packet.data; 
     }
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player wants to walk on the game map.
+    /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
     /// </summary>
-    public ref struct Walk
+    public ref struct WalkRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Walk"/> struct.
+        /// Initializes a new instance of the <see cref="WalkRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public Walk(Span<byte> data)
+        public WalkRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Walk"/> struct.
+        /// Initializes a new instance of the <see cref="WalkRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private Walk(Span<byte> data, bool initialize)
+        private WalkRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2547,7 +2692,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Gets or sets the directions.
+        /// Gets or sets the directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.
         /// </summary>
         public Span<byte> Directions
         {
@@ -2555,18 +2700,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="Walk"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="WalkRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator Walk(Span<byte> packet) => new Walk(packet, false);
+        public static implicit operator WalkRequest(Span<byte> packet) => new WalkRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Walk"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="WalkRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(Walk packet) => packet.data; 
+        public static implicit operator Span<byte>(WalkRequest packet) => packet.data; 
     }
 
 
@@ -2654,28 +2799,28 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player does any kind of animation.
+    /// Causes reaction on server side: The animation number and rotation is forwarded to all surrounding players.
     /// </summary>
-    public ref struct Animation
+    public ref struct AnimationRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Animation"/> struct.
+        /// Initializes a new instance of the <see cref="AnimationRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public Animation(Span<byte> data)
+        public AnimationRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Animation"/> struct.
+        /// Initializes a new instance of the <see cref="AnimationRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private Animation(Span<byte> data, bool initialize)
+        private AnimationRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2721,18 +2866,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="Animation"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AnimationRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator Animation(Span<byte> packet) => new Animation(packet, false);
+        public static implicit operator AnimationRequest(Span<byte> packet) => new AnimationRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Animation"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="AnimationRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(Animation packet) => packet.data; 
+        public static implicit operator Span<byte>(AnimationRequest packet) => packet.data; 
     }
 
 
@@ -4589,28 +4734,28 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A guild member wants to kick himself or a guild master wants to kick another player from its guild.
+    /// Causes reaction on server side: If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.
     /// </summary>
-    public ref struct GuildKickPlayer
+    public ref struct GuildKickPlayerRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuildKickPlayer"/> struct.
+        /// Initializes a new instance of the <see cref="GuildKickPlayerRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public GuildKickPlayer(Span<byte> data)
+        public GuildKickPlayerRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuildKickPlayer"/> struct.
+        /// Initializes a new instance of the <see cref="GuildKickPlayerRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private GuildKickPlayer(Span<byte> data, bool initialize)
+        private GuildKickPlayerRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -4656,18 +4801,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildKickPlayer"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildKickPlayerRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildKickPlayer(Span<byte> packet) => new GuildKickPlayer(packet, false);
+        public static implicit operator GuildKickPlayerRequest(Span<byte> packet) => new GuildKickPlayerRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="GuildKickPlayer"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="GuildKickPlayerRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(GuildKickPlayer packet) => packet.data; 
+        public static implicit operator Span<byte>(GuildKickPlayerRequest packet) => packet.data; 
     }
 
 
@@ -5181,11 +5326,72 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
+    /// Causes reaction on server side: Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
     /// </summary>
     public ref struct ChaosMachineMixRequest
     {
+        /// <summary>
+        /// This enum describes the possible chaos machine mix type identifiers.
+        /// </summary>
+        public enum ChaosMachineMixType
+        {
+            /// <summary>
+            /// Mixes the items to a chaos weapon.
+            /// </summary>
+            ChaosWeapon = 1,
+
+            /// <summary>
+            /// Upgrades an item to level 10.
+            /// </summary>
+            UpgradeItemLevelTo10 = 3,
+
+            /// <summary>
+            /// Upgrades an item to level 11.
+            /// </summary>
+            UpgradeItemLevelTo11 = 4,
+
+            /// <summary>
+            /// Upgrades an item to level 12.
+            /// </summary>
+            UpgradeItemLevelTo12 = 22,
+
+            /// <summary>
+            /// Upgrades an item to level 13.
+            /// </summary>
+            UpgradeItemLevelTo13 = 23,
+
+            /// <summary>
+            /// Upgrades an item to level 14.
+            /// </summary>
+            UpgradeItemLevelTo14 = 49,
+
+            /// <summary>
+            /// Upgrades an item to level 15.
+            /// </summary>
+            UpgradeItemLevelTo15 = 50,
+
+            /// <summary>
+            /// Mixes the items to a fruit.
+            /// </summary>
+            FruitCreation = 6,
+
+            /// <summary>
+            /// Refines a gemstone to a jewel of harmony.
+            /// </summary>
+            GemstoneRefinery = 41,
+
+            /// <summary>
+            /// Refines a Jewel Of Bless to a stack of potions of bless.
+            /// </summary>
+            PotionOfBless = 15,
+
+            /// <summary>
+            /// Refines a Jewel Of Soul to a stack of potions of bless.
+            /// </summary>
+            PotionOfSoul = 16,
+        }
+
         private Span<byte> data;
 
         /// <summary>
@@ -5230,12 +5436,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new C1Header(this.data);
 
         /// <summary>
-        /// Gets or sets the mix id.
+        /// Gets or sets the identifier which tells the server which kind of mix should be executed.
         /// </summary>
-        public byte MixId
+        public ChaosMachineMixType MixType
         {
-            get => this.data[2];
-            set => this.data[2] = value;
+            get => (ChaosMachineMixType)this.data.Slice(2).GetByteValue();
+            set => this.data.Slice(2).SetByteValue((byte)value);
         }
 
         /// <summary>
