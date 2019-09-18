@@ -28,12 +28,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Memory" Version="4.5.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Buffers">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.2.0\ref\netcoreapp2.2\System.Buffers.dll</HintPath>
-    </Reference>
+    <PackageReference Include="System.Buffers" Version="4.4.0" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
