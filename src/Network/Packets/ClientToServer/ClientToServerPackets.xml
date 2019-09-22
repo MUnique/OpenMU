@@ -574,6 +574,43 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>81</Code>
+      <Name>VaultMoveMoneyRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to move money from or to the vault storage.</SentWhen>
+      <CausedReaction>The money is moved, if possible.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>VaultMoneyMoveDirection</TypeName>
+          <Name>Direction</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>Amount</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>VaultMoneyMoveDirection</Name>
+          <Description>Defines the moving direction of money between inventory and vault.</Description>
+          <Values>
+            <EnumValue>
+              <Name>InventoryToVault</Name>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>VaultToInventory</Name>
+              <Value>1</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>BC</Code>
       <Name>LahapJewelMixRequest</Name>
       <Caption>Jewel Mix (Lahap)</Caption>
@@ -976,7 +1013,7 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>11</Code>
-      <Name>Hit</Name>
+      <Name>HitRequest</Name>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player attacks a target without using a skill.</SentWhen>
       <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
@@ -1273,16 +1310,15 @@
       <CausedReaction>If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.</CausedReaction>
       <Fields>
         <Field>
-          <Index>4</Index>
+          <Index>3</Index>
           <Type>String</Type>
           <Name>PlayerName</Name>
           <Length>10</Length>
         </Field>
         <Field>
-          <Index>14</Index>
+          <Index>13</Index>
           <Type>String</Type>
-          <Name>Password</Name>
-          <Length>20</Length>
+          <Name>SecurityCode</Name>
         </Field>
       </Fields>
     </Packet>
@@ -1291,8 +1327,8 @@
       <Code>50</Code>
       <Name>GuildJoinRequest</Name>
       <Direction>ClientToServer</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>A player (non-guild member) requests to join a guild.</SentWhen>
+      <CausedReaction>The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
@@ -1306,8 +1342,8 @@
       <Code>51</Code>
       <Name>GuildJoinResponse</Name>
       <Direction>ClientToServer</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>A guild master responded to a previously sent request.</SentWhen>
+      <CausedReaction>If the request was accepted by the guild master, the previously requesting player is added to the guild.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
@@ -1321,8 +1357,8 @@
       <Code>52</Code>
       <Name>GuildListRequest</Name>
       <Direction>ClientToServer</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>A guild player opens its guild menu in the game client.</SentWhen>
+      <CausedReaction>A list of all guild members and their state is sent back as response.</CausedReaction>
       <Fields />
     </Packet>
     <Packet>
@@ -1330,14 +1366,21 @@
       <Code>55</Code>
       <Name>GuildCreateRequest</Name>
       <Direction>ClientToServer</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>When a player wants to create a guild.</SentWhen>
+      <CausedReaction>The guild is created and the player is set as the new guild master of the guild.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
           <Type>String</Type>
           <Name>GuildName</Name>
           <Length>9</Length>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Binary</Type>
+          <Name>GuildEmblem</Name>
+          <Length>32</Length>
+          <Description>The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -1346,13 +1389,14 @@
       <Code>54</Code>
       <Name>GuildMasterAnswer</Name>
       <Direction>ClientToServer</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>The player has the dialog of the guild master NPC opened and decided about its next step.</SentWhen>
+      <CausedReaction>It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type><!-- TODO: Enum or Boolean-->
-          <Name>Answer</Name>
+          <Type>Boolean</Type>
+          <Name>ShowCreationDialog</Name>
+          <Description>A value whether the guild creation dialog should be shown. Otherwise, the guild creation is cancelled and the dialog was closed.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -1361,12 +1405,12 @@
       <Code>66</Code>
       <Name>GuildInfoRequest</Name>
       <Direction>ClientToServer</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.</SentWhen>
+      <CausedReaction>The server sends a response which includes the guild name and emblem.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>GuildId</Name>
         </Field>
       </Fields>
@@ -1376,13 +1420,14 @@
       <Code>34</Code>
       <Name>ItemRepair</Name>
       <Direction>ClientToServer</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>A player wants to repair an item of his inventory, either himself or with the usage of an NPC.</SentWhen>
+      <CausedReaction>If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
           <Type>Byte</Type>
           <Name>InventoryItemSlot</Name>
+          <Description>The inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -1465,6 +1510,16 @@
           </Values>
         </Enum>
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>87</Code>
+      <Name>CloseChaosMachineRequest</Name>
+      <Caption>Close Chaos Machine</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player closes the dialog which was opened by an interaction with the chaos machine goblin.</SentWhen>
+      <CausedReaction>The server updates the state of the player accordingly.</CausedReaction>
+      <Fields />
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
@@ -1576,6 +1631,213 @@
           <Name>RequestId</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A0</Code>
+      <Name>LegacyQuestStateRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>After the player entered the game world with a character.</SentWhen>
+      <CausedReaction>The quest state is sent back as response.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A2</Code>
+      <Name>LegacyQuestStateSetRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to change the state of a quest, e.g. to start or to finish a quest.</SentWhen>
+      <CausedReaction>Depending on the requested new state, a response is sent back.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>NewState</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0A</SubCode>
+      <Name>QuestStartRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client opened an quest NPC dialog and decided to start an available quests.</SentWhen>
+      <CausedReaction>The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>UnknownField</Name>
+          <Description>A value between 1 and 3, probably depending on how many quests are already running. Should not be trusted or considered.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0B</SubCode>
+      <Name>QuestProceedRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.</SentWhen>
+      <CausedReaction>The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>NextState</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0D</SubCode>
+      <Name>QuestCompletionRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests to complete an active quest.</SentWhen>
+      <CausedReaction>The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0F</SubCode>
+      <Name>QuestCancelRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests to cancel an active quest.</SentWhen>
+      <CausedReaction>The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>10</SubCode>
+      <Name>QuestClientActionRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests to complete a client action, e.g. completing a tutorial.</SentWhen>
+      <CausedReaction>The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>1A</SubCode>
+      <Name>ActiveQuestListRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The clients requests the states of all quests, usually after entering the game.</SentWhen>
+      <CausedReaction>The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>1B</SubCode>
+      <Name>QuestStateRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests the state of a specific active quests.</SentWhen>
+      <CausedReaction>The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>21</SubCode>
+      <Name>EventQuestStateListRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests the list of event quests, usually after entering the game.</SentWhen>
+      <CausedReaction>The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>30</SubCode>
+      <Name>AvailableQuestsRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client opened an quest NPC dialog and requests a list of available quests.</SentWhen>
+      <CausedReaction>The list of available quests of this NPC is sent back (F60A).</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>31</SubCode>
+      <Name>NpcBuffRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).</SentWhen>
+      <CausedReaction>The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.</CausedReaction>
+      <Fields />
     </Packet>
   </Packets>
   <Enums>

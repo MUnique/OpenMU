@@ -2174,6 +2174,99 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
+    /// Is sent by the client when: The player wants to move money from or to the vault storage.
+    /// Causes reaction on server side: The money is moved, if possible.
+    /// </summary>
+    public ref struct VaultMoveMoneyRequest
+    {
+        /// <summary>
+        /// Defines the moving direction of money between inventory and vault.
+        /// </summary>
+        public enum VaultMoneyMoveDirection
+        {
+            InventoryToVault = 0,
+
+            VaultToInventory = 1,
+        }
+
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VaultMoveMoneyRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public VaultMoveMoneyRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VaultMoveMoneyRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private VaultMoveMoneyRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x81;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the direction.
+        /// </summary>
+        public VaultMoneyMoveDirection Direction
+        {
+            get => (VaultMoneyMoveDirection)this.data.Slice(3).GetByteValue();
+            set => this.data.Slice(3).SetByteValue((byte)value);
+        }
+
+        /// <summary>
+        /// Gets or sets the amount.
+        /// </summary>
+        public uint Amount
+        {
+            get => this.data.Slice(4).GetIntegerBigEndian();
+            set => this.data.Slice(4).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="VaultMoveMoneyRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator VaultMoveMoneyRequest(Span<byte> packet) => new VaultMoveMoneyRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="VaultMoveMoneyRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(VaultMoveMoneyRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the client when: When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
     /// Causes reaction on server side: If successful, the inventory is updated and the game client gets corresponding responses.
     /// </summary>
@@ -3613,25 +3706,25 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player attacks a target without using a skill.
     /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
     /// </summary>
-    public ref struct Hit
+    public ref struct HitRequest
     {
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Hit"/> struct.
+        /// Initializes a new instance of the <see cref="HitRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public Hit(Span<byte> data)
+        public HitRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Hit"/> struct.
+        /// Initializes a new instance of the <see cref="HitRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private Hit(Span<byte> data, bool initialize)
+        private HitRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -3686,18 +3779,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="Hit"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="HitRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator Hit(Span<byte> packet) => new Hit(packet, false);
+        public static implicit operator HitRequest(Span<byte> packet) => new HitRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Hit"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="HitRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(Hit packet) => packet.data; 
+        public static implicit operator Span<byte>(HitRequest packet) => packet.data; 
     }
 
 
@@ -4787,17 +4880,17 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public string PlayerName
         {
-            get => this.data.ExtractString(4, 10, System.Text.Encoding.UTF8);
-            set => this.data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+            get => this.data.ExtractString(3, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
         }
 
         /// <summary>
-        /// Gets or sets the password.
+        /// Gets or sets the security code.
         /// </summary>
-        public string Password
+        public string SecurityCode
         {
-            get => this.data.ExtractString(14, 20, System.Text.Encoding.UTF8);
-            set => this.data.Slice(14, 20).WriteString(value, System.Text.Encoding.UTF8);
+            get => this.data.ExtractString(13, this.data.Length - 13, System.Text.Encoding.UTF8);
+            set => this.data.Slice(13).WriteString(value, System.Text.Encoding.UTF8);
         }
 
         /// <summary>
@@ -4817,8 +4910,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player (non-guild member) requests to join a guild.
+    /// Causes reaction on server side: The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.
     /// </summary>
     public ref struct GuildJoinRequest
     {
@@ -4891,8 +4984,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A guild master responded to a previously sent request.
+    /// Causes reaction on server side: If the request was accepted by the guild master, the previously requesting player is added to the guild.
     /// </summary>
     public ref struct GuildJoinResponse
     {
@@ -4965,8 +5058,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A guild player opens its guild menu in the game client.
+    /// Causes reaction on server side: A list of all guild members and their state is sent back as response.
     /// </summary>
     public ref struct GuildListRequest
     {
@@ -5030,8 +5123,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: When a player wants to create a guild.
+    /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
     /// </summary>
     public ref struct GuildCreateRequest
     {
@@ -5088,6 +5181,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Gets or sets the guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.
+        /// </summary>
+        public Span<byte> GuildEmblem
+        {
+            get => this.data.Slice(12, 32);
+        }
+
+        /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildCreateRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
@@ -5104,8 +5205,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
+    /// Causes reaction on server side: It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
     /// </summary>
     public ref struct GuildMasterAnswer
     {
@@ -5153,12 +5254,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new C1Header(this.data);
 
         /// <summary>
-        /// Gets or sets the answer.
+        /// Gets or sets a value whether the guild creation dialog should be shown. Otherwise, the guild creation is cancelled and the dialog was closed.
         /// </summary>
-        public byte Answer
+        public bool ShowCreationDialog
         {
-            get => this.data[3];
-            set => this.data[3] = value;
+            get => this.data.Slice(3).GetBoolean();
+            set => this.data.Slice(3).SetBoolean(value);
         }
 
         /// <summary>
@@ -5178,8 +5279,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
+    /// Causes reaction on server side: The server sends a response which includes the guild name and emblem.
     /// </summary>
     public ref struct GuildInfoRequest
     {
@@ -5229,10 +5330,10 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the guild id.
         /// </summary>
-        public ushort GuildId
+        public uint GuildId
         {
-            get => this.data.Slice(4).GetShortLittleEndian();
-            set => this.data.Slice(4).SetShortLittleEndian(value);
+            get => this.data.Slice(4).GetIntegerBigEndian();
+            set => this.data.Slice(4).SetIntegerBigEndian(value);
         }
 
         /// <summary>
@@ -5252,8 +5353,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: 
-    /// Causes reaction on server side: 
+    /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
+    /// Causes reaction on server side: If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
     /// </summary>
     public ref struct ItemRepair
     {
@@ -5301,7 +5402,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C3Header Header => new C3Header(this.data);
 
         /// <summary>
-        /// Gets or sets the inventory item slot.
+        /// Gets or sets the inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.
         /// </summary>
         public byte InventoryItemSlot
         {
@@ -5457,6 +5558,71 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(ChaosMachineMixRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
+    /// Causes reaction on server side: The server updates the state of the player accordingly.
+    /// </summary>
+    public ref struct CloseChaosMachineRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CloseChaosMachineRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public CloseChaosMachineRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CloseChaosMachineRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private CloseChaosMachineRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x87;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CloseChaosMachineRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator CloseChaosMachineRequest(Span<byte> packet) => new CloseChaosMachineRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="CloseChaosMachineRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(CloseChaosMachineRequest packet) => packet.data; 
     }
 
 
@@ -5933,6 +6099,1000 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(ChatRoomInvitationRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: After the player entered the game world with a character.
+    /// Causes reaction on server side: The quest state is sent back as response.
+    /// </summary>
+    public ref struct LegacyQuestStateRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LegacyQuestStateRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LegacyQuestStateRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA0;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestStateRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LegacyQuestStateRequest(Span<byte> packet) => new LegacyQuestStateRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LegacyQuestStateRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LegacyQuestStateRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The player wants to change the state of a quest, e.g. to start or to finish a quest.
+    /// Causes reaction on server side: Depending on the requested new state, a response is sent back.
+    /// </summary>
+    public ref struct LegacyQuestStateSetRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateSetRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LegacyQuestStateSetRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateSetRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LegacyQuestStateSetRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA2;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public byte QuestNumber
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the new state.
+        /// </summary>
+        public LegacyQuestState NewState
+        {
+            get => (LegacyQuestState)this.data.Slice(4).GetByteValue();
+            set => this.data.Slice(4).SetByteValue((byte)value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestStateSetRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LegacyQuestStateSetRequest(Span<byte> packet) => new LegacyQuestStateSetRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LegacyQuestStateSetRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LegacyQuestStateSetRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The client opened an quest NPC dialog and decided to start an available quests.
+    /// Causes reaction on server side: The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.
+    /// </summary>
+    public ref struct QuestStartRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStartRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestStartRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStartRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestStartRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0A;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => this.data.Slice(6).GetShortBigEndian();
+            set => this.data.Slice(6).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value between 1 and 3, probably depending on how many quests are already running. Should not be trusted or considered.
+        /// </summary>
+        public byte UnknownField
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestStartRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestStartRequest(Span<byte> packet) => new QuestStartRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestStartRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestStartRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
+    /// Causes reaction on server side: The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
+    /// </summary>
+    public ref struct QuestProceedRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestProceedRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestProceedRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestProceedRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestProceedRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0B;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => this.data.Slice(6).GetShortBigEndian();
+            set => this.data.Slice(6).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the next state.
+        /// </summary>
+        public byte NextState
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestProceedRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestProceedRequest(Span<byte> packet) => new QuestProceedRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestProceedRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestProceedRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The game client requests to complete an active quest.
+    /// Causes reaction on server side: The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.
+    /// </summary>
+    public ref struct QuestCompletionRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCompletionRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestCompletionRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCompletionRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestCompletionRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0D;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => this.data.Slice(6).GetShortBigEndian();
+            set => this.data.Slice(6).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestCompletionRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestCompletionRequest(Span<byte> packet) => new QuestCompletionRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestCompletionRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestCompletionRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The game client requests to cancel an active quest.
+    /// Causes reaction on server side: The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.
+    /// </summary>
+    public ref struct QuestCancelRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCancelRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestCancelRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCancelRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestCancelRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0F;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => this.data.Slice(6).GetShortBigEndian();
+            set => this.data.Slice(6).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestCancelRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestCancelRequest(Span<byte> packet) => new QuestCancelRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestCancelRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestCancelRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The game client requests to complete a client action, e.g. completing a tutorial.
+    /// Causes reaction on server side: The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.
+    /// </summary>
+    public ref struct QuestClientActionRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestClientActionRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestClientActionRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestClientActionRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestClientActionRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x10;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => this.data.Slice(6).GetShortBigEndian();
+            set => this.data.Slice(6).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestClientActionRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestClientActionRequest(Span<byte> packet) => new QuestClientActionRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestClientActionRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestClientActionRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The clients requests the states of all quests, usually after entering the game.
+    /// Causes reaction on server side: The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
+    /// </summary>
+    public ref struct ActiveQuestListRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActiveQuestListRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ActiveQuestListRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActiveQuestListRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ActiveQuestListRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x1A;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ActiveQuestListRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ActiveQuestListRequest(Span<byte> packet) => new ActiveQuestListRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ActiveQuestListRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ActiveQuestListRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The game client requests the state of a specific active quests.
+    /// Causes reaction on server side: The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.
+    /// </summary>
+    public ref struct QuestStateRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStateRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestStateRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStateRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestStateRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x1B;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => this.data.Slice(6).GetShortBigEndian();
+            set => this.data.Slice(6).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestStateRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestStateRequest(Span<byte> packet) => new QuestStateRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestStateRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestStateRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The game client requests the list of event quests, usually after entering the game.
+    /// Causes reaction on server side: The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
+    /// </summary>
+    public ref struct EventQuestStateListRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventQuestStateListRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public EventQuestStateListRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventQuestStateListRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private EventQuestStateListRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x21;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="EventQuestStateListRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator EventQuestStateListRequest(Span<byte> packet) => new EventQuestStateListRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="EventQuestStateListRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(EventQuestStateListRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The client opened an quest NPC dialog and requests a list of available quests.
+    /// Causes reaction on server side: The list of available quests of this NPC is sent back (F60A).
+    /// </summary>
+    public ref struct AvailableQuestsRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AvailableQuestsRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AvailableQuestsRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AvailableQuestsRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AvailableQuestsRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x30;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AvailableQuestsRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AvailableQuestsRequest(Span<byte> packet) => new AvailableQuestsRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AvailableQuestsRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AvailableQuestsRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).
+    /// Causes reaction on server side: The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.
+    /// </summary>
+    public ref struct NpcBuffRequest
+    {
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NpcBuffRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public NpcBuffRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NpcBuffRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private NpcBuffRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x31;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="NpcBuffRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator NpcBuffRequest(Span<byte> packet) => new NpcBuffRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="NpcBuffRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(NpcBuffRequest packet) => packet.data; 
     }
         /// <summary>
         /// Defines the values which are used for the character classes on client side.

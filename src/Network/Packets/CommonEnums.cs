@@ -43,4 +43,30 @@ namespace MUnique.OpenMU.Network.Packets
             PlayerShop = 4,
         }
 
+        /// <summary>
+        /// The quest state for the legacy quest system.
+        /// </summary>
+        public enum LegacyQuestState
+        {
+            /// <summary>
+            /// The state is undefined. This value is used when there is no quest defined for a specific index
+            /// </summary>
+            Undefined = 0,
+
+            /// <summary>
+            /// The quest is active and in progress.
+            /// </summary>
+            Active = 1,
+
+            /// <summary>
+            /// The quest was completed.
+            /// </summary>
+            Complete = 2,
+
+            /// <summary>
+            /// The quest is inactive, that means it isn't active and wasn't completed yet.
+            /// </summary>
+            Inactive = 3,
+        }
+
 }

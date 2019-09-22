@@ -35,5 +35,31 @@
         </EnumValue>
       </Values>
     </Enum>
+    <Enum>
+      <Name>LegacyQuestState</Name>
+      <Description>The quest state for the legacy quest system.</Description>
+      <Values>
+        <EnumValue>
+          <Value>0</Value>
+          <Name>Undefined</Name>
+          <Description>The state is undefined. This value is used when there is no quest defined for a specific index</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>1</Value>
+          <Name>Active</Name>
+          <Description>The quest is active and in progress.</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>2</Value>
+          <Name>Complete</Name>
+          <Description>The quest was completed.</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>3</Value>
+          <Name>Inactive</Name>
+          <Description>The quest is inactive, that means it isn't active and wasn't completed yet.</Description>
+        </EnumValue>
+      </Values>
+    </Enum>
   </Enums>
 </PacketDefinitions>
