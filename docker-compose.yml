@@ -1,0 +1,50 @@
+#Docker compose for postgres and MUnique
+version: '3'
+
+services:
+  #MUnique build from Dockerfile
+  munique:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: munique
+    container_name: munique
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "1234:1234"
+      - "55901:55901"
+      - "55902:55902"
+      - "55903:55903"
+      - "44405:44405"
+      - "55980:55980"
+    environment:
+      SERVICE_NAME: munique
+      SERVICE_TAGS: dev
+    working_dir: /app/
+    links:
+      - database
+    networks:
+      - munique-network
+    depends_on:
+      - database
+
+  #SETUP POSTGRES DATABASE
+  database:
+    image: postgres
+    restart: always
+    container_name: database
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: openmu
+      POSTGRES_USER: postgres
+    networks:
+      - munique-network
+
+networks:
+  munique-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
