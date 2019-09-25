@@ -168,7 +168,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     setting.ConnectionString = setting.ConnectionString.Replace("User Id=postgres;", $"User Id={dbAdminUser};");
                 }
 
-                if (Environment.GetEnvironmentVariable(DbHostVariableName) is string dbAdminPassword
+                if (Environment.GetEnvironmentVariable(DbAdminPasswordVariableName) is string dbAdminPassword
                     && !string.IsNullOrEmpty(dbAdminPassword))
                 {
                     setting.ConnectionString = setting.ConnectionString.Replace("Password=admin;", $"Password={dbAdminPassword};");
