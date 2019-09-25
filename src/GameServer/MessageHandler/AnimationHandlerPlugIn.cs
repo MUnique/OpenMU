@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.World;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -22,7 +23,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.Animation;
+        public byte Key => AnimationRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
@@ -32,8 +33,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            var rotation = packet[3].ParseAsDirection();
-            var animation = packet[4];
+            AnimationRequest request = packet;
+
+            var rotation = request.Rotation.ParseAsDirection();
+            var animation = request.AnimationNumber;
             player.Rotation = rotation;
 
             switch (animation)

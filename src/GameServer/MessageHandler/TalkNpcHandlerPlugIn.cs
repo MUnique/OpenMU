@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -25,13 +25,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.TalkNPC;
+        public byte Key => TalkToNpcRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            ushort id = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
-            if (player.CurrentMap.GetObject(id) is NonPlayerCharacter npc)
+            TalkToNpcRequest message = packet;
+            if (player.CurrentMap.GetObject(message.NpcId) is NonPlayerCharacter npc)
             {
                 this.talkNpcAction.TalkToNpc(player, npc);
             }

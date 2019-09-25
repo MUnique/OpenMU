@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
     using MUnique.OpenMU.GameServer.RemoteView;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -24,14 +25,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.InventoryMove;
+        public byte Key => ItemMoveRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            byte fromStorage = packet[3];
-            byte fromSlot = packet[4];
+            ItemMoveRequest message = packet;
 
+            // to make it compatible with multiple versions, we just handle the data which is coming after that manually
             var itemSize = 12;
             if (player is RemotePlayer remotePlayer)
             {
@@ -41,7 +42,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
             byte toStorage = packet[5 + itemSize];
             byte toSlot = packet[6 + itemSize];
 
-            this.moveAction.MoveItem(player, fromSlot, (Storages)fromStorage, toSlot, (Storages)toStorage);
+            this.moveAction.MoveItem(player, message.FromSlot, (Storages)message.FromStorage, toSlot, (Storages)toStorage);
         }
     }
 }

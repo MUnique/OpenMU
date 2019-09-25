@@ -6,12 +6,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,24 +27,22 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => 0x05;
+        public byte Key => PlayerShopItemListRequest.SubCode;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            ushort requestedId = packet.MakeWordSmallEndian(4);
-            var requestedPlayer = player.CurrentMap.GetObject(requestedId) as Player;
+            PlayerShopItemListRequest message = packet;
+            var requestedPlayer = player.CurrentMap.GetObject(message.PlayerId) as Player;
             if (requestedPlayer == null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
                 return;
             }
 
-            string requestedPlayerName = packet.ExtractString(6, 10, Encoding.UTF8);
-
-            if (requestedPlayerName != requestedPlayer.SelectedCharacter.Name)
+            if (message.PlayerName != requestedPlayer.SelectedCharacter.Name)
             {
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player Names don't match." + requestedPlayerName + "<>" + requestedPlayer.SelectedCharacter.Name, MessageType.BlueNormal);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player Names don't match." + message.PlayerName + "<>" + requestedPlayer.SelectedCharacter.Name, MessageType.BlueNormal);
                 return;
             }
 

@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -26,15 +26,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.TradeRequest;
+        public byte Key => TradeRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            ////0xC3, 0x05, 0x36, idtotrade[0], idtotrade[1]
-            ushort pid = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
-
-            Player partner = player.GetObservingPlayerWithId(pid);
+            TradeRequest message = packet;
+            Player partner = player.GetObservingPlayerWithId(message.PlayerId);
             if (partner == null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Trade partner not found.", MessageType.BlueNormal);

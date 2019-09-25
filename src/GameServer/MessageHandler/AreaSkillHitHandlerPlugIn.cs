@@ -6,12 +6,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
     using System.Runtime.InteropServices;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.AreaSkillHit;
+        public byte Key => AreaSkillHit.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
@@ -41,18 +40,17 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            ushort skillId = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
-            if (!player.SkillList.ContainsSkill(skillId))
+            AreaSkillHit message = packet;
+            if (!player.SkillList.ContainsSkill(message.SkillId))
             {
                 return;
             }
 
-            SkillEntry skillEntry = player.SkillList.GetSkill(skillId);
-            ushort targetId = NumberConversionExtensions.MakeWord(packet[10], packet[9]);
-            if (player.GetObject(targetId) is IAttackable target)
+            if (player.GetObject(message.TargetId) is IAttackable target)
             {
                 if (target is IObservable observable && observable.Observers.Contains(player))
                 {
+                    var skillEntry = player.SkillList.GetSkill(message.SkillId);
                     this.skillHitAction.AttackTarget(player, target, skillEntry);
                 }
                 else

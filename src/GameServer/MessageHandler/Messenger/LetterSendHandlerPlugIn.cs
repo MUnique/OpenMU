@@ -6,13 +6,12 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,25 +27,20 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.FriendMemoSend;
+        public byte Key => LetterSendRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            var letterId = packet.MakeDwordBigEndian(4);
+            LetterSendRequest message = packet;
             if (packet.Length < 83)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Letter invalid.", MessageType.BlueNormal);
-                player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
+                player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, message.LetterId);
                 return;
             }
 
-            var receiverName = packet.ExtractString(8, 10, Encoding.UTF8);
-            var title = packet.ExtractString(18, 60, Encoding.UTF8);
-            var message = packet.ExtractString(0x52, packet.Length - 0x52, Encoding.UTF8);
-            var rotation = packet[0x4E];
-            var animation = packet[0x4F];
-            this.sendAction.SendLetter(player, receiverName, message, title, rotation, animation, letterId);
+            this.sendAction.SendLetter(player, message.Receiver, message.Message, message.Title, message.Rotation, message.Animation, message.LetterId);
         }
     }
 }

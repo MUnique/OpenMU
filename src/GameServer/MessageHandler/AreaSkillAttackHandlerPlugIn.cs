@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
@@ -25,22 +25,18 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.AreaSkill;
+        public byte Key => AreaSkill.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            ushort skillId = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
-            if (!player.SkillList.ContainsSkill(skillId))
+            AreaSkill message = packet;
+            if (!player.SkillList.ContainsSkill(message.SkillId))
             {
                 return;
             }
 
-            ushort targetId = NumberConversionExtensions.MakeWord(packet[10], packet[9]);
-            byte tX = packet[5];
-            byte tY = packet[6];
-            byte rotation = packet[7];
-            this.attackAction.Attack(player, targetId, skillId, new Point(tX, tY), rotation);
+            this.attackAction.Attack(player, message.ExtraTargetId, message.SkillId, new Point(message.TargetX, message.TargetY), message.Rotation);
         }
     }
 }

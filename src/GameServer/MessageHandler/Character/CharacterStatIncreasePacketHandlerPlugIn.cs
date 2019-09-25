@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Character;
     using MUnique.OpenMU.GameServer.RemoteView;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,8 +31,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
         /// <inheritdoc />
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            var statType = (CharacterStatType)packet[4];
-            this.increaseStatsAction.IncreaseStats(player, statType.GetAttributeDefinition());
+            IncreaseCharacterStatPoint message = packet;
+            this.increaseStatsAction.IncreaseStats(player, message.StatType.GetAttributeDefinition());
         }
     }
 }

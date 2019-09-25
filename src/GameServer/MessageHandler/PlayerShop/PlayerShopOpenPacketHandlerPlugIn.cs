@@ -6,10 +6,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -26,13 +25,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => 0x02;
+        public byte Key => PlayerShopOpen.SubCode;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            var storeName = packet.ExtractString(4, 26, Encoding.UTF8);
-            this.openStoreAction.OpenStore(player, storeName);
+            PlayerShopOpen message = packet;
+            this.openStoreAction.OpenStore(player, message.StoreName);
         }
     }
 }

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,18 +24,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.FriendStateClient;
+        public byte Key => SetFriendOnlineState.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < 4)
-            {
-                // log
-                return;
-            }
-
-            this.changeAction.SetOnlineState(player, packet[3] == 1);
+            SetFriendOnlineState message = packet;
+            this.changeAction.SetOnlineState(player, message.OnlineState);
         }
     }
 }

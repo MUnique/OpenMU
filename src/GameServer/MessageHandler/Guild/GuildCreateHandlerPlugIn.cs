@@ -6,10 +6,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -25,14 +24,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.GuildMasterInfoSave;
+        public byte Key => GuildCreateRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            var guildName = packet.ExtractString(4, 9, Encoding.UTF8);
-            var guildEmblem = packet.Slice(12, 32).ToArray();
-            this.createAction.CreateGuild(player, guildName, guildEmblem);
+            GuildCreateRequest request = packet;
+            this.createAction.CreateGuild(player, request.GuildName, request.GuildEmblem.ToArray());
         }
     }
 }

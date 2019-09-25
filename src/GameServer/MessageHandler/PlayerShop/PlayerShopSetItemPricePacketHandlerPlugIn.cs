@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,15 +28,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => 0x01;
+        public byte Key => PlayerShopSetItemPrice.SubCode;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            var itemSlot = packet[4];
-            var price = (int)packet.MakeDwordBigEndian(5);
-            Logger.DebugFormat("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter.Name, itemSlot, price);
-            this.setPriceAction.SetPrice(player, itemSlot, price);
+            PlayerShopSetItemPrice message = packet;
+            Logger.DebugFormat("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter.Name, message.ItemSlot, message.Price);
+            this.setPriceAction.SetPrice(player, message.ItemSlot, (int)message.Price);
         }
     }
 }

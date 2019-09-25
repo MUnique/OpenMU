@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -27,16 +27,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public virtual bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.SkillAttack;
+        public byte Key => TargetedSkill.Code;
 
         /// <inheritdoc/>
         public virtual void HandlePacket(Player player, Span<byte> packet)
         {
-            ////          skill target
-            ////C3 len 19 XX XX TT TT
-            ushort skillId = packet.MakeWordSmallEndian(3);
-            ushort targetId = packet.MakeWordSmallEndian(5);
-            this.Handle(player, skillId, targetId);
+            TargetedSkill message = packet;
+            this.Handle(player, message.SkillId, message.TargetId);
         }
 
         /// <summary>

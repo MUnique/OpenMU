@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -24,7 +25,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => 0x03;
+        public byte Key => PlayerShopClose.SubCode;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)

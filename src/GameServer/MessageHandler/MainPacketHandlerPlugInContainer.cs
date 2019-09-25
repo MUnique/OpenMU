@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
-    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

@@ -5,10 +5,9 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
 
     /// <summary>
     /// Base class for a chat message handler.
@@ -31,12 +30,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            ////byte 3-12 char name
-            string characterName = packet.ExtractString(3, 10, Encoding.UTF8);
-            ////byte 13-n message
-            string message = packet.ExtractString(13, packet.Length - 13, Encoding.UTF8);
-
-            this.messageAction.ChatMessage(player, characterName, message, this.IsWhisper);
+            WhisperMessage message = packet;
+            this.messageAction.ChatMessage(player, message.ReceiverName, message.Message, this.IsWhisper);
         }
     }
 }
