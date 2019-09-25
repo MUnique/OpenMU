@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -34,7 +35,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 packet[2] = 0x1C;
                 packet[3] = 0x0F;
                 packet[4] = 1;
-                packet.Slice(5).SetShortSmallEndian(mapNumber);
+                packet.Slice(5).SetShortLittleEndian(mapNumber);
                 var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
                 packet[7] = position.X;
                 packet[8] = position.Y;

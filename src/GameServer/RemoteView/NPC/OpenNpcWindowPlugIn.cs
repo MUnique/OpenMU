@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,12 +30,26 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         /// <inheritdoc/>
         public void OpenNpcWindow(NpcWindow window)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x0B))
+            if (window == NpcWindow.NpcDialog)
             {
-                var packet = writer.Span;
-                packet[2] = 0x30;
-                packet[3] = this.GetWindowIdOf(window);
-                writer.Commit();
+                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0C))
+                {
+                    var packet = writer.Span;
+                    packet[2] = 0xF9;
+                    packet[3] = 0x01; // success
+                    packet.Slice(4).SetShortBigEndian(this.player.OpenedNpc.Definition.Number.ToUnsigned());
+                    writer.Commit();
+                }
+            }
+            else
+            {
+                using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x0B))
+                {
+                    var packet = writer.Span;
+                    packet[2] = 0x30;
+                    packet[3] = this.GetWindowIdOf(window);
+                    writer.Commit();
+                }
             }
         }
 
@@ -67,6 +82,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
                 case NpcWindow.JuliaWarpMarketServer: return 0x25;
                 case NpcWindow.CombineLuckyItem: return 0x26;
                 case NpcWindow.GuildMaster: throw new ArgumentException("guild master dialog is opened by another action.");
+                case NpcWindow.NpcDialog: throw new ArgumentException("The quest dialog is opened by another action");
                 default: return (byte)window;
             }
         }

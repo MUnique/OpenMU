@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -115,10 +116,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 {
                     var packet = writer.Span;
                     packet[2] = this.operation;
-                    packet.Slice(3).SetShortSmallEndian(targetId);
-                    packet.Slice(5).SetShortSmallEndian(healthDamage);
+                    packet.Slice(3).SetShortLittleEndian(targetId);
+                    packet.Slice(5).SetShortLittleEndian(healthDamage);
                     packet[7] = this.GetDamageColor(hitInfo.Attributes);
-                    packet.Slice(8).SetShortSmallEndian(shieldDamage);
+                    packet.Slice(8).SetShortLittleEndian(shieldDamage);
                     writer.Commit();
                 }
 
@@ -151,7 +152,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 case ClientLanguage.Thai:
                     return 0xD2;
                 default:
-                    return (byte)PacketType.Hit;
+                    return (byte)MUnique.OpenMU.GameServer.PacketType.Hit;
             }
         }
 

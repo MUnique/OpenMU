@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -41,9 +42,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 {
                     var packet = writer.Span;
                     packet[2] = 0x16;
-                    packet.Slice(3).SetShortSmallEndian(id);
-                    packet.Slice(5).SetShortSmallEndian(sendExp);
-                    packet.Slice(7).SetShortSmallEndian((ushort)((obj as IAttackable)?.LastReceivedDamage ?? 0));
+                    packet.Slice(3).SetShortLittleEndian(id);
+                    packet.Slice(5).SetShortLittleEndian(sendExp);
+                    packet.Slice(7).SetShortLittleEndian((ushort)((obj as IAttackable)?.LastReceivedDamage ?? 0));
                     writer.Commit();
                 }
 

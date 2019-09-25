@@ -40,6 +40,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\Network\MUnique.OpenMU.Network.csproj" />
+    <ProjectReference Include="..\Network\Packets\MUnique.OpenMU.Network.Packets.csproj" />
   </ItemGroup>
 
 </Project>

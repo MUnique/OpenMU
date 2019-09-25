@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -36,7 +37,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 var packet = writer.Span;
                 packet[2] = 0x25;
-                packet.Slice(3).SetShortSmallEndian(changedPlayer.GetId(this.player));
+                packet.Slice(3).SetShortLittleEndian(changedPlayer.GetId(this.player));
                 var itemBlock = packet.Slice(5);
 
                 if (changedPlayer.Inventory.EquippedItems.Contains(item))

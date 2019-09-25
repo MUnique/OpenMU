@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -44,7 +45,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
                 {
                     var shopPlayerId = shopPlayer.GetId(this.player);
                     var shopBlock = packet.Slice(offset, sizePerShop);
-                    shopBlock.SetShortSmallEndian(shopPlayerId);
+                    shopBlock.SetShortLittleEndian(shopPlayerId);
                     shopBlock.Slice(2).WriteString(shopPlayer.ShopStorage.StoreName, Encoding.UTF8);
                     offset += sizePerShop;
                 }

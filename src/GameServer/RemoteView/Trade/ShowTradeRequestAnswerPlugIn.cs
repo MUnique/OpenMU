@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
     using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

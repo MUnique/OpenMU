@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 

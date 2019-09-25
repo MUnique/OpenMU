@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
