@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// <summary>
         /// The XML namespace for this class.
         /// </summary>
-        public const string XmlNamespace = "http://www.munique.net/OpenMU/PacketDefinitions";
+        internal const string XmlNamespace = "http://www.munique.net/OpenMU/PacketDefinitions";
 
         /// <summary>
         /// Gets or sets the description.
