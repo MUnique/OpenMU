@@ -1,13 +1,10 @@
-#Docker compose for postgres and MUnique
+# Docker compose for postgres and MUnique OpenMU
 version: '3'
 
 services:
-  #MUnique build from Dockerfile
+  # Deploy MUnique OpenMU from docker hub
   munique:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: munique
+    image: munique/openmu
     container_name: munique
     restart: unless-stopped
     tty: true
@@ -30,7 +27,7 @@ services:
     depends_on:
       - database
 
-  #SETUP POSTGRES DATABASE
+  # Deploy postgres database from docker hub
   database:
     image: postgres
     restart: always
