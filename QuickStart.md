@@ -28,6 +28,12 @@ The last argument is there to start the server in demo mode, without a database.
 
 If you know how to do this, feel free to submit a pull request.
 
+## Docker-compose
+
+if you want to up the server and postgres in the same time you can use this.
+
+> docker-compose up -d --build
+
 ## Manually
 
 Use this way, if you want to develop or debug for OpenMU.
