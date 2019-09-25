@@ -30,7 +30,7 @@ If you know how to do this, feel free to submit a pull request.
 
 ## Docker-compose
 
-if you want to up the server and postgres in the same time you can use this.
+if you want to up the server and postgres in the same time you can use this. ;)
 
 > docker-compose up -d --build
 
