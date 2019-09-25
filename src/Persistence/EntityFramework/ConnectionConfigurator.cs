@@ -48,6 +48,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </summary>
     public static class ConnectionConfigurator
     {
+        private const string DbHostVariableName = "DB_HOST";
+        private const string DbAdminUserVariableName = "DB_ADMIN_USER";
+        private const string DbAdminPasswordVariableName = "DB_ADMIN_PW";
+
         private static readonly IDictionary<Type, ConnectionSetting> Settings = LoadSettings();
 
         /// <summary>
@@ -137,16 +141,39 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                         foreach (var setting in xmlSettings.Connections)
                         {
                             Type contextType = Type.GetType(setting.ContextTypeName, true, true);
-                            if (contextType != null)
-                            {
-                                result.Add(contextType, setting);
-                            }
+                            ApplyEnvironmentVariables(setting);
+
+                            result.Add(contextType, setting);
                         }
                     }
                 }
             }
 
             return result;
+        }
+
+        private static void ApplyEnvironmentVariables(ConnectionSetting setting)
+        {
+            if (Environment.GetEnvironmentVariable(DbHostVariableName) is string dbHost
+                                            && !string.IsNullOrEmpty(dbHost))
+            {
+                setting.ConnectionString = setting.ConnectionString.Replace("Server=localhost;", $"Server={dbHost};");
+            }
+
+            if (setting.ConnectionString.Contains("User Id=postgres;"))
+            {
+                if (Environment.GetEnvironmentVariable(DbAdminUserVariableName) is string dbAdminUser
+                    && !string.IsNullOrEmpty(dbAdminUser))
+                {
+                    setting.ConnectionString = setting.ConnectionString.Replace("User Id=postgres;", $"User Id={dbAdminUser};");
+                }
+
+                if (Environment.GetEnvironmentVariable(DbHostVariableName) is string dbAdminPassword
+                    && !string.IsNullOrEmpty(dbAdminPassword))
+                {
+                    setting.ConnectionString = setting.ConnectionString.Replace("Password=admin;", $"Password={dbAdminPassword};");
+                }
+            }
         }
     }
 }

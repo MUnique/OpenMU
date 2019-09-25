@@ -21,6 +21,7 @@ services:
     environment:
       SERVICE_NAME: munique
       SERVICE_TAGS: dev
+      DB_HOST: database
     working_dir: /app/
     links:
       - database
