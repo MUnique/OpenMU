@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Party
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Party;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,8 +29,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Party
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            byte index = packet[3];
-            this.action.KickPlayer(player, index);
+            PartyPlayerKickRequest message = packet;
+            this.action.KickPlayer(player, message.PlayerIndex);
         }
     }
 }

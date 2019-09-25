@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,13 +24,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.ChaosMachineMix;
+        public byte Key => ChaosMachineMixRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            byte mixId = packet.Length > 3 ? packet[3] : (byte)1;
-            this.mixAction.MixItems(player, mixId);
+            ChaosMachineMixRequest message = packet;
+            this.mixAction.MixItems(player, (byte)message.MixType);
         }
     }
 }

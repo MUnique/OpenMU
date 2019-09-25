@@ -8,8 +8,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
-    using MUnique.OpenMU.GameLogic.Views.Trade;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
+    using TradeButtonState = MUnique.OpenMU.GameLogic.Views.Trade.TradeButtonState;
 
     /// <summary>
     /// Handles the trade button packets.
@@ -24,17 +25,18 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.TradeButton;
+        public byte Key => TradeButtonStateChange.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
+            TradeButtonStateChange message = packet;
             if (packet.Length < 4)
             {
                 return;
             }
 
-            this.buttonAction.TradeButtonChanged(player, (TradeButtonState)packet[3]);
+            this.buttonAction.TradeButtonChanged(player, (TradeButtonState)message.NewState);
         }
     }
 }

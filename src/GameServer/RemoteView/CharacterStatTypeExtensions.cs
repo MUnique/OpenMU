@@ -7,77 +7,47 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
 
     /// <summary>
-    /// The type of a character stat attribute.
-    /// </summary>
-    public enum CharacterStatType : byte
-    {
-        /// <summary>
-        /// The strength attribute.
-        /// </summary>
-        Strength = 0,
-
-        /// <summary>
-        /// The agility attribute.
-        /// </summary>
-        Agility = 1,
-
-        /// <summary>
-        /// The vitality attribute.
-        /// </summary>
-        Vitality = 2,
-
-        /// <summary>
-        /// The energy attribute.
-        /// </summary>
-        Energy = 3,
-
-        /// <summary>
-        /// The leadership attribute.
-        /// </summary>
-        Leadership = 4,
-    }
-
-    /// <summary>
-    /// Extensions for character stat attributes.
+    /// Extensions for <see cref="CharacterStatAttribute"/>.
     /// </summary>
     public static class CharacterStatTypeExtensions
     {
-        private static readonly Dictionary<AttributeDefinition, CharacterStatType> AttributesToStatTypes = new Dictionary<AttributeDefinition, CharacterStatType>
+        private static readonly Dictionary<AttributeDefinition, CharacterStatAttribute> AttributesToStatTypes = new Dictionary<AttributeDefinition, CharacterStatAttribute>
         {
-            { Stats.BaseAgility, CharacterStatType.Agility },
-            { Stats.BaseEnergy, CharacterStatType.Energy },
-            { Stats.BaseStrength, CharacterStatType.Strength },
-            { Stats.BaseVitality, CharacterStatType.Vitality },
-            { Stats.BaseLeadership, CharacterStatType.Leadership },
+            { Stats.BaseAgility, CharacterStatAttribute.Agility },
+            { Stats.BaseEnergy, CharacterStatAttribute.Energy },
+            { Stats.BaseStrength, CharacterStatAttribute.Strength },
+            { Stats.BaseVitality, CharacterStatAttribute.Vitality },
+            { Stats.BaseLeadership, CharacterStatAttribute.Leadership },
         };
 
-        private static readonly Dictionary<CharacterStatType, AttributeDefinition> StatTypesToAttributes = new Dictionary<CharacterStatType, AttributeDefinition>
+        private static readonly Dictionary<CharacterStatAttribute, AttributeDefinition> StatTypesToAttributes = new Dictionary<CharacterStatAttribute, AttributeDefinition>
         {
-            { CharacterStatType.Agility, Stats.BaseAgility },
-            { CharacterStatType.Energy, Stats.BaseEnergy },
-            { CharacterStatType.Strength, Stats.BaseStrength },
-            { CharacterStatType.Vitality, Stats.BaseVitality },
-            { CharacterStatType.Leadership, Stats.BaseLeadership },
+            { CharacterStatAttribute.Agility, Stats.BaseAgility },
+            { CharacterStatAttribute.Energy, Stats.BaseEnergy },
+            { CharacterStatAttribute.Strength, Stats.BaseStrength },
+            { CharacterStatAttribute.Vitality, Stats.BaseVitality },
+            { CharacterStatAttribute.Leadership, Stats.BaseLeadership },
         };
 
         /// <summary>
-        /// Gets the attribute definition of a <see cref="CharacterStatType"/>.
+        /// Gets the attribute definition of a <see cref="CharacterStatAttribute"/>.
         /// </summary>
         /// <param name="statType">Type of the stat.</param>
-        /// <returns>The corrsponding <see cref="AttributeDefinition"/>.</returns>
-        public static AttributeDefinition GetAttributeDefinition(this CharacterStatType statType)
+        /// <returns>The corresponding <see cref="AttributeDefinition"/>.</returns>
+        public static AttributeDefinition GetAttributeDefinition(this CharacterStatAttribute statType)
         {
             return StatTypesToAttributes[statType];
         }
 
         /// <summary>
-        /// Gets the <see cref="CharacterStatType"/> of the specified <see cref="AttributeDefinition"/>.
+        /// Gets the <see cref="CharacterStatAttribute"/> of the specified <see cref="AttributeDefinition"/>.
         /// </summary>
         /// <param name="attributeDefinition">The attribute definition.</param>
-        /// <returns>The corresponding <see cref="CharacterStatType"/>.</returns>
-        public static CharacterStatType GetStatType(this AttributeDefinition attributeDefinition)
+        /// <returns>The corresponding <see cref="CharacterStatAttribute"/>.</returns>
+        public static CharacterStatAttribute GetStatType(this AttributeDefinition attributeDefinition)
         {
             return AttributesToStatTypes[attributeDefinition];
         }

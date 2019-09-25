@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,14 +24,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.BuyNPCItem;
+        public byte Key => BuyItemFromNpcRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            byte slot = packet[3];
-
-            this.buyAction.BuyItem(player, slot);
+            BuyItemFromNpcRequest message = packet;
+            this.buyAction.BuyItem(player, message.ItemSlot);
         }
     }
 }

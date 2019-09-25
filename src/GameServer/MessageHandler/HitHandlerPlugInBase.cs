@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
 
     /// <summary>
     /// Handler for hit packets.
@@ -33,9 +33,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            ushort id = NumberConversionExtensions.MakeWord(packet[4], packet[3]);
-            var attackAnimation = packet[5];
-            var lookingDirection = packet[6].ParseAsDirection();
+            HitRequest message = packet;
             var currentMap = player.CurrentMap;
             if (currentMap == null)
             {
@@ -43,14 +41,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            var target = currentMap.GetObject(id) as IAttackable;
+            var target = currentMap.GetObject(message.TargetId) as IAttackable;
             if (target == null)
             {
-                Log.Warn($"Object {id} of current player map not found. Possible hacker action. Character name: {player.Name}");
+                Log.Warn($"Object {message.TargetId} of current player map not found alive. Possible hacker action. Character name: {player.Name}");
             }
             else
             {
-                this.hitAction.Hit(player, target, attackAnimation, lookingDirection);
+                this.hitAction.Hit(player, target, message.AttackAnimation, message.LookingDirection.ParseAsDirection());
             }
         }
     }

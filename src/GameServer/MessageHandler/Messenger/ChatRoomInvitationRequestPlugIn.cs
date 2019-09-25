@@ -6,10 +6,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -26,22 +25,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.ChatRoomInvitationReq;
+        public byte Key => ChatRoomInvitationRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            // C1 13 CB [FriendName] [RoomNumber] [RequestId]
-            if (packet.Length < 0x13)
-            {
-                // Log?
-                return;
-            }
-
-            var friendName = packet.ExtractString(3, 10, Encoding.UTF8);
-            var roomId = packet.MakeWordSmallEndian(13);
-            var requestId = packet.MakeDwordSmallEndian(15);
-            this.chatRequestAction.InviteFriendToChat(player, friendName, roomId, requestId);
+            ChatRoomInvitationRequest message = packet;
+            this.chatRequestAction.InviteFriendToChat(player, message.FriendName, message.RoomId, message.RequestId);
         }
     }
 }

@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System;
     using System.Reflection;
     using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameServer.MessageHandler.Login;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

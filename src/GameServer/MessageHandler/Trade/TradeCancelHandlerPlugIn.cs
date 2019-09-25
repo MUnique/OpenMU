@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.TradeCancel;
+        public byte Key => TradeCancel.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)

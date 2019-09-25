@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views.Login;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -25,18 +26,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => 2;
+        public byte Key => LogOut.SubCode;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < 5)
-            {
-                return;
-            }
-
-            var logoutType = packet[4];
-            this.logoutAction.Logout(player, (LogoutType)logoutType);
+            LogOut message = packet;
+            this.logoutAction.Logout(player, (LogoutType)message.Type);
         }
     }
 }

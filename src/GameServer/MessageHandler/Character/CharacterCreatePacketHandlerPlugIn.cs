@@ -6,10 +6,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Character;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,9 +30,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
         /// <inheritdoc />
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            var characterName = packet.ExtractString(4, 10, Encoding.UTF8);
-            int classNumber = packet[14] >> 2;
-            this.createCharacterAction.CreateCharacter(player, characterName, classNumber);
+            CreateCharacter message = packet;
+            this.createCharacterAction.CreateCharacter(player, message.Name, (byte)message.Class);
         }
     }
 }

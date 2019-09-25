@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -26,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.FriendMemoDelete;
+        public byte Key => LetterDeleteRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
@@ -37,10 +38,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
                 return;
             }
 
-            var letterIndex = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
-            if (letterIndex < player.SelectedCharacter.Letters.Count)
+            LetterDeleteRequest message = packet;
+            if (message.LetterIndex < player.SelectedCharacter.Letters.Count)
             {
-                var letter = player.SelectedCharacter.Letters[letterIndex];
+                var letter = player.SelectedCharacter.Letters[message.LetterIndex];
                 this.deleteAction.DeleteLetter(player, letter);
             }
         }

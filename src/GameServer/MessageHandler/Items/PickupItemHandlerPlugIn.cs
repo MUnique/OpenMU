@@ -4,7 +4,11 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.Items
 {
+    using System;
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -14,9 +18,21 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [PlugIn("PickupItemHandlerPlugIn", "Handler for item pickup packets.")]
     [Guid("8bcb9d85-95ae-4611-ae64-e9cc801ec647")]
     [MinimumClient(0, 97, ClientLanguage.Invariant)]
-    internal class PickupItemHandlerPlugIn : PickupItemHandlerPlugInBase
+    internal class PickupItemHandlerPlugIn : IPacketHandlerPlugIn
     {
+        private readonly PickupItemAction pickupAction = new PickupItemAction();
+
         /// <inheritdoc />
-        public override bool IsEncryptionExpected => true;
+        public bool IsEncryptionExpected => true;
+
+        /// <inheritdoc/>
+        public byte Key => PickupItemRequest.Code;
+
+        /// <inheritdoc/>
+        public void HandlePacket(Player player, Span<byte> packet)
+        {
+            PickupItemRequest message = packet;
+            this.pickupAction.PickupItem(player, message.ItemId);
+        }
     }
 }

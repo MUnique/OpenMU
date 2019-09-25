@@ -6,13 +6,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,36 +31,33 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         public bool IsEncryptionExpected => true;
 
         /// <inheritdoc/>
-        public byte Key => 0x06;
+        public byte Key => PlayerShopItemBuyRequest.SubCode;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
+            PlayerShopItemBuyRequest message = packet;
             if (Logger.IsDebugEnabled)
             {
                 Logger.DebugFormat("BuyRequest, Player=[{0}], Packet=[{1}]", player.SelectedCharacter.Name, packet.AsString());
             }
 
-            ushort requestedId = packet.MakeWordSmallEndian(4);
-            var requestedPlayer = player.CurrentMap.GetObject(requestedId) as Player;
+            var requestedPlayer = player.CurrentMap.GetObject(message.PlayerId) as Player;
             if (requestedPlayer == null)
             {
-                Logger.DebugFormat("Player not found: {0}", requestedId);
+                Logger.DebugFormat("Player not found: {0}", message.PlayerId);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
                 return;
             }
 
-            string playerName = packet.ExtractString(6, 10, Encoding.UTF8);
-            if (playerName != requestedPlayer.SelectedCharacter.Name)
+            if (message.PlayerName != requestedPlayer.SelectedCharacter.Name)
             {
-                Logger.DebugFormat("Player Names dont match: {0} != {1}", playerName, requestedPlayer.SelectedCharacter.Name);
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Player Names don't match. {playerName} <> {requestedPlayer.SelectedCharacter.Name}", MessageType.BlueNormal);
+                Logger.DebugFormat("Player Names dont match: {0} != {1}", message.PlayerName, requestedPlayer.SelectedCharacter.Name);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Player Names don't match. {message.PlayerName} <> {requestedPlayer.SelectedCharacter.Name}", MessageType.BlueNormal);
                 return;
             }
 
-            byte slot = packet[16];
-
-            this.buyAction.BuyItem(player, requestedPlayer, slot);
+            this.buyAction.BuyItem(player, requestedPlayer, message.ItemSlot);
         }
     }
 }

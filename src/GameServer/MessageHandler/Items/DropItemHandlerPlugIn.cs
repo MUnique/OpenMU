@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
@@ -24,16 +25,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.DropItem;
+        public byte Key => DropItemRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            // 0xC3, 0x06, 0x23, CoX, CoY, i
-            var slot = packet[5];
-            var x = packet[3];
-            var y = packet[4];
-            this.dropAction.DropItem(player, slot, new Point(x, y));
+            DropItemRequest message = packet;
+            this.dropAction.DropItem(player, message.ItemSlot, new Point(message.TargetX, message.TargetY));
         }
     }
 }

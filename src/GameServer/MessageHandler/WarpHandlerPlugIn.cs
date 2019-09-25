@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,17 +28,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.WarpCommand;
+        public byte Key => WarpCommandRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet[3] != 2) ////is always 2 i guess?
-            {
-                return;
-            }
-
-            ushort warpInfoIndex = NumberConversionExtensions.MakeWord(packet[8], packet[9]);
+            WarpCommandRequest request = packet;
+            ushort warpInfoIndex = request.WarpInfoIndex;
             var warpInfo = player.GameContext.Configuration.WarpList?.FirstOrDefault(info => info.Index == warpInfoIndex);
             if (warpInfo != null)
             {

@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -24,18 +24,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.TradeMoney;
+        public byte Key => SetTradeMoney.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < 8)
-            {
-                return;
-            }
-
-            uint moneyAmount = packet.MakeDwordBigEndian(4);
-            this.tradeAction.TradeMoney(player, moneyAmount);
+            SetTradeMoney message = packet;
+            this.tradeAction.TradeMoney(player, message.Amount);
         }
     }
 }
