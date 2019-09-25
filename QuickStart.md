@@ -12,27 +12,32 @@ This guide describes two ways of starting the server. Use Docker, if you just wa
 
 ## Docker
 
+This guide assumes you know how to use docker in general and have docker installed (e.g. by using Docker Desktop on Windows).
+
+### Demo Mode
 If you just want to play around with the server, you can find the newest docker image on the Docker Hub:
 https://hub.docker.com/r/munique/openmu
-
-This guide assumes you know how to use docker in general and have docker installed (e.g. by using Docker Desktop on Windows).
 
 To pull and run the latest docker image, run this command:
 > docker run --name openmu -d -p 1234:1234 -p 44405:44405 -p 55901:55901 -p 55902:55902 -p 55903:55903 -p 55980:55980 munique/openmu:latest -demo
 
-The last argument is there to start the server in demo mode, without a database. To use a postgres database, we still have to do some extensions:
-  * Currently, these connection strings are defined in the ConnectionSettings.xml file. So we need to make the connection strings configurable
-    from the outside of a container, e.g. by environment variables or by storing in it in docker volumes. This probably requires changes in the code.   
-  * Adding a docker-compose.yml with a container for the postgres database and set up a connection between the two containers.
-  * Extension of this guide :-)
+The last argument is there to start the server in demo mode, without a database. To use a postgres database, you can use docker-compose.
 
-If you know how to do this, feel free to submit a pull request.
+### Docker-compose
 
-## Docker-compose
-
-if you want to up the server and postgres in the same time you can use this. ;)
-
+To start the server and database in one go, you can use docker compose. The command is as follows:
 > docker-compose up -d --build
+
+It pulls the newest images from the docker hub, sets the network and disk volume up and finally starts OpenMU and the postgres database in separate containers.
+
+### Environment Variables
+It's possible to define additional environment variables to influence the postgres database connection strings.
+
+| Name | Description         |
+|------|---------------------|
+| DB_HOST | The hostname of the database. If the local configuration file is still configured to use 'localhost', the value of this variable replaces it |
+| DB_ADMIN_USER | The user name of the postgres admin account. If the local configuration file is still configured to use 'postgres' for the user name of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
+| DB_ADMIN_PW | The user name of the postgres admin account. If the local configuration file is still configured to use 'admin' for the user password of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
 
 ## Manually
 
