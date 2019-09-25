@@ -25,7 +25,7 @@ The last argument is there to start the server in demo mode, without a database.
 
 ### Docker-compose
 
-To start the server and database in one go, you can use docker compose. The command is as follows:
+To start the server and database in one go, you can use docker-compose with our [docker-compose.yml](docker-compose.yml). The command is as follows when you are in the folder which includes the yml file:
 > docker-compose up -d --build
 
 It pulls the newest images from the docker hub, sets the network and disk volume up and finally starts OpenMU and the postgres database in separate containers.
