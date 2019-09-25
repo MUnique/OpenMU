@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -33,7 +34,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
             {
                 var packet = writer.Span;
                 packet[2] = 0x01;
-                packet.Slice(3).SetShortSmallEndian(sender.Id);
+                packet.Slice(3).SetShortLittleEndian(sender.Id);
                 packet.Slice(5).WriteString(message, Encoding.UTF8);
                 writer.Commit();
             }

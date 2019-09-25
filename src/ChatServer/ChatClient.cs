@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.ChatServer
     using System.Text;
     using log4net;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.Xor;
 
     /// <summary>

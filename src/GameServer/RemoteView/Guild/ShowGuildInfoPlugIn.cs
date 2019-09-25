@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -59,7 +60,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
          */
             var result = new byte[0x3C];
             result.SetValues<byte>(0xC1, (byte)result.Length, 0x66);
-            result.SetIntegerBigEndian(guildId, 4);
+            result.AsSpan(4).SetIntegerBigEndian(guildId);
             Encoding.UTF8.GetBytes(guild.Name, 0, guild.Name.Length, result, 17);
             Buffer.BlockCopy(guild.Logo, 0, result, 25, 32);
             if (guild.AllianceGuild != null)

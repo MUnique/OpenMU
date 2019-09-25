@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

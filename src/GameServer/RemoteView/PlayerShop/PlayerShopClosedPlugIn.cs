@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -36,7 +37,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
                 packet[2] = 0x3F;
                 packet[3] = 3;
                 packet[4] = 1;
-                packet.Slice(5).SetShortSmallEndian(playerId);
+                packet.Slice(5).SetShortLittleEndian(playerId);
                 writer.Commit();
             }
 
@@ -47,7 +48,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
                 var packet = writer.Span;
                 packet[2] = 0x3F;
                 packet[3] = 0x12;
-                packet.Slice(4).SetShortSmallEndian(playerId);
+                packet.Slice(4).SetShortLittleEndian(playerId);
                 writer.Commit();
             }
         }

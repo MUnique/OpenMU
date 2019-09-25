@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.ConnectServer
 {
+    using System;
     using System.Net;
     using System.Text;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
 
     /// <summary>
     /// A list item of an available server.
@@ -91,7 +93,7 @@ namespace MUnique.OpenMU.ConnectServer
 
                 var ip = value.Address.ToString();
                 Encoding.ASCII.GetBytes(ip, 0, ip.Length, this.ConnectInfo, IpStartIndex);
-                this.ConnectInfo.SetShortBigEndian((ushort)value.Port, this.ConnectInfo.Length - 2);
+                this.ConnectInfo.AsSpan(this.ConnectInfo.Length - 2).SetShortBigEndian((ushort)value.Port);
             }
         }
 

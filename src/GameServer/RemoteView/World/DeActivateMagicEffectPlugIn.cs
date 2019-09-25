@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -52,7 +53,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 var packet = writer.Span;
                 packet[2] = 0x07;
                 packet[3] = isActive ? (byte)1 : (byte)0;
-                packet.Slice(4).SetShortSmallEndian(playerId);
+                packet.Slice(4).SetShortLittleEndian(playerId);
                 packet[6] = (byte)effect.Id;
                 writer.Commit();
             }

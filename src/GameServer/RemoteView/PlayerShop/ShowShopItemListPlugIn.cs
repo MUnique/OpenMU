@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -51,7 +52,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
                 packet[3] = 0x3F;
                 packet[4] = isUpdate ? (byte)0x13 : (byte)0x05;
                 packet[5] = 1;
-                packet.Slice(6).SetShortSmallEndian(playerId);
+                packet.Slice(6).SetShortLittleEndian(playerId);
                 packet.Slice(8, maxCharacterNameLength).WriteString(this.player.SelectedCharacter.Name, Encoding.UTF8);
                 var storeName = requestedPlayer.ShopStorage.StoreName;
                 packet.Slice(8 + maxCharacterNameLength, maxStoreNameLength).WriteString(storeName, Encoding.UTF8);

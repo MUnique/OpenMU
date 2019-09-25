@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -39,7 +40,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
             {
                 var packet = writer.Span;
                 packet[3] = 0x31;
-                packet.Slice(4).SetShortSmallEndian((ushort)storeItems.Count);
+                packet.Slice(4).SetShortLittleEndian((ushort)storeItems.Count);
 
                 int i = 0;
                 foreach (var item in storeItems)

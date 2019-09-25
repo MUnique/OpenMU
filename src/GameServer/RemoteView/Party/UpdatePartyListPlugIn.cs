@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
     using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Party;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

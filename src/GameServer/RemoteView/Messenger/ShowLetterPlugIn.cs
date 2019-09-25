@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
