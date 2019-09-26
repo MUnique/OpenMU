@@ -28,6 +28,7 @@ The last argument is there to start the server in demo mode, without a database.
 To start the server and database in one go, you can use docker-compose with our [docker-compose.yml](docker-compose.yml). The command is as follows when you are in the folder which includes the yml file:
 > docker-compose up -d --build
 or if u want to pass some args
+> docker-compose run -d munique -local (arg1 arg2 arg3)
 > docker-compose run munique -local (arg1 arg2 arg3)
 
 It pulls the newest images from the docker hub, sets the network and disk volume up and finally starts OpenMU and the postgres database in separate containers.
