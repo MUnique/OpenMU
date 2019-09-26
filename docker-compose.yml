@@ -36,8 +36,12 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: openmu
       POSTGRES_USER: postgres
+    ports:
+      - "5432:5432" #acess outside the container
     networks:
       - munique-network
+    volumes:
+      - dbdata:/var/lib/postgresql/data #store data on volume
 
 networks:
   munique-network:
@@ -45,4 +49,3 @@ networks:
 
 volumes:
   dbdata:
-    driver: local
