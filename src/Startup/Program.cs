@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.Startup
             }
             else
             {
-                this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"));
+                this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"));
             }
 
             var ipResolver = args.Contains("-local") ? (IIpAddressResolver)new LocalIpResolver() : new PublicIpResolver();
@@ -189,13 +189,13 @@ namespace MUnique.OpenMU.Startup
             (this.persistenceContextProvider as IDisposable)?.Dispose();
         }
 
-        private IPersistenceContextProvider PrepareRepositoryManager(bool reinit)
+        private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, bool autoupdate)
         {
             PersistenceContextProvider.InitializeSqlLogging();
             var manager = new PersistenceContextProvider();
             if (reinit || !manager.DatabaseExists())
             {
-                Log.Info("The database is getting (re-)ininitialized...");
+                Log.Info("The database is getting (re-)initialized...");
                 manager.ReCreateDatabase();
                 var initialization = new DataInitialization(manager);
                 initialization.CreateInitialData();
@@ -203,17 +203,26 @@ namespace MUnique.OpenMU.Startup
             }
             else if (!manager.IsDatabaseUpToDate())
             {
-                Console.WriteLine("The database needs to be updated before the server can be started. Apply update? (y/n)");
-                var key = Console.ReadLine()?.ToLowerInvariant();
-                if (key == "y")
+                if (autoupdate)
                 {
+                    Console.WriteLine("The database needs to be updated before the server can be started. Updating...");
                     manager.ApplyAllPendingUpdates();
                     Console.WriteLine("The database has been successfully updated.");
                 }
                 else
                 {
-                    Console.WriteLine("Cancelled the update process, can't start the server.");
-                    return null;
+                    Console.WriteLine("The database needs to be updated before the server can be started. Apply update? (y/n)");
+                    var key = Console.ReadLine()?.ToLowerInvariant();
+                    if (key == "y")
+                    {
+                        manager.ApplyAllPendingUpdates();
+                        Console.WriteLine("The database has been successfully updated.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cancelled the update process, can't start the server.");
+                        return null;
+                    }
                 }
             }
             else
