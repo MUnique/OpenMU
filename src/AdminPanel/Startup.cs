@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.AdminPanel
 {
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using MUnique.Log4Net.CoreSignalR;
     using MUnique.OpenMU.AdminPanel.Hubs;
 
@@ -26,7 +26,8 @@ namespace MUnique.OpenMU.AdminPanel
         /// </remarks>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllersWithViews();
+            services.AddRazorPages();
             services.AddSignalR();
         }
 
@@ -36,20 +37,22 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="app">The application.</param>
         /// <param name="env">The env.</param>
         /// <remarks>This method gets called by the runtime. Use this method to configure the HTTP request pipeline.</remarks>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
-            app.UseSignalR(opt =>
+            app.UseRouting();
+            app.UseEndpoints(opt =>
             {
                 opt.MapHub<ServerListHub>("/signalr/hubs/serverListHub");
                 opt.MapHub<WorldObserverHub>("/signalr/hubs/worldObserverHub");
                 opt.MapHub<SystemHub>("/signalr/hubs/systemHub");
                 opt.MapHub<LogHub>("/signalr/hubs/logHub");
+                opt.MapControllers();
+                opt.MapRazorPages();
             });
             app.UseStaticFiles();
         }

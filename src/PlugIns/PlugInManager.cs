@@ -410,7 +410,10 @@ namespace MUnique.OpenMU.PlugIns
 
         private IEnumerable<Type> DiscoverAllPlugIns()
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
+            return AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly => !assembly.FullName.StartsWith("System"))
+                .Where(assembly => !assembly.FullName.StartsWith("Microsoft"))
+                .SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
         }
 
         private IEnumerable<Type> DiscoverPlugIns(Assembly assembly)

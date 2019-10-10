@@ -55,9 +55,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 Log.Debug($"Determined the following referencable types: {this.referencableTypes.Aggregate(string.Empty, (sum, t) => sum + ", " + t.Name)}");
             }
 
-            var relational = entityType.Relational();
             var stringBuilder = new StringBuilder();
-            stringBuilder.Append("select result.\"Id\" \"$id\", result.\"Id\" id, row_to_json(result) as ").AppendLine(relational.TableName)
+            stringBuilder.Append("select result.\"Id\" \"$id\", result.\"Id\" id, row_to_json(result) as ").AppendLine(entityType.GetTableName())
                 .AppendLine("from (");
             this.AddTypeToQuery(entityType, stringBuilder, "a");
             stringBuilder.AppendLine(") result");
@@ -121,8 +120,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         {
             stringBuilder.Append("select ").Append(alias).Append(".\"Id\" as \"$id\", ").Append(alias).Append(".*");
             this.AddNavigationsToQuery(entityType, stringBuilder, alias);
-            var relational = entityType.Relational();
-            stringBuilder.Append(" from ").Append(relational.Schema).Append(".").Append("\"").Append(relational.TableName).Append("\" ").AppendLine(alias);
+            stringBuilder.Append(" from ").Append(entityType.GetSchema()).Append(".").Append("\"").Append(entityType.GetTableName()).Append("\" ").AppendLine(alias);
         }
 
         private void AddNavigationsToQuery(IEntityType entityType, StringBuilder stringBuilder, string parentAlias)
@@ -167,7 +165,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             var navigationAlias = this.GetNextAlias(parentAlias);
             var targetType = navigation.GetTargetType();
             var foreignKey = navigation.ForeignKey.Properties.First();
-            if (foreignKey.IsShadowProperty)
+            if (foreignKey.IsShadowProperty())
             {
                 // We assume that every important foreign key is mapped to a "real" property
                 Log.DebugFormat("Shadow property {0}", navigation.Name);
@@ -191,7 +189,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 stringBuilder.Append("select row_to_json(").Append(navigationAlias).Append(") from (");
                 this.AddTypeToQuery(targetType, stringBuilder, navigationAlias);
                 var primaryKey = targetType.FindPrimaryKey().Properties.First();
-                stringBuilder.Append(") ").Append(navigationAlias).Append(" where ").Append(navigationAlias).Append(".\"").Append(primaryKey.Relational().ColumnName).Append("\" = ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).AppendLine("\"");
+                stringBuilder.Append(") ").Append(navigationAlias).Append(" where ").Append(navigationAlias).Append(".\"").Append(primaryKey.GetColumnName()).Append("\" = ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).AppendLine("\"");
             }
 
             stringBuilder.Append(") as \"").Append(navigation.Name).AppendLine("\"");
@@ -217,16 +215,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         private void AddOneToManyCollection(IEntityType navigationType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
         {
             var navigationAlias = this.GetNextAlias(parentAlias);
-            var primaryKeyName = navigationType.FindDeclaredPrimaryKey().Properties[0].Relational().ColumnName;
+            var primaryKeyName = navigationType.FindDeclaredPrimaryKey().Properties[0].GetColumnName();
             stringBuilder.AppendLine(", (")
                 .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
 
             if (this.SelectReferences(parentAlias, navigationType))
             {
                 var primaryKeyProperty = navigationType.FindPrimaryKey().Properties[0]; // It's always one property, usually called "Id"
-                var navigationRelational = navigationType.Relational();
-                stringBuilder.Append("select \"").Append(primaryKeyProperty.Relational().ColumnName).AppendLine("\" as \"$ref\"");
-                stringBuilder.Append("from ").Append(navigationRelational.Schema).Append(".\"").Append(navigationRelational.TableName).AppendLine("\" ")
+                stringBuilder.Append("select \"").Append(primaryKeyProperty.GetColumnName()).AppendLine("\" as \"$ref\"");
+                stringBuilder.Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")
                     .Append("where \"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(primaryKeyName).AppendLine("\"")
                     .Append(") as ").AppendLine(navigationAlias);
             }
@@ -254,17 +251,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         private void AddManyToManyCollection(IEntityType navigationType, IEntityType entityType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
         {
             var navigationAlias = this.GetNextAlias(parentAlias);
-            var entityTypePrimaryKeyName = entityType.FindPrimaryKey().Properties.First().Relational().ColumnName; // usually "Id"
+            var entityTypePrimaryKeyName = entityType.FindPrimaryKey().Properties.First().GetColumnName(); // usually "Id"
             var otherEntityTypeForeignKey = navigationType.GetForeignKeys().FirstOrDefault(fk => fk.PrincipalEntityType != entityType);
             var otherEntityTypeKey = navigationType.GetKeys().FirstOrDefault(fk => fk.DeclaringEntityType != entityType);
-            var referenceColumnToOtherEntity = otherEntityTypeForeignKey?.Properties.First().Relational().ColumnName ?? otherEntityTypeKey?.Properties.First().Relational().ColumnName;
+            var referenceColumnToOtherEntity = otherEntityTypeForeignKey?.Properties.First().GetColumnName() ?? otherEntityTypeKey?.Properties.First().GetColumnName();
 
             stringBuilder.AppendLine(", (")
                 .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
 
-            var navigationRelational = navigationType.Relational();
             stringBuilder.Append("select \"").Append(referenceColumnToOtherEntity).AppendLine("\" as \"$ref\"")
-                .Append("from ").Append(navigationRelational.Schema).Append(".\"").Append(navigationRelational.TableName).AppendLine("\" ")
+                .Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")
                 .Append("where ").Append("\"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(entityTypePrimaryKeyName).AppendLine("\"")
                 .Append(") as ").AppendLine(navigationAlias);
         }

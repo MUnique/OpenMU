@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.clientConnection = clientConnection;
             this.serverConnection = serverConnection;
             this.invokeAction = invokeAction;
-            this.log = LogManager.GetLogger("Proxy_" + this.clientConnection);
+            this.log = LogManager.GetLogger(this.GetType().Assembly, "Proxy_" + this.clientConnection);
             this.clientName = this.clientConnection.ToString();
             this.Name = this.clientName;
             this.clientConnection.PacketReceived += this.ClientPacketReceived;
