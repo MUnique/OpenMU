@@ -233,8 +233,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
                 if (repository != null)
                 {
-                    var setter = navigation.GetSetter();
-                    setter.SetClrValue(entityEntry.Entity, repository.GetById(id));
+                    if (navigation is Navigation concreteNavigation
+                            && concreteNavigation.Setter != null)
+                    {
+                        concreteNavigation.Setter.SetClrValue(entityEntry.Entity, repository.GetById(id));
+                    }
+                    else
+                    {
+                        Log.Error($"Could not find setter for navigation {navigation}");
+                    }
                 }
                 else
                 {
