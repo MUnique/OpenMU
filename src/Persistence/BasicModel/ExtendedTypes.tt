@@ -3,21 +3,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 #>
-<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="Common.ttinclude" #>
 <#@ assembly name="System.Core" #>
-
-// fixes error: Compiling transformation: The type Type is defined in an assembly that is not referenced. You must add a reference to assembly netstandard, Version=2.0.0.0 ...
-<#@ assembly Name="C:\Program Files\dotnet\sdk\2.2.108\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll" #>
-<#@ assembly name="$(TargetDir)\MUnique.OpenMU.DataModel.dll" #>
-<#@ assembly name="$(TargetDir)\MUnique.OpenMU.AttributeSystem.dll" #>
-<#@ assembly name="$(TargetDir)\MUnique.OpenMU.Interfaces.dll" #>
-<#@ assembly name="$(TargetDir)\MUnique.OpenMU.PlugIns.dll" #>
-<#@ assembly name="$(TargetPath)" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="MUnique.OpenMU.DataModel.Entities" #>
 <#@ output extension=".cs" #>
 // <copyright file="ExtendedTypes.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -39,17 +31,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
     using MUnique.OpenMU.Persistence.Json;
 
 <#
-Assembly assembly = typeof(Account).Assembly;
-var customTypes = assembly.GetTypes().Where(type => type.IsClass && type.IsPublic && !type.IsSealed && !type.IsAbstract && type.GetConstructor(System.Array.Empty<System.Type>()) != null).ToList();
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeDefinition));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.StatAttribute));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstValueAttribute));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationship));
-customTypes.Add(typeof(MUnique.OpenMU.Interfaces.LetterHeader));
-customTypes.Add(typeof(MUnique.OpenMU.Interfaces.Friend));
-customTypes.Add(typeof(MUnique.OpenMU.PlugIns.PlugInConfiguration));
-
-
+List<Type> customTypes = this.GetCustomTypes();
 foreach (Type type in customTypes)
 {
     string className = type.Name;
