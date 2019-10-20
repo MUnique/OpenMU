@@ -50,6 +50,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             using (var temporaryContext = this.persistenceContextProvider.CreateNewContext())
             {
                 this.gameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
+                temporaryContext.SaveChanges();
             }
 
             using (this.context = this.persistenceContextProvider.CreateNewContext(this.gameConfiguration))

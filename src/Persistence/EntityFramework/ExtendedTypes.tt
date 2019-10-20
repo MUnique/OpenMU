@@ -3,20 +3,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 #>
-<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly Name="C:\Program Files\dotnet\sdk\2.2.108\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll" #>
-<#@ assembly name="$(TargetDir)\MUnique.OpenMU.DataModel.dll" #>
-<#@ assembly name="$(TargetDir)\MUnique.OpenMU.AttributeSystem.dll" #>
-<#@ assembly name="$(TargetDir)\MUnique.OpenMU.PlugIns.dll" #>
-<#@ assembly name="$(TargetDir)\MUnique.OpenMU.Interfaces.dll" #>
-<#@ assembly name="$(TargetPath)" #>
+<#@ include file="..\BasicModel\Common.ttinclude" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="MUnique.OpenMU.DataModel.Entities" #>
-<#@ import namespace="MUnique.OpenMU.Persistence.EntityFramework" #>
 <#@ output extension=".cs" #>
 // <copyright file="ExtendedTypes.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -40,16 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using MUnique.OpenMU.Persistence;
 
 <#
-Assembly assembly = typeof(Account).Assembly;
-var customTypes = assembly.GetTypes().Where(type => type.IsClass && type.IsPublic && !type.IsSealed && !type.IsAbstract && type.GetConstructor(System.Array.Empty<System.Type>()) != null).ToList();
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeDefinition));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.StatAttribute));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstValueAttribute));
-customTypes.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationship));
-customTypes.Add(typeof(MUnique.OpenMU.Interfaces.LetterHeader));
-customTypes.Add(typeof(MUnique.OpenMU.Interfaces.Friend));
-customTypes.Add(typeof(MUnique.OpenMU.PlugIns.PlugInConfiguration));
-
+List<Type> customTypes = this.GetCustomTypes();
     
 string customTypeSuffix = string.Empty;
 
@@ -61,11 +45,11 @@ foreach (Type type in customTypes)
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="<#=type.FullName#>"/>.
     /// </summary>
-    [Table("<#=type.Name#>", Schema = "<#=type.IsConfigurationType() ? "config" : "data" #>")]
+    [Table("<#=type.Name#>", Schema = "<#=IsConfigurationType(type) ? "config" : "data" #>")]
     internal partial class <#=className #> : <#=type.FullName#>, IIdentifiable
     {<#
-        var standaloneCollectionProperties = type != typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration) ? 
-            type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && ExtendedModelMetaData.StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0])).ToList() :
+        var standaloneCollectionProperties = type.FullName != "MUnique.OpenMU.DataModel.Configuration.GameConfiguration" ? 
+            type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && standaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)).ToList() :
             Enumerable.Empty<PropertyInfo>();
 
         if (standaloneCollectionProperties.Any() || type.GetConstructors().Any(c => c.IsPublic && c.GetParameters().Length > 0) && type.GetConstructors().Any(c => c.IsPublic && c.GetParameters().Length == 0))
@@ -143,7 +127,7 @@ foreach (Type type in customTypes)
                                     .Where(p => p.GetGetMethod().IsVirtual && !p.GetGetMethod().IsFinal && !p.PropertyType.IsValueType && !p.PropertyType.IsArray)
                                     .Where(p => !(p.PropertyType.IsGenericType 
                                         && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) 
-                                        && ExtendedModelMetaData.StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0])) || type == typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration))
+                                        && standaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)) || type.FullName == "MUnique.OpenMU.DataModel.Configuration.GameConfiguration")
             )
         {
                       string propertyTypeName;
@@ -312,8 +296,8 @@ foreach (Type type in customTypes)
         {
 <#
 var allStandaloneCollectionProperties = customTypes
-    .Where(t => t != typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration))
-    .SelectMany(t => t.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && ExtendedModelMetaData.StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0]))).ToList();
+    .Where(t => t.FullName != "MUnique.OpenMU.DataModel.Configuration.GameConfiguration")
+    .SelectMany(t => t.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && standaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName))).ToList();
 
 foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
 {

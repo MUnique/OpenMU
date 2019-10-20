@@ -1,6 +1,4 @@
-﻿
-// fixes error: Compiling transformation: The type Type is defined in an assembly that is not referenced. You must add a reference to assembly netstandard, Version=2.0.0.0 ...
-// <copyright file="ExtendedTypes.cs" company="MUnique">
+﻿// <copyright file="ExtendedTypes.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 

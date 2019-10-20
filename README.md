@@ -29,10 +29,10 @@ You can try the current state by using the available docker image, also mentione
 This project is released under the MIT license (see LICENSE file).
 
 ## Used technologies ##
-The project is mainly written in C# and targets .NET Standard/Core 2, except for some little tools which still require the full .NET Framework 4.6.1.
+The project is mainly written in C# and targets .NET Standard 2.1 and .NET Core 3.0.
 
 The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel)
-and uses the [React](https://reactjs.org) framework for the user interface.
+and uses the [React](https://reactjs.org) and [Redux](https://redux.js.org/) libraries for the user interface.
 
 At the moment the persistence layer uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 and [PostgreSQL](https://www.postgresql.org) as database. Additionally, it's also possible to start it in a non-persistent in-memory mode.
