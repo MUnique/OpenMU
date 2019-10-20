@@ -29,7 +29,10 @@
     <PackageReference Include="System.Memory" Version="4.5.3" />
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(ci)'!='true'">
+    <!-- We only run the transformation locally on our dev environment with visual studio.
+        The CI environment is identified by the parameter 'ci'. It's set in the azure pipelines and Dockerfile.
+        If you run into errors here under Linux/Mac OS, it might help to add this parameter, too. -->
     <XslTransformation OutputPaths="PacketHeaders.cs" XmlInputPaths="PacketHeaders.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='PacketHeaders.cs'/&gt;" />
     <XslTransformation OutputPaths="CommonEnums.cs" XmlInputPaths="CommonEnums.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='CommonEnums.cs'/&gt;" />
     <XslTransformation OutputPaths="ClientToServer\ClientToServerPackets.cs" XmlInputPaths="ClientToServer\ClientToServerPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ClientToServerPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ClientToServer'/&gt;" />
