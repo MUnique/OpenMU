@@ -699,8 +699,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public LogOutType Type
         {
-            get => (LogOutType)this.data.Slice(4).GetByteValue();
-            set => this.data.Slice(4).SetByteValue((byte)value);
+            get => (LogOutType)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
         }
 
         /// <summary>
@@ -1445,8 +1445,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ItemStorageKind FromStorage
         {
-            get => (ItemStorageKind)this.data.Slice(3).GetByteValue();
-            set => this.data.Slice(3).SetByteValue((byte)value);
+            get => (ItemStorageKind)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>
@@ -1471,8 +1471,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ItemStorageKind ToStorage
         {
-            get => (ItemStorageKind)this.data.Slice(17).GetByteValue();
-            set => this.data.Slice(17).SetByteValue((byte)value);
+            get => (ItemStorageKind)this.data.Slice(17)[0];
+            set => this.data.Slice(17)[0] = (byte)value;
         }
 
         /// <summary>
@@ -2237,8 +2237,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public VaultMoneyMoveDirection Direction
         {
-            get => (VaultMoneyMoveDirection)this.data.Slice(3).GetByteValue();
-            set => this.data.Slice(3).SetByteValue((byte)value);
+            get => (VaultMoneyMoveDirection)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>
@@ -2383,8 +2383,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public MixType Operation
         {
-            get => (MixType)this.data.Slice(3).GetByteValue();
-            set => this.data.Slice(3).SetByteValue((byte)value);
+            get => (MixType)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>
@@ -2392,8 +2392,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ItemType Item
         {
-            get => (ItemType)this.data.Slice(4).GetByteValue();
-            set => this.data.Slice(4).SetByteValue((byte)value);
+            get => (ItemType)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
         }
 
         /// <summary>
@@ -2401,8 +2401,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public StackSize MixingStackSize
         {
-            get => (StackSize)this.data.Slice(5).GetByteValue();
-            set => this.data.Slice(5).SetByteValue((byte)value);
+            get => (StackSize)this.data.Slice(5)[0];
+            set => this.data.Slice(5)[0] = (byte)value;
         }
 
         /// <summary>
@@ -3449,8 +3449,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public CharacterStatAttribute StatType
         {
-            get => (CharacterStatAttribute)this.data.Slice(4).GetByteValue();
-            set => this.data.Slice(4).SetByteValue((byte)value);
+            get => (CharacterStatAttribute)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
         }
 
         /// <summary>
@@ -4317,8 +4317,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public TradeButtonState NewState
         {
-            get => (TradeButtonState)this.data.Slice(3).GetByteValue();
-            set => this.data.Slice(3).SetByteValue((byte)value);
+            get => (TradeButtonState)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>
@@ -5541,8 +5541,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ChaosMachineMixType MixType
         {
-            get => (ChaosMachineMixType)this.data.Slice(2).GetByteValue();
-            set => this.data.Slice(2).SetByteValue((byte)value);
+            get => (ChaosMachineMixType)this.data.Slice(2)[0];
+            set => this.data.Slice(2)[0] = (byte)value;
         }
 
         /// <summary>
@@ -6230,8 +6230,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public LegacyQuestState NewState
         {
-            get => (LegacyQuestState)this.data.Slice(4).GetByteValue();
-            set => this.data.Slice(4).SetByteValue((byte)value);
+            get => (LegacyQuestState)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
         }
 
         /// <summary>

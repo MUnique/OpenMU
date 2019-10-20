@@ -189,9 +189,19 @@ namespace MUnique.OpenMU.Network.Packets
         /// <param name="span">The span with at least 1 byte.</param>
         /// <param name="leftShifted">The number of left shifted bits which were required to write the value into the byte.</param>
         /// <returns>The boolean flag.</returns>
-        public static bool GetBoolean(this Span<byte> span, int leftShifted = 0)
+        public static bool GetBoolean(this Span<byte> span, int leftShifted)
         {
             return ((span[0] >> leftShifted) & 1) == 1;
+        }
+
+        /// <summary>
+        /// Gets the boolean flag of the first byte of the span.
+        /// </summary>
+        /// <param name="span">The span with at least 1 byte.</param>
+        /// <returns>The boolean flag.</returns>
+        public static bool GetBoolean(this Span<byte> span)
+        {
+            return (span[0] & 1) == 1;
         }
 
         /// <summary>
@@ -200,7 +210,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// <param name="span">The span with at least 1 byte.</param>
         /// <param name="value">If set to <c>true</c>, the flag is set, otherwise it's cleared.</param>
         /// <param name="leftShifted">The number of left shifted bits which were required to write the value into the byte.</param>
-        public static void SetBoolean(this Span<byte> span, bool value, int leftShifted = 0)
+        public static void SetBoolean(this Span<byte> span, bool value, int leftShifted)
         {
             var mask = (byte)(1 << leftShifted);
             var clearMask = (byte)(0xFF - (1 << leftShifted));
@@ -212,13 +222,28 @@ namespace MUnique.OpenMU.Network.Packets
         }
 
         /// <summary>
+        /// Sets the boolean flag to the first byte of the span.
+        /// </summary>
+        /// <param name="span">The span with at least 1 byte.</param>
+        /// <param name="value">If set to <c>true</c>, the flag is set, otherwise it's cleared.</param>
+        public static void SetBoolean(this Span<byte> span, bool value)
+        {
+            const byte clearMask = 0b1111_1110;
+            span[0] &= clearMask;
+            if (value)
+            {
+                span[0] |= 1;
+            }
+        }
+
+        /// <summary>
         /// Gets the byte value of the first byte of the span, by using only a defined number of bits and considering bit shifting.
         /// </summary>
         /// <param name="span">The span with at least 1 byte.</param>
         /// <param name="bits">The number of bits which are relevant to get this value.</param>
         /// <param name="leftShifted">The number of left shifted bits which were required to write the value into the byte.</param>
         /// <returns>The byte value.</returns>
-        public static byte GetByteValue(this Span<byte> span, int bits = 8, int leftShifted = 0)
+        public static byte GetByteValue(this Span<byte> span, int bits, int leftShifted)
         {
             var andMask = (byte)(Math.Pow(2, bits) - 1);
             var numericalValue = (byte)((span[0] >> leftShifted) & andMask);
@@ -235,7 +260,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// <param name="value">The value which should be set.</param>
         /// <param name="bits">The number of bits which are relevant to set this value in the target byte.</param>
         /// <param name="leftShifted">The number of left shifted bits which were required to write the value into the byte.</param>
-        public static void SetByteValue(this Span<byte> span, byte value, int bits = 8, int leftShifted = 0)
+        public static void SetByteValue(this Span<byte> span, byte value, int bits, int leftShifted)
         {
             var bitMask = (byte)(Math.Pow(2, bits) - 1) << leftShifted;
             var clearMask = (byte)(0xFF - bitMask);

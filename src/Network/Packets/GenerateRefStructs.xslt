@@ -484,38 +484,45 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
 
     <xsl:template match="pd:Field[pd:Type = 'Enum']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; (</xsl:text><xsl:value-of select="pd:TypeName"/><xsl:text>)this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).GetByteValue(</xsl:text>
+      <xsl:text>            get =&gt; (</xsl:text><xsl:value-of select="pd:TypeName"/><xsl:text>)this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>)</xsl:text>
       <xsl:choose>
         <xsl:when test="pd:Length and pd:LeftShifted">
+          <xsl:text>.GetByteValue(</xsl:text>
           <xsl:value-of select="pd:Length"/>
+          <xsl:text>, </xsl:text>
+          <xsl:value-of select="pd:LeftShifted"/>
+          <xsl:text>)</xsl:text>
         </xsl:when>
         <xsl:when test="pd:LeftShifted">
-          <xsl:text>8</xsl:text>
+          <xsl:text>.GetByteValue(8, </xsl:text>
+          <xsl:value-of select="pd:LeftShifted"/>
+          <xsl:text>)</xsl:text>
         </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>[0]</xsl:text>
+        </xsl:otherwise>
       </xsl:choose>
-      <xsl:if test="pd:LeftShifted">
-        <xsl:text>, </xsl:text>
-        <xsl:value-of select="pd:LeftShifted"/>
-      </xsl:if>
-      <xsl:text>);</xsl:text>
+      <xsl:text>;</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'Enum']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetByteValue((byte)value</xsl:text>
+      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>)</xsl:text>
       <xsl:choose>
         <xsl:when test="pd:Length and pd:LeftShifted">
-          <xsl:text>, </xsl:text>
+          <xsl:text>.SetByteValue((byte)value, </xsl:text>
           <xsl:value-of select="pd:Length"/>
+          <xsl:text>, </xsl:text>
+          <xsl:value-of select="pd:LeftShifted"/>
+          <xsl:text>)</xsl:text>
         </xsl:when>
         <xsl:when test="pd:LeftShifted">
-          <xsl:text>, 8</xsl:text>
+          <xsl:text>.SetByteValue((byte)value, 8, </xsl:text>
+          <xsl:value-of select="pd:LeftShifted"/>
+          <xsl:text>)</xsl:text>
         </xsl:when>
+        <xsl:otherwise>[0] = (byte)value</xsl:otherwise>
       </xsl:choose>
-      <xsl:if test="pd:LeftShifted">
-        <xsl:text>, </xsl:text>
-        <xsl:value-of select="pd:LeftShifted"/>
-      </xsl:if>
-      <xsl:text>);</xsl:text>
+      <xsl:text>;</xsl:text>
     </xsl:template>
 
     <!-- Splits a name by inserting a space before each upper case letter and additionally lowering this letter -->
