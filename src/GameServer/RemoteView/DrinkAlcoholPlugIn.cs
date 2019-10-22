@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,13 +28,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void DrinkAlcohol()
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x06))
+            using (var writer = this.player.Connection.StartSafeWrite(ConsumeItemWithEffect.HeaderType, ConsumeItemWithEffect.Length))
             {
-                var packet = writer.Span;
-                packet[2] = 0x29;
-                packet[3] = 0;
-                packet[4] = 0x50;
-                packet[5] = 0;
+                new ConsumeItemWithEffect(writer.Span)
+                {
+                    EffectTimeInSeconds = 80,
+                    ItemType = ConsumeItemWithEffect.ConsumedItemType.Ale,
+                };
                 writer.Commit();
             }
         }

@@ -114,28 +114,109 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: After the login request has been processed.
+    /// Is sent by the server when: After the login request has been processed by the server.
     /// Causes reaction on client side: Shows the result. When it was successful, the client proceeds by sending a character list request.
     /// </summary>
-    public ref struct LoginResult
+    public ref struct LoginResponse
     {
+        /// <summary>
+        /// The result of a login request.
+        /// </summary>
+        public enum LoginResult
+        {
+            /// <summary>
+            /// The password was wrong.
+            /// </summary>
+            InvalidPassword = 0,
+
+            /// <summary>
+            /// The login succeeded.
+            /// </summary>
+            Okay = 1,
+
+            /// <summary>
+            /// The account is invalid.
+            /// </summary>
+            AccountInvalid = 2,
+
+            /// <summary>
+            /// The account is already connected.
+            /// </summary>
+            AccountAlreadyConnected = 3,
+
+            /// <summary>
+            /// The server is full.
+            /// </summary>
+            ServerIsFull = 4,
+
+            /// <summary>
+            /// The account is blocked.
+            /// </summary>
+            AccountBlocked = 5,
+
+            /// <summary>
+            /// The game client has the wrong version.
+            /// </summary>
+            WrongVersion = 6,
+
+            /// <summary>
+            /// An internal error occured during connection.
+            /// </summary>
+            ConnectionError = 7,
+
+            /// <summary>
+            /// Connection closed because of three failed login requests.
+            /// </summary>
+            ConnectionClosed3Fails = 8,
+
+            /// <summary>
+            /// There is no payment information.
+            /// </summary>
+            NoChargeInfo = 9,
+
+            /// <summary>
+            /// The subscription term is over.
+            /// </summary>
+            SubscriptionTermOver = 10,
+
+            /// <summary>
+            /// The subscription time is over.
+            /// </summary>
+            SubscriptionTimeOver = 11,
+
+            /// <summary>
+            /// The account is temporarily blocked.
+            /// </summary>
+            TemporaryBlocked = 14,
+
+            /// <summary>
+            /// Only players over 15 years are allowed to connect.
+            /// </summary>
+            OnlyPlayersOver15Yrs = 17,
+
+            /// <summary>
+            /// The client connected from a blocked country.
+            /// </summary>
+            BadCountry = 210,
+        }
+
         private Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoginResult"/> struct.
+        /// Initializes a new instance of the <see cref="LoginResponse"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public LoginResult(Span<byte> data)
+        public LoginResponse(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoginResult"/> struct.
+        /// Initializes a new instance of the <see cref="LoginResponse"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private LoginResult(Span<byte> data, bool initialize)
+        private LoginResponse(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -143,7 +224,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -165,6 +246,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static byte SubCode => 0x01;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
@@ -172,25 +258,133 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the success.
         /// </summary>
-        public byte Success
+        public LoginResult Success
         {
-            get => this.data[4];
-            set => this.data[4] = value;
+            get => (LoginResult)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="LoginResult"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LoginResponse"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LoginResult(Span<byte> packet) => new LoginResult(packet, false);
+        public static implicit operator LoginResponse(Span<byte> packet) => new LoginResponse(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="LoginResult"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="LoginResponse"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(LoginResult packet) => packet.data; 
+        public static implicit operator Span<byte>(LoginResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A player sends a chat message.
+    /// Causes reaction on client side: The message is shown in the chat box and above the character of the sender.
+    /// </summary>
+    public ref struct ChatMessage
+    {
+        /// <summary>
+        /// Defines the type of a chat message.
+        /// </summary>
+        public enum ChatMessageType
+        {
+            /// <summary>
+            /// The message is a normal chat message, e.g. public, within a party or guild.
+            /// </summary>
+            Normal = 0,
+
+            /// <summary>
+            /// The message is sent privately to the receiving player.
+            /// </summary>
+            Whisper = 2,
+        }
+
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatMessage"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ChatMessage(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatMessage"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ChatMessage(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x00;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public ChatMessageType Type
+        {
+            get => (ChatMessageType)this.data.Slice(2)[0];
+            set => this.data.Slice(2)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the sender.
+        /// </summary>
+        public string Sender
+        {
+            get => this.data.ExtractString(3, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the message.
+        /// </summary>
+        public string Message
+        {
+            get => this.data.ExtractString(13, this.data.Length - 13, System.Text.Encoding.UTF8);
+            set => this.data.Slice(13).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatMessage"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ChatMessage(Span<byte> packet) => new ChatMessage(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ChatMessage"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ChatMessage packet) => packet.data; 
     }
 
 
@@ -551,6 +745,115 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(MaximumManaAndAbility packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The client requested to consume a special item, e.g. a bottle of Ale.
+    /// Causes reaction on client side: The player is shown in a red color and has increased attack speed.
+    /// </summary>
+    public ref struct ConsumeItemWithEffect
+    {
+        /// <summary>
+        /// Defines a consumed item.
+        /// </summary>
+        public enum ConsumedItemType
+        {
+            /// <summary>
+            /// The player consumes a bottle of ale, usually 80 seconds effect time.
+            /// </summary>
+            Ale = 0,
+
+            /// <summary>
+            /// The player consumes a redemy of love, usually 90 seconds effect time.
+            /// </summary>
+            RedemyOfLove = 1,
+
+            /// <summary>
+            /// The player consumes a potion of soul, usually 60 seconds effect time.
+            /// </summary>
+            PotionOfSoul = 77,
+        }
+
+        private Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsumeItemWithEffect"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ConsumeItemWithEffect(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsumeItemWithEffect"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ConsumeItemWithEffect(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x29;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new C3Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the item type.
+        /// </summary>
+        public ConsumedItemType ItemType
+        {
+            get => (ConsumedItemType)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the effect time in seconds.
+        /// </summary>
+        public ushort EffectTimeInSeconds
+        {
+            get => this.data.Slice(4).GetShortLittleEndian();
+            set => this.data.Slice(4).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ConsumeItemWithEffect"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ConsumeItemWithEffect(Span<byte> packet) => new ConsumeItemWithEffect(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ConsumeItemWithEffect"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ConsumeItemWithEffect packet) => packet.data; 
     }
 
 
@@ -1676,6 +1979,27 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// </summary>
     public ref struct ServerMessage
     {
+        /// <summary>
+        /// Defines a type of a server message.
+        /// </summary>
+        public enum MessageType
+        {
+            /// <summary>
+            /// The message is shown as centered golden message in the client.
+            /// </summary>
+            GoldenCenter = 0,
+
+            /// <summary>
+            /// The message is shown as a blue system message.
+            /// </summary>
+            BlueNormal = 1,
+
+            /// <summary>
+            /// The message is a guild notice, centered in green.
+            /// </summary>
+            GuildNotice = 2,
+        }
+
         private Span<byte> data;
 
         /// <summary>
@@ -1722,10 +2046,10 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
-        public byte Type
+        public MessageType Type
         {
-            get => this.data[3];
-            set => this.data[3] = value;
+            get => (MessageType)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>

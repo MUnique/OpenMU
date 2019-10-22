@@ -34,17 +34,147 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F1</Code>
       <SubCode>01</SubCode>
-      <Name>Login Result</Name>
+      <Name>LoginResponse</Name>
+      <Length>5</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>After the login request has been processed.</SentWhen>
+      <SentWhen>After the login request has been processed by the server.</SentWhen>
       <CausedReaction>Shows the result. When it was successful, the client proceeds by sending a character list request.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>LoginResult</TypeName>
           <Name>Success</Name>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>LoginResult</Name>
+          <Description>The result of a login request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>InvalidPassword</Name>
+              <Description>The password was wrong.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Okay</Name>
+              <Description>The login succeeded.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AccountInvalid</Name>
+              <Description>The account is invalid.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AccountAlreadyConnected</Name>
+              <Description>The account is already connected.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ServerIsFull</Name>
+              <Description>The server is full.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AccountBlocked</Name>
+              <Description>The account is blocked.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>WrongVersion</Name>
+              <Description>The game client has the wrong version.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ConnectionError</Name>
+              <Description>An internal error occured during connection.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ConnectionClosed3Fails</Name>
+              <Description>Connection closed because of three failed login requests.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoChargeInfo</Name>
+              <Description>There is no payment information.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>SubscriptionTermOver</Name>
+              <Description>The subscription term is over.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>SubscriptionTimeOver</Name>
+              <Description>The subscription time is over.</Description>
+              <Value>11</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>TemporaryBlocked</Name>
+              <Description>The account is temporarily blocked.</Description>
+              <Value>14</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>OnlyPlayersOver15Yrs</Name>
+              <Description>Only players over 15 years are allowed to connect.</Description>
+              <Value>17</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BadCountry</Name>
+              <Description>The client connected from a blocked country.</Description>
+              <Value>210</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>00</Code>
+      <Name>ChatMessage</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A player sends a chat message.</SentWhen>
+      <CausedReaction>The message is shown in the chat box and above the character of the sender.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>2</Index>
+          <Type>Enum</Type>
+          <TypeName>ChatMessageType</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>Sender</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ChatMessageType</Name>
+          <Description>Defines the type of a chat message.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Normal</Name>
+              <Description>The message is a normal chat message, e.g. public, within a party or guild.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Whisper</Name>
+              <Description>The message is sent privately to the receiving player.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -129,6 +259,52 @@
           <Name>Ability</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>29</Code>
+      <Name>ConsumeItemWithEffect</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The client requested to consume a special item, e.g. a bottle of Ale.</SentWhen>
+      <CausedReaction>The player is shown in a red color and has increased attack speed.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>ConsumedItemType</TypeName>
+          <Name>ItemType</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>EffectTimeInSeconds</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ConsumedItemType</Name>
+          <Description>Defines a consumed item.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Ale</Name>
+              <Description>The player consumes a bottle of ale, usually 80 seconds effect time.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RedemyOfLove</Name>
+              <Description>The player consumes a redemy of love, usually 90 seconds effect time.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PotionOfSoul</Name>
+              <Description>The player consumes a potion of soul, usually 60 seconds effect time.</Description>
+              <Value>77</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -474,7 +650,8 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type><!-- TODO: Enum -->
+          <Type>Enum</Type>
+          <TypeName>MessageType</TypeName>
           <Name>Type</Name>
         </Field>
         <Field>
@@ -483,6 +660,29 @@
           <Name>Message</Name>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>MessageType</Name>
+          <Description>Defines a type of a server message.</Description>
+          <Values>
+            <EnumValue>
+              <Name>GoldenCenter</Name>
+              <Description>The message is shown as centered golden message in the client.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BlueNormal</Name>
+              <Description>The message is shown as a blue system message.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildNotice</Name>
+              <Description>The message is a guild notice, centered in green.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>
