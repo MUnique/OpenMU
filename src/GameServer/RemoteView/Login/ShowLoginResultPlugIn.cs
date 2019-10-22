@@ -28,15 +28,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
         /// <inheritdoc/>
         public void ShowLoginResult(LoginResult loginResult)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(LoginResponse.HeaderType, LoginResponse.Length))
+            using var writer = this.player.Connection.StartSafeWrite(LoginResponse.HeaderType, LoginResponse.Length);
+            _ = new LoginResponse(writer.Span)
             {
-                new LoginResponse(writer.Span)
-                {
-                    Success = ConvertResult(loginResult),
-                };
+                Success = ConvertResult(loginResult),
+            };
 
-                writer.Commit();
-            }
+            writer.Commit();
         }
 
         private static LoginResponse.LoginResult ConvertResult(LoginResult loginResult)

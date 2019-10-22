@@ -33,16 +33,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             const string messagePrefix = "000000000";
             string content = this.player.ClientVersion.Season > 0 ? messagePrefix + message : message;
-            using (var writer = this.player.Connection.StartSafeWrite(ServerMessage.HeaderType, 5 + content.Length))
+            using var writer = this.player.Connection.StartSafeWrite(ServerMessage.HeaderType, 5 + content.Length);
+            _ = new ServerMessage(writer.Span)
             {
-                new ServerMessage(writer.Span)
-                {
-                    Type = ConvertMessageType(messageType),
-                    Message = content,
-                };
+                Type = ConvertMessageType(messageType),
+                Message = content,
+            };
 
-                writer.Commit();
-            }
+            writer.Commit();
         }
 
         private static ServerMessage.MessageType ConvertMessageType(OpenMU.Interfaces.MessageType messageType)
