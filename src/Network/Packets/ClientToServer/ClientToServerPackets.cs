@@ -18,9 +18,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
     /// Causes reaction on server side: By the original server this is used to detect speed hacks.
     /// </summary>
-    public ref struct Ping
+    public readonly ref struct Ping
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Ping"/> struct.
@@ -140,9 +140,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player sends a public chat message.
     /// Causes reaction on server side: The message is forwarded to all surrounding players, including the sender.
     /// </summary>
-    public ref struct PublicChatMessage
+    public readonly ref struct PublicChatMessage
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PublicChatMessage"/> struct.
@@ -223,9 +223,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player sends a private chat message to a specific target player.
     /// Causes reaction on server side: The message is forwarded to the target player.
     /// </summary>
-    public ref struct WhisperMessage
+    public readonly ref struct WhisperMessage
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WhisperMessage"/> struct.
@@ -306,9 +306,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player tries to log into the game.
     /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
     /// </summary>
-    public ref struct LoginLongPassword
+    public readonly ref struct LoginLongPassword
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginLongPassword"/> struct.
@@ -411,9 +411,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player tries to log into the game.
     /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
     /// </summary>
-    public ref struct LoginShortPassword
+    public readonly ref struct LoginShortPassword
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginShortPassword"/> struct.
@@ -516,9 +516,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player tries to log into the game.
     /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
     /// </summary>
-    public ref struct Login075
+    public readonly ref struct Login075
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Login075"/> struct.
@@ -621,7 +621,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: When the client wants to leave the game in various ways.
     /// Causes reaction on server side: Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.
     /// </summary>
-    public ref struct LogOut
+    public readonly ref struct LogOut
     {
         /// <summary>
         /// Describes the way how the player wants to leave the current game.
@@ -644,7 +644,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             BackToServerSelection = 2,
         }
 
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogOut"/> struct.
@@ -723,9 +723,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop.
     /// Causes reaction on server side: The price is set for the specified item. Works only if the shop is currently closed.
     /// </summary>
-    public ref struct PlayerShopSetItemPrice
+    public readonly ref struct PlayerShopSetItemPrice
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerShopSetItemPrice"/> struct.
@@ -813,9 +813,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player wants to open his personal item shop.
     /// Causes reaction on server side: The personal item shop is opened and the surrounding players are informed about it, including the own player.
     /// </summary>
-    public ref struct PlayerShopOpen
+    public readonly ref struct PlayerShopOpen
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerShopOpen"/> struct.
@@ -894,9 +894,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player wants to close his personal item shop.
     /// Causes reaction on server side: The personal item shop is closed and the surrounding players are informed about it, including the own player.
     /// </summary>
-    public ref struct PlayerShopClose
+    public readonly ref struct PlayerShopClose
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerShopClose"/> struct.
@@ -966,9 +966,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player opens a shop of another player.
     /// Causes reaction on server side: The list of items is sent back, if the shop of the player is currently open.
     /// </summary>
-    public ref struct PlayerShopItemListRequest
+    public readonly ref struct PlayerShopItemListRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerShopItemListRequest"/> struct.
@@ -1056,9 +1056,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to buy the item of another players shop.
     /// Causes reaction on server side: If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.
     /// </summary>
-    public ref struct PlayerShopItemBuyRequest
+    public readonly ref struct PlayerShopItemBuyRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerShopItemBuyRequest"/> struct.
@@ -1155,9 +1155,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
     /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
     /// </summary>
-    public ref struct PickupItemRequest
+    public readonly ref struct PickupItemRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PickupItemRequest"/> struct.
@@ -1229,9 +1229,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
     /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
     /// </summary>
-    public ref struct PickupItemRequest075
+    public readonly ref struct PickupItemRequest075
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PickupItemRequest075"/> struct.
@@ -1303,9 +1303,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player requests to drop on item of his inventory on the ground.
     /// Causes reaction on server side: When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.
     /// </summary>
-    public ref struct DropItemRequest
+    public readonly ref struct DropItemRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DropItemRequest"/> struct.
@@ -1395,9 +1395,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.
     /// Causes reaction on server side: 
     /// </summary>
-    public ref struct ItemMoveRequest
+    public readonly ref struct ItemMoveRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemMoveRequest"/> struct.
@@ -1504,9 +1504,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
     /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
     /// </summary>
-    public ref struct ConsumeItemRequest
+    public readonly ref struct ConsumeItemRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsumeItemRequest"/> struct.
@@ -1596,9 +1596,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to talk to an NPC.
     /// Causes reaction on server side: Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.
     /// </summary>
-    public ref struct TalkToNpcRequest
+    public readonly ref struct TalkToNpcRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TalkToNpcRequest"/> struct.
@@ -1670,9 +1670,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player closes the dialog which was opened by an interaction with a NPC.
     /// Causes reaction on server side: The server updates the state of the player accordingly.
     /// </summary>
-    public ref struct CloseNpcRequest
+    public readonly ref struct CloseNpcRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloseNpcRequest"/> struct.
@@ -1735,9 +1735,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to buy an item from an opened NPC merchant.
     /// Causes reaction on server side: If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.
     /// </summary>
-    public ref struct BuyItemFromNpcRequest
+    public readonly ref struct BuyItemFromNpcRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BuyItemFromNpcRequest"/> struct.
@@ -1809,9 +1809,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to sell an item of his inventory to the opened NPC merchant.
     /// Causes reaction on server side: The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.
     /// </summary>
-    public ref struct SellItemToNpcRequest
+    public readonly ref struct SellItemToNpcRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SellItemToNpcRequest"/> struct.
@@ -1883,9 +1883,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to repair an item of his inventory.
     /// Causes reaction on server side: The item is repaired if the player has enough money in its inventory. A corresponding response is sent.
     /// </summary>
-    public ref struct RepairItemRequest
+    public readonly ref struct RepairItemRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RepairItemRequest"/> struct.
@@ -1957,9 +1957,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player selected to warp by selecting an entry in the warp list (configured in game client files).
     /// Causes reaction on server side: If the player has enough money and is allowed to enter the map, it's getting moved to there.
     /// </summary>
-    public ref struct WarpCommandRequest
+    public readonly ref struct WarpCommandRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WarpCommandRequest"/> struct.
@@ -2038,9 +2038,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: When the player enters an area on the game map which is configured as gate at the client data files.
     /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
     /// </summary>
-    public ref struct EnterGateRequest
+    public readonly ref struct EnterGateRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EnterGateRequest"/> struct.
@@ -2112,9 +2112,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player closed an opened vault dialog.
     /// Causes reaction on server side: The state on the server is updated.
     /// </summary>
-    public ref struct VaultClosed
+    public readonly ref struct VaultClosed
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaultClosed"/> struct.
@@ -2177,7 +2177,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player wants to move money from or to the vault storage.
     /// Causes reaction on server side: The money is moved, if possible.
     /// </summary>
-    public ref struct VaultMoveMoneyRequest
+    public readonly ref struct VaultMoveMoneyRequest
     {
         /// <summary>
         /// Defines the moving direction of money between inventory and vault.
@@ -2189,7 +2189,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             VaultToInventory = 1,
         }
 
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaultMoveMoneyRequest"/> struct.
@@ -2270,7 +2270,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
     /// Causes reaction on server side: If successful, the inventory is updated and the game client gets corresponding responses.
     /// </summary>
-    public ref struct LahapJewelMixRequest
+    public readonly ref struct LahapJewelMixRequest
     {
         /// <summary>
         /// Describes what kind of operation is requested.
@@ -2335,7 +2335,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             HigherRefineStone = 9,
         }
 
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LahapJewelMixRequest"/> struct.
@@ -2434,9 +2434,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: When the player opens the party menu in the game client.
     /// Causes reaction on server side: If the player is in a party, the server sends back a list with information about all players of the party.
     /// </summary>
-    public ref struct PartyListRequest
+    public readonly ref struct PartyListRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyListRequest"/> struct.
@@ -2499,9 +2499,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
     /// Causes reaction on server side: If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.
     /// </summary>
-    public ref struct PartyPlayerKickRequest
+    public readonly ref struct PartyPlayerKickRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyPlayerKickRequest"/> struct.
@@ -2573,9 +2573,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A party master wants to invite another player to his party.
     /// Causes reaction on server side: If the requesting player has no party, or is the party master, a request is sent to the target player.
     /// </summary>
-    public ref struct PartyInviteRequest
+    public readonly ref struct PartyInviteRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyInviteRequest"/> struct.
@@ -2647,9 +2647,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player was invited by another player to join a party and this player sent the response back.
     /// Causes reaction on server side: If the sender accepts the request, it's added to the party.
     /// </summary>
-    public ref struct PartyInviteResponse
+    public readonly ref struct PartyInviteResponse
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyInviteResponse"/> struct.
@@ -2721,9 +2721,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to walk on the game map.
     /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
     /// </summary>
-    public ref struct WalkRequest
+    public readonly ref struct WalkRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WalkRequest"/> struct.
@@ -2812,9 +2812,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: It's sent when the player performs specific skills.
     /// Causes reaction on server side: Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.
     /// </summary>
-    public ref struct InstantMoveRequest
+    public readonly ref struct InstantMoveRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InstantMoveRequest"/> struct.
@@ -2895,9 +2895,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player does any kind of animation.
     /// Causes reaction on server side: The animation number and rotation is forwarded to all surrounding players.
     /// </summary>
-    public ref struct AnimationRequest
+    public readonly ref struct AnimationRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnimationRequest"/> struct.
@@ -2978,9 +2978,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: After a successful login or after the player decided to leave the game world to go back to the character selection screen.
     /// Causes reaction on server side: The server sends the character list with all available characters.
     /// </summary>
-    public ref struct RequestCharacterList
+    public readonly ref struct RequestCharacterList
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestCharacterList"/> struct.
@@ -3050,9 +3050,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The game client is at the character selection screen and the player requests to add a new character.
     /// Causes reaction on server side: The server checks if the player is allowed to create the character and sends a response back.
     /// </summary>
-    public ref struct CreateCharacter
+    public readonly ref struct CreateCharacter
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateCharacter"/> struct.
@@ -3140,9 +3140,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The game client is at the character selection screen and the player requests to delete an existing character.
     /// Causes reaction on server side: The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
     /// </summary>
-    public ref struct DeleteCharacter
+    public readonly ref struct DeleteCharacter
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteCharacter"/> struct.
@@ -3230,9 +3230,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player selects a character to enter the game world on the character selection screen.
     /// Causes reaction on server side: The player joins the game world with the specified character.
     /// </summary>
-    public ref struct SelectCharacter
+    public readonly ref struct SelectCharacter
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectCharacter"/> struct.
@@ -3311,9 +3311,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
     /// Causes reaction on server side: The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.
     /// </summary>
-    public ref struct FocusCharacter
+    public readonly ref struct FocusCharacter
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FocusCharacter"/> struct.
@@ -3392,9 +3392,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.
     /// Causes reaction on server side: The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.
     /// </summary>
-    public ref struct IncreaseCharacterStatPoint
+    public readonly ref struct IncreaseCharacterStatPoint
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IncreaseCharacterStatPoint"/> struct.
@@ -3473,9 +3473,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: After the server sent a map change message and the client has initialized the game map visualization.
     /// Causes reaction on server side: The character is added to the internal game map and ready to interact with other entities.
     /// </summary>
-    public ref struct ClientReadyAfterMapChange
+    public readonly ref struct ClientReadyAfterMapChange
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientReadyAfterMapChange"/> struct.
@@ -3545,9 +3545,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: When leaving the game world with a character.
     /// Causes reaction on server side: The server saves this configuration in its database.
     /// </summary>
-    public ref struct SaveKeyConfiguration
+    public readonly ref struct SaveKeyConfiguration
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveKeyConfiguration"/> struct.
@@ -3625,9 +3625,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player wants to add or increase the level of a specific master skill of the master skill tree.
     /// Causes reaction on server side: Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.
     /// </summary>
-    public ref struct AddMasterSkillPoint
+    public readonly ref struct AddMasterSkillPoint
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AddMasterSkillPoint"/> struct.
@@ -3706,9 +3706,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player attacks a target without using a skill.
     /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
     /// </summary>
-    public ref struct HitRequest
+    public readonly ref struct HitRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HitRequest"/> struct.
@@ -3798,9 +3798,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
     /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
     /// </summary>
-    public ref struct TargetedSkill
+    public readonly ref struct TargetedSkill
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetedSkill"/> struct.
@@ -3881,9 +3881,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
     /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
     /// </summary>
-    public ref struct TargetedSkill075
+    public readonly ref struct TargetedSkill075
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetedSkill075"/> struct.
@@ -3964,9 +3964,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player is performing an skill which affects an area of the map.
     /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
     /// </summary>
-    public ref struct AreaSkill
+    public readonly ref struct AreaSkill
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AreaSkill"/> struct.
@@ -4083,9 +4083,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: An area skill was performed and the client decided to hit a target.
     /// Causes reaction on server side: The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
     /// </summary>
-    public ref struct AreaSkillHit
+    public readonly ref struct AreaSkillHit
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AreaSkillHit"/> struct.
@@ -4202,9 +4202,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player wants to cancel the trade.
     /// Causes reaction on server side: The trade is cancelled and the previous inventory state is restored.
     /// </summary>
-    public ref struct TradeCancel
+    public readonly ref struct TradeCancel
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TradeCancel"/> struct.
@@ -4267,9 +4267,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player presses the trade button.
     /// Causes reaction on server side: The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.
     /// </summary>
-    public ref struct TradeButtonStateChange
+    public readonly ref struct TradeButtonStateChange
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TradeButtonStateChange"/> struct.
@@ -4341,9 +4341,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player requests to open a trade with another player.
     /// Causes reaction on server side: The request is forwarded to the requested player.
     /// </summary>
-    public ref struct TradeRequest
+    public readonly ref struct TradeRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TradeRequest"/> struct.
@@ -4415,9 +4415,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A requested player responded to a trade request of another player.
     /// Causes reaction on server side: When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. 
     /// </summary>
-    public ref struct TradeRequestResponse
+    public readonly ref struct TradeRequestResponse
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TradeRequestResponse"/> struct.
@@ -4489,9 +4489,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player requests to set an amount of money in the trade.
     /// Causes reaction on server side: It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.
     /// </summary>
-    public ref struct SetTradeMoney
+    public readonly ref struct SetTradeMoney
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetTradeMoney"/> struct.
@@ -4563,9 +4563,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player requests to delete a letter.
     /// Causes reaction on server side: The letter is getting deleted.
     /// </summary>
-    public ref struct LetterDeleteRequest
+    public readonly ref struct LetterDeleteRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LetterDeleteRequest"/> struct.
@@ -4637,9 +4637,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to send a letter to another players character.
     /// Causes reaction on server side: The letter is sent to the other character, if it exists and the player has the required money.
     /// </summary>
-    public ref struct LetterSendRequest
+    public readonly ref struct LetterSendRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LetterSendRequest"/> struct.
@@ -4756,9 +4756,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player requests to read a specific letter of his letter list.
     /// Causes reaction on server side: The server sends the requested letter content back to the game client.
     /// </summary>
-    public ref struct LetterReadRequest
+    public readonly ref struct LetterReadRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LetterReadRequest"/> struct.
@@ -4830,9 +4830,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A guild member wants to kick himself or a guild master wants to kick another player from its guild.
     /// Causes reaction on server side: If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.
     /// </summary>
-    public ref struct GuildKickPlayerRequest
+    public readonly ref struct GuildKickPlayerRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildKickPlayerRequest"/> struct.
@@ -4913,9 +4913,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player (non-guild member) requests to join a guild.
     /// Causes reaction on server side: The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.
     /// </summary>
-    public ref struct GuildJoinRequest
+    public readonly ref struct GuildJoinRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildJoinRequest"/> struct.
@@ -4987,9 +4987,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A guild master responded to a previously sent request.
     /// Causes reaction on server side: If the request was accepted by the guild master, the previously requesting player is added to the guild.
     /// </summary>
-    public ref struct GuildJoinResponse
+    public readonly ref struct GuildJoinResponse
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildJoinResponse"/> struct.
@@ -5061,9 +5061,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A guild player opens its guild menu in the game client.
     /// Causes reaction on server side: A list of all guild members and their state is sent back as response.
     /// </summary>
-    public ref struct GuildListRequest
+    public readonly ref struct GuildListRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildListRequest"/> struct.
@@ -5126,9 +5126,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: When a player wants to create a guild.
     /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
     /// </summary>
-    public ref struct GuildCreateRequest
+    public readonly ref struct GuildCreateRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildCreateRequest"/> struct.
@@ -5208,9 +5208,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
     /// Causes reaction on server side: It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
     /// </summary>
-    public ref struct GuildMasterAnswer
+    public readonly ref struct GuildMasterAnswer
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildMasterAnswer"/> struct.
@@ -5282,9 +5282,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
     /// Causes reaction on server side: The server sends a response which includes the guild name and emblem.
     /// </summary>
-    public ref struct GuildInfoRequest
+    public readonly ref struct GuildInfoRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuildInfoRequest"/> struct.
@@ -5356,9 +5356,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
     /// Causes reaction on server side: If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
     /// </summary>
-    public ref struct ItemRepair
+    public readonly ref struct ItemRepair
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemRepair"/> struct.
@@ -5430,7 +5430,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
     /// Causes reaction on server side: Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
     /// </summary>
-    public ref struct ChaosMachineMixRequest
+    public readonly ref struct ChaosMachineMixRequest
     {
         /// <summary>
         /// This enum describes the possible chaos machine mix type identifiers.
@@ -5493,7 +5493,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             PotionOfSoul = 16,
         }
 
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChaosMachineMixRequest"/> struct.
@@ -5565,9 +5565,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
     /// Causes reaction on server side: The server updates the state of the player accordingly.
     /// </summary>
-    public ref struct CloseChaosMachineRequest
+    public readonly ref struct CloseChaosMachineRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloseChaosMachineRequest"/> struct.
@@ -5630,9 +5630,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to add another players character into his friend list of the messenger.
     /// Causes reaction on server side: A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.
     /// </summary>
-    public ref struct FriendAddRequest
+    public readonly ref struct FriendAddRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FriendAddRequest"/> struct.
@@ -5704,9 +5704,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to delete another players character from his friend list of the messenger.
     /// Causes reaction on server side: The entry in the friend list is removed. The player is shown as offline in the other players friends list.
     /// </summary>
-    public ref struct FriendDelete
+    public readonly ref struct FriendDelete
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FriendDelete"/> struct.
@@ -5778,9 +5778,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to open a chat with another player of his friend list.
     /// Causes reaction on server side: If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.
     /// </summary>
-    public ref struct ChatRoomCreateRequest
+    public readonly ref struct ChatRoomCreateRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatRoomCreateRequest"/> struct.
@@ -5852,9 +5852,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player received a friend request from another player and responded to it.
     /// Causes reaction on server side: If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.
     /// </summary>
-    public ref struct FriendAddResponse
+    public readonly ref struct FriendAddResponse
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FriendAddResponse"/> struct.
@@ -5935,9 +5935,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to set himself on- or offline.
     /// Causes reaction on server side: Depending on the state, the player is shown as offline or online in all friend lists of his friends.
     /// </summary>
-    public ref struct SetFriendOnlineState
+    public readonly ref struct SetFriendOnlineState
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetFriendOnlineState"/> struct.
@@ -6009,9 +6009,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player wants to invite additional players from his friend list to an existing chat room.
     /// Causes reaction on server side: The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.
     /// </summary>
-    public ref struct ChatRoomInvitationRequest
+    public readonly ref struct ChatRoomInvitationRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatRoomInvitationRequest"/> struct.
@@ -6106,9 +6106,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: After the player entered the game world with a character.
     /// Causes reaction on server side: The quest state is sent back as response.
     /// </summary>
-    public ref struct LegacyQuestStateRequest
+    public readonly ref struct LegacyQuestStateRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LegacyQuestStateRequest"/> struct.
@@ -6171,9 +6171,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The player wants to change the state of a quest, e.g. to start or to finish a quest.
     /// Causes reaction on server side: Depending on the requested new state, a response is sent back.
     /// </summary>
-    public ref struct LegacyQuestStateSetRequest
+    public readonly ref struct LegacyQuestStateSetRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LegacyQuestStateSetRequest"/> struct.
@@ -6254,9 +6254,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The client opened an quest NPC dialog and decided to start an available quests.
     /// Causes reaction on server side: The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.
     /// </summary>
-    public ref struct QuestStartRequest
+    public readonly ref struct QuestStartRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QuestStartRequest"/> struct.
@@ -6353,9 +6353,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
     /// Causes reaction on server side: The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
     /// </summary>
-    public ref struct QuestProceedRequest
+    public readonly ref struct QuestProceedRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QuestProceedRequest"/> struct.
@@ -6452,9 +6452,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The game client requests to complete an active quest.
     /// Causes reaction on server side: The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.
     /// </summary>
-    public ref struct QuestCompletionRequest
+    public readonly ref struct QuestCompletionRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QuestCompletionRequest"/> struct.
@@ -6542,9 +6542,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The game client requests to cancel an active quest.
     /// Causes reaction on server side: The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.
     /// </summary>
-    public ref struct QuestCancelRequest
+    public readonly ref struct QuestCancelRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QuestCancelRequest"/> struct.
@@ -6632,9 +6632,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The game client requests to complete a client action, e.g. completing a tutorial.
     /// Causes reaction on server side: The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.
     /// </summary>
-    public ref struct QuestClientActionRequest
+    public readonly ref struct QuestClientActionRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QuestClientActionRequest"/> struct.
@@ -6722,9 +6722,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The clients requests the states of all quests, usually after entering the game.
     /// Causes reaction on server side: The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
     /// </summary>
-    public ref struct ActiveQuestListRequest
+    public readonly ref struct ActiveQuestListRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActiveQuestListRequest"/> struct.
@@ -6794,9 +6794,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The game client requests the state of a specific active quests.
     /// Causes reaction on server side: The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.
     /// </summary>
-    public ref struct QuestStateRequest
+    public readonly ref struct QuestStateRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QuestStateRequest"/> struct.
@@ -6884,9 +6884,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The game client requests the list of event quests, usually after entering the game.
     /// Causes reaction on server side: The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
     /// </summary>
-    public ref struct EventQuestStateListRequest
+    public readonly ref struct EventQuestStateListRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventQuestStateListRequest"/> struct.
@@ -6956,9 +6956,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The client opened an quest NPC dialog and requests a list of available quests.
     /// Causes reaction on server side: The list of available quests of this NPC is sent back (F60A).
     /// </summary>
-    public ref struct AvailableQuestsRequest
+    public readonly ref struct AvailableQuestsRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AvailableQuestsRequest"/> struct.
@@ -7028,9 +7028,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).
     /// Causes reaction on server side: The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.
     /// </summary>
-    public ref struct NpcBuffRequest
+    public readonly ref struct NpcBuffRequest
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcBuffRequest"/> struct.

@@ -50,12 +50,12 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:template match="pd:Structure">
       <xsl:value-of select="$newline" />
       <xsl:apply-templates select="pd:Description"/>
-      <xsl:text>    public ref struct </xsl:text>
+      <xsl:text>    public readonly ref struct </xsl:text>
       <xsl:apply-templates select="pd:Name" />
       <xsl:value-of select="$newline"/>
       <xsl:text>    {</xsl:text>
       <xsl:value-of select="$newline"/>
-      <xsl:text>        private Span&lt;byte&gt; data;</xsl:text>
+      <xsl:text>        private readonly Span&lt;byte&gt; data;</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:call-template name="structConstructor">
         <xsl:with-param name="struct" select="." />
@@ -90,13 +90,13 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       <xsl:value-of select="$newline" />
       </xsl:if>
       <xsl:apply-templates select="pd:Description"/>
-      <xsl:text>    public ref struct </xsl:text>
+      <xsl:text>    public readonly ref struct </xsl:text>
       <xsl:apply-templates select="pd:Name" />
       <xsl:value-of select="$newline"/>
       <xsl:text>    {</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:apply-templates select="pd:Enums" />
-      <xsl:text>        private Span&lt;byte&gt; data;</xsl:text>
+      <xsl:text>        private readonly Span&lt;byte&gt; data;</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:call-template name="constructor">
         <xsl:with-param name="packet" select="." />

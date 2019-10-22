@@ -17,9 +17,9 @@ namespace MUnique.OpenMU.Network.Packets
     /// <summary>
     /// The structure for a C1 packet header. Usually encrypted by Xor32..
     /// </summary>
-    public ref struct C1Header
+    public readonly ref struct C1Header
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="C1Header"/> struct.
@@ -62,9 +62,9 @@ namespace MUnique.OpenMU.Network.Packets
     /// <summary>
     /// The structure for a C1 packet header with sub code. Usually encrypted by Xor32..
     /// </summary>
-    public ref struct C1HeaderWithSubCode
+    public readonly ref struct C1HeaderWithSubCode
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="C1HeaderWithSubCode"/> struct.
@@ -116,9 +116,9 @@ namespace MUnique.OpenMU.Network.Packets
     /// <summary>
     /// The structure for a C2 packet header. Usually encrypted by Xor32..
     /// </summary>
-    public ref struct C2Header
+    public readonly ref struct C2Header
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="C2Header"/> struct.
@@ -161,9 +161,9 @@ namespace MUnique.OpenMU.Network.Packets
     /// <summary>
     /// The structure for a C3 packet header. Usually encrypted by Xor32 and SimpleModulus..
     /// </summary>
-    public ref struct C3Header
+    public readonly ref struct C3Header
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="C3Header"/> struct.
@@ -206,9 +206,9 @@ namespace MUnique.OpenMU.Network.Packets
     /// <summary>
     /// The structure for a C3 packet header with sub code. Usually encrypted by Xor32 and SimpleModulus..
     /// </summary>
-    public ref struct C3HeaderWithSubCode
+    public readonly ref struct C3HeaderWithSubCode
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="C3HeaderWithSubCode"/> struct.
@@ -260,9 +260,9 @@ namespace MUnique.OpenMU.Network.Packets
     /// <summary>
     /// The structure for a C4 packet header. Usually encrypted by Xor32 and SimpleModulus..
     /// </summary>
-    public ref struct C4Header
+    public readonly ref struct C4Header
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="C4Header"/> struct.
@@ -305,9 +305,9 @@ namespace MUnique.OpenMU.Network.Packets
     /// <summary>
     /// The structure for a C4 packet header with sub code. Usually encrypted by Xor32 and SimpleModulus..
     /// </summary>
-    public ref struct C4HeaderWithSubCode
+    public readonly ref struct C4HeaderWithSubCode
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="C4HeaderWithSubCode"/> struct.

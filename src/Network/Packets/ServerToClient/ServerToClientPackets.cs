@@ -18,9 +18,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: After a game client has connected to the game.
     /// Causes reaction on client side: It shows the login dialog.
     /// </summary>
-    public ref struct ServerInfo
+    public readonly ref struct ServerInfo
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerInfo"/> struct.
@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: After the login request has been processed by the server.
     /// Causes reaction on client side: Shows the result. When it was successful, the client proceeds by sending a character list request.
     /// </summary>
-    public ref struct LoginResponse
+    public readonly ref struct LoginResponse
     {
         /// <summary>
         /// The result of a login request.
@@ -200,7 +200,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             BadCountry = 210,
         }
 
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginResponse"/> struct.
@@ -284,7 +284,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: A player sends a chat message.
     /// Causes reaction on client side: The message is shown in the chat box and above the character of the sender.
     /// </summary>
-    public ref struct ChatMessage
+    public readonly ref struct ChatMessage
     {
         /// <summary>
         /// Defines the type of a chat message.
@@ -302,7 +302,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             Whisper = 2,
         }
 
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatMessage"/> struct.
@@ -392,9 +392,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct CurrentHealthAndShield
+    public readonly ref struct CurrentHealthAndShield
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CurrentHealthAndShield"/> struct.
@@ -482,9 +482,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct MaximumHealthAndShield
+    public readonly ref struct MaximumHealthAndShield
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaximumHealthAndShield"/> struct.
@@ -572,9 +572,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct CurrentManaAndAbility
+    public readonly ref struct CurrentManaAndAbility
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CurrentManaAndAbility"/> struct.
@@ -662,9 +662,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct MaximumManaAndAbility
+    public readonly ref struct MaximumManaAndAbility
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaximumManaAndAbility"/> struct.
@@ -752,7 +752,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: The client requested to consume a special item, e.g. a bottle of Ale.
     /// Causes reaction on client side: The player is shown in a red color and has increased attack speed.
     /// </summary>
-    public ref struct ConsumeItemWithEffect
+    public readonly ref struct ConsumeItemWithEffect
     {
         /// <summary>
         /// Defines a consumed item.
@@ -775,7 +775,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             PotionOfSoul = 77,
         }
 
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsumeItemWithEffect"/> struct.
@@ -861,9 +861,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: After the game client requested it, usually after a successful login.
     /// Causes reaction on client side: The game client shows the available characters of the account.
     /// </summary>
-    public ref struct CharacterList
+    public readonly ref struct CharacterList
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterList"/> struct.
@@ -942,9 +942,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct CharacterCreationResult
+    public readonly ref struct CharacterCreationResult
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterCreationResult"/> struct.
@@ -1023,9 +1023,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct SkillListUpdate
+    public readonly ref struct SkillListUpdate
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkillListUpdate"/> struct.
@@ -1122,9 +1122,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct CharacterFocused
+    public readonly ref struct CharacterFocused
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterFocused"/> struct.
@@ -1203,9 +1203,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: After the server processed a character stat increase request packet.
     /// Causes reaction on client side: If it was successful, adds a point to the requested stat type.
     /// </summary>
-    public ref struct CharacterStatIncreaseResponse
+    public readonly ref struct CharacterStatIncreaseResponse
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterStatIncreaseResponse"/> struct.
@@ -1284,9 +1284,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct CharacterDeleteResponse
+    public readonly ref struct CharacterDeleteResponse
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterDeleteResponse"/> struct.
@@ -1365,9 +1365,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: After a character leveled up.
     /// Causes reaction on client side: Updates the level (and other related stats) in the game client and shows an effect.
     /// </summary>
-    public ref struct CharacterLevelUpdate
+    public readonly ref struct CharacterLevelUpdate
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterLevelUpdate"/> struct.
@@ -1500,9 +1500,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </summary>
-    public ref struct CharacterInformation
+    public readonly ref struct CharacterInformation
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterInformation"/> struct.
@@ -1815,9 +1815,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct CharacterInventory
+    public readonly ref struct CharacterInventory
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterInventory"/> struct.
@@ -1896,9 +1896,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct ItemUpgraded
+    public readonly ref struct ItemUpgraded
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemUpgraded"/> struct.
@@ -1977,7 +1977,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct ServerMessage
+    public readonly ref struct ServerMessage
     {
         /// <summary>
         /// Defines a type of a server message.
@@ -2000,7 +2000,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             GuildNotice = 2,
         }
 
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerMessage"/> struct.
@@ -2081,9 +2081,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct PlayerMeet
+    public readonly ref struct PlayerMeet
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerMeet"/> struct.
@@ -2155,9 +2155,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct NpcMeet
+    public readonly ref struct NpcMeet
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcMeet"/> struct.
@@ -2229,9 +2229,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
-    public ref struct MessengerInitialization
+    public readonly ref struct MessengerInitialization
     {
-        private Span<byte> data;
+        private readonly Span<byte> data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessengerInitialization"/> struct.
