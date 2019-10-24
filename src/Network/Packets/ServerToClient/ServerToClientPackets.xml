@@ -327,14 +327,48 @@
       <Code>F3</Code>
       <SubCode>01</SubCode>
       <Name>CharacterCreationResult</Name>
+      <Length>42</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>After the server processed a character creation request.</SentWhen>
+      <CausedReaction>If successful, the new character is shown in the character list; Otherwise, a message is shown that it failed. </CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Boolean</Type>
           <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>CharacterName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>15</Index>
+          <Type>Byte</Type>
+          <Name>CharacterSlot</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Level</Name>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <LeftShifted>3</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>CharacterClassNumber</TypeName>
+          <Name>Class</Name>
+        </Field>
+        <Field>
+          <Index>19</Index>
+          <Type>Byte</Type>
+          <Name>CharacterStatus</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>Binary</Type>
+          <Name>PreviewData</Name>
         </Field>
       </Fields>
     </Packet>

@@ -4,12 +4,15 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
+    using System.Linq;
     using System.Runtime.InteropServices;
     using System.Text;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,21 +33,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void ShowCreatedCharacter(Character character)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x2A))
+            using var writer = this.player.Connection.StartSafeWrite(CharacterCreationResult.HeaderType, CharacterCreationResult.Length);
+            var packet = new CharacterCreationResult(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x01;
-                packet[4] = 0x01; // success
-                packet.Slice(5).WriteString(character.Name, Encoding.UTF8);
-                packet[15] = character.CharacterSlot;
-                packet[16] = 0x01;
-                packet[17] = 0x00;
-                packet[18] = (byte)(character.CharacterClass.Number << 3);
-                packet[19] = (byte)character.CharacterStatus;
-                packet.Slice(20, 22).Fill(0xFF); // preview data?
-                writer.Commit();
-            }
+                Success = true,
+                CharacterName = character.Name,
+                CharacterSlot = character.CharacterSlot,
+                Level = (ushort)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value ?? 0),
+                Class = (CharacterClassNumber)character.CharacterClass.Number,
+                CharacterStatus = (byte)character.CharacterStatus,
+            };
+
+            packet.PreviewData.Fill(0xFF);
+            writer.Commit();
         }
     }
 }

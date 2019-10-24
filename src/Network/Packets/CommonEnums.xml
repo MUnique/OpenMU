@@ -61,5 +61,101 @@
         </EnumValue>
       </Values>
     </Enum>
+    <Enum>
+      <Name>CharacterClassNumber</Name>
+      <Description>Defines the values which are used for the character classes on client side.</Description>
+      <Values>
+        <EnumValue>
+          <Name>DarkWizard</Name>
+          <Description>Value for the dark wizard character class.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>SoulMaster</Name>
+          <Description>Value for the soul master character class.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GrandMaster</Name>
+          <Description>Value for the grand master character class.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DarkKnight</Name>
+          <Description>Value for the dark knight character class.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BladeKnight</Name>
+          <Description>Value for the blade knight character class.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BladeMaster</Name>
+          <Description>Value for the blade master character class.</Description>
+          <Value>7</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FairyElf</Name>
+          <Description>Value for the fairy elf character class.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MuseElf</Name>
+          <Description>Value for the muse elf character class.</Description>
+          <Value>10</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>HighElf</Name>
+          <Description>Value for the high elf character class.</Description>
+          <Value>11</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MagicGladiator</Name>
+          <Description>Value for the magic gladiator character class.</Description>
+          <Value>12</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DuelMaster</Name>
+          <Description>Value for the duel master character class.</Description>
+          <Value>13</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DarkLord</Name>
+          <Description>Value for the dark lord character class.</Description>
+          <Value>16</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LordEmperor</Name>
+          <Description>Value for the lord emperor character class.</Description>
+          <Value>17</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Summoner</Name>
+          <Description>Value for the summoner character class.</Description>
+          <Value>20</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BloodySummoner</Name>
+          <Description>Value for the bloody summoner character class.</Description>
+          <Value>22</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DimensionMaster</Name>
+          <Description>Value for the dimension master character class.</Description>
+          <Value>23</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>RageFighter</Name>
+          <Description>Value for the rage fighter character class.</Description>
+          <Value>24</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FistMaster</Name>
+          <Description>Value for the fist master character class.</Description>
+          <Value>25</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
   </Enums>
 </PacketDefinitions>

@@ -946,8 +946,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: 
-    /// Causes reaction on client side: 
+    /// Is sent by the server when: After the server processed a character creation request.
+    /// Causes reaction on client side: If successful, the new character is shown in the character list; Otherwise, a message is shown that it failed. 
     /// </summary>
     public readonly ref struct CharacterCreationResult
     {
@@ -997,6 +997,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static byte SubCode => 0x01;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 42;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
@@ -1004,10 +1009,63 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the success.
         /// </summary>
-        public byte Success
+        public bool Success
         {
-            get => this.data[4];
-            set => this.data[4] = value;
+            get => this.data.Slice(4).GetBoolean();
+            set => this.data.Slice(4).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the character name.
+        /// </summary>
+        public string CharacterName
+        {
+            get => this.data.ExtractString(5, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the character slot.
+        /// </summary>
+        public byte CharacterSlot
+        {
+            get => this.data[15];
+            set => this.data[15] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the level.
+        /// </summary>
+        public ushort Level
+        {
+            get => this.data.Slice(16).GetShortBigEndian();
+            set => this.data.Slice(16).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the class.
+        /// </summary>
+        public CharacterClassNumber Class
+        {
+            get => (CharacterClassNumber)this.data.Slice(18).GetByteValue(8, 3);
+            set => this.data.Slice(18).SetByteValue((byte)value, 8, 3);
+        }
+
+        /// <summary>
+        /// Gets or sets the character status.
+        /// </summary>
+        public byte CharacterStatus
+        {
+            get => this.data[19];
+            set => this.data[19] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the preview data.
+        /// </summary>
+        public Span<byte> PreviewData
+        {
+            get => this.data.Slice(20);
         }
 
         /// <summary>
@@ -1023,6 +1081,12 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(CharacterCreationResult packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'PreviewData' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(Span<byte> content) => content.Length + 20;
     }
 
 
@@ -1155,7 +1219,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
