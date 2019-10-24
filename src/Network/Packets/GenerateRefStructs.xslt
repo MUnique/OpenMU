@@ -62,6 +62,9 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       </xsl:call-template>
       <xsl:apply-templates select="pd:Type"/>
       <xsl:apply-templates select="pd:Fields" />
+      <xsl:call-template name="lengthCalculator">
+        <xsl:with-param name="struct" select="." />
+      </xsl:call-template>
       <xsl:text>    }</xsl:text>
       <xsl:value-of select="$newline"/>
     </xsl:template>
@@ -116,6 +119,9 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       <xsl:apply-templates select="pd:Fields" />
       <xsl:call-template name="implicitConversions">
         <xsl:with-param name="packet" select="." />
+      </xsl:call-template>
+      <xsl:call-template name="lengthCalculator">
+        <xsl:with-param name="struct" select="." />
       </xsl:call-template>
       <xsl:text>    }</xsl:text>
       <xsl:value-of select="$newline"/>
@@ -253,6 +259,35 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
         <xsl:value-of select="$newline"/>
     </xsl:template>
 
+  <!-- If the last field is a string or a binary without a fixed length, we want to offer a static function to calculate the required size. -->
+  <xsl:template name="lengthCalculator">
+    <xsl:param name="struct" />
+    <xsl:variable name="variableField" select="$struct/pd:Fields[last()]/pd:Field[(pd:Type = 'String' or pd:Type = 'Binary') and not(pd:Length)]" />
+    <xsl:if test="$variableField" >
+      <xsl:text>
+        /// &lt;summary&gt;
+        /// Calculates the size of the packet for the specified field content.
+        /// &lt;/summary&gt;
+        /// &lt;param name="content"&gt;The content of the variable '</xsl:text>
+      <xsl:apply-templates select="$variableField/pd:Name" /><xsl:text>' field from which the size will be calculated.&lt;/param&gt;
+        public static int GetRequiredSize(</xsl:text>
+      <xsl:apply-templates select="$variableField/pd:Type" mode="type"/>
+      <xsl:text> content) => </xsl:text>
+      <xsl:choose>
+        <xsl:when test="$variableField/pd:Type = 'String'">
+          <xsl:text>System.Text.Encoding.UTF8.GetByteCount(content) + 1</xsl:text>
+        </xsl:when>
+        <xsl:when test="$variableField/pd:Type = 'Binary'">
+          <xsl:text>content.Length</xsl:text>
+        </xsl:when>
+      </xsl:choose>
+      <xsl:text> + </xsl:text>
+      <xsl:value-of select="$variableField/pd:Index"/>
+      <xsl:text>;</xsl:text>
+      <xsl:value-of select="$newline"/>
+    </xsl:if>
+  </xsl:template>
+
     <xsl:template name="implicitConversions">
       <xsl:param name="packet" />
       <xsl:text>
@@ -357,6 +392,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:template match="pd:Type[. = 'Short' or . = 'ShortBigEndian']" mode="type">ushort</xsl:template>
     <xsl:template match="pd:Type[. = 'Integer' or . = 'IntegerBigEndian']" mode="type">uint</xsl:template>
     <xsl:template match="pd:Type[. = 'Long' or . = 'LongBigEndian']" mode="type">ulong</xsl:template>
+    <xsl:template match="pd:Type[. = 'Float']" mode="type">float</xsl:template>
     <xsl:template match="pd:Type[. = 'String']" mode="type">string</xsl:template>
     <xsl:template match="pd:Type[. = 'Binary']" mode="type">Span&lt;byte&gt;</xsl:template>
     <xsl:template match="pd:Type[. = 'Enum']" mode="type">
@@ -447,6 +483,20 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:template match="pd:Field[pd:Type = 'LongBigEndian']"  mode="set">
       <xsl:value-of select="$newline"/>
       <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetLongBigEndian(value);</xsl:text>
+    </xsl:template>
+
+    <!-- Floats can be optimized I think-->
+    <xsl:template match="pd:Field[pd:Type = 'Float']"  mode="get">
+      <xsl:value-of select="$newline"/>
+      <xsl:text>            get =&gt; BitConverter.ToSingle(this.data.Slice(</xsl:text>
+      <xsl:value-of select="pd:Index"/>
+      <xsl:text>));</xsl:text>
+    </xsl:template>
+    <xsl:template match="pd:Field[pd:Type = 'Float']"  mode="set">
+      <xsl:value-of select="$newline"/>
+      <xsl:text>            set =&gt; BitConverter.GetBytes(value).CopyTo(this.data.Slice(</xsl:text>
+      <xsl:value-of select="pd:Index"/>
+      <xsl:text>));</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'String']"  mode="get">

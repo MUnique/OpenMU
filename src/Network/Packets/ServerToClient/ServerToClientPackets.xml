@@ -372,6 +372,7 @@
       <Code>F3</Code>
       <SubCode>15</SubCode>
       <Name>CharacterFocused</Name>
+      <Length>15</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen></SentWhen>
       <CausedReaction></CausedReaction>
@@ -380,6 +381,7 @@
           <Index>4</Index>
           <Type>String</Type>
           <Name>CharacterName</Name>
+          <Length>10</Length>
         </Field>
       </Fields>
     </Packet>

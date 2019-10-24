@@ -385,6 +385,13 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(ChatMessage packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
+    }
     }
 
 
@@ -1170,6 +1177,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static byte SubCode => 0x15;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 15;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
@@ -1179,8 +1191,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public string CharacterName
         {
-            get => this.data.ExtractString(4, this.data.Length - 4, System.Text.Encoding.UTF8);
-            set => this.data.Slice(4).WriteString(value, System.Text.Encoding.UTF8);
+            get => this.data.ExtractString(4, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
         }
 
         /// <summary>
@@ -1391,7 +1403,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -2074,6 +2086,12 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(ServerMessage packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 4;
     }
 
 

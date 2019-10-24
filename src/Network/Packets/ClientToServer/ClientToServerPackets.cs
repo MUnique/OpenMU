@@ -216,6 +216,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(PublicChatMessage packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
     }
 
 
@@ -299,6 +305,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(WhisperMessage packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
     }
 
 
@@ -2805,6 +2817,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(WalkRequest packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Directions' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(Span<byte> content) => content.Length + 5;
     }
 
 
@@ -3223,6 +3241,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(DeleteCharacter packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'SecurityCode' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 14;
     }
 
 
@@ -3618,6 +3642,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(SaveKeyConfiguration packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Configuration' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(Span<byte> content) => content.Length + 4;
     }
 
 
@@ -4749,6 +4779,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(LetterSendRequest packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 82;
     }
 
 
@@ -4906,6 +4942,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(GuildKickPlayerRequest packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'SecurityCode' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
     }
 
 
