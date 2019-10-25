@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         {
             var skillIndex = this.SkillList.IndexOf(skill);
             using var writer = this.Player.Connection.StartSafeWrite(SkillRemoved.HeaderType, SkillRemoved.Length);
-            var packet = new SkillRemoved075(writer.Span)
+            _ = new SkillRemoved075(writer.Span)
             {
                 SkillIndex = (byte)skillIndex,
                 SkillNumberAndLevel = this.GetSkillNumberAndLevel(skill),
