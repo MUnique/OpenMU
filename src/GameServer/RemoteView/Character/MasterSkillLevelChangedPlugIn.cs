@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -32,22 +33,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void MasterSkillLevelChanged(SkillEntry skillEntry)
         {
             var character = this.player.SelectedCharacter;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 28))
+            using var writer = this.player.Connection.StartSafeWrite(MasterSkillLevelUpdate.HeaderType, MasterSkillLevelUpdate.Length);
+            _ = new MasterSkillLevelUpdate(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x52;
-                packet[4] = 1; // success
-                packet.Slice(6).SetShortBigEndian((ushort)character.MasterLevelUpPoints);
-                packet[8] = skillEntry.Skill.GetMasterSkillIndex(character.CharacterClass);
-                packet.Slice(12).SetShortBigEndian((ushort)skillEntry.Skill.Number);
-                packet[16] = (byte)skillEntry.Level;
+                Success = true,
+                MasterLevelUpPoints = (ushort)character.MasterLevelUpPoints,
+                MasterSkillIndex = skillEntry.Skill.GetMasterSkillIndex(character.CharacterClass),
+                MasterSkillNumber = (ushort)skillEntry.Skill.Number,
+                Level = (byte)skillEntry.Level,
+                DisplayValue = skillEntry.CalculateDisplayValue(),
+                DisplayValueOfNextLevel = skillEntry.CalculateNextDisplayValue(),
+            };
 
-                // Instead of using the BitConverter, we should use something more efficient. BitConverter creates an array.
-                BitConverter.GetBytes(skillEntry.CalculateDisplayValue()).CopyTo(packet.Slice(20, 4));
-                BitConverter.GetBytes(skillEntry.CalculateNextDisplayValue()).CopyTo(packet.Slice(24, 4));
-                writer.Commit();
-            }
+            writer.Commit();
         }
     }
 }

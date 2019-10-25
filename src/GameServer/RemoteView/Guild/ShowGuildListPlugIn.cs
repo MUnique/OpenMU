@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     using System.Runtime.InteropServices;
     using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Guild;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
@@ -56,7 +57,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 
                     playerBlock[10] = guildPlayer.ServerId;
                     playerBlock[11] = (byte)(guildPlayer.ServerId == 0xFF ? 0x7F : 0x80 + guildPlayer.ServerId);
-                    playerBlock[12] = guildPlayer.PlayerPosition.GetViewValue();
+                    playerBlock[12] = (byte)guildPlayer.PlayerPosition.GetViewValue();
 
                     i++;
                 }

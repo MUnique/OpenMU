@@ -1842,37 +1842,6 @@
   </Packets>
   <Enums>
     <Enum>
-      <Name>CharacterStatAttribute</Name>
-      <Description>Defines the type of a character stat attribute.</Description>
-      <Values>
-        <EnumValue>
-          <Name>Strength</Name>
-          <Description>The strength attribute.</Description>
-          <Value>0</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>Agility</Name>
-          <Description>The agility attribute.</Description>
-          <Value>1</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>Vitality</Name>
-          <Description>The vitality attribute.</Description>
-          <Value>2</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>Energy</Name>
-          <Description>The energy attribute.</Description>
-          <Value>3</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>Leadership</Name>
-          <Description>The leadership attribute.</Description>
-          <Value>4</Value>
-        </EnumValue>
-      </Values>
-    </Enum>
-    <Enum>
       <Name>TradeButtonState</Name>
       <Description>The state of the trade button.</Description>
       <Values>

@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
@@ -13,6 +12,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -41,95 +41,67 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         }
 
         /// <summary>
-        /// Gets the size of the skill block.
+        /// Gets the internal skill list.
         /// </summary>
-        /// <remarks>Season 6 uses 4 bytes; first for the index, 2 for the skill id, the last one for the (master) level of the skill.</remarks>
-        protected virtual int SkillBlockSize => 4;
+        protected IList<Skill> SkillList => this.skillList ??= new List<Skill>();
 
         /// <summary>
-        /// Gets the start index of the skill blocks, after the header with the skill count, where <see cref="WriteSkillBlock"/> is used.
+        /// Gets the player.
         /// </summary>
-        protected virtual int SkillsStartIndex => 6;
-
-        private IList<Skill> SkillList => this.skillList ?? (this.skillList = new List<Skill>());
+        protected RemotePlayer Player => this.player;
 
         /// <inheritdoc/>
-        public void AddSkill(Skill skill)
+        public virtual void AddSkill(Skill skill)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 6 + this.SkillBlockSize))
+            var skillIndex = this.AddSkillToList(skill);
+            using var writer = this.player.Connection.StartSafeWrite(SkillAdded.HeaderType, SkillAdded.Length);
+            _ = new SkillAdded(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x11;
-                packet[4] = 0xFE;
-
-                byte? skillIndex = null;
-                for (byte i = 0; i < this.SkillList.Count; i++)
-                {
-                    if (this.SkillList[i] == null)
-                    {
-                        skillIndex = i;
-                    }
-                }
-
-                if (skillIndex == null)
-                {
-                    this.SkillList.Add(skill);
-                    skillIndex = (byte)(this.SkillList.Count - 1);
-                }
-
-                this.WriteSkillBlock(packet.Slice(this.SkillsStartIndex), skill, 0, skillIndex.Value);
-                writer.Commit();
-            }
+                SkillIndex = skillIndex,
+                SkillNumber = (ushort)skill.Number,
+            };
+            writer.Commit();
         }
 
         /// <inheritdoc/>
-        public void RemoveSkill(Skill skill)
+        public virtual void RemoveSkill(Skill skill)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 6 + this.SkillBlockSize))
+            var skillIndex = this.SkillList.IndexOf(skill);
+            using var writer = this.player.Connection.StartSafeWrite(SkillRemoved.HeaderType, SkillRemoved.Length);
+            _ = new SkillRemoved(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x11;
-                packet[4] = 0xFF;
-                this.WriteSkillBlock(packet.Slice(this.SkillsStartIndex), skill, 0, (byte)this.SkillList.IndexOf(skill));
-                writer.Commit();
-            }
+                SkillIndex = (byte)skillIndex,
+                SkillNumber = (ushort)skill.Number,
+            };
+            this.SkillList[skillIndex] = null;
+            writer.Commit();
         }
 
         /// <inheritdoc/>
-        public void UpdateSkillList()
+        public virtual void UpdateSkillList()
         {
-            const int headerSize = 6;
-            this.SkillList.Clear();
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, headerSize + (this.SkillBlockSize * this.player.SkillList.SkillCount)))
+            this.BuildSkillList();
+
+            using var writer = this.player.Connection.StartSafeWrite(SkillListUpdate.HeaderType, SkillListUpdate.GetRequiredSize(this.SkillList.Count));
+            var packet = new SkillListUpdate(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x11;
+                Count = (byte)this.SkillList.Count,
+            };
 
-                var skills = this.player.SkillList.Skills.ToList();
-                if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
+            for (byte i = 0; i < this.SkillList.Count; i++)
+            {
+                var skillEntry = packet[i];
+                skillEntry.SkillIndex = i;
+
+                var skill = this.SkillList[i];
+                skillEntry.SkillNumber = (ushort)this.SkillList[i].Number;
+                if (skill.MasterDefinition != null)
                 {
-                    var replacedSkills = skills.Select(entry => entry.Skill.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
-                    skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
+                    skillEntry.SkillLevel = (byte)this.player.SkillList.GetSkill((ushort)skill.Number).Level;
                 }
-
-                byte i = 0;
-                foreach (var skillEntry in skills.Distinct(default(SkillEqualityComparer)))
-                {
-                    this.SkillList.Add(skillEntry.Skill);
-
-                    int offset = this.SkillsStartIndex + (i * this.SkillBlockSize);
-                    this.WriteSkillBlock(packet.Slice(offset), skillEntry.Skill, (byte)skillEntry.Level, i);
-                    i++;
-                }
-
-                packet[4] = i;
-                var actualSize = headerSize + (this.SkillBlockSize * i);
-                packet.Slice(0, actualSize).SetPacketSize();
-                writer.Commit(actualSize);
             }
+
+            writer.Commit();
         }
 
         /// <inheritdoc />
@@ -144,23 +116,42 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         }
 
         /// <summary>
-        /// Writes a skill into the specified block.
+        /// Builds the internal skill list, considering duplicates.
         /// </summary>
-        /// <param name="skillBlock">The skill block.</param>
-        /// <param name="skill">The skill.</param>
-        /// <param name="skillLevel">The skill level.</param>
-        /// <param name="skillIndex">Index of the skill.</param>
-        protected virtual void WriteSkillBlock(Span<byte> skillBlock, Skill skill, byte skillLevel, byte skillIndex)
+        protected void BuildSkillList()
         {
-            skillBlock[0] = skillIndex;
-            var unsignedSkillId = ShortExtensions.ToUnsigned(skill.Number);
-            skillBlock[1] = unsignedSkillId.GetLowByte();
-            skillBlock[2] = unsignedSkillId.GetHighByte();
-
-            if (skillBlock.Length > 3)
+            this.SkillList.Clear();
+            var skills = this.player.SkillList.Skills.ToList();
+            if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
             {
-                skillBlock[3] = skillLevel;
+                var replacedSkills = skills.Select(entry => entry.Skill.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
+                skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
             }
+
+            foreach (var skillEntry in skills.Distinct(default(SkillEqualityComparer)))
+            {
+                this.SkillList.Add(skillEntry.Skill);
+            }
+        }
+
+        /// <summary>
+        /// Adds the skill to the internal skill list.
+        /// </summary>
+        /// <param name="skill">The skill to add.</param>
+        /// <returns>The index of the added skill.</returns>
+        protected byte AddSkillToList(Skill skill)
+        {
+            for (byte i = 0; i < this.SkillList.Count; i++)
+            {
+                if (this.SkillList[i] == null)
+                {
+                    this.SkillList[i] = skill;
+                    return i;
+                }
+            }
+
+            this.SkillList.Add(skill);
+            return (byte)(this.SkillList.Count - 1);
         }
 
         private struct SkillEqualityComparer : IEqualityComparer<SkillEntry>

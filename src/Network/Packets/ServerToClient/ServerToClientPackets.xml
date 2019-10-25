@@ -177,6 +177,49 @@
       </Enums>
     </Packet>
     <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>16</Code>
+      <Name>ExperienceGained</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A player gained experience.</SentWhen>
+      <CausedReaction>The experience is added to the experience counter and bar.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>KilledObjectId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Short</Type>
+          <Name>AddedExperience</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Short</Type>
+          <Name>DamageOfLastHit</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>30</SubCode>
+      <Name>ApplyKeyConfiguration</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When entering the game world with a character.</SentWhen>
+      <CausedReaction>The client restores this configuration in its user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>Configuration</Name>
+          <Description>The binary data of the key configuration</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
       <SubCode>FE</SubCode>
@@ -316,11 +359,150 @@
       <CausedReaction>The game client shows the available characters of the account.</CausedReaction>
       <Fields>
         <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CreationFlags</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>MoveCnt</Name>
+        </Field>
+        <Field>
           <Index>6</Index>
           <Type>Byte</Type>
-          <Name>Number of characters</Name>
+          <Name>CharacterCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Boolean</Type>
+          <Name>IsVaultExtended</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>CharacterData</TypeName>
+          <Name>Characters</Name>
         </Field>
       </Fields>
+      <Structures>
+        <Structure>
+          <Name>CharacterData</Name>
+          <Description>Data of one character in the list.</Description>
+          <Length>34</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>SlotIndex</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>Level</Name>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <Type>Enum</Type>
+              <TypeName>CharacterStatus</TypeName>
+              <Name>Status</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsItemBlockActive</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>15</Index>
+              <Type>Binary</Type>
+              <Name>Appearance</Name>
+              <Length>18</Length><!-- 0.75 has a length of 9 -->
+            </Field>
+            <Field>
+              <Index>33</Index>
+              <Type>Enum</Type>
+              <TypeName>GuildMemberRole</TypeName>
+              <Name>GuildPosition</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>00</SubCode>
+      <Name>CharacterList075</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested it, usually after a successful login.</SentWhen>
+      <CausedReaction>The game client shows the available characters of the account.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CharacterCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>CharacterData</TypeName>
+          <Name>Characters</Name>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>CharacterData</Name>
+          <Description>Data of one character in the list.</Description>
+          <Length>24</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>SlotIndex</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>11</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>Level</Name>
+            </Field>
+            <Field>
+              <Index>13</Index>
+              <Type>Enum</Type>
+              <TypeName>CharacterStatus</TypeName>
+              <Name>Status</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>13</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsItemBlockActive</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <Type>Binary</Type>
+              <Name>Appearance</Name>
+              <Length>9</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -372,14 +554,99 @@
         </Field>
       </Fields>
     </Packet>
+
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>08</SubCode>
+      <Name>HeroStateChanged</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a the hero state of an observed character changed.</SentWhen>
+      <CausedReaction>The color of the name of the character is changed accordingly and a message is shown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterHeroState</TypeName>
+          <Name>NewState</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>11</SubCode>
+      <Name>SkillAdded</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a skill got added to the skill list, e.g. by equipping an item or learning a skill.</SentWhen>
+      <CausedReaction>The skill is added to the skill list on client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flag</Name>
+          <DefaultValue>0xFE</DefaultValue>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillNumber</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>SkillLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>11</SubCode>
+      <Name>SkillRemoved</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a skill got removed from the skill list, e.g. by removing an equipped item.</SentWhen>
+      <CausedReaction>The skill is added to the skill list on client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flag</Name>
+          <DefaultValue>0xFF</DefaultValue>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillNumber</Name>
+        </Field>
+      </Fields>
+    </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
       <SubCode>11</SubCode>
       <Name>SkillListUpdate</Name>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>Usually, when the player entered the game with a character. When skills get added or removed, this message is sent as well, but with a misleading count.</SentWhen>
+      <CausedReaction>The skill list gets initialized.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -389,17 +656,133 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Byte</Type>
-          <Name>SkillIndex</Name>
-          <Description>Skill index (when added)</Description>
-        </Field>
-        <Field>
-          <Index>7</Index>
-          <Type>ShortBigEndian</Type>
-          <Name>SkillId</Name>
-          <Description>Skill id (when added)</Description>
+          <Type>Structure[]</Type>
+          <TypeName>SkillEntry</TypeName>
+          <Name>Skills</Name>
         </Field>
       </Fields>
+      <Structures>
+        <Structure>
+          <Name>SkillEntry</Name>
+          <Description>Structure for a skill entry of the skill list.</Description>
+          <Length>4</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>SkillIndex</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>SkillNumber</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>SkillLevel</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>11</SubCode>
+      <Name>SkillAdded075</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a skill got added to the skill list, e.g. by equipping an item or learning a skill.</SentWhen>
+      <CausedReaction>The skill is added to the skill list on client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flag</Name>
+          <DefaultValue>0xFE</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Short</Type>
+          <Name>SkillNumberAndLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>11</SubCode>
+      <Name>SkillRemoved075</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a skill got removed from the skill list, e.g. by removing an equipped item.</SentWhen>
+      <CausedReaction>The skill is added to the skill list on client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flag</Name>
+          <DefaultValue>0xFF</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Short</Type>
+          <Name>SkillNumberAndLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>11</SubCode>
+      <Name>SkillListUpdate075</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Usually, when the player entered the game with a character. When skills get added or removed, this message is sent as well, but with a misleading count.</SentWhen>
+      <CausedReaction>The skill list gets initialized.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+          <Description>Mixed usage: Skill list count (when list). 0xFE when adding a skill, 0xFF when removing a Skill.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>SkillEntry</TypeName>
+          <Name>Skills</Name>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>SkillEntry</Name>
+          <Description>Structure for a skill entry of the skill list.</Description>
+          <Length>3</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>SkillIndex</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Short</Type>
+              <Name>SkillNumberAndLevel</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -408,8 +791,8 @@
       <Name>CharacterFocused</Name>
       <Length>15</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>After the client focused the character successfully on the server side.</SentWhen>
+      <CausedReaction>The client highlights the focused character.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -424,15 +807,38 @@
       <Code>F3</Code>
       <SubCode>06</SubCode>
       <Name>CharacterStatIncreaseResponse</Name>
+      <Length>12</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the server processed a character stat increase request packet.</SentWhen>
       <CausedReaction>If it was successful, adds a point to the requested stat type.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>Result</Name>
-          <Description>Result (first 4 bit) and Stat Type (last 4 bit)</Description>
+          <LeftShifted>4</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatAttribute</TypeName>
+          <Name>Attribute</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>UpdatedDependentMaximumStat</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>UpdatedMaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>UpdatedMaximumAbility</Name>
         </Field>
       </Fields>
     </Packet>
@@ -441,16 +847,41 @@
       <Code>F3</Code>
       <SubCode>02</SubCode>
       <Name>CharacterDeleteResponse</Name>
+      <Length>5</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>After the server processed a character delete response of the client.</SentWhen>
+      <CausedReaction>If successful, the character is deleted from the character selection screen. Otherwise, a message is shown.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CharacterDeleteResult</TypeName>
           <Name>Result</Name>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>CharacterDeleteResult</Name>
+          <Description>Result of a character delete request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Unsuccessful</Name>
+              <Description>Deleting was not successful</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Successful</Name>
+              <Description>Deleting was successful</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>WrongSecurityCode</Name>
+              <Description>Deleting was not successful because a wrong security code was entered</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -677,6 +1108,54 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>52</SubCode>
+      <Name>MasterSkillLevelUpdate</Name>
+      <Length>28</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a master skill level has been changed (usually increased).</SentWhen>
+      <CausedReaction>The level is updated in the master skill tree.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MasterLevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>MasterSkillIndex</Name>
+          <Description>The index of the master skill on the clients master skill tree for the given character class.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MasterSkillNumber</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>Byte</Type>
+          <Name>Level</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>Float</Type>
+          <Name>DisplayValue</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Float</Type>
+          <Name>DisplayValueOfNextLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>0D</Code>
       <Name>ServerMessage</Name>
@@ -778,6 +1257,54 @@
         </Field>
       </Fields>
     </Packet>
-    
   </Packets>
+  <Enums>
+    <Enum>
+      <Name>GuildMemberRole</Name>
+      <Description>Defines the role of a guild member.</Description>
+      <Values>
+        <EnumValue>
+          <Name>NormalMember</Name>
+          <Description>The member is a normal member without special rights.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BattleMaster</Name>
+          <Description>The member is a battle master.</Description>
+          <Value>32</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GuildMaster</Name>
+          <Description>The member is the guild master.</Description>
+          <Value>128</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Undefined</Name>
+          <Description>The character is not a member, therefore the role is undefined.</Description>
+          <Value>255</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CharacterStatus</Name>
+      <Description>The status of a character.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Normal</Name>
+          <Description>The state of the character is normal.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Banned</Name>
+          <Description>The character is banned from the game.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GameMaster</Name>
+          <Description>The character is a game master.</Description>
+          <Value>32</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+  </Enums>
 </PacketDefinitions>

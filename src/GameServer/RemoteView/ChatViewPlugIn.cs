@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -34,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             using var writer = this.player.Connection.StartSafeWrite(
                 Network.Packets.ServerToClient.ChatMessage.HeaderType,
-                Encoding.UTF8.GetByteCount(message) + 14);
+                Network.Packets.ServerToClient.ChatMessage.GetRequiredSize(message));
             _ = new ChatMessage(writer.Span)
             {
                 Type = ConvertChatMessageType(type),

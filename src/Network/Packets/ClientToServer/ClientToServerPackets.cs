@@ -7137,37 +7137,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static implicit operator Span<byte>(NpcBuffRequest packet) => packet.data; 
     }
         /// <summary>
-        /// Defines the type of a character stat attribute.
-        /// </summary>
-        public enum CharacterStatAttribute
-        {
-            /// <summary>
-            /// The strength attribute.
-            /// </summary>
-            Strength = 0,
-
-            /// <summary>
-            /// The agility attribute.
-            /// </summary>
-            Agility = 1,
-
-            /// <summary>
-            /// The vitality attribute.
-            /// </summary>
-            Vitality = 2,
-
-            /// <summary>
-            /// The energy attribute.
-            /// </summary>
-            Energy = 3,
-
-            /// <summary>
-            /// The leadership attribute.
-            /// </summary>
-            Leadership = 4,
-        }
-
-        /// <summary>
         /// The state of the trade button.
         /// </summary>
         public enum TradeButtonState

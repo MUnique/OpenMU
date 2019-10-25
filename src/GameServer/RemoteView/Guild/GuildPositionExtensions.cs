@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 {
-    using System;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
 
     /// <summary>
     /// Extension method for <see cref="GuildPosition"/>.
@@ -17,19 +17,30 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// </summary>
         /// <param name="playerPosition">The player position.</param>
         /// <returns>The value which is used in the message for the corresponding enum value.</returns>
-        public static byte GetViewValue(this GuildPosition playerPosition)
+        public static GuildMemberRole GetViewValue(this GuildPosition? playerPosition)
         {
-            switch (playerPosition)
+            if (playerPosition.HasValue)
             {
-                case GuildPosition.GuildMaster:
-                    return 0x80;
-                case GuildPosition.NormalMember:
-                    return 0x00;
-                case GuildPosition.BattleMaster:
-                    return 0x20;
-                default:
-                    throw new ArgumentException(nameof(playerPosition));
+                return playerPosition.Value.GetViewValue();
             }
+
+            return GuildMemberRole.Undefined;
+        }
+
+        /// <summary>
+        /// Gets the view value.
+        /// </summary>
+        /// <param name="playerPosition">The player position.</param>
+        /// <returns>The value which is used in the message for the corresponding enum value.</returns>
+        public static GuildMemberRole GetViewValue(this GuildPosition playerPosition)
+        {
+            return playerPosition switch
+            {
+                GuildPosition.GuildMaster => GuildMemberRole.GuildMaster,
+                GuildPosition.NormalMember => GuildMemberRole.NormalMember,
+                GuildPosition.BattleMaster => GuildMemberRole.BattleMaster,
+                _ => GuildMemberRole.Undefined,
+            };
         }
     }
 }

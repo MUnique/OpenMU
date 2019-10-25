@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network.Packets
 {
     using System;
+    using System.Xml;
     using System.Xml.Serialization;
 
     /// <summary>
@@ -78,7 +79,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// <summary>
         /// The field is a structure and has the length of the structure.
         /// </summary>
-        Structure,
+        [XmlEnum("Structure[]")]
+        StructureArray,
     }
 
     /// <summary>
@@ -130,6 +132,11 @@ namespace MUnique.OpenMU.Network.Packets
         /// In case of enums, it defines the size in bits. If not specified, a size of 8 bits is assumed.
         /// </summary>
         public int Length { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default value of this field. It gets set when a packet is initialized.
+        /// </summary>
+        public string DefaultValue { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether <see cref="Length"/> is specified.

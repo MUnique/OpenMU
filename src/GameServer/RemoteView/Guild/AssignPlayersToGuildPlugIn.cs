@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         private void SetGuildPlayerBlock(Span<byte> playerBlock, Player guildPlayer, bool appearsNew)
         {
             playerBlock.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId);
-            playerBlock[4] = guildPlayer.GuildStatus.Position.GetViewValue();
+            playerBlock[4] = (byte)guildPlayer.GuildStatus.Position.GetViewValue();
 
             var playerId = guildPlayer.GetId(this.player);
             playerBlock[7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));

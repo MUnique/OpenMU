@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.GameLogic.Attributes;
-    using MUnique.OpenMU.Network.Packets.ClientToServer;
+    using MUnique.OpenMU.Network.Packets;
 
     /// <summary>
     /// Extensions for <see cref="CharacterStatAttribute"/>.

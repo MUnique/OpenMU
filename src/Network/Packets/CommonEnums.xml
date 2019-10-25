@@ -157,5 +157,77 @@
         </EnumValue>
       </Values>
     </Enum>
+    <Enum>
+      <Name>CharacterStatAttribute</Name>
+      <Description>Defines the type of a character stat attribute.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Strength</Name>
+          <Description>The strength attribute.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Agility</Name>
+          <Description>The agility attribute.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Vitality</Name>
+          <Description>The vitality attribute.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Energy</Name>
+          <Description>The energy attribute.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Leadership</Name>
+          <Description>The leadership attribute.</Description>
+          <Value>4</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CharacterHeroState</Name>
+      <Description>Defines the hero state of a character.</Description>
+      <Values>
+        <EnumValue>
+          <Name>New</Name>
+          <Description>The character is new and has the highest state.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Hero</Name>
+          <Description>The character is a hero.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LightHero</Name>
+          <Description>The character is a hero, but the state is almost gone.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Normal</Name>
+          <Description>The character is in a neutral state.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PlayerKillWarning</Name>
+          <Description>The character killed another character, and has a kill warning.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PlayerKiller1stStage</Name>
+          <Description>The character killed two characters, and has some restrictions.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PlayerKiller2ndStage</Name>
+          <Description>The character killed more than two characters, and has hard restrictions.</Description>
+          <Value>6</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
   </Enums>
 </PacketDefinitions>

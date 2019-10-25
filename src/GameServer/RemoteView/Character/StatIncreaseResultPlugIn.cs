@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,39 +30,33 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void StatIncreaseResult(AttributeDefinition attribute, bool success)
         {
-            byte successAndStatType = (byte)attribute.GetStatType();
+            using var writer = this.player.Connection.StartSafeWrite(CharacterStatIncreaseResponse.HeaderType, CharacterStatIncreaseResponse.Length);
+            var packet = new CharacterStatIncreaseResponse(writer.Span)
+            {
+                Success = success,
+                Attribute = attribute.GetStatType(),
+            };
             if (success)
             {
-                successAndStatType += 1 << 4;
-            }
-
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0C))
-            {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x06;
-                packet[4] = successAndStatType;
-                if (success)
+                if (attribute == Stats.BaseEnergy)
                 {
-                    if (attribute == Stats.BaseEnergy)
-                    {
-                        packet.Slice(6).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
-                    }
-                    else if (attribute == Stats.BaseVitality)
-                    {
-                        packet.Slice(6).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth]);
-                    }
-                    else
-                    {
-                        // no updated value required at index 6
-                    }
-
-                    packet.Slice(8).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield]);
-                    packet.Slice(10).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility]);
+                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes[Stats.MaximumMana];
+                }
+                else if (attribute == Stats.BaseVitality)
+                {
+                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes[Stats.MaximumHealth];
+                }
+                else
+                {
+                    // no updated value required at index 6
                 }
 
-                writer.Commit();
+                // Since all stats may affect shield and ability, both are specified
+                packet.UpdatedMaximumShield = (ushort)this.player.Attributes[Stats.MaximumShield];
+                packet.UpdatedMaximumAbility = (ushort)this.player.Attributes[Stats.MaximumAbility];
             }
+
+            writer.Commit();
         }
     }
 }

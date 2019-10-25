@@ -27,6 +27,11 @@ namespace MUnique.OpenMU.Network.Packets
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the length.
+        /// </summary>
+        public int Length { get; set; }
+
+        /// <summary>
         /// Gets or sets the fields.
         /// </summary>
         [XmlArray(IsNullable = true)]

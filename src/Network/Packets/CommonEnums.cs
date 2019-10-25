@@ -165,4 +165,76 @@ namespace MUnique.OpenMU.Network.Packets
             FistMaster = 25,
         }
 
+        /// <summary>
+        /// Defines the type of a character stat attribute.
+        /// </summary>
+        public enum CharacterStatAttribute
+        {
+            /// <summary>
+            /// The strength attribute.
+            /// </summary>
+            Strength = 0,
+
+            /// <summary>
+            /// The agility attribute.
+            /// </summary>
+            Agility = 1,
+
+            /// <summary>
+            /// The vitality attribute.
+            /// </summary>
+            Vitality = 2,
+
+            /// <summary>
+            /// The energy attribute.
+            /// </summary>
+            Energy = 3,
+
+            /// <summary>
+            /// The leadership attribute.
+            /// </summary>
+            Leadership = 4,
+        }
+
+        /// <summary>
+        /// Defines the hero state of a character.
+        /// </summary>
+        public enum CharacterHeroState
+        {
+            /// <summary>
+            /// The character is new and has the highest state.
+            /// </summary>
+            New = 0,
+
+            /// <summary>
+            /// The character is a hero.
+            /// </summary>
+            Hero = 1,
+
+            /// <summary>
+            /// The character is a hero, but the state is almost gone.
+            /// </summary>
+            LightHero = 2,
+
+            /// <summary>
+            /// The character is in a neutral state.
+            /// </summary>
+            Normal = 3,
+
+            /// <summary>
+            /// The character killed another character, and has a kill warning.
+            /// </summary>
+            PlayerKillWarning = 4,
+
+            /// <summary>
+            /// The character killed two characters, and has some restrictions.
+            /// </summary>
+            PlayerKiller1stStage = 5,
+
+            /// <summary>
+            /// The character killed more than two characters, and has hard restrictions.
+            /// </summary>
+            PlayerKiller2ndStage = 6,
+        }
+
 }
