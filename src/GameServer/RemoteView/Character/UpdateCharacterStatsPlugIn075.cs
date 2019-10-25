@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -33,28 +33,26 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         {
             using (var writer = this.player.Connection.StartSafeWrite(0xC3, 42))
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x03;
-                packet[4] = this.player.Position.X;
-                packet[5] = this.player.Position.Y;
-                packet[6] = (byte)this.player.SelectedCharacter.CurrentMap.Number;
-                packet.Slice(8).SetIntegerBigEndian((uint)this.player.SelectedCharacter.Experience);
-                packet.Slice(12).SetIntegerBigEndian((uint)this.player.GameServerContext.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1]);
-                packet.Slice(16).SetShortBigEndian((ushort)this.player.SelectedCharacter.LevelUpPoints);
-                packet.Slice(18).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseStrength]);
-                packet.Slice(20).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseAgility]);
-                packet.Slice(22).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseVitality]);
-                packet.Slice(24).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseEnergy]);
-                packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentHealth]);
-                packet.Slice(28).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth]);
-                packet.Slice(30).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentMana]);
-                packet.Slice(32).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
-
-                //// 2 missing bytes here are padding
-                packet.Slice(36).SetIntegerBigEndian((uint)this.player.Money);
-                packet[40] = (byte)this.player.SelectedCharacter.State;
-                packet[41] = (byte)this.player.SelectedCharacter.CharacterStatus;
+                _ = new CharacterInformation075(writer.Span)
+                {
+                    X = this.player.Position.X,
+                    Y = this.player.Position.Y,
+                    MapId = (byte)this.player.SelectedCharacter.CurrentMap.Number,
+                    CurrentExperience = (uint)this.player.SelectedCharacter.Experience,
+                    ExperienceForNextLevel = (uint)this.player.GameServerContext.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1],
+                    LevelUpPoints = (ushort)this.player.SelectedCharacter.LevelUpPoints,
+                    Strength = (byte)this.player.Attributes[Stats.BaseStrength],
+                    Agility = (byte)this.player.Attributes[Stats.BaseAgility],
+                    Vitality = (byte)this.player.Attributes[Stats.BaseVitality],
+                    Energy = (byte)this.player.Attributes[Stats.BaseEnergy],
+                    CurrentHealth = (ushort)this.player.Attributes[Stats.CurrentHealth],
+                    MaximumHealth = (ushort)this.player.Attributes[Stats.MaximumHealth],
+                    CurrentMana = (ushort)this.player.Attributes[Stats.CurrentMana],
+                    MaximumMana = (ushort)this.player.Attributes[Stats.MaximumMana],
+                    Money = (uint)this.player.Money,
+                    HeroState = this.player.SelectedCharacter.State.Convert(),
+                    Status = this.player.SelectedCharacter.CharacterStatus.Convert(),
+                };
                 writer.Commit();
             }
 

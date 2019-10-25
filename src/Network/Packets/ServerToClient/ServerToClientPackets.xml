@@ -222,11 +222,12 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
-      <SubCode>FE</SubCode>
+      <SubCode>FF</SubCode>
       <Name>CurrentHealthAndShield</Name>
+      <Length>9</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>Periodically, or if the current health or shield changed on the server side, e.g. by hits.</SentWhen>
+      <CausedReaction>The health and shield bar is updated on the game client user interface.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -243,11 +244,34 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
-      <SubCode>FF</SubCode>
+      <SubCode>FE</SubCode>
       <Name>MaximumHealthAndShield</Name>
+      <Length>9</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>When the maximum health changed, e.g. by adding stat points or changed items.</SentWhen>
+      <CausedReaction>The health and shield bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Short</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>26</Code>
+      <SubCode>FD</SubCode>
+      <Name>ItemConsumptionFailed</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the consumption of an item failed.</SentWhen>
+      <CausedReaction>The game client gets a feedback about a failed consumption, and allows for do further consumption requests.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -264,11 +288,12 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>27</Code>
-      <SubCode>FE</SubCode>
+      <SubCode>FF</SubCode>
       <Name>CurrentManaAndAbility</Name>
+      <Length>8</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>The currently available mana or ability has changed, e.g. by using a skill.</SentWhen>
+      <CausedReaction>The mana and ability bar is updated on the game client user interface.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -285,11 +310,12 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>27</Code>
-      <SubCode>FF</SubCode>
+      <SubCode>FE</SubCode>
       <Name>MaximumManaAndAbility</Name>
+      <Length>8</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>The maximum available mana or ability has changed, e.g. by adding stat points.</SentWhen>
+      <CausedReaction>The mana and ability bar is updated on the game client user interface.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -888,6 +914,7 @@
       <Code>F3</Code>
       <SubCode>05</SubCode>
       <Name>CharacterLevelUpdate</Name>
+      <Length>24</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After a character leveled up.</SentWhen>
       <CausedReaction>Updates the level (and other related stats) in the game client and shows an effect.</CausedReaction>
@@ -927,6 +954,21 @@
           <Type>ShortBigEndian</Type>
           <Name>FruitPoints</Name>
         </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MaximumFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>NegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MaximumNegativeFruitPoints</Name>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -934,6 +976,7 @@
       <Code>F3</Code>
       <SubCode>03</SubCode>
       <Name>CharacterInformation</Name>
+      <Length>72</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the character was selected by the player and entered the game.</SentWhen>
       <CausedReaction>The characters enters the game world.</CausedReaction>
@@ -1029,24 +1072,21 @@
           <Name>MaximumAbility</Name>
         </Field>
         <Field>
-          <Index>50</Index>
-          <Type>ShortBigEndian</Type>
-          <Name>Unknown</Name>
-        </Field>
-        <Field>
           <Index>52</Index>
           <Type>IntegerBigEndian</Type>
           <Name>Money</Name>
         </Field>
         <Field>
           <Index>56</Index>
-          <Type>Byte</Type>
-          <Name>PlayerKillLevel</Name>
+          <Type>Enum</Type>
+          <TypeName>CharacterHeroState</TypeName>
+          <Name>HeroState</Name>
         </Field>
         <Field>
           <Index>57</Index>
-          <Type>Byte</Type>
-          <Name>CtlCode</Name>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatus</TypeName>
+          <Name>Status</Name>
         </Field>
         <Field>
           <Index>58</Index>
@@ -1054,24 +1094,128 @@
           <Name>UsedFruitPoints</Name>
         </Field>
         <Field>
-          <Index>58</Index>
+          <Index>60</Index>
           <Type>ShortBigEndian</Type>
           <Name>MaxFruitPoints</Name>
         </Field>
         <Field>
-          <Index>60</Index>
-          <Type>ShortBigEndian</Type>
-          <Name>Command</Name>
-        </Field>
-        <Field>
           <Index>62</Index>
           <Type>ShortBigEndian</Type>
-          <Name>UsedNegativeFruitPoints</Name>
+          <Name>Leadership</Name>
         </Field>
         <Field>
           <Index>64</Index>
           <Type>ShortBigEndian</Type>
+          <Name>UsedNegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>66</Index>
+          <Type>ShortBigEndian</Type>
           <Name>MaxNegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>68</Index>
+          <Type>Boolean</Type>
+          <Name>IsVaultExtended</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>03</SubCode>
+      <Name>CharacterInformation075</Name>
+      <Length>42</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the character was selected by the player and entered the game.</SentWhen>
+      <CausedReaction>The characters enters the game world.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>X</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Y</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>MapId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>CurrentExperience</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>ExperienceForNextLevel</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>LevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Strength</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Agility</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Vitality</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Energy</Name>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>CurrentHealth</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>CurrentMana</Name>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>Money</Name>
+        </Field>
+        <Field>
+          <Index>40</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterHeroState</TypeName>
+          <Name>HeroState</Name>
+        </Field>
+        <Field>
+          <Index>41</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatus</TypeName>
+          <Name>Status</Name>
         </Field>
       </Fields>
     </Packet>
@@ -1104,6 +1248,58 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>ItemSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>50</SubCode>
+      <Name>MasterStatsUpdate</Name>
+      <Length>32</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After entering the game with a master class character.</SentWhen>
+      <CausedReaction>The master related data is available.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MasterLevel</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Long</Type>
+          <Name>MasterExperience</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Long</Type>
+          <Name>MasterExperienceOfNextLevel</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MasterLevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MaximumAbility</Name>
         </Field>
       </Fields>
     </Packet>
@@ -1154,6 +1350,58 @@
           <Name>DisplayValueOfNextLevel</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>53</SubCode>
+      <Name>MasterSkillList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Usually after entering the game with a master character.</SentWhen>
+      <CausedReaction>The data is available in the master skill tree.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>MasterSkillCount</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Structure[]</Type>
+          <TypeName>MasterSkillEntry</TypeName>
+          <Name>Skills</Name>
+        </Field>
+        </Fields>
+      <Structures>
+        <Structure>
+          <Name>MasterSkillEntry</Name>
+          <Description>An entry in the master skill list.</Description>
+          <Length>12</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>MasterSkillIndex</Name>
+              <Description>The index of the master skill on the clients master skill tree for the given character class.</Description>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Byte</Type>
+              <Name>Level</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>Float</Type>
+              <Name>DisplayValue</Name>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>Float</Type>
+              <Name>DisplayValueOfNextLevel</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>

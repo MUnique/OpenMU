@@ -71,6 +71,32 @@
       </Fields>
     </Structure>
     <Structure>
+      <Name>C2HeaderWithSubCode</Name>
+      <Description>The structure for a C2 packet header. Usually encrypted by Xor32.</Description>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Short</Type>
+          <Name>Length</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Code</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>SubCode</Name>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
       <Name>C3Header</Name>
       <Description>The structure for a C3 packet header. Usually encrypted by Xor32 and SimpleModulus.</Description>
       <Fields>

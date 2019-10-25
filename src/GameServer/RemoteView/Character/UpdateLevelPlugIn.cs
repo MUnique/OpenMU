@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -39,34 +39,22 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             }
 
             var charStats = this.player.Attributes;
-            var level = (ushort)charStats[Stats.Level];
-            var levelUpPoints = (ushort)selectedCharacter.LevelUpPoints;
-            var maximumHealth = (ushort)charStats[Stats.MaximumHealth];
-            var maximumMana = (ushort)charStats[Stats.MaximumMana];
-            var maximumShield = (ushort)charStats[Stats.MaximumShield];
-            var maximumAbility = (ushort)charStats[Stats.MaximumAbility];
-            var fruitPoints = (ushort)selectedCharacter.UsedFruitPoints;
-            var maxFruitPoints = selectedCharacter.GetMaximumFruitPoints();
-            var negativeFruitPoints = (ushort)selectedCharacter.UsedNegFruitPoints;
-
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x18))
+            using var writer = this.player.Connection.StartSafeWrite(CharacterLevelUpdate.HeaderType, CharacterLevelUpdate.Length);
+            _ = new CharacterLevelUpdate(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x05;
-                packet.Slice(4).SetShortBigEndian(level);
-                packet.Slice(6).SetShortBigEndian(levelUpPoints);
-                packet.Slice(8).SetShortBigEndian(maximumHealth);
-                packet.Slice(10).SetShortBigEndian(maximumMana);
-                packet.Slice(12).SetShortBigEndian(maximumShield);
-                packet.Slice(14).SetShortBigEndian(maximumAbility);
-                packet.Slice(16).SetShortBigEndian(fruitPoints);
-                packet.Slice(18).SetShortBigEndian(maxFruitPoints);
-                packet.Slice(20).SetShortBigEndian(negativeFruitPoints);
-                packet.Slice(22).SetShortBigEndian(maxFruitPoints);
+                Level = (ushort)charStats[Stats.Level],
+                LevelUpPoints = (ushort)selectedCharacter.LevelUpPoints,
+                MaximumHealth = (ushort)charStats[Stats.MaximumHealth],
+                MaximumMana = (ushort)charStats[Stats.MaximumMana],
+                MaximumShield = (ushort)charStats[Stats.MaximumShield],
+                MaximumAbility = (ushort)charStats[Stats.MaximumAbility],
+                FruitPoints = (ushort)selectedCharacter.UsedFruitPoints,
+                NegativeFruitPoints = (ushort)selectedCharacter.UsedNegFruitPoints,
+                MaximumFruitPoints = selectedCharacter.GetMaximumFruitPoints(),
+                MaximumNegativeFruitPoints = selectedCharacter.GetMaximumFruitPoints(),
+            };
 
-                writer.Commit();
-            }
+            writer.Commit();
 
             this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Level {this.player.Attributes[Stats.Level]} now.", MessageType.BlueNormal);
         }

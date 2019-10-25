@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -32,46 +32,39 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCharacterStats()
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x48))
+            using var writer = this.player.Connection.StartSafeWrite(CharacterInformation.HeaderType, CharacterInformation.Length);
+            _ = new CharacterInformation(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x03;
-                packet[4] = this.player.Position.X;
-                packet[5] = this.player.Position.Y;
-                var unsignedMapNumber = ShortExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number);
-                packet[6] = unsignedMapNumber.GetLowByte();
-                packet[7] = unsignedMapNumber.GetHighByte();
-                packet.Slice(8).SetLongSmallEndian(this.player.SelectedCharacter.Experience);
-                packet.Slice(16).SetLongSmallEndian(this.player.GameServerContext.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1]);
-                packet.Slice(24).SetShortBigEndian((ushort)this.player.SelectedCharacter.LevelUpPoints);
-                packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseStrength]);
-                packet.Slice(28).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseAgility]);
-                packet.Slice(30).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseVitality]);
-                packet.Slice(32).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseEnergy]);
-                packet.Slice(34).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentHealth]);
-                packet.Slice(36).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth]);
-                packet.Slice(38).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentMana]);
-                packet.Slice(40).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
-                packet.Slice(42).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentShield]);
-                packet.Slice(44).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield]);
-                packet.Slice(46).SetShortBigEndian((ushort)this.player.Attributes[Stats.CurrentAbility]);
-                packet.Slice(48).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility]);
+                X = this.player.Position.X,
+                Y = this.player.Position.Y,
+                MapId = ShortExtensions.ToUnsigned(this.player.SelectedCharacter.CurrentMap.Number),
+                CurrentExperience = (ulong)this.player.SelectedCharacter.Experience,
+                ExperienceForNextLevel = (ulong)this.player.GameServerContext.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1],
+                LevelUpPoints = (ushort)this.player.SelectedCharacter.LevelUpPoints,
+                Strength = (byte)this.player.Attributes[Stats.BaseStrength],
+                Agility = (byte)this.player.Attributes[Stats.BaseAgility],
+                Vitality = (byte)this.player.Attributes[Stats.BaseVitality],
+                Energy = (byte)this.player.Attributes[Stats.BaseEnergy],
+                CurrentHealth = (ushort)this.player.Attributes[Stats.CurrentHealth],
+                MaximumHealth = (ushort)this.player.Attributes[Stats.MaximumHealth],
+                CurrentMana = (ushort)this.player.Attributes[Stats.CurrentMana],
+                MaximumMana = (ushort)this.player.Attributes[Stats.MaximumMana],
+                CurrentShield = (ushort)this.player.Attributes[Stats.CurrentShield],
+                MaximumShield = (ushort)this.player.Attributes[Stats.MaximumShield],
+                CurrentAbility = (ushort)this.player.Attributes[Stats.CurrentAbility],
+                MaximumAbility = (ushort)this.player.Attributes[Stats.MaximumAbility],
+                Money = (uint)this.player.Money,
+                HeroState = this.player.SelectedCharacter.State.Convert(),
+                Status = this.player.SelectedCharacter.CharacterStatus.Convert(),
+                UsedFruitPoints = (ushort)this.player.SelectedCharacter.UsedFruitPoints,
+                MaxFruitPoints = this.player.SelectedCharacter.GetMaximumFruitPoints(),
+                Leadership = (byte)this.player.Attributes[Stats.BaseLeadership],
+                UsedNegativeFruitPoints = (ushort)this.player.SelectedCharacter.UsedNegFruitPoints,
+                MaxNegativeFruitPoints = this.player.SelectedCharacter.GetMaximumFruitPoints(),
+                IsVaultExtended = this.player.Account.IsVaultExtended,
+            };
 
-                //// 2 missing bytes here are padding
-                packet.Slice(52).SetIntegerBigEndian((uint)this.player.Money);
-                packet[56] = (byte)this.player.SelectedCharacter.State;
-                packet[57] = (byte)this.player.SelectedCharacter.CharacterStatus;
-                packet.Slice(58).SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedFruitPoints);
-                packet.Slice(60).SetShortBigEndian(this.player.SelectedCharacter.GetMaximumFruitPoints());
-                packet.Slice(62).SetShortBigEndian((ushort)this.player.Attributes[Stats.BaseLeadership]);
-                packet.Slice(64).SetShortBigEndian((ushort)this.player.SelectedCharacter.UsedNegFruitPoints);
-                packet.Slice(66).SetShortBigEndian(this.player.SelectedCharacter.GetMaximumFruitPoints());
-                packet[68] = this.player.Account.IsVaultExtended ? (byte)1 : (byte)0;
-                //// 3 additional bytes are padding
-
-                writer.Commit();
-            }
+            writer.Commit();
 
             if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
             {

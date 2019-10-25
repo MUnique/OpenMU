@@ -159,6 +159,60 @@ namespace MUnique.OpenMU.Network.Packets
 
 
     /// <summary>
+    /// The structure for a C2 packet header. Usually encrypted by Xor32..
+    /// </summary>
+    public readonly ref struct C2HeaderWithSubCode
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="C2HeaderWithSubCode"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public C2HeaderWithSubCode(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public byte Type
+        {
+            get => this.data[0];
+            set => this.data[0] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the length.
+        /// </summary>
+        public ushort Length
+        {
+            get => this.data.Slice(1).GetShortLittleEndian();
+            set => this.data.Slice(1).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the code.
+        /// </summary>
+        public byte Code
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the sub code.
+        /// </summary>
+        public byte SubCode
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+    }
+
+
+    /// <summary>
     /// The structure for a C3 packet header. Usually encrypted by Xor32 and SimpleModulus..
     /// </summary>
     public readonly ref struct C3Header

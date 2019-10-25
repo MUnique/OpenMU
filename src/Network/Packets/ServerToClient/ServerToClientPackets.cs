@@ -578,8 +578,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: 
-    /// Causes reaction on client side: 
+    /// Is sent by the server when: Periodically, or if the current health or shield changed on the server side, e.g. by hits.
+    /// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
     /// </summary>
     public readonly ref struct CurrentHealthAndShield
     {
@@ -607,7 +607,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -626,7 +626,12 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Gets the operation sub-code of this data packet.
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
-        public static byte SubCode => 0xFE;
+        public static byte SubCode => 0xFF;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 9;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -668,8 +673,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: 
-    /// Causes reaction on client side: 
+    /// Is sent by the server when: When the maximum health changed, e.g. by adding stat points or changed items.
+    /// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
     /// </summary>
     public readonly ref struct MaximumHealthAndShield
     {
@@ -697,7 +702,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -716,7 +721,12 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Gets the operation sub-code of this data packet.
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
-        public static byte SubCode => 0xFF;
+        public static byte SubCode => 0xFE;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 9;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -758,8 +768,103 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: 
-    /// Causes reaction on client side: 
+    /// Is sent by the server when: When the consumption of an item failed.
+    /// Causes reaction on client side: The game client gets a feedback about a failed consumption, and allows for do further consumption requests.
+    /// </summary>
+    public readonly ref struct ItemConsumptionFailed
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemConsumptionFailed"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ItemConsumptionFailed(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemConsumptionFailed"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ItemConsumptionFailed(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x26;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0xFD;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 9;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the health.
+        /// </summary>
+        public ushort Health
+        {
+            get => this.data.Slice(4).GetShortLittleEndian();
+            set => this.data.Slice(4).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the shield.
+        /// </summary>
+        public ushort Shield
+        {
+            get => this.data.Slice(7).GetShortLittleEndian();
+            set => this.data.Slice(7).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemConsumptionFailed"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ItemConsumptionFailed(Span<byte> packet) => new ItemConsumptionFailed(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ItemConsumptionFailed"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ItemConsumptionFailed packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The currently available mana or ability has changed, e.g. by using a skill.
+    /// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
     /// </summary>
     public readonly ref struct CurrentManaAndAbility
     {
@@ -787,7 +892,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -806,7 +911,12 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Gets the operation sub-code of this data packet.
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
-        public static byte SubCode => 0xFE;
+        public static byte SubCode => 0xFF;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -848,8 +958,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: 
-    /// Causes reaction on client side: 
+    /// Is sent by the server when: The maximum available mana or ability has changed, e.g. by adding stat points.
+    /// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
     /// </summary>
     public readonly ref struct MaximumManaAndAbility
     {
@@ -877,7 +987,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -896,7 +1006,12 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Gets the operation sub-code of this data packet.
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
-        public static byte SubCode => 0xFF;
+        public static byte SubCode => 0xFE;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -2707,7 +2822,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -2727,6 +2842,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x05;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 24;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -2797,6 +2917,33 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Gets or sets the maximum fruit points.
+        /// </summary>
+        public ushort MaximumFruitPoints
+        {
+            get => this.data.Slice(18).GetShortBigEndian();
+            set => this.data.Slice(18).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the negative fruit points.
+        /// </summary>
+        public ushort NegativeFruitPoints
+        {
+            get => this.data.Slice(20).GetShortBigEndian();
+            set => this.data.Slice(20).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum negative fruit points.
+        /// </summary>
+        public ushort MaximumNegativeFruitPoints
+        {
+            get => this.data.Slice(22).GetShortBigEndian();
+            set => this.data.Slice(22).SetShortBigEndian(value);
+        }
+
+        /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterLevelUpdate"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
@@ -2842,7 +2989,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -2862,6 +3009,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x03;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 72;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3031,15 +3183,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Gets or sets the unknown.
-        /// </summary>
-        public ushort Unknown
-        {
-            get => this.data.Slice(50).GetShortBigEndian();
-            set => this.data.Slice(50).SetShortBigEndian(value);
-        }
-
-        /// <summary>
         /// Gets or sets the money.
         /// </summary>
         public uint Money
@@ -3049,21 +3192,21 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Gets or sets the player kill level.
+        /// Gets or sets the hero state.
         /// </summary>
-        public byte PlayerKillLevel
+        public CharacterHeroState HeroState
         {
-            get => this.data[56];
-            set => this.data[56] = value;
+            get => (CharacterHeroState)this.data.Slice(56)[0];
+            set => this.data.Slice(56)[0] = (byte)value;
         }
 
         /// <summary>
-        /// Gets or sets the ctl code.
+        /// Gets or sets the status.
         /// </summary>
-        public byte CtlCode
+        public CharacterStatus Status
         {
-            get => this.data[57];
-            set => this.data[57] = value;
+            get => (CharacterStatus)this.data.Slice(57)[0];
+            set => this.data.Slice(57)[0] = (byte)value;
         }
 
         /// <summary>
@@ -3080,17 +3223,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public ushort MaxFruitPoints
         {
-            get => this.data.Slice(58).GetShortBigEndian();
-            set => this.data.Slice(58).SetShortBigEndian(value);
+            get => this.data.Slice(60).GetShortBigEndian();
+            set => this.data.Slice(60).SetShortBigEndian(value);
         }
 
         /// <summary>
-        /// Gets or sets the command.
+        /// Gets or sets the leadership.
         /// </summary>
-        public ushort Command
+        public ushort Leadership
         {
-            get => this.data.Slice(60).GetShortBigEndian();
-            set => this.data.Slice(60).SetShortBigEndian(value);
+            get => this.data.Slice(62).GetShortBigEndian();
+            set => this.data.Slice(62).SetShortBigEndian(value);
         }
 
         /// <summary>
@@ -3098,8 +3241,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public ushort UsedNegativeFruitPoints
         {
-            get => this.data.Slice(62).GetShortBigEndian();
-            set => this.data.Slice(62).SetShortBigEndian(value);
+            get => this.data.Slice(64).GetShortBigEndian();
+            set => this.data.Slice(64).SetShortBigEndian(value);
         }
 
         /// <summary>
@@ -3107,8 +3250,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public ushort MaxNegativeFruitPoints
         {
-            get => this.data.Slice(64).GetShortBigEndian();
-            set => this.data.Slice(64).SetShortBigEndian(value);
+            get => this.data.Slice(66).GetShortBigEndian();
+            set => this.data.Slice(66).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the is vault extended.
+        /// </summary>
+        public bool IsVaultExtended
+        {
+            get => this.data.Slice(68).GetBoolean();
+            set => this.data.Slice(68).SetBoolean(value);
         }
 
         /// <summary>
@@ -3124,6 +3276,236 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(CharacterInformation packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the character was selected by the player and entered the game.
+    /// Causes reaction on client side: The characters enters the game world.
+    /// </summary>
+    public readonly ref struct CharacterInformation075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterInformation075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public CharacterInformation075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterInformation075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private CharacterInformation075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x03;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 42;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the x.
+        /// </summary>
+        public byte X
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the y.
+        /// </summary>
+        public byte Y
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the map id.
+        /// </summary>
+        public byte MapId
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current experience.
+        /// </summary>
+        public uint CurrentExperience
+        {
+            get => this.data.Slice(8).GetIntegerBigEndian();
+            set => this.data.Slice(8).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the experience for next level.
+        /// </summary>
+        public uint ExperienceForNextLevel
+        {
+            get => this.data.Slice(12).GetIntegerBigEndian();
+            set => this.data.Slice(12).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the level up points.
+        /// </summary>
+        public ushort LevelUpPoints
+        {
+            get => this.data.Slice(16).GetShortBigEndian();
+            set => this.data.Slice(16).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the strength.
+        /// </summary>
+        public ushort Strength
+        {
+            get => this.data.Slice(18).GetShortBigEndian();
+            set => this.data.Slice(18).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the agility.
+        /// </summary>
+        public ushort Agility
+        {
+            get => this.data.Slice(20).GetShortBigEndian();
+            set => this.data.Slice(20).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the vitality.
+        /// </summary>
+        public ushort Vitality
+        {
+            get => this.data.Slice(22).GetShortBigEndian();
+            set => this.data.Slice(22).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the energy.
+        /// </summary>
+        public ushort Energy
+        {
+            get => this.data.Slice(24).GetShortBigEndian();
+            set => this.data.Slice(24).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current health.
+        /// </summary>
+        public ushort CurrentHealth
+        {
+            get => this.data.Slice(26).GetShortBigEndian();
+            set => this.data.Slice(26).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum health.
+        /// </summary>
+        public ushort MaximumHealth
+        {
+            get => this.data.Slice(28).GetShortBigEndian();
+            set => this.data.Slice(28).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current mana.
+        /// </summary>
+        public ushort CurrentMana
+        {
+            get => this.data.Slice(30).GetShortBigEndian();
+            set => this.data.Slice(30).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum mana.
+        /// </summary>
+        public ushort MaximumMana
+        {
+            get => this.data.Slice(32).GetShortBigEndian();
+            set => this.data.Slice(32).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the money.
+        /// </summary>
+        public uint Money
+        {
+            get => this.data.Slice(36).GetIntegerBigEndian();
+            set => this.data.Slice(36).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the hero state.
+        /// </summary>
+        public CharacterHeroState HeroState
+        {
+            get => (CharacterHeroState)this.data.Slice(40)[0];
+            set => this.data.Slice(40)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        public CharacterStatus Status
+        {
+            get => (CharacterStatus)this.data.Slice(41)[0];
+            set => this.data.Slice(41)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterInformation075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator CharacterInformation075(Span<byte> packet) => new CharacterInformation075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="CharacterInformation075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(CharacterInformation075 packet) => packet.data; 
     }
 
 
@@ -3290,6 +3672,155 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: After entering the game with a master class character.
+    /// Causes reaction on client side: The master related data is available.
+    /// </summary>
+    public readonly ref struct MasterStatsUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterStatsUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MasterStatsUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterStatsUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MasterStatsUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x50;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 32;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the master level.
+        /// </summary>
+        public ushort MasterLevel
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the master experience.
+        /// </summary>
+        public ulong MasterExperience
+        {
+            get => this.data.Slice(6).GetLongLittleEndian();
+            set => this.data.Slice(6).SetLongLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the master experience of next level.
+        /// </summary>
+        public ulong MasterExperienceOfNextLevel
+        {
+            get => this.data.Slice(14).GetLongLittleEndian();
+            set => this.data.Slice(14).SetLongLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the master level up points.
+        /// </summary>
+        public ushort MasterLevelUpPoints
+        {
+            get => this.data.Slice(22).GetShortBigEndian();
+            set => this.data.Slice(22).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum health.
+        /// </summary>
+        public ushort MaximumHealth
+        {
+            get => this.data.Slice(24).GetShortBigEndian();
+            set => this.data.Slice(24).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum mana.
+        /// </summary>
+        public ushort MaximumMana
+        {
+            get => this.data.Slice(26).GetShortBigEndian();
+            set => this.data.Slice(26).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum shield.
+        /// </summary>
+        public ushort MaximumShield
+        {
+            get => this.data.Slice(28).GetShortBigEndian();
+            set => this.data.Slice(28).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum ability.
+        /// </summary>
+        public ushort MaximumAbility
+        {
+            get => this.data.Slice(30).GetShortBigEndian();
+            set => this.data.Slice(30).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MasterStatsUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MasterStatsUpdate(Span<byte> packet) => new MasterStatsUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MasterStatsUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MasterStatsUpdate packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: After a master skill level has been changed (usually increased).
     /// Causes reaction on client side: The level is updated in the master skill tree.
     /// </summary>
@@ -3426,6 +3957,157 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(MasterSkillLevelUpdate packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: Usually after entering the game with a master character.
+    /// Causes reaction on client side: The data is available in the master skill tree.
+    /// </summary>
+    public readonly ref struct MasterSkillList
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterSkillList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MasterSkillList(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterSkillList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MasterSkillList(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x53;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2HeaderWithSubCode Header => new C2HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the master skill count.
+        /// </summary>
+        public uint MasterSkillCount
+        {
+            get => this.data.Slice(8).GetIntegerBigEndian();
+            set => this.data.Slice(8).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets the masterSkillEntry of the specified index.
+        /// </summary>
+        public MasterSkillEntry this[int index] => new MasterSkillEntry(this.data.Slice(12 + (index * MasterSkillEntry.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MasterSkillList"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MasterSkillList(Span<byte> packet) => new MasterSkillList(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MasterSkillList"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MasterSkillList packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="MasterSkillEntry"/>.
+        /// </summary>
+        /// <param name="skillsCount">The count of <see cref="MasterSkillEntry"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int skillsCount) => skillsCount * MasterSkillEntry.Length + 12;
+
+
+    /// <summary>
+    /// An entry in the master skill list..
+    /// </summary>
+    public readonly ref struct MasterSkillEntry
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterSkillEntry"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MasterSkillEntry(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets or sets the index of the master skill on the clients master skill tree for the given character class.
+        /// </summary>
+        public byte MasterSkillIndex
+        {
+            get => this.data[0];
+            set => this.data[0] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the level.
+        /// </summary>
+        public byte Level
+        {
+            get => this.data[1];
+            set => this.data[1] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the display value.
+        /// </summary>
+        public float DisplayValue
+        {
+            get => BitConverter.ToSingle(this.data.Slice(4));
+            set => BitConverter.GetBytes(value).CopyTo(this.data.Slice(4));
+        }
+
+        /// <summary>
+        /// Gets or sets the display value of next level.
+        /// </summary>
+        public float DisplayValueOfNextLevel
+        {
+            get => BitConverter.ToSingle(this.data.Slice(8));
+            set => BitConverter.GetBytes(value).CopyTo(this.data.Slice(8));
+        }
+    }
     }
 
 

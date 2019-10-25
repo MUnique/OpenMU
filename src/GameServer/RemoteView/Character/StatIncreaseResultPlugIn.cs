@@ -48,10 +48,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 }
                 else
                 {
-                    // no updated value required at index 6
+                    // no updated value required
                 }
 
-                // Since all stats may affect shield and ability, both are specified
+                // since all stats may affect shield and ability, both are included
                 packet.UpdatedMaximumShield = (ushort)this.player.Attributes[Stats.MaximumShield];
                 packet.UpdatedMaximumAbility = (ushort)this.player.Attributes[Stats.MaximumAbility];
             }
