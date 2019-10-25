@@ -12,16 +12,16 @@ namespace MUnique.OpenMU.GameLogic.Views.Character
         /// <summary>
         /// Deleting was not successful.
         /// </summary>
-        Unsuccessful = 0,
+        Unsuccessful,
 
         /// <summary>
         /// Deleting was successful.
         /// </summary>
-        Successful = 1,
+        Successful,
 
         /// <summary>
         /// Deleting was not successful because a wrong security code was entered.
         /// </summary>
-        WrongSecurityCode = 2,
+        WrongSecurityCode,
     }
 }
