@@ -47,6 +47,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 };
 
                 remainingExperience -= sendExp;
+                writer.Commit();
             }
         }
     }
