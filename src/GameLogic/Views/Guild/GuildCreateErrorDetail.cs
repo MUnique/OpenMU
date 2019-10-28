@@ -12,11 +12,11 @@ namespace MUnique.OpenMU.GameLogic.Views.Guild
         /// <summary>
         /// No error occured.
         /// </summary>
-        None = 0,
+        None,
 
         /// <summary>
         /// The guild already exists.
         /// </summary>
-        GuildAlreadyExist = 0xB3,
+        GuildAlreadyExist,
     }
 }

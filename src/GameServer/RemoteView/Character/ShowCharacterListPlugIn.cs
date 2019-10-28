@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 characterData.Level = (ushort)(character.Attributes.FirstOrDefault(s => s.Definition == Stats.Level)?.Value ?? 1);
                 characterData.Status = character.CharacterStatus.Convert();
                 var guildPosition = this.player.GameServerContext.GuildServer?.GetGuildPosition(character.Id);
-                characterData.GuildPosition = guildPosition.GetViewValue();
+                characterData.GuildPosition = guildPosition.Convert();
                 appearanceSerializer.WriteAppearanceData(characterData.Appearance, new CharacterAppearanceDataAdapter(character), false);
                 i++;
             }

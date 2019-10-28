@@ -6,11 +6,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -33,21 +32,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         public void ShowGuildInfo(uint guildId)
         {
             var data = this.GetGuildData(guildId);
-            if (data == null)
+            if (data.Length == 0)
             {
                 return;
             }
 
             // guildInfo is the cached, serialized result of the GuildInformation-Class.
-            using (var writer = this.Player.Connection.StartSafeWrite(data[0], data.Length))
+            using (var writer = this.Player.Connection.StartSafeWrite(data.Span[0], data.Length))
             {
-                data.CopyTo(writer.Span);
+                data.Span.CopyTo(writer.Span);
                 writer.Commit();
             }
         }
 
         /// <inheritdoc/>
-        protected override byte[] Serialize(Guild guild, uint guildId)
+        protected override Memory<byte> Serialize(Guild guild, uint guildId)
         {
             /*
          *  C1 3C 66 00
@@ -58,17 +57,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             18 88 88 81 18 66 66 81 18 61 16 81 18 61 16 81 18 66 66 81 18 61 16 81 18 61 16 81 18 61 16 81 //Guild Logo
             F9 96 7C //?
          */
-            var result = new byte[0x3C];
-            result.SetValues<byte>(0xC1, (byte)result.Length, 0x66);
-            result.AsSpan(4).SetIntegerBigEndian(guildId);
-            Encoding.UTF8.GetBytes(guild.Name, 0, guild.Name.Length, result, 17);
-            Buffer.BlockCopy(guild.Logo, 0, result, 25, 32);
+            var array = new byte[GuildInformation.Length];
+            var result = new GuildInformation(array)
+            {
+                GuildId = guildId,
+                GuildName = guild.Name,
+            };
             if (guild.AllianceGuild != null)
             {
-                Encoding.UTF8.GetBytes(guild.AllianceGuild.Name, 0, guild.AllianceGuild.Name.Length, result, 9);
+                result.AllianceGuildName = guild.AllianceGuild.Name;
             }
 
-            return result;
+            guild.Logo.CopyTo(result.Logo);
+            return array.AsMemory<byte>();
         }
     }
 }

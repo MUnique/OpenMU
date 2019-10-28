@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using MUnique.OpenMU.GameLogic;
@@ -22,7 +23,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// The cache for already serialized guilds. This data doesn't change, but is requested often.
         /// </summary>
         // ReSharper disable once StaticMemberInGenericType That's what we want
-        private static readonly ConcurrentDictionary<uint, byte[]> Cache = new ConcurrentDictionary<uint, byte[]>();
+        private static readonly ConcurrentDictionary<uint, Memory<byte>> Cache = new ConcurrentDictionary<uint, Memory<byte>>();
 
         // ReSharper disable once StaticMemberInGenericType That's what we want
         private static readonly HashSet<IGameServerContext> AppendedGuildDeletedSenders = new HashSet<IGameServerContext>();
@@ -58,7 +59,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <param name="guild">The guild.</param>
         /// <param name="guildId">The guild identifier.</param>
         /// <returns>The serialized guild data packet.</returns>
-        protected abstract byte[] Serialize(Guild guild, uint guildId);
+        protected abstract Memory<byte> Serialize(Guild guild, uint guildId);
 
         /// <summary>
         /// Returns the Guild Info Data of a Guild. It will either
@@ -68,7 +69,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <returns>
         /// The data of the guild.
         /// </returns>
-        protected byte[] GetGuildData(uint guildId)
+        protected Memory<byte> GetGuildData(uint guildId)
         {
             if (Cache.TryGetValue(guildId, out var guildInfo))
             {

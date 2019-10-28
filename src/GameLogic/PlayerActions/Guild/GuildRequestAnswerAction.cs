@@ -35,21 +35,21 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (lastGuildRequester.GuildStatus != null)
             {
-                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
+                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
                 return;
             }
 
             if (player.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
                 Log.WarnFormat("Suspicious request for player with name: {0} (player is not a guild master), could be hack attempt.", player.Name);
-                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
+                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
                 return;
             }
 
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
                 || lastGuildRequester.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
-                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy);
+                lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy);
             }
 
             if (accept)
@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 lastGuildRequester.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(lastGuildRequester, false), true);
             }
 
-            lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused);
+            lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused);
             player.LastGuildRequester = null;
         }
     }

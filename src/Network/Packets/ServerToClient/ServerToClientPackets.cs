@@ -4370,6 +4370,1041 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: A player requested to join a guild. This message is sent then to the guild master.
+    /// Causes reaction on client side: The guild master gets a message box with the request popping up.
+    /// </summary>
+    public readonly ref struct GuildJoinRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildJoinRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildJoinRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildJoinRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildJoinRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x50;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the requester id.
+        /// </summary>
+        public ushort RequesterId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildJoinRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildJoinRequest(Span<byte> packet) => new GuildJoinRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildJoinRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildJoinRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a guild master responded to a request of a player to join his guild. This message is sent back to the requesting player.
+    /// Causes reaction on client side: The requester gets a corresponding message showing.
+    /// </summary>
+    public readonly ref struct GuildJoinResponse
+    {
+        /// <summary>
+        /// The result of the guild join request.
+        /// </summary>
+        public enum GuildJoinRequestResult
+        {
+            Refused = 0,
+
+            Accepted = 1,
+
+            GuildFull = 2,
+
+            Disconnected = 3,
+
+            NotTheGuildMaster = 4,
+
+            AlreadyHaveGuild = 5,
+
+            GuildMasterOrRequesterIsBusy = 6,
+
+            MinimumLevel6 = 7,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildJoinResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildJoinResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildJoinResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildJoinResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x51;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public GuildJoinRequestResult Result
+        {
+            get => (GuildJoinRequestResult)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildJoinResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildJoinResponse(Span<byte> packet) => new GuildJoinResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildJoinResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildJoinResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a game client requested the list of players of his guild, which is usually the case when the player opens the guild dialog at the game client.
+    /// Causes reaction on client side: The list of player is available at the client.
+    /// </summary>
+    public readonly ref struct GuildList
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildList(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildList(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x52;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the is in guild.
+        /// </summary>
+        public bool IsInGuild
+        {
+            get => this.data.Slice(4).GetBoolean();
+            set => this.data.Slice(4).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the guild member count.
+        /// </summary>
+        public byte GuildMemberCount
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the total score.
+        /// </summary>
+        public uint TotalScore
+        {
+            get => this.data.Slice(8).GetIntegerBigEndian();
+            set => this.data.Slice(8).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current score.
+        /// </summary>
+        public byte CurrentScore
+        {
+            get => this.data[12];
+            set => this.data[12] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rival guild name.
+        /// </summary>
+        public string RivalGuildName
+        {
+            get => this.data.ExtractString(13, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(13, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets the guildMember of the specified index.
+        /// </summary>
+        public GuildMember this[int index] => new GuildMember(this.data.Slice(24 + (index * GuildMember.Length)));
+
+
+    /// <summary>
+    /// Contains the data of one guild member..
+    /// </summary>
+    public readonly ref struct GuildMember
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildMember"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildMember(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 13;
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => this.data.ExtractString(0, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(0, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the server id.
+        /// </summary>
+        public byte ServerId
+        {
+            get => this.data[10];
+            set => this.data[10] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the server id 2.
+        /// </summary>
+        public byte ServerId2
+        {
+            get => this.data[11];
+            set => this.data[11] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the role.
+        /// </summary>
+        public GuildMemberRole Role
+        {
+            get => (GuildMemberRole)this.data.Slice(12)[0];
+            set => this.data.Slice(12)[0] = (byte)value;
+        }
+    }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildList"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildList(Span<byte> packet) => new GuildList(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildList"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildList packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="GuildMember"/>.
+        /// </summary>
+        /// <param name="membersCount">The count of <see cref="GuildMember"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int membersCount) => membersCount * GuildMember.Length + 24;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a guild master sent a request to kick a player from its guild and the server processed this request.
+    /// Causes reaction on client side: The client shows a message depending on the result.
+    /// </summary>
+    public readonly ref struct GuildKickResponse
+    {
+        /// <summary>
+        /// The result of the guild kick request.
+        /// </summary>
+        public enum GuildKickSuccess
+        {
+            Failed = 0,
+
+            KickSucceeded = 1,
+
+            GuildDisband = 2,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildKickResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildKickResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildKickResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildKickResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x53;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public GuildKickSuccess Result
+        {
+            get => (GuildKickSuccess)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildKickResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildKickResponse(Span<byte> packet) => new GuildKickResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildKickResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildKickResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a player started talking to the guild master NPC and the player is allowed to create a guild.
+    /// Causes reaction on client side: The client shows the guild master dialog.
+    /// </summary>
+    public readonly ref struct ShowGuildMasterDialog
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShowGuildMasterDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ShowGuildMasterDialog(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShowGuildMasterDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ShowGuildMasterDialog(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x54;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ShowGuildMasterDialog"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ShowGuildMasterDialog(Span<byte> packet) => new ShowGuildMasterDialog(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ShowGuildMasterDialog"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ShowGuildMasterDialog packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a player started talking to the guild master NPC and the player proceeds to create a guild.
+    /// Causes reaction on client side: The client shows the guild creation dialog.
+    /// </summary>
+    public readonly ref struct ShowGuildCreationDialog
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShowGuildCreationDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ShowGuildCreationDialog(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShowGuildCreationDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ShowGuildCreationDialog(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x55;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ShowGuildCreationDialog"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ShowGuildCreationDialog(Span<byte> packet) => new ShowGuildCreationDialog(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ShowGuildCreationDialog"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ShowGuildCreationDialog packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a player requested to create a guild at the guild master NPC.
+    /// Causes reaction on client side: Depending on the result, a message is shown.
+    /// </summary>
+    public readonly ref struct GuildCreationResult
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildCreationResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildCreationResult(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildCreationResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildCreationResult(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x56;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the success.
+        /// </summary>
+        public bool Success
+        {
+            get => this.data.Slice(3).GetBoolean();
+            set => this.data.Slice(3).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the error.
+        /// </summary>
+        public GuildCreationErrorType Error
+        {
+            get => (GuildCreationErrorType)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+        /// <summary>
+        /// Defines a guild creation error.
+        /// </summary>
+        public enum GuildCreationErrorType
+        {
+            None = 0,
+
+            GuildNameAlreadyTaken = 179,
+        }
+
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildCreationResult"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildCreationResult(Span<byte> packet) => new GuildCreationResult(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildCreationResult"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildCreationResult packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A player left a guild. This message is sent to the player and all surrounding players.
+    /// Causes reaction on client side: The player is not longer shown as a guild member.
+    /// </summary>
+    public readonly ref struct GuildMemberLeftGuild
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildMemberLeftGuild"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildMemberLeftGuild(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildMemberLeftGuild"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildMemberLeftGuild(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x5D;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the is guild master.
+        /// </summary>
+        public bool IsGuildMaster
+        {
+            get => this.data.Slice(3).GetBoolean(7);
+            set => this.data.Slice(3).SetBoolean(value, 7);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildMemberLeftGuild"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildMemberLeftGuild(Span<byte> packet) => new GuildMemberLeftGuild(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildMemberLeftGuild"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildMemberLeftGuild packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The server wants to visibly assign a player to a guild, e.g. when two players met each other and one of them is a guild member.
+    /// Causes reaction on client side: The players which belong to the guild are shown as guild players. If the game client doesn't met a player of this guild yet, it will send another request to get the guild information.
+    /// </summary>
+    public readonly ref struct AssignCharacterToGuild
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssignCharacterToGuild"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AssignCharacterToGuild(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssignCharacterToGuild"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AssignCharacterToGuild(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x65;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the player count.
+        /// </summary>
+        public byte PlayerCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the guildMemberRelation of the specified index.
+        /// </summary>
+        public GuildMemberRelation this[int index] => new GuildMemberRelation(this.data.Slice(5 + (index * GuildMemberRelation.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AssignCharacterToGuild"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AssignCharacterToGuild(Span<byte> packet) => new AssignCharacterToGuild(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AssignCharacterToGuild"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AssignCharacterToGuild packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="GuildMemberRelation"/>.
+        /// </summary>
+        /// <param name="membersCount">The count of <see cref="GuildMemberRelation"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int membersCount) => membersCount * GuildMemberRelation.Length + 5;
+
+
+    /// <summary>
+    /// Relation between a guild and a member..
+    /// </summary>
+    public readonly ref struct GuildMemberRelation
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildMemberRelation"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildMemberRelation(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets or sets the guild id.
+        /// </summary>
+        public uint GuildId
+        {
+            get => this.data.Slice(0).GetIntegerBigEndian();
+            set => this.data.Slice(0).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the role.
+        /// </summary>
+        public GuildMemberRole Role
+        {
+            get => (GuildMemberRole)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the is player appearing new.
+        /// </summary>
+        public bool IsPlayerAppearingNew
+        {
+            get => this.data.Slice(7).GetBoolean(7);
+            set => this.data.Slice(7).SetBoolean(value, 7);
+        }
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => this.data.Slice(7).GetShortLittleEndian();
+            set => this.data.Slice(7).SetShortLittleEndian(value);
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A game client requested the (public) info of a guild, e.g. when it met a player of previously unknown guild.
+    /// Causes reaction on client side: The players which belong to the guild are shown as guild players.
+    /// </summary>
+    public readonly ref struct GuildInformation
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildInformation"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildInformation(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildInformation"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildInformation(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x66;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 60;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the guild id.
+        /// </summary>
+        public uint GuildId
+        {
+            get => this.data.Slice(4).GetIntegerBigEndian();
+            set => this.data.Slice(4).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the guild type.
+        /// </summary>
+        public byte GuildType
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the alliance guild name.
+        /// </summary>
+        public string AllianceGuildName
+        {
+            get => this.data.ExtractString(9, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(9, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the guild name.
+        /// </summary>
+        public string GuildName
+        {
+            get => this.data.ExtractString(17, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(17, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the logo.
+        /// </summary>
+        public Span<byte> Logo
+        {
+            get => this.data.Slice(25, 32);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildInformation"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildInformation(Span<byte> packet) => new GuildInformation(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildInformation"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildInformation packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: 
     /// Causes reaction on client side: 
     /// </summary>
