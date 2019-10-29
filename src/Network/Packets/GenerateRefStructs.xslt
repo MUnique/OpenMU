@@ -266,12 +266,19 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
   <xsl:template name="lengthCalculator">
     <xsl:param name="struct" />
     <xsl:variable name="variableField" select="$struct/pd:Fields[last()]/pd:Field[(pd:Type = 'String' or pd:Type = 'Binary' or pd:Type = 'Structure[]') and not(pd:Length)]" />
+    <xsl:variable name="structTypeName" select="$variableField[pd:Type = 'Structure[]']/pd:TypeName" />
+    <xsl:variable name="arrayOfVariableStruct" select="$variableField[pd:Type = 'Structure[]' 
+                  and ($struct/pd:Structures/pd:Structure[pd:Name = $structTypeName and not(pd:Length)] or $struct/../../pd:Structures/pd:Structure[pd:Name = $structTypeName and not(pd:Length)])]" />
     <xsl:if test="$variableField" >
       <xsl:variable name="paramName">
         <xsl:choose>
           <xsl:when test="$variableField/pd:Type = 'Structure[]'">
             <xsl:value-of select="concat(translate(substring($variableField/pd:Name, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring($variableField/pd:Name, 2))"/>
             <xsl:text>Count</xsl:text>
+          </xsl:when>
+          <xsl:when test="$variableField/pd:Type = 'Binary'">
+            <xsl:value-of select="concat(translate(substring($variableField/pd:Name, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring($variableField/pd:Name, 2))"/>
+            <xsl:text>Length</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:text>content</xsl:text>
@@ -280,7 +287,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       </xsl:variable>
       <xsl:variable name="paramTypeName">
         <xsl:choose>
-          <xsl:when test="$variableField/pd:Type = 'Structure[]'">
+          <xsl:when test="$variableField/pd:Type = 'Structure[]' or $variableField/pd:Type = 'Binary'">
             <xsl:text>int</xsl:text>
           </xsl:when>
           <xsl:otherwise>
@@ -289,6 +296,23 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
         </xsl:choose>
       </xsl:variable>
       <xsl:choose>
+        <xsl:when test="$arrayOfVariableStruct">
+          <xsl:text>
+        /// &lt;summary&gt;
+        /// Calculates the size of the packet for the specified count of &lt;see cref="</xsl:text>
+          <xsl:value-of select="$variableField/pd:TypeName" />
+          <xsl:text>"/&gt; and it's size.
+        /// &lt;/summary&gt;
+        /// &lt;param name="</xsl:text>
+          <xsl:value-of select="$paramName"/>
+          <xsl:text>"&gt;The count of &lt;see cref="</xsl:text>
+          <xsl:value-of select="$variableField/pd:TypeName" />
+          <xsl:text>"/&gt; from which the size will be calculated.&lt;/param&gt;
+        /// &lt;param name="structLength"&gt;The length of &lt;see cref="</xsl:text>
+          <xsl:value-of select="$variableField/pd:TypeName" />
+          <xsl:text>"/&gt; from which the size will be calculated.&lt;/param&gt;
+          </xsl:text>
+        </xsl:when>
         <xsl:when test="$variableField/pd:Type = 'Structure[]'">
           <xsl:text>
         /// &lt;summary&gt;
@@ -300,6 +324,20 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
           <xsl:value-of select="$paramName"/><xsl:text>"&gt;The count of &lt;see cref="</xsl:text>
           <xsl:value-of select="$variableField/pd:TypeName" />
           <xsl:text>"/&gt; from which the size will be calculated.&lt;/param&gt;
+        </xsl:text>
+        </xsl:when>
+        <xsl:when test="$variableField/pd:Type = 'Binary'">
+          <xsl:text>
+        /// &lt;summary&gt;
+        /// Calculates the size of the packet for the specified length of &lt;see cref="</xsl:text>
+          <xsl:value-of select="$variableField/pd:Name" />
+          <xsl:text>"/&gt;.
+        /// &lt;/summary&gt;
+        /// &lt;param name="</xsl:text>
+          <xsl:value-of select="$paramName"/>
+          <xsl:text>"&gt;The length in bytes of &lt;see cref="</xsl:text>
+          <xsl:value-of select="$variableField/pd:Name" />
+          <xsl:text>"/&gt; on which the required size depends.&lt;/param&gt;
         </xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -317,6 +355,9 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       <xsl:value-of select="$paramTypeName"/>
       <xsl:text xml:space="preserve"> </xsl:text>
       <xsl:value-of select="$paramName"/>
+      <xsl:if test="$arrayOfVariableStruct">
+        <xsl:text>, int structLength</xsl:text>
+      </xsl:if>
       <xsl:text>) => </xsl:text>
       
       <xsl:choose>
@@ -324,13 +365,20 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
           <xsl:text>System.Text.Encoding.UTF8.GetByteCount(content) + 1</xsl:text>
         </xsl:when>
         <xsl:when test="$variableField/pd:Type = 'Binary'">
-          <xsl:text>content.Length</xsl:text>
+          <xsl:value-of select="$paramName"/>
         </xsl:when>
         <xsl:when test="$variableField/pd:Type = 'Structure[]'">
           <xsl:value-of select="concat(translate(substring($variableField/pd:Name, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring($variableField/pd:Name, 2))"/>
           <xsl:text>Count * </xsl:text>
-          <xsl:value-of select="$variableField/pd:TypeName" />
-          <xsl:text>.Length</xsl:text>
+          <xsl:choose>
+            <xsl:when test="$arrayOfVariableStruct">
+              <xsl:text>structLength</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$variableField/pd:TypeName" />
+              <xsl:text>.Length</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:when>
       </xsl:choose>
       <xsl:text> + </xsl:text>
@@ -367,22 +415,43 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
 
     <!-- Example: public CharacterData this[int index] => new CharacterData(this.data.Slice(8 + index));-->
     <xsl:template match="pd:Field[pd:Type = 'Structure[]']">
+      <xsl:variable name="typeName" select="pd:TypeName" />
+      <xsl:variable name="arrayOfVariableStruct" select="(../../pd:Structures/pd:Structure[pd:Name = $typeName and not(pd:Length)] or ../../../../pd:Structures/pd:Structure[pd:Name = $typeName and not(pd:Length)])" />
+      <xsl:variable name="typeLengthParamName" select="concat(translate(substring(pd:TypeName, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring(pd:TypeName, 2), 'Length')" />
       <xsl:text>
         /// &lt;summary&gt;
-        /// Gets the </xsl:text>
-      <xsl:value-of select="concat(translate(substring(pd:TypeName, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring(pd:TypeName, 2))"/>
-      <xsl:text> of the specified index.
+        /// Gets the &lt;see cref="</xsl:text><xsl:value-of select="pd:TypeName" /><xsl:text>"/&gt; of the specified index.
         /// &lt;/summary&gt;</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:text>        public </xsl:text>
       <xsl:value-of select="pd:TypeName"/>
-      <xsl:text> this[int index] => new </xsl:text>
+      <xsl:choose>
+        <xsl:when test="$arrayOfVariableStruct">
+          <xsl:text> this[int index, int </xsl:text>
+          <xsl:value-of select="$typeLengthParamName"/>
+          <xsl:text>] => new </xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text> this[int index] => new </xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
+      
       <xsl:value-of select="pd:TypeName"/>
       <xsl:text>(this.data.Slice(</xsl:text>
       <xsl:value-of select="pd:Index"/>
       <xsl:text> + (index * </xsl:text>
-      <xsl:value-of select="pd:TypeName"/>
-      <xsl:text>.Length)));</xsl:text>
+
+      <xsl:choose>
+        <xsl:when test="$arrayOfVariableStruct">
+          <xsl:value-of select="$typeLengthParamName"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="pd:TypeName"/>
+          <xsl:text>.Length</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:text>)));</xsl:text>
+      
       <xsl:value-of select="$newline"/>
     </xsl:template>
 

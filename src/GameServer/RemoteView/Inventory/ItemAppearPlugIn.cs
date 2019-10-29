@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,14 +30,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         public void ItemAppear(Item newItem)
         {
             var itemSerializer = this.player.ItemSerializer;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 5 + itemSerializer.NeededSpace))
+            using var writer = this.player.Connection.StartSafeWrite(ItemAddedToInventory.HeaderType, ItemAddedToInventory.GetRequiredSize(itemSerializer.NeededSpace));
+            var message = new ItemAddedToInventory(writer.Span)
             {
-                var message = writer.Span;
-                message[2] = 0x22;
-                message[3] = newItem.ItemSlot;
-                itemSerializer.SerializeItem(message.Slice(4), newItem);
-                writer.Commit();
-            }
+                InventorySlot = newItem.ItemSlot,
+            };
+            itemSerializer.SerializeItem(message.ItemData, newItem);
+            writer.Commit();
         }
     }
 }

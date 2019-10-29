@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                     throw new InvalidEnumArgumentException($"The direction {request.Direction} is not a valid value.");
             }
 
-            player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney();
+            player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney(true);
         }
     }
 }

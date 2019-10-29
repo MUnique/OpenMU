@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,12 +28,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void CloseVault()
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x03))
-            {
-                var packet = writer.Span;
-                packet[2] = 0x82;
-                writer.Commit();
-            }
+            using var writer = this.player.Connection.StartSafeWrite(VaultClosed.HeaderType, VaultClosed.Length);
+            _ = new VaultClosed(writer.Span);
+            writer.Commit();
         }
     }
 }

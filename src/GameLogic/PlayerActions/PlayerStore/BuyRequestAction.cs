@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                             requestedPlayer.ShopStorage.RemoveItem(item);
                             requestedPlayer.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
                             requestedPlayer.ViewPlugIns.GetPlugIn<IItemSoldByPlayerShopPlugIn>()?.ItemSoldByPlayerShop(slot, player);
-                            requestedPlayer.ViewPlugIns.GetPlugIn<Views.Inventory.IItemConsumedPlugIn>()?.ItemConsumed(slot, true);
+                            requestedPlayer.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(slot);
                             item.ItemSlot = (byte)freeslot;
                             item.StorePrice = null;
                             player.Inventory.AddItem(item);

@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             targetItem.Durability += sourceItem.Durability;
             player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(sourceItem);
-            player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemConsumedPlugIn>()?.ItemConsumed(sourceItem.ItemSlot, true);
+            player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(sourceItem.ItemSlot);
             player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(targetItem, false);
         }
 

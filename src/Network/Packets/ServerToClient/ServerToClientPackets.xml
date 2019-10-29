@@ -1,7 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains all packet definitions for packets which are sent from game server to client.</Description>
-  <Structures />
+  <Structures>
+    <Structure>
+      <Name>StoredItem</Name>
+      <Description>The structure for a stored item, e.g. in the inventory or vault.</Description>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Structure>
+  </Structures>
   <Packets>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -220,6 +237,146 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>22</Code>
+      <Name>ItemAddedToInventory</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A new item was added to the inventory.</SentWhen>
+      <CausedReaction>The client adds the item to the inventory user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>22</Code>
+      <Name>ItemDropResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to drop an item of his inventory. This message is the response about the success of the request.</SentWhen>
+      <CausedReaction>If successful, the client removes the item from the inventory user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>22</Code>
+      <Name>ItemPickUpRequestFailed</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to pick up an item from to ground to add it to his inventory, but it failed.</SentWhen>
+      <CausedReaction>Depending on the reason, the game client shows a message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemPickUpFailReason</TypeName>
+          <Name>FailReason</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ItemPickUpFailReason</Name>
+          <Description>Defines the possible fail reasons</Description>
+          <Values>
+            <EnumValue>
+              <Name>ItemStacked</Name>
+              <Description>The picked up item was combined into an existing item of the players inventory. A separate durability update will be sent to the client.</Description>
+              <Value>253</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>__MaximumInventoryMoneyReached</Name>
+              <Description>The maximum inventory money has been reached, so the money wasn't picked up. Should not be used, because it's used in the InventoryMoneyUpdate message.</Description>
+              <Value>254</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>General</Name>
+              <Description>The general, non-specific reason. It just failed.</Description>
+              <Value>255</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>22</Code>
+      <SubCode>FE</SubCode>
+      <Name>InventoryMoneyUpdate</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The players money amount of the inventory has been changed and needs an update.</SentWhen>
+      <CausedReaction>The money is updated in the inventory user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Integer</Type>
+          <Name>Money</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>24</Code>
+      <Name>ItemMoved</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An item in the inventory or vault of the player has been moved.</SentWhen>
+      <CausedReaction>The client updates the position of item in the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemStorageKind</TypeName>
+          <Name>TargetStorageType</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetSlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>24</Code>
+      <SubCode>FF</SubCode>
+      <Name>ItemMoveRequestFailed</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An item in the inventory or vault of the player could not be moved as requested by the player.</SentWhen>
+      <CausedReaction>The client restores the position of item in the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
       <SubCode>FF</SubCode>
@@ -330,6 +487,29 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>28</Code>
+      <Name>ItemRemoved</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The item has been removed from the inventory of the player.</SentWhen>
+      <CausedReaction>The client removes the item in the inventory user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+          <Description>The affected slot of the item in the inventory.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TrueFlag</Name>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>29</Code>
       <Name>ConsumeItemWithEffect</Name>
@@ -372,8 +552,197 @@
             </EnumValue>
           </Values>
         </Enum>
-        
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>2A</Code>
+      <Name>ItemDurabilityChanged</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The durability of an item in the inventory of the player has been changed.</SentWhen>
+      <CausedReaction>The client updates the item in the inventory user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Durability</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Boolean</Type>
+          <Name>ByConsumption</Name>
+          <Description>true, if the change resulted from an item consumption; otherwise, false</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>31</Code>
+      <Name>StoreItemList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player opens a merchant npc or the vault. It's sent after the dialog was opened by another message.</SentWhen>
+      <CausedReaction>The client shows the items in the opened dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>StoredItem</TypeName>
+          <Name>Items</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>32</Code>
+      <SubCode>FF</SubCode>
+      <Name>NpcItemBuyFailed</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The request of buying an item from a NPC failed.</SentWhen>
+      <CausedReaction>The client is responsive again. Without this message, it may stuck.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>32</Code>
+      <Name>ItemBought</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The request of buying an item from a player or npc was successful.</SentWhen>
+      <CausedReaction>The bought item is added to the inventory.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>33</Code>
+      <Name>NpcItemSellResult</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The result of a previous item sell request.</SentWhen>
+      <CausedReaction>The amount of specified money is set at the players inventory.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>Money</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>01</SubCode>
+      <Name>PlayerShopSetItemPriceResponse</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to set a price for an item of the players shop.</SentWhen>
+      <CausedReaction>The item gets a price on the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemPriceSetResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ItemPriceSetResult</Name>
+          <Description>Describes the possible results of setting an item price in a player shop.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Value>0</Value>
+              <Description>Failed, e.g. because the shop feature is deactivated</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Value>1</Value>
+              <Description>The price has been set successfully</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>ItemSlotOutOfRange</Name>
+              <Value>2</Value>
+              <Description>Failed because the item slot was out of range</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>ItemNotFound</Name>
+              <Value>3</Value>
+              <Description>Failed because the item could not be found</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>PriceNegative</Name>
+              <Value>4</Value>
+              <Description>Failed because the price was negative</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>ItemIsBlocked</Name>
+              <Value>5</Value>
+              <Description>Failed because the item is blocked</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooLow</Name>
+              <Value>6</Value>
+              <Description>Failed because the character level is too low (below level 6)</Description>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>08</SubCode>
+      <Name>PlayerShopItemSoldToPlayer</Name>
+      <Length>15</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An item of the players shop was sold to another player.</SentWhen>
+      <CausedReaction>The item is removed from the players inventory and a blue system message appears.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>BuyerName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -1225,13 +1594,19 @@
       <SubCode>10</SubCode>
       <Name>CharacterInventory</Name>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>The player entered the game or finished a trade.</SentWhen>
+      <CausedReaction>The user interface of the inventory is initialized with all of its items.</CausedReaction>
       <Fields>
         <Field>
           <Index>5</Index>
           <Type>Byte</Type>
           <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>StoredItem</TypeName>
+          <Name>Items</Name>
         </Field>
       </Fields>
     </Packet>
@@ -1239,15 +1614,20 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
       <SubCode>14</SubCode>
-      <Name>ItemUpgraded</Name>
+      <Name>InventoryItemUpgraded</Name>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
+      <SentWhen>An item in the inventory got upgraded by the player, e.g. by applying a jewel.</SentWhen>
+      <CausedReaction>The item is updated on the user interface.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
           <Type>Byte</Type>
-          <Name>ItemSlot</Name>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
         </Field>
       </Fields>
     </Packet>
@@ -1836,6 +2216,97 @@
           <Length>32</Length>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>81</Code>
+      <Name>VaultMoneyUpdate</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to move money between the vault and inventory.</SentWhen>
+      <CausedReaction>The game client updates the money values of vault and inventory.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>VaultMoney</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>InventoryMoney</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>82</Code>
+      <Name>VaultClosed</Name>
+      <Length>3</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to close the vault, this confirmation is sent back to the client.</SentWhen>
+      <CausedReaction>The game client closes the vault dialog.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>83</Code>
+      <Name>VaultProtectionInformation</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to open the vault.</SentWhen>
+      <CausedReaction>The game client updates the UI to show the current vault protection state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>VaultProtectionState</TypeName>
+          <Name>ProtectionState</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>VaultProtectionState</Name>
+          <Description>Defines the vault protection state.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Unprotected</Name>
+              <Value>0</Value>
+              <Description>The vault is unprotected.</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>Locked</Name>
+              <Value>1</Value>
+              <Description>The vault is protected and locked. To move items or money, the player needs to unlock it.</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>UnlockFailedByWrongPin</Name>
+              <Value>10</Value>
+              <Description>The vault is protected and locked. The user-requested unlock failed by a wrong pin.</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>SetPinFailedBecauseLock</Name>
+              <Value>11</Value>
+              <Description>The vault is protected and locked and the player-requested pin setting failed because of the lock.</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>Unlocked</Name>
+              <Value>12</Value>
+              <Description>The vault is protected, but was unlocked by the player.</Description>
+            </EnumValue>
+            <EnumValue>
+              <Name>RemovePinFailedByWrongPassword</Name>
+              <Value>13</Value>
+              <Description>The vault is protected and the player-requested pin removal failed by using the wrong password.</Description>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>

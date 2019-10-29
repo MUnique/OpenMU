@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
 
             using var writer = this.player.Connection.StartSafeWrite(
                 MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.HeaderType,
-                MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.GetRequiredSize(keyConfiguration));
+                MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.GetRequiredSize(keyConfiguration.Length));
             var packet = new ApplyKeyConfiguration(writer.Span);
             keyConfiguration.AsSpan().CopyTo(packet.Configuration);
             writer.Commit();

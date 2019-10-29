@@ -2819,10 +2819,10 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static implicit operator Span<byte>(WalkRequest packet) => packet.data; 
 
         /// <summary>
-        /// Calculates the size of the packet for the specified field content.
+        /// Calculates the size of the packet for the specified length of <see cref="Directions"/>.
         /// </summary>
-        /// <param name="content">The content of the variable 'Directions' field from which the size will be calculated.</param>
-        public static int GetRequiredSize(Span<byte> content) => content.Length + 5;
+        /// <param name="directionsLength">The length in bytes of <see cref="Directions"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int directionsLength) => directionsLength + 5;
     }
 
 
@@ -3644,10 +3644,10 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static implicit operator Span<byte>(SaveKeyConfiguration packet) => packet.data; 
 
         /// <summary>
-        /// Calculates the size of the packet for the specified field content.
+        /// Calculates the size of the packet for the specified length of <see cref="Configuration"/>.
         /// </summary>
-        /// <param name="content">The content of the variable 'Configuration' field from which the size will be calculated.</param>
-        public static int GetRequiredSize(Span<byte> content) => content.Length + 4;
+        /// <param name="configurationLength">The length in bytes of <see cref="Configuration"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int configurationLength) => configurationLength + 4;
     }
 
 

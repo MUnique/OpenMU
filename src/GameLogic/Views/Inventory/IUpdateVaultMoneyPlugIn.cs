@@ -10,8 +10,9 @@ namespace MUnique.OpenMU.GameLogic.Views.Inventory
     public interface IUpdateVaultMoneyPlugIn : IViewPlugIn
     {
         /// <summary>
-        /// Refresh vault and player money on client side.
+        /// Refreshes vault and player money on client side, if the last money movement was successfully.
         /// </summary>
-        void UpdateVaultMoney();
+        /// <param name="success"><c>true</c>, if the money movement request was successful; otherwise, <c>false</c>.</param>
+        void UpdateVaultMoney(bool success);
     }
 }

@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -26,19 +26,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         public UpdateVaultMoneyPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void UpdateVaultMoney()
+        public void UpdateVaultMoney(bool success)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0C))
+            using var writer = this.player.Connection.StartSafeWrite(VaultMoneyUpdate.HeaderType, VaultMoneyUpdate.Length);
+            var moneyUpdate = new VaultMoneyUpdate(writer.Span)
             {
-                uint zenPlayer = (uint)this.player.Money;
-                uint zenStorage = (uint)this.player.Account.Vault.Money;
-                var zenPacket = writer.Span;
-                zenPacket[2] = 0x81;
-                zenPacket[3] = 0x01;
-                zenPacket.Slice(4).SetIntegerBigEndian(zenStorage);
-                zenPacket.Slice(8).SetIntegerBigEndian(zenPlayer);
-                writer.Commit();
+                Success = success,
+            };
+            if (success)
+            {
+                moneyUpdate.InventoryMoney = (uint)this.player.Money;
+                moneyUpdate.VaultMoney = (uint)this.player.Account.Vault.Money;
             }
+
+            writer.Commit();
         }
     }
 }
