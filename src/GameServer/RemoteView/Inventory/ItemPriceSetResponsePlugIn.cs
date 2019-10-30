@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc />
         public void ItemPriceSetResponse(byte itemSlot, ItemPriceResult result)
         {
-            using var writer = this.player.Connection.StartSafeWrite(0xC3, 6);
+            using var writer = this.player.Connection.StartSafeWrite(PlayerShopSetItemPriceResponse.HeaderType, PlayerShopSetItemPriceResponse.Length);
             _ = new PlayerShopSetItemPriceResponse(writer.Span)
             {
                 InventorySlot = itemSlot,

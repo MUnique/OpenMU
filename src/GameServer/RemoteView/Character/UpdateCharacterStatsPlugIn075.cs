@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCharacterStats()
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 42))
+            using (var writer = this.player.Connection.StartSafeWrite(CharacterInformation075.Code, CharacterInformation075.Length))
             {
                 _ = new CharacterInformation075(writer.Span)
                 {

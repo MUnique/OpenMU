@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCharacterHeroState()
         {
-            using var writer = this.player.Connection.StartSafeWrite(0xC1, 0x07);
+            using var writer = this.player.Connection.StartSafeWrite(HeroStateChanged.HeaderType, HeroStateChanged.Length);
             _ = new HeroStateChanged(writer.Span)
             {
                 PlayerId = this.player.GetId(this.player),
