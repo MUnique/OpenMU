@@ -28,8 +28,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void ShowCharacterCreationFailed()
         {
-            using var writer = this.player.Connection.StartSafeWrite(CharacterCreationResult.HeaderType, 5);
-            _ = new CharacterCreationResult(writer.Span);
+            using var writer = this.player.Connection.StartSafeWrite(CharacterCreationFailed.HeaderType, CharacterCreationFailed.Length);
+            _ = new CharacterCreationFailed(writer.Span);
             writer.Commit();
         }
     }

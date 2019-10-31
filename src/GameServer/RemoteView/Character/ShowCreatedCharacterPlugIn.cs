@@ -33,10 +33,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void ShowCreatedCharacter(Character character)
         {
-            using var writer = this.player.Connection.StartSafeWrite(CharacterCreationResult.HeaderType, CharacterCreationResult.Length);
-            var packet = new CharacterCreationResult(writer.Span)
+            using var writer = this.player.Connection.StartSafeWrite(CharacterCreationSuccessful.HeaderType, CharacterCreationSuccessful.Length);
+            var packet = new CharacterCreationSuccessful(writer.Span)
             {
-                Success = true,
                 CharacterName = character.Name,
                 CharacterSlot = character.CharacterSlot,
                 Level = (ushort)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value ?? 0),

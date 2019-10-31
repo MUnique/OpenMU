@@ -903,16 +903,17 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
       <SubCode>01</SubCode>
-      <Name>CharacterCreationResult</Name>
+      <Name>CharacterCreationSuccessful</Name>
       <Length>42</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>After the server processed a character creation request.</SentWhen>
-      <CausedReaction>If successful, the new character is shown in the character list; Otherwise, a message is shown that it failed. </CausedReaction>
+      <SentWhen>After the server successfully processed a character creation request.</SentWhen>
+      <CausedReaction>The new character is shown in the character list</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
           <Type>Boolean</Type>
           <Name>Success</Name>
+          <DefaultValue>1</DefaultValue>
         </Field>
         <Field>
           <Index>5</Index>
@@ -949,7 +950,17 @@
         </Field>
       </Fields>
     </Packet>
-
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>01</SubCode>
+      <Name>CharacterCreationFailed</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the server processed a character creation request without success.</SentWhen>
+      <CausedReaction>A message is shown that it failed. </CausedReaction>
+      <Fields />
+    </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>

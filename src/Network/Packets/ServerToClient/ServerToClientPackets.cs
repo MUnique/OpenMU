@@ -2876,28 +2876,28 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: After the server processed a character creation request.
-    /// Causes reaction on client side: If successful, the new character is shown in the character list; Otherwise, a message is shown that it failed. 
+    /// Is sent by the server when: After the server successfully processed a character creation request.
+    /// Causes reaction on client side: The new character is shown in the character list
     /// </summary>
-    public readonly ref struct CharacterCreationResult
+    public readonly ref struct CharacterCreationSuccessful
     {
         private readonly Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterCreationResult"/> struct.
+        /// Initializes a new instance of the <see cref="CharacterCreationSuccessful"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public CharacterCreationResult(Span<byte> data)
+        public CharacterCreationSuccessful(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterCreationResult"/> struct.
+        /// Initializes a new instance of the <see cref="CharacterCreationSuccessful"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private CharacterCreationResult(Span<byte> data, bool initialize)
+        private CharacterCreationSuccessful(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -2999,24 +2999,101 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterCreationResult"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterCreationSuccessful"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator CharacterCreationResult(Span<byte> packet) => new CharacterCreationResult(packet, false);
+        public static implicit operator CharacterCreationSuccessful(Span<byte> packet) => new CharacterCreationSuccessful(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CharacterCreationResult"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="CharacterCreationSuccessful"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(CharacterCreationResult packet) => packet.data; 
+        public static implicit operator Span<byte>(CharacterCreationSuccessful packet) => packet.data; 
 
         /// <summary>
         /// Calculates the size of the packet for the specified length of <see cref="PreviewData"/>.
         /// </summary>
         /// <param name="previewDataLength">The length in bytes of <see cref="PreviewData"/> on which the required size depends.</param>
         public static int GetRequiredSize(int previewDataLength) => previewDataLength + 20;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the server processed a character creation request without success.
+    /// Causes reaction on client side: A message is shown that it failed. 
+    /// </summary>
+    public readonly ref struct CharacterCreationFailed
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterCreationFailed"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public CharacterCreationFailed(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterCreationFailed"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private CharacterCreationFailed(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterCreationFailed"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator CharacterCreationFailed(Span<byte> packet) => new CharacterCreationFailed(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="CharacterCreationFailed"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(CharacterCreationFailed packet) => packet.data; 
     }
 
 
@@ -3052,6 +3129,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
+                this.data[4] = 1;
             }
         }
 
