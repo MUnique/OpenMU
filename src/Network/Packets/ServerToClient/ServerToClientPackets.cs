@@ -322,6 +322,92 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: After the logout request has been processed by the server.
+    /// Causes reaction on client side: Depending on the result, the game client closes the game or changes to another selection screen.
+    /// </summary>
+    public readonly ref struct LogoutResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogoutResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LogoutResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogoutResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LogoutResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF1;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x02;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public LogOutType Type
+        {
+            get => (LogOutType)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LogoutResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LogoutResponse(Span<byte> packet) => new LogoutResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LogoutResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LogoutResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: A player sends a chat message.
     /// Causes reaction on client side: The message is shown in the chat box and above the character of the sender.
     /// </summary>
@@ -2907,6 +2993,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
+                this.data[4] = 1;
             }
         }
 
@@ -3129,7 +3216,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 1;
             }
         }
 

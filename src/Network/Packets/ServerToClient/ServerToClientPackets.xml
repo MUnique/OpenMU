@@ -149,6 +149,24 @@
       </Enums>
     </Packet>
     <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>02</SubCode>
+      <Name>LogoutResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the logout request has been processed by the server.</SentWhen>
+      <CausedReaction>Depending on the result, the game client closes the game or changes to another selection screen.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>LogOutType</TypeName>
+          <Name>Type</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>00</Code>
       <Name>ChatMessage</Name>

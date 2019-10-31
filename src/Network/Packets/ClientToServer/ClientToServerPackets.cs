@@ -635,27 +635,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// </summary>
     public readonly ref struct LogOut
     {
-        /// <summary>
-        /// Describes the way how the player wants to leave the current game.
-        /// </summary>
-        public enum LogOutType
-        {
-            /// <summary>
-            /// The player wants to close the game.
-            /// </summary>
-            CloseGame = 0,
-
-            /// <summary>
-            /// The player wants to go back to the character selection screen.
-            /// </summary>
-            BackToCharacterSelection = 1,
-
-            /// <summary>
-            /// The player wants to go back to the server selection screen.
-            /// </summary>
-            BackToServerSelection = 2,
-        }
-
         private readonly Span<byte> data;
 
         /// <summary>

@@ -4,9 +4,12 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Login
 {
+    using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Login;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,14 +34,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
         /// <inheritdoc />
         public void Logout(LogoutType logoutType)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x05))
+            using var writer = this.player.Connection.StartSafeWrite(LogoutResponse.HeaderType, LogoutResponse.Length);
+            _ = new LogoutResponse(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF1;
-                packet[3] = 0x02;
-                packet[4] = (byte)logoutType;
-                writer.Commit();
-            }
+                Type = Convert(logoutType),
+            };
+
+            writer.Commit();
+        }
+
+        private static LogOutType Convert(LogoutType logoutType)
+        {
+            return logoutType switch
+            {
+                LogoutType.CloseGame => LogOutType.CloseGame,
+                LogoutType.BackToServerSelection => LogOutType.BackToServerSelection,
+                LogoutType.BackToCharacterSelection => LogOutType.BackToCharacterSelection,
+                _ => throw new ArgumentException($"Unhandled enum value {logoutType}."),
+            };
         }
     }
 }
