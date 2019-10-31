@@ -5,11 +5,10 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,22 +29,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x24))
+            var chatServerIp = this.player.GameServerContext.FriendServer.GetChatserverIP();
+            using var writer = this.player.Connection.StartSafeWrite(ChatRoomConnectionInfo.HeaderType, ChatRoomConnectionInfo.Length);
+            _ = new ChatRoomConnectionInfo(writer.Span)
             {
-                var chatServerIp = this.player.GameServerContext.FriendServer.GetChatserverIP();
-                var packet = writer.Span;
-                packet[2] = 0xCA;
-                packet.Slice(3, 15).WriteString(chatServerIp, Encoding.UTF8);
-                var chatRoomId = authenticationInfo.RoomId;
-                packet[18] = chatRoomId.GetLowByte();
-                packet[19] = chatRoomId.GetHighByte();
-                packet.Slice(20, 4).SetIntegerBigEndian(uint.Parse(authenticationInfo.AuthenticationToken));
-
-                packet[24] = 0x01; // type
-                packet.Slice(25, 10).WriteString(friendName, Encoding.UTF8);
-                packet[35] = success ? (byte)1 : (byte)0;
-                writer.Commit();
-            }
+                ChatServerIp = chatServerIp,
+                AuthenticationToken = uint.Parse(authenticationInfo.AuthenticationToken),
+                ChatRoomId = authenticationInfo.RoomId,
+                FriendName = friendName,
+                Success = success,
+            };
+            writer.Commit();
         }
     }
 }

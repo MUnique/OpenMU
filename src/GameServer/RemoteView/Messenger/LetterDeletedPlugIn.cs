@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,15 +28,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void LetterDeleted(ushort letterIndex)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 6))
+            using var writer = this.player.Connection.StartSafeWrite(RemoveLetter.HeaderType, RemoveLetter.Length);
+            _ = new RemoveLetter(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xC8;
-                packet[3] = 1;
-                packet[4] = letterIndex.GetLowByte();
-                packet[5] = letterIndex.GetHighByte();
-                writer.Commit();
-            }
+                LetterIndex = letterIndex,
+            };
+            writer.Commit();
         }
     }
 }

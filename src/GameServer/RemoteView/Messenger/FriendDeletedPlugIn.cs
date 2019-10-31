@@ -5,10 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,16 +26,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         public FriendDeletedPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void FriendDeleted(string deletingFriend)
+        public void FriendDeleted(string deletedFriend)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0E))
+            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.FriendDeleted.HeaderType, Network.Packets.ServerToClient.FriendDeleted.Length);
+            _ = new FriendDeleted(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xC3;
-                packet[3] = 0x01;
-                packet.Slice(4).WriteString(deletingFriend, Encoding.UTF8);
-                writer.Commit();
-            }
+                FriendName = deletedFriend,
+            };
+
+            writer.Commit();
         }
     }
 }

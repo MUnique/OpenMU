@@ -59,25 +59,25 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: After a game client has connected to the game.
     /// Causes reaction on client side: It shows the login dialog.
     /// </summary>
-    public readonly ref struct ServerInfo
+    public readonly ref struct GameServerEntered
     {
         private readonly Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerInfo"/> struct.
+        /// Initializes a new instance of the <see cref="GameServerEntered"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public ServerInfo(Span<byte> data)
+        public GameServerEntered(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerInfo"/> struct.
+        /// Initializes a new instance of the <see cref="GameServerEntered"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private ServerInfo(Span<byte> data, bool initialize)
+        private GameServerEntered(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -85,8 +85,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
+                this.data[4] = 1;
             }
         }
 
@@ -107,6 +108,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static byte SubCode => 0x00;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
@@ -114,10 +120,10 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the success.
         /// </summary>
-        public byte Success
+        public bool Success
         {
-            get => this.data[4];
-            set => this.data[4] = value;
+            get => this.data.Slice(4).GetBoolean();
+            set => this.data.Slice(4).SetBoolean(value);
         }
 
         /// <summary>
@@ -130,27 +136,35 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Gets or sets the version.
+        /// Gets or sets the version string.
         /// </summary>
-        public string Version
+        public string VersionString
         {
             get => this.data.ExtractString(7, 5, System.Text.Encoding.UTF8);
             set => this.data.Slice(7, 5).WriteString(value, System.Text.Encoding.UTF8);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="ServerInfo"/>.
+        /// Gets or sets the version.
+        /// </summary>
+        public Span<byte> Version
+        {
+            get => this.data.Slice(7, 5);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GameServerEntered"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ServerInfo(Span<byte> packet) => new ServerInfo(packet, false);
+        public static implicit operator GameServerEntered(Span<byte> packet) => new GameServerEntered(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="ServerInfo"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="GameServerEntered"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(ServerInfo packet) => packet.data; 
+        public static implicit operator Span<byte>(GameServerEntered packet) => packet.data; 
     }
 
 
@@ -7219,7 +7233,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: 
+    /// Is sent by the server when: After entering the game with a character.
     /// Causes reaction on client side: 
     /// </summary>
     public readonly ref struct MessengerInitialization
@@ -7295,6 +7309,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Gets the <see cref="Friend"/> of the specified index.
+        /// </summary>
+        public Friend this[int index] => new Friend(this.data.Slice(7 + (index * Friend.Length)));
+
+        /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="MessengerInitialization"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
@@ -7307,6 +7326,1083 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(MessengerInitialization packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="Friend"/>.
+        /// </summary>
+        /// <param name="friendsCount">The count of <see cref="Friend"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int friendsCount) => friendsCount * Friend.Length + 7;
+
+
+    /// <summary>
+    /// The structure which contains the friend name and online state..
+    /// </summary>
+    public readonly ref struct Friend
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Friend"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public Friend(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 11;
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => this.data.ExtractString(0, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(0, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the server id on which the player currently is online. 0xFF means offline.
+        /// </summary>
+        public byte ServerId
+        {
+            get => this.data[1];
+            set => this.data[1] = value;
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a friend has been added to the friend list.
+    /// Causes reaction on client side: The friend appears in the friend list.
+    /// </summary>
+    public readonly ref struct FriendAdded
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendAdded"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public FriendAdded(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendAdded"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private FriendAdded(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+                this.data[14] = 0xFF;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC1;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the friend name.
+        /// </summary>
+        public string FriendName
+        {
+            get => this.data.ExtractString(4, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the server id on which the player currently is online. 0xFF means offline.
+        /// </summary>
+        public byte ServerId
+        {
+            get => this.data[14];
+            set => this.data[14] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="FriendAdded"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator FriendAdded(Span<byte> packet) => new FriendAdded(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FriendAdded"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(FriendAdded packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a player has requested to add another player as friend. This other player gets this message.
+    /// Causes reaction on client side: The friend request appears on the user interface.
+    /// </summary>
+    public readonly ref struct FriendRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public FriendRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private FriendRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC2;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 13;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the requester.
+        /// </summary>
+        public string Requester
+        {
+            get => this.data.ExtractString(3, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="FriendRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator FriendRequest(Span<byte> packet) => new FriendRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FriendRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(FriendRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a friend has been removed from the friend list.
+    /// Causes reaction on client side: The friend is removed from the friend list.
+    /// </summary>
+    public readonly ref struct FriendDeleted
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendDeleted"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public FriendDeleted(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendDeleted"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private FriendDeleted(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 14;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the friend name.
+        /// </summary>
+        public string FriendName
+        {
+            get => this.data.ExtractString(4, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="FriendDeleted"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator FriendDeleted(Span<byte> packet) => new FriendDeleted(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FriendDeleted"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(FriendDeleted packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a friend has been added to the friend list.
+    /// Causes reaction on client side: The friend appears in the friend list.
+    /// </summary>
+    public readonly ref struct FriendOnlineStateUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendOnlineStateUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public FriendOnlineStateUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendOnlineStateUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private FriendOnlineStateUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC4;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 14;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the friend name.
+        /// </summary>
+        public string FriendName
+        {
+            get => this.data.ExtractString(3, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the server id on which the player currently is online. 0xFF means offline.
+        /// </summary>
+        public byte ServerId
+        {
+            get => this.data[13];
+            set => this.data[13] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="FriendOnlineStateUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator FriendOnlineStateUpdate(Span<byte> packet) => new FriendOnlineStateUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FriendOnlineStateUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(FriendOnlineStateUpdate packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the player requested to send a letter to another player.
+    /// Causes reaction on client side: Depending on the result, the letter send dialog closes or an error message appears.
+    /// </summary>
+    public readonly ref struct LetterSendResponse
+    {
+        /// <summary>
+        /// Describes the result of a letter send request.
+        /// </summary>
+        public enum LetterSendRequestResult
+        {
+            /// <summary>
+            /// The letter wasn't sent because there was an internal problem. The user should try again.
+            /// </summary>
+            TryAgain = 0,
+
+            /// <summary>
+            /// The letter was sent.
+            /// </summary>
+            Success = 1,
+
+            /// <summary>
+            /// The mailbox of the recipient is full.
+            /// </summary>
+            MailboxFull = 2,
+
+            /// <summary>
+            /// The receiver does not exist.
+            /// </summary>
+            ReceiverNotExists = 3,
+
+            /// <summary>
+            /// A letter can't be sent to yourself.
+            /// </summary>
+            CantSendToYourself = 4,
+
+            /// <summary>
+            /// The sender doesn't have enough money to send a letter.
+            /// </summary>
+            NotEnoughMoney = 7,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LetterSendResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LetterSendResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LetterSendResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LetterSendResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC5;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the letter id.
+        /// </summary>
+        public uint LetterId
+        {
+            get => this.data.Slice(4).GetIntegerBigEndian();
+            set => this.data.Slice(4).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public LetterSendRequestResult Result
+        {
+            get => (LetterSendRequestResult)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LetterSendResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LetterSendResponse(Span<byte> packet) => new LetterSendResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LetterSendResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LetterSendResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a letter has been received or after the player entered the game with a character.
+    /// Causes reaction on client side: The letter appears in the letter list.
+    /// </summary>
+    public readonly ref struct AddLetter
+    {
+        /// <summary>
+        /// Describes the state of a letter.
+        /// </summary>
+        public enum LetterState
+        {
+            /// <summary>
+            /// The letter was read before.
+            /// </summary>
+            Read = 0,
+
+            /// <summary>
+            /// The letter wasn't read yet.
+            /// </summary>
+            Unread = 1,
+
+            /// <summary>
+            /// The letter is new (= was just sent by the sender) and wasn't read yet. It will notify the user about the received letter.
+            /// </summary>
+            New = 2,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddLetter"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AddLetter(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddLetter"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AddLetter(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC6;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 79;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new C3Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the letter index.
+        /// </summary>
+        public ushort LetterIndex
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the sender name.
+        /// </summary>
+        public string SenderName
+        {
+            get => this.data.ExtractString(6, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the timestamp.
+        /// </summary>
+        public string Timestamp
+        {
+            get => this.data.ExtractString(16, 30, System.Text.Encoding.UTF8);
+            set => this.data.Slice(16, 30).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the subject.
+        /// </summary>
+        public string Subject
+        {
+            get => this.data.ExtractString(46, 32, System.Text.Encoding.UTF8);
+            set => this.data.Slice(46, 32).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the state.
+        /// </summary>
+        public LetterState State
+        {
+            get => (LetterState)this.data.Slice(78)[0];
+            set => this.data.Slice(78)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AddLetter"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AddLetter(Span<byte> packet) => new AddLetter(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AddLetter"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AddLetter packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the player requested to read a letter.
+    /// Causes reaction on client side: The letter is opened in a new dialog.
+    /// </summary>
+    public readonly ref struct OpenLetter
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenLetter"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public OpenLetter(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenLetter"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private OpenLetter(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC4;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C4Header Header => new C4Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the letter index.
+        /// </summary>
+        public ushort LetterIndex
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the message size.
+        /// </summary>
+        public ushort MessageSize
+        {
+            get => this.data.Slice(6).GetShortBigEndian();
+            set => this.data.Slice(6).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the sender appearance.
+        /// </summary>
+        public Span<byte> SenderAppearance
+        {
+            get => this.data.Slice(8, 18);
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data[26];
+            set => this.data[26] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the animation.
+        /// </summary>
+        public byte Animation
+        {
+            get => this.data[27];
+            set => this.data[27] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the message.
+        /// </summary>
+        public string Message
+        {
+            get => this.data.ExtractString(28, this.data.Length - 28, System.Text.Encoding.UTF8);
+            set => this.data.Slice(28).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="OpenLetter"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator OpenLetter(Span<byte> packet) => new OpenLetter(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="OpenLetter"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(OpenLetter packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 28;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a letter has been deleted by the request of the player.
+    /// Causes reaction on client side: The letter is removed from the letter list.
+    /// </summary>
+    public readonly ref struct RemoveLetter
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveLetter"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public RemoveLetter(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveLetter"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private RemoveLetter(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                this.data[3] = 1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC8;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the request successful.
+        /// </summary>
+        public bool RequestSuccessful
+        {
+            get => this.data.Slice(3).GetBoolean();
+            set => this.data.Slice(3).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the letter index.
+        /// </summary>
+        public ushort LetterIndex
+        {
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="RemoveLetter"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator RemoveLetter(Span<byte> packet) => new RemoveLetter(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="RemoveLetter"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(RemoveLetter packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The player is invited to join a chat room on the chat server.
+    /// Causes reaction on client side: The game client connects to the chat server and joins the chat room with the specified authentication data.
+    /// </summary>
+    public readonly ref struct ChatRoomConnectionInfo
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatRoomConnectionInfo"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ChatRoomConnectionInfo(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatRoomConnectionInfo"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ChatRoomConnectionInfo(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                this.data[24] = 1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xCA;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 36;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new C3Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the chat server ip.
+        /// </summary>
+        public string ChatServerIp
+        {
+            get => this.data.ExtractString(3, 15, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 15).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the chat room id.
+        /// </summary>
+        public ushort ChatRoomId
+        {
+            get => this.data.Slice(18).GetShortBigEndian();
+            set => this.data.Slice(18).SetShortBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the authentication token.
+        /// </summary>
+        public uint AuthenticationToken
+        {
+            get => this.data.Slice(20).GetIntegerBigEndian();
+            set => this.data.Slice(20).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public byte Type
+        {
+            get => this.data[24];
+            set => this.data[24] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the friend name.
+        /// </summary>
+        public string FriendName
+        {
+            get => this.data.ExtractString(25, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(25, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the success.
+        /// </summary>
+        public bool Success
+        {
+            get => this.data.Slice(35).GetBoolean();
+            set => this.data.Slice(35).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomConnectionInfo"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ChatRoomConnectionInfo(Span<byte> packet) => new ChatRoomConnectionInfo(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ChatRoomConnectionInfo"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ChatRoomConnectionInfo packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The player requested to add another player to his friend list and the server processed this request.
+    /// Causes reaction on client side: The game client knows if the invitation could be sent to the other player.
+    /// </summary>
+    public readonly ref struct FriendInvitationResult
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendInvitationResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public FriendInvitationResult(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FriendInvitationResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private FriendInvitationResult(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xCB;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new C3Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the success.
+        /// </summary>
+        public bool Success
+        {
+            get => this.data.Slice(3).GetBoolean();
+            set => this.data.Slice(3).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the request id.
+        /// </summary>
+        public uint RequestId
+        {
+            get => this.data.Slice(4).GetIntegerBigEndian();
+            set => this.data.Slice(4).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="FriendInvitationResult"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator FriendInvitationResult(Span<byte> packet) => new FriendInvitationResult(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FriendInvitationResult"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(FriendInvitationResult packet) => packet.data; 
     }
         /// <summary>
         /// Defines the role of a guild member.

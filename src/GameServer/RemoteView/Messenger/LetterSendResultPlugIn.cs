@@ -4,10 +4,11 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
 {
+    using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,14 +29,28 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void LetterSendResult(LetterSendSuccess success, uint letterId)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 8))
+            using var writer = this.player.Connection.StartSafeWrite(LetterSendResponse.HeaderType, LetterSendResponse.Length);
+            _ = new LetterSendResponse(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xC5;
-                packet[3] = (byte)success;
-                packet.Slice(4, 4).SetIntegerBigEndian(letterId);
-                writer.Commit();
-            }
+                LetterId = letterId,
+                Result = Convert(success),
+            };
+
+            writer.Commit();
+        }
+
+        private static LetterSendResponse.LetterSendRequestResult Convert(LetterSendSuccess success)
+        {
+            return success switch
+            {
+                LetterSendSuccess.TryAgain => LetterSendResponse.LetterSendRequestResult.TryAgain,
+                LetterSendSuccess.Success => LetterSendResponse.LetterSendRequestResult.Success,
+                LetterSendSuccess.MailboxFull => LetterSendResponse.LetterSendRequestResult.MailboxFull,
+                LetterSendSuccess.ReceiverNotExists => LetterSendResponse.LetterSendRequestResult.ReceiverNotExists,
+                LetterSendSuccess.CantSendToYourself => LetterSendResponse.LetterSendRequestResult.CantSendToYourself,
+                LetterSendSuccess.NotEnoughMoney => LetterSendResponse.LetterSendRequestResult.NotEnoughMoney,
+                _ => throw new ArgumentException($"Unhandled case {success}."),
+            };
         }
     }
 }

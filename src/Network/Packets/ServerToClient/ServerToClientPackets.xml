@@ -24,15 +24,17 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F1</Code>
       <SubCode>00</SubCode>
-      <Name>ServerInfo</Name>
+      <Name>GameServerEntered</Name>
+      <Length>12</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After a game client has connected to the game.</SentWhen>
       <CausedReaction>It shows the login dialog.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Boolean</Type>
           <Name>Success</Name>
+          <DefaultValue>1</DefaultValue>
         </Field>
         <Field>
           <Index>5</Index>
@@ -42,6 +44,12 @@
         <Field>
           <Index>7</Index>
           <Type>String</Type>
+          <Name>VersionString</Name>
+          <Length>5</Length>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Binary</Type>
           <Name>Version</Name>
           <Length>5</Length>
         </Field>
@@ -2343,7 +2351,7 @@
       <Name>MessengerInitialization</Name>
       <Caption>MUssenger initialization / friend list</Caption>
       <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
+      <SentWhen>After entering the game with a character.</SentWhen>
       <CausedReaction></CausedReaction>
       <Fields>
         <Field>
@@ -2360,6 +2368,366 @@
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>FriendCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>Friend</TypeName>
+          <Name>Friends</Name>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>Friend</Name>
+          <Description>The structure which contains the friend name and online state.</Description>
+          <Length>11</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Byte</Type>
+              <Name>ServerId</Name>
+              <Description>The server id on which the player currently is online. 0xFF means offline.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>C1</Code>
+      <SubCode>01</SubCode>
+      <Name>FriendAdded</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a friend has been added to the friend list.</SentWhen>
+      <CausedReaction>The friend appears in the friend list.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>FriendName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Byte</Type>
+          <Name>ServerId</Name>
+          <Description>The server id on which the player currently is online. 0xFF means offline.</Description>
+          <DefaultValue>0xFF</DefaultValue>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C2</Code>
+      <Name>FriendRequest</Name>
+      <Length>13</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a player has requested to add another player as friend. This other player gets this message.</SentWhen>
+      <CausedReaction>The friend request appears on the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>Requester</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>C3</Code>
+      <SubCode>01</SubCode>
+      <Name>FriendDeleted</Name>
+      <Length>14</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a friend has been removed from the friend list.</SentWhen>
+      <CausedReaction>The friend is removed from the friend list.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>FriendName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C4</Code>
+      <Name>FriendOnlineStateUpdate</Name>
+      <Length>14</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a friend has been added to the friend list.</SentWhen>
+      <CausedReaction>The friend appears in the friend list.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>FriendName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Byte</Type>
+          <Name>ServerId</Name>
+          <Description>The server id on which the player currently is online. 0xFF means offline.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C5</Code>
+      <Name>LetterSendResponse</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to send a letter to another player.</SentWhen>
+      <CausedReaction>Depending on the result, the letter send dialog closes or an error message appears.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>LetterId</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>LetterSendRequestResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>LetterSendRequestResult</Name>
+          <Description>Describes the result of a letter send request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>TryAgain</Name>
+              <Description>The letter wasn't sent because there was an internal problem. The user should try again.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The letter was sent.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MailboxFull</Name>
+              <Description>The mailbox of the recipient is full.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ReceiverNotExists</Name>
+              <Description>The receiver does not exist.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CantSendToYourself</Name>
+              <Description>A letter can't be sent to yourself.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughMoney</Name>
+              <Description>The sender doesn't have enough money to send a letter.</Description>
+              <Value>7</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>C6</Code>
+      <Name>AddLetter</Name>
+      <Length>79</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a letter has been received or after the player entered the game with a character.</SentWhen>
+      <CausedReaction>The letter appears in the letter list.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>LetterIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>SenderName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>String</Type>
+          <Name>Timestamp</Name>
+          <Length>30</Length>
+        </Field>
+        <Field>
+          <Index>46</Index>
+          <Type>String</Type>
+          <Name>Subject</Name>
+          <Length>32</Length>
+        </Field>
+        <Field>
+          <Index>78</Index>
+          <Type>Enum</Type>
+          <TypeName>LetterState</TypeName>
+          <Name>State</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>LetterState</Name>
+          <Description>Describes the state of a letter.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Read</Name>
+              <Description>The letter was read before.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Unread</Name>
+              <Description>The letter wasn't read yet.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>New</Name>
+              <Description>The letter is new (= was just sent by the sender) and wasn't read yet. It will notify the user about the received letter.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C4Header</HeaderType>
+      <Code>C7</Code>
+      <Name>OpenLetter</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to read a letter.</SentWhen>
+      <CausedReaction>The letter is opened in a new dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>LetterIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MessageSize</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Binary</Type>
+          <Name>SenderAppearance</Name>
+          <Length>18</Length><!-- Season 6 specific! TODO: Make dynamic size within a message possible -->
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+        <Field>
+          <Index>27</Index>
+          <Type>Byte</Type>
+          <Name>Animation</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C8</Code>
+      <Name>RemoveLetter</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a letter has been deleted by the request of the player.</SentWhen>
+      <CausedReaction>The letter is removed from the letter list.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>RequestSuccessful</Name>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>LetterIndex</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>CA</Code>
+      <Name>ChatRoomConnectionInfo</Name>
+      <Length>36</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player is invited to join a chat room on the chat server.</SentWhen>
+      <CausedReaction>The game client connects to the chat server and joins the chat room with the specified authentication data.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>ChatServerIp</Name>
+          <Length>15</Length>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ChatRoomId</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>AuthenticationToken</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>25</Index>
+          <Type>String</Type>
+          <Name>FriendName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>35</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>CB</Code>
+      <Name>FriendInvitationResult</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to add another player to his friend list and the server processed this request.</SentWhen>
+      <CausedReaction>The game client knows if the invitation could be sent to the other player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerSmallEndian</Type>
+          <Name>RequestId</Name>
         </Field>
       </Fields>
     </Packet>

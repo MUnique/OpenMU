@@ -5,10 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,13 +28,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void ShowFriendRequest(string requester)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0D))
+            using var writer = this.player.Connection.StartSafeWrite(FriendRequest.HeaderType, FriendRequest.Length);
+            _ = new FriendRequest(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xC2;
-                packet.Slice(3).WriteString(requester, Encoding.UTF8);
-                writer.Commit();
-            }
+                Requester = requester,
+            };
+            writer.Commit();
         }
     }
 }

@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Login;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -32,17 +33,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
         /// <inheritdoc/>
         public void ShowLoginWindow()
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0C))
+            using var writer = this.player.Connection.StartSafeWrite(GameServerEntered.HeaderType, GameServerEntered.Length);
+            var message = new GameServerEntered(writer.Span)
             {
-                var message = writer.Span;
-                message[2] = 0xF1;
-                message[3] = 0x00;
-                message[4] = 0x01; // Success
-                message[5] = ViewExtensions.ConstantPlayerId.GetHighByte();
-                message[6] = ViewExtensions.ConstantPlayerId.GetLowByte();
-                ClientVersionResolver.Resolve(this.player.ClientVersion).CopyTo(message.Slice(7, 5));
-                writer.Commit();
-            }
+                PlayerId = ViewExtensions.ConstantPlayerId,
+            };
+
+            ClientVersionResolver.Resolve(this.player.ClientVersion).CopyTo(message.Version);
+            writer.Commit();
         }
     }
 }
