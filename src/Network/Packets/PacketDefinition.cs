@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.Network.Packets
             {
                 if (!this.type.HasValue)
                 {
-                    this.type = (PacketType)byte.Parse("0x" + this.HeaderType.Substring(0, 2), NumberStyles.HexNumber);
+                    this.type = (PacketType)byte.Parse(this.HeaderType.Substring(0, 2), NumberStyles.HexNumber);
                 }
 
                 return this.type.Value;
