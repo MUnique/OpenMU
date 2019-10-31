@@ -77,6 +77,11 @@ namespace MUnique.OpenMU.Network.Packets
         Boolean,
 
         /// <summary>
+        /// The field is a float value and has a length of four bytes.
+        /// </summary>
+        Float,
+
+        /// <summary>
         /// The field is a structure and has the length of the structure.
         /// </summary>
         [XmlEnum("Structure[]")]
