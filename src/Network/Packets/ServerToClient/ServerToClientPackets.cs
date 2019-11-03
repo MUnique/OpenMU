@@ -8386,8 +8386,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public uint RequestId
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => this.data.Slice(4).GetIntegerLittleEndian();
+            set => this.data.Slice(4).SetIntegerLittleEndian(value);
         }
 
         /// <summary>

@@ -2726,7 +2726,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>IntegerSmallEndian</Type>
+          <Type>Integer</Type>
           <Name>RequestId</Name>
         </Field>
       </Fields>
