@@ -56,6 +56,61 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Data of an item in a player shop..
+    /// </summary>
+    public readonly ref struct PlayerShopItem
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShopItem"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PlayerShopItem(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 20;
+
+        /// <summary>
+        /// Gets or sets the item slot.
+        /// </summary>
+        public byte ItemSlot
+        {
+            get => this.data[0];
+            set => this.data[0] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the item data.
+        /// </summary>
+        public Span<byte> ItemData
+        {
+            get => this.data.Slice(1);
+        }
+
+        /// <summary>
+        /// Gets or sets the price.
+        /// </summary>
+        public uint Price
+        {
+            get => this.data.Slice(16).GetIntegerBigEndian();
+            set => this.data.Slice(16).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified length of <see cref="ItemData"/>.
+        /// </summary>
+        /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int itemDataLength) => itemDataLength + 1;
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: After a game client has connected to the game.
     /// Causes reaction on client side: It shows the login dialog.
     /// </summary>
@@ -165,6 +220,1362 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(GameServerEntered packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The server wants to show a message above any kind of character, even NPCs.
+    /// Causes reaction on client side: The message is shown above the character.
+    /// </summary>
+    public readonly ref struct ObjectMessage
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectMessage"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ObjectMessage(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectMessage"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ObjectMessage(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x01;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the object id.
+        /// </summary>
+        public ushort ObjectId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the message.
+        /// </summary>
+        public string Message
+        {
+            get => this.data.ExtractString(5, this.data.Length - 5, System.Text.Encoding.UTF8);
+            set => this.data.Slice(5).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ObjectMessage"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ObjectMessage(Span<byte> packet) => new ObjectMessage(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ObjectMessage"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ObjectMessage packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 5;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: Another player requests party from the receiver of this message.
+    /// Causes reaction on client side: The party request is shown.
+    /// </summary>
+    public readonly ref struct PartyRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PartyRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PartyRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x40;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the requester id.
+        /// </summary>
+        public ushort RequesterId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PartyRequest(Span<byte> packet) => new PartyRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PartyRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PartyRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A player joined a party or requested the current party list by opening the party dialog.
+    /// Causes reaction on client side: The party list is updated.
+    /// </summary>
+    public readonly ref struct PartyList
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PartyList(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PartyList(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x42;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the count.
+        /// </summary>
+        public byte Count
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="PartyMember"/> of the specified index.
+        /// </summary>
+        public PartyMember this[int index] => new PartyMember(this.data.Slice(5 + (index * PartyMember.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyList"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PartyList(Span<byte> packet) => new PartyList(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PartyList"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PartyList packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="PartyMember"/>.
+        /// </summary>
+        /// <param name="membersCount">The count of <see cref="PartyMember"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int membersCount) => membersCount * PartyMember.Length + 5;
+
+
+    /// <summary>
+    /// Data about a party member..
+    /// </summary>
+    public readonly ref struct PartyMember
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyMember"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PartyMember(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 24;
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => this.data.ExtractString(0, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(0, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        public byte Index
+        {
+            get => this.data[10];
+            set => this.data[10] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the map id.
+        /// </summary>
+        public byte MapId
+        {
+            get => this.data[11];
+            set => this.data[11] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position x.
+        /// </summary>
+        public byte PositionX
+        {
+            get => this.data[12];
+            set => this.data[12] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position y.
+        /// </summary>
+        public byte PositionY
+        {
+            get => this.data[13];
+            set => this.data[13] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current health.
+        /// </summary>
+        public uint CurrentHealth
+        {
+            get => this.data.Slice(16).GetIntegerBigEndian();
+            set => this.data.Slice(16).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum health.
+        /// </summary>
+        public uint MaximumHealth
+        {
+            get => this.data.Slice(20).GetIntegerBigEndian();
+            set => this.data.Slice(20).SetIntegerBigEndian(value);
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A party member got removed from a party in which the player is in.
+    /// Causes reaction on client side: The party member with the specified index is removed from the party list on the user interface.
+    /// </summary>
+    public readonly ref struct RemovePartyMember
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemovePartyMember"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public RemovePartyMember(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemovePartyMember"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private RemovePartyMember(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x43;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        public byte Index
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="RemovePartyMember"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator RemovePartyMember(Span<byte> packet) => new RemovePartyMember(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="RemovePartyMember"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(RemovePartyMember packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: Periodically, when the health state of the party changed.
+    /// Causes reaction on client side: The party health list is updated.
+    /// </summary>
+    public readonly ref struct PartyHealthUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyHealthUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PartyHealthUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyHealthUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PartyHealthUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x44;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the count.
+        /// </summary>
+        public byte Count
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="PartyMemberHealth"/> of the specified index.
+        /// </summary>
+        public PartyMemberHealth this[int index] => new PartyMemberHealth(this.data.Slice(4 + (index * PartyMemberHealth.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyHealthUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PartyHealthUpdate(Span<byte> packet) => new PartyHealthUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PartyHealthUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PartyHealthUpdate packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="PartyMemberHealth"/>.
+        /// </summary>
+        /// <param name="membersCount">The count of <see cref="PartyMemberHealth"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int membersCount) => membersCount * PartyMemberHealth.Length + 4;
+
+
+    /// <summary>
+    /// Health of a party member.
+    /// </summary>
+    public readonly ref struct PartyMemberHealth
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyMemberHealth"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PartyMemberHealth(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 1;
+
+        /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        public byte Index
+        {
+            get => this.data.Slice(0).GetByteValue(4, 4);
+            set => this.data.Slice(0).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets a value from 0 to 10 about the health of a player. 10 means the current health is 100% of the maximum health.
+        /// </summary>
+        public byte Value
+        {
+            get => this.data.Slice(0).GetByteValue(4, 0);
+            set => this.data.Slice(0).SetByteValue(value, 4, 0);
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the player requested to open his shop and this request was successful.
+    /// Causes reaction on client side: The own player shop is shown as open.
+    /// </summary>
+    public readonly ref struct PlayerShopOpenSuccessful
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShopOpenSuccessful"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PlayerShopOpenSuccessful(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShopOpenSuccessful"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PlayerShopOpenSuccessful(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+                this.data[4] = 1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x3F;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x2;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the success.
+        /// </summary>
+        public bool Success
+        {
+            get => this.data.Slice(4).GetBoolean();
+            set => this.data.Slice(4).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopOpenSuccessful"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PlayerShopOpenSuccessful(Span<byte> packet) => new PlayerShopOpenSuccessful(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PlayerShopOpenSuccessful"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PlayerShopOpenSuccessful packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the trading partner checked or unchecked the trade accept button.
+    /// Causes reaction on client side: The game client updates the trade button state accordingly.
+    /// </summary>
+    public readonly ref struct TradeButtonStateChanged
+    {
+        /// <summary>
+        /// Defines the state of the trade button.
+        /// </summary>
+        public enum TradeButtonState
+        {
+            /// <summary>
+            /// Trade button is not pressed. It means that the trade is not yet accepted by the trader.
+            /// </summary>
+            Unchecked = 0,
+
+            /// <summary>
+            /// Trade Button is pressed. It means that the trade is accepted by the trader.
+            /// </summary>
+            Checked = 1,
+
+            /// <summary>
+            /// This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.
+            /// </summary>
+            Red = 2,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeButtonStateChanged"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TradeButtonStateChanged(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeButtonStateChanged"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TradeButtonStateChanged(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xC3;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the state.
+        /// </summary>
+        public TradeButtonState State
+        {
+            get => (TradeButtonState)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeButtonStateChanged"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TradeButtonStateChanged(Span<byte> packet) => new TradeButtonStateChanged(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TradeButtonStateChanged"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TradeButtonStateChanged packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The trade money has been set by a previous request of the player.
+    /// Causes reaction on client side: The money which was set into the trade by the player is updated on the UI.
+    /// </summary>
+    public readonly ref struct TradeMoneySetResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeMoneySetResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TradeMoneySetResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeMoneySetResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TradeMoneySetResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x3A;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeMoneySetResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TradeMoneySetResponse(Span<byte> packet) => new TradeMoneySetResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TradeMoneySetResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TradeMoneySetResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: This message is sent when the trading partner put a certain amount of money (also 0) into the trade.
+    /// Causes reaction on client side: It overrides all previous sent money values.
+    /// </summary>
+    public readonly ref struct TradeMoneyUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeMoneyUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TradeMoneyUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeMoneyUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TradeMoneyUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x3B;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the money amount.
+        /// </summary>
+        public uint MoneyAmount
+        {
+            get => this.data.Slice(4).GetIntegerBigEndian();
+            set => this.data.Slice(4).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeMoneyUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TradeMoneyUpdate(Span<byte> packet) => new TradeMoneyUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TradeMoneyUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TradeMoneyUpdate packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The player which receives this message, sent a trade request to another player. This message is sent when the other player responded to this request.
+    /// Causes reaction on client side: If the trade was accepted, a trade dialog is opened. Otherwise, a message is shown.
+    /// </summary>
+    public readonly ref struct TradeRequestAnswer
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeRequestAnswer"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TradeRequestAnswer(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeRequestAnswer"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TradeRequestAnswer(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x37;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 20;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the accepted.
+        /// </summary>
+        public bool Accepted
+        {
+            get => this.data.Slice(3).GetBoolean();
+            set => this.data.Slice(3).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => this.data.ExtractString(4, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the trade partner level.
+        /// </summary>
+        public ushort TradePartnerLevel
+        {
+            get => this.data.Slice(14).GetShortLittleEndian();
+            set => this.data.Slice(14).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the guild id.
+        /// </summary>
+        public uint GuildId
+        {
+            get => this.data.Slice(16).GetIntegerBigEndian();
+            set => this.data.Slice(16).SetIntegerBigEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeRequestAnswer"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TradeRequestAnswer(Span<byte> packet) => new TradeRequestAnswer(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TradeRequestAnswer"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TradeRequestAnswer packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A trade was requested by another player.
+    /// Causes reaction on client side: A trade request dialog is shown.
+    /// </summary>
+    public readonly ref struct TradeRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TradeRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TradeRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x36;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 13;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new C3Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => this.data.ExtractString(3, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TradeRequest(Span<byte> packet) => new TradeRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TradeRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TradeRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A trade was finished.
+    /// Causes reaction on client side: The trade dialog is closed. Depending on the result, a message is shown.
+    /// </summary>
+    public readonly ref struct TradeFinished
+    {
+        /// <summary>
+        /// Defines the result of a finished trade.
+        /// </summary>
+        public enum TradeResult
+        {
+            /// <summary>
+            /// The trade was cancelled.
+            /// </summary>
+            Cancelled = 0,
+
+            /// <summary>
+            /// The trade was successful.
+            /// </summary>
+            Success = 1,
+
+            /// <summary>
+            /// The trade failed because of a full inventory.
+            /// </summary>
+            FailedByFullInventory = 2,
+
+            /// <summary>
+            /// The trade failed because the request timed out.
+            /// </summary>
+            TimedOut = 3,
+
+            /// <summary>
+            /// The trade failed because one or more items were not allowed to trade.
+            /// </summary>
+            FailedByItemsNotAllowedToTrade = 4,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeFinished"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TradeFinished(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeFinished"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TradeFinished(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x3D;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public TradeResult Result
+        {
+            get => (TradeResult)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeFinished"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TradeFinished(Span<byte> packet) => new TradeFinished(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TradeFinished"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TradeFinished packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The trading partner added an item to the trade.
+    /// Causes reaction on client side: The item is added in the trade dialog.
+    /// </summary>
+    public readonly ref struct TradeItemAdded
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeItemAdded"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TradeItemAdded(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeItemAdded"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TradeItemAdded(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x39;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the to slot.
+        /// </summary>
+        public byte ToSlot
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the item data.
+        /// </summary>
+        public Span<byte> ItemData
+        {
+            get => this.data.Slice(4);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeItemAdded"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TradeItemAdded(Span<byte> packet) => new TradeItemAdded(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TradeItemAdded"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TradeItemAdded packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified length of <see cref="ItemData"/>.
+        /// </summary>
+        /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int itemDataLength) => itemDataLength + 4;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The trading partner removed an item from the trade.
+    /// Causes reaction on client side: The item is removed from the trade dialog.
+    /// </summary>
+    public readonly ref struct TradeItemRemoved
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeItemRemoved"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TradeItemRemoved(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TradeItemRemoved"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TradeItemRemoved(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x38;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the slot.
+        /// </summary>
+        public byte Slot
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeItemRemoved"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TradeItemRemoved(Span<byte> packet) => new TradeItemRemoved(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TradeItemRemoved"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TradeItemRemoved packet) => packet.data; 
     }
 
 
@@ -2034,6 +3445,214 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: After the client talked to an NPC which should cause a dialog to open on the client side.
+    /// Causes reaction on client side: The client opens the specified dialog.
+    /// </summary>
+    public readonly ref struct NpcWindowResponse
+    {
+        /// <summary>
+        /// Defines the kind of npc window which should be shown on the client.
+        /// </summary>
+        public enum NpcWindow
+        {
+            /// <summary>
+            /// A merchant window.
+            /// </summary>
+            Merchant = 0,
+
+            /// <summary>
+            /// Another merchant window.
+            /// </summary>
+            Merchant1 = 1,
+
+            /// <summary>
+            /// A vault storage.
+            /// </summary>
+            VaultStorage = 2,
+
+            /// <summary>
+            /// A chaos machine window.
+            /// </summary>
+            ChaosMachine = 3,
+
+            /// <summary>
+            /// A devil square window.
+            /// </summary>
+            DevilSquare = 4,
+
+            /// <summary>
+            /// A blood castle window.
+            /// </summary>
+            BloodCastle = 6,
+
+            /// <summary>
+            /// The pet trainer window.
+            /// </summary>
+            PetTrainer = 7,
+
+            /// <summary>
+            /// The lahap window.
+            /// </summary>
+            Lahap = 9,
+
+            /// <summary>
+            /// The castle senior window.
+            /// </summary>
+            CastleSeniorNPC = 12,
+
+            /// <summary>
+            /// The elphis refinery window.
+            /// </summary>
+            ElphisRefinery = 17,
+
+            /// <summary>
+            /// The refine stone making window.
+            /// </summary>
+            RefineStoneMaking = 18,
+
+            /// <summary>
+            /// The jewel of harmony option removal window.
+            /// </summary>
+            RemoveJohOption = 19,
+
+            /// <summary>
+            /// The illusion temple window.
+            /// </summary>
+            IllusionTemple = 20,
+
+            /// <summary>
+            /// The chaos card combination window.
+            /// </summary>
+            ChaosCardCombination = 21,
+
+            /// <summary>
+            /// The cherry blossom branches assembly window.
+            /// </summary>
+            CherryBlossomBranchesAssembly = 22,
+
+            /// <summary>
+            /// The seed master window.
+            /// </summary>
+            SeedMaster = 23,
+
+            /// <summary>
+            /// The seed researcher window.
+            /// </summary>
+            SeedResearcher = 24,
+
+            /// <summary>
+            /// The stat reinitializer window.
+            /// </summary>
+            StatReInitializer = 25,
+
+            /// <summary>
+            /// The delgado lucky coin registration window.
+            /// </summary>
+            DelgadoLuckyCoinRegistration = 32,
+
+            /// <summary>
+            /// The doorkeeper titus duel watch window.
+            /// </summary>
+            DoorkeeperTitusDuelWatch = 33,
+
+            /// <summary>
+            /// The lugard doppelganger entry window.
+            /// </summary>
+            LugardDoppelgangerEntry = 35,
+
+            /// <summary>
+            /// The jerint gaion event entry window.
+            /// </summary>
+            JerintGaionEvententry = 36,
+
+            /// <summary>
+            /// The julia warp market server window.
+            /// </summary>
+            JuliaWarpMarketServer = 37,
+
+            /// <summary>
+            /// The dialog window which allows to exchange or refine Lucky Item.
+            /// </summary>
+            /// <summary>
+            /// Used by NPC "David".
+            /// </summary>
+            CombineLuckyItem = 38,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NpcWindowResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public NpcWindowResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NpcWindowResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private NpcWindowResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x30;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 11;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new C3Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the window.
+        /// </summary>
+        public NpcWindow Window
+        {
+            get => (NpcWindow)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="NpcWindowResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator NpcWindowResponse(Span<byte> packet) => new NpcWindowResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="NpcWindowResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(NpcWindowResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: The player opens a merchant npc or the vault. It's sent after the dialog was opened by another message.
     /// Causes reaction on client side: The client shows the items in the opened dialog.
     /// </summary>
@@ -2509,6 +4128,102 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: After a player in scope requested to close his shop or after all items has been sold.
+    /// Causes reaction on client side: The player shop not shown as open anymore.
+    /// </summary>
+    public readonly ref struct PlayerShopClosed
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShopClosed"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PlayerShopClosed(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShopClosed"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PlayerShopClosed(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+                this.data[4] = 1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x3F;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x3;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the success.
+        /// </summary>
+        public bool Success
+        {
+            get => this.data.Slice(4).GetBoolean();
+            set => this.data.Slice(4).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => this.data.Slice(5).GetShortLittleEndian();
+            set => this.data.Slice(5).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopClosed"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PlayerShopClosed(Span<byte> packet) => new PlayerShopClosed(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PlayerShopClosed"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PlayerShopClosed packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: An item of the players shop was sold to another player.
     /// Causes reaction on client side: The item is removed from the players inventory and a blue system message appears.
     /// </summary>
@@ -2600,6 +4315,378 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(PlayerShopItemSoldToPlayer packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the player requested to close his shop or after all items has been sold.
+    /// Causes reaction on client side: The player shop dialog is closed for the shop of the specified player.
+    /// </summary>
+    public readonly ref struct ClosePlayerShopDialog
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClosePlayerShopDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ClosePlayerShopDialog(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClosePlayerShopDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ClosePlayerShopDialog(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x3F;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x12;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => this.data.Slice(4).GetShortLittleEndian();
+            set => this.data.Slice(4).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ClosePlayerShopDialog"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ClosePlayerShopDialog(Span<byte> packet) => new ClosePlayerShopDialog(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ClosePlayerShopDialog"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ClosePlayerShopDialog packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the player requested to open a shop of another player.
+    /// Causes reaction on client side: The player shop dialog is shown with the provided item data.
+    /// </summary>
+    public readonly ref struct PlayerShopItemList
+    {
+        /// <summary>
+        /// The kind of action which led to the list message.
+        /// </summary>
+        public enum ActionKind
+        {
+            /// <summary>
+            /// The list was requested.
+            /// </summary>
+            ByRequest = 5,
+
+            /// <summary>
+            /// The list was changed, e.g. because an item was sold.
+            /// </summary>
+            UpdateAfterItemChange = 19,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShopItemList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PlayerShopItemList(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShopItemList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PlayerShopItemList(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x3F;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x05;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2HeaderWithSubCode Header => new C2HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the action.
+        /// </summary>
+        public ActionKind Action
+        {
+            get => (ActionKind)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the success.
+        /// </summary>
+        public bool Success
+        {
+            get => this.data.Slice(5).GetBoolean();
+            set => this.data.Slice(5).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => this.data.Slice(6).GetShortLittleEndian();
+            set => this.data.Slice(6).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the player name.
+        /// </summary>
+        public string PlayerName
+        {
+            get => this.data.ExtractString(8, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(8, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the shop name.
+        /// </summary>
+        public string ShopName
+        {
+            get => this.data.ExtractString(18, 36, System.Text.Encoding.UTF8);
+            set => this.data.Slice(18, 36).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the item count.
+        /// </summary>
+        public byte ItemCount
+        {
+            get => this.data[54];
+            set => this.data[54] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="PlayerShopItem"/> of the specified index.
+        /// </summary>
+        public PlayerShopItem this[int index] => new PlayerShopItem(this.data.Slice(55 + (index * PlayerShopItem.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopItemList"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PlayerShopItemList(Span<byte> packet) => new PlayerShopItemList(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PlayerShopItemList"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PlayerShopItemList packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="PlayerShopItem"/>.
+        /// </summary>
+        /// <param name="itemsCount">The count of <see cref="PlayerShopItem"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int itemsCount) => itemsCount * PlayerShopItem.Length + 55;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the player gets into scope of a player with an opened shop.
+    /// Causes reaction on client side: The player shop title is shown at the specified players.
+    /// </summary>
+    public readonly ref struct PlayerShops
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShops"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PlayerShops(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShops"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PlayerShops(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x3F;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x00;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2HeaderWithSubCode Header => new C2HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the shop count.
+        /// </summary>
+        public byte ShopCount
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="PlayerShop"/> of the specified index.
+        /// </summary>
+        public PlayerShop this[int index] => new PlayerShop(this.data.Slice(6 + (index * PlayerShop.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShops"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PlayerShops(Span<byte> packet) => new PlayerShops(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PlayerShops"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PlayerShops packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="PlayerShop"/>.
+        /// </summary>
+        /// <param name="shopsCount">The count of <see cref="PlayerShop"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int shopsCount) => shopsCount * PlayerShop.Length + 6;
+
+
+    /// <summary>
+    /// Data of the shop of a player..
+    /// </summary>
+    public readonly ref struct PlayerShop
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerShop"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PlayerShop(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 38;
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => this.data.Slice(0).GetShortLittleEndian();
+            set => this.data.Slice(0).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the store name.
+        /// </summary>
+        public string StoreName
+        {
+            get => this.data.ExtractString(2, 36, System.Text.Encoding.UTF8);
+            set => this.data.Slice(2, 36).WriteString(value, System.Text.Encoding.UTF8);
+        }
+    }
     }
 
 

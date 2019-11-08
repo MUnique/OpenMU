@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,13 +30,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc />
         public void TradeFinished(TradeResult tradeResult)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 4))
+            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.TradeFinished.HeaderType, TradeFinished.Length);
+            _ = new TradeFinished(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x3D;
-                packet[3] = this.GetTradeResultByte(tradeResult);
-                writer.Commit();
-            }
+                Result = Convert(tradeResult),
+            };
+            writer.Commit();
 
             if (tradeResult != TradeResult.TimedOut)
             {
@@ -44,17 +44,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
             }
         }
 
-        private byte GetTradeResultByte(TradeResult tradeResult)
+        private static TradeFinished.TradeResult Convert(TradeResult tradeResult)
         {
-            switch (tradeResult)
+            return tradeResult switch
             {
-                case TradeResult.Cancelled: return 0;
-                case TradeResult.Success: return 1;
-                case TradeResult.FailedByFullInventory: return 2;
-                case TradeResult.TimedOut: return 3;
-                case TradeResult.FailedByItemsNotAllowedToTrade: return 4;
-                default: throw new ArgumentException($"TradeResult {tradeResult} not mapped to a byte value.");
-            }
+                TradeResult.Cancelled => Network.Packets.ServerToClient.TradeFinished.TradeResult.Cancelled,
+                TradeResult.Success => Network.Packets.ServerToClient.TradeFinished.TradeResult.Success,
+                TradeResult.FailedByFullInventory => Network.Packets.ServerToClient.TradeFinished.TradeResult.FailedByFullInventory,
+                TradeResult.TimedOut => Network.Packets.ServerToClient.TradeFinished.TradeResult.TimedOut,
+                TradeResult.FailedByItemsNotAllowedToTrade => Network.Packets.ServerToClient.TradeFinished.TradeResult.FailedByItemsNotAllowedToTrade,
+                _ => throw new ArgumentException($"TradeResult {tradeResult} not mapped to a byte value."),
+            };
         }
     }
 }

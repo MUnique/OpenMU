@@ -18,6 +18,29 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>PlayerShopItem</Name>
+      <Description>Data of an item in a player shop.</Description>
+      <Length>20</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Lemgth>12</Lemgth><!-- Season 6 specific ! -->
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>Price</Name>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -52,6 +75,392 @@
           <Type>Binary</Type>
           <Name>Version</Name>
           <Length>5</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>01</Code>
+      <Name>ObjectMessage</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server wants to show a message above any kind of character, even NPCs.</SentWhen>
+      <CausedReaction>The message is shown above the character.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>40</Code>
+      <Name>PartyRequest</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Another player requests party from the receiver of this message.</SentWhen>
+      <CausedReaction>The party request is shown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>RequesterId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>42</Code>
+      <SubCode>01</SubCode>
+      <Name>PartyList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A player joined a party or requested the current party list by opening the party dialog.</SentWhen>
+      <CausedReaction>The party list is updated.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PartyMember</TypeName>
+          <Name>Members</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>PartyMember</Name>
+          <Description>Data about a party member.</Description>
+          <Length>24</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>Byte</Type>
+              <Name>Index</Name>
+            </Field>
+            <Field>
+              <Index>11</Index>
+              <Type>Byte</Type>
+              <Name>MapId</Name>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>Byte</Type>
+              <Name>PositionX</Name>
+            </Field>
+            <Field>
+              <Index>13</Index>
+              <Type>Byte</Type>
+              <Name>PositionY</Name>
+            </Field>
+            <Field>
+              <Index>16</Index>
+              <Type>IntegerBigEndian</Type>
+              <Name>CurrentHealth</Name>
+            </Field>
+            <Field>
+              <Index>20</Index>
+              <Type>IntegerBigEndian</Type>
+              <Name>MaximumHealth</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>43</Code>
+      <Name>RemovePartyMember</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A party member got removed from a party in which the player is in.</SentWhen>
+      <CausedReaction>The party member with the specified index is removed from the party list on the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>44</Code>
+      <Name>PartyHealthUpdate</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Periodically, when the health state of the party changed.</SentWhen>
+      <CausedReaction>The party health list is updated.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PartyMemberHealth</TypeName>
+          <Name>Members</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>PartyMemberHealth</Name>
+          <Description>Health of a party member</Description>
+          <Length>1</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Byte</Type>
+              <Name>Index</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>0</Index>
+              <LeftShifted>0</LeftShifted>
+              <Type>Byte</Type>
+              <Name>Value</Name>
+              <Description>A value from 0 to 10 about the health of a player. 10 means the current health is 100% of the maximum health.</Description>
+              <Length>4</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>2</SubCode>
+      <Name>PlayerShopOpenSuccessful</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to open his shop and this request was successful.</SentWhen>
+      <CausedReaction>The own player shop is shown as open.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C3</Code>
+      <Name>TradeButtonStateChanged</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the trading partner checked or unchecked the trade accept button.</SentWhen>
+      <CausedReaction>The game client updates the trade button state accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>TradeButtonState</TypeName>
+          <Name>State</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>TradeButtonState</Name>
+          <Description>Defines the state of the trade button.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Unchecked</Name>
+              <Description>Trade button is not pressed. It means that the trade is not yet accepted by the trader.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Checked</Name>
+              <Description>Trade Button is pressed. It means that the trade is accepted by the trader.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Red</Name>
+              <Description>This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3A</Code>
+      <SubCode>01</SubCode>
+      <Name>TradeMoneySetResponse</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The trade money has been set by a previous request of the player.</SentWhen>
+      <CausedReaction>The money which was set into the trade by the player is updated on the UI.</CausedReaction>
+      <Fields/>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>3B</Code>
+      <Name>TradeMoneyUpdate</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This message is sent when the trading partner put a certain amount of money (also 0) into the trade.</SentWhen>
+      <CausedReaction>It overrides all previous sent money values.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>MoneyAmount</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>37</Code>
+      <Name>TradeRequestAnswer</Name>
+      <Length>20</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player which receives this message, sent a trade request to another player. This message is sent when the other player responded to this request.</SentWhen>
+      <CausedReaction>If the trade was accepted, a trade dialog is opened. Otherwise, a message is shown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Accepted</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Short</Type>
+          <Name>TradePartnerLevel</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>GuildId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>36</Code>
+      <Name>TradeRequest</Name>
+      <Length>13</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A trade was requested by another player.</SentWhen>
+      <CausedReaction>A trade request dialog is shown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>3D</Code>
+      <Name>TradeFinished</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A trade was finished.</SentWhen>
+      <CausedReaction>The trade dialog is closed. Depending on the result, a message is shown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>TradeResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>TradeResult</Name>
+          <Description>Defines the result of a finished trade.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Cancelled</Name>
+              <Description>The trade was cancelled.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The trade was successful.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FailedByFullInventory</Name>
+              <Description>The trade failed because of a full inventory.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>TimedOut</Name>
+              <Description>The trade failed because the request timed out.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FailedByItemsNotAllowedToTrade</Name>
+              <Description>The trade failed because one or more items were not allowed to trade.</Description>
+              <Value>4</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>39</Code>
+      <Name>TradeItemAdded</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The trading partner added an item to the trade.</SentWhen>
+      <CausedReaction>The item is added in the trade dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>ToSlot</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>38</Code>
+      <Name>TradeItemRemoved</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The trading partner removed an item from the trade.</SentWhen>
+      <CausedReaction>The item is removed from the trade dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
         </Field>
       </Fields>
     </Packet>
@@ -608,6 +1017,152 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>30</Code>
+      <Name>NpcWindowResponse</Name>
+      <Length>11</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client talked to an NPC which should cause a dialog to open on the client side.</SentWhen>
+      <CausedReaction>The client opens the specified dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>NpcWindow</TypeName>
+          <Name>Window</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>NpcWindow</Name>
+          <Description>Defines the kind of npc window which should be shown on the client.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Merchant</Name>
+              <Description>A merchant window.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Merchant1</Name>
+              <Description>Another merchant window.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>VaultStorage</Name>
+              <Description>A vault storage.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosMachine</Name>
+              <Description>A chaos machine window.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DevilSquare</Name>
+              <Description>A devil square window.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BloodCastle</Name>
+              <Description>A blood castle window.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PetTrainer</Name>
+              <Description>The pet trainer window.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Lahap</Name>
+              <Description>The lahap window.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CastleSeniorNPC</Name>
+              <Description>The castle senior window.</Description>
+              <Value>12</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ElphisRefinery</Name>
+              <Description>The elphis refinery window.</Description>
+              <Value>17</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RefineStoneMaking</Name>
+              <Description>The refine stone making window.</Description>
+              <Value>18</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RemoveJohOption</Name>
+              <Description>The jewel of harmony option removal window.</Description>
+              <Value>19</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IllusionTemple</Name>
+              <Description>The illusion temple window.</Description>
+              <Value>20</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCardCombination</Name>
+              <Description>The chaos card combination window.</Description>
+              <Value>21</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CherryBlossomBranchesAssembly</Name>
+              <Description>The cherry blossom branches assembly window.</Description>
+              <Value>22</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>SeedMaster</Name>
+              <Description>The seed master window.</Description>
+              <Value>23</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>SeedResearcher</Name>
+              <Description>The seed researcher window.</Description>
+              <Value>24</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>StatReInitializer</Name>
+              <Description>The stat reinitializer window.</Description>
+              <Value>25</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DelgadoLuckyCoinRegistration</Name>
+              <Description>The delgado lucky coin registration window.</Description>
+              <Value>32</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DoorkeeperTitusDuelWatch</Name>
+              <Description>The doorkeeper titus duel watch window.</Description>
+              <Value>33</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LugardDoppelgangerEntry</Name>
+              <Description>The lugard doppelganger entry window.</Description>
+              <Value>35</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>JerintGaionEvententry</Name>
+              <Description>The jerint gaion event entry window.</Description>
+              <Value>36</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>JuliaWarpMarketServer</Name>
+              <Description>The julia warp market server window.</Description>
+              <Value>37</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CombineLuckyItem</Name>
+              <Description>The dialog window which allows to exchange or refine Lucky Item.</Description>
+              <Description>Used by NPC "David".</Description>
+              <Value>38</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C2Header</HeaderType>
       <Code>31</Code>
       <Name>StoreItemList</Name>
@@ -625,6 +1180,7 @@
           <Type>Structure[]</Type>
           <TypeName>StoredItem</TypeName>
           <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>
@@ -750,6 +1306,29 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>3F</Code>
+      <SubCode>3</SubCode>
+      <Name>PlayerShopClosed</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a player in scope requested to close his shop or after all items has been sold.</SentWhen>
+      <CausedReaction>The player shop not shown as open anymore.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
       <SubCode>08</SubCode>
       <Name>PlayerShopItemSoldToPlayer</Name>
       <Length>15</Length>
@@ -769,6 +1348,136 @@
           <Length>10</Length>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>12</SubCode>
+      <Name>ClosePlayerShopDialog</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to close his shop or after all items has been sold.</SentWhen>
+      <CausedReaction>The player shop dialog is closed for the shop of the specified player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>05</SubCode>
+      <Name>PlayerShopItemList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to open a shop of another player.</SentWhen>
+      <CausedReaction>The player shop dialog is shown with the provided item data.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ActionKind</TypeName>
+          <Name>Action</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+          <DefaulValue>1</DefaulValue>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>String</Type>
+          <Name>ShopName</Name>
+          <Length>36</Length>
+        </Field>
+        <Field>
+          <Index>54</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>55</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerShopItem</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ActionKind</Name>
+          <Description>The kind of action which led to the list message.</Description>
+          <Values>
+            <EnumValue>
+              <Name>ByRequest</Name>
+              <Description>The list was requested.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpdateAfterItemChange</Name>
+              <Description>The list was changed, e.g. because an item was sold.</Description>
+              <Value>19</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>00</SubCode>
+      <Name>PlayerShops</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player gets into scope of a player with an opened shop.</SentWhen>
+      <CausedReaction>The player shop title is shown at the specified players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ShopCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerShop</TypeName>
+          <Name>Shops</Name>
+          <ItemCountField>ShopCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>PlayerShop</Name>
+          <Description>Data of the shop of a player.</Description>
+          <Length>38</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Short</Type>
+              <Name>PlayerId</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>String</Type>
+              <Name>StoreName</Name>
+              <Length>36</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -804,6 +1513,7 @@
           <Type>Structure[]</Type>
           <TypeName>CharacterData</TypeName>
           <Name>Characters</Name>
+          <ItemCountField>CharacterCount</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -846,7 +1556,8 @@
               <Index>15</Index>
               <Type>Binary</Type>
               <Name>Appearance</Name>
-              <Length>18</Length><!-- 0.75 has a length of 9 -->
+              <Length>18</Length>
+              <!-- 0.75 has a length of 9 -->
             </Field>
             <Field>
               <Index>33</Index>
@@ -877,6 +1588,7 @@
           <Type>Structure[]</Type>
           <TypeName>CharacterData</TypeName>
           <Name>Characters</Name>
+          <ItemCountField>CharacterCount</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -1091,6 +1803,7 @@
           <Type>Structure[]</Type>
           <TypeName>SkillEntry</TypeName>
           <Name>Skills</Name>
+          <ItemCountField>Count</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -1194,6 +1907,7 @@
           <Type>Structure[]</Type>
           <TypeName>SkillEntry</TypeName>
           <Name>Skills</Name>
+          <ItemCountField>Count</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -1644,6 +2358,7 @@
           <Type>Structure[]</Type>
           <TypeName>StoredItem</TypeName>
           <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>
@@ -1787,8 +2502,9 @@
           <Type>Structure[]</Type>
           <TypeName>MasterSkillEntry</TypeName>
           <Name>Skills</Name>
+          <ItemCountField>MasterSkillCount</ItemCountField>
         </Field>
-        </Fields>
+      </Fields>
       <Structures>
         <Structure>
           <Name>MasterSkillEntry</Name>
@@ -2008,6 +2724,7 @@
           <Type>Structure[]</Type>
           <TypeName>GuildMember</TypeName>
           <Name>Members</Name>
+          <ItemCountField>GuildMemberCount</ItemCountField>
         </Field>
         <Structures>
           <Structure>
@@ -2181,6 +2898,7 @@
           <Type>Structure[]</Type>
           <TypeName>GuildMemberRelation</TypeName>
           <Name>Members</Name>
+          <ItemCountField>PlayerCount</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -2374,6 +3092,7 @@
           <Type>Structure[]</Type>
           <TypeName>Friend</TypeName>
           <Name>Friends</Name>
+          <ItemCountField>FriendCount</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -2625,7 +3344,8 @@
           <Index>8</Index>
           <Type>Binary</Type>
           <Name>SenderAppearance</Name>
-          <Length>18</Length><!-- Season 6 specific! TODO: Make dynamic size within a message possible -->
+          <Length>18</Length>
+          <!-- Season 6 specific! TODO: Make dynamic size within a message possible -->
         </Field>
         <Field>
           <Index>26</Index>

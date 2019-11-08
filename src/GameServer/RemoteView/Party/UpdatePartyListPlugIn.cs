@@ -5,10 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Party
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Party;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -35,32 +34,28 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
                 return;
             }
 
-            const int serializedSizePerPlayer = 24;
             var partyList = party.PartyList;
             var partyListCount = party.PartyList?.Count ?? 0;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 5 + (serializedSizePerPlayer * partyListCount)))
+            using var writer = this.player.Connection.StartSafeWrite(PartyList.HeaderType, PartyList.GetRequiredSize(partyListCount));
+            var packet = new PartyList(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x42;
-                packet[3] = 0x01;
-                packet[4] = (byte)partyListCount;
-                var offset = 5;
-                for (int i = 0; i < partyListCount; i++)
-                {
-                    var partyMember = partyList[i];
-                    packet.Slice(offset, 10).WriteString(partyMember.Name, Encoding.UTF8);
-                    packet[offset + 10] = (byte)i;
-                    packet[offset + 11] = (byte)partyMember.CurrentMap.MapId;
-                    packet[offset + 12] = partyMember.Position.X;
-                    packet[offset + 13] = partyMember.Position.Y;
-                    ////14 + 15 are padding
-                    packet.Slice(offset + 16).SetIntegerBigEndian(partyMember.CurrentHealth);
-                    packet.Slice(offset + 20).SetIntegerBigEndian(partyMember.MaximumHealth);
-                    offset += serializedSizePerPlayer;
-                }
+                Count = (byte)partyListCount,
+            };
 
-                writer.Commit();
+            for (byte i = 0; i < partyListCount; i++)
+            {
+                var partyMember = partyList[i];
+                var partyMemberBlock = packet[i];
+                partyMemberBlock.Index = i;
+                partyMemberBlock.Name = partyMember.Name;
+                partyMemberBlock.MapId = (byte) partyMember.CurrentMap.MapId;
+                partyMemberBlock.PositionX = partyMember.Position.X;
+                partyMemberBlock.PositionY = partyMember.Position.Y;
+                partyMemberBlock.CurrentHealth = partyMember.CurrentHealth;
+                partyMemberBlock.MaximumHealth = partyMember.MaximumHealth;
             }
+
+            writer.Commit();
         }
     }
 }

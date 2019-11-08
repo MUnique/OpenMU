@@ -6,12 +6,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
 {
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -32,26 +31,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
         /// <inheritdoc />
         public void ShowShopsOfPlayers(ICollection<Player> playersWithShop)
         {
-            const int sizePerShop = 38;
-            const int headerSize = 6;
-            var shopCount = playersWithShop.Count;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, headerSize + (sizePerShop * shopCount)))
-            {
-                var packet = writer.Span;
-                packet[3] = 0x3F;
-                packet[5] = (byte)shopCount;
-                int offset = headerSize;
-                foreach (var shopPlayer in playersWithShop)
-                {
-                    var shopPlayerId = shopPlayer.GetId(this.player);
-                    var shopBlock = packet.Slice(offset, sizePerShop);
-                    shopBlock.SetShortLittleEndian(shopPlayerId);
-                    shopBlock.Slice(2).WriteString(shopPlayer.ShopStorage.StoreName, Encoding.UTF8);
-                    offset += sizePerShop;
-                }
+            using var writer = this.player.Connection.StartSafeWrite(PlayerShops.HeaderType, PlayerShops.GetRequiredSize(playersWithShop.Count));
 
-                writer.Commit();
+            var packet = new PlayerShops(writer.Span)
+            {
+                ShopCount = (byte)playersWithShop.Count,
+            };
+
+            int i = 0;
+            foreach (var shopPlayer in playersWithShop)
+            {
+                var shopBlock = packet[i];
+                shopBlock.PlayerId = shopPlayer.GetId(this.player);
+                shopBlock.StoreName = shopPlayer.ShopStorage.StoreName;
+                i++;
             }
+
+            writer.Commit();
         }
     }
 }
