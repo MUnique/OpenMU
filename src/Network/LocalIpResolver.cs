@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Network
         private readonly string ip;
 
         /// <inheritdoc/>
-        public LocalIpResolver(string ip = null)
+        public LocalIpResolver(string ip)
         {
             this.ip = ip;
         }
