@@ -12,9 +12,22 @@ namespace MUnique.OpenMU.Network
     /// </summary>
     public class LocalIpResolver : IIpAddressResolver
     {
+        private readonly string ip;
+
+        /// <inheritdoc/>
+        public LocalIpResolver(string ip = null)
+        {
+            this.ip = ip;
+        }
+
         /// <inheritdoc/>
         public IPAddress GetIPv4()
         {
+            if (IPAddress.TryParse(ip, out var ipAddress))
+            {
+                return ipAddress;
+            }
+
             if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
             {
                 var localHostEntry = Dns.GetHostEntry(Dns.GetHostName());
