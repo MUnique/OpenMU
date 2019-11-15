@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.Startup
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Net;
     using System.Reflection;
     using System.Threading;
     using log4net;
@@ -61,7 +60,7 @@ namespace MUnique.OpenMU.Startup
                 this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"));
             }
 
-            var ipResolver = this.DetermineIpResolver(args);
+            var ipResolver = IpAddressResolverFactory.DetermineIpResolver(args);
 
             Log.Info("Start initializing sub-components");
             var signalRServerObserver = new SignalRGameServerStateObserver();
@@ -204,26 +203,6 @@ namespace MUnique.OpenMU.Startup
             }
 
             return 1234; // Default port
-        }
-
-        private IIpAddressResolver DetermineIpResolver(string[] args)
-        {
-            const string resolveParameterPrefix = "-resolveIP:";
-            const string publicIpResolve = "-resolveIP:public";
-            const string localIpResolve = "-resolveIP:local";
-            var parameter = args.FirstOrDefault(a => a.StartsWith(resolveParameterPrefix, StringComparison.InvariantCultureIgnoreCase));
-
-            switch (parameter)
-            {
-                case null:
-                case string p when p.StartsWith(publicIpResolve, StringComparison.InvariantCultureIgnoreCase):
-                    return new PublicIpResolver();
-                case string p when p.StartsWith(localIpResolve, StringComparison.InvariantCultureIgnoreCase):
-                    return new LocalIpResolver();
-                default:
-                    IPAddress.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out var ip);
-                    return new CustomIpResolver(ip);
-            }
         }
 
         private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, bool autoupdate)
