@@ -41,6 +41,13 @@ namespace MUnique.OpenMU.Network.Packets
         public PacketDefinition[] Packets { get; set; }
 
         /// <summary>
+        /// Gets or sets the enums.
+        /// </summary>
+        [XmlArray(IsNullable = true)]
+        [XmlArrayItem("Enum", IsNullable = false)]
+        public Enum[] Enums { get; set; }
+
+        /// <summary>
         /// Loads the specified file and returns the parsed <see cref="PacketDefinitions"/> object.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
