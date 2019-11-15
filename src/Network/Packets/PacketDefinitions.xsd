@@ -107,6 +107,11 @@
       <xs:element minOccurs="0" maxOccurs="1" name="Description" type="xs:string" />
       <xs:element minOccurs="0" maxOccurs="1" name="Length" type="xs:int" />
       <xs:element minOccurs="0" maxOccurs="1" name="DefaultValue" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ItemCountField" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>The name of the item count field, if this field is of type Structure[].</xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   <xs:simpleType name="FieldType">

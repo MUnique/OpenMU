@@ -144,6 +144,12 @@ namespace MUnique.OpenMU.Network.Packets
         public string DefaultValue { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the item count field, if this field is a structure array.
+        /// </summary>
+        /// <value>The item count field.</value>
+        public string ItemCountField { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether <see cref="Length"/> is specified.
         /// </summary>
         [XmlIgnore]
