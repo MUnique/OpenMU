@@ -11,10 +11,12 @@ namespace MUnique.OpenMU.Startup
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Reflection;
     using System.Threading;
     using log4net;
     using log4net.Config;
+    using Microsoft.EntityFrameworkCore.Internal;
     using MUnique.OpenMU.AdminPanel;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.ConnectServer;
@@ -61,9 +63,7 @@ namespace MUnique.OpenMU.Startup
                 this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"));
             }
 
-            GetIpValue(args, out string ip);
-
-            var ipResolver = args.Contains("-local") ? (IIpAddressResolver)new LocalIpResolver(ip) : new PublicIpResolver();
+            var ipResolver = this.DetermineIpResolver(args);
 
             Log.Info("Start initializing sub-components");
             var signalRServerObserver = new SignalRGameServerStateObserver();
@@ -129,7 +129,7 @@ namespace MUnique.OpenMU.Startup
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
             Log.Info("Start initializing admin panel");
 
-            this.adminPanel = new AdminPanel(12345, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
+            this.adminPanel = new AdminPanel(1234, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
             Log.Info("Admin panel initialized");
 
             if (args.Contains("-autostart"))
@@ -143,23 +143,6 @@ namespace MUnique.OpenMU.Startup
                 foreach (var connectServer in this.servers.OfType<IConnectServer>())
                 {
                     connectServer.Start();
-                }
-            }
-        }
-
-        private static void GetIpValue(string[] args, out string ip)
-        {
-            ip = string.Empty;
-            var keyName = "-ip=";
-            if (args.Any(arg => arg.Contains(keyName)))
-            {
-                Regex cmdRegEx = new Regex($@"{keyName}(?<val>.+)");
-
-                var value = args.First(x => x.Contains(keyName));
-                Match match = cmdRegEx.Match(value);
-                if (match.Success)
-                {
-                    ip = match.Groups["val"].Value;
                 }
             }
         }
@@ -208,6 +191,26 @@ namespace MUnique.OpenMU.Startup
             }
 
             (this.persistenceContextProvider as IDisposable)?.Dispose();
+        }
+
+        private IIpAddressResolver DetermineIpResolver(string[] args)
+        {
+            const string resolveParameterPrefix = "-resolveIP";
+            const string publicIpResolve = "-resolveIP:public";
+            const string localIpResolve = "-resolveIP:local";
+            var parameter = args.FirstOrDefault(a => a.StartsWith(resolveParameterPrefix, StringComparison.InvariantCultureIgnoreCase));
+
+            switch (parameter)
+            {
+                case null:
+                case string p when p.StartsWith(publicIpResolve, StringComparison.InvariantCultureIgnoreCase):
+                    return new PublicIpResolver();
+                case string p when p.StartsWith(localIpResolve, StringComparison.InvariantCultureIgnoreCase):
+                    return new LocalIpResolver();
+                default:
+                    IPAddress.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out var ip);
+                    return new CustomIpResolver(ip);
+            }
         }
 
         private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, bool autoupdate)
