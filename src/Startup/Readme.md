@@ -17,6 +17,7 @@ You can start the server with the following parameters:
 | -autostart  | It automatically initializes the game servers and starts the tcp listeners of all (sub-)servers |
 | -reinit     | It recreates and reinitializes the database. It doesn't have any effect when *-demo* is used. |
 | -demo       | Instead of using an external database, it uses in-memory repositories and data is initialized at each start. Only for testing, not for production usage, as player progress is **not saved** to a database or file. |
+| -adminport:[1 to 65535] | Defines the tcp port which should be used for the admin panel. Default: 1234 |
 
 ### -resolveIP ###
 Defines how the own ip address is determined which is reported back to the game client in case it requests to connect to a selected game server (server selection screen) or the chat server (when starting a chat with the in-game messenger).
