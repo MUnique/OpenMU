@@ -24,6 +24,7 @@ Defines how the own ip address is determined which is reported back to the game 
 This may be helpful, if the server is started in an environment where the public IP is not reachable from the outside (e.g. because you share your IPv4-Address or behind a firewall) and you want to use it within your computer or private network.
 
 It supports the following values:
+
 | Value  | Description  | Example |
 |--------|--------------|---------|
 | public | Default value, if nothing is specified. The public ip is automatically determined by an [external API](https://www.ipify.org/). | -resolveIP:public |
