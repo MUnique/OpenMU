@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc />
         public void TradeFinished(TradeResult tradeResult)
         {
-            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.TradeFinished.HeaderType, TradeFinished.Length);
+            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.TradeFinished.HeaderType, Network.Packets.ServerToClient.TradeFinished.Length);
             _ = new TradeFinished(writer.Span)
             {
                 Result = Convert(tradeResult),
