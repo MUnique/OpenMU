@@ -127,10 +127,11 @@ namespace MUnique.OpenMU.Startup
 
             stopwatch.Stop();
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
-            Log.Info("Start initializing admin panel");
+            var adminPort = this.DetermineAdminPort(args);
+            Log.Info($"Start initializing admin panel for port {adminPort}.");
 
-            this.adminPanel = new AdminPanel(1234, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
-            Log.Info("Admin panel initialized");
+            this.adminPanel = new AdminPanel(adminPort, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
+            Log.Info($"Admin panel initialized, port {adminPort}.");
 
             if (args.Contains("-autostart"))
             {
@@ -193,9 +194,23 @@ namespace MUnique.OpenMU.Startup
             (this.persistenceContextProvider as IDisposable)?.Dispose();
         }
 
+        private ushort DetermineAdminPort(string[] args)
+        {
+            var parameter = args.FirstOrDefault(a => a.StartsWith("-adminport:", StringComparison.InvariantCultureIgnoreCase));
+            if (parameter != null
+                && int.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out int port)
+                && port >= 1
+                && port <= ushort.MaxValue)
+            {
+                return (ushort)port;
+            }
+
+            return 1234; // Default port
+        }
+
         private IIpAddressResolver DetermineIpResolver(string[] args)
         {
-            const string resolveParameterPrefix = "-resolveIP";
+            const string resolveParameterPrefix = "-resolveIP:";
             const string publicIpResolve = "-resolveIP:public";
             const string localIpResolve = "-resolveIP:local";
             var parameter = args.FirstOrDefault(a => a.StartsWith(resolveParameterPrefix, StringComparison.InvariantCultureIgnoreCase));
