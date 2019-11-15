@@ -578,11 +578,65 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
 
     <xsl:template match="pd:Field[pd:Type = 'Byte']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; this.data[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>];</xsl:text>
+      <xsl:text>            get =&gt; this.data</xsl:text>
+      <xsl:if test="pd:Length or pd:LeftShifted">
+        <xsl:text>.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>)</xsl:text>
+      </xsl:if>
+      <xsl:choose>
+        <xsl:when test="pd:Length and pd:LeftShifted">
+          <xsl:text>.GetByteValue(</xsl:text>
+          <xsl:value-of select="pd:Length"/>
+          <xsl:text>, </xsl:text>
+          <xsl:value-of select="pd:LeftShifted"/>
+          <xsl:text>)</xsl:text>
+        </xsl:when>
+        <xsl:when test="pd:Length">
+          <xsl:text>.GetByteValue(</xsl:text>
+          <xsl:value-of select="pd:Length"/>
+          <xsl:text>, 0)</xsl:text>
+        </xsl:when>
+        <xsl:when test="pd:LeftShifted">
+          <xsl:text>.GetByteValue(8, </xsl:text>
+          <xsl:value-of select="pd:LeftShifted"/>
+          <xsl:text>)</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>]</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:text>;</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'Byte']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; this.data[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>] = value;</xsl:text>
+      <xsl:text>            set =&gt; this.data</xsl:text>
+      <xsl:if test="pd:Length or pd:LeftShifted">
+        <xsl:text>.Slice(</xsl:text>
+        <xsl:value-of select="pd:Index"/>
+        <xsl:text>)</xsl:text>
+      </xsl:if>
+      <xsl:choose>
+        <xsl:when test="pd:Length and pd:LeftShifted">
+          <xsl:text>.SetByteValue(value, </xsl:text>
+          <xsl:value-of select="pd:Length"/>
+          <xsl:text>, </xsl:text>
+          <xsl:value-of select="pd:LeftShifted"/>
+          <xsl:text>)</xsl:text>
+        </xsl:when>
+        <xsl:when test="pd:Length">
+          <xsl:text>.SetByteValue((byte)value, </xsl:text>
+          <xsl:value-of select="pd:Length"/>
+          <xsl:text>, 0)</xsl:text>
+        </xsl:when>
+        <xsl:when test="pd:LeftShifted">
+          <xsl:text>.SetByteValue((byte)value, 8, </xsl:text>
+          <xsl:value-of select="pd:LeftShifted"/>
+          <xsl:text>)</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>] = value</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:text>;</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'Short']" mode="get">
