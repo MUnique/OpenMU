@@ -2,13 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Text.RegularExpressions;
-
 namespace MUnique.OpenMU.ChatServer.ExDbConnector
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Reflection;
     using log4net;
     using log4net.Config;
@@ -35,8 +32,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         {
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
-            GetIpValue(args, out string ip);
-            var addressResolver = args.Contains("-local") ? (IIpAddressResolver)new LocalIpResolver(ip) : new PublicIpResolver();
+            var addressResolver = IpAddressResolverFactory.DetermineIpResolver(args);
             var settings = new Settings("ChatServer.cfg");
 
             int chatServerListenerPort = settings.ChatServerListenerPort ?? 55980;
@@ -64,23 +60,6 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             catch (Exception ex)
             {
                 Log.Fatal("Unexpected error occured", ex);
-            }
-        }
-
-        private static void GetIpValue(string[] args, out string ip)
-        {
-            ip = string.Empty;
-            var keyName = "-ip=";
-            if (args.Any(arg => arg.Contains(keyName)))
-            {
-                Regex cmdRegEx = new Regex($@"{keyName}(?<val>.+)");
-
-                var value = args.First(x => x.Contains(keyName));
-                Match match = cmdRegEx.Match(value);
-                if (match.Success)
-                {
-                    ip = match.Groups["val"].Value;
-                }
             }
         }
     }
