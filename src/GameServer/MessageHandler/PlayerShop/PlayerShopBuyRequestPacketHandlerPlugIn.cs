@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 

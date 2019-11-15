@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using log4net;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.RemoteView;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
     using Unity;
     using Unity.Lifetime;

@@ -307,5 +307,15 @@ namespace MUnique.OpenMU.Network.Packets
                 ArrayPool<byte>.Shared.Return(array, true);
             }
         }
+
+        /// <summary>
+        /// Converts the byte span into a readable hexadecimal string.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns>The hexadecimal string.</returns>
+        public static string AsString(this Span<byte> bytes)
+        {
+            return BitConverter.ToString(bytes.ToArray()).Replace('-', ' ');
+        }
     }
 }
