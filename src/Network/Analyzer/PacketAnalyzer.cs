@@ -189,8 +189,6 @@ namespace MUnique.OpenMU.Network.Analyzer
                             stringBuilder.Append(Environment.NewLine)
                                 .Append("  ").Append(structField.Name).Append(": ").Append(this.ExtractFieldValue(elementData, structField, packet, definitions));
                         }
-
-                        i++;
                     }
 
                     return stringBuilder.ToString();
