@@ -224,6 +224,94 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: AppearanceChanged.
+    /// Causes reaction on client side: AppearanceChanged.
+    /// </summary>
+    public readonly ref struct AppearanceChanged
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppearanceChanged"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AppearanceChanged(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppearanceChanged"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AppearanceChanged(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x25;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the changed player id.
+        /// </summary>
+        public ushort ChangedPlayerId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the item block.
+        /// </summary>
+        public Span<byte> ItemBlock
+        {
+            get => this.data.Slice(5);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AppearanceChanged"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AppearanceChanged(Span<byte> packet) => new AppearanceChanged(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AppearanceChanged"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AppearanceChanged packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified length of <see cref="ItemBlock"/>.
+        /// </summary>
+        /// <param name="itemBlockLength">The length in bytes of <see cref="ItemBlock"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int itemBlockLength) => itemBlockLength + 5;
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: The server wants to show a message above any kind of character, even NPCs.
     /// Causes reaction on client side: The message is shown above the character.
     /// </summary>

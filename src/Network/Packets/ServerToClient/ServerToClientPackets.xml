@@ -80,6 +80,26 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>25</Code>
+      <Name>AppearanceChanged</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The appearance of a player changed, all surrounding players are informed about it.</SentWhen>
+      <CausedReaction>The appearance of the player is updated.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>ChangedPlayerId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>01</Code>
       <Name>ObjectMessage</Name>
       <Direction>ServerToClient</Direction>
