@@ -28,7 +28,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void FriendAdded(string friendName)
         {
-            using var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0F);
+            using var writer = this.player.Connection.StartSafeWrite(
+                Network.Packets.ServerToClient.FriendAdded.HeaderType,
+                Network.Packets.ServerToClient.FriendAdded.Length);
             _ = new FriendAdded(writer.Span)
             {
                 FriendName = friendName,
