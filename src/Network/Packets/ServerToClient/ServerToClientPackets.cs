@@ -224,8 +224,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: AppearanceChanged.
-    /// Causes reaction on client side: AppearanceChanged.
+    /// <summary>
+    /// Is sent by the server when: The appearance of a player changed, all surrounding players are informed about it.
+    /// Causes reaction on client side: The appearance of the player is updated.
     /// </summary>
     public readonly ref struct AppearanceChanged
     {
@@ -282,9 +283,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Gets or sets the item block.
+        /// Gets or sets the item data.
         /// </summary>
-        public Span<byte> ItemBlock
+        public Span<byte> ItemData
         {
             get => this.data.Slice(5);
         }
@@ -304,10 +305,10 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static implicit operator Span<byte>(AppearanceChanged packet) => packet.data; 
 
         /// <summary>
-        /// Calculates the size of the packet for the specified length of <see cref="ItemBlock"/>.
+        /// Calculates the size of the packet for the specified length of <see cref="ItemData"/>.
         /// </summary>
-        /// <param name="itemBlockLength">The length in bytes of <see cref="ItemBlock"/> on which the required size depends.</param>
-        public static int GetRequiredSize(int itemBlockLength) => itemBlockLength + 5;
+        /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int itemDataLength) => itemDataLength + 5;
     }
 
 
@@ -9581,7 +9582,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
                 this.data[14] = 0xFF;
             }
