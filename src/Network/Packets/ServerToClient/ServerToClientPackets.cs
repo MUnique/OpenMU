@@ -9605,6 +9605,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static byte SubCode => 0x01;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 15;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);

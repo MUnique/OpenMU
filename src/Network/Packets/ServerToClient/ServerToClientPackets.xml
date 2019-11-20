@@ -3142,6 +3142,7 @@
       <Code>C1</Code>
       <SubCode>01</SubCode>
       <Name>FriendAdded</Name>
+      <Length>15</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After a friend has been added to the friend list.</SentWhen>
       <CausedReaction>The friend appears in the friend list.</CausedReaction>
