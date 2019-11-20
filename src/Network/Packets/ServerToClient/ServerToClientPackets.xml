@@ -80,6 +80,115 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>07</Code>
+      <Length>7</Length>
+      <Name>MagicEffectStatus</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A magic effect was added or removed to the own or another player.</SentWhen>
+      <CausedReaction>The user interface updates itself. If it's the effect of the own player, it's shown as icon at the top of the interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>IsActive</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>EffectId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+	  <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>17</Code>
+      <Length>9</Length>
+      <Name>ObjectGotKilled</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An observed object was killed.</SentWhen>
+      <CausedReaction>The object is shown as dead.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>KilledId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Short</Type>
+          <Name>KillerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>1E</Code>
+      <Length>10</Length>
+      <Name>AreaSkillAnimation</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object performs a skill which has effect on an area.</SentWhen>
+      <CausedReaction>The animation is shown on the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>PointX</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>PointY</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>19</Code>
+	    <Length>9</Length>
+      <Name>SkillAnimation</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object performs a skill which is directly targetted to another object.</SentWhen>
+      <CausedReaction>The animation is shown on the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Short</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>25</Code>
       <Name>AppearanceChanged</Name>
       <Direction>ServerToClient</Direction>

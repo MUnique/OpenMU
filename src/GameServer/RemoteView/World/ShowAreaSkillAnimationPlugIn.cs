@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
@@ -33,20 +34,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         {
             var skillId = NumberConversionExtensions.ToUnsigned(skill.Number);
             var playerId = playerWhichPerformsSkill.GetId(this.player);
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x0A))
+            using var writer = this.player.Connection.StartSafeWrite(
+                AreaSkillAnimation.HeaderType,
+                AreaSkillAnimation.Length);
+            _ = new AreaSkillAnimation(writer.Span)
             {
                 // Example: C3 0A 1E 00 09 23 47 3D 62 3A
-                var packet = writer.Span;
-                packet[2] = 0x1E;
-                packet[3] = skillId.GetHighByte();
-                packet[4] = skillId.GetLowByte();
-                packet[5] = playerId.GetHighByte();
-                packet[6] = playerId.GetLowByte();
-                packet[7] = point.X;
-                packet[8] = point.Y;
-                packet[9] = rotation;
-                writer.Commit();
-            }
+                SkillId = skillId,
+                PlayerId = playerId,
+                PointX = point.X,
+                PointY = point.Y,
+                Rotation = rotation,
+            };
+            writer.Commit();
         }
     }
 }
