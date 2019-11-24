@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
         private void SetStepData(ObjectWalked walkPacket, Span<Direction> steps, int stepsSize)
         {
-            if (steps == null || walkPacket.StepCount <= 0)
+            if (steps == default || walkPacket.StepCount == 0)
             {
                 return;
             }
