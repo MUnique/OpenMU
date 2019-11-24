@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,21 +32,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         {
             ////C2 00 07 21 01 00 0C
             int count = disappearedItemIds.Count();
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, 5 + (2 * count)))
+            using var writer = this.player.Connection.StartSafeWrite(ItemDropRemoved.HeaderType, ItemDropRemoved.GetRequiredSize(count));
+            var message = new ItemDropRemoved(writer.Span)
             {
-                var data = writer.Span;
-                data[3] = 0x21;
-                data[4] = (byte)count;
-                int i = 0;
-                foreach (var dropId in disappearedItemIds)
-                {
-                    data[5 + (i * 2)] = (byte)((dropId >> 8) & 0xFF);
-                    data[6 + (i * 2)] = (byte)(dropId & 0xFF);
-                    i++;
-                }
-
-                writer.Commit();
+                ItemCount = (byte)count,
+            };
+            int i = 0;
+            foreach (var dropId in disappearedItemIds)
+            {
+                var drop = message[i];
+                drop.Id = dropId;
+                i++;
             }
+
+            writer.Commit();
         }
     }
 }

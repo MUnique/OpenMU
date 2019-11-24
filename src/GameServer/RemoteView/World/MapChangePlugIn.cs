@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,19 +29,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public void MapChange()
         {
             var mapNumber = this.player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x0F))
+            var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
+            using var writer = this.player.Connection.StartSafeWrite(MapChanged.HeaderType, MapChanged.Length);
+            _ = new MapChanged(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x1C;
-                packet[3] = 0x0F;
-                packet[4] = 1;
-                packet.Slice(5).SetShortLittleEndian(mapNumber);
-                var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
-                packet[7] = position.X;
-                packet[8] = position.Y;
-                packet[9] = this.player.Rotation.ToPacketByte();
-                writer.Commit();
-            }
+                MapNumber = mapNumber,
+                PositionX = position.X,
+                PositionY = position.Y,
+                Rotation = this.player.Rotation.ToPacketByte(),
+            };
+
+            writer.Commit();
         }
     }
 }

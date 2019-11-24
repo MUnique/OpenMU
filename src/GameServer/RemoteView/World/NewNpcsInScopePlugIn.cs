@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -33,52 +34,42 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
         {
-            const int NpcDataSize = 10;
-
             if (newObjects == null || !newObjects.Any())
             {
                 return;
             }
 
             var newObjectList = newObjects.ToList();
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, (newObjectList.Count * NpcDataSize) + 5))
+            using var writer = this.player.Connection.StartSafeWrite(AddNpcsToScope.HeaderType, AddNpcsToScope.GetRequiredSize(newObjectList.Count));
             {
-                var packet = writer.Span;
-                packet[3] = 0x13; ////Packet Id
-                packet[4] = (byte)newObjectList.Count;
+                var packet = new AddNpcsToScope(writer.Span)
+                {
+                    NpcCount = (byte)newObjectList.Count,
+                };
+
                 int i = 0;
                 foreach (var npc in newObjectList)
                 {
-                    var npcBlock = packet.Slice(5 + (i * NpcDataSize));
-                    ////Npc Id:
-                    npcBlock[0] = npc.Id.GetHighByte();
-                    npcBlock[1] = npc.Id.GetLowByte();
+                    var npcBlock = packet[i];
+                    npcBlock.Id = npc.Id;
+                    npcBlock.TypeNumber = (ushort)(npc.Definition?.Number ?? 0);
+                    npcBlock.CurrentPositionX = npc.Position.X;
+                    npcBlock.CurrentPositionY = npc.Position.Y;
 
-                    ////Npc Type:
-                    var npcStats = npc.Definition;
-                    if (npcStats != null)
-                    {
-                        npcBlock[2] = (byte)((npcStats.Number >> 8) & 0xFF);
-                        npcBlock[3] = (byte)(npcStats.Number & 0xFF);
-                    }
-
-                    ////Coords:
-                    npcBlock[4] = npc.Position.X;
-                    npcBlock[5] = npc.Position.Y;
                     var supportWalk = npc as ISupportWalk;
                     if (supportWalk?.IsWalking ?? false)
                     {
-                        npcBlock[6] = supportWalk.WalkTarget.X;
-                        npcBlock[7] = supportWalk.WalkTarget.Y;
+                        npcBlock.TargetPositionX = supportWalk.WalkTarget.X;
+                        npcBlock.TargetPositionY = supportWalk.WalkTarget.Y;
                     }
                     else
                     {
-                        npcBlock[6] = npc.Position.X;
-                        npcBlock[7] = npc.Position.Y;
+                        npcBlock.TargetPositionX = npc.Position.X;
+                        npcBlock.TargetPositionY = npc.Position.Y;
                     }
 
-                    npcBlock[8] = (byte)(npc.Rotation.ToPacketByte() << 4);
-                    ////9 = offset byte for magic effects - currently we don't show them for NPCs
+                    npcBlock.Rotation = npc.Rotation.ToPacketByte();
+
                     i++;
                 }
 
