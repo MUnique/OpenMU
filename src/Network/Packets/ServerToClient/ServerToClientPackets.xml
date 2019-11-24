@@ -924,6 +924,86 @@
       </Enums>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>15</Code>
+      <Name>ObjectMoved</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object in the observed scope (including the own player) moved instantly.</SentWhen>
+      <CausedReaction>The position of the object is updated on client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>2</Index>
+          <Type>Byte</Type>
+          <Name>HeaderCode</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>PositionX</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>PositionY</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>D4</Code>
+      <Name>ObjectWalked</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object in the observed scope (including the own player) walked to another position.</SentWhen>
+      <CausedReaction>The object is animated to walk to the new position.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>2</Index>
+          <Type>Byte</Type>
+          <Name>HeaderCode</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>TargetRotation</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Byte</Type>
+          <Name>StepCount</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Binary</Type>
+          <Name>StepData</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>16</Code>
       <Name>ExperienceGained</Name>

@@ -2819,6 +2819,245 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: An object in the observed scope (including the own player) moved instantly.
+    /// Causes reaction on client side: The position of the object is updated on client side.
+    /// </summary>
+    public readonly ref struct ObjectMoved
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectMoved"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ObjectMoved(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectMoved"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ObjectMoved(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x15;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the header code.
+        /// </summary>
+        public byte HeaderCode
+        {
+            get => this.data[2];
+            set => this.data[2] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the object id.
+        /// </summary>
+        public ushort ObjectId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the position x.
+        /// </summary>
+        public byte PositionX
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position y.
+        /// </summary>
+        public byte PositionY
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ObjectMoved"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ObjectMoved(Span<byte> packet) => new ObjectMoved(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ObjectMoved"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ObjectMoved packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: An object in the observed scope (including the own player) walked to another position.
+    /// Causes reaction on client side: The object is animated to walk to the new position.
+    /// </summary>
+    public readonly ref struct ObjectWalked
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectWalked"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ObjectWalked(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectWalked"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ObjectWalked(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xD4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the header code.
+        /// </summary>
+        public byte HeaderCode
+        {
+            get => this.data[2];
+            set => this.data[2] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the object id.
+        /// </summary>
+        public ushort ObjectId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the target x.
+        /// </summary>
+        public byte TargetX
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target y.
+        /// </summary>
+        public byte TargetY
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target rotation.
+        /// </summary>
+        public byte TargetRotation
+        {
+            get => this.data.Slice(7).GetByteValue(4, 4);
+            set => this.data.Slice(7).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the step count.
+        /// </summary>
+        public byte StepCount
+        {
+            get => this.data.Slice(7).GetByteValue(4, 0);
+            set => this.data.Slice(7).SetByteValue(value, 4, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the step data.
+        /// </summary>
+        public Span<byte> StepData
+        {
+            get => this.data.Slice(8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ObjectWalked"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ObjectWalked(Span<byte> packet) => new ObjectWalked(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ObjectWalked"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ObjectWalked packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified length of <see cref="StepData"/>.
+        /// </summary>
+        /// <param name="stepDataLength">The length in bytes of <see cref="StepData"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int stepDataLength) => stepDataLength + 8;
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: A player gained experience.
     /// Causes reaction on client side: The experience is added to the experience counter and bar.
     /// </summary>
