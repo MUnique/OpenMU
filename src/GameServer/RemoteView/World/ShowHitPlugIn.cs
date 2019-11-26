@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -34,68 +34,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             this.operation = this.DetermineOperation();
         }
 
-        /// <summary>
-        /// The color of the damage.
-        /// </summary>
-        public enum DamageColor : byte
-        {
-            /// <summary>
-            /// The normal, red damage color.
-            /// </summary>
-            NormalRed = 0,
-
-            /// <summary>
-            /// The ignore defense, cyan damage color.
-            /// </summary>
-            IgnoreDefenseCyan = 1,
-
-            /// <summary>
-            /// The excellent, light green damage color.
-            /// </summary>
-            ExcellentLightGreen = 2,
-
-            /// <summary>
-            /// The critical, blue damage color.
-            /// </summary>
-            CriticalBlue = 3,
-
-            /// <summary>
-            /// The light pink damage color.
-            /// </summary>
-            LightPink = 4,
-
-            /// <summary>
-            /// The poison, dark green damage color.
-            /// </summary>
-            PoisonDarkGreen = 5,
-
-            /// <summary>
-            /// The dark pink damage color.
-            /// </summary>
-            DarkPink = 6,
-
-            /// <summary>
-            /// The white damage color.
-            /// </summary>
-            White = 7,
-        }
-
-        /// <summary>
-        /// The special damage.
-        /// </summary>
-        public enum SpecialDamage : byte
-        {
-            /// <summary>
-            /// The double damage.
-            /// </summary>
-            Double = 0x40,
-
-            /// <summary>
-            /// The triple damage.
-            /// </summary>
-            Triple = 0x80,
-        }
-
         /// <remarks>
         /// This Packet is sent to the Client when a Player or Monster got Hit and damaged.
         /// It includes which Player/Monster got hit by who, and the Damage Type.
@@ -112,16 +50,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 var healthDamage = (ushort)(remainingHealthDamage & 0xFFFF);
                 var shieldDamage = (ushort)(remainingShieldDamage & 0xFFFF);
-                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0A))
+                using var writer = this.player.Connection.StartSafeWrite(ObjectHit.HeaderType, ObjectHit.Length);
+                _ = new ObjectHit(writer.Span)
                 {
-                    var packet = writer.Span;
-                    packet[2] = this.operation;
-                    packet.Slice(3).SetShortLittleEndian(targetId);
-                    packet.Slice(5).SetShortLittleEndian(healthDamage);
-                    packet[7] = this.GetDamageColor(hitInfo.Attributes);
-                    packet.Slice(8).SetShortLittleEndian(shieldDamage);
-                    writer.Commit();
-                }
+                    HeaderCode = this.operation,
+                    ObjectId = targetId,
+                    HealthDamage = healthDamage,
+                    ShieldDamage = shieldDamage,
+                    IsDoubleDamage = hitInfo.Attributes.HasFlag(DamageAttributes.Double),
+                    IsTripleDamage = hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
+                    Kind = this.GetDamageKind(hitInfo.Attributes),
+                };
+
+                writer.Commit();
 
                 remainingShieldDamage -= shieldDamage;
                 remainingHealthDamage -= healthDamage;
@@ -156,42 +97,29 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
         }
 
-        private byte GetDamageColor(DamageAttributes attributes)
+        private ObjectHit.DamageKind GetDamageKind(DamageAttributes attributes)
         {
-            var colorResult = DamageColor.NormalRed;
             if (attributes.HasFlag(DamageAttributes.IgnoreDefense))
             {
-                colorResult = DamageColor.IgnoreDefenseCyan;
-            }
-            else if (attributes.HasFlag(DamageAttributes.Excellent))
-            {
-                colorResult = DamageColor.ExcellentLightGreen;
-            }
-            else if (attributes.HasFlag(DamageAttributes.Critical))
-            {
-                colorResult = DamageColor.CriticalBlue;
-            }
-            else if (attributes.HasFlag(DamageAttributes.Reflected))
-            {
-                colorResult = DamageColor.DarkPink;
-            }
-            else
-            {
-                // no special color
+                return ObjectHit.DamageKind.IgnoreDefenseCyan;
             }
 
-            byte result = (byte)colorResult;
-            if (attributes.HasFlag(DamageAttributes.Double))
+            if (attributes.HasFlag(DamageAttributes.Excellent))
             {
-                result |= (byte)SpecialDamage.Double;
+                return ObjectHit.DamageKind.ExcellentLightGreen;
             }
 
-            if (attributes.HasFlag(DamageAttributes.Triple))
+            if (attributes.HasFlag(DamageAttributes.Critical))
             {
-                result |= (byte)SpecialDamage.Triple;
+                return ObjectHit.DamageKind.CriticalBlue;
             }
 
-            return result;
+            if (attributes.HasFlag(DamageAttributes.Reflected))
+            {
+                return ObjectHit.DamageKind.ReflectedDarkPink;
+            }
+
+            return ObjectHit.DamageKind.NormalRed;
         }
     }
 }

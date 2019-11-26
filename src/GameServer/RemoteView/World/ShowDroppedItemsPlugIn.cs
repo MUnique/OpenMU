@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,39 +31,33 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void ShowDroppedItems(IEnumerable<DroppedItem> droppedItems, bool freshDrops)
         {
-            const int itemHeaderSize = 4; ////Id + Coordinates
-            const byte freshDropFlag = 0x80;
             var itemSerializer = this.player.ItemSerializer;
-
+            var droppedItemLength = ItemsDropped.DroppedItem.GetRequiredSize(itemSerializer.NeededSpace);
             int itemCount = droppedItems.Count();
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, 9 + (itemSerializer.NeededSpace * itemCount)))
+            using var writer = this.player.Connection.StartSafeWrite(ItemsDropped.HeaderType, ItemsDropped.GetRequiredSize(itemCount, droppedItemLength));
+            var packet = new ItemsDropped(writer.Span)
             {
-                var data = writer.Span;
-                data[3] = 0x20;
-                data[4] = (byte)itemCount;
+                ItemCount = (byte)itemCount,
+            };
 
-                int i = 0;
-                int startOffset = 5;
-                foreach (var item in droppedItems)
+            int i = 0;
+            foreach (var item in droppedItems)
+            {
+                var itemBlock = packet[i, droppedItemLength];
+                itemBlock.Id = item.Id;
+                if (freshDrops)
                 {
-                    var startIndex = startOffset + ((itemSerializer.NeededSpace + itemHeaderSize) * i);
-                    var itemBlock = data.Slice(startIndex, itemSerializer.NeededSpace + itemHeaderSize);
-                    itemBlock[0] = item.Id.GetHighByte();
-                    if (freshDrops)
-                    {
-                        data[0] |= freshDropFlag;
-                    }
-
-                    itemBlock[1] = item.Id.GetLowByte();
-                    itemBlock[2] = item.Position.X;
-                    itemBlock[3] = item.Position.Y;
-                    itemSerializer.SerializeItem(data.Slice(startIndex + 4), item.Item);
-
-                    i++;
+                    itemBlock.IsFreshDrop = true;
                 }
 
-                writer.Commit();
+                itemBlock.PositionX = item.Position.X;
+                itemBlock.PositionY = item.Position.Y;
+                itemSerializer.SerializeItem(itemBlock.ItemData, item.Item);
+
+                i++;
             }
+
+            writer.Commit();
         }
     }
 }

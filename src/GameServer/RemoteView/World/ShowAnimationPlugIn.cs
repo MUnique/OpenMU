@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -35,35 +36,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction)
         {
             var animatingId = animatingObj.GetId(this.player);
-            if (targetObj == null)
+            var targetId = targetObj?.GetId(this.player) ?? 0;
+            using var writer = this.player.Connection.StartSafeWrite(ObjectAnimation.HeaderType, ObjectAnimation.Length);
+            _ = new ObjectAnimation(writer.Span)
             {
-                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 7))
-                {
-                    var packet = writer.Span;
-                    packet[2] = 0x18;
-                    packet[3] = animatingId.GetHighByte();
-                    packet[4] = animatingId.GetLowByte();
-                    packet[5] = direction.ToPacketByte();
-                    packet[6] = animation;
-                    writer.Commit();
-                }
-            }
-            else
-            {
-                var targetId = targetObj.GetId(this.player);
-                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 9))
-                {
-                    var packet = writer.Span;
-                    packet[2] = 0x18;
-                    packet[3] = animatingId.GetHighByte();
-                    packet[4] = animatingId.GetLowByte();
-                    packet[5] = direction.ToPacketByte();
-                    packet[6] = animation;
-                    packet[7] = targetId.GetHighByte();
-                    packet[8] = targetId.GetLowByte();
-                    writer.Commit();
-                }
-            }
+                ObjectId = animatingId,
+                TargetId = targetId,
+                Animation = animation,
+                Direction = direction.ToPacketByte(),
+            };
+
+            writer.Commit();
         }
     }
 }

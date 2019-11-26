@@ -708,6 +708,123 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: One or more objects (player, npc, etc.) on the map got out of scope, e.g. when the own player moved away from it/them or the object itself moved.
+    /// Causes reaction on client side: The game client removes the objects from the game map.
+    /// </summary>
+    public readonly ref struct MapObjectOutOfScope
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapObjectOutOfScope"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MapObjectOutOfScope(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapObjectOutOfScope"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MapObjectOutOfScope(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x14;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the object count.
+        /// </summary>
+        public byte ObjectCount
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ObjectId"/> of the specified index.
+        /// </summary>
+        public ObjectId this[int index] => new ObjectId(this.data.Slice(4 + (index * ObjectId.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MapObjectOutOfScope"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MapObjectOutOfScope(Span<byte> packet) => new MapObjectOutOfScope(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MapObjectOutOfScope"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MapObjectOutOfScope packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="ObjectId"/>.
+        /// </summary>
+        /// <param name="objectsCount">The count of <see cref="ObjectId"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int objectsCount) => objectsCount * ObjectId.Length + 4;
+
+
+    /// <summary>
+    /// Contains the id of a object..
+    /// </summary>
+    public readonly ref struct ObjectId
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectId"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ObjectId(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 2;
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => this.data.Slice(0).GetShortLittleEndian();
+            set => this.data.Slice(0).SetShortLittleEndian(value);
+        }
+    }
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: An observed object was killed.
     /// Causes reaction on client side: The object is shown as dead.
     /// </summary>
@@ -792,6 +909,112 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(ObjectGotKilled packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: An object performs an animation.
+    /// Causes reaction on client side: The animation is shown for the specified object.
+    /// </summary>
+    public readonly ref struct ObjectAnimation
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectAnimation"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ObjectAnimation(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectAnimation"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ObjectAnimation(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x18;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 9;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the object id.
+        /// </summary>
+        public ushort ObjectId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the direction.
+        /// </summary>
+        public byte Direction
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the animation.
+        /// </summary>
+        public byte Animation
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => this.data.Slice(7).GetShortLittleEndian();
+            set => this.data.Slice(7).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ObjectAnimation"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ObjectAnimation(Span<byte> packet) => new ObjectAnimation(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ObjectAnimation"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ObjectAnimation packet) => packet.data; 
     }
 
 
@@ -2819,6 +3042,161 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.
+    /// Causes reaction on client side: The damage is shown at the object which received the hit.
+    /// </summary>
+    public readonly ref struct ObjectHit
+    {
+        /// <summary>
+        /// Defines the kind of the damage.
+        /// </summary>
+        public enum DamageKind
+        {
+            NormalRed = 0,
+
+            IgnoreDefenseCyan = 1,
+
+            ExcellentLightGreen = 2,
+
+            CriticalBlue = 3,
+
+            LightPink = 4,
+
+            PoisonDarkGreen = 5,
+
+            ReflectedDarkPink = 6,
+
+            White = 7,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectHit"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ObjectHit(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectHit"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ObjectHit(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x11;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 10;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the header code.
+        /// </summary>
+        public byte HeaderCode
+        {
+            get => this.data[2];
+            set => this.data[2] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the object id.
+        /// </summary>
+        public ushort ObjectId
+        {
+            get => this.data.Slice(3).GetShortLittleEndian();
+            set => this.data.Slice(3).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the health damage.
+        /// </summary>
+        public ushort HealthDamage
+        {
+            get => this.data.Slice(5).GetShortLittleEndian();
+            set => this.data.Slice(5).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the kind.
+        /// </summary>
+        public DamageKind Kind
+        {
+            get => (DamageKind)this.data.Slice(7).GetByteValue(4, 0);
+            set => this.data.Slice(7).SetByteValue((byte)value, 4, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the is double damage.
+        /// </summary>
+        public bool IsDoubleDamage
+        {
+            get => this.data.Slice(7).GetBoolean(6);
+            set => this.data.Slice(7).SetBoolean(value, 6);
+        }
+
+        /// <summary>
+        /// Gets or sets the is triple damage.
+        /// </summary>
+        public bool IsTripleDamage
+        {
+            get => this.data.Slice(7).GetBoolean(7);
+            set => this.data.Slice(7).SetBoolean(value, 7);
+        }
+
+        /// <summary>
+        /// Gets or sets the shield damage.
+        /// </summary>
+        public ushort ShieldDamage
+        {
+            get => this.data.Slice(8).GetShortLittleEndian();
+            set => this.data.Slice(8).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ObjectHit"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ObjectHit(Span<byte> packet) => new ObjectHit(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ObjectHit"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ObjectHit packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: An object in the observed scope (including the own player) moved instantly.
     /// Causes reaction on client side: The position of the object is updated on client side.
     /// </summary>
@@ -3360,6 +3738,160 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="configurationLength">The length in bytes of <see cref="Configuration"/> on which the required size depends.</param>
         public static int GetRequiredSize(int configurationLength) => configurationLength + 4;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The items dropped on the ground.
+    /// Causes reaction on client side: The client adds the items to the ground.
+    /// </summary>
+    public readonly ref struct ItemsDropped
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemsDropped"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ItemsDropped(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemsDropped"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ItemsDropped(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x20;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the item count.
+        /// </summary>
+        public byte ItemCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="DroppedItem"/> of the specified index.
+        /// </summary>
+        public DroppedItem this[int index, int droppedItemLength] => new DroppedItem(this.data.Slice(5 + (index * droppedItemLength)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemsDropped"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ItemsDropped(Span<byte> packet) => new ItemsDropped(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ItemsDropped"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ItemsDropped packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="DroppedItem"/> and it's size.
+        /// </summary>
+        /// <param name="itemsCount">The count of <see cref="DroppedItem"/> from which the size will be calculated.</param>
+        /// <param name="structLength">The length of <see cref="DroppedItem"/> from which the size will be calculated.</param>
+          public static int GetRequiredSize(int itemsCount, int structLength) => itemsCount * structLength + 5;
+
+
+    /// <summary>
+    /// Contains the data about a dropped item..
+    /// </summary>
+    public readonly ref struct DroppedItem
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DroppedItem"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public DroppedItem(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => this.data.Slice(0).GetShortLittleEndian();
+            set => this.data.Slice(0).SetShortLittleEndian(value);
+        }
+
+        /// <summary>
+        /// Gets or sets if this flag is set, the item is added to the map with an animation and sound. Otherwise it's just added like it was already on the ground before.
+        /// </summary>
+        public bool IsFreshDrop
+        {
+            get => this.data.Slice(0).GetBoolean(7);
+            set => this.data.Slice(0).SetBoolean(value, 7);
+        }
+
+        /// <summary>
+        /// Gets or sets the position x.
+        /// </summary>
+        public byte PositionX
+        {
+            get => this.data[2];
+            set => this.data[2] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position y.
+        /// </summary>
+        public byte PositionY
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the item data.
+        /// </summary>
+        public Span<byte> ItemData
+        {
+            get => this.data.Slice(4);
+        }
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified length of <see cref="ItemData"/>.
+        /// </summary>
+        /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int itemDataLength) => itemDataLength + 4;
+    }
     }
 
 

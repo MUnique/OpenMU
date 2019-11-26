@@ -270,6 +270,42 @@
         </Structure>
       </Structures>
     </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>14</Code>
+      <Name>MapObjectOutOfScope</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>One or more objects (player, npc, etc.) on the map got out of scope, e.g. when the own player moved away from it/them or the object itself moved.</SentWhen>
+      <CausedReaction>The game client removes the objects from the game map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>ObjectCount</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ObjectId</TypeName>
+          <Name>Objects</Name>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>ObjectId</Name>
+          <Description>Contains the id of a object.</Description>
+          <Length>2</Length>
+          <ItemCountField>ObjectCount</ItemCountField>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Short</Type>
+              <Name>Id</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
 	  <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>17</Code>
@@ -288,6 +324,37 @@
           <Index>7</Index>
           <Type>Short</Type>
           <Name>KillerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>18</Code>
+      <Length>9</Length>
+      <Name>ObjectAnimation</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object performs an animation.</SentWhen>
+      <CausedReaction>The animation is shown for the specified object.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Direction</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Animation</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Short</Type>
+          <Name>TargetId</Name>
         </Field>
       </Fields>
     </Packet>
@@ -925,6 +992,97 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>11</Code>
+      <Name>ObjectHit</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.</SentWhen>
+      <CausedReaction>The damage is shown at the object which received the hit.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>2</Index>
+          <Type>Byte</Type>
+          <Name>HeaderCode</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Short</Type>
+          <Name>HealthDamage</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>DamageKind</TypeName>
+          <Name>Kind</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <LeftShifted>6</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsDoubleDamage</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <LeftShifted>7</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsTripleDamage</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Short</Type>
+          <Name>ShieldDamage</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>DamageKind</Name>
+          <Description>Defines the kind of the damage.</Description>
+          <Values>
+            <EnumValue>
+              <Name>NormalRed</Name>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IgnoreDefenseCyan</Name>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ExcellentLightGreen</Name>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CriticalBlue</Name>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LightPink</Name>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PoisonDarkGreen</Name>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ReflectedDarkPink</Name>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>White</Name>
+              <Value>7</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>15</Code>
       <Name>ObjectMoved</Name>
       <Length>8</Length>
@@ -1083,6 +1241,63 @@
           <Description>The binary data of the key configuration</Description>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>20</Code>
+      <Name>ItemsDropped</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The items dropped on the ground.</SentWhen>
+      <CausedReaction>The client adds the items to the ground.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>DroppedItem</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>DroppedItem</Name>
+          <Description>Contains the data about a dropped item.</Description>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Short</Type>
+              <Name>Id</Name>
+            </Field>
+            <Field>
+              <Index>0</Index>
+              <LeftShifted>7</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsFreshDrop</Name>
+              <Description>If this flag is set, the item is added to the map with an animation and sound. Otherwise it's just added like it was already on the ground before.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>PositionX</Name>
+            </Field>
+            <Field>
+              <Index>3</Index>
+              <Type>Byte</Type>
+              <Name>PositionY</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>Binary</Type>
+              <Name>ItemData</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>
