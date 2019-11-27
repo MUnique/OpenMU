@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Party
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Party;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Party
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.RequestPartyList;
+        public byte Key => PartyListRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)

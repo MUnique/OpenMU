@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -34,14 +35,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 return;
             }
 
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 4 + keyConfiguration.Length))
-            {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x30;
-                keyConfiguration.AsSpan().CopyTo(packet.Slice(4));
-                writer.Commit();
-            }
+            using var writer = this.player.Connection.StartSafeWrite(
+                MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.HeaderType,
+                MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.GetRequiredSize(keyConfiguration.Length));
+            var packet = new ApplyKeyConfiguration(writer.Span);
+            keyConfiguration.AsSpan().CopyTo(packet.Configuration);
+            writer.Commit();
         }
     }
 }

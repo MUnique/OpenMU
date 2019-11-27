@@ -4,10 +4,10 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
 {
-    using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,29 +28,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc />
         public void ItemPickUpFailed(ItemPickFailReason reason)
         {
-            byte reasonByte;
-            switch (reason)
+            using var writer = this.player.Connection.StartSafeWrite(ItemPickUpRequestFailed.HeaderType, ItemPickUpRequestFailed.Length);
+            _ = new ItemPickUpRequestFailed(writer.Span)
             {
-                case ItemPickFailReason.General:
-                    reasonByte = 0xFF;
-                    break;
-                case ItemPickFailReason.ItemStacked:
-                    reasonByte = 0xFD;
-                    break;
-                case ItemPickFailReason.MaximumInventoryMoneyReached:
-                    reasonByte = 0xFE;
-                    break;
-                default:
-                    throw new ArgumentException($"Reason {reason} is unknown.");
-            }
+                FailReason = reason.Convert(),
+            };
 
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 4))
-            {
-                var packet = writer.Span;
-                packet[2] = 0x22;
-                packet[3] = reasonByte;
-                writer.Commit();
-            }
+            writer.Commit();
         }
     }
 }

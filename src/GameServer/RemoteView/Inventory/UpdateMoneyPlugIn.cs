@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,14 +28,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void UpdateMoney()
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x08))
+            using var writer = this.player.Connection.StartSafeWrite(InventoryMoneyUpdate.HeaderType, InventoryMoneyUpdate.Length);
+            _ = new InventoryMoneyUpdate(writer.Span)
             {
-                var message = writer.Span;
-                message[2] = 0x22;
-                message[3] = 0xFE;
-                message.Slice(4, 4).SetIntegerSmallEndian((uint)this.player.Money);
-                writer.Commit();
-            }
+                Money = (uint)this.player.Money,
+            };
+
+            writer.Commit();
         }
     }
 }

@@ -6,10 +6,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Character;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,9 +30,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
         /// <inheritdoc />
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            string characterName = packet.ExtractString(4, 10, Encoding.UTF8);
-            string securityCode = packet.ExtractString(14, packet.Length - 14, Encoding.UTF8);
-            this.deleteCharacterAction.DeleteCharacter(player, characterName, securityCode);
+            DeleteCharacter message = packet;
+            this.deleteCharacterAction.DeleteCharacter(player, message.Name, message.SecurityCode);
         }
     }
 }

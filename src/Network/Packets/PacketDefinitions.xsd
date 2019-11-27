@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://www.munique.net/OpenMU/PacketDefinitions" elementFormDefault="qualified" targetNamespace="http://www.munique.net/OpenMU/PacketDefinitions" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="PacketDefinitions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="Description" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="Structures" type="tns:ArrayOfStructures" />
+        <xs:element minOccurs="1" maxOccurs="1" name="Packets" nillable="true" type="tns:ArrayOfPacketDefinition" />
+        <xs:element minOccurs="0" maxOccurs="1" name="Enums" type="tns:ArrayOfEnums" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfPacketDefinition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Packet" type="tns:PacketDefinition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfStructures">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Structure" type="tns:Structure" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfStructuresWithCount">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="Count" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Structure" type="tns:Structure" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfEnums">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Enum" type="tns:Enum" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PacketDefinition">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="HeaderType" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The name of the header type structure.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="Code" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="SubCode" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Name" type="xs:Name" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Caption" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Length" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Direction" nillable="false" type="tns:Direction" />
+      <xs:element minOccurs="1" maxOccurs="1" name="SentWhen" nillable="true" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="CausedReaction" nillable="true" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Fields" nillable="true" type="tns:ArrayOfField" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Structures" type="tns:ArrayOfStructures" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Enums" type="tns:ArrayOfEnums" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Structure">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Name" type="xs:Name" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Length" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Fields" nillable="true" type="tns:ArrayOfField" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Enum">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="Name" type="xs:Name" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Description" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Values">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="EnumValue" type="tns:EnumValue" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EnumValue">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="Name" type="xs:Name" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Description" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Value" type="xs:unsignedByte" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="Direction">
+    <xs:restriction base="xs:Name">
+      <xs:enumeration value="ServerToClient" />
+      <xs:enumeration value="ClientToServer" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ArrayOfField">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Field" type="tns:Field" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Field">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="Index" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="LeftShifted" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Type" type="tns:FieldType" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TypeName" type="xs:Name">
+        <xs:annotation>
+          <xs:documentation>The name of the actual type, if it's an enum or structure.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Name" type="xs:Name" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Description" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Length" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DefaultValue" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ItemCountField" type="xs:Name">
+        <xs:annotation>
+          <xs:documentation>The name of the item count field, if this field is of type Structure[].</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="UseCustomIndexer" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>If this is 'true' and this field is of type Structure[], the indexer is not implemented by the XSLT, but by custom code.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="FieldType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Boolean" />
+      <xs:enumeration value="Byte" />
+      <xs:enumeration value="Short" />
+      <xs:enumeration value="ShortBigEndian" />
+      <xs:enumeration value="Integer" />
+      <xs:enumeration value="IntegerBigEndian" />
+      <xs:enumeration value="Long" />
+      <xs:enumeration value="LongBigEndian" />
+      <xs:enumeration value="String" />
+      <xs:enumeration value="Binary" />
+      <xs:enumeration value="Enum" />
+      <xs:enumeration value="Structure[]" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

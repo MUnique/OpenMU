@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,14 +28,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void ItemDropResult(byte slot, bool success)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 5))
+            using var writer = this.player.Connection.StartSafeWrite(ItemDropResponse.HeaderType, ItemDropResponse.Length);
+            _ = new ItemDropResponse(writer.Span)
             {
-                var message = writer.Span;
-                message[2] = 0x23;
-                message[3] = success ? (byte)1 : (byte)0;
-                message[4] = slot;
-                writer.Commit();
-            }
+                Success = success,
+                InventorySlot = slot,
+            };
+            writer.Commit();
         }
     }
 }

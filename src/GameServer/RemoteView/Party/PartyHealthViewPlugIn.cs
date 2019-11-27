@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Party;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,7 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
             this.player = player;
         }
 
-        private byte[] HealthValues => this.healthValues ?? (this.healthValues = new byte[this.player.Party.MaxPartySize]);
+        private byte[] HealthValues => this.healthValues ??= new byte[this.player.Party.MaxPartySize];
 
         /// <inheritdoc/>
         public bool IsHealthUpdateNeeded()
@@ -40,18 +41,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
         public void UpdatePartyHealth()
         {
             var partyListCount = this.player.Party.PartyList.Count;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, partyListCount + 4))
+            using var writer = this.player.Connection.StartSafeWrite(PartyHealthUpdate.HeaderType, PartyHealthUpdate.GetRequiredSize(partyListCount));
+            var packet = new PartyHealthUpdate(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x44;
-                packet[3] = (byte)partyListCount;
-                for (int i = 0; i < partyListCount; i++)
-                {
-                    packet[4 + i] = (byte)((i << 4) + this.HealthValues[i]);
-                }
+                Count = (byte)partyListCount,
+            };
 
-                writer.Commit();
+            for (int i = 0; i < partyListCount; i++)
+            {
+                var member = packet[i];
+                member.Index = (byte)i;
+                member.Value = this.HealthValues[i];
             }
+
+            writer.Commit();
         }
 
         private bool UpdateHealthValues()

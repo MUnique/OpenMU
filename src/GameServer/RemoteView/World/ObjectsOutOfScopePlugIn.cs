@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -32,22 +33,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
         {
             var count = objects.Count();
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 4 + (count * 2)))
+            using var writer = this.player.Connection.StartSafeWrite(MapObjectOutOfScope.HeaderType, MapObjectOutOfScope.GetRequiredSize(count));
+            var packet = new MapObjectOutOfScope(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 20;
-                packet[3] = (byte)count;
-                int i = 4;
-                foreach (var m in objects)
-                {
-                    var objectId = m.GetId(this.player);
-                    packet[i] = objectId.GetHighByte();
-                    packet[i + 1] = objectId.GetLowByte();
-                    i += 2;
-                }
+                ObjectCount = (byte)count,
+            };
 
-                writer.Commit();
+            int i = 0;
+            foreach (var m in objects)
+            {
+                var objectId = packet[i];
+                objectId.Id = m.GetId(this.player);
+                i++;
             }
+
+            writer.Commit();
         }
     }
 }

@@ -21,13 +21,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         {
             if (player.Level < 6)
             {
-                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.MinimumLevel6);
+                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.MinimumLevel6);
                 return;
             }
 
             if (player.GuildStatus != null)
             {
-                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
+                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
                 return;
             }
 
@@ -35,13 +35,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (guildMaster?.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
+                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
                 return; // targeted player not in a guild or not the guild master
             }
 
             if (guildMaster.LastGuildRequester != null || player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
-                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.GuildJoinResponse(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy);
+                player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy);
                 return;
             }
 

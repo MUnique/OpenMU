@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,18 +24,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.TradeAccept;
+        public byte Key => TradeRequestResponse.Code;
 
         /// <inheritdoc/>
         /// <summary>The packet looks like: 0xC1, 0x04, 0x37, 0x01.</summary>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < 4)
-            {
-                return;
-            }
-
-            this.acceptAction.HandleTradeAccept(player, packet[3] == 1);
+            TradeRequestResponse message = packet;
+            this.acceptAction.HandleTradeAccept(player, message.TradeAccepted);
         }
     }
 }

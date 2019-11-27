@@ -1,40 +1,37 @@
-﻿// <copyright file="SkillEffects.cs" company="MUnique">
+﻿// <copyright file="EffectNumbers.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameServer.RemoteView.World
 {
-    using System;
-
     /// <summary>
     /// Skill effect flags which were used in earlier versions, like 0.75.
     /// </summary>
-    [Flags]
-    internal enum SkillEffects
+    internal static class EffectNumbers
     {
         /// <summary>
-        /// The undefined effect. No effect is active.
+        /// The undefined effect. No effect.
         /// </summary>
-        Undefined = 0,
-
-        /// <summary>
-        /// The object is poisoned.
-        /// </summary>
-        Poisoned = 1,
-
-        /// <summary>
-        /// The object is iced.
-        /// </summary>
-        Iced = 2,
+        public const int Undefined = 0;
 
         /// <summary>
         /// The object has a damage buff.
         /// </summary>
-        DamageBuff = 4,
+        public const int DamageBuff = 0x01;
 
         /// <summary>
         /// The object has a defense buff.
         /// </summary>
-        DefenseBuff = 8,
+        public const int DefenseBuff = 0x02;
+
+        /// <summary>
+        /// The object is poisoned.
+        /// </summary>
+        public const int Poisoned = 0x37;
+
+        /// <summary>
+        /// The object is iced.
+        /// </summary>
+        public const int Iced = 0x38;
     }
 }

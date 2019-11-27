@@ -12,16 +12,16 @@ namespace MUnique.OpenMU.GameLogic.Views.Trade
         /// <summary>
         /// Trade button is not pressed. It means that the trade is not yet accepted by the trader.
         /// </summary>
-        Unchecked = 0,
+        Unchecked,
 
         /// <summary>
         /// Trade Button is pressed. It means that the trade is accepted by the trader.
         /// </summary>
-        Checked = 1,
+        Checked,
 
         /// <summary>
         /// This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.
         /// </summary>
-        Red = 2,
+        Red,
     }
 }

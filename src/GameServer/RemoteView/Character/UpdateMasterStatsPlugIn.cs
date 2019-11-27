@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,20 +30,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void SendMasterStats()
         {
             var character = this.player.SelectedCharacter;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x20))
+            using (var writer = this.player.Connection.StartSafeWrite(MasterStatsUpdate.HeaderType, MasterStatsUpdate.Length))
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x50;
-                var masterLevel = (ushort)this.player.Attributes[Stats.MasterLevel];
-                packet.Slice(4).SetShortBigEndian(masterLevel);
-                packet.Slice(6).SetLongSmallEndian(character.MasterExperience);
-                packet.Slice(14).SetLongSmallEndian(this.player.GameServerContext.Configuration.MasterExperienceTable[masterLevel + 1]);
-                packet.Slice(22).SetShortBigEndian((ushort)character.MasterLevelUpPoints);
-                packet.Slice(24).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumHealth]);
-                packet.Slice(26).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumMana]);
-                packet.Slice(28).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumShield]);
-                packet.Slice(30).SetShortBigEndian((ushort)this.player.Attributes[Stats.MaximumAbility]);
+                _ = new MasterStatsUpdate(writer.Span)
+                {
+                    MasterLevel = (ushort)this.player.Attributes[Stats.MasterLevel],
+                    MasterExperience = (ulong)character.MasterExperience,
+                    MasterExperienceOfNextLevel = (ulong)this.player.GameServerContext.Configuration.MasterExperienceTable[(int)this.player.Attributes[Stats.MasterLevel] + 1],
+                    MasterLevelUpPoints = (ushort)character.MasterLevelUpPoints,
+                    MaximumHealth = (ushort)this.player.Attributes[Stats.MaximumHealth],
+                    MaximumMana = (ushort)this.player.Attributes[Stats.MaximumMana],
+                    MaximumShield = (ushort)this.player.Attributes[Stats.MaximumShield],
+                    MaximumAbility = (ushort)this.player.Attributes[Stats.MaximumAbility],
+                };
                 writer.Commit();
             }
 

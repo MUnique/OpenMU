@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Login;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,14 +28,36 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
         /// <inheritdoc/>
         public void ShowLoginResult(LoginResult loginResult)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x05))
+            using var writer = this.player.Connection.StartSafeWrite(LoginResponse.HeaderType, LoginResponse.Length);
+            _ = new LoginResponse(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF1;
-                packet[3] = 0x01;
-                packet[4] = (byte)loginResult;
-                writer.Commit();
-            }
+                Success = ConvertResult(loginResult),
+            };
+
+            writer.Commit();
+        }
+
+        private static LoginResponse.LoginResult ConvertResult(LoginResult loginResult)
+        {
+            return loginResult switch
+            {
+                LoginResult.AccountAlreadyConnected => LoginResponse.LoginResult.AccountAlreadyConnected,
+                LoginResult.AccountBlocked => LoginResponse.LoginResult.AccountBlocked,
+                LoginResult.AccountInvalid => LoginResponse.LoginResult.AccountInvalid,
+                LoginResult.BadCountry => LoginResponse.LoginResult.BadCountry,
+                LoginResult.ConnectionClosed3Fails => LoginResponse.LoginResult.ConnectionClosed3Fails,
+                LoginResult.ConnectionError => LoginResponse.LoginResult.ConnectionError,
+                LoginResult.InvalidPassword => LoginResponse.LoginResult.InvalidPassword,
+                LoginResult.NoChargeInfo => LoginResponse.LoginResult.NoChargeInfo,
+                LoginResult.OK => LoginResponse.LoginResult.Okay,
+                LoginResult.OnlyPlayersOver15Yrs => LoginResponse.LoginResult.OnlyPlayersOver15Yrs,
+                LoginResult.ServerIsFull => LoginResponse.LoginResult.ServerIsFull,
+                LoginResult.SubscriptionTermOver => LoginResponse.LoginResult.SubscriptionTermOver,
+                LoginResult.SubscriptionTimeOver => LoginResponse.LoginResult.SubscriptionTimeOver,
+                LoginResult.TemporaryBlocked => LoginResponse.LoginResult.TemporaryBlocked,
+                LoginResult.WrongVersion => LoginResponse.LoginResult.WrongVersion,
+                _ => LoginResponse.LoginResult.ConnectionError,
+            };
         }
     }
 }

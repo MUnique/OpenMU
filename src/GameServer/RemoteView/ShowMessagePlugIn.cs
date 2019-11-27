@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
+    using System;
     using System.Runtime.InteropServices;
     using System.Text;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,14 +33,25 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             const string messagePrefix = "000000000";
             string content = this.player.ClientVersion.Season > 0 ? messagePrefix + message : message;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 5 + content.Length))
+            using var writer = this.player.Connection.StartSafeWrite(ServerMessage.HeaderType, 5 + content.Length);
+            _ = new ServerMessage(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 13;
-                packet[3] = (byte)messageType;
-                packet.Slice(4).WriteString(content, Encoding.UTF8);
-                writer.Commit();
-            }
+                Type = ConvertMessageType(messageType),
+                Message = content,
+            };
+
+            writer.Commit();
+        }
+
+        private static ServerMessage.MessageType ConvertMessageType(OpenMU.Interfaces.MessageType messageType)
+        {
+            return messageType switch
+            {
+                Interfaces.MessageType.BlueNormal => ServerMessage.MessageType.BlueNormal,
+                Interfaces.MessageType.GoldenCenter => ServerMessage.MessageType.GoldenCenter,
+                Interfaces.MessageType.GuildNotice => ServerMessage.MessageType.GuildNotice,
+                _ => throw new NotImplementedException($"Case for {messageType} is not implemented."),
+            };
         }
     }
 }

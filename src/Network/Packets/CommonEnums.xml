@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
+  <Description>This file contains common enum definitions which are used by server and client messages.</Description>
+  <Structures />
+  <Packets />
+  <Enums>
+    <Enum>
+      <Name>ItemStorageKind</Name>
+      <Description>Defines from or to which item storage an item is moved.</Description>
+      <Values>
+        <EnumValue>
+          <Value>0</Value>
+          <Name>Inventory</Name>
+          <Description>The inventory storage</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>1</Value>
+          <Name>Trade</Name>
+          <Description>The trade storage</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>2</Value>
+          <Name>Vault</Name>
+          <Description>The vault storage</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>3</Value>
+          <Name>ChaosMachine</Name>
+          <Description>The chaos machine storage</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>4</Value>
+          <Name>PlayerShop</Name>
+          <Description>The player shop storage</Description>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>LegacyQuestState</Name>
+      <Description>The quest state for the legacy quest system.</Description>
+      <Values>
+        <EnumValue>
+          <Value>0</Value>
+          <Name>Undefined</Name>
+          <Description>The state is undefined. This value is used when there is no quest defined for a specific index</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>1</Value>
+          <Name>Active</Name>
+          <Description>The quest is active and in progress.</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>2</Value>
+          <Name>Complete</Name>
+          <Description>The quest was completed.</Description>
+        </EnumValue>
+        <EnumValue>
+          <Value>3</Value>
+          <Name>Inactive</Name>
+          <Description>The quest is inactive, that means it isn't active and wasn't completed yet.</Description>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CharacterClassNumber</Name>
+      <Description>Defines the values which are used for the character classes on client side.</Description>
+      <Values>
+        <EnumValue>
+          <Name>DarkWizard</Name>
+          <Description>Value for the dark wizard character class.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>SoulMaster</Name>
+          <Description>Value for the soul master character class.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GrandMaster</Name>
+          <Description>Value for the grand master character class.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DarkKnight</Name>
+          <Description>Value for the dark knight character class.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BladeKnight</Name>
+          <Description>Value for the blade knight character class.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BladeMaster</Name>
+          <Description>Value for the blade master character class.</Description>
+          <Value>7</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FairyElf</Name>
+          <Description>Value for the fairy elf character class.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MuseElf</Name>
+          <Description>Value for the muse elf character class.</Description>
+          <Value>10</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>HighElf</Name>
+          <Description>Value for the high elf character class.</Description>
+          <Value>11</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MagicGladiator</Name>
+          <Description>Value for the magic gladiator character class.</Description>
+          <Value>12</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DuelMaster</Name>
+          <Description>Value for the duel master character class.</Description>
+          <Value>13</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DarkLord</Name>
+          <Description>Value for the dark lord character class.</Description>
+          <Value>16</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LordEmperor</Name>
+          <Description>Value for the lord emperor character class.</Description>
+          <Value>17</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Summoner</Name>
+          <Description>Value for the summoner character class.</Description>
+          <Value>20</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BloodySummoner</Name>
+          <Description>Value for the bloody summoner character class.</Description>
+          <Value>22</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DimensionMaster</Name>
+          <Description>Value for the dimension master character class.</Description>
+          <Value>23</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>RageFighter</Name>
+          <Description>Value for the rage fighter character class.</Description>
+          <Value>24</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FistMaster</Name>
+          <Description>Value for the fist master character class.</Description>
+          <Value>25</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CharacterStatAttribute</Name>
+      <Description>Defines the type of a character stat attribute.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Strength</Name>
+          <Description>The strength attribute.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Agility</Name>
+          <Description>The agility attribute.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Vitality</Name>
+          <Description>The vitality attribute.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Energy</Name>
+          <Description>The energy attribute.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Leadership</Name>
+          <Description>The leadership attribute.</Description>
+          <Value>4</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CharacterHeroState</Name>
+      <Description>Defines the hero state of a character.</Description>
+      <Values>
+        <EnumValue>
+          <Name>New</Name>
+          <Description>The character is new and has the highest state.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Hero</Name>
+          <Description>The character is a hero.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LightHero</Name>
+          <Description>The character is a hero, but the state is almost gone.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Normal</Name>
+          <Description>The character is in a neutral state.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PlayerKillWarning</Name>
+          <Description>The character killed another character, and has a kill warning.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PlayerKiller1stStage</Name>
+          <Description>The character killed two characters, and has some restrictions.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PlayerKiller2ndStage</Name>
+          <Description>The character killed more than two characters, and has hard restrictions.</Description>
+          <Value>6</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>LogOutType</Name>
+      <Description>Describes the way how the player wants to leave the current game.</Description>
+      <Values>
+        <EnumValue>
+          <Name>CloseGame</Name>
+          <Description>The player wants to close the game.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BackToCharacterSelection</Name>
+          <Description>The player wants to go back to the character selection screen.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BackToServerSelection</Name>
+          <Description>The player wants to go back to the server selection screen.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+  </Enums>
+</PacketDefinitions>

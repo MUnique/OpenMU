@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,24 +31,25 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
         public void PlayerShopClosed(Player playerWithClosedShop)
         {
             var playerId = playerWithClosedShop.GetId(this.player);
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x07))
+            using (var writer = this.player.Connection.StartSafeWrite(
+                Network.Packets.ServerToClient.PlayerShopClosed.HeaderType,
+                Network.Packets.ServerToClient.PlayerShopClosed.Length))
             {
-                var packet = writer.Span;
-                packet[2] = 0x3F;
-                packet[3] = 3;
-                packet[4] = 1;
-                packet.Slice(5).SetShortSmallEndian(playerId);
+                _ = new PlayerShopClosed(writer.Span)
+                {
+                    PlayerId = playerId,
+                };
                 writer.Commit();
             }
 
             // The following usually just needs to be sent to all players which currently have the shop dialog open
             // For the sake of simplicity, we send it to all players.
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x06))
+            using (var writer = this.player.Connection.StartSafeWrite(ClosePlayerShopDialog.HeaderType, ClosePlayerShopDialog.Length))
             {
-                var packet = writer.Span;
-                packet[2] = 0x3F;
-                packet[3] = 0x12;
-                packet.Slice(4).SetShortSmallEndian(playerId);
+                _ = new ClosePlayerShopDialog(writer.Span)
+                {
+                    PlayerId = playerId,
+                };
                 writer.Commit();
             }
         }

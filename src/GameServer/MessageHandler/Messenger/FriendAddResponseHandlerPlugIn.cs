@@ -6,10 +6,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -25,20 +24,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.FriendAddReponse;
+        public byte Key => FriendAddResponse.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < 0x0E)
-            {
-                // log
-                return;
-            }
-
-            var requesterName = packet.ExtractString(4, 10, Encoding.UTF8);
-            var accepted = packet[3] == 1;
-            this.responseAction.ProceedResponse(player, requesterName, accepted);
+            FriendAddResponse message = packet;
+            this.responseAction.ProceedResponse(player, message.FriendRequesterName, message.Accepted);
         }
     }
 }

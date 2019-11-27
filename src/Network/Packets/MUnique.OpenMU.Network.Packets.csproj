@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.2.0</Version>
+    <Authors>MUnique</Authors>
+    <Description>This package contains message structs for the MMORPG "MU Online", which primarily focused on the english version of Season 6 Episode 3.</Description>
+    <PackageLicense>MIT</PackageLicense>
+    <PackageProjectUrl>https://github.com/MUnique/OpenMU/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MUnique/OpenMU/</RepositoryUrl>
+    <PackageTags />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(ci)'!='true'">
+    <!-- We only run the transformation locally on our dev environment with visual studio.
+        The CI environment is identified by the parameter 'ci'. It's set in the azure pipelines and Dockerfile.
+        If you run into errors here under Linux/Mac OS, it might help to add this parameter, too. -->
+    <XslTransformation OutputPaths="PacketHeaders.cs" XmlInputPaths="PacketHeaders.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='PacketHeaders.cs'/&gt;" />
+    <XslTransformation OutputPaths="CommonEnums.cs" XmlInputPaths="CommonEnums.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='CommonEnums.cs'/&gt;" />
+    <XslTransformation OutputPaths="ClientToServer\ClientToServerPackets.cs" XmlInputPaths="ClientToServer\ClientToServerPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ClientToServerPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ClientToServer'/&gt;" />
+    <XslTransformation OutputPaths="ServerToClient\ServerToClientPackets.cs" XmlInputPaths="ServerToClient\ServerToClientPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ServerToClientPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ServerToClient'/&gt;" />
+  </Target>
+
+</Project>

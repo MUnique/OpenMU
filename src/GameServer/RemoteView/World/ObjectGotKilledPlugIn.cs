@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -32,21 +33,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         {
             var killedId = killed.GetId(this.player);
             var killerId = killer.GetId(this.player);
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 9))
+            using var writer = this.player.Connection.StartSafeWrite(
+                Network.Packets.ServerToClient.ObjectGotKilled.HeaderType,
+                Network.Packets.ServerToClient.ObjectGotKilled.Length);
+            _ = new ObjectGotKilled(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x17;
-                packet[3] = killedId.GetHighByte();
-                packet[4] = killedId.GetLowByte();
-                packet[7] = killerId.GetHighByte();
-                packet[8] = killerId.GetLowByte();
-                writer.Commit();
-            }
+                KilledId = killedId,
+                KillerId = killerId,
+            };
 
             if (this.player == killed && killer is Player killerPlayer)
             {
                 this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal);
             }
+
+            writer.Commit();
         }
     }
 }

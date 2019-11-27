@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,19 +30,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         public void ItemMoveFailed(Item item)
         {
             var itemSerializer = this.player.ItemSerializer;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 5 + itemSerializer.NeededSpace))
+            using var writer = this.player.Connection.StartSafeWrite(ItemMoveRequestFailed.HeaderType, ItemMoveRequestFailed.GetRequiredSize(itemSerializer.NeededSpace));
+            var message = new ItemMoveRequestFailed(writer.Span);
+            if (item != null)
             {
-                var itemMoveFailed = writer.Span;
-                itemMoveFailed[2] = 0x24;
-                itemMoveFailed[3] = 0xFF;
-                itemMoveFailed[4] = 0;
-                if (item != null)
-                {
-                    this.player.ItemSerializer.SerializeItem(itemMoveFailed.Slice(5), item);
-                }
-
-                writer.Commit();
+                itemSerializer.SerializeItem(message.ItemData, item);
             }
+
+            writer.Commit();
         }
     }
 }

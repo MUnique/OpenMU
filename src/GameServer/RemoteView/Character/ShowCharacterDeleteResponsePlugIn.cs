@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
+    using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,14 +29,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void ShowCharacterDeleteResponse(CharacterDeleteResult result)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x05))
+            var writer = this.player.Connection.StartSafeWrite(CharacterDeleteResponse.HeaderType, CharacterDeleteResponse.Length);
+            _ = new CharacterDeleteResponse(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xF3;
-                packet[3] = 0x02;
-                packet[4] = (byte)result;
-                writer.Commit();
-            }
+                Result = ConvertResult(result),
+            };
+
+            writer.Commit();
+        }
+
+        private static CharacterDeleteResponse.CharacterDeleteResult ConvertResult(CharacterDeleteResult result)
+        {
+            return result switch
+            {
+                CharacterDeleteResult.Successful => CharacterDeleteResponse.CharacterDeleteResult.Successful,
+                CharacterDeleteResult.Unsuccessful => CharacterDeleteResponse.CharacterDeleteResult.Unsuccessful,
+                CharacterDeleteResult.WrongSecurityCode => CharacterDeleteResponse.CharacterDeleteResult.WrongSecurityCode,
+                _ => throw new ArgumentException($"Case {result} is not handled."),
+            };
         }
     }
 }

@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,38 +30,30 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <inheritdoc/>
         public void ShowGuildList(IEnumerable<OpenMU.Interfaces.GuildListEntry> players)
         {
-            const int playerEntryLength = 13;
             var playerCount = players.Count();
 
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, 6 + 18 + (playerCount * playerEntryLength)))
+            using var writer = this.player.Connection.StartSafeWrite(GuildList.HeaderType, GuildList.GetRequiredSize(playerCount));
+            var packet = new GuildList(writer.Span)
             {
-                var packet = writer.Span;
-                packet[3] = 0x52;
-                packet[4] = playerCount > 0 ? (byte)1 : (byte)0;
-                packet[5] = (byte)playerCount;
+                GuildMemberCount = (byte)playerCount,
+                IsInGuild = playerCount > 0,
+                RivalGuildName = string.Empty, // TODO
+                CurrentScore = 0, // TODO
+                TotalScore = 0, // TODO
+            };
 
-                uint totalScore = 0; // TODO
-                byte score = 0; // TODO
-                string rivalGuildName = "TODO"; // TODO
-                packet.Slice(8).SetIntegerBigEndian(totalScore); // 2 bytes are padding (6+7)
-                packet[12] = score;
-                packet.Slice(13).WriteString(rivalGuildName, Encoding.UTF8);
-                //// next 2 bytes are padding (22+23)
-                int i = 0;
-                foreach (var guildPlayer in players)
-                {
-                    var playerBlock = packet.Slice(24 + (i * playerEntryLength), playerEntryLength);
-                    playerBlock.WriteString(guildPlayer.PlayerName, Encoding.UTF8);
-
-                    playerBlock[10] = guildPlayer.ServerId;
-                    playerBlock[11] = (byte)(guildPlayer.ServerId == 0xFF ? 0x7F : 0x80 + guildPlayer.ServerId);
-                    playerBlock[12] = guildPlayer.PlayerPosition.GetViewValue();
-
-                    i++;
-                }
-
-                writer.Commit();
+            int i = 0;
+            foreach (var member in players)
+            {
+                var memberBlock = packet[i];
+                memberBlock.Name = member.PlayerName;
+                memberBlock.Role = member.PlayerPosition.Convert();
+                memberBlock.ServerId = member.ServerId;
+                memberBlock.ServerId2 = (byte)(member.ServerId == 0xFF ? 0x7F : 0x80 + member.ServerId);
+                i++;
             }
+
+            writer.Commit();
         }
     }
 }

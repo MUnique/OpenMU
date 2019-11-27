@@ -4,12 +4,12 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
-    using System;
     using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,29 +31,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void UpdateMasterSkills()
         {
             var masterSkills = this.player.SkillList.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
-
-            const int sizePerSkill = 12;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, 12 + (masterSkills.Count * sizePerSkill)))
+            using var writer = this.player.Connection.StartSafeWrite(MasterSkillList.HeaderType, MasterSkillList.GetRequiredSize(masterSkills.Count));
+            var packet = new MasterSkillList(writer.Span)
             {
-                var packet = writer.Span;
-                packet[3] = 0xF3;
-                packet[4] = 0x53;
-                packet.Slice(8).SetIntegerBigEndian((uint)masterSkills.Count);
-                var skillsBlock = packet.Slice(12);
-                foreach (var masterSkill in masterSkills)
-                {
-                    skillsBlock[0] = masterSkill.Skill.GetMasterSkillIndex(this.player.SelectedCharacter.CharacterClass);
-                    skillsBlock[1] = (byte)masterSkill.Level;
-                    //// 2 bytes padding
-                    // Instead of using the BitConverter, we should use something more efficient. BitConverter creates an array.
-                    BitConverter.GetBytes(masterSkill.CalculateDisplayValue()).CopyTo(skillsBlock.Slice(4, 4));
-                    BitConverter.GetBytes(masterSkill.CalculateNextDisplayValue()).CopyTo(skillsBlock.Slice(8, 4));
+                MasterSkillCount = (uint)masterSkills.Count,
+            };
 
-                    skillsBlock = skillsBlock.Slice(sizePerSkill);
-                }
-
-                writer.Commit();
+            int i = 0;
+            foreach (var masterSkill in masterSkills)
+            {
+                var skillsBlock = packet[i];
+                skillsBlock.MasterSkillIndex = masterSkill.Skill.GetMasterSkillIndex(this.player.SelectedCharacter.CharacterClass);
+                skillsBlock.Level = (byte)masterSkill.Level;
+                skillsBlock.DisplayValue = masterSkill.CalculateDisplayValue();
+                skillsBlock.DisplayValueOfNextLevel = masterSkill.CalculateNextDisplayValue();
+                i++;
             }
+
+            writer.Commit();
         }
     }
 }

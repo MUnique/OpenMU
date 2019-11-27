@@ -7,46 +7,46 @@ namespace MUnique.OpenMU.GameLogic.Views.Guild
     /// <summary>
     /// Guild join request answer result.
     /// </summary>
-    public enum GuildRequestAnswerResult : byte
+    public enum GuildRequestAnswerResult
     {
         /// <summary>
         /// Refused by the guild master.
         /// </summary>
-        Refused = 0,
+        Refused,
 
         /// <summary>
         /// Accepted by the guild master.
         /// </summary>
-        Accepted = 1,
+        Accepted,
 
         /// <summary>
         /// The guild is full.
         /// </summary>
-        GuildFull = 2,
+        GuildFull,
 
         /// <summary>
         /// The guild master is disconnected.
         /// </summary>
-        Disconnected = 3,
+        Disconnected,
 
         /// <summary>
         /// The requested player is not the guild master of its guild.
         /// </summary>
-        NotTheGuildMaster = 4,
+        NotTheGuildMaster,
 
         /// <summary>
         /// The player already has a guild.
         /// </summary>
-        AlreadyHaveGuild = 5,
+        AlreadyHaveGuild,
 
         /// <summary>
         /// The guild master or the requesting player is busy, e.g. by another request or by an ongoing guild war.
         /// </summary>
-        GuildMasterOrRequesterIsBusy = 6,
+        GuildMasterOrRequesterIsBusy,
 
         /// <summary>
         /// The requesting player needs a minimum level of 6.
         /// </summary>
-        MinimumLevel6 = 7,
+        MinimumLevel6,
     }
 }

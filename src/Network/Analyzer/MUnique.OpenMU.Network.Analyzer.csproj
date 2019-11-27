@@ -24,6 +24,17 @@
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Packets\ClientToServer\ClientToServerPackets.xml" Link="ClientToServerPackets.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Packets\CommonEnums.xml" Link="CommonEnums.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Packets\ServerToClient\ServerToClientPackets.xml" Link="ServerToClientPackets.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -31,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MUnique.OpenMU.Network.csproj" />
+    <ProjectReference Include="..\Packets\MUnique.OpenMU.Network.Packets.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="MainForm.cs">
@@ -41,13 +53,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Update="ClientToServerPackets.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Readme.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ServerToClientPackets.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

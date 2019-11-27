@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -20,22 +21,22 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         private readonly ItemRepairAction repairAction = new ItemRepairAction();
 
         /// <inheritdoc/>
-        public bool IsEncryptionExpected => false;
+        public bool IsEncryptionExpected { get; } = RepairItemRequest.HeaderType >= 0xC3;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.ItemRepair;
+        public byte Key => RepairItemRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            var slot = packet[3];
-            if (slot == 0xFF)
+            RepairItemRequest message = packet;
+            if (message.ItemSlot == 0xFF)
             {
                 this.repairAction.RepairAllItems(player);
             }
             else
             {
-                this.repairAction.RepairItem(player, slot);
+                this.repairAction.RepairItem(player, message.ItemSlot);
             }
         }
     }

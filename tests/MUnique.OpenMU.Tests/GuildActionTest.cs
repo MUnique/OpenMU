@@ -70,7 +70,7 @@ namespace MUnique.OpenMU.Tests
 
             Assert.That(this.player.GuildStatus, Is.Not.Null);
             Assert.That(this.player.GuildStatus.GuildId, Is.Not.EqualTo(0));
-            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g.GuildJoinResponse(GuildRequestAnswerResult.Accepted), Times.Once);
+            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g.ShowGuildJoinResponse(GuildRequestAnswerResult.Accepted), Times.Once);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.Tests
         {
             this.RequestGuildAndRespond(false);
             Assert.That(this.player.GuildStatus, Is.Null);
-            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g.GuildJoinResponse(GuildRequestAnswerResult.Refused), Times.Once);
+            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g.ShowGuildJoinResponse(GuildRequestAnswerResult.Refused), Times.Once);
         }
 
         /// <summary>

@@ -12,16 +12,16 @@ namespace MUnique.OpenMU.GameLogic.Views.Guild
         /// <summary>
         /// Kicking failed. Player stays at guild.
         /// </summary>
-        Failed = 0,
+        Failed,
 
         /// <summary>
         /// Kicking succeeded. Player left the guild.
         /// </summary>
-        KickSucceeded = 1,
+        KickSucceeded,
 
         /// <summary>
         /// Kicking succeeded and guild got disbanded.
         /// </summary>
-        GuildDisband = 4,
+        GuildDisband,
     }
 }

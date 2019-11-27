@@ -5,10 +5,11 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
+    using System.ComponentModel;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -22,23 +23,25 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.VaultMoneyInOut;
+        public byte Key => VaultMoveMoneyRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            int zen = (int)packet.MakeDwordBigEndian(4);
-
-            if (packet[3] == 0)
+            VaultMoveMoneyRequest request = packet;
+            switch (request.Direction)
             {
-                player.TryDepositVaultMoney(zen);
-            }
-            else
-            {
-                player.TryTakeVaultMoney(zen);
+                case VaultMoveMoneyRequest.VaultMoneyMoveDirection.InventoryToVault:
+                    player.TryDepositVaultMoney((int)request.Amount);
+                    break;
+                case VaultMoveMoneyRequest.VaultMoneyMoveDirection.VaultToInventory:
+                    player.TryTakeVaultMoney((int)request.Amount);
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException($"The direction {request.Direction} is not a valid value.");
             }
 
-            player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney();
+            player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney(true);
         }
     }
 }

@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
@@ -42,16 +43,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             var objectId = obj.GetId(this.player);
             if (type == MoveType.Instant)
             {
-                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x08))
+                using var writer = this.player.Connection.StartSafeWrite(0xC1, 0x08);
+                _ = new ObjectMoved(writer.Span)
                 {
-                    var packet = writer.Span;
-                    packet[2] = this.GetInstantMoveCode();
-                    packet[3] = objectId.GetHighByte();
-                    packet[4] = objectId.GetLowByte();
-                    packet[5] = obj.Position.X;
-                    packet[6] = obj.Position.Y;
-                    writer.Commit();
-                }
+                    HeaderCode = this.GetInstantMoveCode(),
+                    ObjectId = objectId,
+                    PositionX = obj.Position.X,
+                    PositionY = obj.Position.Y,
+                };
+
+                writer.Commit();
             }
             else
             {
@@ -92,28 +93,38 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
 
             var stepsSize = steps == null ? 1 : (steps.Length / 2) + 2;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 8 + stepsSize))
+            using var writer = this.player.Connection.StartSafeWrite(
+                Network.Packets.ServerToClient.ObjectWalked.HeaderType,
+                Network.Packets.ServerToClient.ObjectWalked.GetRequiredSize(stepsSize));
+            var walkPacket = new ObjectWalked(writer.Span)
             {
-                var walkPacket = writer.Span;
-                walkPacket[2] = this.GetWalkCode();
-                walkPacket[3] = objectId.GetHighByte();
-                walkPacket[4] = objectId.GetLowByte();
-                walkPacket[5] = targetPoint.X;
-                walkPacket[6] = targetPoint.Y;
-                walkPacket[7] = (byte)(stepsLength | rotation.ToPacketByte() << 4);
-                if (steps != null && stepsLength > 0)
-                {
-                    walkPacket[8] = (byte) (steps[0].ToPacketByte() << 4 | stepsSize);
-                    for (int i = 0; i < stepsSize; i += 2)
-                    {
-                        var index = 9 + (i / 2);
-                        var firstStep = steps[i].ToPacketByte();
-                        var secondStep = steps.Length > i + 1 ? steps[i + 1].ToPacketByte() : 0;
-                        walkPacket[index] = (byte)(firstStep << 4 | secondStep);
-                    }
-                }
+                HeaderCode = this.GetWalkCode(),
+                ObjectId = objectId,
+                TargetX = targetPoint.X,
+                TargetY = targetPoint.Y,
+                TargetRotation = rotation.ToPacketByte(),
+                StepCount = (byte)stepsLength,
+            };
 
-                writer.Commit();
+            this.SetStepData(walkPacket, steps, stepsSize);
+
+            writer.Commit();
+        }
+
+        private void SetStepData(ObjectWalked walkPacket, Span<Direction> steps, int stepsSize)
+        {
+            if (steps == default || walkPacket.StepCount == 0)
+            {
+                return;
+            }
+
+            walkPacket.StepData[0] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
+            for (int i = 0; i < stepsSize; i += 2)
+            {
+                var index = 1 + (i / 2);
+                var firstStep = steps[i].ToPacketByte();
+                var secondStep = steps.Length > i + 1 ? steps[i + 1].ToPacketByte() : 0;
+                walkPacket.StepData[index] = (byte)(firstStep << 4 | secondStep);
             }
         }
 

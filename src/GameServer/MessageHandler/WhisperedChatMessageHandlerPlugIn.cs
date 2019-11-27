@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -15,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     internal class WhisperedChatMessageHandlerPlugIn : ChatMessageBaseHandlerPlugIn
     {
         /// <inheritdoc />
-        public override byte Key => (int)PacketType.Whisper;
+        public override byte Key => WhisperMessage.Code;
 
         /// <inheritdoc />
         protected override bool IsWhisper => true;

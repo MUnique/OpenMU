@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,20 +30,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCurrentHealth()
         {
-            // C1 09 26 FE 00 C3 00 00 85
-            var hp = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f);
-            var sd = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f);
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x09))
+            using var writer = this.player.Connection.StartSafeWrite(CurrentHealthAndShield.HeaderType, CurrentHealthAndShield.Length);
+            _ = new CurrentHealthAndShield(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x26;
-                packet[3] = (byte)UpdateType.Current;
-                packet[4] = hp.GetHighByte();
-                packet[5] = hp.GetLowByte();
-                packet[7] = sd.GetHighByte();
-                packet[8] = sd.GetLowByte();
-                writer.Commit();
-            }
+                Health = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f),
+                Shield = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f),
+            };
+
+            writer.Commit();
         }
     }
 }

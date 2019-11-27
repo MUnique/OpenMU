@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -37,17 +38,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 // On a normal exp server this should never be an issue, but with higher settings, it fixes the problem that the exp bar
                 // shows less exp than the player actually gained.
                 ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
-                using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x09))
+                using var writer = this.player.Connection.StartSafeWrite(ExperienceGained.HeaderType, ExperienceGained.Length);
+                _ = new ExperienceGained(writer.Span)
                 {
-                    var packet = writer.Span;
-                    packet[2] = 0x16;
-                    packet.Slice(3).SetShortSmallEndian(id);
-                    packet.Slice(5).SetShortSmallEndian(sendExp);
-                    packet.Slice(7).SetShortSmallEndian((ushort)((obj as IAttackable)?.LastReceivedDamage ?? 0));
-                    writer.Commit();
-                }
+                    KilledObjectId = id,
+                    AddedExperience = sendExp,
+                    DamageOfLastHit = (ushort)((obj as IAttackable)?.LastReceivedDamage ?? 0),
+                };
 
                 remainingExperience -= sendExp;
+                writer.Commit();
             }
         }
     }

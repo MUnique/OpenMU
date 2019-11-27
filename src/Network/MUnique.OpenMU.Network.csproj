@@ -26,6 +26,11 @@
     <EmbeddedResource Remove="Analyzer\**" />
     <None Remove="Analyzer\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Packets\**" />
+    <EmbeddedResource Remove="Packets\**" />
+    <None Remove="Packets\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />

@@ -9,6 +9,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,23 +33,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         {
             var appearanceSerializer = this.player.AppearanceSerializer;
             var letterIndex = this.player.SelectedCharacter.Letters.IndexOf(letter.Header);
-            var headerSize = appearanceSerializer.NeededSpace + 10;
-            var messageSize = Encoding.UTF8.GetByteCount(letter.Message);
-            var len = (ushort)(messageSize + headerSize);
-            using (var writer = this.player.Connection.StartSafeWrite(0xC4, len))
+            using var writer = this.player.Connection.StartSafeWrite(OpenLetter.HeaderType, OpenLetter.GetRequiredSize(letter.Message));
+
+            var result = new OpenLetter(writer.Span)
             {
-                var result = writer.Span;
-                result[3] = 0xC7;
-                result[4] = ((ushort)letterIndex).GetLowByte();
-                result[5] = ((ushort)letterIndex).GetHighByte();
-                result[6] = ((ushort)messageSize).GetLowByte();
-                result[7] = ((ushort)messageSize).GetHighByte();
-                appearanceSerializer.WriteAppearanceData(result.Slice(8, appearanceSerializer.NeededSpace), letter.SenderAppearance, false);
-                result[8 + appearanceSerializer.NeededSpace] = letter.Rotation;
-                result[9 + appearanceSerializer.NeededSpace] = letter.Animation;
-                result.Slice(headerSize).WriteString(letter.Message, Encoding.UTF8);
-                writer.Commit();
-            }
+                LetterIndex = (ushort)letterIndex,
+                MessageSize = (ushort)Encoding.UTF8.GetByteCount(letter.Message),
+                Animation = letter.Animation,
+                Rotation = letter.Rotation,
+                Message = letter.Message,
+            };
+
+            appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letter.SenderAppearance, false);
+
+            writer.Commit();
         }
     }
 }

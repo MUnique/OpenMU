@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,14 +28,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void FriendStateUpdate(string friend, int serverId)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x0E))
+            using var writer = this.player.Connection.StartSafeWrite(FriendOnlineStateUpdate.HeaderType, FriendOnlineStateUpdate.Length);
+            _ = new FriendOnlineStateUpdate(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0xC4;
-                packet.Slice(3).WriteString(friend, Encoding.UTF8);
-                packet[packet.Length - 1] = (byte)serverId;
-                writer.Commit();
-            }
+                FriendName = friend,
+                ServerId = (byte)serverId,
+            };
+            writer.Commit();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -31,15 +31,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// </remarks>
         public override void HandlePacket(Player player, Span<byte> packet)
         {
-            byte skillIndex = packet[3];
-            var skill = player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.GetSkillByIndex(skillIndex);
+            TargetedSkill075 message = packet;
+            var skill = player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.GetSkillByIndex(message.SkillId);
             if (skill == null)
             {
                 return;
             }
 
-            ushort targetId = packet.MakeWordSmallEndian(4);
-            this.Handle(player, (ushort)skill.Number, targetId);
+            this.Handle(player, (ushort)skill.Number, message.TargetId);
         }
     }
 }

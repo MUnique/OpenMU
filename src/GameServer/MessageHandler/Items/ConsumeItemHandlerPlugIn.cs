@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,16 +24,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.ConsumeItem;
+        public byte Key => ConsumeItemRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            byte invPos = packet[3];
-            byte invTarget = packet[4];
-            //// byte itemUseType = packet[5]; ////Dont know for what its used yet
-
-            this.consumeAction.HandleConsumeRequest(player, invPos, invTarget);
+            ConsumeItemRequest message = packet;
+            this.consumeAction.HandleConsumeRequest(player, message.ItemSlot, message.TargetSlot);
         }
     }
 }

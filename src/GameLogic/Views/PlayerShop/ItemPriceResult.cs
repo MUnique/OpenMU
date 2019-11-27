@@ -14,36 +14,36 @@ namespace MUnique.OpenMU.GameLogic.Views.PlayerShop
         /// <summary>
         /// Failed, e.g. because the shop feature is deactivated.
         /// </summary>
-        Failed = 0,
+        Failed,
 
         /// <summary>
         /// The price has been set successfully.
         /// </summary>
-        Success = 1,
+        Success,
 
         /// <summary>
         /// Failed because the item slot was out of range.
         /// </summary>
-        ItemSlotOutOfRange = 2,
+        ItemSlotOutOfRange,
 
         /// <summary>
         /// Failed because the item could not be found.
         /// </summary>
-        ItemNotFound = 3,
+        ItemNotFound,
 
         /// <summary>
         /// Failed because the price was negative.
         /// </summary>
-        PriceNegative = 4,
+        PriceNegative,
 
         /// <summary>
         /// Failed because the item is blocked.
         /// </summary>
-        ItemIsBlocked = 5,
+        ItemIsBlocked,
 
         /// <summary>
         /// Failed because the character level is too low (below level 6).
         /// </summary>
-        CharacterLevelTooLow = 6,
+        CharacterLevelTooLow,
     }
 }

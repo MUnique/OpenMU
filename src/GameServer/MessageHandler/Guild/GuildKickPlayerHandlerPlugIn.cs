@@ -6,10 +6,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -25,15 +24,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => (byte)PacketType.GuildKickPlayer;
+        public byte Key => GuildKickPlayerRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player guildMaster, Span<byte> packet)
         {
-            var nickname = packet.ExtractString(3, 10, Encoding.UTF8);
-            var securityCode = packet.ExtractString(13, packet.Length - 13, Encoding.UTF8);
-
-            this.kickAction.KickPlayer(guildMaster, nickname, securityCode);
+            GuildKickPlayerRequest request = packet;
+            this.kickAction.KickPlayer(guildMaster, request.PlayerName, request.SecurityCode);
         }
     }
 }

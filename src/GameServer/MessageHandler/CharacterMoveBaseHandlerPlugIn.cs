@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.World;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
@@ -37,11 +38,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            var x = packet[3];
-            var y = packet[4];
             if (this.MoveType == MoveType.Walk)
             {
-                this.Walk(player, packet, new Point(x, y));
+                WalkRequest request = packet;
+                this.Walk(player, request, new Point(request.SourceX, request.SourceY));
             }
             else
             {
@@ -52,25 +52,26 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 #if DEBUG
                 if (System.Diagnostics.Debugger.IsAttached)
                 {
-                    player.Move(new Point(x, y));
+                    InstantMoveRequest moveRequest = packet;
+                    player.Move(new Point(moveRequest.TargetX, moveRequest.TargetY));
                 }
 #endif
             }
         }
 
-        private void Walk(Player player, Span<byte> packet, Point sourcePoint)
+        private void Walk(Player player, WalkRequest request, Point sourcePoint)
         {
-            if (packet.Length > 6)
+            if (request.Header.Length > 6)
             {
                 // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
-                var steps = this.GetSteps(sourcePoint, this.GetDirections(packet));
+                var steps = this.GetSteps(sourcePoint, this.GetDirections(request.Directions));
                 Point target = this.GetTarget(steps, sourcePoint);
 
                 player.WalkTo(target, steps);
             }
             else
             {
-                var rotationValue = (byte)((packet[5] >> 4) & 0x0F);
+                var rotationValue = (byte)((request.Directions[0] >> 4) & 0x0F);
                 player.Rotation = rotationValue.ParseAsDirection();
             }
         }
@@ -105,25 +106,25 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <summary>
         /// Gets the walking directions from the walk packet.
         /// </summary>
-        /// <param name="packet">The walk packet.</param>
+        /// <param name="binaryDirections">The walking directions as binary data.</param>
         /// <returns>The walking directions.</returns>
         /// <remarks>
         /// We return here the directions left-rotated; I don't know yet if that's an error in our Direction-enum
         /// or just the client uses another enumeration for it.
         /// </remarks>
-        private Span<Direction> GetDirections(Span<byte> packet)
+        private Span<Direction> GetDirections(Span<byte> binaryDirections)
         {
             // the first 4 bits of the first path byte contains the number of steps
-            var count = packet[5] & 0x0F;
+            var count = binaryDirections[0] & 0x0F;
             var result = new Direction[count];
-            var firstDirectionValue = (byte)((packet[5] >> 4) & 0x0F);
+            var firstDirectionValue = (byte)((binaryDirections[0] >> 4) & 0x0F);
             result[0] = firstDirectionValue.ParseAsDirection();
 
             int i;
             for (i = 1; i < count; i++)
             {
-                var index = 5 + (i / 2);
-                var directionValue = (byte)((packet[index] >> ((i % 2) == 0 ? 0 : 4)) & 0x0F);
+                var index = 0 + (i / 2);
+                var directionValue = (byte)((binaryDirections[index] >> ((i % 2) == 0 ? 0 : 4)) & 0x0F);
                 result[i] = directionValue.ParseAsDirection();
             }
 

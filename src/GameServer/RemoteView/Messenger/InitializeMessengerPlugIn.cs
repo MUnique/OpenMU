@@ -7,9 +7,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -34,46 +35,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
             var friends = friendServer.GetFriendList(this.player.SelectedCharacter.Id);
             var friendList = friends as ICollection<string> ?? friends.ToList();
 
-            var letterCount = (byte)this.player.SelectedCharacter.Letters.Count;
-            if (friendList.Count == 0)
+            using var writer = this.player.Connection.StartSafeWrite(MessengerInitialization.HeaderType, MessengerInitialization.GetRequiredSize(friendList.Count));
+            var message = new MessengerInitialization(writer.Span)
             {
-                using (var writer = this.player.Connection.StartSafeWrite(0xC2, 7))
-                {
-                    var packet = writer.Span;
-                    packet[3] = 0xC0;
-                    packet[4] = letterCount;
-                    packet[5] = (byte)maxLetters;
-                    packet[6] = 0;
-                    writer.Commit();
-                }
-            }
-            else
+                FriendCount = (byte)friendList.Count,
+                LetterCount = (byte)this.player.SelectedCharacter.Letters.Count,
+                MaximumLetterCount = (byte)maxLetters,
+            };
+
+            int i = 0;
+            foreach (var friend in friendList)
             {
-                var friendListCount = (byte)friendList.Count;
-                const byte sizePerFriend = 11;
-                ////C2 00 06 C0 06 32
-                var packetLength = (ushort)(7 + (sizePerFriend * friendListCount));
-                using (var writer = this.player.Connection.StartSafeWrite(0xC2, packetLength))
-                {
-                    var packet = writer.Span;
-                    packet[3] = 0xC0;
-                    packet[4] = letterCount;
-                    packet[5] = (byte)maxLetters;
-                    packet[6] = friendListCount;
-
-                    int i = 0;
-                    foreach (var friend in friendList)
-                    {
-                        var friendBlock = packet.Slice(7 + (i * sizePerFriend), sizePerFriend);
-                        friendBlock.WriteString(friend, Encoding.UTF8);
-                        friendBlock[friendBlock.Length - 1] = 0xFF;
-                        i++;
-                    }
-
-                    writer.Commit();
-                }
+                var friendBlock = message[i];
+                friendBlock.Name = friend;
+                friendBlock.ServerId = (byte)SpecialServerId.Offline;
+                i++;
             }
 
+            writer.Commit();
             foreach (var requesterName in friendServer.GetOpenFriendRequests(this.player.SelectedCharacter.Id))
             {
                 this.player.ViewPlugIns.GetPlugIn<IShowFriendRequestPlugIn>()?.ShowFriendRequest(requesterName);

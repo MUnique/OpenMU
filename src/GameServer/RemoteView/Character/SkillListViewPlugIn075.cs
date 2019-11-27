@@ -8,6 +8,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views.Character;
+    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -31,38 +33,66 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         {
         }
 
-        /// <summary>
-        /// Gets the size of the skill block.
-        /// </summary>
-        /// <remarks>
-        /// Season 6 uses 4 bytes; first for the index, 2 for the skill id, the last one for the (master) level of the skill.
-        /// </remarks>
-        protected override int SkillBlockSize => 3;
-
-        /// <summary>
-        /// Gets the start index of the skill blocks, after the header with the skill count, where <see cref="WriteSkillBlock" /> is used.
-        /// </summary>
-        /// <remarks>
-        /// In earlier versions, the skills blocks start one byte before. I guess it's some kind of a byte alignment change.
-        /// </remarks>
-        protected override int SkillsStartIndex => 5;
-
-        /// <summary>
-        /// Writes a skill into the specified block.
-        /// </summary>
-        /// <param name="skillBlock">The skill block.</param>
-        /// <param name="skill">The skill.</param>
-        /// <param name="skillLevel">The skill level.</param>
-        /// <param name="skillIndex">Index of the skill.</param>
-        protected override void WriteSkillBlock(Span<byte> skillBlock, Skill skill, byte skillLevel, byte skillIndex)
+        /// <inheritdoc/>
+        public override void AddSkill(Skill skill)
         {
-            skillBlock[0] = skillIndex;
-            skillBlock[1] = (byte)skill.Number;
+            var skillIndex = this.AddSkillToList(skill);
+            using var writer = this.Player.Connection.StartSafeWrite(SkillAdded.HeaderType, SkillAdded.Length);
+            _ = new SkillAdded075(writer.Span)
+            {
+                SkillIndex = skillIndex,
+                SkillNumberAndLevel = this.GetSkillNumberAndLevel(skill),
+            };
+            writer.Commit();
+        }
 
-            // The next line seems strange but is correct. The same part of the skill number is already set in index 1.
+        /// <inheritdoc/>
+        public override void RemoveSkill(Skill skill)
+        {
+            var skillIndex = this.SkillList.IndexOf(skill);
+            using var writer = this.Player.Connection.StartSafeWrite(SkillRemoved.HeaderType, SkillRemoved.Length);
+            _ = new SkillRemoved075(writer.Span)
+            {
+                SkillIndex = (byte)skillIndex,
+                SkillNumberAndLevel = this.GetSkillNumberAndLevel(skill),
+            };
+
+            this.SkillList[skillIndex] = null;
+            writer.Commit();
+        }
+
+        /// <inheritdoc/>
+        public override void UpdateSkillList()
+        {
+            this.BuildSkillList();
+
+            using var writer = this.Player.Connection.StartSafeWrite(SkillListUpdate.HeaderType, SkillListUpdate.GetRequiredSize(this.SkillList.Count));
+            var packet = new SkillListUpdate075(writer.Span)
+            {
+                Count = (byte)this.SkillList.Count,
+            };
+
+            for (byte i = 0; i < this.SkillList.Count; i++)
+            {
+                var skillEntry = packet[i];
+                skillEntry.SkillIndex = i;
+                skillEntry.SkillNumberAndLevel = this.GetSkillNumberAndLevel(this.SkillList[i]);
+            }
+
+            writer.Commit();
+        }
+
+        private ushort GetSkillNumberAndLevel(Skill skill)
+        {
+            ushort result = (ushort)((skill.Number & 0xFF) << 8);
+
+            // The next lines seems strange but is correct. The same part of the skill number is already set in the first byte.
             // Unfortunately it's unclear to us which skill got a level greater than 0 in these early versions.
             // It might be the item level of a weapon with a skill, but this should not be of interest for the client.
-            skillBlock[2] = (byte)((skill.Number & 7) | (skillLevel << 3));
+            // It could be the type of summoning orb skill, too. For now, we just don't send this level.
+            var skillLevel = 0;
+            var secondByte = (byte)((skill.Number & 7) | (skillLevel << 3));
+            return (ushort)(result + secondByte);
         }
     }
 }

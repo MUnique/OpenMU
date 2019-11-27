@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
-    using System.Collections.Generic;
     using System.Linq;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -59,7 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 foreach (Item jewel in jewels)
                 {
                     player.Inventory.RemoveItem(jewel);
-                    player.ViewPlugIns.GetPlugIn<IItemConsumedPlugIn>()?.ItemConsumed(jewel.ItemSlot, true);
+                    player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(jewel.ItemSlot);
                 }
 
                 var stacked = player.PersistenceContext.CreateNew<Item>();
@@ -117,7 +116,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             player.Inventory.RemoveItem(stacked);
-            player.ViewPlugIns.GetPlugIn<IItemConsumedPlugIn>()?.ItemConsumed(slot, true);
+            player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(slot);
             foreach (var freeSlot in freeSlots)
             {
                 var jewel = player.PersistenceContext.CreateNew<Item>();

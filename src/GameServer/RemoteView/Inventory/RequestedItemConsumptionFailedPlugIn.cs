@@ -8,8 +8,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
-    using MUnique.OpenMU.GameServer.RemoteView.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,23 +28,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         public RequestedItemConsumptionFailedPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc />
-        /// <remarks>The server sends the current health/shield to the client, with <see cref="UpdateType.Failed"/>.</remarks>
+        /// <remarks>The server sends the current health/shield to the client, with <see cref="ItemConsumptionFailed"/>.</remarks>
         public void RequestedItemConsumptionFailed()
         {
-            var hp = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f);
-            var sd = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f);
-
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x09))
+            using var writer = this.player.Connection.StartSafeWrite(ItemConsumptionFailed.HeaderType, ItemConsumptionFailed.Length);
+            _ = new ItemConsumptionFailed(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x26;
-                packet[3] = (byte)UpdateType.Failed;
-                packet[4] = hp.GetHighByte();
-                packet[5] = hp.GetLowByte();
-                packet[7] = sd.GetHighByte();
-                packet[8] = sd.GetLowByte();
-                writer.Commit();
-            }
+                Health = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f),
+                Shield = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f),
+            };
+
+            writer.Commit();
         }
     }
 }

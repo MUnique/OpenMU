@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -36,21 +37,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             // 01
             // 34 4B 00 00 80 00 00
             // A4 F2 00 00 00
-            const int sizePerPlayer = 12;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, (guildPlayers.Count * sizePerPlayer) + 5))
+            using var writer = this.player.Connection.StartSafeWrite(0xC2, AssignCharacterToGuild.GetRequiredSize(guildPlayers.Count));
+            var packet = new AssignCharacterToGuild(writer.Span)
             {
-                var packet = writer.Span;
-                packet[3] = 0x65;
-                packet[4] = (byte)guildPlayers.Count;
-                int i = 0;
-                foreach (var guildPlayer in guildPlayers)
-                {
-                    this.SetGuildPlayerBlock(packet.Slice(5 + (i * sizePerPlayer)), guildPlayer, appearsNew);
-                    i++;
-                }
+                PlayerCount = (byte)guildPlayers.Count,
+            };
 
-                writer.Commit();
+            int i = 0;
+            foreach (var guildPlayer in guildPlayers)
+            {
+                this.SetGuildPlayerBlock(packet[i], guildPlayer, appearsNew);
+                i++;
             }
+
+            writer.Commit();
         }
 
         /// <inheritdoc />
@@ -61,27 +61,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             // 01
             // 34 4B 00 00 80 00 00
             // A4 F2 00 00 00
-            const int sizePerPlayer = 12;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, sizePerPlayer + 5))
+            using var writer = this.player.Connection.StartSafeWrite(AssignCharacterToGuild.HeaderType, AssignCharacterToGuild.GetRequiredSize(1));
+            var packet = new AssignCharacterToGuild(writer.Span)
             {
-                var packet = writer.Span;
-                packet[3] = 0x65;
-                packet[4] = 1; // One player
-                this.SetGuildPlayerBlock(packet.Slice(5), guildPlayer, appearsNew);
+                PlayerCount = 1,
+            };
 
-                writer.Commit();
-            }
+            this.SetGuildPlayerBlock(packet[0], guildPlayer, appearsNew);
+
+            writer.Commit();
         }
 
-        private void SetGuildPlayerBlock(Span<byte> playerBlock, Player guildPlayer, bool appearsNew)
+        private void SetGuildPlayerBlock(AssignCharacterToGuild.GuildMemberRelation playerBlock, Player guildPlayer, bool appearsNew)
         {
-            playerBlock.SetIntegerBigEndian(guildPlayer.GuildStatus.GuildId);
-            playerBlock[4] = guildPlayer.GuildStatus.Position.GetViewValue();
-
-            var playerId = guildPlayer.GetId(this.player);
-            playerBlock[7] = (byte)(playerId.GetHighByte() | (appearsNew ? 0x80 : 0));
-            playerBlock[8] = playerId.GetLowByte();
-            ////todo: for alliances there is an extra packet, code 0x67
+            playerBlock.GuildId = guildPlayer.GuildStatus.GuildId;
+            playerBlock.Role = guildPlayer.GuildStatus.Position.Convert();
+            playerBlock.PlayerId = guildPlayer.GetId(this.player);
+            playerBlock.IsPlayerAppearingNew = appearsNew;
         }
     }
 }

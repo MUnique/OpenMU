@@ -13,6 +13,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Guild
         /// Shows the guild join response from the guild master.
         /// </summary>
         /// <param name="response">The response.</param>
-        void GuildJoinResponse(GuildRequestAnswerResult response);
+        void ShowGuildJoinResponse(GuildRequestAnswerResult response);
     }
 }

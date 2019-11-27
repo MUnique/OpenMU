@@ -7,12 +7,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.GameLogic.Views.World;
+    using MUnique.OpenMU.GameServer.RemoteView.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -41,48 +42,50 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
 
             var appearanceSerializer = this.player.AppearanceSerializer;
-            var playerDataSize = appearanceSerializer.NeededSpace + 18;
-
             IList<Player> guildPlayers = null;
             var newPlayerList = newPlayers.ToList();
-            var size = 5 + (newPlayerList.Count * playerDataSize);
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, size))
+            using (var writer = this.player.Connection.StartSafeWrite(AddCharactersToScope075.HeaderType, AddCharactersToScope075.GetRequiredSize(newPlayerList.Count)))
             {
-                var packet = writer.Span;
-                packet[3] = 0x12;
-                packet[4] = (byte)newPlayerList.Count;
+                var packet = new AddCharactersToScope075(writer.Span)
+                {
+                    CharacterCount = (byte)newPlayerList.Count,
+                };
+
                 var i = 0;
 
                 foreach (var newPlayer in newPlayerList)
                 {
                     var playerId = newPlayer.GetId(this.player);
-                    var playerBlock = packet.Slice(5 + (i * playerDataSize), playerDataSize);
-                    playerBlock[0] = playerId.GetHighByte();
-                    playerBlock[1] = playerId.GetLowByte();
-                    playerBlock[2] = newPlayer.Position.X;
-                    playerBlock[3] = newPlayer.Position.Y;
+                    var playerBlock = packet[i];
+                    playerBlock.Id = playerId;
+                    playerBlock.CurrentPositionX = newPlayer.Position.X;
+                    playerBlock.CurrentPositionY = newPlayer.Position.Y;
+                    appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 12
 
-                    var appearanceBlock = playerBlock.Slice(4, appearanceSerializer.NeededSpace);
-                    appearanceSerializer.WriteAppearanceData(appearanceBlock, newPlayer.AppearanceData, true); // 4 ... 12
-                    playerBlock[4 + appearanceBlock.Length] = (byte)newPlayer.MagicEffectList.GetVisibleEffects().GetSkillFlags();
-                    playerBlock.Slice(5 + appearanceBlock.Length, 10).WriteString(newPlayer.SelectedCharacter.Name, Encoding.UTF8); // 14 ... 23
+                    playerBlock.IsPoisoned = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
+                    playerBlock.IsIced = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
+                    playerBlock.IsDamageBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
+                    playerBlock.IsDefenseBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
+                    playerBlock.Name = newPlayer.SelectedCharacter.Name;
+
                     if (newPlayer.IsWalking)
                     {
-                        playerBlock[15 + appearanceBlock.Length] = newPlayer.WalkTarget.X;
-                        playerBlock[16 + appearanceBlock.Length] = newPlayer.WalkTarget.Y;
+                        playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
+                        playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
                     }
                     else
                     {
-                        playerBlock[15 + appearanceBlock.Length] = newPlayer.Position.X;
-                        playerBlock[16 + appearanceBlock.Length] = newPlayer.Position.Y;
+                        playerBlock.TargetPositionX = newPlayer.Position.X;
+                        playerBlock.TargetPositionY = newPlayer.Position.Y;
                     }
 
-                    playerBlock[17 + appearanceBlock.Length] = (byte)((newPlayer.Rotation.ToPacketByte() * 0x10) + newPlayer.SelectedCharacter.State);
+                    playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
+                    playerBlock.HeroState = newPlayer.SelectedCharacter.State.Convert();
                     i++;
 
                     if (newPlayer.GuildStatus != null)
                     {
-                        (guildPlayers ?? (guildPlayers = new List<Player>())).Add(newPlayer);
+                        (guildPlayers ??= new List<Player>()).Add(newPlayer);
                     }
                 }
 

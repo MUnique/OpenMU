@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,14 +30,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         public void TradeItemAppear(byte toSlot, Item item)
         {
             var itemSerializer = this.player.ItemSerializer;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, itemSerializer.NeededSpace + 5))
+            using var writer = this.player.Connection.StartSafeWrite(TradeItemAdded.HeaderType, TradeItemAdded.GetRequiredSize(itemSerializer.NeededSpace));
+            var packet = new TradeItemAdded(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x39;
-                packet[3] = toSlot;
-                itemSerializer.SerializeItem(packet.Slice(4), item);
-                writer.Commit();
-            }
+                ToSlot = toSlot,
+            };
+            itemSerializer.SerializeItem(packet.ItemData, item);
+            writer.Commit();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
     using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,26 +29,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc/>
         public void ShowTradeRequestAnswer(bool tradeAccepted)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x14))
+            using var writer = this.player.Connection.StartSafeWrite(TradeRequestAnswer.HeaderType, TradeRequestAnswer.Length);
+            var packet = new TradeRequestAnswer(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x37;
-                packet.Slice(4).WriteString(this.player.TradingPartner.Name, Encoding.UTF8);
+                Name = this.player.TradingPartner.Name,
+                Accepted = tradeAccepted,
+            };
 
-                if (tradeAccepted)
-                {
-                    packet[3] = 1; // accepted
-
-                    var tradePartnerLevel = (ushort)this.player.TradingPartner.Level;
-                    packet[14] = tradePartnerLevel.GetHighByte();
-                    packet[15] = tradePartnerLevel.GetLowByte();
-
-                    var guildId = this.player.TradingPartner.GuildStatus?.GuildId ?? 0;
-                    packet.Slice(16).SetIntegerBigEndian(guildId);
-                }
-
-                writer.Commit();
+            if (tradeAccepted)
+            {
+                packet.TradePartnerLevel = (ushort)this.player.TradingPartner.Level;
+                packet.GuildId = this.player.TradingPartner.GuildStatus?.GuildId ?? 0;
             }
+
+            writer.Commit();
         }
     }
 }

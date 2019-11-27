@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,30 +30,24 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         /// <inheritdoc/>
         public void ShowMerchantStoreItemList(ICollection<Item> storeItems)
         {
-            // C2 [len_high] [len_low] 31 [itemcount_high] [itemcount_low]
-            // for each item: [slot number] [item data....]
-            const int slotNumberSize = 1;
-            const int headerSize = 6;
             var itemSerializer = this.player.ItemSerializer;
-            int sizePerItem = itemSerializer.NeededSpace + slotNumberSize;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, headerSize + (storeItems.Count * sizePerItem)))
+            int sizePerItem = StoredItem.GetRequiredSize(itemSerializer.NeededSpace);
+            using var writer = this.player.Connection.StartSafeWrite(StoreItemList.HeaderType, StoreItemList.GetRequiredSize(storeItems.Count, sizePerItem));
+            var packet = new StoreItemList(writer.Span)
             {
-                var packet = writer.Span;
-                packet[3] = 0x31;
-                packet.Slice(4).SetShortSmallEndian((ushort)storeItems.Count);
+                ItemCount = (ushort)storeItems.Count,
+            };
 
-                int i = 0;
-                foreach (var item in storeItems)
-                {
-                    var offset = headerSize + (i * sizePerItem);
-                    var itemBlock = packet.Slice(offset, sizePerItem);
-                    itemBlock[0] = item.ItemSlot;
-                    itemSerializer.SerializeItem(itemBlock.Slice(slotNumberSize), item);
-                    i++;
-                }
-
-                writer.Commit();
+            int i = 0;
+            foreach (var item in storeItems)
+            {
+                var storedItem = packet[i, sizePerItem];
+                storedItem.ItemSlot = item.ItemSlot;
+                itemSerializer.SerializeItem(storedItem.ItemData, item);
+                i++;
             }
+
+            writer.Commit();
         }
     }
 }

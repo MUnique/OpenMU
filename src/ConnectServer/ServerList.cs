@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.ConnectServer
 {
     using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.ConnectServer
                 var i = 0;
                 foreach (var server in this.Servers)
                 {
-                    packet.SetShortBigEndian(server.ServerId, headerSize + (i * serverBlockSize));
+                    packet.AsSpan(headerSize + (i * serverBlockSize)).SetShortBigEndian(server.ServerId);
                     var loadIndex = headerSize + 2 + (i * serverBlockSize);
                     packet[loadIndex] = (byte)server.ServerLoad;
                     server.LoadIndex = loadIndex;

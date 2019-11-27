@@ -100,6 +100,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{09EAF8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{820453DE-DA7A-454C-A077-BED8F0FA9764}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Packets", "Network\Packets\MUnique.OpenMU.Network.Packets.csproj", "{482217F9-BBA8-4DA9-BEE0-03E278E0684B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -233,6 +235,10 @@ Global
 		{89669CA5-E5C8-4854-B318-3903459236A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89669CA5-E5C8-4854-B318-3903459236A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89669CA5-E5C8-4854-B318-3903459236A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{482217F9-BBA8-4DA9-BEE0-03E278E0684B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{482217F9-BBA8-4DA9-BEE0-03E278E0684B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{482217F9-BBA8-4DA9-BEE0-03E278E0684B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{482217F9-BBA8-4DA9-BEE0-03E278E0684B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -269,6 +275,7 @@ Global
 		{F9871781-EC97-4570-A165-6FFF6CAC7004} = {6443D0E9-82F8-4A04-BB9C-72CE36E1D952}
 		{5AB17B80-021D-4898-9750-0C26B2AF1A39} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 		{89669CA5-E5C8-4854-B318-3903459236A2} = {6443D0E9-82F8-4A04-BB9C-72CE36E1D952}
+		{482217F9-BBA8-4DA9-BEE0-03E278E0684B} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28C13837-B616-4790-84D6-4BDCB4A8166D}

@@ -5,10 +5,10 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Trade
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,13 +29,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc/>
         public void ShowTradeRequest(ITrader requester)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 13))
+            using var writer = this.player.Connection.StartSafeWrite(TradeRequest.HeaderType, TradeRequest.Length);
+            _ = new TradeRequest(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x36;
-                packet.Slice(3).WriteString(requester.Name, Encoding.UTF8);
-                writer.Commit();
-            }
+                Name = requester.Name,
+            };
+            writer.Commit();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -28,15 +29,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void ItemDurabilityChanged(Item item, bool afterConsumption)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 6))
+            using var writer = this.player.Connection.StartSafeWrite(
+                Network.Packets.ServerToClient.ItemDurabilityChanged.HeaderType,
+                Network.Packets.ServerToClient.ItemDurabilityChanged.Length);
+            _ = new ItemDurabilityChanged(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x2A;
-                packet[3] = item.ItemSlot;
-                packet[4] = item.Durability;
-                packet[5] = afterConsumption ? (byte)0x01 : (byte)0x00;
-                writer.Commit();
-            }
+                InventorySlot = item.ItemSlot,
+                Durability = item.Durability,
+                ByConsumption = afterConsumption,
+            };
+
+            writer.Commit();
         }
     }
 }

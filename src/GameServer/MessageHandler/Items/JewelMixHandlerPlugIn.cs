@@ -5,9 +5,11 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.Items
 {
     using System;
+    using System.ComponentModel;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -19,46 +21,42 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     {
         private readonly ItemStackAction mixAction = new ItemStackAction();
 
-        private enum MixType
-        {
-            Mix,
-
-            Unmix,
-        }
+        /// <inheritdoc/>
+        public bool IsEncryptionExpected => LahapJewelMixRequest.HeaderType >= 0xC3;
 
         /// <inheritdoc/>
-        public bool IsEncryptionExpected => false;
-
-        /// <inheritdoc/>
-        public byte Key => (byte)PacketType.JewelMix;
+        public byte Key => LahapJewelMixRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
+            LahapJewelMixRequest message = packet;
             if (packet.Length < 6)
             {
                 return;
             }
 
-            /*C1 06 BC 00 00 01 [slot]
-//               ^ Size, 0=10, 1=20, 2=30
-//            ^0=Bless, 1=Soul ...
-//         ^ 0=mix  1=unmix
-*/
-            byte stackSize = (byte)((packet[5] + 1) * 10);
-            byte mixId = packet[4];
-            var mixType = (MixType)packet[3];
-            switch (mixType)
+            switch (message.Operation)
             {
-                case MixType.Mix:
-                    this.mixAction.StackItems(player, mixId, stackSize);
+                case LahapJewelMixRequest.MixType.Mix:
+                    this.mixAction.StackItems(player, (byte)message.Item, GetStackSize(message.MixingStackSize));
                     break;
-                case MixType.Unmix:
-                    byte slot = packet.Length > 6 ? packet[6] : (byte)0;
-                    this.mixAction.UnstackItems(player, mixId, slot);
+                case LahapJewelMixRequest.MixType.Unmix:
+                    this.mixAction.UnstackItems(player, (byte)message.Item, message.UnmixingSourceSlot);
                     break;
                 default:
-                    throw new ArgumentException($"The mix type {mixType} is unknown.");
+                    throw new ArgumentException($"The mix operation {message.Operation} is unknown.");
+            }
+        }
+
+        private static byte GetStackSize(LahapJewelMixRequest.StackSize stackSize)
+        {
+            switch (stackSize)
+            {
+                case LahapJewelMixRequest.StackSize.Ten: return 10;
+                case LahapJewelMixRequest.StackSize.Twenty: return 20;
+                case LahapJewelMixRequest.StackSize.Thirty: return 30;
+                default: throw new InvalidEnumArgumentException(nameof(stackSize), (int)stackSize, typeof(LahapJewelMixRequest.StackSize));
             }
         }
     }

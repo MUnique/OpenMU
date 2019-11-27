@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -27,13 +28,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void BuyNpcItemFailed()
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 4 + this.player.ItemSerializer.NeededSpace))
-            {
-                var message = writer.Span;
-                message[2] = 0x32;
-                message[3] = 0xFF;
-                writer.Commit();
-            }
+            using var writer = this.player.Connection.StartSafeWrite(NpcItemBuyFailed.HeaderType, NpcItemBuyFailed.Length);
+            _ = new NpcItemBuyFailed(writer.Span);
+            writer.Commit();
         }
     }
 }

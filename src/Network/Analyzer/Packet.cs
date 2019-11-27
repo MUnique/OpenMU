@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Network.Analyzer
 {
     using System;
-    using System.Text;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// A captured data packet.
@@ -46,6 +46,11 @@ namespace MUnique.OpenMU.Network.Analyzer
         public DateTime Timestamp { get; }
 
         /// <summary>
+        /// Gets the raw data of the packet.
+        /// </summary>
+        public byte[] Data => this.innerData;
+
+        /// <summary>
         /// Gets the type of the packet, which is the first byte of the packet byte array.
         /// </summary>
         public byte Type => this.innerData[0];
@@ -78,78 +83,12 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Gets the packet data as binary string.
         /// </summary>
-        public string PacketData => this.dataAsString ?? (this.dataAsString = BitConverter.ToString(this.innerData).Replace('-', ' '));
+        public string PacketData => this.dataAsString ??= this.innerData.AsString();
 
         /// <inheritdoc />
         public override string ToString()
         {
             return $"{this.Direction}: {this.PacketData}";
-        }
-
-        /// <summary>
-        /// Extracts the field value from this packet.
-        /// </summary>
-        /// <param name="field">The field definition.</param>
-        /// <returns>The value of the field.</returns>
-        internal string ExtractFieldValue(Field field)
-        {
-            var fieldSize = this.GetFieldSizeInBytes(field) ?? int.MaxValue;
-            if (field.Type == FieldType.String && field.Index < this.innerData.Length)
-            {
-                return this.innerData.ExtractString(field.Index, fieldSize, Encoding.UTF8);
-            }
-
-            if (field.Type == FieldType.Binary && field.Index < this.innerData.Length)
-            {
-                return BitConverter.ToString(this.innerData, field.Index, field.Length).Replace('-', ' ');
-            }
-
-            if (this.innerData.Length < field.Index + fieldSize)
-            {
-                return string.Empty;
-            }
-
-            switch (field.Type)
-            {
-                case FieldType.Byte:
-                    return this.innerData[field.Index].ToString();
-                case FieldType.Integer:
-                    return this.innerData.MakeDwordSmallEndian(field.Index).ToString();
-                case FieldType.IntegerBigEndian:
-                    return this.innerData.MakeDwordBigEndian(field.Index).ToString();
-                case FieldType.Short:
-                    return this.innerData.MakeWordSmallEndian(field.Index).ToString();
-                case FieldType.ShortBigEndian:
-                    return this.innerData.MakeWordBigEndian(field.Index).ToString();
-                case FieldType.Long:
-                    return this.innerData.MakeQword(field.Index).ToString();
-                case FieldType.LongBigEndian:
-                    return this.innerData.MakeQwordBigEndian(field.Index).ToString();
-                default:
-                    return string.Empty;
-            }
-        }
-
-        private int? GetFieldSizeInBytes(Field field)
-        {
-            switch (field.Type)
-            {
-                case FieldType.Byte:
-                    return 1;
-                case FieldType.Integer:
-                case FieldType.IntegerBigEndian:
-                    return sizeof(int);
-                case FieldType.Long:
-                case FieldType.LongBigEndian:
-                    return sizeof(long);
-                case FieldType.Short:
-                case FieldType.ShortBigEndian:
-                    return sizeof(short);
-                case FieldType.String:
-                    return field.LengthSpecified ? field.Length : (int?)null;
-                default:
-                    return null;
-            }
         }
     }
 }

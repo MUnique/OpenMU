@@ -11,9 +11,9 @@ namespace MUnique.OpenMU.Network
     /// A helper struct to write safely to a <see cref="IConnection.Output" />.
     /// </summary>
     /// <remarks>
-    /// We use a struct here, so we don't allocate more memory on the stack.
+    /// We use a readonly ref struct here, so we don't allocate more memory on the stack.
     /// </remarks>
-    public struct ThreadSafeWriter : IDisposable
+    public readonly ref struct ThreadSafeWriter
     {
         private readonly IConnection connection;
         private readonly int expectedPacketSize;

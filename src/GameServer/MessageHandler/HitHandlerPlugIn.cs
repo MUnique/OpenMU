@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -17,6 +18,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     internal class HitHandlerPlugIn : HitHandlerPlugInBase
     {
         /// <inheritdoc/>
-        public override byte Key => (byte)PacketType.Hit;
+        public override byte Key => HitRequest.Code;
     }
 }

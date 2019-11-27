@@ -1,0 +1,1843 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
+  <Description>This file contains all packet definitions for packets which are sent from game client to the game server.</Description>
+  <Structures>
+  </Structures>
+  <Packets>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>0E</Code>
+      <SubCode>00</SubCode>
+      <Name>Ping</Name>
+      <Length>12</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.</SentWhen>
+      <CausedReaction>By the original server this is used to detect speed hacks.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>TickCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Speed1</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>Speed2</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>Speed3</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>Speed4</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>00</Code>
+      <Name>PublicChatMessage</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player sends a public chat message.</SentWhen>
+      <CausedReaction>The message is forwarded to all surrounding players, including the sender.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>Character</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>02</Code>
+      <Name>WhisperMessage</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player sends a private chat message to a specific target player.</SentWhen>
+      <CausedReaction>The message is forwarded to the target player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>ReceiverName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>01</SubCode>
+      <Name>LoginLongPassword</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player tries to log into the game.</SentWhen>
+      <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>Username</Name>
+          <Description>The user name, "encrypted" with Xor3.</Description>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Binary</Type>
+          <Name>Password</Name>
+          <Description>The password, "encrypted" with Xor3.</Description>
+          <Length>20</Length>
+        </Field>
+        <Field>
+          <Index>34</Index>
+          <Type>Integer</Type>
+          <Name>TickCount</Name>
+        </Field>
+        <Field>
+          <Index>38</Index>
+          <Type>Binary</Type>
+          <Name>ClientVersion</Name>
+          <Length>5</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>01</SubCode>
+      <Name>LoginShortPassword</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player tries to log into the game.</SentWhen>
+      <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>Username</Name>
+          <Description>The user name, "encrypted" with Xor3.</Description>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Binary</Type>
+          <Name>Password</Name>
+          <Description>The password, "encrypted" with Xor3.</Description>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Integer</Type>
+          <Name>TickCount</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>Binary</Type>
+          <Name>ClientVersion</Name>
+          <Length>5</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>01</SubCode>
+      <Name>Login075</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player tries to log into the game.</SentWhen>
+      <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>Username</Name>
+          <Description>The user name, "encrypted" with Xor3.</Description>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Binary</Type>
+          <Name>Password</Name>
+          <Description>The password, "encrypted" with Xor3.</Description>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Integer</Type>
+          <Name>TickCount</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>Binary</Type>
+          <Name>ClientVersion</Name>
+          <Length>3</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>02</SubCode>
+      <Name>LogOut</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>When the client wants to leave the game in various ways.</SentWhen>
+      <CausedReaction>Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>LogOutType</TypeName>
+          <Name>Type</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>01</SubCode>
+      <Name>PlayerShopSetItemPrice</Name>
+      <Caption>Player Shop - Set Item Price</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to set a price of an item which is inside his personal item shop.</SentWhen>
+      <CausedReaction>The price is set for the specified item. Works only if the shop is currently closed.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>Price</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>02</SubCode>
+      <Name>PlayerShopOpen</Name>
+      <Caption>Player Shop - Open</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to open his personal item shop.</SentWhen>
+      <CausedReaction>The personal item shop is opened and the surrounding players are informed about it, including the own player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>StoreName</Name>
+          <Length>26</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>03</SubCode>
+      <Name>PlayerShopClose</Name>
+      <Caption>Player Shop - Close</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to close his personal item shop.</SentWhen>
+      <CausedReaction>The personal item shop is closed and the surrounding players are informed about it, including the own player.</CausedReaction>
+      <Fields/>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>05</SubCode>
+      <Name>PlayerShopItemListRequest</Name>
+      <Caption>Player Shop - Item List Request</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player opens a shop of another player.</SentWhen>
+      <CausedReaction>The list of items is sent back, if the shop of the player is currently open.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>06</SubCode>
+      <Name>PlayerShopItemBuyRequest</Name>
+      <Caption>Player Shop - Item Buy Request</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to buy the item of another players shop.</SentWhen>
+      <CausedReaction>If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>22</Code>
+      <Name>PickupItemRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to pick up an item which is laying on the ground in the near of the players character.</SentWhen>
+      <CausedReaction>If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>ItemId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>22</Code>
+      <Name>PickupItemRequest075</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to pick up an item which is laying on the ground in the near of the players character.</SentWhen>
+      <CausedReaction>If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>ItemId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>23</Code>
+      <Name>DropItemRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to drop on item of his inventory on the ground.</SentWhen>
+      <CausedReaction>When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>24</Code>
+      <Name>ItemMoveRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.</SentWhen>
+      <CausedReaction></CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemStorageKind</TypeName>
+          <Name>FromStorage</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>FromSlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Length>12</Length>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemStorageKind</TypeName>
+          <Name>ToStorage</Name>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>Byte</Type>
+          <Name>ToSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>26</Code>
+      <Name>ConsumeItemRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.</SentWhen>
+      <CausedReaction>The server tries to 'consume' the specified item and responses accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+          <Description>The inventory slot index of the item which should be consumed.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetSlot</Name>
+          <Description>If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ItemUseType</Name>
+          <Description>Unknown field, we don't know what it's good for.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>30</Code>
+      <Name>TalkToNpcRequest</Name>
+      <Caption>Talk to NPC</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to talk to an NPC.</SentWhen>
+      <CausedReaction>Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>NpcId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>31</Code>
+      <Name>CloseNpcRequest</Name>
+      <Caption>Close NPC</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player closes the dialog which was opened by an interaction with a NPC.</SentWhen>
+      <CausedReaction>The server updates the state of the player accordingly.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>32</Code>
+      <Name>BuyItemFromNpcRequest</Name>
+      <Caption>Buy Item From NPC Request</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to buy an item from an opened NPC merchant.</SentWhen>
+      <CausedReaction>If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+          <Description>Item Slot (NPC Store)</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>33</Code>
+      <Name>SellItemToNpcRequest</Name>
+      <Caption>Sell Item To NPC</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to sell an item of his inventory to the opened NPC merchant.</SentWhen>
+      <CausedReaction>The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+          <Description>Item Slot (Inventory)</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>34</Code>
+      <Name>RepairItemRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to repair an item of his inventory.</SentWhen>
+      <CausedReaction>The item is repaired if the player has enough money in its inventory. A corresponding response is sent.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+          <Description>Inventory item slot of the target item. If it's 0xFF, the player wants to repair all items - this is only possible with some opened NPC dialogs. Repairing the pet item slot (8) is only possible when the pet trainer npc is opened.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>8E</Code>
+      <SubCode>02</SubCode>
+      <Name>WarpCommandRequest</Name>
+      <Caption>Warp Command (pre-season 6)</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player selected to warp by selecting an entry in the warp list (configured in game client files).</SentWhen>
+      <CausedReaction>If the player has enough money and is allowed to enter the map, it's getting moved to there.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>WarpInfoIndex</Name>
+          <Description>The index of the entry in the warp list.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>1C</Code>
+      <Name>EnterGateRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>When the player enters an area on the game map which is configured as gate at the client data files.</SentWhen>
+      <CausedReaction>If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>GateNumber</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>82</Code>
+      <Name>VaultClosed</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player closed an opened vault dialog.</SentWhen>
+      <CausedReaction>The state on the server is updated.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>81</Code>
+      <Name>VaultMoveMoneyRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to move money from or to the vault storage.</SentWhen>
+      <CausedReaction>The money is moved, if possible.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>VaultMoneyMoveDirection</TypeName>
+          <Name>Direction</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>Amount</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>VaultMoneyMoveDirection</Name>
+          <Description>Defines the moving direction of money between inventory and vault.</Description>
+          <Values>
+            <EnumValue>
+              <Name>InventoryToVault</Name>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>VaultToInventory</Name>
+              <Value>1</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>BC</Code>
+      <Name>LahapJewelMixRequest</Name>
+      <Caption>Jewel Mix (Lahap)</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.</SentWhen>
+      <CausedReaction>If successful, the inventory is updated and the game client gets corresponding responses.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>MixType</TypeName>
+          <Name>Operation</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemType</TypeName>
+          <Name>Item</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>StackSize</TypeName>
+          <Name>MixingStackSize</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>UnmixingSourceSlot</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>MixType</Name>
+          <Description>Describes what kind of operation is requested.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Mix</Name>
+              <Description>The player wants to mix single jewels into a bundle.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Unmix</Name>
+              <Description>The player wants to disband a bundle into single jewels.</Description>
+              <Value>1</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>StackSize</Name>
+          <Description>Describes the size of a mixed stack.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Ten</Name>
+              <Description>A stack of 10 items.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Twenty</Name>
+              <Description>A stack of 20 items.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Thirty</Name>
+              <Description>A stack of 30 items.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>ItemType</Name>
+          <Description>Describes the type of item which is mixed or unmixed.</Description>
+          <Values>
+            <EnumValue>
+              <Name>JewelOfBless</Name>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>JewelOfSoul</Name>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>JewelOfLife</Name>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>JewelOfCreation</Name>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>JewelOfGuardian</Name>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Gemstone</Name>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>JewelOfHarmony</Name>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>JewelOfChaos</Name>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LowerRefineStone</Name>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>HigherRefineStone</Name>
+              <Value>9</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>42</Code>
+      <Name>PartyListRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>When the player opens the party menu in the game client.</SentWhen>
+      <CausedReaction>If the player is in a party, the server sends back a list with information about all players of the party.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>43</Code>
+      <Name>PartyPlayerKickRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A party master wants to kick another player from his party, or when a player wants to kick himself from his party.</SentWhen>
+      <CausedReaction>If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>PlayerIndex</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>40</Code>
+      <Name>PartyInviteRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A party master wants to invite another player to his party.</SentWhen>
+      <CausedReaction>If the requesting player has no party, or is the party master, a request is sent to the target player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>TargetPlayerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>41</Code>
+      <Name>PartyInviteResponse</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player was invited by another player to join a party and this player sent the response back.</SentWhen>
+      <CausedReaction>If the sender accepts the request, it's added to the party.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Accepted</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>D4</Code>
+      <Name>WalkRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to walk on the game map.</SentWhen>
+      <CausedReaction>The player gets moved on the map, visible for other surrounding players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SourceX</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>SourceY</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>Directions</Name>
+          <Description>The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>15</Code>
+      <Name>InstantMoveRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>It's sent when the player performs specific skills.</SentWhen>
+      <CausedReaction>Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>18</Code>
+      <Name>AnimationRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player does any kind of animation.</SentWhen>
+      <CausedReaction>The animation number and rotation is forwarded to all surrounding players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>AnimationNumber</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>00</SubCode>
+      <Name>RequestCharacterList</Name>
+      <Caption>Request Character List</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>After a successful login or after the player decided to leave the game world to go back to the character selection screen.</SentWhen>
+      <CausedReaction>The server sends the character list with all available characters.</CausedReaction>
+      <Fields/>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>01</SubCode>
+      <Name>CreateCharacter</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client is at the character selection screen and the player requests to add a new character.</SentWhen>
+      <CausedReaction>The server checks if the player is allowed to create the character and sends a response back.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Description>The name of the character which should be created.</Description>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <LeftShifted>2</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>CharacterClassNumber</TypeName>
+          <Name>Class</Name>
+          <Description>The character class of the character which should be created.</Description>
+          <Length>6</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>02</SubCode>
+      <Name>DeleteCharacter</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client is at the character selection screen and the player requests to delete an existing character.</SentWhen>
+      <CausedReaction>The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Description>The name of the character which should be deleted.</Description>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>String</Type>
+          <Name>SecurityCode</Name>
+          <Description>A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>03</SubCode>
+      <Name>SelectCharacter</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player selects a character to enter the game world on the character selection screen.</SentWhen>
+      <CausedReaction>The player joins the game world with the specified character.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Description>The name of the character with which the player wants to join the game world</Description>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>15</SubCode>
+      <Name>FocusCharacter</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.</SentWhen>
+      <CausedReaction>The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>06</SubCode>
+      <Name>IncreaseCharacterStatPoint</Name>
+      <Caption>Character - Stat Point Increase</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.</SentWhen>
+      <CausedReaction>The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatAttribute</TypeName>
+          <Name>StatType</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>12</SubCode>
+      <Name>ClientReadyAfterMapChange</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>After the server sent a map change message and the client has initialized the game map visualization.</SentWhen>
+      <CausedReaction>The character is added to the internal game map and ready to interact with other entities.</CausedReaction>
+      <Fields/>
+    </Packet>
+
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>30</SubCode>
+      <Name>SaveKeyConfiguration</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>When leaving the game world with a character.</SentWhen>
+      <CausedReaction>The server saves this configuration in its database.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>Configuration</Name>
+          <Description>The binary data of the key configuration</Description>
+        </Field>
+      </Fields>
+    </Packet>
+
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>52</SubCode>
+      <Name>AddMasterSkillPoint</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to add or increase the level of a specific master skill of the master skill tree.</SentWhen>
+      <CausedReaction>Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>11</Code>
+      <Name>HitRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player attacks a target without using a skill.</SentWhen>
+      <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>TargetId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>AttackAnimation</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>LookingDirection</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>19</Code>
+      <Name>TargetedSkill</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
+      <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Short</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>19</Code>
+      <Name>TargetedSkill075</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
+      <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Short</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>1E</Code>
+      <Name>AreaSkill</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player is performing an skill which affects an area of the map.</SentWhen>
+      <CausedReaction>It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Short</Type>
+          <Name>ExtraTargetId</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>AnimationCounter</Name>
+          <Description>Animation counter which acts as a reference to the previously sent Area Skill Animation packet.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>DB</Code>
+      <Name>AreaSkillHit</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>An area skill was performed and the client decided to hit a target.</SentWhen>
+      <CausedReaction>The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>HitCounter</Name>
+          <Description>A sequential hit counter which should prevent that hits are sent multiple times.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Short</Type>
+          <Name>TargetId</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>AnimationCounter</Name>
+          <Description>A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>3D</Code>
+      <Name>TradeCancel</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to cancel the trade.</SentWhen>
+      <CausedReaction>The trade is cancelled and the previous inventory state is restored.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>3C</Code>
+      <Name>TradeButtonStateChange</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player presses the trade button.</SentWhen>
+      <CausedReaction>The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>TradeButtonState</TypeName>
+          <Name>NewState</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>36</Code>
+      <Name>TradeRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player requests to open a trade with another player.</SentWhen>
+      <CausedReaction>The request is forwarded to the requested player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>PlayerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>37</Code>
+      <Name>TradeRequestResponse</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A requested player responded to a trade request of another player.</SentWhen>
+      <CausedReaction>When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. </CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>TradeAccepted</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>3A</Code>
+      <Name>SetTradeMoney</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to set an amount of money in the trade.</SentWhen>
+      <CausedReaction>It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>Amount</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C8</Code>
+      <Name>LetterDeleteRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to delete a letter.</SentWhen>
+      <CausedReaction>The letter is getting deleted.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>LetterIndex</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C4Header</HeaderType>
+      <Code>C5</Code>
+      <Name>LetterSendRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to send a letter to another players character.</SentWhen>
+      <CausedReaction>The letter is sent to the other character, if it exists and the player has the required money.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>LetterId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>String</Type>
+          <Name>Receiver</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>String</Type>
+          <Name>Title</Name>
+          <Length>60</Length>
+        </Field>
+        <Field>
+          <Index>78</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+        <Field>
+          <Index>79</Index>
+          <Type>Byte</Type>
+          <Name>Animation</Name>
+        </Field>
+        <Field>
+          <Index>82</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C7</Code>
+      <Name>LetterReadRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to read a specific letter of his letter list.</SentWhen>
+      <CausedReaction>The server sends the requested letter content back to the game client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>LetterIndex</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>53</Code>
+      <Name>GuildKickPlayerRequest</Name>
+      <Caption>Guild - Kick Player</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A guild member wants to kick himself or a guild master wants to kick another player from its guild.</SentWhen>
+      <CausedReaction>If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>String</Type>
+          <Name>SecurityCode</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>50</Code>
+      <Name>GuildJoinRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player (non-guild member) requests to join a guild.</SentWhen>
+      <CausedReaction>The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Short</Type>
+          <Name>GuildMasterPlayerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>51</Code>
+      <Name>GuildJoinResponse</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A guild master responded to a previously sent request.</SentWhen>
+      <CausedReaction>If the request was accepted by the guild master, the previously requesting player is added to the guild.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Accepted</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>52</Code>
+      <Name>GuildListRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A guild player opens its guild menu in the game client.</SentWhen>
+      <CausedReaction>A list of all guild members and their state is sent back as response.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>55</Code>
+      <Name>GuildCreateRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>When a player wants to create a guild.</SentWhen>
+      <CausedReaction>The guild is created and the player is set as the new guild master of the guild.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>GuildName</Name>
+          <Length>9</Length>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Binary</Type>
+          <Name>GuildEmblem</Name>
+          <Length>32</Length>
+          <Description>The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>54</Code>
+      <Name>GuildMasterAnswer</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player has the dialog of the guild master NPC opened and decided about its next step.</SentWhen>
+      <CausedReaction>It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>ShowCreationDialog</Name>
+          <Description>A value whether the guild creation dialog should be shown. Otherwise, the guild creation is cancelled and the dialog was closed.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>66</Code>
+      <Name>GuildInfoRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.</SentWhen>
+      <CausedReaction>The server sends a response which includes the guild name and emblem.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>GuildId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>34</Code>
+      <Name>ItemRepair</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to repair an item of his inventory, either himself or with the usage of an NPC.</SentWhen>
+      <CausedReaction>If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>InventoryItemSlot</Name>
+          <Description>The inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>86</Code>
+      <Name>ChaosMachineMixRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.</SentWhen>
+      <CausedReaction>Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>2</Index>
+          <Type>Enum</Type>
+          <TypeName>ChaosMachineMixType</TypeName>
+          <Name>MixType</Name>
+          <Description>The identifier which tells the server which kind of mix should be executed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ChaosMachineMixType</Name>
+          <Description>This enum describes the possible chaos machine mix type identifiers.</Description>
+          <Values>
+            <EnumValue>
+              <Name>ChaosWeapon</Name>
+              <Description>Mixes the items to a chaos weapon.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpgradeItemLevelTo10</Name>
+              <Description>Upgrades an item to level 10.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpgradeItemLevelTo11</Name>
+              <Description>Upgrades an item to level 11.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpgradeItemLevelTo12</Name>
+              <Description>Upgrades an item to level 12.</Description>
+              <Value>22</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpgradeItemLevelTo13</Name>
+              <Description>Upgrades an item to level 13.</Description>
+              <Value>23</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpgradeItemLevelTo14</Name>
+              <Description>Upgrades an item to level 14.</Description>
+              <Value>49</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpgradeItemLevelTo15</Name>
+              <Description>Upgrades an item to level 15.</Description>
+              <Value>50</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FruitCreation</Name>
+              <Description>Mixes the items to a fruit.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GemstoneRefinery</Name>
+              <Description>Refines a gemstone to a jewel of harmony.</Description>
+              <Value>41</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PotionOfBless</Name>
+              <Description>Refines a Jewel Of Bless to a stack of potions of bless.</Description>
+              <Value>15</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PotionOfSoul</Name>
+              <Description>Refines a Jewel Of Soul to a stack of potions of bless.</Description>
+              <Value>16</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>87</Code>
+      <Name>CloseChaosMachineRequest</Name>
+      <Caption>Close Chaos Machine</Caption>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player closes the dialog which was opened by an interaction with the chaos machine goblin.</SentWhen>
+      <CausedReaction>The server updates the state of the player accordingly.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C1</Code>
+      <Name>FriendAddRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to add another players character into his friend list of the messenger.</SentWhen>
+      <CausedReaction>A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>FriendName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C3</Code>
+      <Name>FriendDelete</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to delete another players character from his friend list of the messenger.</SentWhen>
+      <CausedReaction>The entry in the friend list is removed. The player is shown as offline in the other players friends list.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>FriendName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>CA</Code>
+      <Name>ChatRoomCreateRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to open a chat with another player of his friend list.</SentWhen>
+      <CausedReaction>If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>FriendName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C2</Code>
+      <Name>FriendAddResponse</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player received a friend request from another player and responded to it.</SentWhen>
+      <CausedReaction>If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Accepted</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>FriendRequesterName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>C4</Code>
+      <Name>SetFriendOnlineState</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to set himself on- or offline.</SentWhen>
+      <CausedReaction>Depending on the state, the player is shown as offline or online in all friend lists of his friends.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>OnlineState</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>CB</Code>
+      <Name>ChatRoomInvitationRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <Length>13</Length>
+      <SentWhen>A player wants to invite additional players from his friend list to an existing chat room.</SentWhen>
+      <CausedReaction>The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>FriendName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Short</Type>
+          <Name>RoomId</Name>
+        </Field>
+        <Field>
+          <Index>15</Index>
+          <Type>Integer</Type>
+          <Name>RequestId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A0</Code>
+      <Name>LegacyQuestStateRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>After the player entered the game world with a character.</SentWhen>
+      <CausedReaction>The quest state is sent back as response.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A2</Code>
+      <Name>LegacyQuestStateSetRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to change the state of a quest, e.g. to start or to finish a quest.</SentWhen>
+      <CausedReaction>Depending on the requested new state, a response is sent back.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>NewState</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0A</SubCode>
+      <Name>QuestStartRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client opened an quest NPC dialog and decided to start an available quests.</SentWhen>
+      <CausedReaction>The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>UnknownField</Name>
+          <Description>A value between 1 and 3, probably depending on how many quests are already running. Should not be trusted or considered.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0B</SubCode>
+      <Name>QuestProceedRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.</SentWhen>
+      <CausedReaction>The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>NextState</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0D</SubCode>
+      <Name>QuestCompletionRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests to complete an active quest.</SentWhen>
+      <CausedReaction>The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0F</SubCode>
+      <Name>QuestCancelRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests to cancel an active quest.</SentWhen>
+      <CausedReaction>The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>10</SubCode>
+      <Name>QuestClientActionRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests to complete a client action, e.g. completing a tutorial.</SentWhen>
+      <CausedReaction>The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>1A</SubCode>
+      <Name>ActiveQuestListRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The clients requests the states of all quests, usually after entering the game.</SentWhen>
+      <CausedReaction>The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>1B</SubCode>
+      <Name>QuestStateRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests the state of a specific active quests.</SentWhen>
+      <CausedReaction>The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>21</SubCode>
+      <Name>EventQuestStateListRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests the list of event quests, usually after entering the game.</SentWhen>
+      <CausedReaction>The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>30</SubCode>
+      <Name>AvailableQuestsRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client opened an quest NPC dialog and requests a list of available quests.</SentWhen>
+      <CausedReaction>The list of available quests of this NPC is sent back (F60A).</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>31</SubCode>
+      <Name>NpcBuffRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).</SentWhen>
+      <CausedReaction>The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.</CausedReaction>
+      <Fields />
+    </Packet>
+  </Packets>
+  <Enums>
+    <Enum>
+      <Name>TradeButtonState</Name>
+      <Description>The state of the trade button.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Unchecked</Name>
+          <Description>Trade button is not pressed. It means that the trade is not yet accepted by the trader.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Checked</Name>
+          <Description>Trade Button is pressed. It means that the trade is accepted by the trader.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Red</Name>
+          <Description>This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+  </Enums>
+</PacketDefinitions>

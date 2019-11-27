@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network.Analyzer
+namespace MUnique.OpenMU.Network.Packets
 {
     using System;
     using System.Globalization;
@@ -37,16 +37,78 @@ namespace MUnique.OpenMU.Network.Analyzer
     }
 
     /// <summary>
-    /// The definiton of one packet type.
+    /// Defines the direction from which to which endpoint a data packet flows.
+    /// </summary>
+    [Serializable]
+    [XmlType(Namespace = PacketDefinitions.XmlNamespace)]
+    public enum Direction
+    {
+        /// <summary>
+        /// The data packet is sent from the (game) server to the game client.
+        /// </summary>
+        ServerToClient,
+
+        /// <summary>
+        /// TThe data packet is sent from the game client to the (game) server.
+        /// </summary>
+        ClientToServer,
+    }
+
+    /// <summary>
+    /// The definition of one packet type.
     /// </summary>
     [XmlType(Namespace = PacketDefinitions.XmlNamespace)]
     [Serializable]
     public class PacketDefinition
     {
+        private string headerType;
+
+        private PacketType? type;
+
+        /// <summary>
+        /// Gets or sets the type of the header.
+        /// </summary>
+        /// <value>
+        /// The type of the header.
+        /// </value>
+        public string HeaderType
+        {
+            get => this.headerType;
+            set
+            {
+                this.headerType = value;
+                this.type = null;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the type of the packet, represented by its first byte value.
         /// </summary>
-        public PacketType Type { get; set; }
+        [XmlIgnore]
+        public PacketType Type
+        {
+            get
+            {
+                if (!this.type.HasValue)
+                {
+                    this.type = (PacketType)byte.Parse(this.HeaderType.Substring(0, 2), NumberStyles.HexNumber);
+                }
+
+                return this.type.Value;
+            }
+
+            set
+            {
+                this.type = value;
+                var newHeaderType = ((byte) value).ToString("X") + "Header";
+                if (this.SubCodeSpecified)
+                {
+                    newHeaderType += "WithSubCode";
+                }
+
+                this.HeaderType = newHeaderType;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="Code"/> as hexadecimal string.
@@ -101,11 +163,19 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// </summary>
         public string Name { get; set; }
 
+        public string Caption { get; set; }
+
+        public int Length { get; set; }
+
+        public Direction Direction { get; set; }
+
         /// <summary>
         /// Gets or sets the description of the packet.
         /// </summary>
         [XmlElement(IsNullable = true)]
-        public string Description { get; set; }
+        public string SentWhen { get; set; }
+
+        [XmlElement(IsNullable = true)] public string CausedReaction { get; set; }
 
         /// <summary>
         /// Gets or sets the field definitions of the packets.
@@ -113,5 +183,39 @@ namespace MUnique.OpenMU.Network.Analyzer
         [XmlArray(IsNullable = true)]
         [XmlArrayItem("Field", IsNullable = false)]
         public Field[] Fields { get; set; }
+
+        [XmlArrayItem("Structure", IsNullable = false)]
+        public Structure[] Structures { get; set; }
+
+        [XmlArrayItem(IsNullable = false)]
+        public Enum[] Enums { get; set; }
+    }
+
+
+    [XmlType(Namespace = PacketDefinitions.XmlNamespace)]
+    [Serializable]
+    public class EnumValue
+    {
+        /// <remarks/>
+        [XmlElement(DataType = "Name")]
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        /// <remarks/>
+        public byte Value { get; set; }
+    }
+
+    [XmlType(Namespace = PacketDefinitions.XmlNamespace)]
+    [Serializable]
+    public class Enum
+    {
+        [XmlElement(DataType = "Name")]
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        [XmlArrayItem(IsNullable = false)]
+        public EnumValue[] Values { get; set; }
     }
 }

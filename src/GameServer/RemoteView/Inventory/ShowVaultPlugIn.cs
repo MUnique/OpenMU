@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -26,51 +27,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <param name="player">The player.</param>
         public ShowVaultPlugIn(RemotePlayer player) => this.player = player;
 
-        private enum VaultState : byte
-        {
-            Unprotected = 0,
-            Locked = 1,
-            UnlockFailedByWrongPin = 10,
-            SetPinFailedBecauseLock = 11,
-            Unlocked = 12,
-            RemovePinFailedByWrongPassword = 13,
-        }
-
         /// <inheritdoc/>
         public void ShowVault()
         {
             this.player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(NpcWindow.VaultStorage);
-            var itemSerializer = this.player.ItemSerializer;
-            var itemsCount = this.player.Vault.ItemStorage.Items.Count;
-            var spacePerItem = itemSerializer.NeededSpace + 1;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, 6 + (itemsCount * spacePerItem)))
+            this.player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(this.player.Vault.ItemStorage.Items);
+            this.player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney(true);
+
+            // Currently, we don't support vault locking yet. The following message probably needs to be moved into a separate plugin when we implement it.
+            using var writer = this.player.Connection.StartSafeWrite(VaultProtectionInformation.HeaderType, VaultProtectionInformation.Length);
+            _ = new VaultProtectionInformation(writer.Span)
             {
-                var packet = writer.Span;
-                packet[3] = 0x31;
-                packet[4] = 0;
-                packet[5] = (byte)itemsCount;
-                int i = 0;
-                foreach (var item in this.player.Vault.Items)
-                {
-                    var itemBlock = packet.Slice(6 + (i * spacePerItem), spacePerItem);
-                    itemBlock[0] = item.ItemSlot;
-                    itemSerializer.SerializeItem(itemBlock.Slice(1), item);
-                    i++;
-                }
-
-                writer.Commit();
-            }
-
-            this.player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney();
-
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 4))
-            {
-                // vault password protection info
-                var packet = writer.Span;
-                packet[2] = 0x83;
-                packet[3] = (byte)VaultState.Unprotected;
-                writer.Commit();
-            }
+                ProtectionState = VaultProtectionInformation.VaultProtectionState.Unprotected,
+            };
+            writer.Commit();
         }
     }
 }

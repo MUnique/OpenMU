@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,46 +30,45 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         /// <inheritdoc/>
         public void OpenNpcWindow(NpcWindow window)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 0x0B))
+            using var writer = this.player.Connection.StartSafeWrite(NpcWindowResponse.HeaderType, NpcWindowResponse.Length);
+            _ = new NpcWindowResponse(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x30;
-                packet[3] = this.GetWindowIdOf(window);
-                writer.Commit();
-            }
+                Window = Convert(window),
+            };
+            writer.Commit();
         }
 
-        private byte GetWindowIdOf(NpcWindow window)
+        private static NpcWindowResponse.NpcWindow Convert(NpcWindow window)
         {
-            switch (window)
+            return window switch
             {
-                case NpcWindow.Merchant: return 0;
-                case NpcWindow.Merchant1: return 1;
-                case NpcWindow.VaultStorage: return 2;
-                case NpcWindow.ChaosMachine: return 3;
-                case NpcWindow.DevilSquare: return 4;
-                case NpcWindow.BloodCastle: return 6;
-                case NpcWindow.PetTrainer: return 7;
-                case NpcWindow.Lahap: return 9;
-                case NpcWindow.CastleSeniorNPC: return 0x0C;
-                case NpcWindow.ElphisRefinery: return 0x11;
-                case NpcWindow.RefineStoneMaking: return 0x12;
-                case NpcWindow.RemoveJohOption: return 0x13;
-                case NpcWindow.IllusionTemple: return 0x14;
-                case NpcWindow.ChaosCardCombination: return 0x15;
-                case NpcWindow.CherryBlossomBranchesAssembly: return 0x16;
-                case NpcWindow.SeedMaster: return 0x17;
-                case NpcWindow.SeedResearcher: return 0x18;
-                case NpcWindow.StatReInitializer: return 0x19;
-                case NpcWindow.DelgadoLuckyCoinRegistration: return 0x20;
-                case NpcWindow.DoorkeeperTitusDuelWatch: return 0x21;
-                case NpcWindow.LugardDoppelgangerEntry: return 0x23;
-                case NpcWindow.JerintGaionEvententry: return 0x24;
-                case NpcWindow.JuliaWarpMarketServer: return 0x25;
-                case NpcWindow.CombineLuckyItem: return 0x26;
-                case NpcWindow.GuildMaster: throw new ArgumentException("guild master dialog is opened by another action.");
-                default: return (byte)window;
-            }
+                NpcWindow.Merchant => NpcWindowResponse.NpcWindow.Merchant,
+                NpcWindow.Merchant1 => NpcWindowResponse.NpcWindow.Merchant1,
+                NpcWindow.VaultStorage => NpcWindowResponse.NpcWindow.VaultStorage,
+                NpcWindow.ChaosMachine => NpcWindowResponse.NpcWindow.ChaosMachine,
+                NpcWindow.DevilSquare => NpcWindowResponse.NpcWindow.DevilSquare,
+                NpcWindow.BloodCastle => NpcWindowResponse.NpcWindow.BloodCastle,
+                NpcWindow.PetTrainer => NpcWindowResponse.NpcWindow.PetTrainer,
+                NpcWindow.Lahap => NpcWindowResponse.NpcWindow.Lahap,
+                NpcWindow.CastleSeniorNPC => NpcWindowResponse.NpcWindow.CastleSeniorNPC,
+                NpcWindow.ElphisRefinery => NpcWindowResponse.NpcWindow.ElphisRefinery,
+                NpcWindow.RefineStoneMaking => NpcWindowResponse.NpcWindow.RefineStoneMaking,
+                NpcWindow.RemoveJohOption => NpcWindowResponse.NpcWindow.RemoveJohOption,
+                NpcWindow.IllusionTemple => NpcWindowResponse.NpcWindow.IllusionTemple,
+                NpcWindow.ChaosCardCombination => NpcWindowResponse.NpcWindow.ChaosCardCombination,
+                NpcWindow.CherryBlossomBranchesAssembly => NpcWindowResponse.NpcWindow.CherryBlossomBranchesAssembly,
+                NpcWindow.SeedMaster => NpcWindowResponse.NpcWindow.SeedMaster,
+                NpcWindow.SeedResearcher => NpcWindowResponse.NpcWindow.SeedResearcher,
+                NpcWindow.StatReInitializer => NpcWindowResponse.NpcWindow.StatReInitializer,
+                NpcWindow.DelgadoLuckyCoinRegistration => NpcWindowResponse.NpcWindow.DelgadoLuckyCoinRegistration,
+                NpcWindow.DoorkeeperTitusDuelWatch => NpcWindowResponse.NpcWindow.DoorkeeperTitusDuelWatch,
+                NpcWindow.LugardDoppelgangerEntry => NpcWindowResponse.NpcWindow.LugardDoppelgangerEntry,
+                NpcWindow.JerintGaionEvententry => NpcWindowResponse.NpcWindow.JerintGaionEvententry,
+                NpcWindow.JuliaWarpMarketServer => NpcWindowResponse.NpcWindow.JuliaWarpMarketServer,
+                NpcWindow.CombineLuckyItem => NpcWindowResponse.NpcWindow.CombineLuckyItem,
+                NpcWindow.GuildMaster => throw new ArgumentException("guild master dialog is opened by another action."),
+                _ => throw new ArgumentException($"Unhandled case {window}."),
+            };
         }
     }
 }

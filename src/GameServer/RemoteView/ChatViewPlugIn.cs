@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -31,24 +31,27 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ChatMessage(string message, string sender, ChatMessageType type)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, Encoding.UTF8.GetByteCount(message) + 14))
+            using var writer = this.player.Connection.StartSafeWrite(
+                Network.Packets.ServerToClient.ChatMessage.HeaderType,
+                Network.Packets.ServerToClient.ChatMessage.GetRequiredSize(message));
+            _ = new ChatMessage(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = this.GetChatMessageTypeByte(type);
-                packet.Slice(3, 10).WriteString(sender, Encoding.UTF8);
-                packet.Slice(13).WriteString(message, Encoding.UTF8);
-                writer.Commit();
-            }
+                Type = ConvertChatMessageType(type),
+                Sender = sender,
+                Message = message,
+            };
+
+            writer.Commit();
         }
 
-        private byte GetChatMessageTypeByte(ChatMessageType type)
+        private static ChatMessage.ChatMessageType ConvertChatMessageType(ChatMessageType type)
         {
             if (type == ChatMessageType.Whisper)
             {
-                return 0x02;
+                return Network.Packets.ServerToClient.ChatMessage.ChatMessageType.Whisper;
             }
 
-            return 0x00;
+            return Network.Packets.ServerToClient.ChatMessage.ChatMessageType.Normal;
         }
     }
 }

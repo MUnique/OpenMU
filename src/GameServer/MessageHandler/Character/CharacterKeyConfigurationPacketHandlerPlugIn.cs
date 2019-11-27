@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+    using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -29,7 +30,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
         /// <inheritdoc />
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            this.saveKeyConfigurationAction.SaveKeyConfiguration(player, packet.Slice(4).ToArray());
+            SaveKeyConfiguration message = packet;
+            this.saveKeyConfigurationAction.SaveKeyConfiguration(player, message.Configuration.ToArray());
         }
     }
 }

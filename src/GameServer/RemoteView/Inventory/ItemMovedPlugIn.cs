@@ -9,6 +9,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -30,15 +32,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         public void ItemMoved(Item item, byte toSlot, Storages storage)
         {
             var itemSerializer = this.player.ItemSerializer;
-            using (var writer = this.player.Connection.StartSafeWrite(0xC3, 5 + itemSerializer.NeededSpace))
+            var targetStorage = storage.Convert();
+            if (targetStorage == ItemStorageKind.PlayerShop)
             {
-                var itemMoved = writer.Span;
-                itemMoved[2] = 0x24;
-                itemMoved[3] = storage == Storages.PersonalStore ? (byte)0 : (byte)storage;
-                itemMoved[4] = toSlot;
-                itemSerializer.SerializeItem(itemMoved.Slice(5), item);
-                writer.Commit();
+                targetStorage = ItemStorageKind.Inventory;
             }
+
+            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.ItemMoved.HeaderType, Network.Packets.ServerToClient.ItemMoved.GetRequiredSize(itemSerializer.NeededSpace));
+            var message = new ItemMoved(writer.Span)
+            {
+                TargetStorageType = targetStorage,
+                TargetSlot = toSlot,
+            };
+            itemSerializer.SerializeItem(message.ItemData, item);
+
+            writer.Commit();
         }
     }
 }

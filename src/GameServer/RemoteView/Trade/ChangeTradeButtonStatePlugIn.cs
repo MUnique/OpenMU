@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Trade
 {
+    using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Trade;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -34,13 +36,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// </remarks>
         public void ChangeTradeButtonState(TradeButtonState state)
         {
-            using (var writer = this.player.Connection.StartSafeWrite(0xC1, 4))
+            using var writer = this.player.Connection.StartSafeWrite(TradeButtonStateChanged.HeaderType, TradeButtonStateChanged.Length);
+            _ = new TradeButtonStateChanged(writer.Span)
             {
-                var packet = writer.Span;
-                packet[2] = 0x3C;
-                packet[3] = (byte)state;
-                writer.Commit();
-            }
+                State = Convert(state),
+            };
+            writer.Commit();
+        }
+
+        private static TradeButtonStateChanged.TradeButtonState Convert(TradeButtonState state)
+        {
+            return state switch
+            {
+                TradeButtonState.Unchecked => TradeButtonStateChanged.TradeButtonState.Unchecked,
+                TradeButtonState.Checked => TradeButtonStateChanged.TradeButtonState.Checked,
+                TradeButtonState.Red => TradeButtonStateChanged.TradeButtonState.Red,
+                _ => throw new ArgumentException($"Unhandled enum value {state}."),
+            };
         }
     }
 }

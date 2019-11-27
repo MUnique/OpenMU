@@ -7,13 +7,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.GameLogic.Views.World;
+    using MUnique.OpenMU.GameServer.RemoteView.Character;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -41,71 +42,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 return;
             }
 
-            var appearanceSerializer = this.player.AppearanceSerializer;
-            var playerDataSize = appearanceSerializer.NeededSpace + 18;
-
-            IList<Player> shopPlayers = null;
-            IList<Player> guildPlayers = null;
-            var newPlayerList = newPlayers.ToList();
-            const int estimatedEffectsPerPlayer = 5;
-            var estimatedSize = 5 + (newPlayerList.Count * (playerDataSize + estimatedEffectsPerPlayer)); // this should just be a rough number to optimize the capacity of the list
-            using (var writer = this.player.Connection.StartSafeWrite(0xC2, estimatedSize))
-            {
-                var packet = writer.Span;
-                packet[3] = 0x12;
-                packet[4] = (byte)newPlayerList.Count;
-                var actualSize = 5;
-
-                foreach (var newPlayer in newPlayerList)
-                {
-                    var playerId = newPlayer.GetId(this.player);
-                    var playerBlock = packet.Slice(actualSize);
-                    playerBlock[0] = playerId.GetHighByte();
-                    playerBlock[1] = playerId.GetLowByte();
-                    playerBlock[2] = newPlayer.Position.X;
-                    playerBlock[3] = newPlayer.Position.Y;
-
-                    var appearanceBlock = playerBlock.Slice(4, appearanceSerializer.NeededSpace);
-                    appearanceSerializer.WriteAppearanceData(appearanceBlock, newPlayer.AppearanceData, true); // 4 ... 21
-
-                    playerBlock.Slice(4 + appearanceBlock.Length, 10).WriteString(newPlayer.SelectedCharacter.Name, Encoding.UTF8); // 22 ... 31
-                    if (newPlayer.IsWalking)
-                    {
-                        playerBlock[14 + appearanceBlock.Length] = newPlayer.WalkTarget.X;
-                        playerBlock[15 + appearanceBlock.Length] = newPlayer.WalkTarget.Y;
-                    }
-                    else
-                    {
-                        playerBlock[14 + appearanceBlock.Length] = newPlayer.Position.X;
-                        playerBlock[15 + appearanceBlock.Length] = newPlayer.Position.Y;
-                    }
-
-                    playerBlock[16 + appearanceBlock.Length] = (byte)((newPlayer.Rotation.ToPacketByte() * 0x10) + newPlayer.SelectedCharacter.State);
-                    var activeEffects = newPlayer.MagicEffectList.GetVisibleEffects();
-                    var effectCount = 0;
-                    for (int e = activeEffects.Count - 1; e >= 0; e--)
-                    {
-                        playerBlock[18 + appearanceBlock.Length + e] = (byte)activeEffects[e].Id;
-                        effectCount++;
-                    }
-
-                    playerBlock[17 + appearanceBlock.Length] = (byte)effectCount;
-                    actualSize += playerDataSize + effectCount;
-
-                    if (newPlayer.ShopStorage.StoreOpen)
-                    {
-                        (shopPlayers ?? (shopPlayers = new List<Player>())).Add(newPlayer);
-                    }
-
-                    if (newPlayer.GuildStatus != null)
-                    {
-                        (guildPlayers ?? (guildPlayers = new List<Player>())).Add(newPlayer);
-                    }
-                }
-
-                packet.Slice(0, actualSize).SetPacketSize();
-                writer.Commit(actualSize);
-            }
+            this.SendCharacters(newPlayers, out var shopPlayers, out var guildPlayers);
 
             if (shopPlayers != null)
             {
@@ -116,6 +53,73 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 this.player.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayersToGuild(guildPlayers, true);
             }
+        }
+
+        private void SendCharacters(IEnumerable<Player> newPlayers, out IList<Player> shopPlayers, out IList<Player> guildPlayers)
+        {
+            var appearanceSerializer = this.player.AppearanceSerializer;
+            shopPlayers = null;
+            guildPlayers = null;
+            var newPlayerList = newPlayers.ToList();
+            const int estimatedEffectsPerPlayer = 5;
+            var estimatedSizePerCharacter = AddCharactersToScope.CharacterData.GetRequiredSize(estimatedEffectsPerPlayer);
+            var estimatedSize = AddCharactersToScope.GetRequiredSize(newPlayerList.Count, estimatedSizePerCharacter);
+            using var writer = this.player.Connection.StartSafeWrite(AddCharactersToScope.HeaderType, estimatedSize);
+            var packet = new AddCharactersToScope(writer.Span)
+            {
+                CharacterCount = (byte)newPlayerList.Count,
+            };
+
+            var i = 0;
+            foreach (var newPlayer in newPlayerList)
+            {
+                var playerBlock = packet[i];
+                playerBlock.Id = newPlayer.GetId(this.player);
+                playerBlock.CurrentPositionX = newPlayer.Position.X;
+                playerBlock.CurrentPositionY = newPlayer.Position.Y;
+
+                appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
+                playerBlock.Name = newPlayer.SelectedCharacter.Name;
+                if (newPlayer.IsWalking)
+                {
+                    playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
+                    playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
+                }
+                else
+                {
+                    playerBlock.TargetPositionX = newPlayer.Position.X;
+                    playerBlock.TargetPositionY = newPlayer.Position.Y;
+                }
+
+                playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
+                playerBlock.HeroState = newPlayer.SelectedCharacter.State.Convert();
+
+                var activeEffects = newPlayer.MagicEffectList.GetVisibleEffects();
+                playerBlock.EffectCount = (byte)activeEffects.Count;
+                for (int e = playerBlock.EffectCount - 1; e >= 0; e--)
+                {
+                    var effectBlock = playerBlock[e];
+                    effectBlock.Id = (byte)activeEffects[e].Id;
+                }
+
+                if (newPlayer.ShopStorage.StoreOpen)
+                {
+                    (shopPlayers ??= new List<Player>()).Add(newPlayer);
+                }
+
+                if (newPlayer.GuildStatus != null)
+                {
+                    (guildPlayers ??= new List<Player>()).Add(newPlayer);
+                }
+
+                i++;
+            }
+
+            // The calculation of the final size is not a requirement, but we do it to save some traffic.
+            // The original server also doesn't send more bytes than necessary.
+            var finalSize = packet.FinalSize;
+            writer.Span.Slice(0, finalSize).SetPacketSize();
+            writer.Commit(finalSize);
         }
     }
 }

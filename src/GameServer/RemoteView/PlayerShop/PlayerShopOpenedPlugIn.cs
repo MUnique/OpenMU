@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -33,14 +34,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
             if (this.player == playerWithShop)
             {
                 // Success of opening the own shop
-                using (var writer = this.player.Connection.StartSafeWrite(0xC1, 0x05))
-                {
-                    var packet = writer.Span;
-                    packet[2] = 0x3F;
-                    packet[3] = 0x02;
-                    packet[4] = 0x01;
-                    writer.Commit();
-                }
+                using var writer = this.player.Connection.StartSafeWrite(PlayerShopOpenSuccessful.HeaderType, PlayerShopOpenSuccessful.Length);
+                _ = new PlayerShopOpenSuccessful(writer.Span);
+                writer.Commit();
             }
         }
     }
