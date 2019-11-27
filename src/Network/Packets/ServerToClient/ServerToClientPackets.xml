@@ -81,8 +81,8 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>07</Code>
-      <Length>7</Length>
       <Name>MagicEffectStatus</Name>
+      <Length>7</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>A magic effect was added or removed to the own or another player.</SentWhen>
       <CausedReaction>The user interface updates itself. If it's the effect of the own player, it's shown as icon at the top of the interface.</CausedReaction>
@@ -337,6 +337,7 @@
           <Type>Structure[]</Type>
           <TypeName>NpcData</TypeName>
           <Name>NPCs</Name>
+          <ItemCountField>NpcCount</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -344,7 +345,6 @@
           <Name>NpcData</Name>
           <Description>Contains the data of an NPC.</Description>
           <Length>10</Length>
-          <ItemCountField>NpcCount</ItemCountField>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -411,6 +411,7 @@
           <Type>Structure[]</Type>
           <TypeName>NpcData</TypeName>
           <Name>NPCs</Name>
+          <ItemCountField>NpcCount</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -418,7 +419,6 @@
           <Name>NpcData</Name>
           <Description>Contains the data of an NPC.</Description>
           <Length>9</Length>
-          <ItemCountField>NpcCount</ItemCountField>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -503,6 +503,7 @@
           <Type>Structure[]</Type>
           <TypeName>ObjectId</TypeName>
           <Name>Objects</Name>
+          <ItemCountField>ObjectCount</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -510,7 +511,6 @@
           <Name>ObjectId</Name>
           <Description>Contains the id of a object.</Description>
           <Length>2</Length>
-          <ItemCountField>ObjectCount</ItemCountField>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -1532,6 +1532,7 @@
           <Type>Structure[]</Type>
           <TypeName>DroppedItemId</TypeName>
           <Name>ItemData</Name>
+          <ItemCountField>ItemCount</ItemCountField>
         </Field>
       </Fields>
       <Structures>
@@ -1539,7 +1540,6 @@
           <Name>DroppedItemId</Name>
           <Description>Contains the id of a dropped item.</Description>
           <Length>2</Length>
-          <ItemCountField>ItemCount</ItemCountField>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -3605,38 +3605,38 @@
           <Name>Members</Name>
           <ItemCountField>GuildMemberCount</ItemCountField>
         </Field>
-        <Structures>
-          <Structure>
-            <Name>GuildMember</Name>
-            <Description>Contains the data of one guild member.</Description>
-            <Length>13</Length>
-            <Fields>
-              <Field>
-                <Index>0</Index>
-                <Type>String</Type>
-                <Name>Name</Name>
-                <Length>10</Length>
-              </Field>
-              <Field>
-                <Index>10</Index>
-                <Type>Byte</Type>
-                <Name>ServerId</Name>
-              </Field>
-              <Field>
-                <Index>11</Index>
-                <Type>Byte</Type>
-                <Name>ServerId2</Name>
-              </Field>
-              <Field>
-                <Index>12</Index>
-                <Type>Enum</Type>
-                <TypeName>GuildMemberRole</TypeName>
-                <Name>Role</Name>
-              </Field>
-            </Fields>
-          </Structure>
-        </Structures>
       </Fields>
+      <Structures>
+        <Structure>
+          <Name>GuildMember</Name>
+          <Description>Contains the data of one guild member.</Description>
+          <Length>13</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>Byte</Type>
+              <Name>ServerId</Name>
+            </Field>
+            <Field>
+              <Index>11</Index>
+              <Type>Byte</Type>
+              <Name>ServerId2</Name>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>Enum</Type>
+              <TypeName>GuildMemberRole</TypeName>
+              <Name>Role</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>

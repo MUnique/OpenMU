@@ -10619,6 +10619,26 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public GuildMember this[int index] => new GuildMember(this.data.Slice(24 + (index * GuildMember.Length)));
 
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildList"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildList(Span<byte> packet) => new GuildList(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildList"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildList packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="GuildMember"/>.
+        /// </summary>
+        /// <param name="membersCount">The count of <see cref="GuildMember"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int membersCount) => membersCount * GuildMember.Length + 24;
+
 
     /// <summary>
     /// Contains the data of one guild member..
@@ -10677,26 +10697,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             set => this.data.Slice(12)[0] = (byte)value;
         }
     }
-
-        /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildList"/>.
-        /// </summary>
-        /// <param name="packet">The packet as span.</param>
-        /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildList(Span<byte> packet) => new GuildList(packet, false);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="GuildList"/> to a Span of bytes.
-        /// </summary>
-        /// <param name="packet">The packet as struct.</param>
-        /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(GuildList packet) => packet.data; 
-
-        /// <summary>
-        /// Calculates the size of the packet for the specified count of <see cref="GuildMember"/>.
-        /// </summary>
-        /// <param name="membersCount">The count of <see cref="GuildMember"/> from which the size will be calculated.</param>
-        public static int GetRequiredSize(int membersCount) => membersCount * GuildMember.Length + 24;
     }
 
 
