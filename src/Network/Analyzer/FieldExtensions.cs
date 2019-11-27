@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     using MUnique.OpenMU.Network.Packets;
 
     /// <summary>
-    /// Extensions for <see cref="FIeld"/>s.
+    /// Extensions for <see cref="Field"/>s.
     /// </summary>
     public static class FieldExtensions
     {
