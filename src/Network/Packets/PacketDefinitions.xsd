@@ -98,7 +98,7 @@
       <xs:element minOccurs="1" maxOccurs="1" name="Index" type="xs:int" />
       <xs:element minOccurs="0" maxOccurs="1" name="LeftShifted" type="xs:int" />
       <xs:element minOccurs="1" maxOccurs="1" name="Type" type="tns:FieldType" />
-      <xs:element minOccurs="0" maxOccurs="1" name="TypeName" type="xs:string">
+      <xs:element minOccurs="0" maxOccurs="1" name="TypeName" type="xs:Name">
         <xs:annotation>
           <xs:documentation>The name of the actual type, if it's an enum or structure.</xs:documentation>
         </xs:annotation>
@@ -107,9 +107,14 @@
       <xs:element minOccurs="0" maxOccurs="1" name="Description" type="xs:string" />
       <xs:element minOccurs="0" maxOccurs="1" name="Length" type="xs:int" />
       <xs:element minOccurs="0" maxOccurs="1" name="DefaultValue" type="xs:string" />
-      <xs:element minOccurs="0" maxOccurs="1" name="ItemCountField" type="xs:int">
+      <xs:element minOccurs="0" maxOccurs="1" name="ItemCountField" type="xs:Name">
         <xs:annotation>
           <xs:documentation>The name of the item count field, if this field is of type Structure[].</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="UseCustomIndexer" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>If this is 'true' and this field is of type Structure[], the indexer is not implemented by the XSLT, but by custom code.</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>

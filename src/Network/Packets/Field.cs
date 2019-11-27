@@ -150,6 +150,14 @@ namespace MUnique.OpenMU.Network.Packets
         public string ItemCountField { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this field uses a custom implementation for the indexer, if this field is a struct array.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this field uses a custom implementation for the indexer, if this field is a struct array; otherwise, <c>false</c>.
+        /// </value>
+        public bool UseCustomIndexer { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether <see cref="Length"/> is specified.
         /// </summary>
         [XmlIgnore]
@@ -160,5 +168,11 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         [XmlIgnore]
         public bool LeftShiftedSpecified { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether <see cref="UseCustomIndexer"/> is specified.
+        /// </summary>
+        [XmlIgnore]
+        public bool UseCustomIndexerSpecified { get; set; }
     }
 }

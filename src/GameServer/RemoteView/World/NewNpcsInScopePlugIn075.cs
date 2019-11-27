@@ -34,8 +34,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
         {
-            const int NpcDataSize = 9;
-
             if (newObjects == null || !newObjects.Any())
             {
                 return;
@@ -59,10 +57,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 npcBlock.CurrentPositionY = npc.Position.Y;
                 if (npc is Monster monster)
                 {
-                    npcBlock.IsPoisoned = monster.MagicEffectList.ActiveEffects.ContainsKey(0x37);
-                    npcBlock.IsIced = monster.MagicEffectList.ActiveEffects.ContainsKey(0x38);
-                    npcBlock.IsDamageBuffed = monster.MagicEffectList.ActiveEffects.ContainsKey(0x01);
-                    npcBlock.IsDefenseBuffed = monster.MagicEffectList.ActiveEffects.ContainsKey(0x02);
+                    npcBlock.IsPoisoned = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
+                    npcBlock.IsIced = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
+                    npcBlock.IsDamageBuffed = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
+                    npcBlock.IsDefenseBuffed = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
                 }
 
                 var supportWalk = npc as ISupportWalk;

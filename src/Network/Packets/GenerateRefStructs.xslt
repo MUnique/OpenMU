@@ -94,7 +94,12 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       <xsl:value-of select="$newline" />
       </xsl:if>
       <xsl:apply-templates select="pd:Description"/>
-      <xsl:text>    public readonly ref struct </xsl:text>
+      
+      <xsl:text>    public readonly ref </xsl:text>
+      <xsl:if test="pd:Fields/pd:Field/pd:UseCustomIndexer = 'true'">
+        <xsl:text>partial </xsl:text>
+      </xsl:if>
+      <xsl:text>struct </xsl:text>
       <xsl:apply-templates select="pd:Name" />
       <xsl:value-of select="$newline"/>
       <xsl:text>    {</xsl:text>
@@ -413,8 +418,10 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       <xsl:value-of select="$newline"/>
     </xsl:template>
 
+    <xsl:template match="pd:Field[pd:UseCustomIndexer = 'true']"></xsl:template>
+
     <!-- Example: public CharacterData this[int index] => new CharacterData(this.data.Slice(8 + index));-->
-    <xsl:template match="pd:Field[pd:Type = 'Structure[]']">
+    <xsl:template match="pd:Field[pd:Type = 'Structure[]' and not(pd:UseCustomIndexer)]">
       <xsl:variable name="typeName" select="pd:TypeName" />
       <xsl:variable name="arrayOfVariableStruct" select="(../../pd:Structures/pd:Structure[pd:Name = $typeName and not(pd:Length)] or ../../../../pd:Structures/pd:Structure[pd:Name = $typeName and not(pd:Length)])" />
       <xsl:variable name="typeLengthParamName" select="concat(translate(substring(pd:TypeName, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring(pd:TypeName, 2), 'Length')" />
