@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                 foreach (var field in definition.Fields)
                 {
                     stringBuilder.Append(Environment.NewLine)
-                        .Append(field.Name).Append(": ").Append(this.ExtractFieldValue(packet.Data.AsSpan(), field, definition, definitions));
+                        .Append(field.Name).Append(": ").Append(this.ExtractFieldValueOrGetError(packet.Data.AsSpan(), field, definition, definitions));
                 }
 
                 return stringBuilder.ToString();
@@ -104,6 +104,28 @@ namespace MUnique.OpenMU.Network.Analyzer
         }
 
         /// <summary>
+        /// Extracts the field value from this packet or returns an error message, if it couldn't be extracted.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="field">The field definition.</param>
+        /// <param name="packet">The packet.</param>
+        /// <param name="definitions">The definitions.</param>
+        /// <returns>
+        /// The value of the field or the error message.
+        /// </returns>
+        private string ExtractFieldValueOrGetError(Span<byte> data, Field field, PacketDefinition packet, PacketDefinitions definitions)
+        {
+            try
+            {
+                return this.ExtractFieldValue(data, field, packet, definitions);
+            }
+            catch (Exception e)
+            {
+                return $"{e.GetType().Name}: {e.Message}";
+            }
+        }
+
+        /// <summary>
         /// Extracts the field value from this packet.
         /// </summary>
         /// <param name="data">The data.</param>
@@ -136,7 +158,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             switch (field.Type)
             {
                 case FieldType.Byte:
-                    return data[field.Index].ToString();
+                    return data.Slice(field.Index).GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted).ToString();
                 case FieldType.Boolean:
                     return data.Slice(field.Index).GetBoolean(field.LeftShifted).ToString();
                 case FieldType.Integer:
@@ -152,51 +174,98 @@ namespace MUnique.OpenMU.Network.Analyzer
                 case FieldType.LongBigEndian:
                     return data.Slice(field.Index).GetLongBigEndian().ToString();
                 case FieldType.Enum:
-                    var byteValue = data.Slice(field.Index).GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted);
-                    var enumDefinition = packet.Enums?.FirstOrDefault(e => e.Name == field.TypeName)
-                                         ?? definitions.Enums?.FirstOrDefault(e => e.Name == field.TypeName)
-                                         ?? this.commonDefinitions?.Enums?.FirstOrDefault(e => e.Name == field.TypeName);
-                    var enumValue = enumDefinition?.Values.FirstOrDefault(v => v.Value == byteValue);
-                    return $"{data[field.Index]} ({enumValue?.Name ?? "unknown"})";
-
+                    return this.ExtractEnumValue(data, field, packet, definitions);
                 case FieldType.StructureArray:
-                    var type = packet.Structures?.FirstOrDefault(s => s.Name == field.TypeName)
-                               ?? definitions.Structures?.FirstOrDefault(s => s.Name == field.TypeName)
-                               ?? this.commonDefinitions.Structures?.FirstOrDefault(s => s.Name == field.TypeName);
-                    if (type == null)
-                    {
-                        return data.Slice(field.Index).AsString();
-                    }
-
-                    var countField = packet.Fields.FirstOrDefault(f => f.Name == field.ItemCountField);
-                    int count = int.Parse(this.ExtractFieldValue(data, countField, packet, definitions));
-                    if (count == 0)
-                    {
-                        return data.Slice(field.Index).AsString();
-                    }
-
-                    var typeLength = type.Length > 0 ? type.Length : (data.Length - field.Index) / count;
-                    var stringBuilder = new StringBuilder();
-                    for (int i = 0; i < count; i++)
-                    {
-                        var elementData = data.Slice(field.Index + (i * typeLength), typeLength);
-                        stringBuilder.Append(Environment.NewLine)
-                            .Append(field.Name + $"[{i}]:");
-                        stringBuilder.Append(Environment.NewLine)
-                            .Append("  Raw: ").Append(elementData.AsString());
-                        foreach (var structField in type.Fields)
-                        {
-                            stringBuilder.Append(Environment.NewLine)
-                                .Append("  ").Append(structField.Name).Append(": ").Append(this.ExtractFieldValue(elementData, structField, packet, definitions));
-                        }
-                    }
-
-                    return stringBuilder.ToString();
+                    return this.ExtractStructureArrayValues(data, field, packet, definitions);
                 case FieldType.Float:
                     return BitConverter.ToSingle(data.Slice(field.Index)).ToString(CultureInfo.InvariantCulture);
                 default:
                     return string.Empty;
             }
+        }
+
+        private string ExtractStructureArrayValues(Span<byte> data, Field field, PacketDefinition packet, PacketDefinitions definitions)
+        {
+            var type = packet.Structures?.FirstOrDefault(s => s.Name == field.TypeName)
+                       ?? definitions.Structures?.FirstOrDefault(s => s.Name == field.TypeName)
+                       ?? this.commonDefinitions.Structures?.FirstOrDefault(s => s.Name == field.TypeName);
+            if (type == null)
+            {
+                return data.Slice(field.Index).AsString();
+            }
+
+            var countField = packet.Fields.FirstOrDefault(f => f.Name == field.ItemCountField)
+                             ?? packet.Structures?.SelectMany(s => s.Fields).FirstOrDefault(f => f.Name == field.ItemCountField);
+            int count = int.Parse(this.ExtractFieldValue(data, countField, packet, definitions));
+            if (count == 0)
+            {
+                return string.Empty;
+            }
+
+            var typeLength = type.Length > 0 ? type.Length : this.DetermineFixedStructLength(data, field, type, count);
+            var stringBuilder = new StringBuilder();
+            var restData = data.Slice(field.Index);
+
+            for (int i = 0; i < count; i++)
+            {
+                var currentLength = typeLength ?? this.DetermineDynamicStructLength(restData, type, packet);
+                var elementData = restData.Slice(0, currentLength);
+                restData = restData.Slice(currentLength);
+
+                stringBuilder.Append(Environment.NewLine)
+                    .Append(field.Name + $"[{i}]:");
+                stringBuilder.Append(Environment.NewLine)
+                    .Append("  Raw: ").Append(elementData.AsString());
+                foreach (var structField in type.Fields)
+                {
+                    stringBuilder.Append(Environment.NewLine)
+                        .Append("  ").Append(structField.Name).Append(": ").Append(this.ExtractFieldValue(elementData, structField, packet, definitions));
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private string ExtractEnumValue(Span<byte> data, Field field, PacketDefinition packet, PacketDefinitions definitions)
+        {
+            var byteValue = data.Slice(field.Index).GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted);
+            var enumDefinition = packet.Enums?.FirstOrDefault(e => e.Name == field.TypeName)
+                                 ?? definitions.Enums?.FirstOrDefault(e => e.Name == field.TypeName)
+                                 ?? this.commonDefinitions?.Enums?.FirstOrDefault(e => e.Name == field.TypeName);
+            var enumValue = enumDefinition?.Values.FirstOrDefault(v => v.Value == byteValue);
+            return $"{data[field.Index]} ({enumValue?.Name ?? "unknown"})";
+        }
+
+        private int? DetermineFixedStructLength(Span<byte> data, Field field, Structure type, int count)
+        {
+            if (type.Length > 0)
+            {
+                return type.Length;
+            }
+
+            if (type.Fields.All(f => f.Type != FieldType.StructureArray))
+            {
+                return (data.Length - field.Index) / count;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Determines the length of the dynamic structure.
+        /// We assume that a nested struct type has a fixed length specified in <see cref="Structure.Length"/>.
+        /// </summary>
+        /// <param name="restData">The rest data.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="packetType">Type of the packet.</param>
+        /// <returns>The dynamic length of a struct with a nested structure array.</returns>
+        private int DetermineDynamicStructLength(Span<byte> restData, Structure type, PacketDefinition packetType)
+        {
+            var nestedStructField = type.Fields.First(f => f.Type == FieldType.StructureArray);
+            var countField = type.Fields.First(f => f.Name == nestedStructField.ItemCountField);
+            var count = restData[countField.Index];
+            var nestedStructType = packetType.Structures.First(s => s.Name == nestedStructField.TypeName);
+            return nestedStructField.Index + (count * nestedStructType.Length);
         }
     }
 }
