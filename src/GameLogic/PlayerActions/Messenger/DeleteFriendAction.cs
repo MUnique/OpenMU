@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
     using MUnique.OpenMU.GameLogic.Views.Messenger;
-    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// Action to delete a friend from the friend list.
