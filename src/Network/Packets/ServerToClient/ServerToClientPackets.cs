@@ -142,7 +142,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 1;
+                this.Success = true;
             }
         }
 
@@ -2356,7 +2356,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 1;
+                this.Success = true;
             }
         }
 
@@ -4019,7 +4019,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 1;
+                this.Success = true;
             }
         }
 
@@ -5518,7 +5518,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Type = HeaderType;
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
-                this.data[4] = 1;
+                this.TrueFlag = 1;
             }
         }
 
@@ -6497,7 +6497,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 1;
+                this.Success = true;
             }
         }
 
@@ -7432,7 +7432,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 1;
+                this.Success = true;
             }
         }
 
@@ -7750,7 +7750,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 0xFE;
+                this.Flag = 0xFE;
             }
         }
 
@@ -7864,7 +7864,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 0xFF;
+                this.Flag = 0xFF;
             }
         }
 
@@ -8111,7 +8111,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 0xFE;
+                this.Flag = 0xFE;
             }
         }
 
@@ -8216,7 +8216,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[4] = 0xFF;
+                this.Flag = 0xFF;
             }
         }
 
@@ -11833,7 +11833,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.data[14] = 0xFF;
+                this.ServerId = 0xFF;
             }
         }
 
@@ -12565,7 +12565,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Type = HeaderType;
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
-                this.data[3] = 1;
+                this.RequestSuccessful = true;
             }
         }
 
@@ -12654,7 +12654,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Type = HeaderType;
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
-                this.data[24] = 1;
+                this.Type = 1;
             }
         }
 

@@ -464,9 +464,9 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
 
     <xsl:template match="pd:Field[pd:DefaultValue]" mode="init">
       <xsl:value-of select="$newline"/>
-      <xsl:text>                this.data[</xsl:text>
-      <xsl:value-of select="pd:Index"/>
-      <xsl:text>] = </xsl:text>
+      <xsl:text>                this.</xsl:text>
+      <xsl:value-of select="pd:Name"/>
+      <xsl:text> = </xsl:text>
       <xsl:value-of select="pd:DefaultValue"/>
       <xsl:text>;</xsl:text>
     </xsl:template>
