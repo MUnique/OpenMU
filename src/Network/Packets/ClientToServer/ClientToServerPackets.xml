@@ -1644,6 +1644,7 @@
       <Code>F6</Code>
       <SubCode>0A</SubCode>
       <Name>QuestStartRequest</Name>
+      <Length>9</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The client opened an quest NPC dialog and decided to start an available quests.</SentWhen>
       <CausedReaction>The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.</CausedReaction>
@@ -1671,6 +1672,7 @@
       <Code>F6</Code>
       <SubCode>0B</SubCode>
       <Name>QuestProceedRequest</Name>
+      <Length>9</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.</SentWhen>
       <CausedReaction>The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).</CausedReaction>
@@ -1697,6 +1699,7 @@
       <Code>F6</Code>
       <SubCode>0D</SubCode>
       <Name>QuestCompletionRequest</Name>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client requests to complete an active quest.</SentWhen>
       <CausedReaction>The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.</CausedReaction>
@@ -1718,6 +1721,7 @@
       <Code>F6</Code>
       <SubCode>0F</SubCode>
       <Name>QuestCancelRequest</Name>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client requests to cancel an active quest.</SentWhen>
       <CausedReaction>The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.</CausedReaction>
@@ -1739,6 +1743,7 @@
       <Code>F6</Code>
       <SubCode>10</SubCode>
       <Name>QuestClientActionRequest</Name>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client requests to complete a client action, e.g. completing a tutorial.</SentWhen>
       <CausedReaction>The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.</CausedReaction>
@@ -1760,6 +1765,7 @@
       <Code>F6</Code>
       <SubCode>1A</SubCode>
       <Name>ActiveQuestListRequest</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The clients requests the states of all quests, usually after entering the game.</SentWhen>
       <CausedReaction>The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.</CausedReaction>
@@ -1770,6 +1776,7 @@
       <Code>F6</Code>
       <SubCode>1B</SubCode>
       <Name>QuestStateRequest</Name>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client requests the state of a specific active quests.</SentWhen>
       <CausedReaction>The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.</CausedReaction>
@@ -1791,6 +1798,7 @@
       <Code>F6</Code>
       <SubCode>21</SubCode>
       <Name>EventQuestStateListRequest</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client requests the list of event quests, usually after entering the game.</SentWhen>
       <CausedReaction>The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).</CausedReaction>
@@ -1801,6 +1809,7 @@
       <Code>F6</Code>
       <SubCode>30</SubCode>
       <Name>AvailableQuestsRequest</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The client opened an quest NPC dialog and requests a list of available quests.</SentWhen>
       <CausedReaction>The list of available quests of this NPC is sent back (F60A).</CausedReaction>
@@ -1811,6 +1820,7 @@
       <Code>F6</Code>
       <SubCode>31</SubCode>
       <Name>NpcBuffRequest</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).</SentWhen>
       <CausedReaction>The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.</CausedReaction>
