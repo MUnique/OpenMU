@@ -57,7 +57,7 @@
           <Index>4</Index>
           <Type>Boolean</Type>
           <Name>Success</Name>
-          <DefaultValue>1</DefaultValue>
+          <DefaultValue>true</DefaultValue>
         </Field>
         <Field>
           <Index>5</Index>
@@ -835,7 +835,7 @@
           <Index>4</Index>
           <Type>Boolean</Type>
           <Name>Success</Name>
-          <DefaultValue>1</DefaultValue>
+          <DefaultValue>true</DefaultValue>
         </Field>
       </Fields>
     </Packet>
@@ -1416,7 +1416,7 @@
           <Index>4</Index>
           <Type>Boolean</Type>
           <Name>Success</Name>
-          <DefaultValue>1</DefaultValue>
+          <DefaultValue>true</DefaultValue>
         </Field>
         <Field>
           <Index>5</Index>
@@ -2196,7 +2196,7 @@
           <Index>4</Index>
           <Type>Boolean</Type>
           <Name>Success</Name>
-          <DefaultValue>1</DefaultValue>
+          <DefaultValue>true</DefaultValue>
         </Field>
         <Field>
           <Index>5</Index>
@@ -2530,7 +2530,7 @@
           <Index>4</Index>
           <Type>Boolean</Type>
           <Name>Success</Name>
-          <DefaultValue>1</DefaultValue>
+          <DefaultValue>true</DefaultValue>
         </Field>
         <Field>
           <Index>5</Index>
@@ -4257,7 +4257,7 @@
           <Index>3</Index>
           <Type>Boolean</Type>
           <Name>RequestSuccessful</Name>
-          <DefaultValue>1</DefaultValue>
+          <DefaultValue>true</DefaultValue>
         </Field>
         <Field>
           <Index>4</Index>
