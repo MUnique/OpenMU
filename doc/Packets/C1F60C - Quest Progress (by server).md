@@ -55,7 +55,7 @@ The client shows the quest progress accordingly.
 | 4 | int |   | Reward Type, see below |
 | 2 | short | | Reward Id |
 | 4 | int |   | Reward Count (e.g. Number of Items, Experience, Money )  |
-| 12 | byte[] | | Required Item |
+| 12 | byte[] | | Rewarded Item |
 
 #### Reward Type
 

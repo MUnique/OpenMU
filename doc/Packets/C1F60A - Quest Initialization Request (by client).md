@@ -13,7 +13,7 @@ The server decides if the character can start the quest. A character can run up 
 |  Length  | Data type | Value | Description |
 |----------|---------|-------------|---------|
 | 1 | byte | 0xC1    | [Packet type](PacketTypes.md) |
-| 1 | byte | 0x04    | Packet header - length of the packet |
+| 1 | byte |         | Packet header - length of the packet |
 | 1 | byte | 0xF6    | Packet header - packet type identifier |
 | 1 | byte | 0x0A    | Packet header - packet type identifier |
 | 2 | short |        | Quest Number (big endian) |

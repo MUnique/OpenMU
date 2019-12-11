@@ -1,11 +1,12 @@
 ﻿# C1 F6 0A - Quest List Response
 
 ## Is sent when
-After the client [requested](<C1F630 - Available Quests Request (by client).md>) the list of available quests.
+After the client [requested](<C1F630 - Available Quests Request (by client).md>) the list of available quests
+through an NPC dialog.
 
 
 ## Causes the following actions on the client side
-The client shows the available quests.
+The client shows the available quests for the currently interacting NPC.
 
 ## Additional Informations
 Since this message contains just a quest "number" and "group", the client and server must

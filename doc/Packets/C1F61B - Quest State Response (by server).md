@@ -1,7 +1,7 @@
 ﻿# C1 F6 1B - Quest State Response
 
 ## Is sent when
-After the client [requested](<C1F60A - Quest Initialization Request (by client).md>) it.
+After the client [requested](<C1F61B - Quest State Request (by client).md>) it.
 
 ## Causes the following actions on the client side
 The client shows the quest progress accordingly.

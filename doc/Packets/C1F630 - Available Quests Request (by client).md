@@ -5,7 +5,7 @@ The client opened an quest NPC dialog and requests a list of available quests.
 
 
 ## Causes the following actions on the server side
-The server sends the list of available quests.
+The server sends the [list of available quests](<C1F60A - Quest List Response (by server).md>) of this NPC.
 
 
 ## Structure
