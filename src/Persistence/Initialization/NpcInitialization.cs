@@ -260,6 +260,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 257;
                 def.Designation = "Elf Soldier";
+                def.NpcWindow = NpcWindow.NpcDialog;
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -745,6 +746,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 543;
                 def.Designation = "Gens Duprian";
+                def.NpcWindow = NpcWindow.NpcDialog;
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -752,6 +754,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 544;
                 def.Designation = "Gens Vanert";
+                def.NpcWindow = NpcWindow.NpcDialog;
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -759,6 +762,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 566;
                 def.Designation = "Mercenary Guild Felicia";
+                def.NpcWindow = NpcWindow.NpcDialog;
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -898,6 +902,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 568;
                 def.Designation = "Wandering Merchant Zyro";
+                def.NpcWindow = NpcWindow.NpcDialog;
                 this.gameConfiguration.Monsters.Add(def);
             }
 

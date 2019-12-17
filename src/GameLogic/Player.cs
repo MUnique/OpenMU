@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
+    using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Pathfinding;
@@ -248,7 +249,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public bool OnlineAsFriend { get; set; } = true;
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IWorldObserver"/>
         public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns => this.viewPlugIns ?? (this.viewPlugIns = this.CreateViewPlugInContainer());
 
         /// <inheritdoc/>
@@ -939,6 +940,7 @@ namespace MUnique.OpenMU.GameLogic
             this.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.UpdateSkillList();
             this.ViewPlugIns.GetPlugIn<IUpdateCharacterStatsPlugIn>()?.UpdateCharacterStats();
             this.ViewPlugIns.GetPlugIn<IUpdateInventoryListPlugIn>()?.UpdateInventoryList();
+            this.ViewPlugIns.GetPlugIn<IQuestStateResponsePlugIn>()?.ShowQuestState(null);
 
             this.Attributes.GetOrCreateAttribute(Stats.MaximumMana).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumAbility).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();

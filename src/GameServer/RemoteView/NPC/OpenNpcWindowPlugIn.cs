@@ -30,12 +30,25 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         /// <inheritdoc/>
         public void OpenNpcWindow(NpcWindow window)
         {
-            using var writer = this.player.Connection.StartSafeWrite(NpcWindowResponse.HeaderType, NpcWindowResponse.Length);
-            _ = new NpcWindowResponse(writer.Span)
+            if (window == NpcWindow.NpcDialog)
             {
-                Window = Convert(window),
-            };
-            writer.Commit();
+                using var writer = this.player.Connection.StartSafeWrite(OpenNpcDialog.HeaderType, OpenNpcDialog.Length);
+                _ = new OpenNpcDialog(writer.Span)
+                {
+                    NpcNumber = this.player.OpenedNpc.Definition.Number.ToUnsigned(),
+                };
+
+                writer.Commit();
+            }
+            else
+            {
+                using var writer = this.player.Connection.StartSafeWrite(NpcWindowResponse.HeaderType, NpcWindowResponse.Length);
+                _ = new NpcWindowResponse(writer.Span)
+                {
+                    Window = Convert(window),
+                };
+                writer.Commit();
+            }
         }
 
         private static NpcWindowResponse.NpcWindow Convert(NpcWindow window)
@@ -67,6 +80,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
                 NpcWindow.JuliaWarpMarketServer => NpcWindowResponse.NpcWindow.JuliaWarpMarketServer,
                 NpcWindow.CombineLuckyItem => NpcWindowResponse.NpcWindow.CombineLuckyItem,
                 NpcWindow.GuildMaster => throw new ArgumentException("guild master dialog is opened by another action."),
+                NpcWindow.NpcDialog => throw new ArgumentException("The quest dialog is opened by another action"),
                 _ => throw new ArgumentException($"Unhandled case {window}."),
             };
         }
