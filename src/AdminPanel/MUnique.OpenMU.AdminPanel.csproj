@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
@@ -81,14 +81,14 @@
   <ItemGroup>
     <PackageReference Include="apache.log4net.Extensions.Logging" Version="2.0.0.12" />
     <PackageReference Include="BCrypt.Net-Next" Version="3.2.1" />
-    <PackageReference Include="BuildBundlerMinifier" Version="3.0.415" />
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.435" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Mapster" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.6.3">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.7.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

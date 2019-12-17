@@ -50,8 +50,8 @@ Requirements:
 * Windows OS
   * It runs under Linux and MacOS, too. However, this guide describes it for windows.
 * PostgreSQL installed
-* Visual Studio 2019 installed
-* [.NET Core SDK SDK 3.0.100](https://www.microsoft.com/net/download/dotnet-core/3.0)
+* Visual Studio 2019 (16.4) installed
+* [.NET Core SDK SDK 3.1.100](https://www.microsoft.com/net/download/dotnet-core/3.1)
 * This repository cloned
 
 If you have that, you'll need to do:

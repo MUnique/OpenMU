@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 # Requirements for the typescript compiler
 RUN apt-get update
@@ -12,7 +12,7 @@ COPY doc/ ./app/doc
 WORKDIR /app
 RUN dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj -o out -p:ci=true
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0 AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 
 EXPOSE 1234
 EXPOSE 55901
