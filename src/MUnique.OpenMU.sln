@@ -39,7 +39,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B79F6365-0C4A-45C1-A1F5-4BE69F18FF98}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
-		..\.travis.yml = ..\.travis.yml
 		..\azure-pipelines-1.yml = ..\azure-pipelines-1.yml
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\LICENSE = ..\LICENSE

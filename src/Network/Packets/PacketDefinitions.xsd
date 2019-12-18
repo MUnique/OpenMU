@@ -129,6 +129,7 @@
       <xs:enumeration value="IntegerBigEndian" />
       <xs:enumeration value="Long" />
       <xs:enumeration value="LongBigEndian" />
+      <xs:enumeration value="Float" />
       <xs:enumeration value="String" />
       <xs:enumeration value="Binary" />
       <xs:enumeration value="Enum" />

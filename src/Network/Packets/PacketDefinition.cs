@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.Network.Packets
             set
             {
                 this.type = value;
-                var newHeaderType = ((byte) value).ToString("X") + "Header";
+                var newHeaderType = ((byte)value).ToString("X") + "Header";
                 if (this.SubCodeSpecified)
                 {
                     newHeaderType += "WithSubCode";

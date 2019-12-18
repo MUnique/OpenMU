@@ -486,14 +486,14 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:value-of select="$newline"/>
   </xsl:template>
 
-  <xsl:template match="pd:Field[pd:DefaultValue]" mode="init">
-    <xsl:value-of select="$newline"/>
-    <xsl:text>                this.</xsl:text>
-    <xsl:value-of select="pd:Name"/>
-    <xsl:text> = </xsl:text>
-    <xsl:value-of select="pd:DefaultValue"/>
-    <xsl:text>;</xsl:text>
-  </xsl:template>
+    <xsl:template match="pd:Field[pd:DefaultValue]" mode="init">
+      <xsl:value-of select="$newline"/>
+      <xsl:text>                this.</xsl:text>
+      <xsl:value-of select="pd:Name"/>
+      <xsl:text> = </xsl:text>
+      <xsl:value-of select="pd:DefaultValue"/>
+      <xsl:text>;</xsl:text>
+    </xsl:template>
 
     <xsl:template match="pd:Field">
       <xsl:choose>

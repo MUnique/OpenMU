@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// The definition of a connect server.

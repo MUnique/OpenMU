@@ -43,7 +43,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             var objectId = obj.GetId(this.player);
             if (type == MoveType.Instant)
             {
-                using var writer = this.player.Connection.StartSafeWrite(0xC1, 0x08);
+                using var writer = this.player.Connection.StartSafeWrite(
+                    Network.Packets.ServerToClient.ObjectMoved.HeaderType,
+                    Network.Packets.ServerToClient.ObjectMoved.Length);
                 _ = new ObjectMoved(writer.Span)
                 {
                     HeaderCode = this.GetInstantMoveCode(),

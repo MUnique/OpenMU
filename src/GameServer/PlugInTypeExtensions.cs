@@ -25,9 +25,9 @@ namespace MUnique.OpenMU.GameServer
         {
             var minimumClientAttribute = plugInType.GetCustomAttribute(typeof(MinimumClientAttribute), false) as MinimumClientAttribute;
             var maximumClientAttribute = plugInType.GetCustomAttribute(typeof(MaximumClientAttribute), false) as MaximumClientAttribute;
-            return (ReferenceEquals(minimumClientAttribute, null) // if the plugin doesn't specify a version, it always suits us
+            return (minimumClientAttribute is null // if the plugin doesn't specify a version, it always suits us
                         || clientVersion.CompareTo(minimumClientAttribute.Client) >= 0)
-                   && (ReferenceEquals(maximumClientAttribute, null)
+                   && (maximumClientAttribute is null
                         || clientVersion.CompareTo(maximumClientAttribute.Client) <= 1);
         }
     }

@@ -1,3 +1,0 @@
-language: csharp
-solution: src/MUnique.OpenMU.sln
-dotnet: 2.2.108
