@@ -4045,8 +4045,8 @@
           <Type>Structure[]</Type>
           <TypeName>LegacyQuestState</TypeName>
           <Name>States</Name>
-          <UseCustomIndexer>true</UseCustomIndexer>
           <Length>0</Length>
+          <UseCustomIndexer>true</UseCustomIndexer>
         </Field>
         <Field>
           <Index>4</Index>
