@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     /// Packet handler for the list of active quests request packets (0xF6, 0x1A identifier).
     /// </summary>
     [PlugIn("Quest - Request active quests list", "Packet handler for character focus packets (0xF3, 0x15 identifier).")]
-    [Guid("8687C77F-E26C-4510-AD85-E5F51305DE2A")]
+    [Guid("521ED931-BDB0-422E-8E8A-3CCB1BEB639C")]
     [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
     internal class ActiveQuestListRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     {
