@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
                 var partyMemberBlock = packet[i];
                 partyMemberBlock.Index = i;
                 partyMemberBlock.Name = partyMember.Name;
-                partyMemberBlock.MapId = (byte) partyMember.CurrentMap.MapId;
+                partyMemberBlock.MapId = (byte)partyMember.CurrentMap.MapId;
                 partyMemberBlock.PositionX = partyMember.Position.X;
                 partyMemberBlock.PositionY = partyMember.Position.Y;
                 partyMemberBlock.CurrentHealth = partyMember.CurrentHealth;
