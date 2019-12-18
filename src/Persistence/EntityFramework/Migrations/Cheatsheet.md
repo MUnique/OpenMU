@@ -5,7 +5,7 @@ Here are my notes about how to (re-)generate entity framework core migrations.
 ## Adding a new migration
   * Open Package Manager Console
   * Select default project *MUnique.OpenMU.Persistence.EntityFramework*
-  * Edit *MUnique.OpenMU.Persistence.EntityFramework.csproj* and change *TargetFramework* to *netcoreapp3.0*
+  * Edit *MUnique.OpenMU.Persistence.EntityFramework.csproj* and change *TargetFramework* to *netcoreapp3.1*
   * Run this command (replace *[Name]* by the name of the migration):
   > Add-Migration *[Name]* -context EntityDataContext
 
