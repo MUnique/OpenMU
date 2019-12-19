@@ -52,11 +52,13 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         /// <returns>The task.</returns>
         public static async ValueTask InitializeAllClients(IHubContext<ServerListHub> context, IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider)
         {
-            var currentServerInfos = CreateServerInfos(servers);
+            var currentGameServerInfos = CreateGameServerInfos(servers);
+            var currentConnectServerInfos = CreateConnectServerInfos(servers);
+            var currentServerInfos = CreateOtherServerInfos(servers);
             using (var persistenceContext = persistenceContextProvider.CreateNewConfigurationContext())
             {
                 var clients = persistenceContext.Get<GameClientDefinition>().ToList();
-                await context.Clients.Group(SubscriberGroup).SendCoreAsync(nameof(IServerListClient.Initialize), new object[] { currentServerInfos, clients }).ConfigureAwait(false);
+                await context.Clients.Group(SubscriberGroup).SendCoreAsync(nameof(IServerListClient.Initialize), new object[] { currentGameServerInfos, currentConnectServerInfos, currentServerInfos, clients }).ConfigureAwait(false);
             }
         }
 
@@ -67,8 +69,10 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         public async Task Subscribe()
         {
             await this.Groups.AddToGroupAsync(this.Context.ConnectionId, SubscriberGroup).ConfigureAwait(false);
-            var currentServerInfos = CreateServerInfos(this.servers);
-            if (currentServerInfos == null)
+            var currentGameServerInfos = CreateGameServerInfos(this.servers);
+            var currentConnectServerInfos = CreateConnectServerInfos(this.servers);
+            var currentServerInfos = CreateOtherServerInfos(this.servers);
+            if (currentConnectServerInfos == null)
             {
                 Log.Warn("Client connected too early. servers not available yet.");
             }
@@ -77,7 +81,7 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
                 using (var context = this.persistenceContextProvider.CreateNewConfigurationContext())
                 {
                     var clients = context.Get<GameClientDefinition>().ToList();
-                    await this.Clients.Caller.Initialize(currentServerInfos, clients).ConfigureAwait(false);
+                    await this.Clients.Caller.Initialize(currentGameServerInfos, currentConnectServerInfos, currentServerInfos, clients).ConfigureAwait(false);
                 }
             }
         }
@@ -111,34 +115,19 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
             this.Clients.Group(SubscriberGroup).RemovedServer(serverId);
         }
 
-        private static IList<ServerInfo> CreateServerInfos(IList<IManageableServer> servers)
+        private static IList<ConnectServerInfo> CreateConnectServerInfos(IList<IManageableServer> servers)
         {
-            if (servers == null)
-            {
-                return null;
-            }
+            return servers?.OfType<IConnectServer>().OrderBy(s => s.Id).Select(s => new ConnectServerInfo(s)).ToList();
+        }
 
-            var result = new List<ServerInfo>();
+        private static IList<GameServerInfo> CreateGameServerInfos(IList<IManageableServer> servers)
+        {
+            return servers?.OfType<IGameServer>().OrderBy(s => s.Id).Select(s => new GameServerInfo(s)).ToList();
+        }
 
-            foreach (var gameServer in servers.OfType<IGameServer>().OrderBy(s => s.Id))
-            {
-                var serverInfo = new GameServerInfo(gameServer);
-                result.Add(serverInfo);
-            }
-
-            foreach (var connectServer in servers.OfType<IConnectServer>().OrderBy(s => s.Id))
-            {
-                var serverInfo = new ConnectServerInfo(connectServer);
-                result.Add(serverInfo);
-            }
-
-            foreach (var server in servers.Where(server => !(server is IGameServer) && !(server is IConnectServer)))
-            {
-                var serverInfo = new ServerInfo(server);
-                result.Add(serverInfo);
-            }
-
-            return result;
+        private static IList<ServerInfo> CreateOtherServerInfos(IList<IManageableServer> servers)
+        {
+            return servers?.Where(server => !(server is IGameServer) && !(server is IConnectServer)).Select(s => new ServerInfo(s)).ToList();
         }
     }
 }

@@ -28,7 +28,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
-    using Newtonsoft.Json;
     using Mapster;
     using MUnique.OpenMU.Persistence;
 
@@ -171,12 +170,14 @@ foreach (Type type in customTypes)
 <#}#>
         }
         <#} else if (property.PropertyType.GenericTypeArguments.Length == 1 && property.PropertyType.GenericTypeArguments[0].IsPrimitive) {#>[Column("<#=property.Name#>")]
-        [JsonProperty("<#=property.Name#>")]
+        [Newtonsoft.Json.JsonProperty("<#=ToCamelCase(property.Name)#>")]
+        [System.Text.Json.Serialization.JsonPropertyName("<#=ToCamelCase(property.Name)#>")]
         public string Raw<#=property.Name#> { get; set; }
         <#} else {#>public <#=propertyTypeName#> Raw<#=property.Name#> { get; } = new List<<#=genericParameterType#>>();<#}#>
         
         /// <inheritdoc/>
-<#if (property.PropertyType.GenericTypeArguments.Length == 1 && property.PropertyType.GenericTypeArguments[0].IsPrimitive) {#>        [JsonIgnore]
+<#if (property.PropertyType.GenericTypeArguments.Length == 1 && property.PropertyType.GenericTypeArguments[0].IsPrimitive) {#>        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
 <#}#>
         [NotMapped]
         public override <#=originalPropertyTypeName#> <#=property.Name#>

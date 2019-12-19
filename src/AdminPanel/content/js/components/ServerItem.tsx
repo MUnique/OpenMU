@@ -5,7 +5,7 @@ import ConnectServerConfiguration from "./ConnectServerConfiguration";
 
 import { ApplicationState } from "../stores/index";
 
-import {Server, ServerState, ServerType, ConnectServer } from "../stores/servers/types";
+import {Server, ServerState, ServerType, ConnectServer, GameServer } from "../stores/servers/types";
 import {startServer, shutdownServer } from "../stores/servers/actions";
 
 
@@ -84,7 +84,7 @@ class ServerItem extends React.Component<IServerItemProps, ServerItemState> {
  
                         {this.state.expanded
                         ? this.props.server.type === ServerType.GameServer
-                            ? <MapList maps={this.props.server.maps} />
+                            ? <MapList maps={(this.props.server as GameServer).maps} />
                             : <div className="panel panel-body"><ConnectServerConfiguration id="edit-connect-server" serverSettings={(this.props.server as ConnectServer).settings} onSaveSuccess={() => this.setState({ expanded: false })} onCancel={() => this.setState({ expanded: false })}/></div>
                             : null}
                 </td>

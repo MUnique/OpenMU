@@ -12,7 +12,6 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
     using MUnique.OpenMU.AdminPanel.Hubs;
-    using MUnique.OpenMU.AdminPanel.Models;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.BasicModel;
@@ -52,7 +51,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         /// <param name="serverId">The server identifier.</param>
         /// <returns>The connect server definition of the specified id.</returns>
         [HttpGet("{serverId}")]
-        public ActionResult<ConnectServerDefinitionDto> Get(int serverId)
+        public ActionResult<ConnectServerDefinition> Get(int serverId)
         {
             try
             {
@@ -119,7 +118,7 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
         /// <param name="configuration">The configuration.</param>
         /// <returns>The internal id of the saved object.</returns>
         [HttpPost]
-        public ActionResult<Guid> Save([FromBody]ConnectServerDefinitionDto configuration)
+        public ActionResult<Guid> Save([FromBody]ConnectServerDefinition configuration)
         {
             try
             {
@@ -166,9 +165,9 @@ namespace MUnique.OpenMU.AdminPanel.Controllers
                     currentConfiguration.PatchAddress = configuration.PatchAddress;
                     currentConfiguration.Description = configuration.Description;
                     currentConfiguration.DisconnectOnUnknownPacket = configuration.DisconnectOnUnknownPacket;
-                    if (!Equals(currentConfiguration.Client, configuration.GameClient))
+                    if (!Equals(currentConfiguration.Client, configuration.Client))
                     {
-                        currentConfiguration.Client = configContext.GetById<DataModel.Configuration.GameClientDefinition>(configuration.GameClient.Id);
+                        currentConfiguration.Client = configContext.GetById<DataModel.Configuration.GameClientDefinition>(configuration.RawClient.Id);
                     }
 
                     configContext.SaveChanges();

@@ -1,5 +1,5 @@
 ﻿import { Middleware, MiddlewareAPI, Action, Store, Dispatch } from "redux";
-import { Server, GameClientDefinition } from "./types";
+import { Server, GameClientDefinition, ConnectServer, GameServer } from "./types";
 import { Map } from "../map/types";
 import { ApplicationState } from "../index";
 import { SignalRConnector } from "../signalr";
@@ -29,12 +29,16 @@ class ServerListSignalRConnector extends SignalRConnector {
         return "/signalr/hubs/serverListHub";
     }
 
-    private initialize(servers: Server[], clients: GameClientDefinition[]) {
+    private initialize(gameServers: GameServer[], connectServers: ConnectServer[], otherServers: Server[], clients: GameClientDefinition[]) {
         if (console && console.log) {
             console.log("server hub: init");
         }
 
-        this.store.dispatch(serverListInit(servers, clients));
+        let allServers = new Array<Server>();
+        gameServers.forEach(s => allServers.push(s));
+        connectServers.forEach(s => allServers.push(s));
+        otherServers.forEach(s => allServers.push(s));
+        this.store.dispatch(serverListInit(allServers, clients));
     }
 
     private addServer(server: Server) {

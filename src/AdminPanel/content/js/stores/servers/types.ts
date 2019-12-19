@@ -7,6 +7,9 @@ export interface Server {
     readonly description: string;
     readonly onlinePlayerCount: number;
     readonly maximumPlayers: number;
+}
+
+export interface GameServer extends Server {
     readonly maps: Map[];
 }
 
@@ -49,7 +52,7 @@ export enum ServerType {
 export interface ConnectServerSettings {
     readonly id: any;
     readonly description: string;
-    readonly gameClient: GameClientDefinition;
+    readonly client: GameClientDefinition;
     readonly disconnectOnUnknownPacket: boolean;
     readonly maximumReceiveSize: number;
     readonly clientListenerPort: number;
@@ -65,9 +68,8 @@ export interface ConnectServerSettings {
     readonly maxServerListRequests: number;
 }
 
-
 export namespace ConnectServerSettings {
-
+    
     export function timeoutSeconds(settings: ConnectServerSettings) : number {
         return parseInt(settings.timeout.split(':')[0]) * 3600 + parseInt(settings.timeout.split(':')[1]) * 60 + parseInt(settings.timeout.split(':')[2]);
     }
@@ -82,7 +84,7 @@ export namespace ConnectServerSettings {
     export function createNew(client: GameClientDefinition) : ConnectServerSettings {
         return {
             id: '00000000-0000-0000-0000-000000000000',
-            gameClient: client,
+            client: client,
             maxFtpRequests: 1,
             maxIpRequests: 3,
             maxServerListRequests: 30,

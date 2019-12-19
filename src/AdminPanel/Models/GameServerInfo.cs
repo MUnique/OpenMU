@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.AdminPanel.Models
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// A wrapper class for the game server information.
@@ -30,7 +29,6 @@ namespace MUnique.OpenMU.AdminPanel.Models
         /// <summary>
         /// Gets the currently available maps which are running on the server instance.
         /// </summary>
-        [JsonProperty("maps")]
         public IList<GameMapInfo> Maps
         {
             get
@@ -47,25 +45,21 @@ namespace MUnique.OpenMU.AdminPanel.Models
             /// <summary>
             /// Gets or sets the identifier of the map. Its the <see cref="GameMapDefinition.Number"/>.
             /// </summary>
-            [JsonProperty("id")]
             public short Id { get; set; }
 
             /// <summary>
             /// Gets or sets the server identifier on which the map instance is running.
             /// </summary>
-            [JsonProperty("serverId")]
             public int ServerId { get; set; }
 
             /// <summary>
             /// Gets or sets the name of the map.
             /// </summary>
-            [JsonProperty("name")]
             public string Name { get; set; }
 
             /// <summary>
             /// Gets or sets the number of players which are currently on this map instance.
             /// </summary>
-            [JsonProperty("playerCount")]
             public int PlayerCount { get; set; }
         }
     }

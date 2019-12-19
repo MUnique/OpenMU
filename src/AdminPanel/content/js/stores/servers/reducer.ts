@@ -1,5 +1,5 @@
 ﻿import Redux from "redux";
-import { Server, GameClientDefinition } from "./types";
+import { Server, GameClientDefinition, GameServer } from "./types";
 import { Constants, ServerAction as ServerStateAction, ServerUpdateStateAction, ServerUpdatePlayerCountAction,
     ServerUpdateMapPlayerCountAction, ServerListInitAction, ServerAddMapAction, ServerRemoveMapAction } from
     "./actions";
@@ -46,7 +46,8 @@ export const serverStateReducer: Redux.Reducer<ServerListState> =
             return getModificatedState(state,
                 serverUpdateAction,
                 (server) => {
-                    let maps = server.maps.slice(0, server.maps.length);
+                    let gameServer = server as GameServer;
+                    let maps = gameServer.maps.slice(0, gameServer.maps.length);
                     maps.push(serverUpdateAction.map);
                     return { ...server, maps: maps };
                 });
@@ -57,9 +58,10 @@ export const serverStateReducer: Redux.Reducer<ServerListState> =
             return getModificatedState(state,
                 serverUpdateAction,
                 (server) => {
+                    let gameServer = server as GameServer;
                     return {
                         ...server,
-                        maps: server.maps.filter(map => map.id !== serverUpdateAction.mapId)
+                        maps: gameServer.maps.filter(map => map.id !== serverUpdateAction.mapId)
                     };
                 });
         }
@@ -72,8 +74,9 @@ export const serverStateReducer: Redux.Reducer<ServerListState> =
         }
     };
 
-function updateGameMapPlayerCount(server: Server, action: ServerUpdateMapPlayerCountAction) : Partial<Server> {
-    let maps = server.maps.slice(0, server.maps.length);
+function updateGameMapPlayerCount(server: Server, action: ServerUpdateMapPlayerCountAction): Partial<GameServer> {
+    let gameServer = server as GameServer;
+    let maps = gameServer.maps.slice(0, gameServer.maps.length);
     let index = maps.findIndex(map => map.id === action.mapId);
     maps[index] = {...maps[index], playerCount: action.playerCount}
     return { maps };

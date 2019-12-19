@@ -26,9 +26,10 @@ namespace MUnique.OpenMU.AdminPanel
         /// </remarks>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter()));
             services.AddRazorPages();
-            services.AddSignalR();
+            services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
         }
 
         /// <summary>

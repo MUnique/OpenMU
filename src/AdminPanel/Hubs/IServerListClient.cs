@@ -81,6 +81,6 @@ namespace MUnique.OpenMU.AdminPanel.Hubs
         /// <returns>
         /// The task.
         /// </returns>
-        Task Initialize(IList<ServerInfo> servers, IList<GameClientDefinition> clients);
+        Task Initialize(IList<GameServerInfo> gameServers, IList<ConnectServerInfo> connectServers, IList<ServerInfo> otherServers, IList<GameClientDefinition> clients);
     }
 }
