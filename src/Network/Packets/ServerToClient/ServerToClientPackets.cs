@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public Span<byte> ItemData
         {
-            get => this.data.Slice(1);
+            get => this.data.Slice(1, 12);
         }
 
         /// <summary>
@@ -101,12 +101,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             get => this.data.Slice(16).GetIntegerBigEndian();
             set => this.data.Slice(16).SetIntegerBigEndian(value);
         }
-
-        /// <summary>
-        /// Calculates the size of the packet for the specified length of <see cref="ItemData"/>.
-        /// </summary>
-        /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
-        public static int GetRequiredSize(int itemDataLength) => itemDataLength + 1;
     }
 
 
@@ -3507,20 +3501,44 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public enum DamageKind
         {
+            /// <summary>
+            /// Red color, used by normal damage.
+            /// </summary>
             NormalRed = 0,
 
+            /// <summary>
+            /// Cyan color, usually used by ignore defense damage.
+            /// </summary>
             IgnoreDefenseCyan = 1,
 
+            /// <summary>
+            /// Light green color, usually used by excellent damage.
+            /// </summary>
             ExcellentLightGreen = 2,
 
+            /// <summary>
+            /// Blue color, usually used by critical damage.
+            /// </summary>
             CriticalBlue = 3,
 
+            /// <summary>
+            /// Light pink color.
+            /// </summary>
             LightPink = 4,
 
+            /// <summary>
+            /// Dark green color, usually used by poison damage.
+            /// </summary>
             PoisonDarkGreen = 5,
 
+            /// <summary>
+            /// Dark pink color, usually used by reflected damage.
+            /// </summary>
             ReflectedDarkPink = 6,
 
+            /// <summary>
+            /// White color.
+            /// </summary>
             White = 7,
         }
 
@@ -5909,10 +5927,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             JuliaWarpMarketServer = 37,
 
             /// <summary>
-            /// The dialog window which allows to exchange or refine Lucky Item.
-            /// </summary>
-            /// <summary>
-            /// Used by NPC "David".
+            /// The dialog window which allows to exchange or refine Lucky Item. Used by NPC "David".
             /// </summary>
             CombineLuckyItem = 38,
         }
@@ -6790,6 +6805,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (ushort)data.Length;
                 header.SubCode = SubCode;
+                this.Success = true;
             }
         }
 
@@ -10430,20 +10446,44 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public enum GuildJoinRequestResult
         {
+            /// <summary>
+            /// Refused by the guild master.
+            /// </summary>
             Refused = 0,
 
+            /// <summary>
+            /// Accepted by the guild master.
+            /// </summary>
             Accepted = 1,
 
+            /// <summary>
+            /// The guild is full.
+            /// </summary>
             GuildFull = 2,
 
+            /// <summary>
+            /// The guild master is disconnected.
+            /// </summary>
             Disconnected = 3,
 
+            /// <summary>
+            /// The requested player is not the guild master of its guild.
+            /// </summary>
             NotTheGuildMaster = 4,
 
+            /// <summary>
+            /// The player already has a guild.
+            /// </summary>
             AlreadyHaveGuild = 5,
 
+            /// <summary>
+            /// he guild master or the requesting player is busy, e.g. by another request or by an ongoing guild war.
+            /// </summary>
             GuildMasterOrRequesterIsBusy = 6,
 
+            /// <summary>
+            /// The requesting player needs a minimum level of 6.
+            /// </summary>
             MinimumLevel6 = 7,
         }
 
@@ -10711,10 +10751,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public enum GuildKickSuccess
         {
+            /// <summary>
+            /// The kick request failed.
+            /// </summary>
             Failed = 0,
 
+            /// <summary>
+            /// The kick request was successful.
+            /// </summary>
             KickSucceeded = 1,
 
+            /// <summary>
+            /// The guild has been disbanded.
+            /// </summary>
             GuildDisband = 2,
         }
 
@@ -10937,6 +10986,22 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// </summary>
     public readonly ref struct GuildCreationResult
     {
+        /// <summary>
+        /// Defines a guild creation error.
+        /// </summary>
+        public enum GuildCreationErrorType
+        {
+            /// <summary>
+            /// No error occured.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// The requested guild name is already taken.
+            /// </summary>
+            GuildNameAlreadyTaken = 179,
+        }
+
         private readonly Span<byte> data;
 
         /// <summary>
@@ -11002,16 +11067,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             get => (GuildCreationErrorType)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
         }
-        /// <summary>
-        /// Defines a guild creation error.
-        /// </summary>
-        public enum GuildCreationErrorType
-        {
-            None = 0,
-
-            GuildNameAlreadyTaken = 179,
-        }
-
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildCreationResult"/>.

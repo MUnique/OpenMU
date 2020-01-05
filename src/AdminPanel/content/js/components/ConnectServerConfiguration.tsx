@@ -31,7 +31,7 @@ class ConnectServerConfiguration extends React.Component<IConnectServerConfigura
     }
 
     public render() {
-        let clients: JSX.Element[] = this.props.clients.map(c => (<option value={c.id} selected={this.state.gameClient !== null && this.state.gameClient.id === c.id}>{c.description}</option>));
+        let clients: JSX.Element[] = this.props.clients.map(c => (<option value={c.id}>{c.description}</option>));
         return (
             <form id={this.props.id} onSubmit={(event: any) => this.submit(event)}>
                 <div className="form-group">
@@ -44,7 +44,7 @@ class ConnectServerConfiguration extends React.Component<IConnectServerConfigura
                     </div>
                 <div className="form-group">
                     <label htmlFor="gameClientInput">Game Client</label>
-                    <select id="gameClientInput" className="form-control" required={true} onChange={(e: any) => this.setState({ gameClient: this.props.clients.find(c => c.id === e.target.value) })}>
+                    <select id="gameClientInput" className="form-control" required={true} value={this.props.serverSettings.client.id} onChange={(e: any) => this.setState({ client: this.props.clients.find(c => c.id === e.target.value) })}>
                         {clients}
                     </select>
                 </div>

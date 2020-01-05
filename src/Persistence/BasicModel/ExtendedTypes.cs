@@ -14,7 +14,6 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 {
     using System;
     using System.Collections.Generic;
-    using Newtonsoft.Json;
     using MUnique.OpenMU.Persistence.Json;
 
     /// <summary>
@@ -30,11 +29,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="UnlockedCharacterClasses" />.
         /// </summary>
-        [JsonProperty("UnlockedCharacterClasses")]
+        [Newtonsoft.Json.JsonProperty("unlockedCharacterClasses")]
+        [System.Text.Json.Serialization.JsonPropertyName("unlockedCharacterClasses")]
         public ICollection<CharacterClass> RawUnlockedCharacterClasses { get; } = new List<CharacterClass>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> UnlockedCharacterClasses
         {
             get
@@ -54,11 +55,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Characters" />.
         /// </summary>
-        [JsonProperty("Characters")]
+        [Newtonsoft.Json.JsonProperty("characters")]
+        [System.Text.Json.Serialization.JsonPropertyName("characters")]
         public ICollection<Character> RawCharacters { get; } = new List<Character>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Entities.Character> Characters
         {
             get
@@ -78,7 +81,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Vault" />.
         /// </summary>
-        [JsonProperty("Vault")]
+        [Newtonsoft.Json.JsonProperty("vault")]
+        [System.Text.Json.Serialization.JsonPropertyName("vault")]
         public ItemStorage RawVault
         { 
             get { return base.Vault as ItemStorage; }
@@ -86,7 +90,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Entities.ItemStorage Vault
         {
             get
@@ -135,11 +140,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="EquippedItems" />.
         /// </summary>
-        [JsonProperty("EquippedItems")]
+        [Newtonsoft.Json.JsonProperty("equippedItems")]
+        [System.Text.Json.Serialization.JsonPropertyName("equippedItems")]
         public ICollection<ItemAppearance> RawEquippedItems { get; } = new List<ItemAppearance>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemAppearance> EquippedItems
         {
             get
@@ -159,7 +166,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="CharacterClass" />.
         /// </summary>
-        [JsonProperty("CharacterClass")]
+        [Newtonsoft.Json.JsonProperty("characterClass")]
+        [System.Text.Json.Serialization.JsonPropertyName("characterClass")]
         public CharacterClass RawCharacterClass
         { 
             get { return base.CharacterClass as CharacterClass; }
@@ -167,7 +175,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
         {
             get
@@ -211,11 +220,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Attributes" />.
         /// </summary>
-        [JsonProperty("Attributes")]
+        [Newtonsoft.Json.JsonProperty("attributes")]
+        [System.Text.Json.Serialization.JsonPropertyName("attributes")]
         public ICollection<StatAttribute> RawAttributes { get; } = new List<StatAttribute>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.AttributeSystem.StatAttribute> Attributes
         {
             get
@@ -235,11 +246,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Letters" />.
         /// </summary>
-        [JsonProperty("Letters")]
+        [Newtonsoft.Json.JsonProperty("letters")]
+        [System.Text.Json.Serialization.JsonPropertyName("letters")]
         public IList<LetterHeader> RawLetters { get; } = new List<LetterHeader>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override IList<MUnique.OpenMU.Interfaces.LetterHeader> Letters
         {
             get
@@ -259,11 +272,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="LearnedSkills" />.
         /// </summary>
-        [JsonProperty("LearnedSkills")]
+        [Newtonsoft.Json.JsonProperty("learnedSkills")]
+        [System.Text.Json.Serialization.JsonPropertyName("learnedSkills")]
         public ICollection<SkillEntry> RawLearnedSkills { get; } = new List<SkillEntry>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Entities.SkillEntry> LearnedSkills
         {
             get
@@ -283,11 +298,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="DropItemGroups" />.
         /// </summary>
-        [JsonProperty("DropItemGroups")]
+        [Newtonsoft.Json.JsonProperty("dropItemGroups")]
+        [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
         public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
         {
             get
@@ -307,7 +324,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="CharacterClass" />.
         /// </summary>
-        [JsonProperty("CharacterClass")]
+        [Newtonsoft.Json.JsonProperty("characterClass")]
+        [System.Text.Json.Serialization.JsonPropertyName("characterClass")]
         public CharacterClass RawCharacterClass
         { 
             get { return base.CharacterClass as CharacterClass; }
@@ -315,7 +333,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
         {
             get
@@ -332,7 +351,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="CurrentMap" />.
         /// </summary>
-        [JsonProperty("CurrentMap")]
+        [Newtonsoft.Json.JsonProperty("currentMap")]
+        [System.Text.Json.Serialization.JsonPropertyName("currentMap")]
         public GameMapDefinition RawCurrentMap
         { 
             get { return base.CurrentMap as GameMapDefinition; }
@@ -340,7 +360,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition CurrentMap
         {
             get
@@ -357,7 +378,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Inventory" />.
         /// </summary>
-        [JsonProperty("Inventory")]
+        [Newtonsoft.Json.JsonProperty("inventory")]
+        [System.Text.Json.Serialization.JsonPropertyName("inventory")]
         public ItemStorage RawInventory
         { 
             get { return base.Inventory as ItemStorage; }
@@ -365,7 +387,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Entities.ItemStorage Inventory
         {
             get
@@ -409,11 +432,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Members" />.
         /// </summary>
-        [JsonProperty("Members")]
+        [Newtonsoft.Json.JsonProperty("members")]
+        [System.Text.Json.Serialization.JsonPropertyName("members")]
         public ICollection<GuildMember> RawMembers { get; } = new List<GuildMember>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Entities.GuildMember> Members
         {
             get
@@ -433,7 +458,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Hostility" />.
         /// </summary>
-        [JsonProperty("Hostility")]
+        [Newtonsoft.Json.JsonProperty("hostility")]
+        [System.Text.Json.Serialization.JsonPropertyName("hostility")]
         public Guild RawHostility
         { 
             get { return base.Hostility as Guild; }
@@ -441,7 +467,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.Interfaces.Guild Hostility
         {
             get
@@ -458,7 +485,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="AllianceGuild" />.
         /// </summary>
-        [JsonProperty("AllianceGuild")]
+        [Newtonsoft.Json.JsonProperty("allianceGuild")]
+        [System.Text.Json.Serialization.JsonPropertyName("allianceGuild")]
         public Guild RawAllianceGuild
         { 
             get { return base.AllianceGuild as Guild; }
@@ -466,7 +494,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.Interfaces.Guild AllianceGuild
         {
             get
@@ -552,11 +581,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ItemOptions" />.
         /// </summary>
-        [JsonProperty("ItemOptions")]
+        [Newtonsoft.Json.JsonProperty("itemOptions")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemOptions")]
         public ICollection<ItemOptionLink> RawItemOptions { get; } = new List<ItemOptionLink>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemOptionLink> ItemOptions
         {
             get
@@ -576,11 +607,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ItemSetGroups" />.
         /// </summary>
-        [JsonProperty("ItemSetGroups")]
+        [Newtonsoft.Json.JsonProperty("itemSetGroups")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemSetGroups")]
         public ICollection<ItemSetGroup> RawItemSetGroups { get; } = new List<ItemSetGroup>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup> ItemSetGroups
         {
             get
@@ -600,7 +633,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Definition" />.
         /// </summary>
-        [JsonProperty("Definition")]
+        [Newtonsoft.Json.JsonProperty("definition")]
+        [System.Text.Json.Serialization.JsonPropertyName("definition")]
         public ItemDefinition RawDefinition
         { 
             get { return base.Definition as ItemDefinition; }
@@ -608,7 +642,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Definition
         {
             get
@@ -657,11 +692,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="VisibleOptions" />.
         /// </summary>
-        [JsonProperty("VisibleOptions")]
+        [Newtonsoft.Json.JsonProperty("visibleOptions")]
+        [System.Text.Json.Serialization.JsonPropertyName("visibleOptions")]
         public ICollection<ItemOptionType> RawVisibleOptions { get; } = new List<ItemOptionType>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType> VisibleOptions
         {
             get
@@ -681,7 +718,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Definition" />.
         /// </summary>
-        [JsonProperty("Definition")]
+        [Newtonsoft.Json.JsonProperty("definition")]
+        [System.Text.Json.Serialization.JsonPropertyName("definition")]
         public ItemDefinition RawDefinition
         { 
             get { return base.Definition as ItemDefinition; }
@@ -689,7 +727,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Definition
         {
             get
@@ -738,7 +777,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ItemOption" />.
         /// </summary>
-        [JsonProperty("ItemOption")]
+        [Newtonsoft.Json.JsonProperty("itemOption")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemOption")]
         public IncreasableItemOption RawItemOption
         { 
             get { return base.ItemOption as IncreasableItemOption; }
@@ -746,7 +786,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption ItemOption
         {
             get
@@ -795,11 +836,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Items" />.
         /// </summary>
-        [JsonProperty("Items")]
+        [Newtonsoft.Json.JsonProperty("items")]
+        [System.Text.Json.Serialization.JsonPropertyName("items")]
         public ICollection<Item> RawItems { get; } = new List<Item>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Entities.Item> Items
         {
             get
@@ -846,7 +889,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Header" />.
         /// </summary>
-        [JsonProperty("Header")]
+        [Newtonsoft.Json.JsonProperty("header")]
+        [System.Text.Json.Serialization.JsonPropertyName("header")]
         public LetterHeader RawHeader
         { 
             get { return base.Header as LetterHeader; }
@@ -854,7 +898,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.Interfaces.LetterHeader Header
         {
             get
@@ -871,7 +916,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="SenderAppearance" />.
         /// </summary>
-        [JsonProperty("SenderAppearance")]
+        [Newtonsoft.Json.JsonProperty("senderAppearance")]
+        [System.Text.Json.Serialization.JsonPropertyName("senderAppearance")]
         public AppearanceData RawSenderAppearance
         { 
             get { return base.SenderAppearance as AppearanceData; }
@@ -879,7 +925,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Entities.AppearanceData SenderAppearance
         {
             get
@@ -928,7 +975,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Skill" />.
         /// </summary>
-        [JsonProperty("Skill")]
+        [Newtonsoft.Json.JsonProperty("skill")]
+        [System.Text.Json.Serialization.JsonPropertyName("skill")]
         public Skill RawSkill
         { 
             get { return base.Skill as Skill; }
@@ -936,7 +984,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Skill Skill
         {
             get
@@ -985,11 +1034,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="StatAttributes" />.
         /// </summary>
-        [JsonProperty("StatAttributes")]
+        [Newtonsoft.Json.JsonProperty("statAttributes")]
+        [System.Text.Json.Serialization.JsonPropertyName("statAttributes")]
         public ICollection<StatAttributeDefinition> RawStatAttributes { get; } = new List<StatAttributeDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition> StatAttributes
         {
             get
@@ -1009,11 +1060,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="AttributeCombinations" />.
         /// </summary>
-        [JsonProperty("AttributeCombinations")]
+        [Newtonsoft.Json.JsonProperty("attributeCombinations")]
+        [System.Text.Json.Serialization.JsonPropertyName("attributeCombinations")]
         public ICollection<AttributeRelationship> RawAttributeCombinations { get; } = new List<AttributeRelationship>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> AttributeCombinations
         {
             get
@@ -1033,11 +1086,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="BaseAttributeValues" />.
         /// </summary>
-        [JsonProperty("BaseAttributeValues")]
+        [Newtonsoft.Json.JsonProperty("baseAttributeValues")]
+        [System.Text.Json.Serialization.JsonPropertyName("baseAttributeValues")]
         public ICollection<ConstValueAttribute> RawBaseAttributeValues { get; } = new List<ConstValueAttribute>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.AttributeSystem.ConstValueAttribute> BaseAttributeValues
         {
             get
@@ -1057,7 +1112,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="NextGenerationClass" />.
         /// </summary>
-        [JsonProperty("NextGenerationClass")]
+        [Newtonsoft.Json.JsonProperty("nextGenerationClass")]
+        [System.Text.Json.Serialization.JsonPropertyName("nextGenerationClass")]
         public CharacterClass RawNextGenerationClass
         { 
             get { return base.NextGenerationClass as CharacterClass; }
@@ -1065,7 +1121,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.CharacterClass NextGenerationClass
         {
             get
@@ -1082,7 +1139,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="HomeMap" />.
         /// </summary>
-        [JsonProperty("HomeMap")]
+        [Newtonsoft.Json.JsonProperty("homeMap")]
+        [System.Text.Json.Serialization.JsonPropertyName("homeMap")]
         public GameMapDefinition RawHomeMap
         { 
             get { return base.HomeMap as GameMapDefinition; }
@@ -1090,7 +1148,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition HomeMap
         {
             get
@@ -1139,11 +1198,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Endpoints" />.
         /// </summary>
-        [JsonProperty("Endpoints")]
+        [Newtonsoft.Json.JsonProperty("endpoints")]
+        [System.Text.Json.Serialization.JsonPropertyName("endpoints")]
         public ICollection<ChatServerEndpoint> RawEndpoints { get; } = new List<ChatServerEndpoint>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint> Endpoints
         {
             get
@@ -1195,7 +1256,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Client" />.
         /// </summary>
-        [JsonProperty("Client")]
+        [Newtonsoft.Json.JsonProperty("client")]
+        [System.Text.Json.Serialization.JsonPropertyName("client")]
         public GameClientDefinition RawClient
         { 
             get { return base.Client as GameClientDefinition; }
@@ -1203,7 +1265,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameClientDefinition Client
         {
             get
@@ -1252,7 +1315,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Client" />.
         /// </summary>
-        [JsonProperty("Client")]
+        [Newtonsoft.Json.JsonProperty("client")]
+        [System.Text.Json.Serialization.JsonPropertyName("client")]
         public GameClientDefinition RawClient
         { 
             get { return base.Client as GameClientDefinition; }
@@ -1260,7 +1324,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameClientDefinition Client
         {
             get
@@ -1309,11 +1374,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="PossibleItems" />.
         /// </summary>
-        [JsonProperty("PossibleItems")]
+        [Newtonsoft.Json.JsonProperty("possibleItems")]
+        [System.Text.Json.Serialization.JsonPropertyName("possibleItems")]
         public ICollection<ItemDefinition> RawPossibleItems { get; } = new List<ItemDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition> PossibleItems
         {
             get
@@ -1365,7 +1432,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="TargetGate" />.
         /// </summary>
-        [JsonProperty("TargetGate")]
+        [Newtonsoft.Json.JsonProperty("targetGate")]
+        [System.Text.Json.Serialization.JsonPropertyName("targetGate")]
         public ExitGate RawTargetGate
         { 
             get { return base.TargetGate as ExitGate; }
@@ -1373,7 +1441,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.ExitGate TargetGate
         {
             get
@@ -1422,7 +1491,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Map" />.
         /// </summary>
-        [JsonProperty("Map")]
+        [Newtonsoft.Json.JsonProperty("map")]
+        [System.Text.Json.Serialization.JsonPropertyName("map")]
         public GameMapDefinition RawMap
         { 
             get { return base.Map as GameMapDefinition; }
@@ -1430,7 +1500,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition Map
         {
             get
@@ -1511,11 +1582,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="JewelMixes" />.
         /// </summary>
-        [JsonProperty("JewelMixes")]
+        [Newtonsoft.Json.JsonProperty("jewelMixes")]
+        [System.Text.Json.Serialization.JsonPropertyName("jewelMixes")]
         public ICollection<JewelMix> RawJewelMixes { get; } = new List<JewelMix>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.JewelMix> JewelMixes
         {
             get
@@ -1535,11 +1608,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="WarpList" />.
         /// </summary>
-        [JsonProperty("WarpList")]
+        [Newtonsoft.Json.JsonProperty("warpList")]
+        [System.Text.Json.Serialization.JsonPropertyName("warpList")]
         public ICollection<WarpInfo> RawWarpList { get; } = new List<WarpInfo>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.WarpInfo> WarpList
         {
             get
@@ -1559,11 +1634,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="DropItemGroups" />.
         /// </summary>
-        [JsonProperty("DropItemGroups")]
+        [Newtonsoft.Json.JsonProperty("dropItemGroups")]
+        [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
         public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
         {
             get
@@ -1583,11 +1660,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Skills" />.
         /// </summary>
-        [JsonProperty("Skills")]
+        [Newtonsoft.Json.JsonProperty("skills")]
+        [System.Text.Json.Serialization.JsonPropertyName("skills")]
         public ICollection<Skill> RawSkills { get; } = new List<Skill>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Skill> Skills
         {
             get
@@ -1607,11 +1686,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="CharacterClasses" />.
         /// </summary>
-        [JsonProperty("CharacterClasses")]
+        [Newtonsoft.Json.JsonProperty("characterClasses")]
+        [System.Text.Json.Serialization.JsonPropertyName("characterClasses")]
         public ICollection<CharacterClass> RawCharacterClasses { get; } = new List<CharacterClass>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> CharacterClasses
         {
             get
@@ -1631,11 +1712,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Items" />.
         /// </summary>
-        [JsonProperty("Items")]
+        [Newtonsoft.Json.JsonProperty("items")]
+        [System.Text.Json.Serialization.JsonPropertyName("items")]
         public ICollection<ItemDefinition> RawItems { get; } = new List<ItemDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition> Items
         {
             get
@@ -1655,11 +1738,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ItemSlotTypes" />.
         /// </summary>
-        [JsonProperty("ItemSlotTypes")]
+        [Newtonsoft.Json.JsonProperty("itemSlotTypes")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemSlotTypes")]
         public ICollection<ItemSlotType> RawItemSlotTypes { get; } = new List<ItemSlotType>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType> ItemSlotTypes
         {
             get
@@ -1679,11 +1764,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ItemOptions" />.
         /// </summary>
-        [JsonProperty("ItemOptions")]
+        [Newtonsoft.Json.JsonProperty("itemOptions")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemOptions")]
         public ICollection<ItemOptionDefinition> RawItemOptions { get; } = new List<ItemOptionDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition> ItemOptions
         {
             get
@@ -1703,11 +1790,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ItemOptionTypes" />.
         /// </summary>
-        [JsonProperty("ItemOptionTypes")]
+        [Newtonsoft.Json.JsonProperty("itemOptionTypes")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemOptionTypes")]
         public ICollection<ItemOptionType> RawItemOptionTypes { get; } = new List<ItemOptionType>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType> ItemOptionTypes
         {
             get
@@ -1727,11 +1816,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ItemSetGroups" />.
         /// </summary>
-        [JsonProperty("ItemSetGroups")]
+        [Newtonsoft.Json.JsonProperty("itemSetGroups")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemSetGroups")]
         public ICollection<ItemSetGroup> RawItemSetGroups { get; } = new List<ItemSetGroup>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup> ItemSetGroups
         {
             get
@@ -1751,11 +1842,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Maps" />.
         /// </summary>
-        [JsonProperty("Maps")]
+        [Newtonsoft.Json.JsonProperty("maps")]
+        [System.Text.Json.Serialization.JsonPropertyName("maps")]
         public ICollection<GameMapDefinition> RawMaps { get; } = new List<GameMapDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition> Maps
         {
             get
@@ -1775,11 +1868,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Monsters" />.
         /// </summary>
-        [JsonProperty("Monsters")]
+        [Newtonsoft.Json.JsonProperty("monsters")]
+        [System.Text.Json.Serialization.JsonPropertyName("monsters")]
         public ICollection<MonsterDefinition> RawMonsters { get; } = new List<MonsterDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterDefinition> Monsters
         {
             get
@@ -1799,11 +1894,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Attributes" />.
         /// </summary>
-        [JsonProperty("Attributes")]
+        [Newtonsoft.Json.JsonProperty("attributes")]
+        [System.Text.Json.Serialization.JsonPropertyName("attributes")]
         public ICollection<AttributeDefinition> RawAttributes { get; } = new List<AttributeDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeDefinition> Attributes
         {
             get
@@ -1823,11 +1920,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="MagicEffects" />.
         /// </summary>
-        [JsonProperty("MagicEffects")]
+        [Newtonsoft.Json.JsonProperty("magicEffects")]
+        [System.Text.Json.Serialization.JsonPropertyName("magicEffects")]
         public ICollection<MagicEffectDefinition> RawMagicEffects { get; } = new List<MagicEffectDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition> MagicEffects
         {
             get
@@ -1847,11 +1946,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="MasterSkillRoots" />.
         /// </summary>
-        [JsonProperty("MasterSkillRoots")]
+        [Newtonsoft.Json.JsonProperty("masterSkillRoots")]
+        [System.Text.Json.Serialization.JsonPropertyName("masterSkillRoots")]
         public ICollection<MasterSkillRoot> RawMasterSkillRoots { get; } = new List<MasterSkillRoot>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot> MasterSkillRoots
         {
             get
@@ -1871,11 +1972,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="PlugInConfigurations" />.
         /// </summary>
-        [JsonProperty("PlugInConfigurations")]
+        [Newtonsoft.Json.JsonProperty("plugInConfigurations")]
+        [System.Text.Json.Serialization.JsonPropertyName("plugInConfigurations")]
         public ICollection<PlugInConfiguration> RawPlugInConfigurations { get; } = new List<PlugInConfiguration>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.PlugIns.PlugInConfiguration> PlugInConfigurations
         {
             get
@@ -1927,11 +2030,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="MonsterSpawns" />.
         /// </summary>
-        [JsonProperty("MonsterSpawns")]
+        [Newtonsoft.Json.JsonProperty("monsterSpawns")]
+        [System.Text.Json.Serialization.JsonPropertyName("monsterSpawns")]
         public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<MonsterSpawnArea>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea> MonsterSpawns
         {
             get
@@ -1951,11 +2056,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="EnterGates" />.
         /// </summary>
-        [JsonProperty("EnterGates")]
+        [Newtonsoft.Json.JsonProperty("enterGates")]
+        [System.Text.Json.Serialization.JsonPropertyName("enterGates")]
         public ICollection<EnterGate> RawEnterGates { get; } = new List<EnterGate>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.EnterGate> EnterGates
         {
             get
@@ -1975,11 +2082,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ExitGates" />.
         /// </summary>
-        [JsonProperty("ExitGates")]
+        [Newtonsoft.Json.JsonProperty("exitGates")]
+        [System.Text.Json.Serialization.JsonPropertyName("exitGates")]
         public ICollection<ExitGate> RawExitGates { get; } = new List<ExitGate>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.ExitGate> ExitGates
         {
             get
@@ -1999,11 +2108,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="DropItemGroups" />.
         /// </summary>
-        [JsonProperty("DropItemGroups")]
+        [Newtonsoft.Json.JsonProperty("dropItemGroups")]
+        [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
         public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
         {
             get
@@ -2023,11 +2134,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="MapRequirements" />.
         /// </summary>
-        [JsonProperty("MapRequirements")]
+        [Newtonsoft.Json.JsonProperty("mapRequirements")]
+        [System.Text.Json.Serialization.JsonPropertyName("mapRequirements")]
         public ICollection<AttributeRequirement> RawMapRequirements { get; } = new List<AttributeRequirement>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> MapRequirements
         {
             get
@@ -2047,7 +2160,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="SafezoneMap" />.
         /// </summary>
-        [JsonProperty("SafezoneMap")]
+        [Newtonsoft.Json.JsonProperty("safezoneMap")]
+        [System.Text.Json.Serialization.JsonPropertyName("safezoneMap")]
         public GameMapDefinition RawSafezoneMap
         { 
             get { return base.SafezoneMap as GameMapDefinition; }
@@ -2055,7 +2169,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition SafezoneMap
         {
             get
@@ -2104,11 +2219,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Maps" />.
         /// </summary>
-        [JsonProperty("Maps")]
+        [Newtonsoft.Json.JsonProperty("maps")]
+        [System.Text.Json.Serialization.JsonPropertyName("maps")]
         public ICollection<GameMapDefinition> RawMaps { get; } = new List<GameMapDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition> Maps
         {
             get
@@ -2160,11 +2277,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Endpoints" />.
         /// </summary>
-        [JsonProperty("Endpoints")]
+        [Newtonsoft.Json.JsonProperty("endpoints")]
+        [System.Text.Json.Serialization.JsonPropertyName("endpoints")]
         public ICollection<GameServerEndpoint> RawEndpoints { get; } = new List<GameServerEndpoint>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint> Endpoints
         {
             get
@@ -2184,7 +2303,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ServerConfiguration" />.
         /// </summary>
-        [JsonProperty("ServerConfiguration")]
+        [Newtonsoft.Json.JsonProperty("serverConfiguration")]
+        [System.Text.Json.Serialization.JsonPropertyName("serverConfiguration")]
         public GameServerConfiguration RawServerConfiguration
         { 
             get { return base.ServerConfiguration as GameServerConfiguration; }
@@ -2192,7 +2312,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration ServerConfiguration
         {
             get
@@ -2209,7 +2330,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="GameConfiguration" />.
         /// </summary>
-        [JsonProperty("GameConfiguration")]
+        [Newtonsoft.Json.JsonProperty("gameConfiguration")]
+        [System.Text.Json.Serialization.JsonPropertyName("gameConfiguration")]
         public GameConfiguration RawGameConfiguration
         { 
             get { return base.GameConfiguration as GameConfiguration; }
@@ -2217,7 +2339,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration GameConfiguration
         {
             get
@@ -2266,7 +2389,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Client" />.
         /// </summary>
-        [JsonProperty("Client")]
+        [Newtonsoft.Json.JsonProperty("client")]
+        [System.Text.Json.Serialization.JsonPropertyName("client")]
         public GameClientDefinition RawClient
         { 
             get { return base.Client as GameClientDefinition; }
@@ -2274,7 +2398,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameClientDefinition Client
         {
             get
@@ -2355,7 +2480,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="SingleJewel" />.
         /// </summary>
-        [JsonProperty("SingleJewel")]
+        [Newtonsoft.Json.JsonProperty("singleJewel")]
+        [System.Text.Json.Serialization.JsonPropertyName("singleJewel")]
         public ItemDefinition RawSingleJewel
         { 
             get { return base.SingleJewel as ItemDefinition; }
@@ -2363,7 +2489,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition SingleJewel
         {
             get
@@ -2380,7 +2507,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="MixedJewel" />.
         /// </summary>
-        [JsonProperty("MixedJewel")]
+        [Newtonsoft.Json.JsonProperty("mixedJewel")]
+        [System.Text.Json.Serialization.JsonPropertyName("mixedJewel")]
         public ItemDefinition RawMixedJewel
         { 
             get { return base.MixedJewel as ItemDefinition; }
@@ -2388,7 +2516,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition MixedJewel
         {
             get
@@ -2469,7 +2598,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="PowerUpDefinition" />.
         /// </summary>
-        [JsonProperty("PowerUpDefinition")]
+        [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
         public PowerUpDefinitionWithDuration RawPowerUpDefinition
         { 
             get { return base.PowerUpDefinition as PowerUpDefinitionWithDuration; }
@@ -2477,7 +2607,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration PowerUpDefinition
         {
             get
@@ -2526,11 +2657,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="RequiredMasterSkills" />.
         /// </summary>
-        [JsonProperty("RequiredMasterSkills")]
+        [Newtonsoft.Json.JsonProperty("requiredMasterSkills")]
+        [System.Text.Json.Serialization.JsonPropertyName("requiredMasterSkills")]
         public ICollection<Skill> RawRequiredMasterSkills { get; } = new List<Skill>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Skill> RequiredMasterSkills
         {
             get
@@ -2550,7 +2683,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Root" />.
         /// </summary>
-        [JsonProperty("Root")]
+        [Newtonsoft.Json.JsonProperty("root")]
+        [System.Text.Json.Serialization.JsonPropertyName("root")]
         public MasterSkillRoot RawRoot
         { 
             get { return base.Root as MasterSkillRoot; }
@@ -2558,7 +2692,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot Root
         {
             get
@@ -2575,7 +2710,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="TargetAttribute" />.
         /// </summary>
-        [JsonProperty("TargetAttribute")]
+        [Newtonsoft.Json.JsonProperty("targetAttribute")]
+        [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
         public AttributeDefinition RawTargetAttribute
         { 
             get { return base.TargetAttribute as AttributeDefinition; }
@@ -2583,7 +2719,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
         {
             get
@@ -2600,7 +2737,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ReplacedSkill" />.
         /// </summary>
-        [JsonProperty("ReplacedSkill")]
+        [Newtonsoft.Json.JsonProperty("replacedSkill")]
+        [System.Text.Json.Serialization.JsonPropertyName("replacedSkill")]
         public Skill RawReplacedSkill
         { 
             get { return base.ReplacedSkill as Skill; }
@@ -2608,7 +2746,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Skill ReplacedSkill
         {
             get
@@ -2684,7 +2823,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="AttributeDefinition" />.
         /// </summary>
-        [JsonProperty("AttributeDefinition")]
+        [Newtonsoft.Json.JsonProperty("attributeDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("attributeDefinition")]
         public AttributeDefinition RawAttributeDefinition
         { 
             get { return base.AttributeDefinition as AttributeDefinition; }
@@ -2692,7 +2832,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition AttributeDefinition
         {
             get
@@ -2741,11 +2882,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ItemCraftings" />.
         /// </summary>
-        [JsonProperty("ItemCraftings")]
+        [Newtonsoft.Json.JsonProperty("itemCraftings")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemCraftings")]
         public ICollection<ItemCrafting> RawItemCraftings { get; } = new List<ItemCrafting>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> ItemCraftings
         {
             get
@@ -2765,11 +2908,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="DropItemGroups" />.
         /// </summary>
-        [JsonProperty("DropItemGroups")]
+        [Newtonsoft.Json.JsonProperty("dropItemGroups")]
+        [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
         public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
         {
             get
@@ -2789,11 +2934,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Attributes" />.
         /// </summary>
-        [JsonProperty("Attributes")]
+        [Newtonsoft.Json.JsonProperty("attributes")]
+        [System.Text.Json.Serialization.JsonPropertyName("attributes")]
         public ICollection<MonsterAttribute> RawAttributes { get; } = new List<MonsterAttribute>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute> Attributes
         {
             get
@@ -2813,7 +2960,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="AttackSkill" />.
         /// </summary>
-        [JsonProperty("AttackSkill")]
+        [Newtonsoft.Json.JsonProperty("attackSkill")]
+        [System.Text.Json.Serialization.JsonPropertyName("attackSkill")]
         public Skill RawAttackSkill
         { 
             get { return base.AttackSkill as Skill; }
@@ -2821,7 +2969,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Skill AttackSkill
         {
             get
@@ -2838,7 +2987,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="MerchantStore" />.
         /// </summary>
-        [JsonProperty("MerchantStore")]
+        [Newtonsoft.Json.JsonProperty("merchantStore")]
+        [System.Text.Json.Serialization.JsonPropertyName("merchantStore")]
         public ItemStorage RawMerchantStore
         { 
             get { return base.MerchantStore as ItemStorage; }
@@ -2846,7 +2996,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Entities.ItemStorage MerchantStore
         {
             get
@@ -2895,7 +3046,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="MonsterDefinition" />.
         /// </summary>
-        [JsonProperty("MonsterDefinition")]
+        [Newtonsoft.Json.JsonProperty("monsterDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("monsterDefinition")]
         public MonsterDefinition RawMonsterDefinition
         { 
             get { return base.MonsterDefinition as MonsterDefinition; }
@@ -2903,7 +3055,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition MonsterDefinition
         {
             get
@@ -2920,7 +3073,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="GameMap" />.
         /// </summary>
-        [JsonProperty("GameMap")]
+        [Newtonsoft.Json.JsonProperty("gameMap")]
+        [System.Text.Json.Serialization.JsonPropertyName("gameMap")]
         public GameMapDefinition RawGameMap
         { 
             get { return base.GameMap as GameMapDefinition; }
@@ -2928,7 +3082,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition GameMap
         {
             get
@@ -2977,11 +3132,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Requirements" />.
         /// </summary>
-        [JsonProperty("Requirements")]
+        [Newtonsoft.Json.JsonProperty("requirements")]
+        [System.Text.Json.Serialization.JsonPropertyName("requirements")]
         public ICollection<AttributeRequirement> RawRequirements { get; } = new List<AttributeRequirement>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> Requirements
         {
             get
@@ -3001,11 +3158,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ConsumeRequirements" />.
         /// </summary>
-        [JsonProperty("ConsumeRequirements")]
+        [Newtonsoft.Json.JsonProperty("consumeRequirements")]
+        [System.Text.Json.Serialization.JsonPropertyName("consumeRequirements")]
         public ICollection<AttributeRequirement> RawConsumeRequirements { get; } = new List<AttributeRequirement>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> ConsumeRequirements
         {
             get
@@ -3025,11 +3184,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="QualifiedCharacters" />.
         /// </summary>
-        [JsonProperty("QualifiedCharacters")]
+        [Newtonsoft.Json.JsonProperty("qualifiedCharacters")]
+        [System.Text.Json.Serialization.JsonPropertyName("qualifiedCharacters")]
         public ICollection<CharacterClass> RawQualifiedCharacters { get; } = new List<CharacterClass>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> QualifiedCharacters
         {
             get
@@ -3049,7 +3210,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ElementalModifierTarget" />.
         /// </summary>
-        [JsonProperty("ElementalModifierTarget")]
+        [Newtonsoft.Json.JsonProperty("elementalModifierTarget")]
+        [System.Text.Json.Serialization.JsonPropertyName("elementalModifierTarget")]
         public AttributeDefinition RawElementalModifierTarget
         { 
             get { return base.ElementalModifierTarget as AttributeDefinition; }
@@ -3057,7 +3219,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition ElementalModifierTarget
         {
             get
@@ -3074,7 +3237,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="MagicEffectDef" />.
         /// </summary>
-        [JsonProperty("MagicEffectDef")]
+        [Newtonsoft.Json.JsonProperty("magicEffectDef")]
+        [System.Text.Json.Serialization.JsonPropertyName("magicEffectDef")]
         public MagicEffectDefinition RawMagicEffectDef
         { 
             get { return base.MagicEffectDef as MagicEffectDefinition; }
@@ -3082,7 +3246,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition MagicEffectDef
         {
             get
@@ -3099,7 +3264,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="MasterDefinition" />.
         /// </summary>
-        [JsonProperty("MasterDefinition")]
+        [Newtonsoft.Json.JsonProperty("masterDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("masterDefinition")]
         public MasterSkillDefinition RawMasterDefinition
         { 
             get { return base.MasterDefinition as MasterSkillDefinition; }
@@ -3107,7 +3273,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition MasterDefinition
         {
             get
@@ -3166,7 +3333,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Attribute" />.
         /// </summary>
-        [JsonProperty("Attribute")]
+        [Newtonsoft.Json.JsonProperty("attribute")]
+        [System.Text.Json.Serialization.JsonPropertyName("attribute")]
         public AttributeDefinition RawAttribute
         { 
             get { return base.Attribute as AttributeDefinition; }
@@ -3174,7 +3342,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Attribute
         {
             get
@@ -3223,7 +3392,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Gate" />.
         /// </summary>
-        [JsonProperty("Gate")]
+        [Newtonsoft.Json.JsonProperty("gate")]
+        [System.Text.Json.Serialization.JsonPropertyName("gate")]
         public ExitGate RawGate
         { 
             get { return base.Gate as ExitGate; }
@@ -3231,7 +3401,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.ExitGate Gate
         {
             get
@@ -3280,7 +3451,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Attribute" />.
         /// </summary>
-        [JsonProperty("Attribute")]
+        [Newtonsoft.Json.JsonProperty("attribute")]
+        [System.Text.Json.Serialization.JsonPropertyName("attribute")]
         public AttributeDefinition RawAttribute
         { 
             get { return base.Attribute as AttributeDefinition; }
@@ -3288,7 +3460,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Attribute
         {
             get
@@ -3337,11 +3510,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="LevelDependentOptions" />.
         /// </summary>
-        [JsonProperty("LevelDependentOptions")]
+        [Newtonsoft.Json.JsonProperty("levelDependentOptions")]
+        [System.Text.Json.Serialization.JsonPropertyName("levelDependentOptions")]
         public ICollection<ItemOptionOfLevel> RawLevelDependentOptions { get; } = new List<ItemOptionOfLevel>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel> LevelDependentOptions
         {
             get
@@ -3361,7 +3536,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="OptionType" />.
         /// </summary>
-        [JsonProperty("OptionType")]
+        [Newtonsoft.Json.JsonProperty("optionType")]
+        [System.Text.Json.Serialization.JsonPropertyName("optionType")]
         public ItemOptionType RawOptionType
         { 
             get { return base.OptionType as ItemOptionType; }
@@ -3369,7 +3545,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
         {
             get
@@ -3386,7 +3563,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="PowerUpDefinition" />.
         /// </summary>
-        [JsonProperty("PowerUpDefinition")]
+        [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
         public PowerUpDefinition RawPowerUpDefinition
         { 
             get { return base.PowerUpDefinition as PowerUpDefinition; }
@@ -3394,7 +3572,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition PowerUpDefinition
         {
             get
@@ -3443,11 +3622,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="BonusPerLevel" />.
         /// </summary>
-        [JsonProperty("BonusPerLevel")]
+        [Newtonsoft.Json.JsonProperty("bonusPerLevel")]
+        [System.Text.Json.Serialization.JsonPropertyName("bonusPerLevel")]
         public ICollection<LevelBonus> RawBonusPerLevel { get; } = new List<LevelBonus>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus> BonusPerLevel
         {
             get
@@ -3467,7 +3648,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="TargetAttribute" />.
         /// </summary>
-        [JsonProperty("TargetAttribute")]
+        [Newtonsoft.Json.JsonProperty("targetAttribute")]
+        [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
         public AttributeDefinition RawTargetAttribute
         { 
             get { return base.TargetAttribute as AttributeDefinition; }
@@ -3475,7 +3657,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
         {
             get
@@ -3524,11 +3707,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="QualifiedCharacters" />.
         /// </summary>
-        [JsonProperty("QualifiedCharacters")]
+        [Newtonsoft.Json.JsonProperty("qualifiedCharacters")]
+        [System.Text.Json.Serialization.JsonPropertyName("qualifiedCharacters")]
         public ICollection<CharacterClass> RawQualifiedCharacters { get; } = new List<CharacterClass>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> QualifiedCharacters
         {
             get
@@ -3548,11 +3733,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="PossibleItemSetGroups" />.
         /// </summary>
-        [JsonProperty("PossibleItemSetGroups")]
+        [Newtonsoft.Json.JsonProperty("possibleItemSetGroups")]
+        [System.Text.Json.Serialization.JsonPropertyName("possibleItemSetGroups")]
         public ICollection<ItemSetGroup> RawPossibleItemSetGroups { get; } = new List<ItemSetGroup>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup> PossibleItemSetGroups
         {
             get
@@ -3572,11 +3759,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="PossibleItemOptions" />.
         /// </summary>
-        [JsonProperty("PossibleItemOptions")]
+        [Newtonsoft.Json.JsonProperty("possibleItemOptions")]
+        [System.Text.Json.Serialization.JsonPropertyName("possibleItemOptions")]
         public ICollection<ItemOptionDefinition> RawPossibleItemOptions { get; } = new List<ItemOptionDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition> PossibleItemOptions
         {
             get
@@ -3596,11 +3785,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Requirements" />.
         /// </summary>
-        [JsonProperty("Requirements")]
+        [Newtonsoft.Json.JsonProperty("requirements")]
+        [System.Text.Json.Serialization.JsonPropertyName("requirements")]
         public ICollection<AttributeRequirement> RawRequirements { get; } = new List<AttributeRequirement>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> Requirements
         {
             get
@@ -3620,11 +3811,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="BasePowerUpAttributes" />.
         /// </summary>
-        [JsonProperty("BasePowerUpAttributes")]
+        [Newtonsoft.Json.JsonProperty("basePowerUpAttributes")]
+        [System.Text.Json.Serialization.JsonPropertyName("basePowerUpAttributes")]
         public ICollection<ItemBasePowerUpDefinition> RawBasePowerUpAttributes { get; } = new List<ItemBasePowerUpDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition> BasePowerUpAttributes
         {
             get
@@ -3644,7 +3837,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ItemSlot" />.
         /// </summary>
-        [JsonProperty("ItemSlot")]
+        [Newtonsoft.Json.JsonProperty("itemSlot")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemSlot")]
         public ItemSlotType RawItemSlot
         { 
             get { return base.ItemSlot as ItemSlotType; }
@@ -3652,7 +3846,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType ItemSlot
         {
             get
@@ -3669,7 +3864,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Skill" />.
         /// </summary>
-        [JsonProperty("Skill")]
+        [Newtonsoft.Json.JsonProperty("skill")]
+        [System.Text.Json.Serialization.JsonPropertyName("skill")]
         public Skill RawSkill
         { 
             get { return base.Skill as Skill; }
@@ -3677,7 +3873,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Skill Skill
         {
             get
@@ -3726,7 +3923,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ItemDefinition" />.
         /// </summary>
-        [JsonProperty("ItemDefinition")]
+        [Newtonsoft.Json.JsonProperty("itemDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemDefinition")]
         public ItemDefinition RawItemDefinition
         { 
             get { return base.ItemDefinition as ItemDefinition; }
@@ -3734,7 +3932,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
         {
             get
@@ -3751,7 +3950,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="BonusOption" />.
         /// </summary>
-        [JsonProperty("BonusOption")]
+        [Newtonsoft.Json.JsonProperty("bonusOption")]
+        [System.Text.Json.Serialization.JsonPropertyName("bonusOption")]
         public IncreasableItemOption RawBonusOption
         { 
             get { return base.BonusOption as IncreasableItemOption; }
@@ -3759,7 +3959,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption BonusOption
         {
             get
@@ -3808,7 +4009,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="OptionType" />.
         /// </summary>
-        [JsonProperty("OptionType")]
+        [Newtonsoft.Json.JsonProperty("optionType")]
+        [System.Text.Json.Serialization.JsonPropertyName("optionType")]
         public ItemOptionType RawOptionType
         { 
             get { return base.OptionType as ItemOptionType; }
@@ -3816,7 +4018,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
         {
             get
@@ -3833,7 +4036,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="PowerUpDefinition" />.
         /// </summary>
-        [JsonProperty("PowerUpDefinition")]
+        [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
         public PowerUpDefinition RawPowerUpDefinition
         { 
             get { return base.PowerUpDefinition as PowerUpDefinition; }
@@ -3841,7 +4045,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition PowerUpDefinition
         {
             get
@@ -3890,11 +4095,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="PossibleOptions" />.
         /// </summary>
-        [JsonProperty("PossibleOptions")]
+        [Newtonsoft.Json.JsonProperty("possibleOptions")]
+        [System.Text.Json.Serialization.JsonPropertyName("possibleOptions")]
         public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new List<IncreasableItemOption>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> PossibleOptions
         {
             get
@@ -3946,7 +4153,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="PowerUpDefinition" />.
         /// </summary>
-        [JsonProperty("PowerUpDefinition")]
+        [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
         public PowerUpDefinition RawPowerUpDefinition
         { 
             get { return base.PowerUpDefinition as PowerUpDefinition; }
@@ -3954,7 +4162,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition PowerUpDefinition
         {
             get
@@ -4030,11 +4239,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Options" />.
         /// </summary>
-        [JsonProperty("Options")]
+        [Newtonsoft.Json.JsonProperty("options")]
+        [System.Text.Json.Serialization.JsonPropertyName("options")]
         public ICollection<IncreasableItemOption> RawOptions { get; } = new List<IncreasableItemOption>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> Options
         {
             get
@@ -4054,11 +4265,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Items" />.
         /// </summary>
-        [JsonProperty("Items")]
+        [Newtonsoft.Json.JsonProperty("items")]
+        [System.Text.Json.Serialization.JsonPropertyName("items")]
         public ICollection<ItemOfItemSet> RawItems { get; } = new List<ItemOfItemSet>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet> Items
         {
             get
@@ -4184,7 +4397,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="SimpleCraftingSettings" />.
         /// </summary>
-        [JsonProperty("SimpleCraftingSettings")]
+        [Newtonsoft.Json.JsonProperty("simpleCraftingSettings")]
+        [System.Text.Json.Serialization.JsonPropertyName("simpleCraftingSettings")]
         public SimpleCraftingSettings RawSimpleCraftingSettings
         { 
             get { return base.SimpleCraftingSettings as SimpleCraftingSettings; }
@@ -4192,7 +4406,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings SimpleCraftingSettings
         {
             get
@@ -4241,11 +4456,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="RequiredItemOptions" />.
         /// </summary>
-        [JsonProperty("RequiredItemOptions")]
+        [Newtonsoft.Json.JsonProperty("requiredItemOptions")]
+        [System.Text.Json.Serialization.JsonPropertyName("requiredItemOptions")]
         public ICollection<ItemOptionType> RawRequiredItemOptions { get; } = new List<ItemOptionType>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType> RequiredItemOptions
         {
             get
@@ -4265,7 +4482,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ItemDefinition" />.
         /// </summary>
-        [JsonProperty("ItemDefinition")]
+        [Newtonsoft.Json.JsonProperty("itemDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemDefinition")]
         public ItemDefinition RawItemDefinition
         { 
             get { return base.ItemDefinition as ItemDefinition; }
@@ -4273,7 +4491,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
         {
             get
@@ -4322,7 +4541,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ItemDefinition" />.
         /// </summary>
-        [JsonProperty("ItemDefinition")]
+        [Newtonsoft.Json.JsonProperty("itemDefinition")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemDefinition")]
         public ItemDefinition RawItemDefinition
         { 
             get { return base.ItemDefinition as ItemDefinition; }
@@ -4330,7 +4550,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
         {
             get
@@ -4379,11 +4600,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="RequiredItems" />.
         /// </summary>
-        [JsonProperty("RequiredItems")]
+        [Newtonsoft.Json.JsonProperty("requiredItems")]
+        [System.Text.Json.Serialization.JsonPropertyName("requiredItems")]
         public IList<ItemCraftingRequiredItem> RawRequiredItems { get; } = new List<ItemCraftingRequiredItem>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override IList<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem> RequiredItems
         {
             get
@@ -4403,11 +4626,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="ResultItems" />.
         /// </summary>
-        [JsonProperty("ResultItems")]
+        [Newtonsoft.Json.JsonProperty("resultItems")]
+        [System.Text.Json.Serialization.JsonPropertyName("resultItems")]
         public IList<ItemCraftingResultItem> RawResultItems { get; } = new List<ItemCraftingResultItem>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override IList<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem> ResultItems
         {
             get
@@ -4459,7 +4684,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="TargetAttribute" />.
         /// </summary>
-        [JsonProperty("TargetAttribute")]
+        [Newtonsoft.Json.JsonProperty("targetAttribute")]
+        [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
         public AttributeDefinition RawTargetAttribute
         { 
             get { return base.TargetAttribute as AttributeDefinition; }
@@ -4467,7 +4693,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
         {
             get
@@ -4484,7 +4711,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Boost" />.
         /// </summary>
-        [JsonProperty("Boost")]
+        [Newtonsoft.Json.JsonProperty("boost")]
+        [System.Text.Json.Serialization.JsonPropertyName("boost")]
         public PowerUpDefinitionValue RawBoost
         { 
             get { return base.Boost as PowerUpDefinitionValue; }
@@ -4492,7 +4720,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Boost
         {
             get
@@ -4541,11 +4770,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="RelatedValues" />.
         /// </summary>
-        [JsonProperty("RelatedValues")]
+        [Newtonsoft.Json.JsonProperty("relatedValues")]
+        [System.Text.Json.Serialization.JsonPropertyName("relatedValues")]
         public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<AttributeRelationship>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> RelatedValues
         {
             get
@@ -4597,7 +4828,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Duration" />.
         /// </summary>
-        [JsonProperty("Duration")]
+        [Newtonsoft.Json.JsonProperty("duration")]
+        [System.Text.Json.Serialization.JsonPropertyName("duration")]
         public PowerUpDefinitionValue RawDuration
         { 
             get { return base.Duration as PowerUpDefinitionValue; }
@@ -4605,7 +4837,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Duration
         {
             get
@@ -4622,7 +4855,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="TargetAttribute" />.
         /// </summary>
-        [JsonProperty("TargetAttribute")]
+        [Newtonsoft.Json.JsonProperty("targetAttribute")]
+        [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
         public AttributeDefinition RawTargetAttribute
         { 
             get { return base.TargetAttribute as AttributeDefinition; }
@@ -4630,7 +4864,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
         {
             get
@@ -4647,7 +4882,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Boost" />.
         /// </summary>
-        [JsonProperty("Boost")]
+        [Newtonsoft.Json.JsonProperty("boost")]
+        [System.Text.Json.Serialization.JsonPropertyName("boost")]
         public PowerUpDefinitionValue RawBoost
         { 
             get { return base.Boost as PowerUpDefinitionValue; }
@@ -4655,7 +4891,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Boost
         {
             get
@@ -4751,7 +4988,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Definition" />.
         /// </summary>
-        [JsonProperty("Definition")]
+        [Newtonsoft.Json.JsonProperty("definition")]
+        [System.Text.Json.Serialization.JsonPropertyName("definition")]
         public AttributeDefinition RawDefinition
         { 
             get { return base.Definition as AttributeDefinition; }
@@ -4759,7 +4997,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Definition
         {
             get
@@ -4814,7 +5053,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Definition" />.
         /// </summary>
-        [JsonProperty("Definition")]
+        [Newtonsoft.Json.JsonProperty("definition")]
+        [System.Text.Json.Serialization.JsonPropertyName("definition")]
         public AttributeDefinition RawDefinition
         { 
             get { return base.Definition as AttributeDefinition; }
@@ -4822,7 +5062,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Definition
         {
             get
@@ -4887,7 +5128,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="TargetAttribute" />.
         /// </summary>
-        [JsonProperty("TargetAttribute")]
+        [Newtonsoft.Json.JsonProperty("targetAttribute")]
+        [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
         public AttributeDefinition RawTargetAttribute
         { 
             get { return base.TargetAttribute as AttributeDefinition; }
@@ -4895,7 +5137,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
         {
             get
@@ -4912,7 +5155,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="InputAttribute" />.
         /// </summary>
-        [JsonProperty("InputAttribute")]
+        [Newtonsoft.Json.JsonProperty("inputAttribute")]
+        [System.Text.Json.Serialization.JsonPropertyName("inputAttribute")]
         public AttributeDefinition RawInputAttribute
         { 
             get { return base.InputAttribute as AttributeDefinition; }
@@ -4920,7 +5164,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition InputAttribute
         {
             get

@@ -4,8 +4,11 @@
 
 namespace MUnique.OpenMU.AdminPanel.Models
 {
+    using System.Text.Json.Serialization;
     using Mapster;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Persistence.BasicModel;
+    using MUnique.OpenMU.Persistence.Json;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -28,7 +31,19 @@ namespace MUnique.OpenMU.AdminPanel.Models
         /// <summary>
         /// Gets the settings.
         /// </summary>
+        [JsonPropertyName("settings")]
         [JsonProperty("settings")]
-        public ConnectServerDefinitionDto Settings => this.server.Settings?.Adapt<ConnectServerDefinitionDto>();
+        public ConnectServerDefinition Settings
+        {
+            get
+            {
+                if (this.server.Settings is IConvertibleTo<ConnectServerDefinition> settings)
+                {
+                    return settings.Convert();
+                }
+
+                return null;
+            }
+        }
     }
 }

@@ -91,4 +91,8 @@
         return false;
     }
 
+    private static string ToCamelCase(string name)
+    {
+        return name.Substring(0, 1).ToLowerInvariant() + name.Substring(1);
+    }
 #>

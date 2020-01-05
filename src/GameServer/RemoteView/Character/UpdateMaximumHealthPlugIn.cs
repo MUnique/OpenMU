@@ -32,8 +32,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             using var writer = this.player.Connection.StartSafeWrite(MaximumHealthAndShield.HeaderType, MaximumHealthAndShield.Length);
             _ = new MaximumHealthAndShield(writer.Span)
             {
-                Health = (ushort) this.player.Attributes[Stats.MaximumHealth],
-                Shield = (ushort) this.player.Attributes[Stats.MaximumShield],
+                Health = (ushort)this.player.Attributes[Stats.MaximumHealth],
+                Shield = (ushort)this.player.Attributes[Stats.MaximumShield],
             };
             writer.Commit();
         }

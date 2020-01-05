@@ -32,7 +32,7 @@
           <Index>1</Index>
           <Type>Binary</Type>
           <Name>ItemData</Name>
-          <Lemgth>12</Lemgth><!-- Season 6 specific ! -->
+          <Length>12</Length><!-- Season 6 specific ! -->
         </Field>
         <Field>
           <Index>16</Index>
@@ -524,8 +524,8 @@
 	  <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>17</Code>
-      <Length>9</Length>
       <Name>ObjectGotKilled</Name>
+      <Length>9</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>An observed object was killed.</SentWhen>
       <CausedReaction>The object is shown as dead.</CausedReaction>
@@ -545,8 +545,8 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>18</Code>
-      <Length>9</Length>
       <Name>ObjectAnimation</Name>
+      <Length>9</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>An object performs an animation.</SentWhen>
       <CausedReaction>The animation is shown for the specified object.</CausedReaction>
@@ -576,8 +576,8 @@
     <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>1E</Code>
-      <Length>10</Length>
       <Name>AreaSkillAnimation</Name>
+      <Length>10</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>An object performs a skill which has effect on an area.</SentWhen>
       <CausedReaction>The animation is shown on the user interface.</CausedReaction>
@@ -612,8 +612,8 @@
     <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>19</Code>
-	    <Length>9</Length>
       <Name>SkillAnimation</Name>
+      <Length>9</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>An object performs a skill which is directly targetted to another object.</SentWhen>
       <CausedReaction>The animation is shown on the user interface.</CausedReaction>
@@ -1262,34 +1262,42 @@
           <Values>
             <EnumValue>
               <Name>NormalRed</Name>
+              <Description>Red color, used by normal damage.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>IgnoreDefenseCyan</Name>
+              <Description>Cyan color, usually used by ignore defense damage.</Description>
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
               <Name>ExcellentLightGreen</Name>
+              <Description>Light green color, usually used by excellent damage.</Description>
               <Value>2</Value>
             </EnumValue>
             <EnumValue>
               <Name>CriticalBlue</Name>
+              <Description>Blue color, usually used by critical damage.</Description>
               <Value>3</Value>
             </EnumValue>
             <EnumValue>
               <Name>LightPink</Name>
+              <Description>Light pink color.</Description>
               <Value>4</Value>
             </EnumValue>
             <EnumValue>
               <Name>PoisonDarkGreen</Name>
+              <Description>Dark green color, usually used by poison damage.</Description>
               <Value>5</Value>
             </EnumValue>
             <EnumValue>
               <Name>ReflectedDarkPink</Name>
+              <Description>Dark pink color, usually used by reflected damage.</Description>
               <Value>6</Value>
             </EnumValue>
             <EnumValue>
               <Name>White</Name>
+              <Description>White color.</Description>
               <Value>7</Value>
             </EnumValue>
           </Values>
@@ -2033,8 +2041,7 @@
             </EnumValue>
             <EnumValue>
               <Name>CombineLuckyItem</Name>
-              <Description>The dialog window which allows to exchange or refine Lucky Item.</Description>
-              <Description>Used by NPC "David".</Description>
+              <Description>The dialog window which allows to exchange or refine Lucky Item. Used by NPC "David".</Description>
               <Value>38</Value>
             </EnumValue>
           </Values>
@@ -2145,38 +2152,38 @@
           <Values>
             <EnumValue>
               <Name>Failed</Name>
-              <Value>0</Value>
               <Description>Failed, e.g. because the shop feature is deactivated</Description>
+              <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>Success</Name>
-              <Value>1</Value>
               <Description>The price has been set successfully</Description>
+              <Value>1</Value>
             </EnumValue>
             <EnumValue>
               <Name>ItemSlotOutOfRange</Name>
-              <Value>2</Value>
               <Description>Failed because the item slot was out of range</Description>
+              <Value>2</Value>
             </EnumValue>
             <EnumValue>
               <Name>ItemNotFound</Name>
-              <Value>3</Value>
               <Description>Failed because the item could not be found</Description>
+              <Value>3</Value>
             </EnumValue>
             <EnumValue>
               <Name>PriceNegative</Name>
-              <Value>4</Value>
               <Description>Failed because the price was negative</Description>
+              <Value>4</Value>
             </EnumValue>
             <EnumValue>
               <Name>ItemIsBlocked</Name>
-              <Value>5</Value>
               <Description>Failed because the item is blocked</Description>
+              <Value>5</Value>
             </EnumValue>
             <EnumValue>
               <Name>CharacterLevelTooLow</Name>
-              <Value>6</Value>
               <Description>Failed because the character level is too low (below level 6)</Description>
+              <Value>6</Value>
             </EnumValue>
           </Values>
         </Enum>
@@ -2264,7 +2271,7 @@
           <Index>5</Index>
           <Type>Boolean</Type>
           <Name>Success</Name>
-          <DefaulValue>1</DefaulValue>
+          <DefaultValue>true</DefaultValue>
         </Field>
         <Field>
           <Index>6</Index>
@@ -3530,34 +3537,42 @@
           <Values>
             <EnumValue>
               <Name>Refused</Name>
+              <Description>Refused by the guild master.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>Accepted</Name>
+              <Description>Accepted by the guild master.</Description>
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
               <Name>GuildFull</Name>
+              <Description>The guild is full.</Description>
               <Value>2</Value>
             </EnumValue>
             <EnumValue>
               <Name>Disconnected</Name>
+              <Description>The guild master is disconnected.</Description>
               <Value>3</Value>
             </EnumValue>
             <EnumValue>
               <Name>NotTheGuildMaster</Name>
+              <Description>The requested player is not the guild master of its guild.</Description>
               <Value>4</Value>
             </EnumValue>
             <EnumValue>
               <Name>AlreadyHaveGuild</Name>
+              <Description>The player already has a guild.</Description>
               <Value>5</Value>
             </EnumValue>
             <EnumValue>
               <Name>GuildMasterOrRequesterIsBusy</Name>
+              <Description>he guild master or the requesting player is busy, e.g. by another request or by an ongoing guild war.</Description>
               <Value>6</Value>
             </EnumValue>
             <EnumValue>
               <Name>MinimumLevel6</Name>
+              <Description>The requesting player needs a minimum level of 6.</Description>
               <Value>7</Value>
             </EnumValue>
           </Values>
@@ -3661,14 +3676,17 @@
           <Values>
             <EnumValue>
               <Name>Failed</Name>
+              <Description>The kick request failed.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>KickSucceeded</Name>
+              <Description>The kick request was successful.</Description>
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
               <Name>GuildDisband</Name>
+              <Description>The guild has been disbanded.</Description>
               <Value>2</Value>
             </EnumValue>
           </Values>
@@ -3717,23 +3735,25 @@
           <TypeName>GuildCreationErrorType</TypeName>
           <Name>Error</Name>
         </Field>
-        <Enums>
-          <Enum>
-            <Name>GuildCreationErrorType</Name>
-            <Description>Defines a guild creation error.</Description>
-            <Values>
-              <EnumValue>
-                <Name>None</Name>
-                <Value>0</Value>
-              </EnumValue>
-              <EnumValue>
-                <Name>GuildNameAlreadyTaken</Name>
-                <Value>179</Value>
-              </EnumValue>
-            </Values>
-          </Enum>
-        </Enums>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>GuildCreationErrorType</Name>
+          <Description>Defines a guild creation error.</Description>
+          <Values>
+            <EnumValue>
+              <Name>None</Name>
+              <Description>No error occured.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildNameAlreadyTaken</Name>
+              <Description>The requested guild name is already taken.</Description>
+              <Value>179</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
@@ -3910,33 +3930,33 @@
           <Values>
             <EnumValue>
               <Name>Unprotected</Name>
-              <Value>0</Value>
               <Description>The vault is unprotected.</Description>
+              <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>Locked</Name>
-              <Value>1</Value>
               <Description>The vault is protected and locked. To move items or money, the player needs to unlock it.</Description>
+              <Value>1</Value>
             </EnumValue>
             <EnumValue>
               <Name>UnlockFailedByWrongPin</Name>
-              <Value>10</Value>
               <Description>The vault is protected and locked. The user-requested unlock failed by a wrong pin.</Description>
+              <Value>10</Value>
             </EnumValue>
             <EnumValue>
               <Name>SetPinFailedBecauseLock</Name>
-              <Value>11</Value>
               <Description>The vault is protected and locked and the player-requested pin setting failed because of the lock.</Description>
+              <Value>11</Value>
             </EnumValue>
             <EnumValue>
               <Name>Unlocked</Name>
-              <Value>12</Value>
               <Description>The vault is protected, but was unlocked by the player.</Description>
+              <Value>12</Value>
             </EnumValue>
             <EnumValue>
               <Name>RemovePinFailedByWrongPassword</Name>
-              <Value>13</Value>
               <Description>The vault is protected and the player-requested pin removal failed by using the wrong password.</Description>
+              <Value>13</Value>
             </EnumValue>
           </Values>
         </Enum>

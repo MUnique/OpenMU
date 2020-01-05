@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
                         FriendName = characters.FirstOrDefault(c => c.Id == f.FriendId)?.Name,
                         Id = f.Id,
                         RequestOpen = f.RequestOpen,
-                });
+                    });
         }
 
         /// <inheritdoc />
