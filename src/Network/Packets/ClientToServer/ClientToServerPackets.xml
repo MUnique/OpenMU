@@ -576,10 +576,12 @@
           <Values>
             <EnumValue>
               <Name>InventoryToVault</Name>
+              <Description>The money is moved from the inventory to the vault.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>VaultToInventory</Name>
+              <Description>The money is moved from the vault to the inventory.</Description>
               <Value>1</Value>
             </EnumValue>
           </Values>
@@ -663,42 +665,52 @@
           <Values>
             <EnumValue>
               <Name>JewelOfBless</Name>
+              <Description>Jewel of Bless.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfSoul</Name>
+              <Description>Jewel of Soul.</Description>
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfLife</Name>
+              <Description>Jewel of Life.</Description>
               <Value>2</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfCreation</Name>
+              <Description>Jewel of Creation.</Description>
               <Value>3</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfGuardian</Name>
+              <Description>Jewel of Guardian.</Description>
               <Value>4</Value>
             </EnumValue>
             <EnumValue>
               <Name>Gemstone</Name>
+              <Description>The gemstone.</Description>
               <Value>5</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfHarmony</Name>
+              <Description>Jewel of Harmony.</Description>
               <Value>6</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfChaos</Name>
+              <Description>Jewel of Chaos.</Description>
               <Value>7</Value>
             </EnumValue>
             <EnumValue>
               <Name>LowerRefineStone</Name>
+              <Description>Lower refine stone.</Description>
               <Value>8</Value>
             </EnumValue>
             <EnumValue>
               <Name>HigherRefineStone</Name>
+              <Description>Higher refine stone.</Description>
               <Value>9</Value>
             </EnumValue>
           </Values>

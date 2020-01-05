@@ -2175,8 +2175,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public enum VaultMoneyMoveDirection
         {
+            /// <summary>
+            /// The money is moved from the inventory to the vault.
+            /// </summary>
             InventoryToVault = 0,
 
+            /// <summary>
+            /// The money is moved from the vault to the inventory.
+            /// </summary>
             VaultToInventory = 1,
         }
 
@@ -2305,24 +2311,54 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public enum ItemType
         {
+            /// <summary>
+            /// Jewel of Bless.
+            /// </summary>
             JewelOfBless = 0,
 
+            /// <summary>
+            /// Jewel of Soul.
+            /// </summary>
             JewelOfSoul = 1,
 
+            /// <summary>
+            /// Jewel of Life.
+            /// </summary>
             JewelOfLife = 2,
 
+            /// <summary>
+            /// Jewel of Creation.
+            /// </summary>
             JewelOfCreation = 3,
 
+            /// <summary>
+            /// Jewel of Guardian.
+            /// </summary>
             JewelOfGuardian = 4,
 
+            /// <summary>
+            /// The gemstone.
+            /// </summary>
             Gemstone = 5,
 
+            /// <summary>
+            /// Jewel of Harmony.
+            /// </summary>
             JewelOfHarmony = 6,
 
+            /// <summary>
+            /// Jewel of Chaos.
+            /// </summary>
             JewelOfChaos = 7,
 
+            /// <summary>
+            /// Lower refine stone.
+            /// </summary>
             LowerRefineStone = 8,
 
+            /// <summary>
+            /// Higher refine stone.
+            /// </summary>
             HigherRefineStone = 9,
         }
 
