@@ -28,8 +28,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <exception cref="ArgumentException">
         /// Generic type argument {typeof(TPlugIn)}
         /// or
-        /// Generic type argument {typeof(TPlugIn)} is not marked with {typeof(PlugInPointAttribute)}
-        /// or
+        /// Generic type argument {typeof(TPlugIn)} is not marked with {typeof(PlugInPointAttribute)}.
         /// </exception>
         /// <exception cref="T:System.Reflection.AmbiguousMatchException">More than one of the requested attributes was found.</exception>
         public IPlugInContainer<TPlugIn> GenerateProxy<TPlugIn>(PlugInManager manager)
