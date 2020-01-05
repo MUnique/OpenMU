@@ -18,17 +18,19 @@ namespace MUnique.OpenMU.Network.Packets
         ///  Gets or sets the name of the enum.
         /// </summary>
         [XmlElement(DataType = "Name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the description of this enum.
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Gets or sets the possible values of this enum.
         /// </summary>
         [XmlArrayItem(IsNullable = false)]
-        public EnumValue[] Values { get; set; }
+#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
+        public EnumValue[]? Values { get; set; }
+#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
     }
 }

@@ -18,13 +18,13 @@ namespace MUnique.OpenMU.Network.Packets
         /// Gets or sets the name.
         /// </summary>
         [XmlElement(DataType = "Name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
         [XmlElement(IsNullable = true)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Gets or sets the length.
@@ -36,6 +36,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         [XmlArray(IsNullable = true)]
         [XmlArrayItem(IsNullable = false)]
-        public Field[] Fields { get; set; }
+#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
+        public Field[]? Fields { get; set; }
+#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
     }
 }

@@ -18,12 +18,12 @@ namespace MUnique.OpenMU.Network.Packets
         /// Gets or sets the name of the enum value.
         /// </summary>
         [XmlElement(DataType = "Name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the description of this enum value.
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Gets or sets the numerical value of this enum value.

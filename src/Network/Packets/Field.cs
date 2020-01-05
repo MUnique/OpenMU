@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Network.Packets
 {
     using System;
-    using System.Xml;
     using System.Xml.Serialization;
 
     /// <summary>
@@ -114,22 +113,22 @@ namespace MUnique.OpenMU.Network.Packets
 
         /// <summary>
         /// Gets or sets the name of the type.
-        /// Relevant when <see cref="Type"/> is a <see cref="FieldType.Enum"/> or <see cref="FieldType.Structure"/>.
+        /// Relevant when <see cref="Type"/> is a <see cref="FieldType.Enum"/> or <see cref="FieldType.StructureArray"/>.
         /// </summary>
         /// <value>
         /// The name of the type.
         /// </value>
-        public string TypeName { get; set; }
+        public string? TypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Gets or sets the length/size of the field, when it's a string or enum; Otherwise it's ignored.
@@ -141,13 +140,13 @@ namespace MUnique.OpenMU.Network.Packets
         /// <summary>
         /// Gets or sets the default value of this field. It gets set when a packet is initialized.
         /// </summary>
-        public string DefaultValue { get; set; }
+        public string? DefaultValue { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the item count field, if this field is a structure array.
         /// </summary>
         /// <value>The item count field.</value>
-        public string ItemCountField { get; set; }
+        public string? ItemCountField { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this field uses a custom implementation for the indexer, if this field is a struct array.

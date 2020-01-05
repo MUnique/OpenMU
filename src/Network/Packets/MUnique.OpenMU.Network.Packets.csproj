@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Nullable>enable</Nullable>
     <Version>0.2.0</Version>
     <Authors>MUnique</Authors>
     <Description>This package contains message structs for the MMORPG "MU Online", which primarily focused on the english version of Season 6 Episode 3.</Description>
