@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.Network.Packets
             set
             {
                 this.type = value;
-                var newHeaderType = ((byte) value).ToString("X") + "Header";
+                var newHeaderType = ((byte)value).ToString("X") + "Header";
                 if (this.SubCodeSpecified)
                 {
                     newHeaderType += "WithSubCode";
@@ -163,19 +163,32 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets the caption.
+        /// </summary>
         public string Caption { get; set; }
 
+        /// <summary>
+        /// Gets or sets the length.
+        /// </summary>
         public int Length { get; set; }
 
+        /// <summary>
+        /// Gets or sets the direction of the packet.
+        /// </summary>
         public Direction Direction { get; set; }
 
         /// <summary>
-        /// Gets or sets the description of the packet.
+        /// Gets or sets the 'sent when' description of the packet.
         /// </summary>
         [XmlElement(IsNullable = true)]
         public string SentWhen { get; set; }
 
-        [XmlElement(IsNullable = true)] public string CausedReaction { get; set; }
+        /// <summary>
+        /// Gets or sets the 'caused reaction' description of the packet.
+        /// </summary>
+        [XmlElement(IsNullable = true)]
+        public string CausedReaction { get; set; }
 
         /// <summary>
         /// Gets or sets the field definitions of the packets.
@@ -184,38 +197,16 @@ namespace MUnique.OpenMU.Network.Packets
         [XmlArrayItem("Field", IsNullable = false)]
         public Field[] Fields { get; set; }
 
+        /// <summary>
+        /// Gets or sets the structures which are exclusively used by this packet.
+        /// </summary>
         [XmlArrayItem("Structure", IsNullable = false)]
         public Structure[] Structures { get; set; }
 
+        /// <summary>
+        /// Gets or sets the enums which are exclusively used by this packet.
+        /// </summary>
         [XmlArrayItem(IsNullable = false)]
         public Enum[] Enums { get; set; }
-    }
-
-
-    [XmlType(Namespace = PacketDefinitions.XmlNamespace)]
-    [Serializable]
-    public class EnumValue
-    {
-        /// <remarks/>
-        [XmlElement(DataType = "Name")]
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        /// <remarks/>
-        public byte Value { get; set; }
-    }
-
-    [XmlType(Namespace = PacketDefinitions.XmlNamespace)]
-    [Serializable]
-    public class Enum
-    {
-        [XmlElement(DataType = "Name")]
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        [XmlArrayItem(IsNullable = false)]
-        public EnumValue[] Values { get; set; }
     }
 }
