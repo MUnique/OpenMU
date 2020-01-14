@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel.Entities;
+
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using MUnique.OpenMU.DataModel.Configuration;
@@ -73,6 +75,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
                     break;
                 case NpcWindow.VaultStorage:
+                    player.Account.Vault ??= player.PersistenceContext.CreateNew<ItemStorage>();
                     player.Vault = new Storage(InventoryConstants.WarehouseSize, player.Account.Vault);
                     player.ViewPlugIns.GetPlugIn<IShowVaultPlugIn>()?.ShowVault();
                     break;
