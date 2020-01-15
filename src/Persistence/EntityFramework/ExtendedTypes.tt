@@ -32,7 +32,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using MUnique.OpenMU.Persistence;
 
 <#
-List<Type> customTypes = this.GetCustomTypes();
+List<Type> customTypes = null;
+try {
+    customTypes = this.GetCustomTypes();
+}
+catch(System.Reflection.ReflectionTypeLoadException ex)
+{
+    #>/* ReflectionTypeLoadException Loader Exceptions:
+    <#
+    foreach (var inner in ex.LoaderExceptions)
+    {
+        #>
+        <#=inner.Message#>
+        <#
+    }
+    #>*/
+    }<#
+    throw;
+}
     
 string customTypeSuffix = string.Empty;
 
@@ -170,7 +187,7 @@ foreach (Type type in customTypes)
 <#}#>
         }
         <#} else if (property.PropertyType.GenericTypeArguments.Length == 1 && property.PropertyType.GenericTypeArguments[0].IsPrimitive) {#>[Column("<#=property.Name#>")]
-        [Newtonsoft.Json.JsonProperty("<#=ToCamelCase(property.Name)#>")]
+        [Newtonsoft.Json.JsonProperty("<#=property.Name#>")]
         [System.Text.Json.Serialization.JsonPropertyName("<#=ToCamelCase(property.Name)#>")]
         public string Raw<#=property.Name#> { get; set; }
         <#} else {#>public <#=propertyTypeName#> Raw<#=property.Name#> { get; } = new List<<#=genericParameterType#>>();<#}#>
