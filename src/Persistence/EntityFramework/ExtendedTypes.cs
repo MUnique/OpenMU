@@ -3629,7 +3629,7 @@ public ICollection<IncreasableItemOption> RawOptions { get; } = new List<Increas
         public Guid Id { get; set; }
 
 [Column("ItemSlots")]
-        [Newtonsoft.Json.JsonProperty("itemSlots")]
+        [Newtonsoft.Json.JsonProperty("ItemSlots")]
         [System.Text.Json.Serialization.JsonPropertyName("itemSlots")]
         public string RawItemSlots { get; set; }
                 
