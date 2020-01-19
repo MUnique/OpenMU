@@ -4615,7 +4615,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the operation code of this data packet.
         /// </summary>
-        public static byte Code => 0x22;
+        public static byte Code => 0x23;
 
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.

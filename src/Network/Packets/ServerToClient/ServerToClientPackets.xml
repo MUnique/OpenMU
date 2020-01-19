@@ -1580,7 +1580,7 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
-      <Code>22</Code>
+      <Code>23</Code>
       <Name>ItemDropResponse</Name>
       <Length>5</Length>
       <Direction>ServerToClient</Direction>
