@@ -3467,38 +3467,6 @@
       </Enums>
     </Packet>
     <Packet>
-      <HeaderType>C2Header</HeaderType>
-      <Code>12</Code>
-      <Name>PlayerMeet</Name>
-      <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>PlayerCount</Name>
-        </Field>
-        <!-- TODO: Structures -->
-      </Fields>
-    </Packet>
-    <Packet>
-      <HeaderType>C2Header</HeaderType>
-      <Code>13</Code>
-      <Name>NpcMeet</Name>
-      <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>NpcCount</Name>
-        </Field>
-        <!-- TODO: Structures -->
-      </Fields>
-    </Packet>
-    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>50</Code>
       <Name>GuildJoinRequest</Name>
