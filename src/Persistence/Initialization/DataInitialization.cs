@@ -32,6 +32,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private readonly IPersistenceContextProvider persistenceContextProvider;
         private GameConfiguration gameConfiguration;
         private IContext context;
+        private IList<Maps.IMapInitializer> mapInitializers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataInitialization"/> class.
@@ -63,14 +64,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateGameServerDefinitions(gameServerConfiguration, 3);
                 this.CreateConnectServerDefinitions();
                 this.context.SaveChanges();
-
-                var lorencia = this.gameConfiguration.Maps.First(map => map.Number == 0);
-                foreach (var map in this.gameConfiguration.Maps)
-                {
-                    // set safezone to lorencia for now...
-                    map.SafezoneMap = lorencia;
-                }
-
+                this.SetSafezoneMaps();
                 this.CreateTestAccounts(10);
                 this.CreateTestAccount("test300", 300);
                 this.CreateTestAccount("test400", 400);
@@ -966,7 +960,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private void CreateGameMapDefinitions()
         {
-            var mapInitializers = new[]
+            var mapInitializerTypes = new[]
             {
                 typeof(Lorencia),
                 typeof(Dungeon),
@@ -1039,10 +1033,22 @@ namespace MUnique.OpenMU.Persistence.Initialization
             };
 
             var parameters = new object[] { this.context, this.gameConfiguration };
-            foreach (var map in mapInitializers)
+            this.mapInitializers = mapInitializerTypes
+                .Select(type => type.GetConstructors().First().Invoke(parameters) as Maps.IMapInitializer)
+                .Where(i => i != null)
+                .ToList();
+
+            foreach (var mapInitializer in this.mapInitializers)
             {
-                var mapInitializer = map.GetConstructors().First().Invoke(parameters) as IInitializer;
-                mapInitializer?.Initialize();
+                mapInitializer.Initialize();
+            }
+        }
+
+        private void SetSafezoneMaps()
+        {
+            foreach (var mapInitializer in this.mapInitializers)
+            {
+                mapInitializer.SetSafezoneMap();
             }
         }
 
