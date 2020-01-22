@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.Inferno, "Inferno", 88, 100, 200, 0, 0, 200, 0, 3, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, SkillType.AreaSkillExplicitHits);
             this.CreateSkill(SkillNumber.TeleportAlly, "Teleport Ally", 83, 0, 90, 25, 6, 188, 0, -1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, SkillType.Other);
             this.CreateSkill(SkillNumber.SoulBarrier, "Soul Barrier", 77, 0, 70, 22, 6, 126, 0, -1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, SkillType.Buff, SkillTarget.Explicit, 0, SkillTargetRestriction.Party);
-            this.CreateSkill(SkillNumber.EnergyBall, "Energy Ball", 2, 3, 1, 0, 6, 0, 0, -1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateSkill(SkillNumber.EnergyBall, "Energy Ball", 0, 3, 1, 0, 6, 0, 0, -1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0);
             this.CreateSkill(SkillNumber.Defense, "Defense", 0, 0, 30, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 1, 1, 0, 0, SkillType.Buff, SkillTarget.Explicit, 0, SkillTargetRestriction.Self);
             this.CreateSkill(SkillNumber.FallingSlash, "Falling Slash", 0, 0, 9, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, movesToTarget: true, movesTarget: true);
             this.CreateSkill(SkillNumber.Lunge, "Lunge", 0, 0, 9, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, movesToTarget: true, movesTarget: true);
