@@ -43,13 +43,15 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public void Detach(object item)
+        public bool Detach(object item)
         {
             if (item is IIdentifiable identifiable)
             {
                 var repository = this.Manager.GetRepository(item.GetType()) as IMemoryRepository;
                 repository?.Remove(identifiable.Id);
             }
+
+            return false;
         }
 
         /// <inheritdoc/>

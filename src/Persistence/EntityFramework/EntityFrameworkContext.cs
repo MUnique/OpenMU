@@ -60,15 +60,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc />
-        public void Detach(object item)
+        public bool Detach(object item)
         {
             var entry = this.Context.Entry(item);
             if (entry == null)
             {
-                return;
+                return false;
             }
 
+            var previousState = entry.State;
             entry.State = EntityState.Detached;
+            return previousState != EntityState.Added;
         }
 
         /// <inheritdoc />
