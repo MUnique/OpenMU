@@ -234,7 +234,8 @@ namespace MUnique.OpenMU.GameLogic
 
                 // We could use here the persistence context of the dropper - but if it logged out and is not saving anymore, the deletion would not be saved.
                 // So we use a new temporary persistence context instead.
-                using var context = repositoryManager.CreateNewContext();
+                // We use a trade-context as it just focuses on the items. Otherwise, we would track a lot more items.
+                using var context = repositoryManager.CreateNewTradeContext();
                 context.Delete(this.Item);
                 context.SaveChanges();
             }
