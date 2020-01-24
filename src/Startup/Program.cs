@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.Startup
     using System.Threading;
     using log4net;
     using log4net.Config;
-    using Microsoft.EntityFrameworkCore.Internal;
     using MUnique.OpenMU.AdminPanel;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.ConnectServer;
