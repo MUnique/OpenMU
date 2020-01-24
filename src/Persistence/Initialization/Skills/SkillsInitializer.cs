@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.SummonSoldier, "Summon Soldier", 0, 0, 350, 0, 0, 280, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Other);
             this.CreateSkill(SkillNumber.Decay, "Decay", 0, 95, 110, 7, 6, 953, 0, 1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.IceStorm, "Ice Storm", 0, 80, 100, 5, 6, 849, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
-            this.CreateSkill(SkillNumber.Nova, "Nova", 100, 0, 180, 45, 6, 258, 0, 3, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, SkillType.Other);
+            this.CreateSkill(SkillNumber.Nova, "Nova", 100, 0, 180, 45, 6, 1052, 0, 3, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, SkillType.Other);
             this.CreateSkill(SkillNumber.TwistingSlash, "Twisting Slash", 0, 0, 10, 10, 2, 0, 0, 5, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.RagefulBlow, "Rageful Blow", 170, 60, 25, 20, 3, 0, 0, 4, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.DeathStab, "Death Stab", 160, 70, 15, 12, 2, 0, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, SkillType.DirectHit, SkillTarget.ExplicitWithImplicitInRange, 1);
