@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <DocumentationFile>$(OutputDir)\MUnique.OpenMU.Network.Packets.xml</DocumentationFile>
+    <DocumentationFile>$(OutDir)\MUnique.OpenMU.Network.Packets.xml</DocumentationFile>
     <Nullable>enable</Nullable>
     <Version>0.2.0</Version>
     <Authors>MUnique</Authors>
