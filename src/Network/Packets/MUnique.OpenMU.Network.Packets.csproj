@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <DocumentationFile>$(OutDir)\MUnique.OpenMU.Network.Packets.xml</DocumentationFile>
     <Nullable>enable</Nullable>
     <Version>0.2.0</Version>
     <Authors>MUnique</Authors>
@@ -13,6 +13,15 @@
     <PackageProjectUrl>https://github.com/MUnique/OpenMU/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MUnique/OpenMU/</RepositoryUrl>
     <PackageTags />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DocumentationFile>..\..\..\bin\Debug\MUnique.OpenMU.Network.Packets.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
+    <DocumentationFile>..\..\..\bin\Release\MUnique.OpenMU.Network.Packets.xml</DocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>
