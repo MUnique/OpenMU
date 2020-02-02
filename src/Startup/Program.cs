@@ -28,6 +28,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.Initialization;
     using MUnique.OpenMU.Persistence.InMemory;
+    using MUnique.OpenMU.PublicApi;
 
     /// <summary>
     /// The startup class for an all-in-one game server.
@@ -123,9 +124,13 @@ namespace MUnique.OpenMU.Startup
 
             stopwatch.Stop();
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
+
+            Log.Info("Start API...");
+            ApiHost.RunAsync(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
+            Log.Info("Started API");
+
             var adminPort = this.DetermineAdminPort(args);
             Log.Info($"Start initializing admin panel for port {adminPort}.");
-
             this.adminPanel = new AdminPanel(adminPort, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
             Log.Info($"Admin panel initialized, port {adminPort}.");
 
