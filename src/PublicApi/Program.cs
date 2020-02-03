@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.PublicApi
     /// <summary>
     /// The main entry class.
     /// </summary>
-    public class Program
+    public static class Program
     {
         /// <summary>
         /// The main entry point.

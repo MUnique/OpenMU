@@ -2,22 +2,21 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using apache.log4net.Extensions.Logging;
-using Microsoft.Extensions.Logging;
-
 namespace MUnique.OpenMU.PublicApi
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using apache.log4net.Extensions.Logging;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// Hosts the public API server.
     /// </summary>
-    public class ApiHost
+    public static class ApiHost
     {
         /// <summary>
         /// Runs the host.
@@ -26,7 +25,7 @@ namespace MUnique.OpenMU.PublicApi
         /// <param name="connectServers">The connect servers.</param>
         /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
         /// <returns>The async task.</returns>
-        public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string loggingConfigurationPath)
+        public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
         {
             var builder = Host.CreateDefaultBuilder();
             if (!string.IsNullOrEmpty(loggingConfigurationPath))
