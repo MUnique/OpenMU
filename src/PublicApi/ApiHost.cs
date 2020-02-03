@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.PublicApi
                 builder = builder.ConfigureLogging(configureLogging =>
                 {
                     configureLogging.ClearProviders();
-                    var settings = new Log4NetSettings {ConfigFile = loggingConfigurationPath, Watch = true};
+                    var settings = new Log4NetSettings { ConfigFile = loggingConfigurationPath, Watch = true };
 
                     configureLogging.AddLog4Net(settings);
                 });
