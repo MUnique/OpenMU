@@ -14,29 +14,24 @@ namespace MUnique.OpenMU.PublicApi.Models
     public class ConnectServerDto
     {
         /// <summary>
-        /// Creates the DTO for the specified connect server.
-        /// </summary>
-        /// <param name="connectServer">The connect server.</param>
-        /// <returns>The DTO.</returns>
-        public static ConnectServerDto Create(IConnectServer connectServer, ICollection<IGameServer> gameServers)
-        {
-            return new ConnectServerDto
-            {
-                PatchAddress = connectServer.Settings.PatchAddress,
-                CurrentPatchVersion = connectServer.Settings.CurrentPatchVersion,
-                // todo client version
-                Port = connectServer.Settings.ClientListenerPort,
-                State = connectServer.ServerState,
-                GameServers = connectServer.GameServerEndPoints
-                    .Select(ep => GameServerDto.Create(
-                        ep.Endpoint, gameServers.FirstOrDefault(gs => gs.Id == ep.Id))).ToList(),
-            };
-        }
-
-        /// <summary>
         /// Gets the port.
         /// </summary>
         public int Port { get; private set; } = 44405;
+
+        /// <summary>
+        /// Gets the version.
+        /// </summary>
+        public byte[] Version { get; private set; } = new byte[5];
+
+        /// <summary>
+        /// Gets the season.
+        /// </summary>
+        public byte Season { get; private set; }
+
+        /// <summary>
+        /// Gets the episode.
+        /// </summary>
+        public byte Episode { get; private set; }
 
         /// <summary>
         /// Gets the patch address.
@@ -57,5 +52,27 @@ namespace MUnique.OpenMU.PublicApi.Models
         /// Gets the available game servers.
         /// </summary>
         public ICollection<GameServerDto> GameServers { get; private set; } = new List<GameServerDto>();
+
+        /// <summary>
+        /// Creates the DTO for the specified connect server.
+        /// </summary>
+        /// <param name="connectServer">The connect server.</param>
+        /// <returns>The DTO.</returns>
+        public static ConnectServerDto Create(IConnectServer connectServer, ICollection<IGameServer> gameServers)
+        {
+            return new ConnectServerDto
+            {
+                PatchAddress = connectServer.Settings.PatchAddress,
+                CurrentPatchVersion = connectServer.Settings.CurrentPatchVersion,
+                Version = connectServer.Settings.Client.Version,
+                Season = connectServer.Settings.Client.Season,
+                Episode = connectServer.Settings.Client.Episode,
+                Port = connectServer.Settings.ClientListenerPort,
+                State = connectServer.ServerState,
+                GameServers = connectServer.GameServerEndPoints
+                    .Select(ep => GameServerDto.Create(
+                        ep.Endpoint, gameServers.FirstOrDefault(gs => gs.Id == ep.Id))).ToList(),
+            };
+        }
     }
 }
