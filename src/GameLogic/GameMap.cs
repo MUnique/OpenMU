@@ -31,8 +31,6 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly IdGenerator objectIdGenerator;
 
-        private readonly IMapStateObserver stateObserver;
-
         private int playerCount;
 
         /// <summary>
@@ -41,12 +39,10 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="mapDefinition">The map definition.</param>
         /// <param name="itemDropDuration">Duration of the item drop.</param>
         /// <param name="chunkSize">Size of the chunk.</param>
-        /// <param name="stateObserver">The map state observer.</param>
-        public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize, IMapStateObserver stateObserver)
+        public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
         {
             this.Definition = mapDefinition;
             this.ItemDropDuration = itemDropDuration;
-            this.stateObserver = stateObserver;
             Log.DebugFormat("Creating GameMap {0}", this.Definition);
             this.Terrain = new GameMapTerrain(this.Definition);
 
@@ -132,7 +128,6 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     player.Id = 0;
                     Interlocked.Decrement(ref this.playerCount);
-                    this.stateObserver?.PlayerCountChanged(this.MapId, this.playerCount);
                 }
 
                 this.ObjectRemoved?.Invoke(this, new GameMapEventArgs(this, locateable));
@@ -156,7 +151,6 @@ namespace MUnique.OpenMU.GameLogic
                 player.Id = (ushort)this.objectIdGenerator.GetId();
                 Log.DebugFormat("{0}: Added player {1}, {2}, ", this.Definition, player.Id, player);
                 Interlocked.Increment(ref this.playerCount);
-                this.stateObserver?.PlayerCountChanged(this.MapId, this.playerCount);
             }
 
             if (locateable is NonPlayerCharacter npc)

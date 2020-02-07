@@ -16,14 +16,13 @@ namespace MUnique.OpenMU.ConnectServer
         /// Creates a new connect server instance.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        /// <param name="stateObserver">The state observer.</param>
         /// <param name="clientVersion">The client version.</param>
         /// <returns>
         /// The new connect server instance.
         /// </returns>
-        public static OpenMU.Interfaces.IConnectServer CreateConnectServer(IConnectServerSettings settings, IServerStateObserver stateObserver, ClientVersion clientVersion)
+        public static OpenMU.Interfaces.IConnectServer CreateConnectServer(IConnectServerSettings settings, ClientVersion clientVersion)
         {
-            return new ConnectServer(settings, stateObserver, clientVersion);
+            return new ConnectServer(settings, clientVersion);
         }
     }
 }

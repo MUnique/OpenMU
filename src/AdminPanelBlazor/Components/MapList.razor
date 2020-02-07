@@ -1,0 +1,58 @@
+﻿@using MUnique.OpenMU.Interfaces
+
+@inject IJSRuntime jsRuntime;
+
+@if (this.Maps == null)
+{
+    <span>Initializing...</span>
+}
+else if (Maps.Count == 0)
+{
+    <span>No game maps hosted. They are created as soon as a player enters a map.</span>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <td class="col-sm-10">Map Name</td>
+                <td class="col-sm-1">Players</td>
+                <td>Spectate</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var map in this.Maps)
+            {
+                <tr>
+                    <td>@map.MapName</td>
+                    <td>@map.Players.Count</td>
+                    <td>
+                        <button type="button" @onclick="args => this.OpenMapAsync(map)">
+                            <span class="oi oi-map" aria-hidden="true"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the game server of the maps which are shown in this component.
+    /// </summary>
+    [Parameter]
+    public IGameServer GameServer { get; set; }
+    
+    /// <summary>
+    /// TODO: Automatic UI updates via INotifyPropertyChanged.
+    /// </summary>
+    private IList<IGameMapInfo> Maps => this.GameServer?.ServerInfo.Maps;
+
+    private ValueTask<object> OpenMapAsync(IGameMapInfo map)
+    {
+        var uri = @"/admin/livemap?serverId=" + this.GameServer.Id + "&mapId=" + map.MapNumber;
+        return this.jsRuntime.InvokeAsync<object>("open", uri, "_blank");
+    }
+}

@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
 
@@ -27,7 +29,31 @@ namespace MUnique.OpenMU.GameServer
         {
             this.gameServer = gameServer;
             this.configuration = configuration;
+            this.gameServer.PropertyChanged += this.OnGameServerPropertyChanged;
         }
+
+        private void OnGameServerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IManageableServer.CurrentConnections):
+                    this.OnPropertyChanged(nameof(this.OnlinePlayerCount));
+                    break;
+                case nameof(IManageableServer.ServerState):
+                    this.OnPropertyChanged(nameof(this.State));
+                    break;
+                case "":
+                case null:
+                    this.OnPropertyChanged();
+                    break;
+                default:
+                    // don't need to handle other events.
+                    break;
+            }
+        }
+
+        /// <inheritdoc />
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <inheritdoc/>
         public byte Id => this.gameServer.Id;
@@ -61,6 +87,15 @@ namespace MUnique.OpenMU.GameServer
         public override string ToString()
         {
             return this.gameServer.ToString();
+        }
+
+        /// <summary>
+        /// Called when a property has been changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

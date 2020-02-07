@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Interfaces
 {
     using System.Collections.Generic;
+    using System.ComponentModel;
 
     /// <summary>
     /// The state of the server.
@@ -172,7 +173,7 @@ namespace MUnique.OpenMU.Interfaces
     /// <summary>
     /// Informations about a game server.
     /// </summary>
-    public interface IGameServerInfo
+    public interface IGameServerInfo : INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the identifier.

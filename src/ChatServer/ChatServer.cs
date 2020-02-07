@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.ChatServer
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Security.Cryptography;
     using System.Timers;
     using log4net;
@@ -26,8 +27,6 @@ namespace MUnique.OpenMU.ChatServer
         private readonly ChatRoomManager manager;
 
         private readonly ChatServerSettings settings;
-
-        private readonly IServerStateObserver stateObserver;
 
         private readonly RandomNumberGenerator randomNumberGenerator;
 
@@ -49,12 +48,10 @@ namespace MUnique.OpenMU.ChatServer
         /// Initializes a new instance of the <see cref="ChatServer" /> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        /// <param name="stateObserver">The state observer.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
-        public ChatServer(ChatServerSettings settings, IServerStateObserver stateObserver, IIpAddressResolver addressResolver)
+        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver)
         {
             this.settings = settings;
-            this.stateObserver = stateObserver;
             this.addressResolver = addressResolver;
             this.manager = new ChatRoomManager();
             this.randomNumberGenerator = RandomNumberGenerator.Create();
@@ -76,6 +73,9 @@ namespace MUnique.OpenMU.ChatServer
         }
 
         /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <inheritdoc/>
         public string Description => this.settings.Description;
 
         /// <inheritdoc/>
@@ -93,7 +93,7 @@ namespace MUnique.OpenMU.ChatServer
                 if (value != this.serverState)
                 {
                     this.serverState = value;
-                    this.stateObserver?.ServerStateChanged(this.Id, value);
+                    this.OnPropertyChanged();
                 }
             }
         }
@@ -230,14 +230,14 @@ namespace MUnique.OpenMU.ChatServer
         {
             var chatClient = new ChatClient(e.AcceptedConnection, this.manager);
             this.connectedClients.Add(chatClient);
-            this.stateObserver?.PlayerCountChanged(this.Id, this.CurrentConnections);
+            this.OnPropertyChanged(nameof(this.CurrentConnections));
             chatClient.Disconnected += this.ChatClient_Disconnected;
         }
 
         private void ChatClient_Disconnected(object sender, EventArgs e)
         {
             this.connectedClients.Remove(sender as IChatClient);
-            this.stateObserver?.PlayerCountChanged(this.Id, this.CurrentConnections);
+            this.OnPropertyChanged(nameof(this.CurrentConnections));
         }
 
         private void ClientCleanupInactiveClients(object sender, ElapsedEventArgs e)
@@ -276,6 +276,15 @@ namespace MUnique.OpenMU.ChatServer
             {
                 Log.Error("Error during cleanup of unused rooms", ex);
             }
+        }
+
+        /// <summary>
+        /// Called when a property changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -1,0 +1,43 @@
+﻿@page "/accounts"
+@using MUnique.OpenMU.DataModel.Entities;
+@using MUnique.OpenMU.AdminPanelBlazor.Services
+
+@inject AccountService accountService;
+
+<h1>Accounts</h1>
+
+<div>
+    <DataTable TItem=@Account>
+        <TableHeader>
+            <th class="col-1">Login Name</th>
+            <th class="col-1">State</th>
+            <th class="col-2">E-Mail</th>
+            <th class="col-2">Action</th>
+        </TableHeader>
+        <ItemTemplate Context="item">
+            <td>@item.LoginName</td>
+            <td>@item.State</td>
+            <td>@item.EMail</td>
+            <td>
+                @if (@item.State == AccountState.Normal)
+                {
+                    <Button class="btn-outline-danger" @onclick="() => this.accountService.Ban(item)">Ban</Button>
+                }
+                else
+                {
+                    <Button class="btn-outline-danger" @onclick="() => this.accountService.Unban(item)">Unban</Button>
+                }
+            </td>
+        </ItemTemplate>
+        <TableFooter>
+            <td><button type="button" class="btn btn-sm btn-success">Create</button></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </TableFooter>
+    </DataTable>    
+</div>
+
+@code {
+
+}

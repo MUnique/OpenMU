@@ -56,8 +56,6 @@ namespace MUnique.OpenMU.AdminPanel
                 .UseStartup<Startup>()
                 .Build();
             host.Start();
-            SignalRGameServerStateObserver.Services = host.Services;
-            SignalRMapStateObserver.Services = host.Services;
         }
     }
 }

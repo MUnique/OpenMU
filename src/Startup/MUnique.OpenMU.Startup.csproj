@@ -37,7 +37,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\AdminPanel\MUnique.OpenMU.AdminPanel.csproj" />
+    <ProjectReference Include="..\AdminPanelBlazor\MUnique.OpenMU.AdminPanelBlazor.csproj" />
     <ProjectReference Include="..\ChatServer\MUnique.OpenMU.ChatServer.csproj" />
     <ProjectReference Include="..\ConnectServer\MUnique.OpenMU.ConnectServer.csproj" />
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />

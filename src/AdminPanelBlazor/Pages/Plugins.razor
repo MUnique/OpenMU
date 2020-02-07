@@ -1,0 +1,45 @@
+﻿@page "/plugins"
+@using MUnique.OpenMU.AdminPanelBlazor.Models;
+@using MUnique.OpenMU.AdminPanelBlazor.Services
+
+@inject PlugInController plugInController;
+
+<h1>Plugins</h1>
+
+<div>
+    <DataTable TItem=@PlugInConfigurationViewItem>
+        <TableHeader>
+            <th class="col-3">Extension Point</th>
+            <th class="col-3">Plugin Name</th>
+            <th class="col-3">Plugin Type</th>
+            <th class="col-3">Action</th>
+        </TableHeader>
+        <SecondaryTableHeader>
+            <th class="col-3"></th>
+            <th class="col-3"><input type="search" placeholder="Search" bind-value="@this.plugInController.NameFilter" /></th>
+            <th class="col-3"><input type="search" placeholder="Search" bind-value="@this.plugInController.TypeFilter" /></th>
+            <th class="col-3"></th>
+        </SecondaryTableHeader>
+        <ItemTemplate Context="item">
+            <td title=@item.PlugInPointDescription>@item.PlugInPointName</td>
+            <td title=@item.PlugInDescription>@item.PlugInName</td>
+            <td title=@item.TypeId}>@item.TypeName</td>
+            <td>
+                @if (item.IsActive)
+                {
+                    <Button class="btn-warning" @onclick="() => this.plugInController.Deactivate(item)">Deactivate</Button>
+                }
+                else
+                {
+                    <Button class="btn-success" @onclick="() => this.plugInController.Activate(item)">Activate</Button>
+                }
+            </td>
+        </ItemTemplate>
+        <TableFooter>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </TableFooter>
+    </DataTable>    
+</div>

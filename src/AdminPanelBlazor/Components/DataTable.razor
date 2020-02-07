@@ -1,0 +1,130 @@
+﻿@using MUnique.OpenMU.AdminPanelBlazor.Services
+@typeparam TItem
+@inject IDataService<TItem> dataService;
+
+<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group" role="group" aria-label="Navigation group">
+        <Button disabled="@(this.Page <= 1 || this.isLoading)" class="btn btn-sm btn-primary" @onclick=@this.GetPreviousPageAsync><span class="oi oi-arrow-thick-left" aria-hidden="true" /></Button>
+        <button class="btn btn-sm btn-light" disabled>
+            @if (this.isLoading)
+            {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span class="sr-only">Loading...</span>
+            }
+            else
+            {
+                <span>Page @this.Page</span>
+            }
+        </button>
+        <Button disabled="@(!this.HasMoreEntries || this.isLoading)" class="btn btn-sm btn-primary" @onclick=@this.GetNextPageAsync><span class="oi oi-arrow-thick-right" aria-hidden="true" /></Button>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>@TableHeader</tr>
+        @if (this.SecondaryTableHeader != null)
+        {
+            <tr>@SecondaryTableHeader</tr>
+        }
+    </thead>
+    <tbody>
+        @if (this.isLoading)
+        {
+            <tr>Loading ...</tr>
+        }
+        else if (this.items != null)
+        {
+            @foreach (var item in this.items)
+            {
+                <tr>@ItemTemplate(item)</tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        <tr>@TableFooter</tr>
+    </tfoot>
+</table>
+@code {
+    [Parameter]
+    public RenderFragment TableHeader { get; set; }
+
+    [Parameter]
+    public RenderFragment SecondaryTableHeader { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; }
+
+    [Parameter]
+    public RenderFragment TableFooter { get; set; }
+
+    public int Page { get; set; } = 1;
+
+    public int PageSize { get; set; } = 20;
+
+    public bool HasMoreEntries { get; set; }
+
+    private bool isLoading;
+
+    private IReadOnlyList<TItem> items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await this.GetPageAsync(1);
+        if (this.dataService is ISupportDataChangedNotification dataChangedNotification)
+        {
+            dataChangedNotification.DataChanged += async (_, __) => await this.RefreshAsync();
+        }
+    }
+
+    internal Task RefreshAsync()
+    {
+        return this.GetPageAsync(this.Page);
+    }
+
+    private Task GetNextPageAsync()
+    {
+        if (this.isLoading)
+        {
+            return Task.CompletedTask;
+        }
+
+        return this.GetPageAsync(this.Page + 1);
+    }
+
+    private Task GetPreviousPageAsync()
+    {
+        if (this.isLoading)
+        {
+            return Task.CompletedTask;
+        }
+
+        return this.GetPageAsync(this.Page - 1);
+    }
+
+    private async Task GetPageAsync(int page)
+    {
+        this.isLoading = true;
+        try
+        {
+            this.StateHasChanged();
+            var items = await this.dataService.Get((page - 1) * this.PageSize, this.PageSize);
+            if (items.Any())
+            {
+                this.items = items;
+                this.HasMoreEntries = this.items.Count == this.PageSize;
+                this.Page = page;
+            }
+            else
+            {
+                this.HasMoreEntries = false;
+            }
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
+        }
+    }
+}
