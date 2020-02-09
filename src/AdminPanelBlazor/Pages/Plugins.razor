@@ -2,28 +2,32 @@
 @using MUnique.OpenMU.AdminPanelBlazor.Models;
 @using MUnique.OpenMU.AdminPanelBlazor.Services
 
-@inject PlugInController plugInController;
+@inject IDataService<PlugInConfigurationViewItem> plugInDataService;
 
 <h1>Plugins</h1>
 
 <div>
     <DataTable TItem=@PlugInConfigurationViewItem>
         <TableHeader>
-            <th class="col-3">Extension Point</th>
-            <th class="col-3">Plugin Name</th>
-            <th class="col-3">Plugin Type</th>
-            <th class="col-3">Action</th>
+            <th class="col-1">Extension Point</th>
+            <th class="col-1">Plugin Name</th>
+            <th class="col-1">Plugin Type</th>
+            <th class="col-1">Action</th>
         </TableHeader>
-        <SecondaryTableHeader>
-            <th class="col-3"></th>
-            <th class="col-3"><input type="search" placeholder="Search" bind-value="@this.plugInController.NameFilter" /></th>
-            <th class="col-3"><input type="search" placeholder="Search" bind-value="@this.plugInController.TypeFilter" /></th>
-            <th class="col-3"></th>
-        </SecondaryTableHeader>
+        <FilterHeader>
+            <th><PlugInExtensionPointSelection SelectedPointId="@this.plugInController.PointFilter" ExtensionPoints="@this.plugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
+            <th><input type="search" placeholder="Search" @bind="@this.plugInController.NameFilter" @bind:event="oninput"/></th>
+            <th><input type="search" placeholder="Search" @bind="@this.plugInController.TypeFilter" @bind:event="oninput"/></th>
+            <th></th>
+        </FilterHeader>
         <ItemTemplate Context="item">
             <td title=@item.PlugInPointDescription>@item.PlugInPointName</td>
-            <td title=@item.PlugInDescription>@item.PlugInName</td>
-            <td title=@item.TypeId}>@item.TypeName</td>
+            <td title=@item.PlugInDescription>
+                <MarkedText Marked=@this.plugInController.NameFilter Text=@item.PlugInName />
+            </td>
+            <td title=@item.TypeId>
+                <MarkedText Marked=@this.plugInController.TypeFilter Text=@item.TypeName />
+            </td>
             <td>
                 @if (item.IsActive)
                 {
@@ -41,5 +45,31 @@
             <td></td>
             <td></td>
         </TableFooter>
-    </DataTable>    
+    </DataTable>
 </div>
+
+@code {
+    private PlugInController plugInController;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (this.plugInDataService is PlugInController controller)
+        {
+            // It's not injected as PlugInController, because it would mean that the DataTable would get another instance of it.
+            // However, we want to get the exactly same instance, so we inject it as IDataService.
+            this.plugInController = controller;
+            this.plugInController.DataChanged += (s, e) => this.StateHasChanged();
+        }
+    }
+
+    private void OnPlugInPointSelected(ChangeEventArgs args)
+    {
+        if (args.Value is string guidString
+            && Guid.TryParse(guidString, out var result))
+        {
+            this.plugInController.PointFilter = result;
+        }
+    }
+}

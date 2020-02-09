@@ -21,6 +21,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
     {
         private readonly IPersistenceContextProvider persistenceContextProvider;
         private string nameFilter;
+        private Guid pointFilter;
+        private string typeFilter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlugInController"/> class.
@@ -56,12 +58,28 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         /// <value>
         /// The type filter.
         /// </value>
-        public string TypeFilter { get; set; }
+        public string TypeFilter
+        {
+            get => this.typeFilter;
+            set
+            {
+                this.typeFilter = value;
+                this.DataChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the extension point filter.
         /// </summary>
-        public Guid PointFilter { get; set; }
+        public Guid PointFilter
+        {
+            get => this.pointFilter;
+            set
+            {
+                this.pointFilter = value;
+                this.DataChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         /// <summary>
         /// Gets the extension points.

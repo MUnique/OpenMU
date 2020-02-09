@@ -1,4 +1,4 @@
-﻿$widthThreshold : 768px;
+﻿$widthThreshold: 768px;
 
 app {
     position: relative;
@@ -69,4 +69,10 @@ button {
     position: absolute;
     right: 0.75rem;
     top: 0.5rem;
+}
+
+mark {
+    font-weight: bold;
+    background: #ff0;
+    padding: 0;
 }

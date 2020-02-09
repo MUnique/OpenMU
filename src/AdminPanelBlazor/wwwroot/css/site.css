@@ -7369,6 +7369,11 @@ a, .btn-link {
   right: 0.75rem;
   top: 0.5rem; }
 
+mark {
+  font-weight: bold;
+  background: #ff0;
+  padding: 0; }
+
 nav {
   background-image: linear-gradient(180deg, #052767 0%, #3a0647 70%); }
 
@@ -7477,6 +7482,11 @@ a, .btn-link {
   position: absolute;
   right: 0.75rem;
   top: 0.5rem; }
+
+mark {
+  font-weight: bold;
+  background: #ff0;
+  padding: 0; }
 
 .main {
   flex: 1; }
@@ -7924,3 +7934,8 @@ a, .btn-link {
   position: absolute;
   right: 0.75rem;
   top: 0.5rem; }
+
+mark {
+  font-weight: bold;
+  background: #ff0;
+  padding: 0; }

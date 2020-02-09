@@ -16,16 +16,16 @@
                 <span>Page @this.Page</span>
             }
         </button>
-        <Button disabled="@(!this.HasMoreEntries || this.isLoading)" class="btn btn-sm btn-primary" @onclick=@this.GetNextPageAsync><span class="oi oi-arrow-thick-right" aria-hidden="true" /></Button>
+        <Button disabled="@(!this.hasMoreEntries || this.isLoading)" class="btn btn-sm btn-primary" @onclick=@this.GetNextPageAsync><span class="oi oi-arrow-thick-right" aria-hidden="true" /></Button>
     </div>
 </div>
 
 <table>
     <thead>
         <tr>@TableHeader</tr>
-        @if (this.SecondaryTableHeader != null)
+        @if (this.FilterHeader != null)
         {
-            <tr>@SecondaryTableHeader</tr>
+            <tr>@FilterHeader</tr>
         }
     </thead>
     <tbody>
@@ -46,28 +46,47 @@
     </tfoot>
 </table>
 @code {
-    [Parameter]
-    public RenderFragment TableHeader { get; set; }
-
-    [Parameter]
-    public RenderFragment SecondaryTableHeader { get; set; }
-
-    [Parameter]
-    public RenderFragment<TItem> ItemTemplate { get; set; }
-
-    [Parameter]
-    public RenderFragment TableFooter { get; set; }
-
-    public int Page { get; set; } = 1;
-
-    public int PageSize { get; set; } = 20;
-
-    public bool HasMoreEntries { get; set; }
+    private bool hasMoreEntries;
 
     private bool isLoading;
 
     private IReadOnlyList<TItem> items;
 
+    /// <summary>
+    /// Gets or sets the table header column elements.
+    /// </summary>
+    [Parameter]
+    public RenderFragment TableHeader { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table filter header column elements.
+    /// </summary>
+    [Parameter]
+    public RenderFragment FilterHeader { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item row template.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table footer template.
+    /// </summary>
+    [Parameter]
+    public RenderFragment TableFooter { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current page.
+    /// </summary>
+    public int Page { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the page size.
+    /// </summary>
+    public int PageSize { get; set; } = 20;
+
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -78,7 +97,7 @@
         }
     }
 
-    internal Task RefreshAsync()
+    private Task RefreshAsync()
     {
         return this.GetPageAsync(this.Page);
     }
@@ -110,15 +129,22 @@
         {
             this.StateHasChanged();
             var items = await this.dataService.Get((page - 1) * this.PageSize, this.PageSize);
+            var isRefresh = this.Page == page;
+            if (isRefresh)
+            {
+                // when refreshing, always set the items.
+                this.items = items;
+            }
+
             if (items.Any())
             {
                 this.items = items;
-                this.HasMoreEntries = this.items.Count == this.PageSize;
+                this.hasMoreEntries = this.items.Count == this.PageSize;
                 this.Page = page;
             }
             else
             {
-                this.HasMoreEntries = false;
+                this.hasMoreEntries = false;
             }
         }
         finally
