@@ -14,7 +14,6 @@ namespace MUnique.OpenMU.AdminPanelBlazor
     using MUnique.OpenMU.AdminPanelBlazor.Models;
     using MUnique.OpenMU.AdminPanelBlazor.Services;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The startup class for the blazor app.
@@ -57,7 +56,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor
 
             services.AddScoped<IDataService<PlugInConfigurationViewItem>, PlugInController>();
 
-            services.AddScoped<LogService>();
+            services.AddSingleton<LogService>();
+            services.AddScoped<LogController>();
         }
 
         /// <summary>

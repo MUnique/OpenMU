@@ -1397,7 +1397,7 @@ pre {
   .table-responsive > .table-bordered {
     border: 0; }
 
-.form-control, input, .invalid .valid {
+.form-control, form input, .invalid .valid {
   display: block;
   width: 100%;
   height: calc(1.5em + 0.75rem + 2px);
@@ -1412,24 +1412,24 @@ pre {
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
   @media (prefers-reduced-motion: reduce) {
-    .form-control, input, .invalid .valid {
+    .form-control, form input, .invalid .valid {
       transition: none; } }
-  .form-control::-ms-expand, input::-ms-expand, .invalid .valid::-ms-expand {
+  .form-control::-ms-expand, form input::-ms-expand, .invalid .valid::-ms-expand {
     background-color: transparent;
     border: 0; }
-  .form-control:-moz-focusring, input:-moz-focusring, .invalid .valid:-moz-focusring {
+  .form-control:-moz-focusring, form input:-moz-focusring, .invalid .valid:-moz-focusring {
     color: transparent;
     text-shadow: 0 0 0 #495057; }
-  .form-control:focus, input:focus, .invalid .valid:focus {
+  .form-control:focus, form input:focus, .invalid .valid:focus {
     color: #495057;
     background-color: #fff;
     border-color: #80bdff;
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
-  .form-control::placeholder, input::placeholder, .invalid .valid::placeholder {
+  .form-control::placeholder, form input::placeholder, .invalid .valid::placeholder {
     color: #6c757d;
     opacity: 1; }
-  .form-control:disabled, input:disabled, .invalid .valid:disabled, .form-control[readonly], input[readonly], .invalid [readonly].valid {
+  .form-control:disabled, form input:disabled, .invalid .valid:disabled, .form-control[readonly], form input[readonly], .invalid [readonly].valid {
     background-color: #e9ecef;
     opacity: 1; }
 
@@ -1567,14 +1567,14 @@ textarea.form-control, .invalid textarea.valid {
 .is-valid ~ .valid-tooltip, .valid.modified ~ .valid-tooltip {
   display: block; }
 
-.was-validated .form-control:valid, .valid.modified .form-control:valid, .was-validated input:valid, .valid.modified input:valid, .was-validated .invalid .valid:valid, .invalid .was-validated .valid:valid, .valid.modified .invalid .valid:valid, .invalid .valid.modified .valid:valid, .was-validated .valid.modified, .valid.modified .valid.modified, .form-control.is-valid, input.is-valid, input.valid.modified, .invalid .is-valid.valid, .invalid .valid.modified, .form-control.valid.modified {
+.was-validated .form-control:valid, .valid.modified .form-control:valid, .was-validated form input:valid, form .was-validated input:valid, .valid.modified form input:valid, form .valid.modified input:valid, .was-validated .invalid .valid:valid, .invalid .was-validated .valid:valid, .valid.modified .invalid .valid:valid, .invalid .valid.modified .valid:valid, .was-validated .valid.modified, .valid.modified .valid.modified, .form-control.is-valid, form input.is-valid, form input.valid.modified, .invalid .is-valid.valid, .invalid .valid.modified, .form-control.valid.modified {
   border-color: #28a745;
   padding-right: calc(1.5em + 0.75rem);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right calc(0.375em + 0.1875rem) center;
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem); }
-  .was-validated .form-control:valid:focus, .valid.modified .form-control:valid:focus, .was-validated input:valid:focus, .valid.modified input:valid:focus, .was-validated .invalid .valid:valid:focus, .invalid .was-validated .valid:valid:focus, .valid.modified .invalid .valid:valid:focus, .invalid .valid.modified .valid:valid:focus, .was-validated .valid.modified:focus, .valid.modified .valid.modified:focus, .form-control.is-valid:focus, input.is-valid:focus, input.valid.modified:focus, .invalid .is-valid.valid:focus, .invalid .valid.modified:focus, .form-control.valid.modified:focus {
+  .was-validated .form-control:valid:focus, .valid.modified .form-control:valid:focus, .was-validated form input:valid:focus, form .was-validated input:valid:focus, .valid.modified form input:valid:focus, form .valid.modified input:valid:focus, .was-validated .invalid .valid:valid:focus, .invalid .was-validated .valid:valid:focus, .valid.modified .invalid .valid:valid:focus, .invalid .valid.modified .valid:valid:focus, .was-validated .valid.modified:focus, .valid.modified .valid.modified:focus, .form-control.is-valid:focus, form input.is-valid:focus, form input.valid.modified:focus, .invalid .is-valid.valid:focus, .invalid .valid.modified:focus, .form-control.valid.modified:focus {
     border-color: #28a745;
     box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); }
 
@@ -1648,14 +1648,14 @@ textarea.form-control, .invalid textarea.valid {
 .is-invalid ~ .invalid-tooltip, .invalid.modified ~ .invalid-tooltip {
   display: block; }
 
-.was-validated .form-control:invalid, .valid.modified .form-control:invalid, .was-validated input:invalid, .valid.modified input:invalid, .was-validated .invalid .valid:invalid, .invalid .was-validated .valid:invalid, .valid.modified .invalid .valid:invalid, .invalid .valid.modified .valid:invalid, .form-control.is-invalid, input.is-invalid, input.invalid.modified, .invalid .is-invalid.valid, .invalid .valid.invalid.modified, .form-control.invalid.modified {
+.was-validated .form-control:invalid, .valid.modified .form-control:invalid, .was-validated form input:invalid, form .was-validated input:invalid, .valid.modified form input:invalid, form .valid.modified input:invalid, .was-validated .invalid .valid:invalid, .invalid .was-validated .valid:invalid, .valid.modified .invalid .valid:invalid, .invalid .valid.modified .valid:invalid, .form-control.is-invalid, form input.is-invalid, form input.invalid.modified, .invalid .is-invalid.valid, .invalid .valid.invalid.modified, .form-control.invalid.modified {
   border-color: #dc3545;
   padding-right: calc(1.5em + 0.75rem);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right calc(0.375em + 0.1875rem) center;
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem); }
-  .was-validated .form-control:invalid:focus, .valid.modified .form-control:invalid:focus, .was-validated input:invalid:focus, .valid.modified input:invalid:focus, .was-validated .invalid .valid:invalid:focus, .invalid .was-validated .valid:invalid:focus, .valid.modified .invalid .valid:invalid:focus, .invalid .valid.modified .valid:invalid:focus, .form-control.is-invalid:focus, input.is-invalid:focus, input.invalid.modified:focus, .invalid .is-invalid.valid:focus, .invalid .valid.invalid.modified:focus, .form-control.invalid.modified:focus {
+  .was-validated .form-control:invalid:focus, .valid.modified .form-control:invalid:focus, .was-validated form input:invalid:focus, form .was-validated input:invalid:focus, .valid.modified form input:invalid:focus, form .valid.modified input:invalid:focus, .was-validated .invalid .valid:invalid:focus, .invalid .was-validated .valid:invalid:focus, .valid.modified .invalid .valid:invalid:focus, .invalid .valid.modified .valid:invalid:focus, .form-control.is-invalid:focus, form input.is-invalid:focus, form input.invalid.modified:focus, .invalid .is-invalid.valid:focus, .invalid .valid.invalid.modified:focus, .form-control.invalid.modified:focus {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
 
@@ -1719,7 +1719,7 @@ textarea.form-control, .invalid textarea.valid {
       flex-flow: row wrap;
       align-items: center;
       margin-bottom: 0; }
-    .form-inline .form-control, .form-inline input, .form-inline .invalid .valid, .invalid .form-inline .valid {
+    .form-inline .form-control, .form-inline form input, form .form-inline input, .form-inline .invalid .valid, .invalid .form-inline .valid {
       display: inline-block;
       width: auto;
       vertical-align: middle; }
@@ -2534,7 +2534,7 @@ input[type="button"].btn-block {
   flex-wrap: wrap;
   align-items: stretch;
   width: 100%; }
-  .input-group > .form-control, form > div > div > .form-control, .input-group > input, form > div > div > input, .invalid .input-group > .valid, .invalid form > div > div > .valid,
+  .input-group > .form-control, form > div > div > .form-control, form .input-group > input, form > div > div > input, .invalid .input-group > .valid, .invalid form > div > div > .valid,
   .input-group > .form-control-plaintext, form > div > div > .form-control-plaintext,
   .input-group > .custom-select, form > div > div > .custom-select,
   .input-group > .custom-file, form > div > div > .custom-file {
@@ -2542,40 +2542,40 @@ input[type="button"].btn-block {
     flex: 1 1 0%;
     min-width: 0;
     margin-bottom: 0; }
-    .input-group > .form-control + .form-control, form > div > div > .form-control + .form-control, .input-group > input + .form-control, form > div > div > input + .form-control, .invalid .input-group > .valid + .form-control, .invalid form > div > div > .valid + .form-control, .input-group > .form-control + input, form > div > div > .form-control + input, .input-group > input + input, form > div > div > input + input, .invalid .input-group > .valid + input, .invalid form > div > div > .valid + input, .invalid .input-group > .form-control + .valid, .invalid form > div > div > .form-control + .valid, .invalid .input-group > input + .valid, .invalid form > div > div > input + .valid, .invalid .input-group > .valid + .valid, .invalid form > div > div > .valid + .valid,
-    .input-group > .form-control + .custom-select, form > div > div > .form-control + .custom-select,
+    .input-group > .form-control + .form-control, form > div > div > .form-control + .form-control, form .input-group > input + .form-control, form > div > div > input + .form-control, .invalid .input-group > .valid + .form-control, .invalid form > div > div > .valid + .form-control, form .input-group > .form-control + input, form > div > div > .form-control + input, form .input-group > input + input, form > div > div > input + input, .invalid form .input-group > .valid + input, form .invalid .input-group > .valid + input, .invalid form > div > div > .valid + input, .invalid .input-group > .form-control + .valid, .invalid form > div > div > .form-control + .valid, form .invalid .input-group > input + .valid, .invalid form .input-group > input + .valid, .invalid form > div > div > input + .valid, .invalid .input-group > .valid + .valid, .invalid form > div > div > .valid + .valid,
+    .input-group > .form-control + .custom-select, form > div > div > .form-control + .custom-select, form
     .input-group > input + .custom-select, form > div > div > input + .custom-select, .invalid
     .input-group > .valid + .custom-select, .invalid form > div > div > .valid + .custom-select,
-    .input-group > .form-control + .custom-file, form > div > div > .form-control + .custom-file,
+    .input-group > .form-control + .custom-file, form > div > div > .form-control + .custom-file, form
     .input-group > input + .custom-file, form > div > div > input + .custom-file, .invalid
     .input-group > .valid + .custom-file, .invalid form > div > div > .valid + .custom-file,
-    .input-group > .form-control-plaintext + .form-control, form > div > div > .form-control-plaintext + .form-control,
+    .input-group > .form-control-plaintext + .form-control, form > div > div > .form-control-plaintext + .form-control, form
     .input-group > .form-control-plaintext + input, form > div > div > .form-control-plaintext + input, .invalid
     .input-group > .form-control-plaintext + .valid, .invalid form > div > div > .form-control-plaintext + .valid,
     .input-group > .form-control-plaintext + .custom-select, form > div > div > .form-control-plaintext + .custom-select,
     .input-group > .form-control-plaintext + .custom-file, form > div > div > .form-control-plaintext + .custom-file,
-    .input-group > .custom-select + .form-control, form > div > div > .custom-select + .form-control,
+    .input-group > .custom-select + .form-control, form > div > div > .custom-select + .form-control, form
     .input-group > .custom-select + input, form > div > div > .custom-select + input, .invalid
     .input-group > .custom-select + .valid, .invalid form > div > div > .custom-select + .valid,
     .input-group > .custom-select + .custom-select, form > div > div > .custom-select + .custom-select,
     .input-group > .custom-select + .custom-file, form > div > div > .custom-select + .custom-file,
-    .input-group > .custom-file + .form-control, form > div > div > .custom-file + .form-control,
+    .input-group > .custom-file + .form-control, form > div > div > .custom-file + .form-control, form
     .input-group > .custom-file + input, form > div > div > .custom-file + input, .invalid
     .input-group > .custom-file + .valid, .invalid form > div > div > .custom-file + .valid,
     .input-group > .custom-file + .custom-select, form > div > div > .custom-file + .custom-select,
     .input-group > .custom-file + .custom-file, form > div > div > .custom-file + .custom-file {
       margin-left: -1px; }
-  .input-group > .form-control:focus, form > div > div > .form-control:focus, .input-group > input:focus, form > div > div > input:focus, .invalid .input-group > .valid:focus, .invalid form > div > div > .valid:focus,
+  .input-group > .form-control:focus, form > div > div > .form-control:focus, form .input-group > input:focus, form > div > div > input:focus, .invalid .input-group > .valid:focus, .invalid form > div > div > .valid:focus,
   .input-group > .custom-select:focus, form > div > div > .custom-select:focus,
   .input-group > .custom-file .custom-file-input:focus ~ .custom-file-label, form > div > div > .custom-file .custom-file-input:focus ~ .custom-file-label {
     z-index: 3; }
   .input-group > .custom-file .custom-file-input:focus, form > div > div > .custom-file .custom-file-input:focus {
     z-index: 4; }
-  .input-group > .form-control:not(:last-child), form > div > div > .form-control:not(:last-child), .input-group > input:not(:last-child), form > div > div > input:not(:last-child), .invalid .input-group > .valid:not(:last-child), .invalid form > div > div > .valid:not(:last-child),
+  .input-group > .form-control:not(:last-child), form > div > div > .form-control:not(:last-child), form .input-group > input:not(:last-child), form > div > div > input:not(:last-child), .invalid .input-group > .valid:not(:last-child), .invalid form > div > div > .valid:not(:last-child),
   .input-group > .custom-select:not(:last-child), form > div > div > .custom-select:not(:last-child) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0; }
-  .input-group > .form-control:not(:first-child), form > div > div > .form-control:not(:first-child), .input-group > input:not(:first-child), form > div > div > input:not(:first-child), .invalid .input-group > .valid:not(:first-child), .invalid form > div > div > .valid:not(:first-child),
+  .input-group > .form-control:not(:first-child), form > div > div > .form-control:not(:first-child), form .input-group > input:not(:first-child), form > div > div > input:not(:first-child), .invalid .input-group > .valid:not(:first-child), .invalid form > div > div > .valid:not(:first-child),
   .input-group > .custom-select:not(:first-child), form > div > div > .custom-select:not(:first-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0; }
@@ -2673,11 +2673,11 @@ form > div > div > input {
   .input-group-text input[type="checkbox"], form > div > div > div:first-of-type > span input[type="checkbox"] {
     margin-top: 0; }
 
-.input-group-lg > .form-control:not(textarea), .input-group-lg > input:not(textarea), .invalid .input-group-lg > .valid:not(textarea),
+.input-group-lg > .form-control:not(textarea), form .input-group-lg > input:not(textarea), .invalid .input-group-lg > .valid:not(textarea),
 .input-group-lg > .custom-select {
   height: calc(1.5em + 1rem + 2px); }
 
-.input-group-lg > .form-control, .input-group-lg > input, .invalid .input-group-lg > .valid,
+.input-group-lg > .form-control, form .input-group-lg > input, .invalid .input-group-lg > .valid,
 .input-group-lg > .custom-select,
 .input-group-lg > .input-group-prepend > .input-group-text, form > div >
 div.input-group-lg > div:first-of-type > .input-group-text, form > div >
@@ -2702,11 +2702,11 @@ div.input-group-lg > input > .primary-button {
   line-height: 1.5;
   border-radius: 0.3rem; }
 
-.input-group-sm > .form-control:not(textarea), .input-group-sm > input:not(textarea), .invalid .input-group-sm > .valid:not(textarea),
+.input-group-sm > .form-control:not(textarea), form .input-group-sm > input:not(textarea), .invalid .input-group-sm > .valid:not(textarea),
 .input-group-sm > .custom-select {
   height: calc(1.5em + 0.5rem + 2px); }
 
-.input-group-sm > .form-control, .input-group-sm > input, .invalid .input-group-sm > .valid,
+.input-group-sm > .form-control, form .input-group-sm > input, .invalid .input-group-sm > .valid,
 .input-group-sm > .custom-select,
 .input-group-sm > .input-group-prepend > .input-group-text, form > div >
 div.input-group-sm > div:first-of-type > .input-group-text, form > div >
@@ -7939,3 +7939,36 @@ mark {
   font-weight: bold;
   background: #ff0;
   padding: 0; }
+
+.log {
+  color: #0f0;
+  background-color: #333; }
+
+.log table {
+  font-family: "Lucida Console";
+  font-size: 12px;
+  color: #0f0;
+  border-color: #fff;
+  border-width: 1px 0 0 0;
+  background-color: #333; }
+
+.log tr.INFO {
+  color: #0f0; }
+
+.log tr.DEBUG {
+  color: #FFFFFF; }
+
+.log tr.WARN {
+  color: #F88017; }
+
+.log tr.ERROR {
+  color: #FF0000; }
+
+.log tr.FATAL {
+  background-color: #FF0000; }
+
+#logger {
+  width: 500px; }
+
+.verticalLine {
+  border-left: thick solid #ff0000; }

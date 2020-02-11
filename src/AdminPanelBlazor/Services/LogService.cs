@@ -12,10 +12,18 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
     using Microsoft.AspNetCore.SignalR.Client;
     using MUnique.Log4Net.CoreSignalR;
 
+    /// <summary>
+    /// Service which connects to the log hub.
+    /// </summary>
     public class LogService
     {
-        private HubConnection connection;
+        private readonly HubConnection connection;
 
+        private long idOfLastMessage;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogService"/> class.
+        /// </summary>
         public LogService()
         {
             this.connection = new HubConnectionBuilder()
@@ -27,8 +35,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
                 await Task.Delay(new Random().Next(0, 5) * 1000);
                 await this.Connect();
             };
-            this.connection.On<LogEntry>(nameof(ILogHubClient.OnLoggedEvent), this.OnLoggedEvent);
-            this.connection.On<string[], LogEntry[]>(nameof(ILogHubClient.Initialize), this.OnInitialize);
+
+            this.connection.On<string, LogEventData, long>("OnLoggedEvent", this.OnLoggedEvent);
+            this.connection.On<string[], LogEntry[]>("Initialize", this.OnInitialize);
 
             Task EnsureConnected()
             {
@@ -43,45 +52,68 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
             this.Initialization = EnsureConnected();
         }
 
+        /// <summary>
+        /// Gets the known loggers.
+        /// </summary>
         public ICollection<string> Loggers { get; private set; }
 
-        public LinkedList<LogEntry> Entries { get; private set; }
+        /// <summary>
+        /// Gets the captured entries.
+        /// </summary>
+        public LinkedList<LogEventData> Entries { get; private set; }
 
-        public EventCallback<LinkedList<LogEntry>>? EntriesChanged;
+        /// <summary>
+        /// Occurs when a log event was received.
+        /// </summary>
+        public EventHandler<LogEntryReceivedEventArgs> LogEventReceived;
 
+        /// <summary>
+        /// Occurs when the connection state to the hub changed.
+        /// </summary>
         public EventCallback<bool>? IsConnectedChanged;
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is connected to the log hub.
+        /// </summary>
         public bool IsConnected => this.connection.State == HubConnectionState.Connected;
 
+        /// <summary>
+        /// Gets the initialization task.
+        /// </summary>
         public Task Initialization { get; }
 
+        /// <summary>
+        /// Gets or sets the maximum size of <see cref="Entries"/>.
+        /// </summary>
         public int MaximumEntries { get; set; } = 500;
 
         private void OnInitialize(string[] loggers, LogEntry[] cachedEntries)
         {
             this.Loggers = loggers.ToList();
-            this.Entries = new LinkedList<LogEntry>(cachedEntries);
+            this.Entries = new LinkedList<LogEventData>(cachedEntries.Select(entry => entry.LoggingEvent));
         }
-
-        private long idOfLastMessage;
 
         private async Task Connect()
         {
             await this.connection.StartAsync();
-            await this.connection.InvokeAsync(nameof(LogHub.SubscribeToGroupWithMessageOffset), "MyGroup", this.idOfLastMessage);
-            await this.IsConnectedChanged?.InvokeAsync(this.IsConnected);
+            await this.connection.InvokeAsync("SubscribeToGroupWithMessageOffset", "MyGroup", this.idOfLastMessage);
+            var isConnectedChanged = this.IsConnectedChanged;
+            if (isConnectedChanged != null)
+            {
+                await isConnectedChanged.Value.InvokeAsync(this.IsConnected);
+            }
         }
 
-        private Task OnLoggedEvent(LogEntry entry)
+        private void OnLoggedEvent(string formattedEvent, LogEventData entry, long id)
         {
-            this.idOfLastMessage = entry.Id;
+            this.idOfLastMessage = id;
             this.Entries.AddLast(entry);
             while (this.Entries.Count > this.MaximumEntries)
             {
                 this.Entries.RemoveFirst();
             }
 
-            return this.EntriesChanged?.InvokeAsync(this.Entries) ?? Task.CompletedTask;
+            this.LogEventReceived?.Invoke(this, new LogEntryReceivedEventArgs(entry));
         }
     }
 }
