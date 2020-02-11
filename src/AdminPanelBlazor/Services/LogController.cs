@@ -30,6 +30,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         public LogController(LogService logService)
         {
             this.logService = logService;
+            this.UpdateEntries();
             this.logService.LogEventReceived += (sender, e) =>
             {
                 if (this.MeetsFilterCriteria(e.Data))
