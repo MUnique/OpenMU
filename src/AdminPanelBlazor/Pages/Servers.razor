@@ -27,7 +27,7 @@ else
             <TotalOnlineCounter />
         </tfoot>
         <tbody>
-            @foreach (var server in this.servers)
+            @foreach (var server in this.servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
             {
                 <ServerItem Server=@server />
             }
