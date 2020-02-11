@@ -13,6 +13,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
 
+    /// <summary>
+    /// A service which provides functions to manage <see cref="IConnectServer"/>s.
+    /// </summary>
     public class ConnectServerService
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -21,6 +24,12 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         private readonly IPersistenceContextProvider persistenceContextProvider;
         private readonly IServerConfigurationChangeListener changeListener;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectServerService"/> class.
+        /// </summary>
+        /// <param name="servers">The servers.</param>
+        /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        /// <param name="changeListener">The change listener.</param>
         public ConnectServerService(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IServerConfigurationChangeListener changeListener)
         {
             this.servers = servers;
@@ -28,12 +37,20 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
             this.changeListener = changeListener;
         }
 
+        /// <summary>
+        /// Gets the available client definitions.
+        /// </summary>
+        /// <returns>The available client definitions.</returns>
         public IEnumerable<GameClientDefinition> GetClients()
         {
             using var configContext = this.persistenceContextProvider.CreateNewContext();
             return configContext.Get<GameClientDefinition>();
         }
 
+        /// <summary>
+        /// Deletes the specified connect server and shuts it down.
+        /// </summary>
+        /// <param name="connectServer">The connect server.</param>
         public void Delete(IConnectServer connectServer)
         {
             try
@@ -62,13 +79,17 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
             }
         }
 
+        /// <summary>
+        /// Saves the specified configuration.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public void Save(ConnectServerDefinition configuration)
         {
             try
             {
                 Log.Info($"requested to save configuration of connect server {configuration.ServerId}");
                 DataModel.Configuration.ConnectServerDefinition currentConfiguration = null;
-                if (this.servers.OfType<IConnectServer>().FirstOrDefault(s => s.Settings.GetId() == configuration.GetId()) is IConnectServer server)
+                if (this.servers.OfType<IConnectServer>().FirstOrDefault(s => s.Settings.GetId() == configuration.GetId()) is { } server)
                 {
                     currentConfiguration = server.Settings as DataModel.Configuration.ConnectServerDefinition;
                 }

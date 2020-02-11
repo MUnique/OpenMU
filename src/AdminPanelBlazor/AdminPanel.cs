@@ -7,8 +7,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor
     using System.Collections.Generic;
     using apache.log4net.Extensions.Logging;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;

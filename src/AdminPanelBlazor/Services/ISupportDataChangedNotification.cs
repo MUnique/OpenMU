@@ -11,6 +11,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
     /// </summary>
     public interface ISupportDataChangedNotification
     {
+        /// <summary>
+        /// Occurs when data has been changed and needs to be updated on the user interface.
+        /// </summary>
         event EventHandler DataChanged;
     }
 }

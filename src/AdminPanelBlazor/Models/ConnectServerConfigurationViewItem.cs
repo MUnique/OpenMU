@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         }
 
         /// <summary>
-        /// The internal id of the configuration.
+        /// Gets the internal id of the configuration.
         /// </summary>
         public Guid Id => this.config.GetId();
 
@@ -71,7 +71,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         public int MaximumReceiveSize
         {
             get => this.config.MaximumReceiveSize;
-            set => this.config.MaximumReceiveSize = (byte) value;
+            set => this.config.MaximumReceiveSize = (byte)value;
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         public int ClientListenerPort
         {
             get => this.config.ClientListenerPort;
-            set => this.config.ClientListenerPort = (ushort) value;
+            set => this.config.ClientListenerPort = (ushort)value;
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         public int CurrentVersionMajor
         {
             get => this.config.CurrentPatchVersion[0];
-            set => this.config.CurrentPatchVersion[0] = (byte) value;
+            set => this.config.CurrentPatchVersion[0] = (byte)value;
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         public int CurrentVersionMinor
         {
             get => this.config.CurrentPatchVersion[1];
-            set => this.config.CurrentPatchVersion[1] = (byte) value;
+            set => this.config.CurrentPatchVersion[1] = (byte)value;
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         public int CurrentVersionPatch
         {
             get => this.config.CurrentPatchVersion[2];
-            set => this.config.CurrentPatchVersion[2] = (byte) value;
+            set => this.config.CurrentPatchVersion[2] = (byte)value;
         }
     }
 }
