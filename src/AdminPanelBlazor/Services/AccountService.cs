@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
                 using var context = this.persistenceContextProvider.CreateNewPlayerContext(null);
                 return Task.FromResult(context.GetAccountsOrderedByLoginName(offset, count).ToList());
             }
-            catch (NotImplementedException e)
+            catch (NotImplementedException)
             {
                 return Task.FromResult(new List<Account>());
             }
