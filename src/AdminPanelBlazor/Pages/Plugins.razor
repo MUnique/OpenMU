@@ -2,7 +2,7 @@
 @using MUnique.OpenMU.AdminPanelBlazor.Models;
 @using MUnique.OpenMU.AdminPanelBlazor.Services
 
-@inject IDataService<PlugInConfigurationViewItem> plugInDataService;
+@inject PlugInController plugInController;
 
 <h1>Plugins</h1>
 
@@ -49,19 +49,13 @@
 </div>
 
 @code {
-    private PlugInController plugInController;
+    
 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        if (this.plugInDataService is PlugInController controller)
-        {
-            // It's not injected as PlugInController, because it would mean that the DataTable would get another instance of it.
-            // However, we want to get the exactly same instance, so we inject it as IDataService.
-            this.plugInController = controller;
-            this.plugInController.DataChanged += (s, e) => this.StateHasChanged();
-        }
+        this.plugInController.DataChanged += (s, e) => this.StateHasChanged();
     }
 
     private void OnPlugInPointSelected(ChangeEventArgs args)
