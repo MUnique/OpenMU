@@ -246,6 +246,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
             context.Attach(item.Configuration);
             item.Configuration.IsActive = value;
             context.SaveChanges();
+            this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private bool FilterByTypeName(Type plugInType)
