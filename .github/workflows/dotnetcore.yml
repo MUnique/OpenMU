@@ -14,4 +14,4 @@ jobs:
       with:
         dotnet-version: 3.1.100
     - name: Build with dotnet
-      run: dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj --configuration Release
+      run: dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj --configuration Release --verbosity detailed
