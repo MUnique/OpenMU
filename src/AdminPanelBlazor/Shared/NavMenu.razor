@@ -1,4 +1,6 @@
-﻿<nav>
+﻿@inject NavigationManager navigationManager
+
+<nav>
     <div>
         <a href="">OpenMU</a>
         <button @onclick="ToggleNavMenu">
@@ -32,12 +34,15 @@
             </li>
             <li>
                 <NavLink href="log">
-                    <span class="oi oi-list" aria-hidden="true"></span> Log
+                    <span class="oi oi-list" aria-hidden="true"></span> Log 
+                    @if (!navigationManager.Uri.EndsWith("/log"))
+                    {
+                        <LogNotifications/>
+                    }
                 </NavLink>
             </li>
         </ul>
     </div>
-    
 </nav>
 
 

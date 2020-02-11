@@ -32,6 +32,6 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.logController.EntriesChanged += (_, __) => this.StateHasChanged();
+        this.logController.EntriesChanged += (_, __) => this.InvokeAsync(this.StateHasChanged);
     }
 }

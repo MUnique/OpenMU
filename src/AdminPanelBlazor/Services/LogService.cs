@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.GameLogic;
+
 namespace MUnique.OpenMU.AdminPanelBlazor.Services
 {
     using System;
@@ -60,7 +62,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         /// <summary>
         /// Gets the captured entries.
         /// </summary>
-        public LinkedList<LogEventData> Entries { get; private set; }
+        public LinkedList<LogEventData> Entries { get; } = new LinkedList<LogEventData>();
 
         /// <summary>
         /// Occurs when a log event was received.
@@ -90,7 +92,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         private void OnInitialize(string[] loggers, LogEntry[] cachedEntries)
         {
             this.Loggers = loggers.ToList();
-            this.Entries = new LinkedList<LogEventData>(cachedEntries.Select(entry => entry.LoggingEvent));
+            cachedEntries.Select(entry => entry.LoggingEvent).ForEach(e => this.Entries.AddLast(e));
         }
 
         private async Task Connect()

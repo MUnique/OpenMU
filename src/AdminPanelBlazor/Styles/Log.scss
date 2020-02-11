@@ -39,3 +39,16 @@
 .verticalLine {
     border-left: thick solid #ff0000;
 }
+
+div.log-notifications {
+    position: relative;
+    left: 20px;
+}
+
+.log-notifications .oi-fire {
+    color: orangered;
+}
+
+.log-notifications .oi-warning {
+    color: orange;
+}
