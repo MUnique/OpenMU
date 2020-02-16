@@ -14,7 +14,7 @@ export interface ObjectData {
 
     readonly x: number;
     readonly y: number;
-    readonly rotation: Direction;
+    readonly direction: Direction;
 }
 
 export interface PlayerData extends ObjectData {

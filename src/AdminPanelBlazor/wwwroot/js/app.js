@@ -251,7 +251,7 @@ System.register("Attackable", ["three", "tween"], function (exports_4, context_4
                         .easing(tween_2.default.Easing.Back.Out)
                         .start();
                     this.setObjectPositionOnMap(this.data.x, this.data.y);
-                    this.setRotation(this.data.rotation);
+                    this.setRotation(this.data.direction);
                 };
                 Attackable.prototype.moveTo = function (newX, newY, moveType, walkDelay, steps) {
                     var _this = this;

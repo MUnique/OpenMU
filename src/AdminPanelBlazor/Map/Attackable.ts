@@ -40,7 +40,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
             .easing(TWEEN.Easing.Back.Out)
             .start();
         this.setObjectPositionOnMap(this.data.x, this.data.y);
-        this.setRotation(this.data.rotation);
+        this.setRotation(this.data.direction);
     }
 
     moveTo(newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]) {
