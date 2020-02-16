@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "module": "system",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "outFile": "wwwroot/js/app.js",
+    "sourceMap": true,
+    "jsx": "react",
+    "target": "es5",
+    "lib": [ "es2017", "es2015", "es6", "dom" ],
+    "baseUrl": ".",
+    "paths": {
+      "*": [ "*" ],
+      "three": [ "Scripts/three/index" ],
+      "tween": [ "Scripts/tween/index" ]
+    }
+  },
+  "include": [
+    "**/*.ts*"
+  ],
+  "exclude": [
+    "**/bin",
+    "**/bower_components",
+    "**/jspm_packages",
+    "**/node_modules",
+    "**/obj",
+    "**/platforms"
+  ]
+}

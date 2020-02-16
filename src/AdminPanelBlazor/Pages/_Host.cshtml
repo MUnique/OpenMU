@@ -31,5 +31,19 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+    <script src="js/system-production.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/Stats.js"></script>
+    <script>
+    // To be able to resolve react etc. in the modules, SystemJS needs to be configured.
+    // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
+    System.config({
+        map: {
+            'three': '@Url.Content("js/three.min.js")',
+            'tween': '@Url.Content("js/tween.min.js")'
+        }
+    });
+    </script>
 </body>
 </html>

@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
     using Microsoft.Extensions.Hosting;
     using MUnique.Log4Net.CoreSignalR;
     using MUnique.OpenMU.AdminPanelBlazor.Hubs;
+    using MUnique.OpenMU.AdminPanelBlazor.Map;
     using MUnique.OpenMU.AdminPanelBlazor.Models;
     using MUnique.OpenMU.AdminPanelBlazor.Services;
     using MUnique.OpenMU.DataModel.Entities;
@@ -47,6 +48,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
+            services.AddControllers();
 
             services.AddSingleton<ServerService>();
             services.AddSingleton<ConnectServerService>();
@@ -59,6 +61,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor
 
             services.AddSingleton<LogService>();
             services.AddScoped<LogController>();
+
+            services.AddScoped<IMapFactory, JavascriptMapFactory>();
         }
 
         /// <summary>
@@ -88,6 +92,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
+                endpoints.MapControllers();
                 endpoints.MapFallbackToPage("/_Host");
 
                 endpoints.MapHub<WorldObserverHub>("/signalr/hubs/worldObserverHub");

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.AdminPanelBlazor.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -25,5 +26,15 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         /// Gets the manageable servers.
         /// </summary>
         public IList<IManageableServer> Servers { get; }
+
+        /// <summary>
+        /// Gets the game server of the specified identifier.
+        /// </summary>
+        /// <param name="gameServerId">The game server identifier.</param>
+        /// <returns>The game server of the specified identifier.</returns>
+        public IGameServer GetGameServer(int gameServerId)
+        {
+            return this.Servers.OfType<IGameServer>().First(s => s.Id == gameServerId);
+        }
     }
 }

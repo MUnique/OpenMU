@@ -7982,3 +7982,10 @@ div.log-notifications {
 
 .log-notifications .oi-warning {
   color: orange; }
+
+.livemap {
+  display: grid;
+  grid-template-columns: auto 250px; }
+
+.livemap-target {
+  width: auto; }

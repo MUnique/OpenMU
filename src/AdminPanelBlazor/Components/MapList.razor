@@ -27,9 +27,9 @@ else
                     <td>@map.MapName</td>
                     <td>@map.Players.Count</td>
                     <td>
-                        <button type="button" @onclick="args => this.OpenMapAsync(map)">
+                        <NavLink href="@($"map/{this.GameServer.Id}/{map.MapNumber}")">
                             <span class="oi oi-map" aria-hidden="true"></span>
-                        </button>
+                        </NavLink>
                     </td>
                 </tr>
             }
@@ -49,10 +49,4 @@ else
     /// TODO: Automatic UI updates via INotifyPropertyChanged.
     /// </summary>
     private IList<IGameMapInfo> Maps => this.GameServer?.ServerInfo.Maps;
-
-    private ValueTask<object> OpenMapAsync(IGameMapInfo map)
-    {
-        var uri = @"/admin/livemap?serverId=" + this.GameServer.Id + "&mapId=" + map.MapNumber;
-        return this.jsRuntime.InvokeAsync<object>("open", uri, "_blank");
-    }
 }

@@ -140,23 +140,27 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="locateable">The locateable object.</param>
         public void Add(ILocateable locateable)
         {
-            if (locateable is DroppedItem droppedItem)
+            switch (locateable)
             {
-                droppedItem.Id = (ushort)this.objectIdGenerator.GetId();
-                Log.DebugFormat("{0}: Added drop {1}, {2}", this.Definition, droppedItem.Id, droppedItem.Item);
-            }
-
-            if (locateable is Player player)
-            {
-                player.Id = (ushort)this.objectIdGenerator.GetId();
-                Log.DebugFormat("{0}: Added player {1}, {2}, ", this.Definition, player.Id, player);
-                Interlocked.Increment(ref this.playerCount);
-            }
-
-            if (locateable is NonPlayerCharacter npc)
-            {
-                npc.Id = (ushort)this.objectIdGenerator.GetId();
-                Log.DebugFormat("{0}: Added npc {1}, {2}", this.Definition, npc.Id, npc.Definition.Designation);
+                case DroppedItem droppedItem:
+                    droppedItem.Id = (ushort)this.objectIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added drop {1}, {2}", this.Definition, droppedItem.Id, droppedItem.Item);
+                    break;
+                case Player player:
+                    player.Id = (ushort)this.objectIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added player {1}, {2}, ", this.Definition, player.Id, player);
+                    Interlocked.Increment(ref this.playerCount);
+                    break;
+                case NonPlayerCharacter npc:
+                    npc.Id = (ushort)this.objectIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added npc {1}, {2}", this.Definition, npc.Id, npc.Definition.Designation);
+                    break;
+                case ISupportIdUpdate idUpdate:
+                    idUpdate.Id = (ushort)this.objectIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added {1}", this.Definition, locateable);
+                    break;
+                default:
+                    throw new ArgumentException($"Adding an object of type {locateable.GetType()} is not supported.");
             }
 
             this.objectsInMap.Add(locateable.Id, locateable);
