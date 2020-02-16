@@ -66,10 +66,10 @@ export class World extends THREE.Object3D {
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
 
-            console.log("Adding npc", npcData);
+            console.debug("Adding npc", npcData);
             this.addNpc(npcData);
         } else {
-            console.log("Updating npc", npcData);
+            console.debug("Updating npc", npcData);
             obj.respawn(npcData);
         }
     }
@@ -81,10 +81,10 @@ export class World extends THREE.Object3D {
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
 
-            console.log("Adding player", playerData);
+            console.debug("Adding player", playerData);
             this.addPlayer(playerData);
         } else {
-            console.log("Updating player", playerData, obj.data);
+            console.debug("Updating player", playerData, obj.data);
             obj.respawn(playerData);
         }
     }
@@ -125,6 +125,10 @@ export class World extends THREE.Object3D {
             this.attacks.addAttack(animating, target);
             // todo add effect instead of attack
         }
+    }
+
+    public dispose() {
+        delete this.objects;
     }
 
     highlightOn(objectId: number): any {
@@ -172,7 +176,7 @@ export class World extends THREE.Object3D {
      */
     public removeObject(objectId: number) {
         let mesh = this.objects[objectId];
-        console.log("Removing object", mesh.data);
+        console.debug("Removing object", mesh.data);
         this.remove(mesh as THREE.Object3D);
         delete this.objects[objectId];
     }

@@ -59,6 +59,10 @@ export class MapApp {
             webGlRenderer.dispose();
         }
 
+        this.scene.remove(this.world);
+        this.world.dispose();
+        this.world = null;
+
         this.renderer = null;
         this.isDisposing = false;
         this.isDisposed = true;

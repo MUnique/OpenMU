@@ -1,7 +1,7 @@
 ﻿// plain javascript to make JS Interop easier
 
-function CreateMap(serverId, mapId, containerId) {
-    console.debug('Creating map; serverId: ', serverId, 'mapId: ', mapId, ', containerId: ', containerId);
+function CreateMap(serverId, mapId, containerId, appId) {
+    console.debug('Creating map; serverId: ', serverId, 'mapId: ', mapId, ', containerId: ', containerId, 'appId: ', appId);
 
     var stats = new Stats();
     stats.domElement.style.position = 'relative';
@@ -11,14 +11,13 @@ function CreateMap(serverId, mapId, containerId) {
     System.import("MapApp")
         .then(module => {
             console.log('MapApp module resolved');
-            var mapApp = new module.MapApp(stats, serverId, mapId, document.getElementById(containerId));
-            window[containerId] = mapApp;
+            window[appId] = new module.MapApp(stats, serverId, mapId, document.getElementById(containerId));;
         });
 };
 
 function DisposeMap(identifier) {
     console.debug('Disposing map; containerId: ', identifier);
-    var map = window[identifier];
+    let map = window[identifier];
     if (map) {
         map.dispose();
         delete window[identifier];

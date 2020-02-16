@@ -16,6 +16,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
         private readonly IJSRuntime jsRuntime;
         private readonly ServerService serverService;
 
+        private int mapCount;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JavascriptMapFactory"/> class.
         /// </summary>
@@ -33,9 +35,10 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
             IMapController mapController = null;
             try
             {
-                await this.jsRuntime.InvokeVoidAsync("CreateMap", serverId, mapId, this.GetMapIdentifier(serverId, mapId));
+                var appId = this.GenerateMapAppIdentifier(serverId, mapId);
+                await this.jsRuntime.InvokeVoidAsync("CreateMap", serverId, mapId, this.GetMapContainerIdentifier(serverId, mapId), appId);
                 var gameServer = this.serverService.GetGameServer(serverId);
-                mapController = new MapController(this.jsRuntime, this.GetMapIdentifier(serverId, mapId), gameServer, mapId);
+                mapController = new MapController(this.jsRuntime, appId, gameServer, mapId);
                 gameServer.RegisterMapObserver((ushort)mapId, mapController);
             }
             catch
@@ -52,6 +55,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
         }
 
         /// <inheritdoc />
-        public string GetMapIdentifier(int serverId, int mapId) => $"map_{serverId}_{mapId}";
+        public string GetMapContainerIdentifier(int serverId, int mapId) => $"map_{serverId}_{mapId}";
+
+        private string GenerateMapAppIdentifier(int serverId, int mapId) => $"map_{serverId}_{mapId}_app{this.mapCount++}";
     }
 }

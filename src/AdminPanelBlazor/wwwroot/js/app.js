@@ -528,11 +528,11 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                                     _a.sent();
                                     return [3, 1];
                                 case 3:
-                                    console.log("Adding npc", npcData);
+                                    console.debug("Adding npc", npcData);
                                     this.addNpc(npcData);
                                     return [3, 5];
                                 case 4:
-                                    console.log("Updating npc", npcData);
+                                    console.debug("Updating npc", npcData);
                                     obj.respawn(npcData);
                                     _a.label = 5;
                                 case 5: return [2];
@@ -556,11 +556,11 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                                     _a.sent();
                                     return [3, 1];
                                 case 3:
-                                    console.log("Adding player", playerData);
+                                    console.debug("Adding player", playerData);
                                     this.addPlayer(playerData);
                                     return [3, 5];
                                 case 4:
-                                    console.log("Updating player", playerData, obj.data);
+                                    console.debug("Updating player", playerData, obj.data);
                                     obj.respawn(playerData);
                                     _a.label = 5;
                                 case 5: return [2];
@@ -597,6 +597,9 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                         this.attacks.addAttack(animating, target);
                     }
                 };
+                World.prototype.dispose = function () {
+                    delete this.objects;
+                };
                 World.prototype.highlightOn = function (objectId) {
                     var player = this.getObjectById(objectId);
                     if (player != null) {
@@ -624,7 +627,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 };
                 World.prototype.removeObject = function (objectId) {
                     var mesh = this.objects[objectId];
-                    console.log("Removing object", mesh.data);
+                    console.debug("Removing object", mesh.data);
                     this.remove(mesh);
                     delete this.objects[objectId];
                 };
@@ -692,6 +695,9 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     if (webGlRenderer != null) {
                         webGlRenderer.dispose();
                     }
+                    this.scene.remove(this.world);
+                    this.world.dispose();
+                    this.world = null;
                     this.renderer = null;
                     this.isDisposing = false;
                     this.isDisposed = true;

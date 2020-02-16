@@ -25,6 +25,6 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
         /// <param name="serverId">The server identifier.</param>
         /// <param name="mapId">The map identifier.</param>
         /// <returns>The map identifier which is used to identify the container DOM-Element.</returns>
-        string GetMapIdentifier(int serverId, int mapId);
+        string GetMapContainerIdentifier(int serverId, int mapId);
     }
 }

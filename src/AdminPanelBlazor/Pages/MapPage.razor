@@ -6,7 +6,7 @@
 @implements IDisposable
 
 <div class="livemap">
-    <LiveMap Id="@this.MapFactory.GetMapIdentifier(this.ServerId, this.MapId)" MapController="@this.lazyController" />
+    <LiveMap Id="@this.MapFactory.GetMapContainerIdentifier(this.ServerId, this.MapId)" MapController="@this.lazyController" />
     @if (this.controller is { })
     {
         <div class="livemap-players">

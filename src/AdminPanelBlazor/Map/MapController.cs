@@ -7,8 +7,10 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using log4net;
     using Microsoft.JSInterop;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
@@ -25,6 +27,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
     /// </summary>
     public sealed class MapController : IMapController, IWorldObserver, IObjectGotKilledPlugIn, IObjectMovedPlugIn, IShowAnimationPlugIn, IObjectsOutOfScopePlugIn, INewPlayersInScopePlugIn, INewNpcsInScopePlugIn, IShowSkillAnimationPlugIn, IShowAreaSkillAnimationPlugIn, ILocateable, IBucketMapObserver, ISupportIdUpdate
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly string identifier;
         private readonly IGameServer gameServer;
         private readonly int mapNumber;
@@ -76,39 +79,53 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
         public IDictionary<int, ILocateable> Objects { get; } = new Dictionary<int, ILocateable>();
 
         /// <inheritdoc />
-        public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
+        public async void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
         {
-            foreach (var npc in newObjects)
+            try
             {
-                this.Objects.TryAdd(npc.Id, npc);
-
-                if (this.disposeCts.IsCancellationRequested)
+                foreach (var npc in newObjects)
                 {
-                    return;
+                    this.Objects.TryAdd(npc.Id, npc);
+
+                    if (this.disposeCts.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addOrUpdateNpc", this.disposeCts.Token, CreateMapObject(npc));
                 }
 
-                Task.Run(() => this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addOrUpdateNpc", this.disposeCts.Token, CreateMapObject(npc)));
+                this.ObjectsChanged?.Invoke(this, EventArgs.Empty);
             }
-
-            this.ObjectsChanged?.Invoke(this, EventArgs.Empty);
+            catch (Exception e)
+            {
+                Log.Error($"Error in {nameof(NewNpcsInScope)}", e);
+            }
         }
 
         /// <inheritdoc />
-        public void NewPlayersInScope(IEnumerable<Player> newObjects)
+        public async void NewPlayersInScope(IEnumerable<Player> newObjects)
         {
-            foreach (var player in newObjects)
+            try
             {
-                this.Objects.TryAdd(player.Id, player);
-
-                if (this.disposeCts.IsCancellationRequested)
+                foreach (var player in newObjects)
                 {
-                    return;
+                    this.Objects.TryAdd(player.Id, player);
+
+                    if (this.disposeCts.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addOrUpdatePlayer", this.disposeCts.Token, CreateMapObject(player));
                 }
 
-                Task.Run(() => this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addOrUpdatePlayer", this.disposeCts.Token, CreateMapObject(player)));
+                this.ObjectsChanged?.Invoke(this, EventArgs.Empty);
             }
-
-            this.ObjectsChanged?.Invoke(this, EventArgs.Empty);
+            catch (Exception e)
+            {
+                Log.Error($"Error in {nameof(NewPlayersInScope)}", e);
+            }
         }
 
         /// <inheritdoc />
@@ -211,9 +228,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
         /// <inheritdoc />
         public async ValueTask DisposeAsync()
         {
+            this.disposeCts.Cancel();
             this.gameServer.UnregisterMapObserver((ushort)this.mapNumber, this.Id);
             this.adapterToWorldView.Dispose();
-            this.disposeCts.Cancel();
             try
             {
                 await this.jsRuntime.InvokeVoidAsync("DisposeMap", this.identifier);
