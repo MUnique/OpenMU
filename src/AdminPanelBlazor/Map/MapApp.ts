@@ -2,7 +2,6 @@
 import TWEEN from "tween";
 import { WorldObjectPicker } from "./WorldObjectPicker";
 import { World } from "./World";
-// import { store, renderPlayerList } from "./PlayerList";
 import { ObjectData } from "./Types";
 
 
@@ -13,7 +12,6 @@ interface Stats {
     update(): void;
 }
 
-// TODO: create component
 /*
  * Class for a Map application which is shown on the whole browser page.
  */
