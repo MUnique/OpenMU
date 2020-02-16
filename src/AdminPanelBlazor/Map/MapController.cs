@@ -97,9 +97,13 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
 
                 this.ObjectsChanged?.Invoke(this, EventArgs.Empty);
             }
+            catch (TaskCanceledException)
+            {
+                // don't need to handle that.
+            }
             catch (Exception e)
             {
-                Log.Error($"Error in {nameof(NewNpcsInScope)}", e);
+                Log.Error($"Error in {nameof(this.NewNpcsInScope)}", e);
             }
         }
 
@@ -122,83 +126,153 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
 
                 this.ObjectsChanged?.Invoke(this, EventArgs.Empty);
             }
+            catch (TaskCanceledException)
+            {
+                // don't need to handle that.
+            }
             catch (Exception e)
             {
-                Log.Error($"Error in {nameof(NewPlayersInScope)}", e);
+                Log.Error($"Error in {nameof(this.NewPlayersInScope)}", e);
             }
         }
 
         /// <inheritdoc />
-        public void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
+        public async void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
         {
-            foreach (var obj in objects)
+            try
             {
-                this.Objects.Remove(obj.Id);
-
-                if (this.disposeCts.IsCancellationRequested)
+                foreach (var obj in objects)
                 {
-                    return;
-                }
+                    this.Objects.Remove(obj.Id);
 
-                Task.Run(() => this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.removeObject", this.disposeCts.Token, obj.Id));
-            }
-
-            this.ObjectsChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <inheritdoc />
-        public void ObjectGotKilled(IAttackable killedObject, IAttackable killerObject)
-        {
-            Task.Run(() => this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.killObject", this.disposeCts.Token, killedObject.Id, killerObject.Id));
-        }
-
-        /// <inheritdoc />
-        public void ObjectMoved(ILocateable movedObject, MoveType moveType)
-        {
-            Point targetPoint = movedObject.Position;
-            object steps = null;
-            int walkDelay = 0;
-            if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
-            {
-                targetPoint = walker.WalkTarget;
-                walkDelay = (int)walker.StepDelay.TotalMilliseconds;
-                Span<WalkingStep> walkingSteps = new WalkingStep[16];
-                var stepCount = walker.GetSteps(walkingSteps);
-                var walkSteps = walkingSteps.Slice(0, stepCount).ToArray().Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
-
-                var lastStep = walkSteps.LastOrDefault();
-                if (lastStep != null)
-                {
-                    var lastPoint = new Point(lastStep.x, lastStep.y);
-                    var lastDirection = lastPoint.GetDirectionTo(targetPoint);
-                    if (lastDirection != Direction.Undefined)
+                    if (this.disposeCts.IsCancellationRequested)
                     {
-                        walkSteps.Add(new { x = targetPoint.X, y = targetPoint.Y, direction = lastDirection });
+                        return;
                     }
+
+                    await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.removeObject", this.disposeCts.Token, obj.Id);
                 }
 
-                steps = walkSteps;
+                this.ObjectsChanged?.Invoke(this, EventArgs.Empty);
             }
-
-            Task.Run(() => this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.objectMoved", this.disposeCts.Token, movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps));
+            catch (TaskCanceledException)
+            {
+                // don't need to handle that.
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error in {nameof(this.ObjectsOutOfScope)}; objects: {string.Join(';', objects)}", e);
+            }
         }
 
         /// <inheritdoc />
-        public void ShowSkillAnimation(Player attackingPlayer, IAttackable target, Skill skill)
+        public async void ObjectGotKilled(IAttackable killedObject, IAttackable killerObject)
         {
-            Task.Run(() => this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addSkillAnimation", this.disposeCts.Token, attackingPlayer.Id, target?.Id, skill.Number));
+            try
+            {
+                await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.killObject", this.disposeCts.Token, killedObject.Id, killerObject.Id);
+            }
+            catch (TaskCanceledException)
+            {
+                // don't need to handle that.
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error in {nameof(this.ObjectGotKilled)}; killedObject: {killedObject}, killerObject: {killerObject}", e);
+            }
         }
 
         /// <inheritdoc />
-        public void ShowAreaSkillAnimation(Player player, Skill skill, Point point, byte rotation)
+        public async void ObjectMoved(ILocateable movedObject, MoveType moveType)
         {
-            Task.Run(() => this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addAreaSkillAnimation", this.disposeCts.Token, player.Id, skill.Number, point.X, point.Y, rotation));
+            try
+            {
+                Point targetPoint = movedObject.Position;
+                object steps = null;
+                int walkDelay = 0;
+                if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
+                {
+                    targetPoint = walker.WalkTarget;
+                    walkDelay = (int)walker.StepDelay.TotalMilliseconds;
+                    var walkingSteps = new WalkingStep[16];
+                    var stepCount = walker.GetSteps(walkingSteps);
+                    var walkSteps = walkingSteps.AsSpan().Slice(0, stepCount).ToArray().Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
+
+                    var lastStep = walkSteps.LastOrDefault();
+                    if (lastStep != null)
+                    {
+                        var lastPoint = new Point(lastStep.x, lastStep.y);
+                        var lastDirection = lastPoint.GetDirectionTo(targetPoint);
+                        if (lastDirection != Direction.Undefined)
+                        {
+                            walkSteps.Add(new { x = targetPoint.X, y = targetPoint.Y, direction = lastDirection });
+                        }
+                    }
+
+                    steps = walkSteps;
+                }
+
+                await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.objectMoved", this.disposeCts.Token, movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps);
+            }
+            catch (TaskCanceledException)
+            {
+                // don't need to handle that.
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error in {nameof(this.ObjectMoved)}; movedObject: {movedObject}, moveType: {moveType}", e);
+            }
         }
 
         /// <inheritdoc />
-        public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction)
+        public async void ShowSkillAnimation(Player attackingPlayer, IAttackable target, Skill skill)
         {
-            Task.Run(() => this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addAnimation", this.disposeCts.Token, animatingObj.Id, animation, targetObj?.Id, direction));
+            try
+            {
+                await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addSkillAnimation", this.disposeCts.Token, attackingPlayer.Id, target?.Id, skill.Number);
+            }
+            catch (TaskCanceledException)
+            {
+                // don't need to handle that.
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error in {nameof(this.ShowSkillAnimation)}", e);
+            }
+        }
+
+        /// <inheritdoc />
+        public async void ShowAreaSkillAnimation(Player player, Skill skill, Point point, byte rotation)
+        {
+            try
+            {
+                await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addAreaSkillAnimation", this.disposeCts.Token, player.Id, skill.Number, point.X, point.Y, rotation);
+            }
+            catch (TaskCanceledException)
+            {
+                // don't need to handle that.
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error in {nameof(this.ShowAreaSkillAnimation)}", e);
+            }
+        }
+
+        /// <inheritdoc />
+        public async void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction)
+        {
+            try
+            {
+                await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.addAnimation", this.disposeCts.Token, animatingObj.Id, animation, targetObj?.Id, direction);
+            }
+            catch (TaskCanceledException)
+            {
+                // don't need to handle that.
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error in {nameof(this.ShowAnimation)}", e);
+            }
         }
 
         /// <inheritdoc/>
