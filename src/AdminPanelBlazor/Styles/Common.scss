@@ -24,6 +24,10 @@ button {
     @extend .btn;
 }
 
+select {
+    @extend .form-control;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

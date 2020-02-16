@@ -8,6 +8,10 @@ table button {
     @extend .btn-sm;
 }
 
+th input {
+    @extend .form-control;
+}
+
 @keyframes FadeIn {
     0% {
         opacity: 0;
