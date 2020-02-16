@@ -27,6 +27,7 @@ export class MapApp {
     private picker: WorldObjectPicker;
     private isDisposing: boolean = false;
     private isDisposed: boolean = false;
+    private resizeEventListener: () => void;
 
     constructor(stats: Stats, serverId: number, mapId: number, mapContainer: HTMLElement, onPickObjectHandler: (data: ObjectData) => void) {
         this.stats = stats;
@@ -40,7 +41,8 @@ export class MapApp {
         this.renderer.setSize(window.innerHeight, window.innerHeight);
         this.container.appendChild(this.renderer.domElement);
         this.onWindowResize();
-        window.addEventListener("resize", () => this.onWindowResize(), false);
+        this.resizeEventListener = () => this.onWindowResize();
+        window.addEventListener("resize", this.resizeEventListener, false);
         
         this.picker = new WorldObjectPicker(mapContainer, this.world, this.camera, onPickObjectHandler);
 
@@ -53,6 +55,7 @@ export class MapApp {
         }
 
         this.isDisposing = true;
+        window.removeEventListener("resize", this.resizeEventListener);
         var webGlRenderer = this.renderer as THREE.WebGLRenderer;
         if (webGlRenderer != null) {
             webGlRenderer.dispose();

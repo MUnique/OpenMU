@@ -677,7 +677,8 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.renderer.setSize(window.innerHeight, window.innerHeight);
                     this.container.appendChild(this.renderer.domElement);
                     this.onWindowResize();
-                    window.addEventListener("resize", function () { return _this.onWindowResize(); }, false);
+                    this.resizeEventListener = function () { return _this.onWindowResize(); };
+                    window.addEventListener("resize", this.resizeEventListener, false);
                     this.picker = new WorldObjectPicker_1.WorldObjectPicker(mapContainer, this.world, this.camera, onPickObjectHandler);
                     this.animate();
                 }
@@ -686,6 +687,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                         return;
                     }
                     this.isDisposing = true;
+                    window.removeEventListener("resize", this.resizeEventListener);
                     var webGlRenderer = this.renderer;
                     if (webGlRenderer != null) {
                         webGlRenderer.dispose();
