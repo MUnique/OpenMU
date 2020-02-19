@@ -93,7 +93,7 @@ namespace MUnique.OpenMU.ChatServer
                 if (value != this.serverState)
                 {
                     this.serverState = value;
-                    this.OnPropertyChanged();
+                    this.RaisePropertyChanged();
                 }
             }
         }
@@ -230,14 +230,14 @@ namespace MUnique.OpenMU.ChatServer
         {
             var chatClient = new ChatClient(e.AcceptedConnection, this.manager);
             this.connectedClients.Add(chatClient);
-            this.OnPropertyChanged(nameof(this.CurrentConnections));
+            this.RaisePropertyChanged(nameof(this.CurrentConnections));
             chatClient.Disconnected += this.ChatClient_Disconnected;
         }
 
         private void ChatClient_Disconnected(object sender, EventArgs e)
         {
             this.connectedClients.Remove(sender as IChatClient);
-            this.OnPropertyChanged(nameof(this.CurrentConnections));
+            this.RaisePropertyChanged(nameof(this.CurrentConnections));
         }
 
         private void ClientCleanupInactiveClients(object sender, ElapsedEventArgs e)
@@ -282,7 +282,7 @@ namespace MUnique.OpenMU.ChatServer
         /// Called when a property changed.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

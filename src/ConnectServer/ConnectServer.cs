@@ -27,7 +27,6 @@ namespace MUnique.OpenMU.ConnectServer
         /// Initializes a new instance of the <see cref="ConnectServer" /> class.
         /// </summary>
         /// <param name="connectServerSettings">The settings.</param>
-        /// <param name="stateObserver">The state observer.</param>
         /// <param name="clientVersion">The client version.</param>
         public ConnectServer(IConnectServerSettings connectServerSettings, ClientVersion clientVersion)
         {
@@ -40,7 +39,7 @@ namespace MUnique.OpenMU.ConnectServer
             this.ClientListener = new ClientListener(this);
             this.ClientListener.ConnectedClientsChanged += (sender, args) =>
             {
-                this.OnPropertyChanged(nameof(this.CurrentConnections));
+                this.RaisePropertyChanged(nameof(this.CurrentConnections));
             };
             this.CreatePlugins();
         }
@@ -57,7 +56,7 @@ namespace MUnique.OpenMU.ConnectServer
                 if (value != this.serverState)
                 {
                     this.serverState = value;
-                    this.OnPropertyChanged();
+                    this.RaisePropertyChanged();
                 }
             }
         }
@@ -213,7 +212,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// Called when a property changed.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

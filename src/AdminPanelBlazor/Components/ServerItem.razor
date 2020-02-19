@@ -1,4 +1,6 @@
-﻿@using MUnique.OpenMU.Interfaces
+﻿@using System.ComponentModel
+@using MUnique.OpenMU.Interfaces
+@implements IDisposable
 
 <tr class=@(this.Server.ServerState == ServerState.Started ? "success" : "warning") >
     <td>
@@ -50,10 +52,21 @@
     public IManageableServer Server { get; set; }
 
     /// <inheritdoc />
+    public void Dispose()
+    {
+        this.Server.PropertyChanged -= this.OnServerPropertyChanged;
+    }
+
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.Server.PropertyChanged += (_, __) => this.InvokeAsync(this.StateHasChanged);
+        this.Server.PropertyChanged += this.OnServerPropertyChanged;
+    }
+
+    private async void OnServerPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)
+    {
+        await this.InvokeAsync(this.StateHasChanged);
     }
 
     private string GetExpandIconClass()

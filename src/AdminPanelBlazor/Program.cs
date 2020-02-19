@@ -43,10 +43,12 @@ namespace MUnique.OpenMU.AdminPanelBlazor
         {
             public void ConnectionServerAdded(ConnectServerDefinition currentConfiguration)
             {
+                // we do nothing
             }
 
             public void ConnectionServerChanged(ConnectServerDefinition currentConfiguration)
             {
+                // we do nothing
             }
         }
 

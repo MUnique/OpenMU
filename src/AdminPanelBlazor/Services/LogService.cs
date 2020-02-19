@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic;
-
 namespace MUnique.OpenMU.AdminPanelBlazor.Services
 {
     using System;
@@ -13,6 +11,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.SignalR.Client;
     using MUnique.Log4Net.CoreSignalR;
+    using MUnique.OpenMU.GameLogic;
 
     /// <summary>
     /// Service which connects to the log hub.
@@ -34,8 +33,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
 
             this.connection.Closed += async (error) =>
             {
-                await Task.Delay(new Random().Next(0, 5) * 1000);
-                await this.Connect();
+                await Task.Delay(new Random().Next(0, 5) * 1000).ConfigureAwait(false);
+                await this.Connect().ConfigureAwait(false);
             };
 
             this.connection.On<string, LogEventData, long>("OnLoggedEvent", this.OnLoggedEvent);
@@ -55,6 +54,11 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         }
 
         /// <summary>
+        /// Occurs when a log event was received.
+        /// </summary>
+        public event EventHandler<LogEntryReceivedEventArgs> LogEventReceived;
+
+        /// <summary>
         /// Gets the known loggers.
         /// </summary>
         public ICollection<string> Loggers { get; private set; }
@@ -65,14 +69,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         public LinkedList<LogEventData> Entries { get; } = new LinkedList<LogEventData>();
 
         /// <summary>
-        /// Occurs when a log event was received.
+        /// Gets or sets an event callback which occurs when the connection state to the hub changed.
         /// </summary>
-        public EventHandler<LogEntryReceivedEventArgs> LogEventReceived;
-
-        /// <summary>
-        /// Occurs when the connection state to the hub changed.
-        /// </summary>
-        public EventCallback<bool>? IsConnectedChanged;
+        public EventCallback<bool>? IsConnectedChanged { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is connected to the log hub.

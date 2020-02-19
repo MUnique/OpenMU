@@ -155,7 +155,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
             }
             catch (NotImplementedException)
             {
-                // swallow;
+                // swallow
             }
 
             return Task.FromResult(result);

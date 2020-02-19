@@ -187,32 +187,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
         {
             try
             {
-                Point targetPoint = movedObject.Position;
-                object steps = null;
-                int walkDelay = 0;
-                if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
-                {
-                    targetPoint = walker.WalkTarget;
-                    walkDelay = (int)walker.StepDelay.TotalMilliseconds;
-                    var walkingSteps = new WalkingStep[16];
-                    var stepCount = walker.GetSteps(walkingSteps);
-                    var walkSteps = walkingSteps.AsSpan().Slice(0, stepCount).ToArray().Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
-
-                    var lastStep = walkSteps.LastOrDefault();
-                    if (lastStep != null)
-                    {
-                        var lastPoint = new Point(lastStep.x, lastStep.y);
-                        var lastDirection = lastPoint.GetDirectionTo(targetPoint);
-                        if (lastDirection != Direction.Undefined)
-                        {
-                            walkSteps.Add(new { x = targetPoint.X, y = targetPoint.Y, direction = lastDirection });
-                        }
-                    }
-
-                    steps = walkSteps;
-                }
-
-                await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.objectMoved", this.disposeCts.Token, movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps);
+                await this.ObjectMovedAsync(movedObject, moveType);
             }
             catch (TaskCanceledException)
             {
@@ -326,6 +301,37 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
                 X = locateable.Position.X,
                 Y = locateable.Position.Y,
             };
+        }
+
+        private async Task ObjectMovedAsync(ILocateable movedObject, MoveType moveType)
+        {
+            Point targetPoint = movedObject.Position;
+            object steps = null;
+            int walkDelay = 0;
+            if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
+            {
+                targetPoint = walker.WalkTarget;
+                walkDelay = (int)walker.StepDelay.TotalMilliseconds;
+                var walkingSteps = new WalkingStep[16];
+                var stepCount = walker.GetSteps(walkingSteps);
+                var walkSteps = walkingSteps.AsSpan().Slice(0, stepCount).ToArray()
+                    .Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
+
+                var lastStep = walkSteps.LastOrDefault();
+                if (lastStep != null)
+                {
+                    var lastPoint = new Point(lastStep.x, lastStep.y);
+                    var lastDirection = lastPoint.GetDirectionTo(targetPoint);
+                    if (lastDirection != Direction.Undefined)
+                    {
+                        walkSteps.Add(new { x = targetPoint.X, y = targetPoint.Y, direction = lastDirection });
+                    }
+                }
+
+                steps = walkSteps;
+            }
+
+            await this.jsRuntime.InvokeVoidAsync($"{this.worldAccessor}.objectMoved", this.disposeCts.Token, movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps);
         }
 
         private class ViewContainer : ICustomPlugInContainer<IViewPlugIn>
