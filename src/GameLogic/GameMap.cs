@@ -31,6 +31,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly IdGenerator objectIdGenerator;
 
+        private readonly IdGenerator dropIdGenerator;
+
         private readonly IMapStateObserver stateObserver;
 
         private int playerCount;
@@ -52,6 +54,7 @@ namespace MUnique.OpenMU.GameLogic
 
             this.areaOfInterestManager = new BucketAreaOfInterestManager(chunkSize);
             this.objectIdGenerator = new IdGenerator(ViewExtensions.ConstantPlayerId + 1, 0x7FFF);
+            this.dropIdGenerator = new IdGenerator(0, ViewExtensions.ConstantPlayerId - 1);
         }
 
         /// <summary>
@@ -126,7 +129,14 @@ namespace MUnique.OpenMU.GameLogic
             this.areaOfInterestManager.RemoveObject(locateable);
             if (this.objectsInMap.Remove(locateable.Id) && locateable.Id != 0)
             {
-                this.objectIdGenerator.GiveBack(locateable.Id);
+                if (locateable is DroppedItem)
+                {
+                    this.dropIdGenerator.GiveBack(locateable.Id);
+                }
+                else
+                {
+                    this.objectIdGenerator.GiveBack(locateable.Id);
+                }
 
                 if (locateable is Player player)
                 {
@@ -147,7 +157,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             if (locateable is DroppedItem droppedItem)
             {
-                droppedItem.Id = (ushort)this.objectIdGenerator.GetId();
+                droppedItem.Id = (ushort)this.dropIdGenerator.GetId();
                 Log.DebugFormat("{0}: Added drop {1}, {2}", this.Definition, droppedItem.Id, droppedItem.Item);
             }
 
