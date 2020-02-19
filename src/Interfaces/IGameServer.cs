@@ -209,7 +209,7 @@ namespace MUnique.OpenMU.Interfaces
     /// <summary>
     /// Information about a concrete instance of a game map.
     /// </summary>
-    public interface IGameMapInfo
+    public interface IGameMapInfo : INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the map number.
@@ -236,6 +236,11 @@ namespace MUnique.OpenMU.Interfaces
         /// Gets the players which are currently playing on the map.
         /// </summary>
         IList<IPlayerInfo> Players { get; }
+
+        /// <summary>
+        /// Gets the player count.
+        /// </summary>
+        int PlayerCount { get; }
     }
 
     /// <summary>

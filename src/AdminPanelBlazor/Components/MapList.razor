@@ -1,5 +1,8 @@
-﻿@using MUnique.OpenMU.Interfaces
+﻿@using System.ComponentModel
+@using log4net
+@using MUnique.OpenMU.Interfaces
 
+@implements IDisposable
 @inject IJSRuntime jsRuntime;
 
 @if (this.Maps == null)
@@ -25,7 +28,7 @@ else
             {
                 <tr>
                     <td>@map.MapName</td>
-                    <td>@map.Players.Count</td>
+                    <td>@map.PlayerCount</td>
                     <td>
                         <NavLink href="@($"map/{this.GameServer.Id}/{map.MapNumber}")">
                             <span class="oi oi-map" aria-hidden="true"></span>
@@ -44,9 +47,33 @@ else
     /// </summary>
     [Parameter]
     public IGameServer GameServer { get; set; }
-    
-    /// <summary>
-    /// TODO: Automatic UI updates via INotifyPropertyChanged.
-    /// </summary>
+
     private IList<IGameMapInfo> Maps => this.GameServer?.ServerInfo.Maps;
+
+    /// <inheritdoc />
+    public void Dispose() => this.GameServer.ServerInfo.PropertyChanged -= this.OnServerInfoChanged;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.GameServer.ServerInfo.PropertyChanged += this.OnServerInfoChanged;
+    }
+
+    private async void OnServerInfoChanged(object sender, PropertyChangedEventArgs e)
+    {
+        try
+        {
+            if (e.PropertyName != nameof(IGameServerInfo.Maps))
+            {
+                return;
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            LogManager.GetLogger(this.GetType()).Debug("Error occured in handling ServerInfo.PropertyChanged", ex);
+        }
+    }
 }

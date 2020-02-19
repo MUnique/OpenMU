@@ -53,6 +53,20 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Occurs when a game map got created.
+        /// </summary>
+        public event EventHandler<GameMapEventArgs> GameMapCreated;
+
+        /// <summary>
+        /// Occurs when a game map got removed.
+        /// </summary>
+        /// <remarks>
+        /// Currently, maps are never removed.
+        /// It may make sense to remove unused maps after a certain period.
+        /// </remarks>
+        public event EventHandler<GameMapEventArgs> GameMapRemoved;
+
+        /// <summary>
         /// Gets the initialized maps which are hosted on this context.
         /// </summary>
         public IEnumerable<GameMap> Maps => this.mapList.Values;
@@ -108,6 +122,7 @@ namespace MUnique.OpenMU.GameLogic
 
             // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
             this.mapInitializer.InitializeState(createdMap);
+            this.GameMapCreated?.Invoke(this, new GameMapEventArgs(createdMap, null));
 
             return createdMap;
         }

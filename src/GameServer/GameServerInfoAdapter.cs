@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer
     using System.Linq;
     using System.Runtime.CompilerServices;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -19,6 +20,7 @@ namespace MUnique.OpenMU.GameServer
     {
         private readonly GameServer gameServer;
         private readonly GameServerConfiguration configuration;
+        private IList<IGameMapInfo> gameMapInfos;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameServerInfoAdapter"/> class.
@@ -55,11 +57,7 @@ namespace MUnique.OpenMU.GameServer
         {
             get
             {
-                return this.gameServer.Context.Maps.Select(map =>
-                        new GameMapInfoAdapter(
-                            map,
-                            this.gameServer.Context.PlayerList.Where(p => p.CurrentMap == map).ToList()))
-                    .ToList<IGameMapInfo>();
+                return this.gameMapInfos ??= this.gameServer.Context.Maps.Select(this.CreateMapAdapter).ToList<IGameMapInfo>();
             }
         }
 
@@ -73,9 +71,53 @@ namespace MUnique.OpenMU.GameServer
         /// Called when a property has been changed.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private bool UpdateMaps()
+        {
+            if (this.gameMapInfos == null)
+            {
+                return false;
+            }
+
+            bool mapsChanged = false;
+
+            // Add new maps
+            this.gameServer.Context.Maps
+                .Where(map => this.gameMapInfos.All(m => m.MapNumber != map.MapId))
+                .Select(this.CreateMapAdapter)
+                .ForEach(map =>
+                {
+                    this.gameMapInfos.Add(map);
+                    mapsChanged = true;
+                });
+
+            // Remove old maps
+            this.gameMapInfos
+                .Where(map => this.gameServer.Context.Maps.All(m => m.MapId != map.MapNumber))
+                .ForEach(map =>
+                {
+                    this.gameMapInfos.Remove(map);
+                    map.PropertyChanged -= this.OnMapPropertyChanged;
+                    mapsChanged = true;
+                });
+
+            return mapsChanged;
+        }
+
+        private void OnMapPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            this.RaisePropertyChanged(nameof(this.Maps));
+        }
+
+        private GameMapInfoAdapter CreateMapAdapter(GameMap gameMap)
+        {
+            var mapAdapter = new GameMapInfoAdapter(gameMap, this.gameServer.Context.PlayerList.Where(p => p.CurrentMap == gameMap));
+            mapAdapter.PropertyChanged += this.OnMapPropertyChanged;
+            return mapAdapter;
         }
 
         private void OnGameServerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -83,14 +125,21 @@ namespace MUnique.OpenMU.GameServer
             switch (e.PropertyName)
             {
                 case nameof(IManageableServer.CurrentConnections):
-                    this.OnPropertyChanged(nameof(this.OnlinePlayerCount));
+                    this.RaisePropertyChanged(nameof(this.OnlinePlayerCount));
                     break;
                 case nameof(IManageableServer.ServerState):
-                    this.OnPropertyChanged(nameof(this.State));
+                    this.RaisePropertyChanged(nameof(this.State));
+                    break;
+                case nameof(GameServer.Context):
+                    if (this.UpdateMaps())
+                    {
+                        this.RaisePropertyChanged(nameof(this.Maps));
+                    }
+
                     break;
                 case "":
                 case null:
-                    this.OnPropertyChanged();
+                    this.RaisePropertyChanged();
                     break;
                 default:
                     // don't need to handle other events.
