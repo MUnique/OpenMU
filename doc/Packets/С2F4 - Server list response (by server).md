@@ -1,4 +1,4 @@
-# C1 XX - [Packet Description] #
+# С2 F4 - Server list response (by server) #
 
 ## Is sent when ##
 
