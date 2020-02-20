@@ -187,7 +187,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
         {
             try
             {
-                await this.ObjectMovedAsync(movedObject, moveType);
+                await this.ObjectMovedAsync(movedObject, moveType).ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {

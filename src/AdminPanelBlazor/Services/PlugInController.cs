@@ -138,19 +138,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
                         break;
                     }
 
-                    var configurations = this.GetConfigurations(allPlugIns, gameConfig);
-
-                    foreach (var plugInConfiguration in configurations.Skip(offset - skipped).Take(rest))
-                    {
-                        if (!allPlugIns.TryGetValue(plugInConfiguration.TypeId, out var plugInType))
-                        {
-                            continue;
-                        }
-
-                        result.Add(BuildConfigurationDto(plugInType, gameConfig, plugInConfiguration));
-                    }
-
-                    skipped += Math.Min(gameConfig.PlugInConfigurations.Count, offset);
+                    result.AddRange(GetPluginsOfConfig(offset, allPlugIns, gameConfig, rest, ref skipped));
                 }
             }
             catch (NotImplementedException)
@@ -159,6 +147,26 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
             }
 
             return Task.FromResult(result);
+        }
+
+        private IEnumerable<PlugInConfigurationViewItem> GetPluginsOfConfig(int offset, Dictionary<Guid, Type> allPlugIns, GameConfiguration gameConfig, int rest, ref int skipped)
+        {
+            IEnumerable<PlugInConfigurationViewItem> GetRange(IEnumerable<PlugInConfiguration> plugInConfigurations, int actualOffset, int count)
+            {
+                foreach (var plugInConfiguration in plugInConfigurations.Skip(actualOffset).Take(count))
+                {
+                    if (!allPlugIns.TryGetValue(plugInConfiguration.TypeId, out var plugInType))
+                    {
+                        continue;
+                    }
+
+                    yield return BuildConfigurationDto(plugInType, gameConfig, plugInConfiguration);
+                }
+            }
+
+            var configurations = this.GetConfigurations(allPlugIns, gameConfig);
+            skipped += Math.Min(gameConfig.PlugInConfigurations.Count, offset);
+            return GetRange(configurations, offset - skipped, rest);
         }
 
         /// <summary>

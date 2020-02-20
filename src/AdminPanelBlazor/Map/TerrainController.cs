@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
             // we need to set the length before writing the data into the body,
             // otherwise it gets "chunked".
             this.Response.ContentLength = mapStream.Length;
-            await mapStream.CopyToAsync(this.Response.Body);
+            await mapStream.CopyToAsync(this.Response.Body).ConfigureAwait(false);
             return this.Ok();
         }
 
