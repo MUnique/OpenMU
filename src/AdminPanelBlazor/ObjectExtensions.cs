@@ -5,13 +5,17 @@
 namespace MUnique.OpenMU.AdminPanelBlazor
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Linq;
+    using System.Reflection;
 
     /// <summary>
     /// Extensions for objects.
     /// </summary>
     internal static class ObjectExtensions
     {
+        private static readonly ConcurrentDictionary<Type, PropertyInfo> IdProperties = new ConcurrentDictionary<Type, PropertyInfo>();
+
         /// <summary>
         /// Gets the guid identifier of an object, which has the name "Id".
         /// </summary>
@@ -19,8 +23,12 @@ namespace MUnique.OpenMU.AdminPanelBlazor
         /// <returns>The guid identifier of an object, which has the name "Id".</returns>
         public static Guid GetId(this object item)
         {
-            // TODO: Add cache
-            var idProperty = item.GetType().GetProperties().FirstOrDefault(p => p.Name.Equals("Id") && p.PropertyType == typeof(Guid));
+            if (!IdProperties.TryGetValue(item.GetType(), out var idProperty))
+            {
+                idProperty = item.GetType().GetProperties().FirstOrDefault(p => p.Name.Equals("Id") && p.PropertyType == typeof(Guid));
+                IdProperties.TryAdd(item.GetType(), idProperty);
+            }
+
             if (idProperty == null)
             {
                 return Guid.Empty;
