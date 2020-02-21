@@ -10,7 +10,6 @@ namespace MUnique.OpenMU.AdminPanelBlazor
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using MUnique.Log4Net.CoreSignalR;
-    using MUnique.OpenMU.AdminPanelBlazor.Hubs;
     using MUnique.OpenMU.AdminPanelBlazor.Map;
     using MUnique.OpenMU.AdminPanelBlazor.Models;
     using MUnique.OpenMU.AdminPanelBlazor.Services;
@@ -95,7 +94,6 @@ namespace MUnique.OpenMU.AdminPanelBlazor
                 endpoints.MapControllers();
                 endpoints.MapFallbackToPage("/_Host");
 
-                endpoints.MapHub<WorldObserverHub>("/signalr/hubs/worldObserverHub");
                 endpoints.MapHub<LogHub>("/signalr/hubs/logHub");
             });
         }
