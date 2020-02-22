@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
     using System.Linq;
     using System.Reflection;
     using log4net;
+    using Mapster;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
@@ -116,21 +117,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
                         isNew = true;
                     }
 
-                    // todo: use automapper / mapster
-                    currentConfiguration.CheckMaxConnectionsPerAddress = configuration.CheckMaxConnectionsPerAddress;
-                    currentConfiguration.ListenerBacklog = configuration.ListenerBacklog;
-                    currentConfiguration.MaxConnections = configuration.MaxConnections;
-                    currentConfiguration.MaxConnectionsPerAddress = configuration.MaxConnectionsPerAddress;
-                    currentConfiguration.MaxFtpRequests = configuration.MaxFtpRequests;
-                    currentConfiguration.MaxIpRequests = configuration.MaxIpRequests;
-                    currentConfiguration.MaximumReceiveSize = configuration.MaximumReceiveSize;
-                    currentConfiguration.MaxServerListRequests = configuration.MaxServerListRequests;
-                    currentConfiguration.ClientListenerPort = configuration.ClientListenerPort;
-                    currentConfiguration.CurrentPatchVersion = configuration.CurrentPatchVersion;
-                    currentConfiguration.Timeout = configuration.Timeout;
-                    currentConfiguration.PatchAddress = configuration.PatchAddress;
-                    currentConfiguration.Description = configuration.Description;
-                    currentConfiguration.DisconnectOnUnknownPacket = configuration.DisconnectOnUnknownPacket;
+                    configuration.Adapt(currentConfiguration);
                     if (!Equals(currentConfiguration.Client, configuration.Client))
                     {
                         currentConfiguration.Client = configContext.GetById<DataModel.Configuration.GameClientDefinition>(configuration.Client.GetId());
