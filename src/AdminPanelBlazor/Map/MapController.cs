@@ -6,10 +6,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
 {
     using System;
     using System.Collections.Generic;
-    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
-    using log4net;
     using Microsoft.JSInterop;
     using MUnique.OpenMU.AdminPanelBlazor.Map.ViewPlugIns;
     using MUnique.OpenMU.GameLogic;
