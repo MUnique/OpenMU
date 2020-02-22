@@ -24,7 +24,6 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
     /// </summary>
     public sealed class MapController : IMapController, IWorldObserver, ILocateable, IBucketMapObserver, ISupportIdUpdate
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly string identifier;
         private readonly IGameServer gameServer;
         private readonly int mapNumber;
@@ -114,7 +113,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map
         public async ValueTask DisposeAsync()
         {
             this.disposeCts.Cancel();
-            this.gameServer.UnregisterMapObserver((ushort) this.mapNumber, this.Id);
+            this.gameServer.UnregisterMapObserver((ushort)this.mapNumber, this.Id);
             this.adapterToWorldView.Dispose();
             try
             {
