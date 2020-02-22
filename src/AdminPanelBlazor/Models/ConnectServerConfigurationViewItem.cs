@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.AdminPanelBlazor.Models
 {
     using System;
+    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.DataModel.Configuration;
 
@@ -13,21 +14,26 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
     /// </summary>
     public class ConnectServerConfigurationViewItem
     {
-        private readonly ConnectServerDefinition config;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectServerConfigurationViewItem"/> class.
         /// </summary>
         /// <param name="config">The configuration.</param>
         public ConnectServerConfigurationViewItem(ConnectServerDefinition config)
         {
-            this.config = config;
+            this.Configuration = config;
         }
 
         /// <summary>
         /// Gets the internal id of the configuration.
         /// </summary>
-        public Guid Id => this.config.GetId();
+        [Browsable(false)]
+        public Guid Id => this.Configuration.GetId();
+
+        /// <summary>
+        /// Gets the underlying configuration object.
+        /// </summary>
+        [Browsable(false)]
+        public ConnectServerDefinition Configuration { get; }
 
         /// <summary>
         /// Gets or sets the description of the server.
@@ -38,8 +44,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Required]
         public string Description
         {
-            get => this.config.Description;
-            set => this.config.Description = value;
+            get => this.Configuration.Description;
+            set => this.Configuration.Description = value;
         }
 
         /// <summary>
@@ -48,8 +54,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Required]
         public GameClientDefinition GameClientDefinition
         {
-            get => this.config.Client;
-            set => this.config.Client = value;
+            get => this.Configuration.Client;
+            set => this.Configuration.Client = value;
         }
 
         /// <summary>
@@ -57,8 +63,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         /// </summary>
         public bool DisconnectOnUnknownPacket
         {
-            get => this.config.DisconnectOnUnknownPacket;
-            set => this.config.DisconnectOnUnknownPacket = value;
+            get => this.Configuration.DisconnectOnUnknownPacket;
+            set => this.Configuration.DisconnectOnUnknownPacket = value;
         }
 
         /// <summary>
@@ -70,8 +76,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(3, 255)]
         public int MaximumReceiveSize
         {
-            get => this.config.MaximumReceiveSize;
-            set => this.config.MaximumReceiveSize = (byte)value;
+            get => this.Configuration.MaximumReceiveSize;
+            set => this.Configuration.MaximumReceiveSize = (byte)value;
         }
 
         /// <summary>
@@ -80,8 +86,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(1, 65535)]
         public int ClientListenerPort
         {
-            get => this.config.ClientListenerPort;
-            set => this.config.ClientListenerPort = (ushort)value;
+            get => this.Configuration.ClientListenerPort;
+            set => this.Configuration.ClientListenerPort = (ushort)value;
         }
 
         /// <summary>
@@ -89,8 +95,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         /// </summary>
         public string PatchAddress
         {
-            get => this.config.PatchAddress;
-            set => this.config.PatchAddress = value;
+            get => this.Configuration.PatchAddress;
+            set => this.Configuration.PatchAddress = value;
         }
 
         /// <summary>
@@ -99,8 +105,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(1, int.MaxValue)]
         public int MaxConnectionsPerAddress
         {
-            get => this.config.MaxConnectionsPerAddress;
-            set => this.config.MaxConnectionsPerAddress = value;
+            get => this.Configuration.MaxConnectionsPerAddress;
+            set => this.Configuration.MaxConnectionsPerAddress = value;
         }
 
         /// <summary>
@@ -108,8 +114,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         /// </summary>
         public bool CheckMaxConnectionsPerAddress
         {
-            get => this.config.CheckMaxConnectionsPerAddress;
-            set => this.config.CheckMaxConnectionsPerAddress = value;
+            get => this.Configuration.CheckMaxConnectionsPerAddress;
+            set => this.Configuration.CheckMaxConnectionsPerAddress = value;
         }
 
         /// <summary>
@@ -118,8 +124,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(1, int.MaxValue)]
         public int MaxConnections
         {
-            get => this.config.MaxConnections;
-            set => this.config.MaxConnections = value;
+            get => this.Configuration.MaxConnections;
+            set => this.Configuration.MaxConnections = value;
         }
 
         /// <summary>
@@ -128,8 +134,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(1, int.MaxValue)]
         public int ListenerBacklog
         {
-            get => this.config.ListenerBacklog;
-            set => this.config.ListenerBacklog = value;
+            get => this.Configuration.ListenerBacklog;
+            set => this.Configuration.ListenerBacklog = value;
         }
 
         /// <summary>
@@ -138,8 +144,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(1, int.MaxValue)]
         public int MaxFtpRequests
         {
-            get => this.config.MaxFtpRequests;
-            set => this.config.MaxFtpRequests = value;
+            get => this.Configuration.MaxFtpRequests;
+            set => this.Configuration.MaxFtpRequests = value;
         }
 
         /// <summary>
@@ -148,8 +154,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(1, int.MaxValue)]
         public int MaxIpRequests
         {
-            get => this.config.MaxIpRequests;
-            set => this.config.MaxIpRequests = value;
+            get => this.Configuration.MaxIpRequests;
+            set => this.Configuration.MaxIpRequests = value;
         }
 
         /// <summary>
@@ -158,8 +164,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(1, int.MaxValue)]
         public int MaxServerListRequests
         {
-            get => this.config.MaxServerListRequests;
-            set => this.config.MaxServerListRequests = value;
+            get => this.Configuration.MaxServerListRequests;
+            set => this.Configuration.MaxServerListRequests = value;
         }
 
         /// <summary>
@@ -168,8 +174,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(10, 3600)]
         public int TimeoutSeconds
         {
-            get => (int)this.config.Timeout.TotalSeconds;
-            set => this.config.Timeout = new TimeSpan(value * TimeSpan.TicksPerSecond);
+            get => (int)this.Configuration.Timeout.TotalSeconds;
+            set => this.Configuration.Timeout = new TimeSpan(value * TimeSpan.TicksPerSecond);
         }
 
         /// <summary>
@@ -178,8 +184,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(0, 255)]
         public int CurrentVersionMajor
         {
-            get => this.config.CurrentPatchVersion[0];
-            set => this.config.CurrentPatchVersion[0] = (byte)value;
+            get => this.Configuration.CurrentPatchVersion[0];
+            set => this.Configuration.CurrentPatchVersion[0] = (byte)value;
         }
 
         /// <summary>
@@ -188,8 +194,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(0, 255)]
         public int CurrentVersionMinor
         {
-            get => this.config.CurrentPatchVersion[1];
-            set => this.config.CurrentPatchVersion[1] = (byte)value;
+            get => this.Configuration.CurrentPatchVersion[1];
+            set => this.Configuration.CurrentPatchVersion[1] = (byte)value;
         }
 
         /// <summary>
@@ -198,8 +204,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
         [Range(0, 255)]
         public int CurrentVersionPatch
         {
-            get => this.config.CurrentPatchVersion[2];
-            set => this.config.CurrentPatchVersion[2] = (byte)value;
+            get => this.Configuration.CurrentPatchVersion[2];
+            set => this.Configuration.CurrentPatchVersion[2] = (byte)value;
         }
     }
 }

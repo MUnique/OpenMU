@@ -2,6 +2,7 @@
 @using MUnique.OpenMU.AdminPanelBlazor.Services
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Persistence.Json
 
 @inject ConnectServerService serverService;
 
@@ -152,8 +153,11 @@
     {
         base.OnInitialized();
 
-        // TODO: That's dangerous! Changes in this object have direct impact, even without saving.
-        this.configuration = new ConnectServerConfigurationViewItem(this.Server.Settings as ConnectServerDefinition);
+        if (this.Server.Settings is IConvertibleTo<Persistence.BasicModel.ConnectServerDefinition> convertible)
+        {
+            var copy = convertible.Convert();
+            this.configuration = new ConnectServerConfigurationViewItem(copy);
+        }
     }
 
     /// <summary>
@@ -161,6 +165,6 @@
     /// </summary>
     public void OnSubmit()
     {
-        this.serverService.Save(this.Server.Settings as ConnectServerDefinition);
+        this.serverService.Save(this.configuration.Configuration);
     }
 }
