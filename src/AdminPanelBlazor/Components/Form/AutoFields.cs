@@ -81,6 +81,10 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                 {
                     i = this.BuildMultiLookUpField(builder, propertyInfo, i);
                 }
+                else
+                {
+                    // not supported.
+                }
             }
         }
 
