@@ -1,0 +1,15 @@
+﻿@inherits InputNumber<int>
+
+<div>
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <InputNumber id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" />
+    <ValidationMessage For=@this.ValueExpression />
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the label.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; }
+}

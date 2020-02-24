@@ -1,0 +1,33 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
+@using System.Reflection
+@typeparam TValue
+
+<label for="@this.fieldIdentifier.FieldName">@this.actualLabel</label>
+
+@code {
+    private string actualLabel;
+    private FieldIdentifier fieldIdentifier;
+
+    /// <summary>
+    /// Gets or sets the text.
+    /// </summary>
+    [Parameter]
+    public string Text { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<TValue>> ValueExpression { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        this.fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
+        this.actualLabel = this.Text
+                           ?? this.fieldIdentifier.Model.GetType().GetProperty(this.fieldIdentifier.FieldName)?.GetCustomAttribute<DisplayAttribute>()?.Name
+                           ?? this.fieldIdentifier.FieldName;
+    }
+}

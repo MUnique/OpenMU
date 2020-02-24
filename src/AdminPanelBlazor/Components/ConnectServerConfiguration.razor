@@ -8,35 +8,9 @@
 
     <EditForm Model="@configuration" OnValidSubmit="OnSubmit">
         <DataAnnotationsValidator />
-        <!-- TODO: Replace all this fields by type-specific components,
-                   Problem: Validation not working correctly yet. (Required field)
-        <TextField Id="descriptionInput"
-               Label="Description"
-               @bind-Value="@configuration.Description"
-               ValidationFor="@(() => configuration.Description)" />
-        -->
-        
-        <div>
-            <label htmlFor="descriptionInput">Description</label>
-            <InputText id="descriptionInput" placeholder="Enter Description" @bind-Value=@this.configuration.Description />
-            <ValidationMessage For="@(() => configuration.Description)" />
-        </div>
-
-        <div>
-            <label htmlFor="clientListenerPortInput">Client listener port</label>
-            <InputNumber id="clientListenerPortInput" @bind-Value=@this.configuration.ClientListenerPort />
-            <ValidationMessage For="@(() => configuration.ClientListenerPort)" />
-        </div>
-        <div>
-            <label htmlFor="gameClientInput">Game Client</label>
-            <InputSelect id="gameClientInput" @bind-Value=@this.configuration.GameClientDefinition>
-                @foreach (var clientVersion in this.serverService.GetClients())
-                {
-                    <!-- TODO: Binding like that is not working yet! it only supports values of strings and enums. -->
-                    <option value=@clientVersion>@clientVersion.Description</option>
-                }
-            </InputSelect>
-        </div>
+        <TextField Id="descriptionInput" Label="Description" @bind-Value="@configuration.Description" />
+        <NumberField Id="clientListenerPortInput" Label="Client listener port" @bind-Value="@configuration.ClientListenerPort" />
+        <LookupField TObject=GameClientDefinition Label="Game Client" @bind-Value="@configuration.GameClientDefinition" />
         <div>
             <label htmlFor="patchVersionInput">Patch-Version</label>
             <div id="patchVersionInput">
@@ -70,15 +44,8 @@
                 <InputText @bind-Value=@this.configuration.PatchAddress aria-describedby="ftp-addon" />
             </div>
         </div>
-        <div>
-            <label htmlFor="disconnectOnUnknownPacketInput">Disconnect on unknown packet</label>
-            <InputCheckbox @bind-Value=@this.configuration.DisconnectOnUnknownPacket />
-        </div>
-        <div>
-            <label htmlFor="maximumReceiveSizeInput">Maximum packet size</label>
-            <InputNumber id="maximumReceiveSizeInput" @bind-Value=@this.configuration.MaximumReceiveSize />
-            <ValidationMessage For="@(() => this.configuration.MaximumReceiveSize)" />
-        </div>
+        <BooleanField Id="disconnectOnUnknownPacketInput" Label="Disconnect on unknown packet" @bind-Value="@configuration.DisconnectOnUnknownPacket" />
+        <NumberField Id="maximumReceiveSizeInput" Label="Maximum packet size" @bind-Value="@configuration.MaximumReceiveSize" />
         <div>
             <label htmlFor="maxConnectionsPerAddressInput">Maximum connections per address</label>
             <div id="maxConnectionsPerAddressInput">
@@ -91,80 +58,56 @@
                 <ValidationMessage For="@(() => this.configuration.MaxConnectionsPerAddress)" />
             </div>
         </div>
-        <div>
-            <label htmlFor="maxConnectionsInput">Maximum connections</label>
-            <InputNumber id="maxConnectionsInput" min="1" @bind-Value=@this.configuration.MaxConnections />
-            <ValidationMessage For="@(() => this.configuration.MaxConnections)" />
-        </div>
-        <div>
-            <label htmlFor="listenerBacklogInput">Listener Backlog</label>
-            <InputNumber id="listenerBacklogInput" min="1" @bind-Value=@this.configuration.ListenerBacklog />
-            <ValidationMessage For="@(() => this.configuration.ListenerBacklog)" />
-        </div>
-        <div>
-            <label htmlFor="maxFtpRequestsInput">Maximum ftp requests per session</label>
-            <InputNumber id="maxFtpRequestsInput" min="0" @bind-Value=@this.configuration.MaxFtpRequests />
-            <ValidationMessage For="@(() => this.configuration.MaxFtpRequests)" />
-        </div>
-        <div>
-            <label htmlFor="maxIpRequestsInput">Maximum address requests per session</label>
-            <InputNumber id="maxIpRequestsInput" min="0" @bind-Value=@this.configuration.MaxIpRequests />
-            <ValidationMessage For="@(() => this.configuration.MaxIpRequests)" />
-        </div>
-        <div>
-            <label htmlFor="maxServerListRequestsInput">Maximum server list requests per session</label>
-            <InputNumber id="maxServerListRequestsInput" min="0" @bind-Value=@this.configuration.MaxServerListRequests />
-            <ValidationMessage For="@(() => this.configuration.MaxServerListRequests)" />
-        </div>
-        <div>
-            <label htmlFor="timeoutSecondsInput">Connection timeout (seconds)</label>
-            <InputNumber id="timeoutSecondsInput" min="1" @bind-Value=@this.configuration.TimeoutSeconds />
-            <ValidationMessage For="@(() => this.configuration.TimeoutSeconds)" />
-        </div>
+        <NumberField Id="maxConnectionsInput" Label="Maximum connections" @bind-Value="@configuration.MaxConnections" />
+        <NumberField Id="listenerBacklogInput" Label="Listener Backlog" @bind-Value="@configuration.ListenerBacklog" />
+        <NumberField Id="maxFtpRequestsInput" Label="Maximum ftp requests per session" @bind-Value="@configuration.MaxFtpRequests" />
+        <NumberField Id="maxIpRequestsInput" Label="Maximum address requests per session" @bind-Value="@configuration.MaxIpRequests" />
+        <NumberField Id="maxServerListRequestsInput" Label="Maximum server list requests per session" @bind-Value="@configuration.MaxServerListRequests" />
+        <NumberField Id="timeoutSecondsInput" Label="Connection timeout (seconds)" @bind-Value="@configuration.TimeoutSeconds" />
 
         <ValidationSummary />
         <div>
             <button type="submit" class="primary-button">Save</button>
             @if (this.Cancel != null)
-            {
-                <button type="button" onClick=@this.Cancel>Cancel</button>
-            }
+                {
+            <button type="button" onClick=@this.Cancel>Cancel</button>
+                }
         </div>
 
     </EditForm>
 
-@code {
-    private ConnectServerConfigurationViewItem configuration;
+        @code {
+            private ConnectServerConfigurationViewItem configuration;
 
-    /// <summary>
-    /// The connect server which should be edited.
-    /// </summary>
-    [Parameter]
-    public IConnectServer Server { get; set; }
+            /// <summary>
+            /// The connect server which should be edited.
+            /// </summary>
+            [Parameter]
+            public IConnectServer Server { get; set; }
 
-    /// <summary>
-    /// The cancel action. If set, an additional Cancel button is provided.
-    /// </summary>
-    [Parameter]
-    public Task Cancel { get; set; }
+            /// <summary>
+            /// The cancel action. If set, an additional Cancel button is provided.
+            /// </summary>
+            [Parameter]
+            public Task Cancel { get; set; }
 
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
+            /// <inheritdoc/>
+            protected override void OnInitialized()
+            {
+                base.OnInitialized();
 
-        if (this.Server.Settings is IConvertibleTo<Persistence.BasicModel.ConnectServerDefinition> convertible)
-        {
-            var copy = convertible.Convert();
-            this.configuration = new ConnectServerConfigurationViewItem(copy);
+                if (this.Server.Settings is IConvertibleTo<Persistence.BasicModel.ConnectServerDefinition> convertible)
+                {
+                    var copy = convertible.Convert();
+                    this.configuration = new ConnectServerConfigurationViewItem(copy);
+                }
+            }
+
+            /// <summary>
+            /// Is executed when clicking the Submit button of the form. Saves the configuration.
+            /// </summary>
+            public void OnSubmit()
+            {
+                this.serverService.Save(this.configuration.Configuration);
+            }
         }
-    }
-
-    /// <summary>
-    /// Is executed when clicking the Submit button of the form. Saves the configuration.
-    /// </summary>
-    public void OnSubmit()
-    {
-        this.serverService.Save(this.configuration.Configuration);
-    }
-}

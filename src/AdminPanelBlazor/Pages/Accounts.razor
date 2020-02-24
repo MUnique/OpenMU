@@ -19,14 +19,7 @@
             <td>@item.State</td>
             <td>@item.EMail</td>
             <td>
-                @if (@item.State == AccountState.Normal)
-                {
-                    <Button class="btn-outline-danger" @onclick="() => this.accountService.Ban(item)">Ban</Button>
-                }
-                else
-                {
-                    <Button class="btn-outline-danger" @onclick="() => this.accountService.Unban(item)">Unban</Button>
-                }
+                <NavLink href="@("edit/" + typeof(Account).FullName + "/" + item.GetId())">Edit</NavLink>
             </td>
         </ItemTemplate>
         <TableFooter>

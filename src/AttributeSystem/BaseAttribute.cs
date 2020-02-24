@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{this.Definition.Designation}: {this.Value}";
+            return $"{this.Definition?.Designation}: {this.Value}";
         }
 
         /// <summary>

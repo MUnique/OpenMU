@@ -1,0 +1,25 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inherits InputBase<string>
+
+    <div>
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        <input @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
+        <ValidationMessage For=@this.ValueExpression />
+    </div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}

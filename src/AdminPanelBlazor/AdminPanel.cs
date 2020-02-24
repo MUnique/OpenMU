@@ -51,6 +51,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStaticWebAssets();
 
                     // For testing purposes, we use http. Later we need to switch to https.
                     // The self-signed certificate would otherwise cause a lot of warnings in the browser.

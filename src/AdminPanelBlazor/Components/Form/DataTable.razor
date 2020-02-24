@@ -128,17 +128,17 @@
         try
         {
             this.StateHasChanged();
-            var items = await this.dataService.Get((page - 1) * this.PageSize, this.PageSize);
+            var loadedItems = await this.dataService.Get((page - 1) * this.PageSize, this.PageSize);
             var isRefresh = this.Page == page;
             if (isRefresh)
             {
                 // when refreshing, always set the items.
-                this.items = items;
+                this.items = loadedItems;
             }
 
-            if (items.Any())
+            if (loadedItems.Any())
             {
-                this.items = items;
+                this.items = loadedItems;
                 this.hasMoreEntries = this.items.Count == this.PageSize;
                 this.Page = page;
             }

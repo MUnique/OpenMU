@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
     internal static class ObjectExtensions
     {
         private static readonly ConcurrentDictionary<Type, PropertyInfo> IdProperties = new ConcurrentDictionary<Type, PropertyInfo>();
+        private static readonly ConcurrentDictionary<Type, PropertyInfo> NameProperties = new ConcurrentDictionary<Type, PropertyInfo>();
 
         /// <summary>
         /// Gets the guid identifier of an object, which has the name "Id".
@@ -35,6 +36,31 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             }
 
             return (Guid)idProperty.GetValue(item);
+        }
+
+        /// <summary>
+        /// Gets the name of an object, which has the name "Id".
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>The guid identifier of an object, which has the name "Id".</returns>
+        public static string GetName(this object item)
+        {
+            if (!NameProperties.TryGetValue(item.GetType(), out var nameProperty))
+            {
+                var properties = item.GetType().GetProperties().Where(p => p.PropertyType == typeof(string));
+                nameProperty = properties.FirstOrDefault(p => p.Name.Equals("Name"))
+                    ?? properties.FirstOrDefault(p => p.Name.Equals("Caption"))
+                    ?? properties.FirstOrDefault(p => p.Name.Equals("Designation"))
+                    ?? properties.FirstOrDefault(p => p.Name.Equals("Description"));
+                NameProperties.TryAdd(item.GetType(), nameProperty);
+            }
+
+            if (nameProperty == null)
+            {
+                return item.ToString();
+            }
+
+            return (string)nameProperty.GetValue(item);
         }
     }
 }

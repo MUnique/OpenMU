@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
+    using System;
     using System.Linq;
     using BCrypt.Net;
     using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,25 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
         }
 
+        /// <inheritdoc />
+        public override Account GetById(Guid id)
+        {
+            this.ContextProvider.RepositoryManager.EnsureCachesForCurrentGameConfiguration();
+            using var context = this.GetContext();
+            context.Context.Database.OpenConnection();
+            try
+            {
+                var objectLoader = new AccountJsonObjectLoader();
+                var account = objectLoader.LoadObject<Account>(id, context.Context);
+                context.Context.Attach(account);
+                return account;
+            }
+            finally
+            {
+                context.Context.Database.CloseConnection();
+            }
+        }
+
         /// <summary>
         /// Gets the account by login name if the password is correct.
         /// </summary>
@@ -31,16 +51,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>The account, if the password is correct. Otherwise, null.</returns>
         internal DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
         {
-            using (var context = this.GetContext())
+            using var context = this.GetContext();
+            var account = this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
+            if (account != null && context.Context.Entry(account) == null)
             {
-                var account = this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
-                if (account != null && context.Context.Entry(account) == null)
-                {
-                    context.Context.Attach(account);
-                }
-
-                return account;
+                context.Context.Attach(account);
             }
+
+            return account;
         }
 
         private Account LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContext context)
@@ -51,20 +69,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             if (accountInfo != null && BCrypt.Verify(password, accountInfo.PasswordHash))
             {
-                this.ContextProvider.RepositoryManager.EnsureCachesForCurrentGameConfiguration();
-
-                context.Context.Database.OpenConnection();
-                try
-                {
-                    var objectLoader = new AccountJsonObjectLoader();
-                    var account = objectLoader.LoadObject<Account>(accountInfo.Id, context.Context);
-                    context.Context.Attach(account);
-                    return account;
-                }
-                finally
-                {
-                    context.Context.Database.CloseConnection();
-                }
+                return this.GetById(accountInfo.Id);
             }
 
             return null;

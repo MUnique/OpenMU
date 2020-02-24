@@ -15,6 +15,8 @@ namespace MUnique.OpenMU.Persistence
     /// </summary>
     public static class TypeHelper
     {
+        private static readonly string ConfigurationNamespace = "MUnique.OpenMU.DataModel.Configuration";
+
         /// <summary>
         /// A cache which holds extended types (Value) for their corresponding base type (Key).
         /// </summary>
@@ -63,6 +65,38 @@ namespace MUnique.OpenMU.Persistence
             }
 
             return Activator.CreateInstance(persistentType, args) as TBase;
+        }
+
+        /// <summary>
+        /// Determines whether the given type is a is configuration type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if the given type is a configuration type; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsConfigurationType(this Type type)
+        {
+            if (type.Namespace != null && type.Namespace.StartsWith(ConfigurationNamespace))
+            {
+                return true;
+            }
+
+            if (type.BaseType != null && type.BaseType.Namespace != null && type.BaseType.Namespace.StartsWith(ConfigurationNamespace))
+            {
+                return true;
+            }
+
+            if (type.Name.Contains("Definition"))
+            {
+                return true;
+            }
+
+            if (type.Name == "AttributeRelationship" || type.Name == "PlugInConfiguration" || type.Name == "ConstValueAttribute")
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

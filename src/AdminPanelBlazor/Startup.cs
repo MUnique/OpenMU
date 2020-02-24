@@ -62,6 +62,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             services.AddScoped<LogController>();
 
             services.AddScoped<IMapFactory, JavascriptMapFactory>();
+            services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
         }
 
         /// <summary>

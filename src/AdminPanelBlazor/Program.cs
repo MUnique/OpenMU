@@ -33,6 +33,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseStaticWebAssets();
                     webBuilder.UseStartup<Startup>();
                 })
                 .Build();

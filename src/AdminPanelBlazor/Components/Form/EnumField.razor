@@ -1,0 +1,22 @@
+﻿@typeparam TValue
+@inherits InputBase<TValue>
+
+<div>
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <EnumSelect Id="@this.FieldIdentifier.FieldName"  @bind-Value="@CurrentValue" />
+    <ValidationMessage For="@this.ValueExpression" />
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the label.
+    /// </summary>
+    [Parameter] public string Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string value, out TValue result, out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+}
