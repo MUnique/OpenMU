@@ -59,13 +59,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                 }
                 else if (propertyInfo.PropertyType.IsEnum)
                 {
-                    var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
-                        .Where(m => m.Name == nameof(this.BuildField))
-                        .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
-                        .MakeGenericMethod(propertyInfo.PropertyType, typeof(EnumField<>).MakeGenericType(propertyInfo.PropertyType));
-                    var parameters = new object[] {propertyInfo, builder, i};
-                    method.Invoke(this, parameters);
-                    i = (int)parameters[2];
+                    i = this.BuildEnumField(builder, propertyInfo, i);
                 }
                 else if (propertyInfo.PropertyType.IsArray)
                 {
@@ -86,6 +80,18 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                     // not supported.
                 }
             }
+        }
+
+        private int BuildEnumField(RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
+        {
+            var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(m => m.Name == nameof(this.BuildField))
+                .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
+                .MakeGenericMethod(propertyInfo.PropertyType, typeof(EnumField<>).MakeGenericType(propertyInfo.PropertyType));
+            var parameters = new object[] {propertyInfo, builder, i};
+            method.Invoke(this, parameters);
+            i = (int)parameters[2];
+            return i;
         }
 
         private int BuildLookUpField(RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
