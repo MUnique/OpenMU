@@ -13,8 +13,6 @@
 namespace MUnique.OpenMU.Network.Packets.ChatServer
 {
     using System;
-    using static System.Buffers.Binary.BinaryPrimitives;
-
 
     /// <summary>
     /// Is sent by the client when: This packet is sent by the client after it connected to the server, to authenticate itself.
@@ -70,8 +68,8 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         public ushort RoomId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
         }
 
         /// <summary>

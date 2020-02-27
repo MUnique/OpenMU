@@ -34,9 +34,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     </xsl:if>
 <xsl:text>
 {
-    using System;
-    using static System.Buffers.Binary.BinaryPrimitives;
-</xsl:text>
+    using System;</xsl:text>
 <xsl:apply-templates />
 <xsl:text>}</xsl:text>
   </xsl:template>
@@ -650,57 +648,57 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
 
     <xsl:template match="pd:Field[pd:Type = 'Short']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt16LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).GetShortLittleEndian();</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'Short']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt16LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetShortLittleEndian(value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'ShortBigEndian']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt16BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).GetShortBigEndian();</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'ShortBigEndian']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt16BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetShortBigEndian(value);</xsl:text>
     </xsl:template>
     
     <xsl:template match="pd:Field[pd:Type = 'Integer']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt32LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).GetIntegerLittleEndian();</xsl:text>
     </xsl:template>
     
     <xsl:template match="pd:Field[pd:Type = 'Integer']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt32LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetIntegerLittleEndian(value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'IntegerBigEndian']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt32BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).GetIntegerBigEndian();</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'IntegerBigEndian']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt32BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetIntegerBigEndian(value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'Long']"  mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt64LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).GetLongLittleEndian();</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'Long']"  mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt64LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetLongLittleEndian(value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'LongBigEndian']"  mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt64BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).GetLongBigEndian();</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'LongBigEndian']"  mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt64BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetLongBigEndian(value);</xsl:text>
     </xsl:template>
 
     <!-- Floats can be optimized I think-->

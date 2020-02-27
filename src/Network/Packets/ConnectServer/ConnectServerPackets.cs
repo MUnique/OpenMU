@@ -13,8 +13,6 @@
 namespace MUnique.OpenMU.Network.Packets.ConnectServer
 {
     using System;
-    using static System.Buffers.Binary.BinaryPrimitives;
-
 
     /// <summary>
     /// Is sent by the client when: This packet is sent by the client after the user clicked on an entry of the server list.
@@ -77,8 +75,8 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// </summary>
         public ushort ServerId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => this.data.Slice(4).GetShortBigEndian();
+            set => this.data.Slice(4).SetShortBigEndian(value);
         }
 
         /// <summary>
@@ -172,8 +170,8 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// </summary>
         public ushort Port
         {
-            get => ReadUInt16BigEndian(this.data.Slice(20));
-            set => WriteUInt16BigEndian(this.data.Slice(20), value);
+            get => this.data.Slice(20).GetShortBigEndian();
+            set => this.data.Slice(20).SetShortBigEndian(value);
         }
 
         /// <summary>
@@ -325,8 +323,8 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// </summary>
         public ushort ServerCount
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(5));
-            set => WriteUInt16LittleEndian(this.data.Slice(5), value);
+            get => this.data.Slice(5).GetShortLittleEndian();
+            set => this.data.Slice(5).SetShortLittleEndian(value);
         }
 
         /// <summary>
@@ -381,8 +379,8 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// </summary>
         public ushort ServerId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(0));
-            set => WriteUInt16BigEndian(this.data.Slice(0), value);
+            get => this.data.Slice(0).GetShortBigEndian();
+            set => this.data.Slice(0).SetShortBigEndian(value);
         }
 
         /// <summary>
