@@ -86,6 +86,7 @@
     <xs:restriction base="xs:Name">
       <xs:enumeration value="ServerToClient" />
       <xs:enumeration value="ClientToServer" />
+      <xs:enumeration value="Bidirectional" />
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="ArrayOfField">
