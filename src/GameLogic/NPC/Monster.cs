@@ -181,6 +181,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.Hit(hitInfo, attacker);
             if (hitInfo.HealthDamage > 0)
             {
+                attacker.ApplyAmmunitionConsumption(hitInfo);
                 (attacker as Player)?.AfterHitTarget();
             }
         }
