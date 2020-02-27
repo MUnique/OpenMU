@@ -201,6 +201,25 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Applies the ammunition consumption.
+        /// </summary>
+        /// <param name="attacker">The attacker.</param>
+        /// <param name="hitInfo">The hit information.</param>
+        public static void ApplyAmmunitionConsumption(this IAttackable attacker, HitInfo hitInfo)
+        {
+            if (!hitInfo.Attributes.HasFlag(DamageAttributes.Reflected) && attacker.Attributes[Stats.AmmunitionConsumptionRate] > 0.0)
+            {
+                // Every hit needs ammo. Failed hits don't need ammo.
+                if (attacker.Attributes[Stats.AmmunitionAmount] < attacker.Attributes[Stats.AmmunitionConsumptionRate])
+                {
+                    return;
+                }
+
+                attacker.Attributes[Stats.AmmunitionAmount] -= attacker.Attributes[Stats.AmmunitionConsumptionRate];
+            }
+        }
+
+        /// <summary>
         /// Checks if the target can be attacked by the player, based on the target restrictions of the skill.
         /// </summary>
         /// <param name="target">The target.</param>

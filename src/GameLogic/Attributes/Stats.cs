@@ -477,6 +477,16 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition MoonstonePendantEquipped { get; } = new AttributeDefinition(new Guid("4BC010D0-9E75-4ECB-8963-08A3697278C3"), "Requirement of the Kanturu Event Map during the event.", "You can enter the Kanturu Event only with an equipped Moonstone Pendant.");
 
         /// <summary>
+        /// Gets the Ammo consumption rate attribute which defines how much ammo is consumed by some skills.
+        /// </summary>
+        public static AttributeDefinition AmmunitionConsumptionRate { get; } = new AttributeDefinition(new Guid("4CD0B1AE-3FE0-499B-B421-4E4078182090"), "The amount of ammo which is required to perform certain skills.", "You can only execute certain skills if you have enough ammo, or if this rate is 0.");
+
+        /// <summary>
+        /// Gets the Ammo attribute which defines how much ammo is available.
+        /// </summary>
+        public static AttributeDefinition AmmunitionAmount { get; } = new AttributeDefinition(new Guid("064543E6-2559-4033-B363-AE76214E7DEE"), "The amount of ammo which is equipped.", "You can only execute certain skills if you have enough ammo, or if the ammo consumption rate is 0.");
+
+        /// <summary>
         /// Gets the attributes which are regenerated in an interval.
         /// </summary>
         public static IEnumerable<Regeneration> IntervalRegenerationAttributes

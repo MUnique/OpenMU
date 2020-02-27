@@ -317,6 +317,8 @@ namespace MUnique.OpenMU.GameLogic
                 return;
             }
 
+            attacker.ApplyAmmunitionConsumption(hitInfo);
+
             if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
             {
                 this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
@@ -927,6 +929,23 @@ namespace MUnique.OpenMU.GameLogic
             this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, killer);
         }
 
+        private Item GetAmmunitionItem()
+        {
+            if (this.Inventory.GetItem(InventoryConstants.LeftHandSlot) is { } leftItem
+                && leftItem.Definition.IsAmmunition)
+            {
+                return leftItem;
+            }
+
+            if (this.Inventory.GetItem(InventoryConstants.RightHandSlot) is { } rightItem
+                && rightItem.Definition.IsAmmunition)
+            {
+                return rightItem;
+            }
+
+            return null;
+        }
+
         private void OnPlayerEnteredWorld(object sender, EventArgs e)
         {
             this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter);
@@ -944,6 +963,9 @@ namespace MUnique.OpenMU.GameLogic
             this.Attributes.GetOrCreateAttribute(Stats.MaximumAbility).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumHealth).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumShield).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
+            var ammoAttribute = this.Attributes.GetOrCreateAttribute(Stats.AmmunitionAmount);
+            this.Attributes[Stats.AmmunitionAmount] = this.GetAmmunitionItem()?.Durability ?? 0;
+            ammoAttribute.ValueChanged += (a, b) => this.OnAmmunitionAmountChanged();
 
             this.ClientReadyAfterMapChange();
 
@@ -979,6 +1001,17 @@ namespace MUnique.OpenMU.GameLogic
             this.Attributes[Stats.CurrentShield] = Math.Min(this.Attributes[Stats.CurrentShield], this.Attributes[Stats.MaximumShield]);
             this.ViewPlugIns.GetPlugIn<IUpdateMaximumHealthPlugIn>()?.UpdateMaximumHealth();
             this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
+        }
+
+        private void OnAmmunitionAmountChanged()
+        {
+            var value = Math.Max((byte)this.Attributes[Stats.AmmunitionAmount], (byte)0);
+            if (this.GetAmmunitionItem() is { } ammoItem
+                && ammoItem.Durability != value)
+            {
+                ammoItem.Durability = value;
+                this.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(ammoItem, false);
+            }
         }
 
         private void OnMaximumManaOrAbilityChanged()
