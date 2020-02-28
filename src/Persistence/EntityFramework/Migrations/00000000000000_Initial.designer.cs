@@ -948,6 +948,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("Height");
 
+                    b.Property<bool>("IsAmmunition");
+
                     b.Property<Guid?>("ItemSlotId");
 
                     b.Property<byte>("MaximumItemLevel");
