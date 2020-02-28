@@ -22,7 +22,7 @@ For the big picture, you may have a look at the [architecture overview](architec
 There are interfaces for the interoperability between the different "servers" or sub-systems in [MUnique.OpenMU.Interfaces](../src/Interfaces/Readme.md).
 
 ### Communication between game client and server
-The network communication between game client and the game server takes place through the [Connection class](../src/Network/Connection.cs). MUnique.OpenMU.Network contains all what's required to connect from and to a game server, using the MU Online network protocol.
+The network communication between game client and the game server takes place through the [Connection class](https://github.com/MUnique/OpenMU/tree/master/src/Network/Connection.cs). MUnique.OpenMU.Network contains all what's required to connect from and to a game server, using the MU Online network protocol.
 It also contains the message structs of the messages in MUnique.OpenMU.Network.Packets.
 
 #### Client -> Server
@@ -34,11 +34,11 @@ or how the communication took place.
 #### Server -> Client
 The other way - data sent to the game game client - is done by views (MUnique.OpenMU.GameServer.RemoteView).
 These views are using the Connection class to send the data in the specified protocol. The GameLogic has no
-knowledge about this protocol and just works with the [view interface plugins](../src/GameLogic/Views/IViewPlugIn.cs).
+knowledge about this protocol and just works with the [view interface plugins](https://github.com/MUnique/OpenMU/tree/master/src/GameLogic/Views/IViewPlugIn.cs).
 
 #### Benefits of this architecture
 As you can see, the GameLogic itself does not know how the player actions are triggered or how the "view" look like.
-Instead of working with the network, there could be an implementation of [view plugins](../src/GameLogic/Views/IViewPlugIn.cs) which is literally a graphical user interface.
+Instead of working with the network, there could be an implementation of [view plugins](https://github.com/MUnique/OpenMU/tree/master/src/GameLogic/Views/IViewPlugIn.cs) which is literally a graphical user interface.
 Also instead of calling the player actions by packet handler plugins, a user interface could call them instead.
 So this project could be a base for a (non-MU) game client which then could also support multiplayer and co-op with the existing server components.
 
@@ -62,10 +62,10 @@ For example, if we want to use a document based database, an account could be on
 To accomplish the design goals, the game logic (and other parts) are using abstractions, [Repositories](https://martinfowler.com/eaaCatalog/repository.html), to access data.
 These abstractions are located at the MUnique.OpenMU.Persistence namespace.
 
-We use a context-based approach to access data, e.g. the [GameConfiguration](../src/DataModel/Configuration/GameConfiguration.cs) is loaded through a [GameConfigurationRepository](../src/Persistence/EntityFramework/GameConfigurationRepository.cs) while "using" a [context](../src/Persistence/IContext.cs), and each connected player uses its own [player context](../src/Persistence/IPlayerContext.cs) to load its [Account](../src/DataModel/Entities/Account.cs).
+We use a context-based approach to access data, e.g. the [GameConfiguration](https://github.com/MUnique/OpenMU/tree/master/src/DataModel/Configuration/GameConfiguration.cs) is loaded through a [GameConfigurationRepository](https://github.com/MUnique/OpenMU/tree/master/src/Persistence/EntityFramework/GameConfigurationRepository.cs) while "using" a [context](https://github.com/MUnique/OpenMU/tree/master/src/Persistence/IContext.cs), and each connected player uses its own [player context](https://github.com/MUnique/OpenMU/tree/master/src/Persistence/IPlayerContext.cs) to load its [Account](https://github.com/MUnique/OpenMU/tree/master/src/DataModel/Entities/Account.cs).
 When saving an account, we actually save the it's context. The context then takes care that every required change is done at the database.
-When accessing or creating new persistent objects, the [context](../src/Persistence/IContext.cs) needs to be "in use" on the current thread, because the actual context implementation may need to track these objects.
-It takes care of a lot of things, e.g. creating new objects. Contexts can be created with the [PersistenceContextProvider](../src/Persistence/IPersistenceContextProvider.cs).
+When accessing or creating new persistent objects, the [context](https://github.com/MUnique/OpenMU/tree/master/src/Persistence/IContext.cs) needs to be "in use" on the current thread, because the actual context implementation may need to track these objects.
+It takes care of a lot of things, e.g. creating new objects. Contexts can be created with the [PersistenceContextProvider](https://github.com/MUnique/OpenMU/tree/master/src/Persistence/IPersistenceContextProvider.cs).
 
 #### Current implementation and supported database ####
 At the moment the persistence layer is implemented by [MUnique.OpenMU.Persistence.EntityFramework](../src/Persistence/EntityFramework/Readme.md) which uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) and [PostgreSQL](https://www.postgresql.org/) as database.
