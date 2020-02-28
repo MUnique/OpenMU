@@ -14,10 +14,10 @@ MU Online packets can start with four different byte values (0xC1 to 0xC4) which
 
 ## Packets
 
-  * [From Game Server to Client](Packets/ServerToClient.md)
-  * [From Client to Game Server](Packets/ServerToClient.md)
-  * [Between Connect Server and Client](Packets/ConnectServer.md)
-  * [Between Chat Server and Client](Packets/ChatServer.md)
+  * [From Game Server to Client](ServerToClient.md)
+  * [From Client to Game Server](ClientToServer.md)
+  * [Between Connect Server and Client](ConnectServer.md)
+  * [Between Chat Server and Client](ChatServer.md)
   
 ## Appearance
 
