@@ -1010,7 +1010,16 @@ namespace MUnique.OpenMU.GameLogic
                 && ammoItem.Durability != value)
             {
                 ammoItem.Durability = value;
-                this.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(ammoItem, false);
+                if (ammoItem.Durability == 0)
+                {
+                    this.Inventory.RemoveItem(ammoItem);
+                    this.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(ammoItem.ItemSlot);
+                    this.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(ammoItem);
+                }
+                else
+                {
+                    this.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(ammoItem, false);
+                }
             }
         }
 
