@@ -4,7 +4,7 @@
 
 This packet is sent by the client after it connected to the server, to authenticate itself.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server will check the token. If it's correct, the client gets added to the requested chat room.
 

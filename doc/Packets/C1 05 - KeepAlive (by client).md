@@ -4,7 +4,7 @@
 
 This packet is sent by the client in a fixed interval.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server will keep the connection and chat room intact as long as the clients sends a message in a certain period of time.
 
