@@ -43,7 +43,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="fileName" select="concat($designation, '.md')" />
-    <xsl:text expand-text="yes">  * [{$designation}](&lt;{$fileName}&gt;)</xsl:text>
+    <xsl:text expand-text="yes">  * [{$designation}]({encode-for-uri($fileName)})</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:result-document href="{$fileName}" method="text">
       <xsl:text># </xsl:text>
