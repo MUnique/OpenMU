@@ -1464,6 +1464,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Durability = table.Column<byte>(nullable: false),
                     Group = table.Column<byte>(nullable: false),
                     Height = table.Column<byte>(nullable: false),
+                    IsAmmunition = table.Column<bool>(nullable: false),
                     MaximumItemLevel = table.Column<byte>(nullable: false),
                     MaximumSockets = table.Column<int>(nullable: false),
                     Number = table.Column<short>(nullable: false),
