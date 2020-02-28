@@ -8,8 +8,8 @@ Complexity 0 means we wont implement it.
 
 | Feature                     | Packet code       | Progress | Complexity | Note                                          |
 |-----------------------------|-------------------|----------|------------|-----------------------------------------------|
-| *Public chat*               | [0x00][0x00]              | 100%     | 5          |                                               |
-| *Whisper chat*              | [0x02][0x02]              | 100%     | 5          |                                               |
+| *Public chat*               | 0x00              | 100%     | 5          |                                               |
+| *Whisper chat*              | 0x02              | 100%     | 5          |                                               |
 | Client Checksum             | 0x03              | 0%       | 0          | Don't need - no security benefit              |
 | Ping                        | 0x0E              | 0%       | 0          | Don't need - no security benefit              |
 | *Animation*                   | 0x18              | 100%     | 2          |                                               |
@@ -63,8 +63,8 @@ Complexity 0 means we wont implement it.
 | BCStuff                     | 0x9B              | 0%       | 1          |                                               |
 | RequestLottoRegister        | 0x9D              | 0%       | 0          |                                               |
 | RequestEventEnterCount      | 0x9F              | 0%       | 0          |                                               |
-| RequestQuestInfo            | [0xA0][0xA0]              | 0%       | 4          |                                               |
-| SetQuestState               | [0xA2][0xA2]              | 0%       | 2          |                                               |
+| RequestQuestInfo            | 0xA0              | 0%       | 4          |                                               |
+| SetQuestState               | 0xA2              | 0%       | 2          |                                               |
 | PetItemCommand              | 0xA7              | 0%       | 5          |                                               |
 | RequestPetItemInfo          | 0xA9              | 0%       | 3          |                                               |
 | RequestDuelStart            | 0xAA              | 0%       | 4          |                                               |
@@ -103,28 +103,16 @@ Complexity 0 means we wont implement it.
 | RequestAllyKickGuild        | 0xEB              | 0%       | 3          |                                               |
 | *LoginLogoutGroup*            | 0xF1              | 100%     | 10         |                                               |
 | *CharacterGroup*              | 0xF3              | 100%     | 10         |                                               |
-|   - *Character list* | [0xF300][0xF300]            |      |          |                                               |
-|   - *Character creation* | [0xF301][0xF301]            |      |          |                                               |
-|   - *Character delete request* | [0xF302][0xF302]            |      |          |                                               |
-|   - *Character select request* | [0xF303][0xF303]            |      |          |                                               |
-|   - *Character stat increase request* | [0xF306][0xF306]            |      |          |                                               |
-|   - *Character focus request* | [0xF315][0xF315]            |      |          |                                               |
-|   - *Save key configuration* | [0xF330][0xF330]            |      |          |                                               |
-|   - *Master skill level increase request* | [0xF352][0xF352]            |      |          |                                               
+|   - *Character list* | 0xF300            |      |          |                                               |
+|   - *Character creation* | 0xF301            |      |          |                                               |
+|   - *Character delete request* | 0xF302            |      |          |                                               |
+|   - *Character select request* | 0xF303            |      |          |                                               |
+|   - *Character stat increase request* | 0xF306            |      |          |                                               |
+|   - *Character focus request* | 0xF315            |      |          |                                               |
+|   - *Save key configuration* | 0xF330            |      |          |                                               |
+|   - *Master skill level increase request* | 0xF352            |      |          |                                               
 | CashShopGroup               | 0xF5              | 0%       | 10         | Low priority                                  |
 | *Hit*                         | 0x11      | 100%     | 10         |                                               |
 | *Teleport*                    | 0x15 | 100%     | 2          |                                               |
 | *Walk*                        | 0xD4     | 100%     | 10         |                                               |
 
-[0x00]: Packets/C100%20-%20Chat%20message%20(by%20client).md
-[0x02]: Packets/C102%20-%20Whispered%20chat%20message.md
-[0xA0]: Packets/C1A0%20-%20Request%20quest%20state%20(by%20client).md
-[0xA2]: Packets/C1A2%20-%20Set%20quest%20state%20request%20(by%20client).md
-[0xF300]: Packets/C1F300%20-%20Character%20list%20request%20(by%20client).md
-[0xF301]: Packets/C1F301%20-%20Character%20creation%20request.md
-[0xF302]: Packets/C1F302%20-%20Character%20delete%20request.md
-[0xF303]: Packets/C1F303%20-%20Character%20select%20request.md
-[0xF306]: Packets/C1F306%20-%20Character%20stat%20increase%20request.md
-[0xF315]: Packets/C1F315%20-%20Character%20focus%20request.md
-[0xF330]: Packets/C1F330%20-%20Save%20key%20configuration.md
-[0xF352]: Packets/C1F352%20-%20Master%20skill%20level%20increase%20request.md

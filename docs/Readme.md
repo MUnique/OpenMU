@@ -1,18 +1,12 @@
 ﻿# Documentation
 
-This project should contain all the (technical) documentation of the OpenMU project, including packet descriptions, game mechanics and software architecture.
-
-### C# Project?
-As you might noticed, it's created as C#-project, but doesn't contain any code.
-It's a workaround to have it available in Visual Studio as separate project.
-Additionally we can later add msbuild tasks to export this documentation in other formats.
-
+This directory should contain all the (technical) documentation of the OpenMU project, including [packets descriptions](Packets/Readme.md), game mechanics and software architecture.
 
 ### Why not using the wiki?
 We think that a lot of the documentation (especially packet descriptions) is based on the actual code.
 This documentation is not added to the wiki, because we can't create a branches of a wiki.
 In case we want to support other versions of the game, we branch this files together with the code so everything fits together.
-We also think that all the (technical) documentation should be available within the code (and IDE), so there is no point in using the wiki.
+We also think that all the (technical) documentation should be available within the code, so there is no point in using the wiki.
 
 However, documentation like getting the project run (like a users manual) could be put on the wiki, of course.
 
@@ -29,30 +23,27 @@ There are interfaces for the interoperability between the different "servers" or
 
 ### Communication between game client and server
 The network communication between game client and the game server takes place through the [Connection class](../src/Network/Connection.cs). MUnique.OpenMU.Network contains all what's required to connect from and to a game server, using the MU Online network protocol.
+It also contains the message structs of the messages in MUnique.OpenMU.Network.Packets.
 
 #### Client -> Server
-When receiving data from the game client, it gets forwarded to the packet handlers located at namespace MUnique.OpenMU.GameServer.MessageHandler.
+When receiving data from the game client, it gets forwarded to the packet handlers located at namespace MUnique.OpenMU.GameServer.MessageHandler. Every handler is an implementation of a IPacketHandlerPlugIn.
 These message handlers are parsing the data packets and then calls the player actions located 
 at MUnique.OpenMU.GameLogic.PlayerActions, which should have no knowledge of the packet structure
 or how the communication took place.
 
-The packet handlers are configured in the GameConfiguration (database), so that they can be replaced by extended or modified versions.
-It's possible to offer different protocols to work on the same game, by configuring multiple main packet handlers which can be bound to separate tcp ports.
-
 #### Server -> Client
 The other way - data sent to the game game client - is done by views (MUnique.OpenMU.GameServer.RemoteView).
 These views are using the Connection class to send the data in the specified protocol. The GameLogic has no
-knowledge about this protocol and just works with the [view interfaces](../src/GameLogic/Views/IPlayerView.cs).
-
-Currently, this is not as configurable as the packet handler configuration - the [RemotePlayer](../src/GameServer/RemoteView/RemotePlayer.cs)
-directly creates the specific [RemoteView](../src/GameServer/RemoteView/RemoteView.cs).
-A better configurability might be good goal for the future.
+knowledge about this protocol and just works with the [view interface plugins](../src/GameLogic/Views/IViewPlugIn.cs).
 
 #### Benefits of this architecture
 As you can see, the GameLogic itself does not know how the player actions are triggered or how the "view" look like.
-Instead of working with the network, there could be an implementation of a [player view](../src/GameLogic/Views/IPlayerView.cs) which is literally a graphical user interface.
-Also instead of calling the player actions by packet handlers, a user interface could call them instead.
+Instead of working with the network, there could be an implementation of [view plugins](../src/GameLogic/Views/IViewPlugIn.cs) which is literally a graphical user interface.
+Also instead of calling the player actions by packet handler plugins, a user interface could call them instead.
 So this project could be a base for a (non-MU) game client which then could also support multiplayer and co-op with the existing server components.
+
+All plugins are configurable over the AdminPanel. They can be activated/deactivated, so that they can be replaced by extended or modified versions.
+It's also possible to offer different protocols to work on the same game world, by implementing multiple view and packet handlers with different client versions attributes. Each game server can have multiple tcp listeners which can be bound to separate tcp ports for different client versions, too.
 
 
 ### Data access
@@ -88,8 +79,13 @@ the really complex game configuration finishes in about 1.5 seconds.
 If there might be a problem in the future, we could go further and mix relational tables with json columns or to fully switch to a document based database (e.g. RavenDB).
 
 
-### Further informations
+### Further information
+  * [Packets](Packets/Readme.md): Information about the packet structures
+  * [Master Skill System](MasterSystem.md): Description about the master skill system
+  * [GameMap](GameMap.md): Description about the GameMap implementation
+  * [Progress](Progress.md): Information about the feature implementation progress of the project
   * [Admin Panel](../src/AdminPanel/Readme.md): The user inferface of the server
   * [Attribute System](../src/AttributeSystem/Readme.md): Damage calculation and player attributes are based on that
   * [Network](../src/Network/Readme.md): About the network communication
   * [Startup](../src/Startup/Readme.md): It's the project for the executeable which puts every piece of the puzzle together
+
