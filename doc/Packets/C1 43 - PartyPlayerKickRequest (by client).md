@@ -4,7 +4,7 @@
 
 A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.
 

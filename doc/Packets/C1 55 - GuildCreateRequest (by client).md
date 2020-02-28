@@ -4,7 +4,7 @@
 
 When a player wants to create a guild.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The guild is created and the player is set as the new guild master of the guild.
 

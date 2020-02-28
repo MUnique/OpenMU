@@ -4,7 +4,7 @@
 
 A player sends a private chat message to a specific target player.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The message is forwarded to the target player.
 

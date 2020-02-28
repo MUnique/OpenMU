@@ -4,7 +4,7 @@
 
 A player attacks a target without using a skill.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
 

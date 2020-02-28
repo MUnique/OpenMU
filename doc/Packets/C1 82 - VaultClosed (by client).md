@@ -4,7 +4,7 @@
 
 The player closed an opened vault dialog.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The state on the server is updated.
 

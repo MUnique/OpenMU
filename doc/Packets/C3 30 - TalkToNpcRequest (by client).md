@@ -4,7 +4,7 @@
 
 A player wants to talk to an NPC.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.
 

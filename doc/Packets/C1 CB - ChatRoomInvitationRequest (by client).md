@@ -4,7 +4,7 @@
 
 A player wants to invite additional players from his friend list to an existing chat room.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.
 

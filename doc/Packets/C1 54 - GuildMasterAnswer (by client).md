@@ -4,7 +4,7 @@
 
 The player has the dialog of the guild master NPC opened and decided about its next step.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
 

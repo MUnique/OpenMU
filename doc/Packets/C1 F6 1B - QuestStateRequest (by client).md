@@ -4,7 +4,7 @@
 
 The game client requests the state of a specific active quests.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.
 

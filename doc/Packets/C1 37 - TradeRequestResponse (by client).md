@@ -4,7 +4,7 @@
 
 A requested player responded to a trade request of another player.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. 
 

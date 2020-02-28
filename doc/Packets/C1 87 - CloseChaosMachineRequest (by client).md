@@ -4,7 +4,7 @@
 
 A player closes the dialog which was opened by an interaction with the chaos machine goblin.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server updates the state of the player accordingly.
 

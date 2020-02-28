@@ -4,7 +4,7 @@
 
 The clients requests the states of all quests, usually after entering the game.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
 

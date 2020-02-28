@@ -4,7 +4,7 @@
 
 A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 
 

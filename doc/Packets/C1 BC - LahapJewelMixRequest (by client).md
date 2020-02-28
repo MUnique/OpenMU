@@ -4,7 +4,7 @@
 
 When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If successful, the inventory is updated and the game client gets corresponding responses.
 

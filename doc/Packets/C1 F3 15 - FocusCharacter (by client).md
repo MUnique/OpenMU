@@ -4,7 +4,7 @@
 
 The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.
 

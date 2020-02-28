@@ -4,7 +4,7 @@
 
 The player tries to log into the game.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
 

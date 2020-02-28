@@ -4,7 +4,7 @@
 
 This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 By the original server this is used to detect speed hacks.
 

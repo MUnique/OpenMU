@@ -4,7 +4,7 @@
 
 A player requests to delete a letter.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The letter is getting deleted.
 

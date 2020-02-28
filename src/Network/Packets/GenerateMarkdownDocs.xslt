@@ -60,7 +60,7 @@
 
       <xsl:text>## Causes the following actions on the </xsl:text>
       <xsl:choose>
-        <xsl:when test="ClientToServer">server side</xsl:when>
+        <xsl:when test="d:Direction = 'ClientToServer'">server side</xsl:when>
         <xsl:otherwise>client side</xsl:otherwise>
       </xsl:choose>
       <xsl:value-of select="$newline" />

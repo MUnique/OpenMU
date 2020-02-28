@@ -4,7 +4,7 @@
 
 The player wants to change the state of a quest, e.g. to start or to finish a quest.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 Depending on the requested new state, a response is sent back.
 

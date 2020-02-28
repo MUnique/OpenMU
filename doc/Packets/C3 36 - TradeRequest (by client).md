@@ -4,7 +4,7 @@
 
 The player requests to open a trade with another player.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The request is forwarded to the requested player.
 

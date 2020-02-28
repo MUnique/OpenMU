@@ -4,7 +4,7 @@
 
 The client opened an quest NPC dialog and decided to start an available quests.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.
 

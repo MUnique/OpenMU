@@ -4,7 +4,7 @@
 
 The game client requests the list of event quests, usually after entering the game.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
 

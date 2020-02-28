@@ -4,7 +4,7 @@
 
 When leaving the game world with a character.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server saves this configuration in its database.
 

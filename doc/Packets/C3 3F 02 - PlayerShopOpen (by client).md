@@ -4,7 +4,7 @@
 
 The player wants to open his personal item shop.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The personal item shop is opened and the surrounding players are informed about it, including the own player.
 

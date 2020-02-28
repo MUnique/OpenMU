@@ -4,7 +4,7 @@
 
 A player received a friend request from another player and responded to it.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.
 

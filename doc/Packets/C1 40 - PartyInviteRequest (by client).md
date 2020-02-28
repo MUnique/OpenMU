@@ -4,7 +4,7 @@
 
 A party master wants to invite another player to his party.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the requesting player has no party, or is the party master, a request is sent to the target player.
 

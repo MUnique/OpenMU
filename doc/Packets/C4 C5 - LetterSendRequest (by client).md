@@ -4,7 +4,7 @@
 
 A player wants to send a letter to another players character.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The letter is sent to the other character, if it exists and the player has the required money.
 

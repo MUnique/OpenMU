@@ -4,7 +4,7 @@
 
 This packet is sent by the client (below season 1) after it connected and received the 'Hello' message.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server will send a ServerListResponseOld back to the client.
 

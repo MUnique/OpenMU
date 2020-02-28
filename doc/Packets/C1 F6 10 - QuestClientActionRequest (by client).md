@@ -4,7 +4,7 @@
 
 The game client requests to complete a client action, e.g. completing a tutorial.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.
 

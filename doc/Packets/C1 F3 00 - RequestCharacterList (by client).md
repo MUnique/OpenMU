@@ -4,7 +4,7 @@
 
 After a successful login or after the player decided to leave the game world to go back to the character selection screen.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server sends the character list with all available characters.
 

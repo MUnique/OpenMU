@@ -4,7 +4,7 @@
 
 The client opened an quest NPC dialog and requests a list of available quests.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The list of available quests of this NPC is sent back (F60A).
 

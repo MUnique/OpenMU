@@ -4,7 +4,7 @@
 
 An area skill was performed and the client decided to hit a target.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
 

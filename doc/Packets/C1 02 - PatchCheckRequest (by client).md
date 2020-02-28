@@ -4,7 +4,7 @@
 
 This packet is sent by the client (launcher) to check if the patch version is high enough to be able to connect to the server.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The connect server will check the version and sends a 'PatchVersionOkay' or a 'ClientNeedsPatch' message.
 

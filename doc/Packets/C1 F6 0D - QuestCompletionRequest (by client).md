@@ -4,7 +4,7 @@
 
 The game client requests to complete an active quest.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.
 

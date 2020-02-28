@@ -4,7 +4,7 @@
 
 A guild member wants to kick himself or a guild master wants to kick another player from its guild.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.
 

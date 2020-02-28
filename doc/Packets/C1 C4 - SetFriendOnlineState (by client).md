@@ -4,7 +4,7 @@
 
 A player wants to set himself on- or offline.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 Depending on the state, the player is shown as offline or online in all friend lists of his friends.
 

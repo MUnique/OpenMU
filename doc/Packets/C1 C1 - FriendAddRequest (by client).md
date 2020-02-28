@@ -4,7 +4,7 @@
 
 A player wants to add another players character into his friend list of the messenger.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.
 

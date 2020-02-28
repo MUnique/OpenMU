@@ -4,7 +4,7 @@
 
 A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server sends a response which includes the guild name and emblem.
 

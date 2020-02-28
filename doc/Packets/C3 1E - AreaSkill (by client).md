@@ -4,7 +4,7 @@
 
 A player is performing an skill which affects an area of the map.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
 

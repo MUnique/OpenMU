@@ -4,7 +4,7 @@
 
 When the client wants to leave the game in various ways.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.
 

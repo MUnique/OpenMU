@@ -4,7 +4,7 @@
 
 The player wants to cancel the trade.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The trade is cancelled and the previous inventory state is restored.
 

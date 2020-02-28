@@ -4,7 +4,7 @@
 
 A player wants to delete another players character from his friend list of the messenger.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The entry in the friend list is removed. The player is shown as offline in the other players friends list.
 

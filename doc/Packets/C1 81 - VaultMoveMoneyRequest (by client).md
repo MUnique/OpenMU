@@ -4,7 +4,7 @@
 
 The player wants to move money from or to the vault storage.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The money is moved, if possible.
 

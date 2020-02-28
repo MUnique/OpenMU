@@ -4,7 +4,7 @@
 
 The game client is at the character selection screen and the player requests to add a new character.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server checks if the player is allowed to create the character and sends a response back.
 

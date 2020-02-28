@@ -4,7 +4,7 @@
 
 A player requests to drop on item of his inventory on the ground.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.
 

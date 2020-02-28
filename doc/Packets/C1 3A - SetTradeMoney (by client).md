@@ -4,7 +4,7 @@
 
 A player requests to set an amount of money in the trade.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.
 

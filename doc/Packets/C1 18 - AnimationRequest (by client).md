@@ -4,7 +4,7 @@
 
 A player does any kind of animation.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The animation number and rotation is forwarded to all surrounding players.
 

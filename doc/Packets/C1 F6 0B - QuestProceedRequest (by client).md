@@ -4,7 +4,7 @@
 
 After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
 

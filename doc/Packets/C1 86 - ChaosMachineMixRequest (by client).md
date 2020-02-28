@@ -4,7 +4,7 @@
 
 The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
 

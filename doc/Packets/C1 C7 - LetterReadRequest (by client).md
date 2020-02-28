@@ -4,7 +4,7 @@
 
 A player requests to read a specific letter of his letter list.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server sends the requested letter content back to the game client.
 

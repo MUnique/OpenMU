@@ -4,7 +4,7 @@
 
 A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server tries to 'consume' the specified item and responses accordingly.
 

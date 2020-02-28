@@ -4,7 +4,7 @@
 
 A player wants to sell an item of his inventory to the opened NPC merchant.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.
 

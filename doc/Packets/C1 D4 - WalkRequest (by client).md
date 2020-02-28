@@ -4,7 +4,7 @@
 
 A player wants to walk on the game map.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The player gets moved on the map, visible for other surrounding players.
 

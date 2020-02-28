@@ -4,7 +4,7 @@
 
 When the player opens the party menu in the game client.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the player is in a party, the server sends back a list with information about all players of the party.
 

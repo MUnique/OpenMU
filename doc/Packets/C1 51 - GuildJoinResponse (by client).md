@@ -4,7 +4,7 @@
 
 A guild master responded to a previously sent request.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the request was accepted by the guild master, the previously requesting player is added to the guild.
 

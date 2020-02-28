@@ -4,7 +4,7 @@
 
 A player sends a public chat message.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The message is forwarded to all surrounding players, including the sender.
 

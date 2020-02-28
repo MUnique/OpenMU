@@ -4,7 +4,7 @@
 
 This packet is sent by the client after the user clicked on an entry of the server list.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server will send a ConnectionInfo back to the client.
 

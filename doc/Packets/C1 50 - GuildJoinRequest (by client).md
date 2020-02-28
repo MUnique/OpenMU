@@ -4,7 +4,7 @@
 
 A player (non-guild member) requests to join a guild.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.
 

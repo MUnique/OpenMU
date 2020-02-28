@@ -4,7 +4,7 @@
 
 The player wants to add or increase the level of a specific master skill of the master skill tree.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.
 

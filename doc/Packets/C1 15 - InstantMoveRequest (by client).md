@@ -4,7 +4,7 @@
 
 It's sent when the player performs specific skills.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.
 

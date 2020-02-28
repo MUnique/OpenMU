@@ -4,7 +4,7 @@
 
 A player opens a shop of another player.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The list of items is sent back, if the shop of the player is currently open.
 

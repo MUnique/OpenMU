@@ -4,7 +4,7 @@
 
 The player wants to set a price of an item which is inside his personal item shop.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The price is set for the specified item. Works only if the shop is currently closed.
 

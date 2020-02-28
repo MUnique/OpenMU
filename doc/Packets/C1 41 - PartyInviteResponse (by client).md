@@ -4,7 +4,7 @@
 
 A player was invited by another player to join a party and this player sent the response back.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the sender accepts the request, it's added to the party.
 

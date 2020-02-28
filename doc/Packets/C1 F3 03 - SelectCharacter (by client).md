@@ -4,7 +4,7 @@
 
 The player selects a character to enter the game world on the character selection screen.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The player joins the game world with the specified character.
 

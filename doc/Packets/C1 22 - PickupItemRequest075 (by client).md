@@ -4,7 +4,7 @@
 
 A player requests to pick up an item which is laying on the ground in the near of the players character.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
 

@@ -4,7 +4,7 @@
 
 The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.
 

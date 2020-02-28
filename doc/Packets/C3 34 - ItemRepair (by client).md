@@ -4,7 +4,7 @@
 
 A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
 

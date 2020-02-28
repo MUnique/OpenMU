@@ -4,7 +4,7 @@
 
 After the server sent a map change message and the client has initialized the game map visualization.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The character is added to the internal game map and ready to interact with other entities.
 

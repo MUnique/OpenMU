@@ -4,7 +4,7 @@
 
 The player presses the trade button.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.
 

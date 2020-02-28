@@ -4,7 +4,7 @@
 
 The game client is at the character selection screen and the player requests to delete an existing character.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
 

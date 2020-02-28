@@ -4,7 +4,7 @@
 
 The game client requests to cancel an active quest.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.
 

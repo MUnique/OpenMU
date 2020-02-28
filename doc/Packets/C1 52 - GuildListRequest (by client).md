@@ -4,7 +4,7 @@
 
 A guild player opens its guild menu in the game client.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 A list of all guild members and their state is sent back as response.
 

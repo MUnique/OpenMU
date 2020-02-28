@@ -4,7 +4,7 @@
 
 A player wants to repair an item of his inventory.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 The item is repaired if the player has enough money in its inventory. A corresponding response is sent.
 

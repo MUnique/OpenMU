@@ -4,7 +4,7 @@
 
 A player selected to warp by selecting an entry in the warp list (configured in game client files).
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the player has enough money and is allowed to enter the map, it's getting moved to there.
 

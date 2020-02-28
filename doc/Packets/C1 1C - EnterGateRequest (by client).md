@@ -4,7 +4,7 @@
 
 When the player enters an area on the game map which is configured as gate at the client data files.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
 

@@ -4,7 +4,7 @@
 
 A player wants to buy the item of another players shop.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.
 

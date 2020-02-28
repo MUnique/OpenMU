@@ -4,7 +4,7 @@
 
 A player wants to open a chat with another player of his friend list.
 
-## Causes the following actions on the client side
+## Causes the following actions on the server side
 
 If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.
 
