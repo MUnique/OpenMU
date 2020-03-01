@@ -1,4 +1,4 @@
-# C1-00-01-Hello_by-server
+# C1 00 01 - Hello (by server)
 
 ## Is sent when
 

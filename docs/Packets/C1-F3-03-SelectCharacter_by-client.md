@@ -1,4 +1,4 @@
-# C1-F3-03-SelectCharacter_by-client
+# C1 F3 03 - SelectCharacter (by client)
 
 ## Is sent when
 

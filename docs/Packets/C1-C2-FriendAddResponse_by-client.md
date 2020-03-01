@@ -1,4 +1,4 @@
-# C1-C2-FriendAddResponse_by-client
+# C1 C2 - FriendAddResponse (by client)
 
 ## Is sent when
 

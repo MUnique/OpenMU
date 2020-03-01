@@ -1,4 +1,4 @@
-# C2-C0-MessengerInitialization_by-server
+# C2 C0 - MessengerInitialization (by server)
 
 ## Is sent when
 

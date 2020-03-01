@@ -1,4 +1,4 @@
-# C3-24-ItemMoved_by-server
+# C3 24 - ItemMoved (by server)
 
 ## Is sent when
 

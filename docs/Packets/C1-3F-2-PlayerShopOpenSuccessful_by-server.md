@@ -1,4 +1,4 @@
-# C1-3F-2-PlayerShopOpenSuccessful_by-server
+# C1 3F 2 - PlayerShopOpenSuccessful (by server)
 
 ## Is sent when
 

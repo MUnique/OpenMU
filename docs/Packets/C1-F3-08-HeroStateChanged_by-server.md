@@ -1,4 +1,4 @@
-# C1-F3-08-HeroStateChanged_by-server
+# C1 F3 08 - HeroStateChanged (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-F3-00-RequestCharacterList_by-client
+# C1 F3 00 - RequestCharacterList (by client)
 
 ## Is sent when
 

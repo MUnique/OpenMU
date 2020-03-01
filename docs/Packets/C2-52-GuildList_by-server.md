@@ -1,4 +1,4 @@
-# C2-52-GuildList_by-server
+# C2 52 - GuildList (by server)
 
 ## Is sent when
 

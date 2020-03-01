@@ -1,4 +1,4 @@
-# C2-12-AddCharactersToScope075_by-server
+# C2 12 - AddCharactersToScope075 (by server)
 
 ## Is sent when
 

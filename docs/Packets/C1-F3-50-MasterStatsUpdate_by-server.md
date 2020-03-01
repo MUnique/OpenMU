@@ -1,4 +1,4 @@
-# C1-F3-50-MasterStatsUpdate_by-server
+# C1 F3 50 - MasterStatsUpdate (by server)
 
 ## Is sent when
 

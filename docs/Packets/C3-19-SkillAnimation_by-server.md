@@ -1,4 +1,4 @@
-# C3-19-SkillAnimation_by-server
+# C3 19 - SkillAnimation (by server)
 
 ## Is sent when
 

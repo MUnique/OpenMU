@@ -1,4 +1,4 @@
-# C1-11-ObjectHit_by-server
+# C1 11 - ObjectHit (by server)
 
 ## Is sent when
 

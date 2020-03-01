@@ -1,4 +1,4 @@
-# C1-F1-01-LoginResponse_by-server
+# C1 F1 01 - LoginResponse (by server)
 
 ## Is sent when
 

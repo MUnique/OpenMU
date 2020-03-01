@@ -1,4 +1,4 @@
-# C3-22-ItemAddedToInventory_by-server
+# C3 22 - ItemAddedToInventory (by server)
 
 ## Is sent when
 

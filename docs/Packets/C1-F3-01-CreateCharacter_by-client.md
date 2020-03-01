@@ -1,4 +1,4 @@
-# C1-F3-01-CreateCharacter_by-client
+# C1 F3 01 - CreateCharacter (by client)
 
 ## Is sent when
 

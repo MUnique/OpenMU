@@ -1,4 +1,4 @@
-# C1-31-CloseNpcRequest_by-client
+# C1 31 - CloseNpcRequest (by client)
 
 ## Is sent when
 

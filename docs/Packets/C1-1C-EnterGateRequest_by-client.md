@@ -1,4 +1,4 @@
-# C1-1C-EnterGateRequest_by-client
+# C1 1C - EnterGateRequest (by client)
 
 ## Is sent when
 

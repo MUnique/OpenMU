@@ -1,4 +1,4 @@
-# C1-42-PartyListRequest_by-client
+# C1 42 - PartyListRequest (by client)
 
 ## Is sent when
 

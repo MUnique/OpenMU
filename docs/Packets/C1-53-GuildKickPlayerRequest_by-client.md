@@ -1,4 +1,4 @@
-# C1-53-GuildKickPlayerRequest_by-client
+# C1 53 - GuildKickPlayerRequest (by client)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C2-31-StoreItemList_by-server
+# C2 31 - StoreItemList (by server)
 
 ## Is sent when
 

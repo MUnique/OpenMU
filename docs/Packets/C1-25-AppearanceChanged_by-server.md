@@ -1,4 +1,4 @@
-# C1-25-AppearanceChanged_by-server
+# C1 25 - AppearanceChanged (by server)
 
 ## Is sent when
 

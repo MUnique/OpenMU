@@ -1,4 +1,4 @@
-# C1-86-ChaosMachineMixRequest_by-client
+# C1 86 - ChaosMachineMixRequest (by client)
 
 ## Is sent when
 

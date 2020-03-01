@@ -1,4 +1,4 @@
-# C1-3F-08-PlayerShopItemSoldToPlayer_by-server
+# C1 3F 08 - PlayerShopItemSoldToPlayer (by server)
 
 ## Is sent when
 

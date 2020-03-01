@@ -1,4 +1,4 @@
-# C1-F6-0D-QuestCompletionRequest_by-client
+# C1 F6 0D - QuestCompletionRequest (by client)
 
 ## Is sent when
 

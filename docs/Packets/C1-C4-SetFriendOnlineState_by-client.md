@@ -1,4 +1,4 @@
-# C1-C4-SetFriendOnlineState_by-client
+# C1 C4 - SetFriendOnlineState (by client)
 
 ## Is sent when
 

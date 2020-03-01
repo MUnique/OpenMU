@@ -1,4 +1,4 @@
-# C2-13-AddNpcsToScope_by-server
+# C2 13 - AddNpcsToScope (by server)
 
 ## Is sent when
 

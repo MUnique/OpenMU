@@ -1,4 +1,4 @@
-# C3-26-ConsumeItemRequest_by-client
+# C3 26 - ConsumeItemRequest (by client)
 
 ## Is sent when
 

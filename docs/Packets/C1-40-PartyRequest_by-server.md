@@ -1,4 +1,4 @@
-# C1-40-PartyRequest_by-server
+# C1 40 - PartyRequest (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-17-ObjectGotKilled_by-server
+# C1 17 - ObjectGotKilled (by server)
 
 ## Is sent when
 

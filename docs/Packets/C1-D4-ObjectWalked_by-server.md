@@ -1,4 +1,4 @@
-# C1-D4-ObjectWalked_by-server
+# C1 D4 - ObjectWalked (by server)
 
 ## Is sent when
 

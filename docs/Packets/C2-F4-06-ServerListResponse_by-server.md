@@ -1,4 +1,4 @@
-# C2-F4-06-ServerListResponse_by-server
+# C2 F4 06 - ServerListResponse (by server)
 
 ## Is sent when
 

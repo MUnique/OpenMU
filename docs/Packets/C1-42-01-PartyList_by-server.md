@@ -1,4 +1,4 @@
-# C1-42-01-PartyList_by-server
+# C1 42 01 - PartyList (by server)
 
 ## Is sent when
 

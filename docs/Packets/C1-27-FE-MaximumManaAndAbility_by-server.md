@@ -1,4 +1,4 @@
-# C1-27-FE-MaximumManaAndAbility_by-server
+# C1 27 FE - MaximumManaAndAbility (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-2A-ItemDurabilityChanged_by-server
+# C1 2A - ItemDurabilityChanged (by server)
 
 ## Is sent when
 

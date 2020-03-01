@@ -1,4 +1,4 @@
-# C1-F3-01-CharacterCreationFailed_by-server
+# C1 F3 01 - CharacterCreationFailed (by server)
 
 ## Is sent when
 

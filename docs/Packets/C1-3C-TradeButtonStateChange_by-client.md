@@ -1,4 +1,4 @@
-# C1-3C-TradeButtonStateChange_by-client
+# C1 3C - TradeButtonStateChange (by client)
 
 ## Is sent when
 

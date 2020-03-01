@@ -1,4 +1,4 @@
-# C1-54-GuildMasterAnswer_by-client
+# C1 54 - GuildMasterAnswer (by client)
 
 ## Is sent when
 

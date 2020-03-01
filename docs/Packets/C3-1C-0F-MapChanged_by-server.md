@@ -1,4 +1,4 @@
-# C3-1C-0F-MapChanged_by-server
+# C3 1C 0F - MapChanged (by server)
 
 ## Is sent when
 

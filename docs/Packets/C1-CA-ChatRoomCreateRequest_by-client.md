@@ -1,4 +1,4 @@
-# C1-CA-ChatRoomCreateRequest_by-client
+# C1 CA - ChatRoomCreateRequest (by client)
 
 ## Is sent when
 

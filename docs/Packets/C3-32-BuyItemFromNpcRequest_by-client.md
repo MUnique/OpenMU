@@ -1,4 +1,4 @@
-# C3-32-BuyItemFromNpcRequest_by-client
+# C3 32 - BuyItemFromNpcRequest (by client)
 
 ## Is sent when
 

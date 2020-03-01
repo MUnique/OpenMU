@@ -1,4 +1,4 @@
-# C3-F1-02-LogoutResponse_by-server
+# C3 F1 02 - LogoutResponse (by server)
 
 ## Is sent when
 

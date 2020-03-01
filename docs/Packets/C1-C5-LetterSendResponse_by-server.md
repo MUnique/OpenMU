@@ -1,4 +1,4 @@
-# C1-C5-LetterSendResponse_by-server
+# C1 C5 - LetterSendResponse (by server)
 
 ## Is sent when
 

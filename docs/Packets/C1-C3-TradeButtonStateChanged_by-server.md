@@ -1,4 +1,4 @@
-# C1-C3-TradeButtonStateChanged_by-server
+# C1 C3 - TradeButtonStateChanged (by server)
 
 ## Is sent when
 

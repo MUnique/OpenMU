@@ -1,4 +1,4 @@
-# C1-40-PartyInviteRequest_by-client
+# C1 40 - PartyInviteRequest (by client)
 
 ## Is sent when
 

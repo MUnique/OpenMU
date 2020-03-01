@@ -1,4 +1,4 @@
-# C1-F4-03-ConnectionInfoRequest_by-client
+# C1 F4 03 - ConnectionInfoRequest (by client)
 
 ## Is sent when
 

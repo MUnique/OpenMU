@@ -1,4 +1,4 @@
-# C3-F1-01-LoginLongPassword_by-client
+# C3 F1 01 - LoginLongPassword (by client)
 
 ## Is sent when
 

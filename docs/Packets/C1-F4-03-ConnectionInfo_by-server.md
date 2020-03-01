@@ -1,4 +1,4 @@
-# C1-F4-03-ConnectionInfo_by-server
+# C1 F4 03 - ConnectionInfo (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-26-FE-MaximumHealthAndShield_by-server
+# C1 26 FE - MaximumHealthAndShield (by server)
 
 ## Is sent when
 

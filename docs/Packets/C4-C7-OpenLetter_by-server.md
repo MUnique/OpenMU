@@ -1,4 +1,4 @@
-# C4-C7-OpenLetter_by-server
+# C4 C7 - OpenLetter (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-3A-01-TradeMoneySetResponse_by-server
+# C1 3A 01 - TradeMoneySetResponse (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-F3-52-AddMasterSkillPoint_by-client
+# C1 F3 52 - AddMasterSkillPoint (by client)
 
 ## Is sent when
 

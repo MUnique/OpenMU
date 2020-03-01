@@ -1,4 +1,4 @@
-# C1-F6-21-EventQuestStateListRequest_by-client
+# C1 F6 21 - EventQuestStateListRequest (by client)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-37-TradeRequestAnswer_by-server
+# C1 37 - TradeRequestAnswer (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C3-3F-03-PlayerShopClose_by-client
+# C3 3F 03 - PlayerShopClose (by client)
 
 ## Is sent when
 

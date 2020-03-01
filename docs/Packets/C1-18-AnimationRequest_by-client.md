@@ -1,4 +1,4 @@
-# C1-18-AnimationRequest_by-client
+# C1 18 - AnimationRequest (by client)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-F3-05-CharacterLevelUpdate_by-server
+# C1 F3 05 - CharacterLevelUpdate (by server)
 
 ## Is sent when
 

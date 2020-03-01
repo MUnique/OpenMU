@@ -1,4 +1,4 @@
-# C1-F3-12-ClientReadyAfterMapChange_by-client
+# C1 F3 12 - ClientReadyAfterMapChange (by client)
 
 ## Is sent when
 

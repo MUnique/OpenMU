@@ -1,4 +1,4 @@
-# C1-82-VaultClosed_by-client
+# C1 82 - VaultClosed (by client)
 
 ## Is sent when
 

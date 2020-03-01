@@ -1,4 +1,4 @@
-# C1-05-1-ClientNeedsPatch_by-server
+# C1 05 1 - ClientNeedsPatch (by server)
 
 ## Is sent when
 

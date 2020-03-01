@@ -1,4 +1,4 @@
-# C3-22-PickupItemRequest_by-client
+# C3 22 - PickupItemRequest (by client)
 
 ## Is sent when
 

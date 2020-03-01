@@ -1,4 +1,4 @@
-# C3-0E-00-Ping_by-client
+# C3 0E 00 - Ping (by client)
 
 ## Is sent when
 

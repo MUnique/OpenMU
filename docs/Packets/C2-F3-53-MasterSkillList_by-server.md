@@ -1,4 +1,4 @@
-# C2-F3-53-MasterSkillList_by-server
+# C2 F3 53 - MasterSkillList (by server)
 
 ## Is sent when
 

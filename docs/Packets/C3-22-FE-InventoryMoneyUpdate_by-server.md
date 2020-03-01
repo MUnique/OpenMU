@@ -1,4 +1,4 @@
-# C3-22-FE-InventoryMoneyUpdate_by-server
+# C3 22 FE - InventoryMoneyUpdate (by server)
 
 ## Is sent when
 

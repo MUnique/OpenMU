@@ -1,4 +1,4 @@
-# C2-02-ChatRoomClients_by-server
+# C2 02 - ChatRoomClients (by server)
 
 ## Is sent when
 

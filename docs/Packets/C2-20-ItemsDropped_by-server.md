@@ -1,4 +1,4 @@
-# C2-20-ItemsDropped_by-server
+# C2 20 - ItemsDropped (by server)
 
 ## Is sent when
 

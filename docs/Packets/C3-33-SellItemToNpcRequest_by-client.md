@@ -1,4 +1,4 @@
-# C3-33-SellItemToNpcRequest_by-client
+# C3 33 - SellItemToNpcRequest (by client)
 
 ## Is sent when
 

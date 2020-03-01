@@ -1,4 +1,4 @@
-# C1-53-GuildKickResponse_by-server
+# C1 53 - GuildKickResponse (by server)
 
 ## Is sent when
 

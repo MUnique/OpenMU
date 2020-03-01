@@ -1,4 +1,4 @@
-# C1-04-ChatMessage
+# C1 04 - ChatMessage
 
 ## Is sent when
 

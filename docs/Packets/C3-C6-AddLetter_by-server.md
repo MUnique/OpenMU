@@ -1,4 +1,4 @@
-# C3-C6-AddLetter_by-server
+# C3 C6 - AddLetter (by server)
 
 ## Is sent when
 

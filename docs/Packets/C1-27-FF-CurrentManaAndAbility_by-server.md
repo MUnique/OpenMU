@@ -1,4 +1,4 @@
-# C1-27-FF-CurrentManaAndAbility_by-server
+# C1 27 FF - CurrentManaAndAbility (by server)
 
 ## Is sent when
 

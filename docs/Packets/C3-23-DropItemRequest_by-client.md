@@ -1,4 +1,4 @@
-# C3-23-DropItemRequest_by-client
+# C3 23 - DropItemRequest (by client)
 
 ## Is sent when
 

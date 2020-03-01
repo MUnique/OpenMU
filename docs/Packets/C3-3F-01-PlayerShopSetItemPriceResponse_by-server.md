@@ -1,4 +1,4 @@
-# C3-3F-01-PlayerShopSetItemPriceResponse_by-server
+# C3 3F 01 - PlayerShopSetItemPriceResponse (by server)
 
 ## Is sent when
 

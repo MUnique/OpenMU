@@ -1,4 +1,4 @@
-# C3-3F-06-PlayerShopItemBuyRequest_by-client
+# C3 3F 06 - PlayerShopItemBuyRequest (by client)
 
 ## Is sent when
 

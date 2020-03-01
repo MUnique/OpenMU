@@ -1,4 +1,4 @@
-# C1-11-HitRequest_by-client
+# C1 11 - HitRequest (by client)
 
 ## Is sent when
 

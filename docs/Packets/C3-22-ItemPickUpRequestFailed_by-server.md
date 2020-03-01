@@ -1,4 +1,4 @@
-# C3-22-ItemPickUpRequestFailed_by-server
+# C3 22 - ItemPickUpRequestFailed (by server)
 
 ## Is sent when
 

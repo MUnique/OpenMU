@@ -1,4 +1,4 @@
-# C3-29-ConsumeItemWithEffect_by-server
+# C3 29 - ConsumeItemWithEffect (by server)
 
 ## Is sent when
 

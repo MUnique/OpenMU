@@ -1,4 +1,4 @@
-# C1-01-00-ChatRoomClientJoined_by-server
+# C1 01 00 - ChatRoomClientJoined (by server)
 
 ## Is sent when
 

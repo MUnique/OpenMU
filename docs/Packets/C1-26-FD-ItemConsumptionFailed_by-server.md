@@ -1,4 +1,4 @@
-# C1-26-FD-ItemConsumptionFailed_by-server
+# C1 26 FD - ItemConsumptionFailed (by server)
 
 ## Is sent when
 

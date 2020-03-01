@@ -1,4 +1,4 @@
-# C3-30-NpcWindowResponse_by-server
+# C3 30 - NpcWindowResponse (by server)
 
 ## Is sent when
 

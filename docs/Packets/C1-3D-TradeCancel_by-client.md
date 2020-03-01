@@ -1,4 +1,4 @@
-# C1-3D-TradeCancel_by-client
+# C1 3D - TradeCancel (by client)
 
 ## Is sent when
 

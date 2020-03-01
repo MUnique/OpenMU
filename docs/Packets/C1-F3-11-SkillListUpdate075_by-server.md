@@ -1,4 +1,4 @@
-# C1-F3-11-SkillListUpdate075_by-server
+# C1 F3 11 - SkillListUpdate075 (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-F3-02-CharacterDeleteResponse_by-server
+# C1 F3 02 - CharacterDeleteResponse (by server)
 
 ## Is sent when
 

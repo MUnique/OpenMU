@@ -1,4 +1,4 @@
-# C1-50-GuildJoinRequest_by-client
+# C1 50 - GuildJoinRequest (by client)
 
 ## Is sent when
 

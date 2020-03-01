@@ -1,4 +1,4 @@
-# C1-D4-WalkRequest_by-client
+# C1 D4 - WalkRequest (by client)
 
 ## Is sent when
 

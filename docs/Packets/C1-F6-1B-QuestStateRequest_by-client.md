@@ -1,4 +1,4 @@
-# C1-F6-1B-QuestStateRequest_by-client
+# C1 F6 1B - QuestStateRequest (by client)
 
 ## Is sent when
 

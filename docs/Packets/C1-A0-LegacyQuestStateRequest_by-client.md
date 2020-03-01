@@ -1,4 +1,4 @@
-# C1-A0-LegacyQuestStateRequest_by-client
+# C1 A0 - LegacyQuestStateRequest (by client)
 
 ## Is sent when
 

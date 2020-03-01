@@ -1,4 +1,4 @@
-# C1-01-01-ChatRoomClientLeft_by-server
+# C1 01 01 - ChatRoomClientLeft (by server)
 
 ## Is sent when
 

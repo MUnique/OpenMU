@@ -1,4 +1,4 @@
-# C1-F3-15-FocusCharacter_by-client
+# C1 F3 15 - FocusCharacter (by client)
 
 ## Is sent when
 

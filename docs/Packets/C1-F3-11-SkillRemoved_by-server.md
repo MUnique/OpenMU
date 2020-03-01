@@ -1,4 +1,4 @@
-# C1-F3-11-SkillRemoved_by-server
+# C1 F3 11 - SkillRemoved (by server)
 
 ## Is sent when
 

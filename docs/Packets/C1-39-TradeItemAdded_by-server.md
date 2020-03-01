@@ -1,4 +1,4 @@
-# C1-39-TradeItemAdded_by-server
+# C1 39 - TradeItemAdded (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-66-GuildInformation_by-server
+# C1 66 - GuildInformation (by server)
 
 ## Is sent when
 

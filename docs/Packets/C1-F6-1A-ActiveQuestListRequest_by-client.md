@@ -1,4 +1,4 @@
-# C1-F6-1A-ActiveQuestListRequest_by-client
+# C1 F6 1A - ActiveQuestListRequest (by client)
 
 ## Is sent when
 

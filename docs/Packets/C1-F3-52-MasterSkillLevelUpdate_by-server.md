@@ -1,4 +1,4 @@
-# C1-F3-52-MasterSkillLevelUpdate_by-server
+# C1 F3 52 - MasterSkillLevelUpdate (by server)
 
 ## Is sent when
 

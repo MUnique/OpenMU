@@ -1,4 +1,4 @@
-# C1-F4-06-ServerListRequest_by-client
+# C1 F4 06 - ServerListRequest (by client)
 
 ## Is sent when
 

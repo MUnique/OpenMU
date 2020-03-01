@@ -1,4 +1,4 @@
-# C1-C7-LetterReadRequest_by-client
+# C1 C7 - LetterReadRequest (by client)
 
 ## Is sent when
 

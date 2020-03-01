@@ -1,4 +1,4 @@
-# C1-43-PartyPlayerKickRequest_by-client
+# C1 43 - PartyPlayerKickRequest (by client)
 
 ## Is sent when
 

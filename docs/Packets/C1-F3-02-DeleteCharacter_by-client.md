@@ -1,4 +1,4 @@
-# C1-F3-02-DeleteCharacter_by-client
+# C1 F3 02 - DeleteCharacter (by client)
 
 ## Is sent when
 

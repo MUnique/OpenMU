@@ -1,4 +1,4 @@
-# C1-F6-0F-QuestCancelRequest_by-client
+# C1 F6 0F - QuestCancelRequest (by client)
 
 ## Is sent when
 

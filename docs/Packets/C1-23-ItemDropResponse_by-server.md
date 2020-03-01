@@ -1,4 +1,4 @@
-# C1-23-ItemDropResponse_by-server
+# C1 23 - ItemDropResponse (by server)
 
 ## Is sent when
 

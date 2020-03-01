@@ -1,4 +1,4 @@
-# C1-3F-3-PlayerShopClosed_by-server
+# C1 3F 3 - PlayerShopClosed (by server)
 
 ## Is sent when
 

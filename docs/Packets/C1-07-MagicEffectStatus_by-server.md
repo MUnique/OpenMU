@@ -1,4 +1,4 @@
-# C1-07-MagicEffectStatus_by-server
+# C1 07 - MagicEffectStatus (by server)
 
 ## Is sent when
 

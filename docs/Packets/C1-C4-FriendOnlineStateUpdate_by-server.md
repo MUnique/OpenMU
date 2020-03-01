@@ -1,4 +1,4 @@
-# C1-C4-FriendOnlineStateUpdate_by-server
+# C1 C4 - FriendOnlineStateUpdate (by server)
 
 ## Is sent when
 

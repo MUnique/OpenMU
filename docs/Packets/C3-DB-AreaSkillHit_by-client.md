@@ -1,4 +1,4 @@
-# C3-DB-AreaSkillHit_by-client
+# C3 DB - AreaSkillHit (by client)
 
 ## Is sent when
 

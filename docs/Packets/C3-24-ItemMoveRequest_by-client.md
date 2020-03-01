@@ -1,4 +1,4 @@
-# C3-24-ItemMoveRequest_by-client
+# C3 24 - ItemMoveRequest (by client)
 
 ## Is sent when
 

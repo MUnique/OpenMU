@@ -1,4 +1,4 @@
-# C1-55-ShowGuildCreationDialog_by-server
+# C1 55 - ShowGuildCreationDialog (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C3-1E-AreaSkillAnimation_by-server
+# C3 1E - AreaSkillAnimation (by server)
 
 ## Is sent when
 

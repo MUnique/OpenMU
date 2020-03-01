@@ -1,4 +1,4 @@
-# C1-02-PatchVersionOkay_by-server
+# C1 02 - PatchVersionOkay (by server)
 
 ## Is sent when
 

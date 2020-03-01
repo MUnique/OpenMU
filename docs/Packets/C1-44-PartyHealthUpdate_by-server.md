@@ -1,4 +1,4 @@
-# C1-44-PartyHealthUpdate_by-server
+# C1 44 - PartyHealthUpdate (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-C8-LetterDeleteRequest_by-client
+# C1 C8 - LetterDeleteRequest (by client)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-F3-30-SaveKeyConfiguration_by-client
+# C1 F3 30 - SaveKeyConfiguration (by client)
 
 ## Is sent when
 

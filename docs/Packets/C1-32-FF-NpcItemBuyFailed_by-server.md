@@ -1,4 +1,4 @@
-# C1-32-FF-NpcItemBuyFailed_by-server
+# C1 32 FF - NpcItemBuyFailed (by server)
 
 ## Is sent when
 

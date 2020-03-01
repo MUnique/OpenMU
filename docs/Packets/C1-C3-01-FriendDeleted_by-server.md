@@ -1,4 +1,4 @@
-# C1-C3-01-FriendDeleted_by-server
+# C1 C3 01 - FriendDeleted (by server)
 
 ## Is sent when
 

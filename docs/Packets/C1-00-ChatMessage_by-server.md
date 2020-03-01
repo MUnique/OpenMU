@@ -1,4 +1,4 @@
-# C1-00-ChatMessage_by-server
+# C1 00 - ChatMessage (by server)
 
 ## Is sent when
 

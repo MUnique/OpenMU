@@ -1,4 +1,4 @@
-# C2-F4-02-ServerListResponseOld_by-server
+# C2 F4 02 - ServerListResponseOld (by server)
 
 ## Is sent when
 

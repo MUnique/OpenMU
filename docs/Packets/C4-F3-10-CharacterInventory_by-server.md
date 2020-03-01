@@ -1,4 +1,4 @@
-# C4-F3-10-CharacterInventory_by-server
+# C4 F3 10 - CharacterInventory (by server)
 
 ## Is sent when
 

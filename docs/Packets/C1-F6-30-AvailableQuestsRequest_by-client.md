@@ -1,4 +1,4 @@
-# C1-F6-30-AvailableQuestsRequest_by-client
+# C1 F6 30 - AvailableQuestsRequest (by client)
 
 ## Is sent when
 

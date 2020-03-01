@@ -1,4 +1,4 @@
-# C2-21-ItemDropRemoved_by-server
+# C2 21 - ItemDropRemoved (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-C1-01-FriendAdded_by-server
+# C1 C1 01 - FriendAdded (by server)
 
 ## Is sent when
 

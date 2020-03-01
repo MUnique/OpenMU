@@ -1,4 +1,4 @@
-# C1-F3-06-CharacterStatIncreaseResponse_by-server
+# C1 F3 06 - CharacterStatIncreaseResponse (by server)
 
 ## Is sent when
 

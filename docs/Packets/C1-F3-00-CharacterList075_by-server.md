@@ -1,4 +1,4 @@
-# C1-F3-00-CharacterList075_by-server
+# C1 F3 00 - CharacterList075 (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-05-KeepAlive_by-client
+# C1 05 - KeepAlive (by client)
 
 ## Is sent when
 

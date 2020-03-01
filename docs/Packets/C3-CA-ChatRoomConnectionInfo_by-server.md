@@ -1,4 +1,4 @@
-# C3-CA-ChatRoomConnectionInfo_by-server
+# C3 CA - ChatRoomConnectionInfo (by server)
 
 ## Is sent when
 

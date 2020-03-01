@@ -1,4 +1,4 @@
-# C1-3B-TradeMoneyUpdate_by-server
+# C1 3B - TradeMoneyUpdate (by server)
 
 ## Is sent when
 

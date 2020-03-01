@@ -1,4 +1,4 @@
-# C1-F1-00-GameServerEntered_by-server
+# C1 F1 00 - GameServerEntered (by server)
 
 ## Is sent when
 

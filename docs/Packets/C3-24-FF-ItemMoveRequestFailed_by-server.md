@@ -1,4 +1,4 @@
-# C3-24-FF-ItemMoveRequestFailed_by-server
+# C3 24 FF - ItemMoveRequestFailed (by server)
 
 ## Is sent when
 

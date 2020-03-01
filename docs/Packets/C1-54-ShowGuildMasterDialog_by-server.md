@@ -1,4 +1,4 @@
-# C1-54-ShowGuildMasterDialog_by-server
+# C1 54 - ShowGuildMasterDialog (by server)
 
 ## Is sent when
 

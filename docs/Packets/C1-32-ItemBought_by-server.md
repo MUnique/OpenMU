@@ -1,4 +1,4 @@
-# C1-32-ItemBought_by-server
+# C1 32 - ItemBought (by server)
 
 ## Is sent when
 

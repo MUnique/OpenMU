@@ -1,4 +1,4 @@
-# C2-3F-05-PlayerShopItemList_by-server
+# C2 3F 05 - PlayerShopItemList (by server)
 
 ## Is sent when
 

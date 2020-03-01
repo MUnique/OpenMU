@@ -1,4 +1,4 @@
-# C1-02-PatchCheckRequest_by-client
+# C1 02 - PatchCheckRequest (by client)
 
 ## Is sent when
 

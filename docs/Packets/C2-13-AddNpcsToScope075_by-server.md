@@ -1,4 +1,4 @@
-# C2-13-AddNpcsToScope075_by-server
+# C2 13 - AddNpcsToScope075 (by server)
 
 ## Is sent when
 

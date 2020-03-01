@@ -1,4 +1,4 @@
-# C3-CB-FriendInvitationResult_by-server
+# C3 CB - FriendInvitationResult (by server)
 
 ## Is sent when
 

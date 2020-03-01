@@ -1,4 +1,4 @@
-# C2-65-AssignCharacterToGuild_by-server
+# C2 65 - AssignCharacterToGuild (by server)
 
 ## Is sent when
 

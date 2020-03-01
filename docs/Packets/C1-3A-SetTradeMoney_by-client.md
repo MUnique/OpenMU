@@ -1,4 +1,4 @@
-# C1-3A-SetTradeMoney_by-client
+# C1 3A - SetTradeMoney (by client)
 
 ## Is sent when
 

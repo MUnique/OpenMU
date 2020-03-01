@@ -1,4 +1,4 @@
-# C1-87-CloseChaosMachineRequest_by-client
+# C1 87 - CloseChaosMachineRequest (by client)
 
 ## Is sent when
 

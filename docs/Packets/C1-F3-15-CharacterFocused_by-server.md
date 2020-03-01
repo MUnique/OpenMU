@@ -1,4 +1,4 @@
-# C1-F3-15-CharacterFocused_by-server
+# C1 F3 15 - CharacterFocused (by server)
 
 ## Is sent when
 

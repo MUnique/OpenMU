@@ -1,4 +1,4 @@
-# C1-C3-FriendDelete_by-client
+# C1 C3 - FriendDelete (by client)
 
 ## Is sent when
 

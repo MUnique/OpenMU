@@ -1,4 +1,4 @@
-# C1-F4-02-ServerListRequestOld_by-client
+# C1 F4 02 - ServerListRequestOld (by client)
 
 ## Is sent when
 

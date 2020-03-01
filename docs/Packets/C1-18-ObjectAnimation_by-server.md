@@ -1,4 +1,4 @@
-# C1-18-ObjectAnimation_by-server
+# C1 18 - ObjectAnimation (by server)
 
 ## Is sent when
 

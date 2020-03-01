@@ -1,4 +1,4 @@
-# C1-55-GuildCreateRequest_by-client
+# C1 55 - GuildCreateRequest (by client)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C3-F1-02-LogOut_by-client
+# C3 F1 02 - LogOut (by client)
 
 ## Is sent when
 

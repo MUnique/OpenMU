@@ -1,4 +1,4 @@
-# C1-01-ObjectMessage_by-server
+# C1 01 - ObjectMessage (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-37-TradeRequestResponse_by-client
+# C1 37 - TradeRequestResponse (by client)
 
 ## Is sent when
 

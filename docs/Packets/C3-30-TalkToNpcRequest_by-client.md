@@ -1,4 +1,4 @@
-# C3-30-TalkToNpcRequest_by-client
+# C3 30 - TalkToNpcRequest (by client)
 
 ## Is sent when
 

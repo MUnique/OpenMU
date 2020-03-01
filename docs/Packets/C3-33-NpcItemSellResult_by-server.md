@@ -1,4 +1,4 @@
-# C3-33-NpcItemSellResult_by-server
+# C3 33 - NpcItemSellResult (by server)
 
 ## Is sent when
 

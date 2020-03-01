@@ -1,4 +1,4 @@
-# C1-28-ItemRemoved_by-server
+# C1 28 - ItemRemoved (by server)
 
 ## Is sent when
 

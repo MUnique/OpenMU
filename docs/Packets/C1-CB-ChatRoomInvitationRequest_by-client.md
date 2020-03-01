@@ -1,4 +1,4 @@
-# C1-CB-ChatRoomInvitationRequest_by-client
+# C1 CB - ChatRoomInvitationRequest (by client)
 
 ## Is sent when
 

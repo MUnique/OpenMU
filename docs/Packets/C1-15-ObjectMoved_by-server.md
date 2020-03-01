@@ -1,4 +1,4 @@
-# C1-15-ObjectMoved_by-server
+# C1 15 - ObjectMoved (by server)
 
 ## Is sent when
 

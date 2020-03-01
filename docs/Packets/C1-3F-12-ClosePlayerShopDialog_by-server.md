@@ -1,4 +1,4 @@
-# C1-3F-12-ClosePlayerShopDialog_by-server
+# C1 3F 12 - ClosePlayerShopDialog (by server)
 
 ## Is sent when
 

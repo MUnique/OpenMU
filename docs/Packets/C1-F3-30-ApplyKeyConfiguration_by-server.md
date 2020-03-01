@@ -1,4 +1,4 @@
-# C1-F3-30-ApplyKeyConfiguration_by-server
+# C1 F3 30 - ApplyKeyConfiguration (by server)
 
 ## Is sent when
 

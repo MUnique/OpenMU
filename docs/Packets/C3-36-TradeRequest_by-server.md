@@ -1,4 +1,4 @@
-# C3-36-TradeRequest_by-server
+# C3 36 - TradeRequest (by server)
 
 ## Is sent when
 

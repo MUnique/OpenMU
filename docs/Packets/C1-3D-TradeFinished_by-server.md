@@ -1,4 +1,4 @@
-# C1-3D-TradeFinished_by-server
+# C1 3D - TradeFinished (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-38-TradeItemRemoved_by-server
+# C1 38 - TradeItemRemoved (by server)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-66-GuildInfoRequest_by-client
+# C1 66 - GuildInfoRequest (by client)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-F6-31-NpcBuffRequest_by-client
+# C1 F6 31 - NpcBuffRequest (by client)
 
 ## Is sent when
 

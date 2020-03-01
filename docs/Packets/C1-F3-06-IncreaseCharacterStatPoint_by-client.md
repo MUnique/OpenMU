@@ -1,4 +1,4 @@
-# C1-F3-06-IncreaseCharacterStatPoint_by-client
+# C1 F3 06 - IncreaseCharacterStatPoint (by client)
 
 ## Is sent when
 

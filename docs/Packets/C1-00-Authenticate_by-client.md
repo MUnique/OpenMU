@@ -1,4 +1,4 @@
-# C1-00-Authenticate_by-client
+# C1 00 - Authenticate (by client)
 
 ## Is sent when
 

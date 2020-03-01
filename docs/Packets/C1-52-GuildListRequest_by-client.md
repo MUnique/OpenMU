@@ -1,4 +1,4 @@
-# C1-52-GuildListRequest_by-client
+# C1 52 - GuildListRequest (by client)
 
 ## Is sent when
 

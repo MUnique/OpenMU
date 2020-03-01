@@ -1,4 +1,4 @@
-# C1-F6-0A-QuestStartRequest_by-client
+# C1 F6 0A - QuestStartRequest (by client)
 
 ## Is sent when
 

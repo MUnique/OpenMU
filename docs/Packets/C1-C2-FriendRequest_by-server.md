@@ -1,4 +1,4 @@
-# C1-C2-FriendRequest_by-server
+# C1 C2 - FriendRequest (by server)
 
 ## Is sent when
 

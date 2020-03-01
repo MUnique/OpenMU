@@ -1,4 +1,4 @@
-# C3-16-ExperienceGained_by-server
+# C3 16 - ExperienceGained (by server)
 
 ## Is sent when
 

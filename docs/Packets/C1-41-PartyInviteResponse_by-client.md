@@ -1,4 +1,4 @@
-# C1-41-PartyInviteResponse_by-client
+# C1 41 - PartyInviteResponse (by client)
 
 ## Is sent when
 

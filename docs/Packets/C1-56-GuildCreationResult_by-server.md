@@ -1,4 +1,4 @@
-# C1-56-GuildCreationResult_by-server
+# C1 56 - GuildCreationResult (by server)
 
 ## Is sent when
 

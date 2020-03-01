@@ -1,4 +1,4 @@
-# C1-83-VaultProtectionInformation_by-server
+# C1 83 - VaultProtectionInformation (by server)
 
 ## Is sent when
 

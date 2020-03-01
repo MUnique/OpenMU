@@ -1,4 +1,4 @@
-# C4-C5-LetterSendRequest_by-client
+# C4 C5 - LetterSendRequest (by client)
 
 ## Is sent when
 

@@ -1,4 +1,4 @@
-# C1-81-VaultMoneyUpdate_by-server
+# C1 81 - VaultMoneyUpdate (by server)
 
 ## Is sent when
 

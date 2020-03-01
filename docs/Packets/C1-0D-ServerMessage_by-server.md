@@ -1,4 +1,4 @@
-# C1-0D-ServerMessage_by-server
+# C1 0D - ServerMessage (by server)
 
 ## Is sent when
 

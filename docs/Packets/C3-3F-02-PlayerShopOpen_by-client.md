@@ -1,4 +1,4 @@
-# C3-3F-02-PlayerShopOpen_by-client
+# C3 3F 02 - PlayerShopOpen (by client)
 
 ## Is sent when
 

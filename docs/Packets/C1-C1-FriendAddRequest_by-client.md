@@ -1,4 +1,4 @@
-# C1-C1-FriendAddRequest_by-client
+# C1 C1 - FriendAddRequest (by client)
 
 ## Is sent when
 

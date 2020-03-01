@@ -1,4 +1,4 @@
-# C1-02-WhisperMessage_by-client
+# C1 02 - WhisperMessage (by client)
 
 ## Is sent when
 

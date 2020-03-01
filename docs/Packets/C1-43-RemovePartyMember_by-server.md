@@ -1,4 +1,4 @@
-# C1-43-RemovePartyMember_by-server
+# C1 43 - RemovePartyMember (by server)
 
 ## Is sent when
 

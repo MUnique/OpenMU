@@ -1,4 +1,4 @@
-# C1-C8-RemoveLetter_by-server
+# C1 C8 - RemoveLetter (by server)
 
 ## Is sent when
 

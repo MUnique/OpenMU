@@ -1,4 +1,4 @@
-# C1-8E-02-WarpCommandRequest_by-client
+# C1 8E 02 - WarpCommandRequest (by client)
 
 ## Is sent when
 

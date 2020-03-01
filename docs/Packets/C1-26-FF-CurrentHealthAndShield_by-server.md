@@ -1,4 +1,4 @@
-# C1-26-FF-CurrentHealthAndShield_by-server
+# C1 26 FF - CurrentHealthAndShield (by server)
 
 ## Is sent when
 

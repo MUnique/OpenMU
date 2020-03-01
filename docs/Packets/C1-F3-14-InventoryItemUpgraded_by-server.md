@@ -1,4 +1,4 @@
-# C1-F3-14-InventoryItemUpgraded_by-server
+# C1 F3 14 - InventoryItemUpgraded (by server)
 
 ## Is sent when
 

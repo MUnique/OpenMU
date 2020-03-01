@@ -1,4 +1,4 @@
-# C3-F1-01-LoginShortPassword_by-client
+# C3 F1 01 - LoginShortPassword (by client)
 
 ## Is sent when
 

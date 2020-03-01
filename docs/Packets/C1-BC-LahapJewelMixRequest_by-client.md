@@ -1,4 +1,4 @@
-# C1-BC-LahapJewelMixRequest_by-client
+# C1 BC - LahapJewelMixRequest (by client)
 
 ## Is sent when
 

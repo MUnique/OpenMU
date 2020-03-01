@@ -1,4 +1,4 @@
-# C1-81-VaultMoveMoneyRequest_by-client
+# C1 81 - VaultMoveMoneyRequest (by client)
 
 ## Is sent when
 

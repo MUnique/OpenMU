@@ -1,4 +1,4 @@
-# C1-5D-GuildMemberLeftGuild_by-server
+# C1 5D - GuildMemberLeftGuild (by server)
 
 ## Is sent when
 

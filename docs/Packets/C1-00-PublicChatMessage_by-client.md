@@ -1,4 +1,4 @@
-# C1-00-PublicChatMessage_by-client
+# C1 00 - PublicChatMessage (by client)
 
 ## Is sent when
 
