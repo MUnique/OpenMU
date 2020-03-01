@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The implementation of a monster, which can attack players.
@@ -25,6 +26,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private readonly IDropGenerator dropGenerator;
         private readonly object moveLock = new object();
         private readonly IMonsterIntelligence intelligence;
+        private readonly PlugInManager plugInManager;
         private readonly Walker walker;
 
         private Timer respawnTimer;
@@ -33,14 +35,15 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private PathFinder pathFinder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Monster"/> class.
+        /// Initializes a new instance of the <see cref="Monster" /> class.
         /// </summary>
         /// <param name="spawnInfo">The spawn information.</param>
         /// <param name="stats">The stats.</param>
         /// <param name="map">The map on which this instance will spawn.</param>
         /// <param name="dropGenerator">The drop generator.</param>
         /// <param name="monsterIntelligence">The monster intelligence.</param>
-        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, IMonsterIntelligence monsterIntelligence)
+        /// <param name="plugInManager">The plug in manager.</param>
+        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, IMonsterIntelligence monsterIntelligence, PlugInManager plugInManager)
             : base(spawnInfo, stats, map)
         {
             this.dropGenerator = dropGenerator;
@@ -48,6 +51,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.MagicEffectList = new MagicEffectsList(this);
             this.walker = new Walker(this, () => this.StepDelay);
             this.intelligence = monsterIntelligence;
+            this.plugInManager = plugInManager;
             this.intelligence.Monster = this;
             this.intelligence.Start();
             this.Initialize();
@@ -63,6 +67,20 @@ namespace MUnique.OpenMU.GameLogic.NPC
         ///   <c>true</c> if walking; otherwise, <c>false</c>.
         /// </value>
         public bool IsWalking => this.WalkTarget != default;
+
+        /// <inheritdoc/>
+        public override Point Position
+        {
+            get => base.Position;
+            set
+            {
+                if (base.Position != value)
+                {
+                    base.Position = value;
+                    this.plugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the current health.
