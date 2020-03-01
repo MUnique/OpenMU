@@ -57,6 +57,7 @@ namespace MUnique.OpenMU.GameServer
             {
                 var mapInitializer = new GameServerMapInitializer(gameServerDefinition, this.Id, stateObserver);
                 this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, stateObserver, mapInitializer);
+                mapInitializer.PlugInManager = this.gameContext.PlugInManager;
             }
             catch (Exception ex)
             {

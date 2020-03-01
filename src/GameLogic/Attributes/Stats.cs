@@ -487,6 +487,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition AmmunitionAmount { get; } = new AttributeDefinition(new Guid("064543E6-2559-4033-B363-AE76214E7DEE"), "The amount of ammo which is equipped.", "You can only execute certain skills if you have enough ammo, or if the ammo consumption rate is 0.");
 
         /// <summary>
+        /// Gets the <see cref="IsInSafezone"/> attribute which defines if the character is located in a safezone of a game map.
+        /// </summary>
+        public static AttributeDefinition IsInSafezone { get; } = new AttributeDefinition(new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover additional health and shield.");
+
+        /// <summary>
         /// Gets the attributes which are regenerated in an interval.
         /// </summary>
         public static IEnumerable<Regeneration> IntervalRegenerationAttributes

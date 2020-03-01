@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A basic map initializer.
@@ -35,6 +36,11 @@ namespace MUnique.OpenMU.GameLogic
             this.ChunkSize = 8;
             this.mapStateObserver = mapStateObserver;
         }
+
+        /// <summary>
+        /// Gets or sets the plug in manager.
+        /// </summary>
+        public PlugInManager PlugInManager { get; set; }
 
         /// <summary>
         /// Gets or sets the duration of the item drop on created <see cref="GameMap"/>s.
@@ -79,7 +85,7 @@ namespace MUnique.OpenMU.GameLogic
                     if (monsterDef.AttackDelay > TimeSpan.Zero)
                     {
                         Logger.Debug($"Creating monster {spawn}");
-                        npc = new Monster(spawn, monsterDef, createdMap, this.defaultDropGenerator, new BasicMonsterIntelligence(createdMap));
+                        npc = new Monster(spawn, monsterDef, createdMap, this.defaultDropGenerator, new BasicMonsterIntelligence(createdMap), this.PlugInManager);
                     }
                     else
                     {
@@ -109,7 +115,9 @@ namespace MUnique.OpenMU.GameLogic
         /// Creates the game map instance with the specified definition.
         /// </summary>
         /// <param name="definition">The definition.</param>
-        /// <returns>The created game map instance.</returns>
+        /// <returns>
+        /// The created game map instance.
+        /// </returns>
         protected virtual GameMap InternalCreateGameMap(GameMapDefinition definition)
         {
             return new GameMap(definition, this.ItemDropDuration, this.ChunkSize, this.mapStateObserver);
