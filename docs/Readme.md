@@ -88,5 +88,3 @@ If there might be a problem in the future, we could go further and mix relationa
   * [Attribute System](../src/AttributeSystem/Readme.md): Damage calculation and player attributes are based on that
   * [Network](../src/Network/Readme.md): About the network communication
   * [Startup](../src/Startup/Readme.md): It's the project for the executeable which puts every piece of the puzzle together
-
-[Link Test](test/LinkTest.md)
