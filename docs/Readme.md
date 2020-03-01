@@ -83,7 +83,7 @@ If there might be a problem in the future, we could go further and mix relationa
   * [Packets](Packets/Readme.md): Information about the packet structures
   * [Master Skill System](MasterSystem.md): Description about the master skill system
   * [GameMap](GameMap.md): Description about the GameMap implementation
-  * [Progress](Progress.md): Information about the feature implementation progress of the project
+  * [Progress](Progress.md)/[Skills Progress](Skills-Progress.md): Information about the feature implementation progress of the project
   * [Admin Panel](../src/AdminPanel/Readme.md): The user inferface of the server
   * [Attribute System](../src/AttributeSystem/Readme.md): Damage calculation and player attributes are based on that
   * [Network](../src/Network/Readme.md): About the network communication
