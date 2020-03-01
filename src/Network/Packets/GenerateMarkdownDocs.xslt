@@ -24,21 +24,20 @@
     <xsl:variable name="headerType" select="substring(d:HeaderType, 1, 2)" />
     <xsl:variable name="designation">
       <xsl:value-of select="substring(d:HeaderType, 1, 2)" />
-      <xsl:text> </xsl:text>
+      <xsl:text>-</xsl:text>
       <xsl:value-of select="d:Code" />
-      <xsl:text> </xsl:text>
+      <xsl:text>-</xsl:text>
       <xsl:if test="d:SubCode">
         <xsl:value-of select="d:SubCode" />
-        <xsl:text> </xsl:text>
+        <xsl:text>-</xsl:text>
       </xsl:if>
-      <xsl:text>- </xsl:text>
       <xsl:value-of select="d:Name" />
       <xsl:choose>
         <xsl:when test="d:Direction = 'ClientToServer'">
-          <xsl:text> (by client)</xsl:text>
+          <xsl:text>_by-client</xsl:text>
         </xsl:when>
         <xsl:when test="d:Direction = 'ServerToClient'">
-          <xsl:text> (by server)</xsl:text>
+          <xsl:text>_by-server</xsl:text>
         </xsl:when>
       </xsl:choose>
     </xsl:variable>
