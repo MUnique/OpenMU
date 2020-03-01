@@ -46,6 +46,7 @@ namespace MUnique.OpenMU.GameLogic
         private Character selectedCharacter;
 
         private ICustomPlugInContainer<IViewPlugIn> viewPlugIns;
+        private GameMap currentMap;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Player" /> class.
@@ -194,7 +195,19 @@ namespace MUnique.OpenMU.GameLogic
         public int TradingMoney { get; set; }
 
         /// <inheritdoc/>
-        public GameMap CurrentMap { get; private set; }
+        public GameMap CurrentMap
+        {
+            get => this.currentMap;
+
+            private set
+            {
+                if (this.currentMap != value)
+                {
+                    this.currentMap = value;
+                    this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public ISet<IWorldObserver> Observers { get; } = new HashSet<IWorldObserver>();
@@ -232,8 +245,12 @@ namespace MUnique.OpenMU.GameLogic
 
             set
             {
-                this.SelectedCharacter.PositionX = value.X;
-                this.SelectedCharacter.PositionY = value.Y;
+                if (this.Position != value)
+                {
+                    this.SelectedCharacter.PositionX = value.X;
+                    this.SelectedCharacter.PositionY = value.Y;
+                    this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+                }
             }
         }
 
