@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.ConnectServer
                 {
                     var serverBlock = response[i];
                     serverBlock.ServerId = server.ServerId;
-                    serverBlock.LoadPercentage = serverBlock.LoadPercentage;
+                    serverBlock.LoadPercentage = server.ServerLoad;
                     i++;
                 }
             }
