@@ -60,7 +60,7 @@
         </Field>
         <Field>
           <Index>1</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Length</Name>
         </Field>
         <Field>
@@ -81,7 +81,7 @@
         </Field>
         <Field>
           <Index>1</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Length</Name>
         </Field>
         <Field>
@@ -154,7 +154,7 @@
         </Field>
         <Field>
           <Index>1</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Length</Name>
         </Field>
         <Field>
@@ -175,7 +175,7 @@
         </Field>
         <Field>
           <Index>1</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Length</Name>
         </Field>
         <Field>

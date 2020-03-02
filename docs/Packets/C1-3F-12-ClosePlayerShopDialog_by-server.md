@@ -16,4 +16,4 @@ The player shop dialog is closed for the shop of the specified player.
 | 1 | 1 |    Byte   |   6   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x3F  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x12  | Packet header - sub packet type identifier |
-| 4 | 2 | Short |  | PlayerId |
+| 4 | 2 | ShortBigEndian |  | PlayerId |

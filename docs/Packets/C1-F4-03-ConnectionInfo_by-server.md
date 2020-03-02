@@ -17,4 +17,4 @@ The client will try to connect to the server with the specified information.
 | 2 | 1 |    Byte   | 0xF4  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x03  | Packet header - sub packet type identifier |
 | 4 | 16 | String |  | IpAddress |
-| 20 | 2 | ShortBigEndian |  | Port |
+| 20 | 2 | ShortLittleEndian |  | Port |

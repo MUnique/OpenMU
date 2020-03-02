@@ -16,7 +16,7 @@ The object is animated to walk to the new position.
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xD4  | Packet header - packet type identifier |
 | 2 | 1 | Byte |  | HeaderCode |
-| 3 | 2 | Short |  | ObjectId |
+| 3 | 2 | ShortBigEndian |  | ObjectId |
 | 5 | 1 | Byte |  | TargetX |
 | 6 | 1 | Byte |  | TargetY |
 | 7 | 4 bit | Byte |  | TargetRotation |

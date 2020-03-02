@@ -28,4 +28,4 @@ Length: 3 Bytes
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 | Byte |  | SkillIndex |
-| 1 | 2 | Short |  | SkillNumberAndLevel |
+| 1 | 2 | ShortBigEndian |  | SkillNumberAndLevel |

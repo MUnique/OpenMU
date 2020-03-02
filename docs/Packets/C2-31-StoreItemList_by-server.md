@@ -15,7 +15,7 @@ The client shows the items in the opened dialog.
 | 0 | 1 |   Byte   | 0xC2  | [Packet type](PacketTypes.md) |
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0x31  | Packet header - packet type identifier |
-| 4 | 2 | Short |  | ItemCount |
+| 4 | 2 | ShortBigEndian |  | ItemCount |
 | 6 | StoredItem.Length * ItemCount | Array of StoredItem |  | Items |
 
 ### StoredItem Structure

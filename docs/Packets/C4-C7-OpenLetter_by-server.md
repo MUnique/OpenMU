@@ -15,8 +15,8 @@ The letter is opened in a new dialog.
 | 0 | 1 |   Byte   | 0xC4  | [Packet type](PacketTypes.md) |
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0xC7  | Packet header - packet type identifier |
-| 4 | 2 | ShortBigEndian |  | LetterIndex |
-| 6 | 2 | ShortBigEndian |  | MessageSize |
+| 4 | 2 | ShortLittleEndian |  | LetterIndex |
+| 6 | 2 | ShortLittleEndian |  | MessageSize |
 | 8 | 18 | Binary |  | SenderAppearance |
 | 26 | 1 | Byte |  | Rotation |
 | 27 | 1 | Byte |  | Animation |

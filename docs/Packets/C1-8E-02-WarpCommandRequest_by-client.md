@@ -16,4 +16,4 @@ If the player has enough money and is allowed to enter the map, it's getting mov
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x8E  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x02  | Packet header - sub packet type identifier |
-| 8 | 2 | ShortBigEndian |  | WarpInfoIndex; The index of the entry in the warp list. |
+| 8 | 2 | ShortLittleEndian |  | WarpInfoIndex; The index of the entry in the warp list. |

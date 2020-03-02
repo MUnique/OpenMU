@@ -18,7 +18,7 @@ The player shop dialog is shown with the provided item data.
 | 4 | 1 |    Byte   | 0x05  | Packet header - sub packet type identifier |
 | 4 | 1 | ActionKind |  | Action |
 | 5 | 1 | Boolean | true | Success |
-| 6 | 2 | Short |  | PlayerId |
+| 6 | 2 | ShortBigEndian |  | PlayerId |
 | 8 | 10 | String |  | PlayerName |
 | 18 | 36 | String |  | ShopName |
 | 54 | 1 | Byte |  | ItemCount |
@@ -34,7 +34,7 @@ Length: 20 Bytes
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 | Byte |  | ItemSlot |
 | 1 | 12 | Binary |  | ItemData |
-| 16 | 4 | IntegerBigEndian |  | Price |
+| 16 | 4 | IntegerLittleEndian |  | Price |
 
 ### ActionKind Enum
 

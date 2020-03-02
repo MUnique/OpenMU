@@ -15,5 +15,5 @@ The player is not longer shown as a guild member.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   5   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x5D  | Packet header - packet type identifier |
-| 3 | 2 | Short |  | PlayerId |
+| 3 | 2 | ShortBigEndian |  | PlayerId |
 | 3 << 7 | 1 bit | Boolean |  | IsGuildMaster |

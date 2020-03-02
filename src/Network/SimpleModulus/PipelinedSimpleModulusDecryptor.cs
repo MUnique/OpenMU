@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using log4net;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// A decryptor which decrypts 0xC3 and 0xC4-packets with the "simple modulus" algorithm.
@@ -204,7 +205,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             result += (uint)(this.inputBuffer[byteOffset++] << (16 + bitOffset));
             result += (uint)((this.inputBuffer[byteOffset] & (0xFF << (8 - bitOffset))) << (8 + bitOffset));
 
-            result = result.SwapBytes();
+            result = ReverseEndianness(result);
             var remainderMask = GetRemainderBitMask(resultIndex);
             var remainder = (byte)(this.inputBuffer[byteOffset] & remainderMask);
             result += (uint)(remainder << 16) >> (6 - bitOffset);

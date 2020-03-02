@@ -6,17 +6,13 @@ namespace MUnique.OpenMU.ConnectServer
 {
     using System;
     using System.Net;
-    using System.Text;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ConnectServer;
 
     /// <summary>
     /// A list item of an available server.
     /// </summary>
     internal class ServerListItem
     {
-        private const byte IpStartIndex = 4;
-        private readonly byte[] data = new byte[4];
         private readonly ServerList owner;
 
         private byte serverLoad;
@@ -78,22 +74,16 @@ namespace MUnique.OpenMU.ConnectServer
         {
             get
             {
-                var ip = IPAddress.Parse(this.ConnectInfo.ExtractString(IpStartIndex, 16, Encoding.UTF8));
-                var port = this.ConnectInfo.MakeWordBigEndian(this.ConnectInfo.Length - 2);
-
-                return new IPEndPoint(ip, port);
+                ConnectionInfo connectInfo = this.ConnectInfo.AsSpan();
+                return new IPEndPoint(IPAddress.Parse(connectInfo.IpAddress), connectInfo.Port);
             }
 
             set
             {
-                for (int i = IpStartIndex; i < this.ConnectInfo.Length; i++)
-                {
-                    this.ConnectInfo[i] = 0;
-                }
-
-                var ip = value.Address.ToString();
-                Encoding.ASCII.GetBytes(ip, 0, ip.Length, this.ConnectInfo, IpStartIndex);
-                this.ConnectInfo.AsSpan(this.ConnectInfo.Length - 2).SetShortBigEndian((ushort)value.Port);
+                this.ConnectInfo.AsSpan().Clear();
+                ConnectionInfo connectInfo = new ConnectionInfo(this.ConnectInfo);
+                connectInfo.IpAddress = value.Address.ToString();
+                connectInfo.Port = (ushort)value.Port;
             }
         }
 

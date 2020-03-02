@@ -297,9 +297,9 @@
     </xsl:choose>
   </xsl:template>
   
-  <xsl:template match="d:Type[. = 'Short' or . = 'ShortBigEndian']" mode="length">2</xsl:template>
-  <xsl:template match="d:Type[. = 'Integer' or . = 'IntegerBigEndian']" mode="length">4</xsl:template>
-  <xsl:template match="d:Type[. = 'Long' or . = 'LongBigEndian']" mode="length">8</xsl:template>
+  <xsl:template match="d:Type[. = 'ShortLittleEndian' or . = 'ShortBigEndian']" mode="length">2</xsl:template>
+  <xsl:template match="d:Type[. = 'IntegerLittleEndian' or . = 'IntegerBigEndian']" mode="length">4</xsl:template>
+  <xsl:template match="d:Type[. = 'LongLittleEndian' or . = 'LongBigEndian']" mode="length">8</xsl:template>
   <xsl:template match="d:Type[. = 'Float']" mode="length">4</xsl:template>
   <xsl:template match="d:Type[. = 'String']" mode="length">
     <xsl:value-of select="../d:Length"/>

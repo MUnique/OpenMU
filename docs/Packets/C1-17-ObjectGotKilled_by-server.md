@@ -15,5 +15,5 @@ The object is shown as dead.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   9   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x17  | Packet header - packet type identifier |
-| 3 | 2 | Short |  | KilledId |
-| 7 | 2 | Short |  | KillerId |
+| 3 | 2 | ShortBigEndian |  | KilledId |
+| 7 | 2 | ShortBigEndian |  | KillerId |

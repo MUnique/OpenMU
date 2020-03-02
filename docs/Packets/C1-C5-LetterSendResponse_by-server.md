@@ -15,7 +15,7 @@ Depending on the result, the letter send dialog closes or an error message appea
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xC5  | Packet header - packet type identifier |
-| 4 | 4 | IntegerBigEndian |  | LetterId |
+| 4 | 4 | IntegerLittleEndian |  | LetterId |
 | 3 | 1 | LetterSendRequestResult |  | Result |
 
 ### LetterSendRequestResult Enum

@@ -15,7 +15,7 @@ The animation is shown for the specified object.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   9   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x18  | Packet header - packet type identifier |
-| 3 | 2 | Short |  | ObjectId |
+| 3 | 2 | ShortBigEndian |  | ObjectId |
 | 5 | 1 | Byte |  | Direction |
 | 6 | 1 | Byte |  | Animation |
-| 7 | 2 | Short |  | TargetId |
+| 7 | 2 | ShortBigEndian |  | TargetId |

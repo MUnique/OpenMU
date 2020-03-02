@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets;
     using Pipelines.Sockets.Unofficial;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// The connected exDB server. This class includes the communication implementation between chat server and exDB server.
@@ -203,26 +204,24 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             }
 
             var roomId = authenticationInfo.RoomId;
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x2C))
+            using var writer = this.connection.StartSafeWrite(0xC1, 0x2C);
+            var packet = writer.Span;
+            packet[2] = 0xA0;
+            packet[3] = 0x01;
+            WriteUInt16LittleEndian(packet.Slice(4), roomId);
+            packet.Slice(6).WriteString(authenticationInfo.ClientName, Encoding.UTF8);
+            if (friendAuthenticationInfo != null)
             {
-                var packet = writer.Span;
-                packet[2] = 0xA0;
-                packet[3] = 0x01;
-                packet.Slice(4).SetShortBigEndian(roomId);
-                packet.Slice(6).WriteString(authenticationInfo.ClientName, Encoding.UTF8);
-                if (friendAuthenticationInfo != null)
-                {
-                    packet.Slice(16).WriteString(friendAuthenticationInfo.ClientName, Encoding.UTF8);
-                }
-
-                packet.Slice(26).SetShortBigEndian(clientId);
-                packet.Slice(28).SetShortBigEndian(serverId);
-                packet.Slice(32).SetIntegerBigEndian(token);
-                packet.Slice(36).SetIntegerBigEndian(friendToken);
-                packet[40] = type;
-
-                writer.Commit();
+                packet.Slice(16).WriteString(friendAuthenticationInfo.ClientName, Encoding.UTF8);
             }
+
+            WriteUInt16LittleEndian(packet.Slice(26), clientId);
+            WriteUInt16LittleEndian(packet.Slice(28), serverId);
+            WriteUInt32LittleEndian(packet.Slice(32), token);
+            WriteUInt32LittleEndian(packet.Slice(36), friendToken);
+            packet[40] = type;
+
+            writer.Commit();
         }
     }
 }

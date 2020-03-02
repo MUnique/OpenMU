@@ -16,6 +16,6 @@ The position of the object is updated on client side.
 | 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x15  | Packet header - packet type identifier |
 | 2 | 1 | Byte |  | HeaderCode |
-| 3 | 2 | Short |  | ObjectId |
+| 3 | 2 | ShortBigEndian |  | ObjectId |
 | 5 | 1 | Byte |  | PositionX |
 | 6 | 1 | Byte |  | PositionY |

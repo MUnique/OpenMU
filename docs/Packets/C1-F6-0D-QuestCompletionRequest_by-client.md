@@ -16,5 +16,5 @@ The server checks the conditions to complete the quest. If this fails, nothing h
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF6  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x0D  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortBigEndian |  | QuestNumber |
-| 6 | 2 | ShortBigEndian |  | QuestGroup |
+| 4 | 2 | ShortLittleEndian |  | QuestNumber |
+| 6 | 2 | ShortLittleEndian |  | QuestGroup |

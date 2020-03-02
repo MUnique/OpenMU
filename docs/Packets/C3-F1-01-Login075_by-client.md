@@ -18,5 +18,5 @@ The server is authenticating the sent login name and password. If it's correct, 
 | 3 | 1 |    Byte   | 0x01  | Packet header - sub packet type identifier |
 | 4 | 10 | Binary |  | Username; The user name, "encrypted" with Xor3. |
 | 14 | 10 | Binary |  | Password; The password, "encrypted" with Xor3. |
-| 24 | 4 | Integer |  | TickCount |
+| 24 | 4 | IntegerBigEndian |  | TickCount |
 | 28 | 3 | Binary |  | ClientVersion |
