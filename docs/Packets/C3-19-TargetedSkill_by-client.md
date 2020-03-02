@@ -15,5 +15,5 @@ Damage is calculated and the target is hit, if the attack was successful. A resp
 | 0 | 1 |   Byte   | 0xC3  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x19  | Packet header - packet type identifier |
-| 3 | 2 | Short |  | SkillId |
-| 5 | 2 | Short |  | TargetId |
+| 3 | 2 | ShortBigEndian |  | SkillId |
+| 5 | 2 | ShortBigEndian |  | TargetId |

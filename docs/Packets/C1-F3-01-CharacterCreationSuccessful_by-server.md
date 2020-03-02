@@ -19,7 +19,7 @@ The new character is shown in the character list
 | 4 | 1 | Boolean | true | Success |
 | 5 | 10 | String |  | CharacterName |
 | 15 | 1 | Byte |  | CharacterSlot |
-| 16 | 2 | ShortBigEndian |  | Level |
+| 16 | 2 | ShortLittleEndian |  | Level |
 | 18 << 3 | 1 | CharacterClassNumber |  | Class |
 | 19 | 1 | Byte |  | CharacterStatus |
 | 20 |  | Binary |  | PreviewData |

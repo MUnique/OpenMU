@@ -15,7 +15,7 @@ The players which belong to the guild are shown as guild players.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   60   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x66  | Packet header - packet type identifier |
-| 4 | 4 | IntegerBigEndian |  | GuildId |
+| 4 | 4 | IntegerLittleEndian |  | GuildId |
 | 8 | 1 | Byte |  | GuildType |
 | 9 | 8 | String |  | AllianceGuildName |
 | 17 | 8 | String |  | GuildName |

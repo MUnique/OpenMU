@@ -15,4 +15,4 @@ It overrides all previous sent money values.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x3B  | Packet header - packet type identifier |
-| 4 | 4 | IntegerBigEndian |  | MoneyAmount |
+| 4 | 4 | IntegerLittleEndian |  | MoneyAmount |

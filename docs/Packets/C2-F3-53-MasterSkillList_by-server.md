@@ -16,7 +16,7 @@ The data is available in the master skill tree.
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 4 | 1 |    Byte   | 0x53  | Packet header - sub packet type identifier |
-| 8 | 4 | IntegerBigEndian |  | MasterSkillCount |
+| 8 | 4 | IntegerLittleEndian |  | MasterSkillCount |
 | 12 | MasterSkillEntry.Length * MasterSkillCount | Array of MasterSkillEntry |  | Skills |
 
 ### MasterSkillEntry Structure

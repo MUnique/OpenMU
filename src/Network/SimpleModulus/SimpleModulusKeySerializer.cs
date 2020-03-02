@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network.SimpleModulus
 {
     using System.IO;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// Serializer to load/save the simple modulus keys into files in the original format of Webzen.
@@ -38,31 +39,35 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <param name="xorKey">The xor key.</param>
         public void Serialize(string fileName, uint[] modKey, uint[] key, uint[] xorKey)
         {
-            using (var fileStream = File.OpenWrite(fileName))
+            using var fileStream = File.OpenWrite(fileName);
+            var length = (uint)(modKey.Length * sizeof(uint) * 3);
+            fileStream.Write(this.headerOneKey, 0, this.headerOneKey.Length);
+            var intBuffer = new byte[4];
+
+            WriteUInt32LittleEndian(intBuffer, length);
+            fileStream.Write(intBuffer, 0, 4);
+            for (int i = 0; i < modKey.Length; i++)
             {
-                var length = (uint)(modKey.Length * sizeof(uint) * 3);
-                fileStream.Write(this.headerOneKey, 0, this.headerOneKey.Length);
-                fileStream.Write(length.ToBytesBigEndian(), 0, 4);
-                for (int i = 0; i < modKey.Length; i++)
-                {
-                    var value = modKey[i] ^ this.encryptionKeys[i];
-                    fileStream.Write(value.ToBytesBigEndian(), 0, 4);
-                }
-
-                for (int i = 0; i < key.Length; i++)
-                {
-                    var value = key[i] ^ this.encryptionKeys[i];
-                    fileStream.Write(value.ToBytesBigEndian(), 0, 4);
-                }
-
-                for (int i = 0; i < xorKey.Length; i++)
-                {
-                    var value = xorKey[i] ^ this.encryptionKeys[i];
-                    fileStream.Write(value.ToBytesBigEndian(), 0, 4);
-                }
-
-                fileStream.Flush(true);
+                var value = modKey[i] ^ this.encryptionKeys[i];
+                WriteUInt32LittleEndian(intBuffer, value);
+                fileStream.Write(intBuffer, 0, 4);
             }
+
+            for (int i = 0; i < key.Length; i++)
+            {
+                var value = key[i] ^ this.encryptionKeys[i];
+                WriteUInt32LittleEndian(intBuffer, value);
+                fileStream.Write(intBuffer, 0, 4);
+            }
+
+            for (int i = 0; i < xorKey.Length; i++)
+            {
+                var value = xorKey[i] ^ this.encryptionKeys[i];
+                WriteUInt32LittleEndian(intBuffer, value);
+                fileStream.Write(intBuffer, 0, 4);
+            }
+
+            fileStream.Flush(true);
         }
 
         /// <summary>

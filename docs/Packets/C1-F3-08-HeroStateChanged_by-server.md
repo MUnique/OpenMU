@@ -16,7 +16,7 @@ The color of the name of the character is changed accordingly and a message is s
 | 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x08  | Packet header - sub packet type identifier |
-| 4 | 2 | Short |  | PlayerId |
+| 4 | 2 | ShortBigEndian |  | PlayerId |
 | 6 | 1 | CharacterHeroState |  | NewState |
 
 ### CharacterHeroState Enum

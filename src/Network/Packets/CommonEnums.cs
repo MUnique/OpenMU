@@ -12,7 +12,8 @@
 
 namespace MUnique.OpenMU.Network.Packets
 {
-    using System;        /// <summary>
+    using System;
+    using static System.Buffers.Binary.BinaryPrimitives;        /// <summary>
         /// Defines from or to which item storage an item is moved.
         /// </summary>
         public enum ItemStorageKind

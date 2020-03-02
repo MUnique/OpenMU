@@ -26,4 +26,4 @@ Length: 2 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 2 | Short |  | Id |
+| 0 | 2 | ShortBigEndian |  | Id |

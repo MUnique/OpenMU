@@ -17,4 +17,4 @@ The player shop not shown as open anymore.
 | 2 | 1 |    Byte   | 0x3F  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x3  | Packet header - sub packet type identifier |
 | 4 | 1 | Boolean | true | Success |
-| 5 | 2 | Short |  | PlayerId |
+| 5 | 2 | ShortBigEndian |  | PlayerId |

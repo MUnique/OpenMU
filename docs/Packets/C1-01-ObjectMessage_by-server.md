@@ -15,5 +15,5 @@ The message is shown above the character.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x01  | Packet header - packet type identifier |
-| 3 | 2 | Short |  | ObjectId |
+| 3 | 2 | ShortBigEndian |  | ObjectId |
 | 5 |  | String |  | Message |

@@ -17,4 +17,4 @@ The price is set for the specified item. Works only if the shop is currently clo
 | 2 | 1 |    Byte   | 0x3F  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x01  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | ItemSlot |
-| 5 | 4 | IntegerBigEndian |  | Price |
+| 5 | 4 | IntegerLittleEndian |  | Price |

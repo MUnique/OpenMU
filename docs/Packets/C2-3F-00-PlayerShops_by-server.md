@@ -27,5 +27,5 @@ Length: 38 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 2 | Short |  | PlayerId |
+| 0 | 2 | ShortBigEndian |  | PlayerId |
 | 2 | 36 | String |  | StoreName |

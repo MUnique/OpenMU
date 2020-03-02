@@ -4,9 +4,8 @@
 
 namespace MUnique.OpenMU.ConnectServer
 {
-    using System;
     using System.Collections.Generic;
-    using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.Packets.ConnectServer;
     using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
@@ -57,44 +56,33 @@ namespace MUnique.OpenMU.ConnectServer
             byte[] packet;
             if (this.clientVersion.Season == 0)
             {
-                const int serverBlockSize = 2;
-                const int headerSize = 6;
-                packet = new byte[(this.Servers.Count * serverBlockSize) + headerSize];
-                packet[0] = 0xC2;
-                packet[1] = (byte)((packet.Length >> 8) & 0xFF);
-                packet[2] = (byte)(packet.Length & 0xFF);
-                packet[3] = 0xF4;
-                packet[4] = 0x02;
-                packet[5] = (byte)this.Servers.Count;
+                packet = new byte[ServerListResponseOld.GetRequiredSize(this.Servers.Count)];
+                var response = new ServerListResponseOld(packet)
+                {
+                    ServerCount = (byte)this.Servers.Count,
+                };
                 var i = 0;
                 foreach (var server in this.Servers)
                 {
-                    packet[headerSize + (i * serverBlockSize)] = (byte)server.ServerId;
-                    var loadIndex = headerSize + 1 + (i * serverBlockSize);
-                    packet[loadIndex] = (byte)server.ServerLoad;
-                    server.LoadIndex = loadIndex;
+                    var serverBlock = response[i];
+                    serverBlock.ServerId = (byte)server.ServerId;
+                    serverBlock.LoadPercentage = server.ServerLoad;
                     i++;
                 }
             }
             else
             {
-                const int serverBlockSize = 4;
-                const int headerSize = 7;
-                packet = new byte[(this.Servers.Count * serverBlockSize) + headerSize];
-                packet[0] = 0xC2;
-                packet[1] = (byte)((packet.Length >> 8) & 0xFF);
-                packet[2] = (byte)(packet.Length & 0xFF);
-                packet[3] = 0xF4;
-                packet[4] = 0x06;
-                packet[5] = (byte)((this.Servers.Count >> 8) & 0xFF);
-                packet[6] = (byte)(this.Servers.Count & 0xFF);
+                packet = new byte[ServerListResponse.GetRequiredSize(this.Servers.Count)];
+                var response = new ServerListResponse(packet)
+                {
+                    ServerCount = (ushort)this.Servers.Count,
+                };
                 var i = 0;
                 foreach (var server in this.Servers)
                 {
-                    packet.AsSpan(headerSize + (i * serverBlockSize)).SetShortBigEndian(server.ServerId);
-                    var loadIndex = headerSize + 2 + (i * serverBlockSize);
-                    packet[loadIndex] = (byte)server.ServerLoad;
-                    server.LoadIndex = loadIndex;
+                    var serverBlock = response[i];
+                    serverBlock.ServerId = server.ServerId;
+                    serverBlock.LoadPercentage = serverBlock.LoadPercentage;
                     i++;
                 }
             }

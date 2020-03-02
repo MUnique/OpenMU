@@ -32,5 +32,5 @@ Length: 24 Bytes
 | 11 | 1 | Byte |  | MapId |
 | 12 | 1 | Byte |  | PositionX |
 | 13 | 1 | Byte |  | PositionY |
-| 16 | 4 | IntegerBigEndian |  | CurrentHealth |
-| 20 | 4 | IntegerBigEndian |  | MaximumHealth |
+| 16 | 4 | IntegerLittleEndian |  | CurrentHealth |
+| 20 | 4 | IntegerLittleEndian |  | MaximumHealth |

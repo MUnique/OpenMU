@@ -17,9 +17,9 @@ The level is updated in the master skill tree.
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x52  | Packet header - sub packet type identifier |
 | 4 | 1 | Boolean |  | Success |
-| 6 | 2 | ShortBigEndian |  | MasterLevelUpPoints |
+| 6 | 2 | ShortLittleEndian |  | MasterLevelUpPoints |
 | 8 | 1 | Byte |  | MasterSkillIndex; The index of the master skill on the clients master skill tree for the given character class. |
-| 12 | 2 | ShortBigEndian |  | MasterSkillNumber |
+| 12 | 2 | ShortLittleEndian |  | MasterSkillNumber |
 | 16 | 1 | Byte |  | Level |
 | 20 | 4 | Float |  | DisplayValue |
 | 24 | 4 | Float |  | DisplayValueOfNextLevel |

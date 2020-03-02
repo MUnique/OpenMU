@@ -16,4 +16,4 @@ Adds or increases the master skill level of the specified skill, if the characte
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x52  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortBigEndian |  | SkillId |
+| 4 | 2 | ShortLittleEndian |  | SkillId |

@@ -26,10 +26,10 @@ Length: 12 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 4 | IntegerBigEndian |  | GuildId |
+| 0 | 4 | IntegerLittleEndian |  | GuildId |
 | 4 | 1 | GuildMemberRole |  | Role |
 | 7 << 7 | 1 bit | Boolean |  | IsPlayerAppearingNew |
-| 7 | 2 | Short |  | PlayerId |
+| 7 | 2 | ShortBigEndian |  | PlayerId |
 
 ### GuildMemberRole Enum
 

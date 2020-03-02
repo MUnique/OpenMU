@@ -16,7 +16,7 @@ By the original server this is used to detect speed hacks.
 | 1 | 1 |    Byte   |   12   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x0E  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x00  | Packet header - sub packet type identifier |
-| 4 | 4 | IntegerBigEndian |  | TickCount |
+| 4 | 4 | IntegerLittleEndian |  | TickCount |
 | 8 | 1 | Byte |  | Speed1 |
 | 9 | 1 | Byte |  | Speed2 |
 | 10 | 1 | Byte |  | Speed3 |

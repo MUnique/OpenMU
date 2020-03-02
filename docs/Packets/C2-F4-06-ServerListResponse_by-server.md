@@ -16,7 +16,7 @@ The client shows the available servers with their load information.
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0xF4  | Packet header - packet type identifier |
 | 4 | 1 |    Byte   | 0x06  | Packet header - sub packet type identifier |
-| 5 | 2 | Short |  | ServerCount |
+| 5 | 2 | ShortBigEndian |  | ServerCount |
 | 7 | ServerLoadInfo.Length *  | Array of ServerLoadInfo |  | Servers |
 
 ### ServerLoadInfo Structure
@@ -27,5 +27,5 @@ Length: 4 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 2 | ShortBigEndian |  | ServerId |
+| 0 | 2 | ShortLittleEndian |  | ServerId |
 | 2 | 1 | Byte |  | LoadPercentage |

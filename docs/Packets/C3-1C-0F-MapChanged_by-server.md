@@ -17,7 +17,7 @@ The game client changes to the specified map and coordinates.
 | 2 | 1 |    Byte   | 0x1C  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x0F  | Packet header - sub packet type identifier |
 | 4 | 1 | Boolean | true | Success |
-| 5 | 2 | Short |  | MapNumber |
+| 5 | 2 | ShortBigEndian |  | MapNumber |
 | 7 | 1 | Byte |  | PositionX |
 | 8 | 1 | Byte |  | PositionY |
 | 9 | 1 | Byte |  | Rotation |

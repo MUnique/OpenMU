@@ -16,8 +16,8 @@ The game client connects to the chat server and joins the chat room with the spe
 | 1 | 1 |    Byte   |   36   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xCA  | Packet header - packet type identifier |
 | 3 | 15 | String |  | ChatServerIp |
-| 18 | 2 | ShortBigEndian |  | ChatRoomId |
-| 20 | 4 | IntegerBigEndian |  | AuthenticationToken |
+| 18 | 2 | ShortLittleEndian |  | ChatRoomId |
+| 20 | 4 | IntegerLittleEndian |  | AuthenticationToken |
 | 24 | 1 | Byte | 1 | Type |
 | 25 | 10 | String |  | FriendName |
 | 35 | 1 | Boolean |  | Success |

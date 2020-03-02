@@ -13,6 +13,7 @@
 namespace MUnique.OpenMU.Network.Packets.ClientToServer
 {
     using System;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
@@ -80,8 +81,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -391,8 +392,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => this.data.Slice(34).GetIntegerLittleEndian();
-            set => this.data.Slice(34).SetIntegerLittleEndian(value);
+            get => ReadUInt32BigEndian(this.data.Slice(34));
+            set => WriteUInt32BigEndian(this.data.Slice(34), value);
         }
 
         /// <summary>
@@ -496,8 +497,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => this.data.Slice(24).GetIntegerLittleEndian();
-            set => this.data.Slice(24).SetIntegerLittleEndian(value);
+            get => ReadUInt32BigEndian(this.data.Slice(24));
+            set => WriteUInt32BigEndian(this.data.Slice(24), value);
         }
 
         /// <summary>
@@ -601,8 +602,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => this.data.Slice(24).GetIntegerLittleEndian();
-            set => this.data.Slice(24).SetIntegerLittleEndian(value);
+            get => ReadUInt32BigEndian(this.data.Slice(24));
+            set => WriteUInt32BigEndian(this.data.Slice(24), value);
         }
 
         /// <summary>
@@ -780,8 +781,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint Price
         {
-            get => this.data.Slice(5).GetIntegerBigEndian();
-            set => this.data.Slice(5).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(5));
+            set => WriteUInt32LittleEndian(this.data.Slice(5), value);
         }
 
         /// <summary>
@@ -1014,8 +1015,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort PlayerId
         {
-            get => this.data.Slice(4).GetShortLittleEndian();
-            set => this.data.Slice(4).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -1104,8 +1105,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort PlayerId
         {
-            get => this.data.Slice(4).GetShortLittleEndian();
-            set => this.data.Slice(4).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -1196,8 +1197,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort ItemId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -1270,8 +1271,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort ItemId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -1637,8 +1638,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort NpcId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -2005,8 +2006,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort WarpInfoIndex
         {
-            get => this.data.Slice(8).GetShortBigEndian();
-            set => this.data.Slice(8).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(8));
+            set => WriteUInt16LittleEndian(this.data.Slice(8), value);
         }
 
         /// <summary>
@@ -2079,8 +2080,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort GateNumber
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -2243,8 +2244,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint Amount
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -2650,8 +2651,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetPlayerId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -3727,8 +3728,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort SkillId
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -3801,8 +3802,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -3893,8 +3894,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort SkillId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -3902,8 +3903,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => this.data.Slice(5).GetShortLittleEndian();
-            set => this.data.Slice(5).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(5));
+            set => WriteUInt16BigEndian(this.data.Slice(5), value);
         }
 
         /// <summary>
@@ -3985,8 +3986,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => this.data.Slice(4).GetShortLittleEndian();
-            set => this.data.Slice(4).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -4059,8 +4060,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort SkillId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -4095,8 +4096,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort ExtraTargetId
         {
-            get => this.data.Slice(9).GetShortLittleEndian();
-            set => this.data.Slice(9).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(9));
+            set => WriteUInt16BigEndian(this.data.Slice(9), value);
         }
 
         /// <summary>
@@ -4178,8 +4179,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort SkillId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -4214,8 +4215,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => this.data.Slice(9).GetShortLittleEndian();
-            set => this.data.Slice(9).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(9));
+            set => WriteUInt16BigEndian(this.data.Slice(9), value);
         }
 
         /// <summary>
@@ -4436,8 +4437,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort PlayerId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -4584,8 +4585,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint Amount
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -4658,8 +4659,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort LetterIndex
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -4732,8 +4733,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint LetterId
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -4857,8 +4858,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort LetterIndex
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -5020,8 +5021,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort GuildMasterPlayerId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -5389,8 +5390,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint GuildId
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6130,8 +6131,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort RoomId
         {
-            get => this.data.Slice(13).GetShortLittleEndian();
-            set => this.data.Slice(13).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(13));
+            set => WriteUInt16BigEndian(this.data.Slice(13), value);
         }
 
         /// <summary>
@@ -6139,8 +6140,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint RequestId
         {
-            get => this.data.Slice(15).GetIntegerLittleEndian();
-            set => this.data.Slice(15).SetIntegerLittleEndian(value);
+            get => ReadUInt32BigEndian(this.data.Slice(15));
+            set => WriteUInt32BigEndian(this.data.Slice(15), value);
         }
 
         /// <summary>
@@ -6368,8 +6369,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6377,8 +6378,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6467,8 +6468,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6476,8 +6477,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6566,8 +6567,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6575,8 +6576,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6656,8 +6657,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6665,8 +6666,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6746,8 +6747,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6755,8 +6756,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6908,8 +6909,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6917,8 +6918,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>

@@ -18,9 +18,9 @@ If it was successful, adds a point to the requested stat type.
 | 3 | 1 |    Byte   | 0x06  | Packet header - sub packet type identifier |
 | 4 << 4 | 1 bit | Boolean |  | Success |
 | 4 | 4 bit | CharacterStatAttribute |  | Attribute |
-| 6 | 2 | ShortBigEndian |  | UpdatedDependentMaximumStat |
-| 8 | 2 | ShortBigEndian |  | UpdatedMaximumShield |
-| 10 | 2 | ShortBigEndian |  | UpdatedMaximumAbility |
+| 6 | 2 | ShortLittleEndian |  | UpdatedDependentMaximumStat |
+| 8 | 2 | ShortLittleEndian |  | UpdatedMaximumShield |
+| 10 | 2 | ShortLittleEndian |  | UpdatedMaximumAbility |
 
 ### CharacterStatAttribute Enum
 

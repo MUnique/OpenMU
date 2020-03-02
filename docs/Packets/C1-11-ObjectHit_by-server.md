@@ -16,12 +16,12 @@ The damage is shown at the object which received the hit.
 | 1 | 1 |    Byte   |   10   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x11  | Packet header - packet type identifier |
 | 2 | 1 | Byte |  | HeaderCode |
-| 3 | 2 | Short |  | ObjectId |
-| 5 | 2 | Short |  | HealthDamage |
+| 3 | 2 | ShortBigEndian |  | ObjectId |
+| 5 | 2 | ShortBigEndian |  | HealthDamage |
 | 7 << 0 | 4 bit | DamageKind |  | Kind |
 | 7 << 6 | 1 bit | Boolean |  | IsDoubleDamage |
 | 7 << 7 | 1 bit | Boolean |  | IsTripleDamage |
-| 8 | 2 | Short |  | ShieldDamage |
+| 8 | 2 | ShortBigEndian |  | ShieldDamage |
 
 ### DamageKind Enum
 

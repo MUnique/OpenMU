@@ -16,11 +16,11 @@ The master related data is available.
 | 1 | 1 |    Byte   |   32   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x50  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortBigEndian |  | MasterLevel |
-| 6 | 8 | Long |  | MasterExperience |
-| 14 | 8 | Long |  | MasterExperienceOfNextLevel |
-| 22 | 2 | ShortBigEndian |  | MasterLevelUpPoints |
-| 24 | 2 | ShortBigEndian |  | MaximumHealth |
-| 26 | 2 | ShortBigEndian |  | MaximumMana |
-| 28 | 2 | ShortBigEndian |  | MaximumShield |
-| 30 | 2 | ShortBigEndian |  | MaximumAbility |
+| 4 | 2 | ShortLittleEndian |  | MasterLevel |
+| 6 | 8 | LongBigEndian |  | MasterExperience |
+| 14 | 8 | LongBigEndian |  | MasterExperienceOfNextLevel |
+| 22 | 2 | ShortLittleEndian |  | MasterLevelUpPoints |
+| 24 | 2 | ShortLittleEndian |  | MaximumHealth |
+| 26 | 2 | ShortLittleEndian |  | MaximumMana |
+| 28 | 2 | ShortLittleEndian |  | MaximumShield |
+| 30 | 2 | ShortLittleEndian |  | MaximumAbility |
