@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
-    using System.IO;
     using log4net;
 
     using MUnique.OpenMU.DataModel.Configuration;
