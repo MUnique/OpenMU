@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="Pipelines.Sockets.Unofficial" Version="2.1.0" />
+    <PackageReference Include="Pipelines.Sockets.Unofficial" Version="2.1.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
