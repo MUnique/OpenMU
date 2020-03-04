@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.Network.Tests
                 packet[2] = 0xBE;
                 packet[3] = 0xAF;
                 await connection.Output.WriteAsync(packet).ConfigureAwait(false);
-                await Task.Delay(1000);
+                await Task.Delay(1000).ConfigureAwait(false);
 
                 Assert.That(connection.Connected, Is.False);
             }
