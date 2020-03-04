@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
     /// Base class for a <see cref="ICharacterCreatedPlugIn"/> which adds an item to the inventory
     /// of the created character.
     /// </summary>
-    public abstract class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
+    public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly byte characterClassNumber;

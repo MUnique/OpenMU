@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
     /// <summary>
     /// Base class for a <see cref="ICharacterCreatedPlugIn"/> which adds an initial skill for a specific character class.
     /// </summary>
-    public abstract class AddInitialSkillPlugInBase : ICharacterCreatedPlugIn
+    public class AddInitialSkillPlugInBase : ICharacterCreatedPlugIn
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly byte characterClassNumber;
