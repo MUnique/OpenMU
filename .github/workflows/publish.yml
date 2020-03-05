@@ -17,7 +17,7 @@ jobs:
           VERSION_FILE_PATH: src/SharedAssemblyInfo.cs
           VERSION_REGEX: >-
            \[assembly: AssemblyVersion\("(\d+[.]\d+[.]\d+)[.]\d+"\)\]
-          # NUGET_KEY: ${{secrets.NUGET_API_KEY}} # nuget.org API key
+          NUGET_KEY: ${{secrets.NUGET_KEY}}
           PACKAGE_NAME: MUnique.OpenMU.Network
 
       - name: publish MUnique.OpenMU.Network.Packets on version change
@@ -29,5 +29,5 @@ jobs:
            \[assembly: AssemblyVersion\("(\d+[.]\d+[.]\d+)[.]\d+"\)\]
           TAG_COMMIT: true
           TAG_FORMAT: v*
-          # NUGET_KEY: ${{secrets.NUGET_API_KEY}} # nuget.org API key
+          NUGET_KEY: ${{secrets.NUGET_KEY}}
           PACKAGE_NAME: MUnique.OpenMU.Network.Packets
