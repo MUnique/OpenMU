@@ -14,9 +14,6 @@ jobs:
         uses: rohith/publish-nuget@e2920cdadd1ebe88751082afc324ca8170f35cd1
         with:
           PROJECT_FILE_PATH: src/Network/MUnique.OpenMU.Network.csproj
-          VERSION_FILE_PATH: src/SharedAssemblyInfo.cs
-          VERSION_REGEX: >-
-           \[assembly: AssemblyVersion\("(\d+[.]\d+[.]\d+)[.]\d+"\)\]
           NUGET_KEY: ${{secrets.NUGET_KEY}}
           PACKAGE_NAME: MUnique.OpenMU.Network
 
@@ -24,9 +21,6 @@ jobs:
         uses: rohith/publish-nuget@e2920cdadd1ebe88751082afc324ca8170f35cd1
         with:
           PROJECT_FILE_PATH: src/Network/Packets/MUnique.OpenMU.Network.Packets.csproj
-          VERSION_FILE_PATH: src/SharedAssemblyInfo.cs
-          VERSION_REGEX: >-
-           \[assembly: AssemblyVersion\("(\d+[.]\d+[.]\d+)[.]\d+"\)\]
           TAG_COMMIT: true
           TAG_FORMAT: v*
           NUGET_KEY: ${{secrets.NUGET_KEY}}

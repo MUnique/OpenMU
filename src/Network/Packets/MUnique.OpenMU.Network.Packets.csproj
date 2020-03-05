@@ -4,17 +4,18 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Nullable>enable</Nullable>
     <Authors>MUnique</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/MUnique/OpenMU/tree/master/src/Network/Packets</RepositoryUrl>
     <PackageProjectUrl>https://munique.net</PackageProjectUrl>
-    <PackageLicenseUrl>http://opensource.org/licenses/mit-license.php</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>MUnique OpenMU MUOnline Network Packets</PackageTags>
     <PackageId>MUnique.OpenMU.Network.Packets</PackageId>
     <Description>This package contains message structs for the MMORPG "MU Online", which are primarily focused on the english version of Season 6 Episode 3.</Description>
+    <PackageVersion>0.3.1</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
