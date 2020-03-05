@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MUnique")]
 [assembly: AssemblyProduct("OpenMU")]
-[assembly: AssemblyCopyright("Copyright © MUnique 2018")]
+[assembly: AssemblyCopyright("Copyright © MUnique 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
