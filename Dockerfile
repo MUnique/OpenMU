@@ -23,5 +23,5 @@ EXPOSE 55980
 
 WORKDIR /app
 COPY --from=build /app/out ./
-COPY --from=build /app/bin/Debug/wwwroot/content/js ./wwwroot/content/js
+COPY --from=build /app/bin/Release/wwwroot/content/js ./wwwroot/content/js
 ENTRYPOINT ["dotnet", "MUnique.OpenMU.Startup.dll", "-autostart"]
