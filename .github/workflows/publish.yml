@@ -14,6 +14,7 @@ jobs:
         uses: rohith/publish-nuget@e2920cdadd1ebe88751082afc324ca8170f35cd1
         with:
           PROJECT_FILE_PATH: src/Network/MUnique.OpenMU.Network.csproj
+          TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_KEY}}
           PACKAGE_NAME: MUnique.OpenMU.Network
 
