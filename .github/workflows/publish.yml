@@ -16,7 +16,7 @@ jobs:
           PROJECT_FILE_PATH: src/Network/MUnique.OpenMU.Network.csproj
           VERSION_FILE_PATH: src/SharedAssemblyInfo.cs
           VERSION_REGEX: >-
-            ^\[assembly: AssemblyVersion\("(\d+[.]\d+[.]\d+)[.]\d+"\)\]
+           ^\[assembly: AssemblyVersion\("(\d+[.]\d+[.]\d+)[.]\d+"\)\]
           # NUGET_KEY: ${{secrets.NUGET_API_KEY}} # nuget.org API key
           PACKAGE_NAME: MUnique.OpenMU.Network
 
@@ -26,7 +26,7 @@ jobs:
           PROJECT_FILE_PATH: src/Network/Packets/MUnique.OpenMU.Network.Packets.csproj
           VERSION_FILE_PATH: src/SharedAssemblyInfo.cs
           VERSION_REGEX: >-
-            ^\[assembly: AssemblyVersion\("(\d+[.]\d+[.]\d+)[.]\d+"\)\]
+           ^\[assembly: AssemblyVersion\("(\d+[.]\d+[.]\d+)[.]\d+"\)\]
           TAG_COMMIT: true
           TAG_FORMAT: v*
           # NUGET_KEY: ${{secrets.NUGET_API_KEY}} # nuget.org API key
