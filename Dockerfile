@@ -10,7 +10,8 @@ COPY tests/ ./app/tests
 COPY docs/ ./app/docs
 
 WORKDIR /app
-RUN dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj -o out -p:ci=true
+RUN dotnet restore src/Startup/MUnique.OpenMU.Startup.csproj
+RUN dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 
