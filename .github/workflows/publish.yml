@@ -10,6 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: publish MUnique.OpenMU.PlugIns on version change
+        uses: rohith/publish-nuget@e2920cdadd1ebe88751082afc324ca8170f35cd1
+        with:
+          PROJECT_FILE_PATH: src/PlugIns/MUnique.OpenMU.PlugIns.csproj
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_KEY}}
+          PACKAGE_NAME: MUnique.OpenMU.PlugIns
+
       - name: publish MUnique.OpenMU.Network on version change
         uses: rohith/publish-nuget@e2920cdadd1ebe88751082afc324ca8170f35cd1
         with:
