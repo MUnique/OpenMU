@@ -19,11 +19,11 @@ namespace MUnique.OpenMU.Network
     public sealed class Connection : PacketPipeReaderBase, IConnection
     {
         private readonly ILog log = LogManager.GetLogger(typeof(Connection));
-        private readonly IPipelinedDecryptor decryptionPipe;
         private readonly IPipelinedEncryptor encryptionPipe;
         private readonly EndPoint remoteEndPoint;
         private IDuplexPipe duplexPipe;
         private bool disconnected;
+        private PipeWriter outputWriter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Connection"/> class.
@@ -34,12 +34,9 @@ namespace MUnique.OpenMU.Network
         public Connection(IDuplexPipe duplexPipe, IPipelinedDecryptor decryptionPipe, IPipelinedEncryptor encryptionPipe)
         {
             this.duplexPipe = duplexPipe;
-            this.decryptionPipe = decryptionPipe;
             this.encryptionPipe = encryptionPipe;
-            this.Source = this.decryptionPipe?.Reader ?? this.duplexPipe.Input;
+            this.Source = decryptionPipe?.Reader ?? this.duplexPipe.Input;
             this.remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
-            this.Source.OnWriterCompleted((e, state) => this.OnComplete(e), null);
-            this.Output.OnReaderCompleted((e, state) => this.OnComplete(e), null);
         }
 
         /// <inheritdoc />
@@ -49,10 +46,10 @@ namespace MUnique.OpenMU.Network
         public event DisconnectedHandler Disconnected;
 
         /// <inheritdoc />
-        public bool Connected => !this.disconnected || (this.SocketConnection?.Socket.Connected ?? false);
+        public bool Connected => this.SocketConnection != null ? this.SocketConnection.ShutdownKind == PipeShutdownKind.None && !this.disconnected : !this.disconnected;
 
         /// <inheritdoc />
-        public PipeWriter Output => this.encryptionPipe?.Writer ?? this.duplexPipe.Output;
+        public PipeWriter Output => this.outputWriter ??= this.encryptionPipe?.Writer ?? this.duplexPipe.Output;
 
         /// <summary>
         /// Gets the socket connection, if the <see cref="duplexPipe"/> is an instance of <see cref="SocketConnection"/>. Otherwise, it returns null.
@@ -72,7 +69,10 @@ namespace MUnique.OpenMU.Network
             catch (Exception e)
             {
                 this.OnComplete(e);
+                return;
             }
+
+            this.OnComplete(null);
         }
 
         /// <inheritdoc />
@@ -90,6 +90,7 @@ namespace MUnique.OpenMU.Network
                 if (this.duplexPipe != null)
                 {
                     this.Source.Complete();
+                    this.Output.Complete();
                     (this.duplexPipe as IDisposable)?.Dispose();
                     this.duplexPipe = null;
                 }
@@ -112,15 +113,14 @@ namespace MUnique.OpenMU.Network
         /// <inheritdoc />
         protected override void OnComplete(Exception exception)
         {
-            using (ThreadContext.Stacks["Connection"].Push(this.ToString()))
+            using var push = ThreadContext.Stacks["Connection"].Push(this.ToString());
+            if (exception != null)
             {
-                if (exception != null)
-                {
-                    this.log.Error("Connection will be disconnected, because of an exception", exception);
-                }
-
-                this.Disconnect();
+                this.log.Error("Connection will be disconnected, because of an exception", exception);
             }
+
+            this.Output.Complete(exception);
+            this.Disconnect();
         }
 
         /// <summary>

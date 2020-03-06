@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A game map initializer which takes aspects of the <see cref="GameServer"/> into account.

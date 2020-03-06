@@ -49,9 +49,14 @@ namespace MUnique.OpenMU.Network.Packets
         ServerToClient,
 
         /// <summary>
-        /// TThe data packet is sent from the game client to the (game) server.
+        /// The data packet is sent from the game client to the (game) server.
         /// </summary>
         ClientToServer,
+
+        /// <summary>
+        /// The data packet is sent in both directions.
+        /// </summary>
+        Bidirectional,
     }
 
     /// <summary>

@@ -47,6 +47,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentMana, 1, false));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentAbility, 1, false));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentShield, 1, false));
+            result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.IsInSafezone, 1, false));
 
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.TotalStrength, 1, Stats.BaseStrength));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.TotalAgility, 1, Stats.BaseAgility));
@@ -99,6 +100,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
 
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.TotalLeadership));
+
+            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
+            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
+
             /* TODO: Add these stats
                                         Critical dmg = cmd/25+str/30
                                         Fireburst bonus min dmg = 100+str/25+ene/50

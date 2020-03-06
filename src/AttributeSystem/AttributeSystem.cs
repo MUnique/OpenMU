@@ -79,9 +79,11 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>The success.</returns>
         public bool SetStatAttribute(AttributeDefinition attributeDefinition, float newValue)
         {
-            if (this.attributes.TryGetValue(attributeDefinition, out IAttribute attribute) && attribute is StatAttribute)
+            if (this.attributes.TryGetValue(attributeDefinition, out IAttribute attribute)
+                && attribute is StatAttribute statAttribute)
             {
-                ((StatAttribute)attribute).Value = newValue;
+                statAttribute.Value = newValue;
+
                 return true;
             }
 

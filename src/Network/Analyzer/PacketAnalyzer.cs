@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System.Linq;
     using System.Text;
     using MUnique.OpenMU.Network.Packets;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// Analyzer which analyzes data packets by considering the configuration files.
@@ -161,18 +162,18 @@ namespace MUnique.OpenMU.Network.Analyzer
                     return data.Slice(field.Index).GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted).ToString();
                 case FieldType.Boolean:
                     return data.Slice(field.Index).GetBoolean(field.LeftShifted).ToString();
-                case FieldType.Integer:
-                    return data.Slice(field.Index).GetIntegerLittleEndian().ToString();
+                case FieldType.IntegerLittleEndian:
+                    return ReadUInt32LittleEndian(data.Slice(field.Index)).ToString();
                 case FieldType.IntegerBigEndian:
-                    return data.Slice(field.Index).GetIntegerBigEndian().ToString();
-                case FieldType.Short:
-                    return data.Slice(field.Index).GetShortLittleEndian().ToString();
+                    return ReadUInt32BigEndian(data.Slice(field.Index)).ToString();
+                case FieldType.ShortLittleEndian:
+                    return ReadUInt16LittleEndian(data.Slice(field.Index)).ToString();
                 case FieldType.ShortBigEndian:
-                    return data.Slice(field.Index).GetShortBigEndian().ToString();
-                case FieldType.Long:
-                    return data.Slice(field.Index).GetLongLittleEndian().ToString();
+                    return ReadUInt16BigEndian(data.Slice(field.Index)).ToString();
+                case FieldType.LongLittleEndian:
+                    return ReadUInt64LittleEndian(data.Slice(field.Index)).ToString();
                 case FieldType.LongBigEndian:
-                    return data.Slice(field.Index).GetLongBigEndian().ToString();
+                    return ReadUInt64BigEndian(data.Slice(field.Index)).ToString();
                 case FieldType.Enum:
                     return this.ExtractEnumValue(data, field, packet, definitions);
                 case FieldType.StructureArray:

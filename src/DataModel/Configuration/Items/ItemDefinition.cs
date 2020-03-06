@@ -39,6 +39,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         public bool DropsFromMonsters { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this instance acts as ammunition for another equipped weapon.
+        /// </summary>
+        public bool IsAmmunition { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the item.
         /// </summary>
         public string Name { get; set; }

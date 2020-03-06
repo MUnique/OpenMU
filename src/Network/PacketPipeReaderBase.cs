@@ -40,7 +40,6 @@ namespace MUnique.OpenMU.Network
         /// <returns>The task.</returns>
         protected async Task ReadSource()
         {
-            Exception error = null;
             try
             {
                 while (true)
@@ -56,12 +55,11 @@ namespace MUnique.OpenMU.Network
             }
             catch (Exception e)
             {
-                error = e;
+                this.OnComplete(e);
+                throw;
             }
 
-            // Mark the PipeReader as complete
-            this.Source.Complete(error);
-            this.OnComplete(error);
+            this.OnComplete(null);
         }
 
         private async Task<bool> ReadBuffer()
@@ -78,7 +76,13 @@ namespace MUnique.OpenMU.Network
                     length = this.headerBuffer.AsSpan().GetPacketSize();
                     if (length == 0)
                     {
-                        throw new InvalidPacketHeaderException(this.headerBuffer, result.Buffer, buffer.Start);
+                        var exception = new InvalidPacketHeaderException(this.headerBuffer, result.Buffer, buffer.Start);
+
+                        // Notify our source, that we don't intend to read anymore.
+                        await this.Source.CompleteAsync(exception).ConfigureAwait(false);
+
+                        this.OnComplete(exception);
+                        throw exception;
                     }
                 }
 

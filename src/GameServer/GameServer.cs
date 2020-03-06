@@ -57,6 +57,7 @@ namespace MUnique.OpenMU.GameServer
                 this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, mapInitializer);
                 this.gameContext.GameMapCreated += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
                 this.gameContext.GameMapRemoved += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
+                mapInitializer.PlugInManager = this.gameContext.PlugInManager;
             }
             catch (Exception ex)
             {
