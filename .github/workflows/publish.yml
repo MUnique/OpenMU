@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: publish MUnique.OpenMU.PlugIns on version change
-        uses: rohith/publish-nuget@e2920cdadd1ebe88751082afc324ca8170f35cd1
+        uses: rohith/publish-nuget@5fdc86fb81a38b37521c9f153bfb60ac44e7ba93
         with:
           PROJECT_FILE_PATH: src/PlugIns/MUnique.OpenMU.PlugIns.csproj
           TAG_COMMIT: false
@@ -19,7 +19,7 @@ jobs:
           PACKAGE_NAME: MUnique.OpenMU.PlugIns
 
       - name: publish MUnique.OpenMU.Network on version change
-        uses: rohith/publish-nuget@e2920cdadd1ebe88751082afc324ca8170f35cd1
+        uses: rohith/publish-nuget@5fdc86fb81a38b37521c9f153bfb60ac44e7ba93
         with:
           PROJECT_FILE_PATH: src/Network/MUnique.OpenMU.Network.csproj
           TAG_COMMIT: false
@@ -27,7 +27,7 @@ jobs:
           PACKAGE_NAME: MUnique.OpenMU.Network
 
       - name: publish MUnique.OpenMU.Network.Packets on version change
-        uses: rohith/publish-nuget@e2920cdadd1ebe88751082afc324ca8170f35cd1
+        uses: rohith/publish-nuget@5fdc86fb81a38b37521c9f153bfb60ac44e7ba93
         with:
           PROJECT_FILE_PATH: src/Network/Packets/MUnique.OpenMU.Network.Packets.csproj
           TAG_COMMIT: true
