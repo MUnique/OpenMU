@@ -7530,6 +7530,9 @@ mark {
     padding-left: 2rem !important;
     padding-right: 1.5rem !important; } }
 
+.blazored-modal-container {
+  overflow-y: scroll; }
+
 @keyframes FadeIn {
   0% {
     opacity: 0;

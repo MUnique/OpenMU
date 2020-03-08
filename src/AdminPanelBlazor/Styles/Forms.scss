@@ -46,3 +46,7 @@ form > div > div > div:first-of-type > span {
 form > div > div > input {
     @extend .input-group-append;
 }
+
+.blazored-modal-container {
+    overflow-y: scroll;
+}
