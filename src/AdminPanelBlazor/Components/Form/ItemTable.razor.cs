@@ -26,6 +26,10 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
 
         private bool isCreatingSupported;
 
+        private bool isStartingCollapsed;
+
+        private bool isCollapsed;
+
         /// <summary>
         /// Gets or sets the label.
         /// </summary>
@@ -42,12 +46,19 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
             this.isPlayerData = !((System.Linq.Expressions.MemberExpression)this.ValueExpression.Body).Expression.Type.IsConfigurationType();
             this.isAddingSupported = (this.isPlayerData && typeof(TItem).IsConfigurationType()) || !this.isPlayerData;
             this.isCreatingSupported = (this.isPlayerData && !typeof(TItem).IsConfigurationType()) || !this.isPlayerData;
+            this.isStartingCollapsed = this.Value.Count > 10;
+            this.isCollapsed = this.isStartingCollapsed;
         }
 
         /// <inheritdoc />
         protected override bool TryParseValueFromString(string value, out ICollection<TItem> result, out string validationErrorMessage)
         {
             throw new NotImplementedException();
+        }
+
+        private void OnToggleCollapseClick()
+        {
+            this.isCollapsed = !this.isCollapsed;
         }
 
         private void OnAddClick()
