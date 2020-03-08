@@ -47,6 +47,8 @@ form > div > div > input {
     @extend .input-group-append;
 }
 
-.blazored-modal-container {
-    overflow-y: scroll;
+.blazored-modal-content {
+    max-height: 700px;
+    overflow-y: auto;
+    padding-right: 10px;
 }

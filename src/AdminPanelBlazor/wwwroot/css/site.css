@@ -7530,8 +7530,10 @@ mark {
     padding-left: 2rem !important;
     padding-right: 1.5rem !important; } }
 
-.blazored-modal-container {
-  overflow-y: scroll; }
+.blazored-modal-content {
+  max-height: 700px;
+  overflow-y: auto;
+  padding-right: 10px; }
 
 @keyframes FadeIn {
   0% {
