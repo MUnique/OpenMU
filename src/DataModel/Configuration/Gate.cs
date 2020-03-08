@@ -28,5 +28,17 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the bottom right corner, y-coordinate.
         /// </summary>
         public byte Y2 { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var start = $"({this.X1}, {this.Y1})";
+            if (this.X1 == this.X2 && this.Y1 == this.Y2)
+            {
+                return start;
+            }
+
+            return $"{start} - ({this.X2}, {this.Y2})";
+        }
     }
 }

@@ -23,5 +23,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the number of the gate.
         /// </summary>
         public short Number { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{base.ToString()} ({this.Number}) (Level {this.LevelRequirement}) to {this.TargetGate}";
+        }
     }
 }

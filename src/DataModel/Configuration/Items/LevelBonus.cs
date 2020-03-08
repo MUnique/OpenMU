@@ -47,5 +47,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
             get => this.AdditionalValueElement?.Value ?? 0;
             set => this.AdditionalValueElement = Equals(value, 0f) ? null : new ConstantElement(value);
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"Level: {this.Level}: {this.AdditionalValue}";
+        }
     }
 }

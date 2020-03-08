@@ -23,5 +23,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the value.
         /// </summary>
         public float Value { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.AttributeDefinition}: {this.Value}";
+        }
     }
 }

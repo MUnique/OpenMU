@@ -41,5 +41,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the sender appearance data.
         /// </summary>
         public virtual AppearanceData SenderAppearance { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.Header}";
+        }
     }
 }

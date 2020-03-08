@@ -111,5 +111,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the characters.
         /// </summary>
         public virtual ICollection<Character> Characters { get; protected set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return this.LoginName;
+        }
     }
 }

@@ -237,5 +237,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the drop item groups.
         /// </summary>
         public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

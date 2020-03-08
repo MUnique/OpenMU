@@ -59,6 +59,12 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// </remarks>
         public IElement PowerUpDuration { get; set; }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.Skill}{(this.Level > 0 ? ", Level: " + this.Level : string.Empty)}";
+        }
+
         private void OnPropertyChanged(string propertyName)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

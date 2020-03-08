@@ -42,5 +42,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
                 this.BaseValueElement = new ConstantElement(value);
             }
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.BaseValue} {this.TargetAttribute}";
+        }
     }
 }

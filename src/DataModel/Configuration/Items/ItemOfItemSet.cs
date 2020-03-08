@@ -21,5 +21,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the bonus option.
         /// </summary>
         public virtual IncreasableItemOption BonusOption { get; set; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return this.BonusOption?.PowerUpDefinition?.ToString() ?? string.Empty;
+        }
     }
 }

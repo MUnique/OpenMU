@@ -41,5 +41,11 @@ namespace MUnique.OpenMU.DataModel.Entities
             this.ItemOption = otherLink.ItemOption;
             this.Level = otherLink.Level;
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.ItemOption?.PowerUpDefinition}";
+        }
     }
 }
