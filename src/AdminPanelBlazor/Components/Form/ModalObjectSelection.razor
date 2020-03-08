@@ -1,4 +1,5 @@
-﻿@using MUnique.OpenMU.AdminPanelBlazor.Services
+﻿@using System.ComponentModel.DataAnnotations
+
 @typeparam TItem
 
 @inject IModalService ModalService;
@@ -14,6 +15,7 @@
     /// <summary>
     /// Gets or sets the selected item.
     /// </summary>
+    [Required]
     public TItem Item { get; set; }
 
     private void Submit()
