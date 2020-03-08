@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
             else if (this.Boost?.RelatedValues != null && this.Boost.RelatedValues.Any())
             {
                 var relation = this.Boost.RelatedValues.First();
-                value = relation.InputAttribute.Designation + OperatorAsString(relation.InputOperator) + relation.InputOperand;
+                value = relation.InputAttribute.Designation + relation.InputOperator.AsString() + relation.InputOperand;
             }
             else
             {
@@ -43,17 +43,6 @@ namespace MUnique.OpenMU.DataModel.Attributes
             }
 
             return value + " " + this.TargetAttribute.Designation;
-        }
-
-        private static string OperatorAsString(InputOperator inputOperator)
-        {
-            switch (inputOperator)
-            {
-                case InputOperator.Add: return "+";
-                case InputOperator.Multiply: return "*";
-                case InputOperator.Exponentiate: return "^";
-                default: return string.Empty;
-            }
         }
     }
 }
