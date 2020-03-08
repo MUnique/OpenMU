@@ -8,27 +8,28 @@
 @inject IModalService Modal
 @inject NavigationManager NavigationManager
 
-<div class="jumbotron">
-    <h2>
-        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-        @if (this.isStartingCollapsed)
+    <div class="card">
+        <h5 class="card-header">
+            <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+            @if (this.isStartingCollapsed)
         {
             @if (this.isCollapsed)
             {
-                <button class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value.Count) Items)</button>
+            <button class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value.Count) Items)</button>
             }
             else
             {
-                <button class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+            <button class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
             }
         }
-    </h2>
-    @if (!this.isCollapsed)
-    {
-        <table>
-            <tbody>
-                @foreach (var item in this.Value)
-                {
+        </h5>
+        @if (!this.isCollapsed)
+        {
+        <div class="card-body card-text">
+            <table>
+                <tbody>
+                    @foreach (var item in this.Value)
+                    {
                     <tr>
                         <td>
                             @item.GetName()
@@ -36,33 +37,34 @@
                         <td>
                             @if (this.isEditable)
                             {
-                                <button class="btn-info" @onclick="@(() => this.NavigationManager.NavigateTo("edit/" + typeof(TItem).FullName + "/" + item.GetId()))">Edit</button>
+                            <button class="btn-info" @onclick="@(() => this.NavigationManager.NavigateTo("edit/" + typeof(TItem).FullName + "/" + item.GetId()))">Edit</button>
                             }
                         </td>
                         <td>
                             @if (this.isEditable)
                             {
-                                <button class="btn-danger" @onclick="@(() => OnRemoveClick(item))">Remove</button>
+                            <button class="btn-danger" @onclick="@(() => OnRemoveClick(item))">Remove</button>
                             }
                         </td>
                     </tr>
-                }
-            </tbody>
-            <tfooter>
-                <tr>
-                    <td colspan="3">
-                        @if (this.isAddingSupported)
-                        {
+                    }
+                </tbody>
+                <tfooter>
+                    <tr>
+                        <td colspan="3">
+                            @if (this.isAddingSupported)
+                            {
                             <button class="btn-primary" @onclick="@OnAddClick">Add</button>
-                        }
+                            }
 
-                        @if (this.isCreatingSupported)
-                        {
+                            @if (this.isCreatingSupported)
+                            {
                             <button class="btn-primary" @onclick="@OnCreateClick">Create</button>
-                        }
-                    </td>
-                </tr>
-            </tfooter>
-        </table>
-    }
-</div>
+                            }
+                        </td>
+                    </tr>
+                </tfooter>
+            </table>
+        </div>
+            }
+        </div>

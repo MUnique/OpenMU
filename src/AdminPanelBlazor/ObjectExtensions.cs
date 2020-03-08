@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Extensions for objects.
@@ -77,6 +78,63 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             var memberExpr = Expression.Property(constantExpr, propertyInfo.Name);
             var delegateType = typeof(Func<>).MakeGenericType(typeof(TProperty));
             return (Expression<Func<TProperty>>)Expression.Lambda(delegateType, memberExpr);
+        }
+
+        /// <summary>
+        /// Determines whether the accessed member is marked with <see cref="MemberOfAggregateAttribute"/>.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <returns>
+        ///   <c>true</c> if  the accessed member is marked with <see cref="MemberOfAggregateAttribute"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsAccessToMemberOfAggregate<TProperty>(this Expression<Func<TProperty>> expression)
+        {
+            if (expression.Body is MemberExpression memberExpression)
+            {
+                return memberExpression.Member.GetCustomAttribute(typeof(MemberOfAggregateAttribute)) is { };
+            }
+
+            throw new ArgumentException("Expression Body must be a MemberExpression", nameof(expression));
+        }
+
+        /// <summary>
+        /// Determines whether the accessed member is marked with <see cref="TransientAttribute"/>.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <returns>
+        ///   <c>true</c> if  the accessed member is marked with <see cref="TransientAttribute"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsAccessToTransientProperty<TProperty>(this Expression<Func<TProperty>> expression)
+        {
+            if (expression.Body is MemberExpression memberExpression)
+            {
+                return memberExpression.Member.GetCustomAttribute(typeof(TransientAttribute)) is { };
+            }
+
+            throw new ArgumentException("Expression Body must be a MemberExpression", nameof(expression));
+        }
+
+        /// <summary>
+        /// Gets the type of the accessed member.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <returns>The type of the accessed member.</returns>
+        public static Type GetAccessedMemberType<TProperty>(this Expression<Func<TProperty>> expression)
+        {
+            if (expression.Body is MemberExpression memberExpression)
+            {
+                if (memberExpression.Type.IsGenericType)
+                {
+                    return memberExpression.Type.GenericTypeArguments[0];
+                }
+
+                return memberExpression.Type;
+            }
+
+            throw new ArgumentException("Expression Body must be a MemberExpression", nameof(expression));
         }
     }
 }

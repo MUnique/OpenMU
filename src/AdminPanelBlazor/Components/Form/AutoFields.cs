@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
     using Microsoft.AspNetCore.Components.Rendering;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// A razor component which automatically generates input fields for all properties for the type of the enclosing form model.
@@ -33,19 +34,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
         {
             // The next code is not clean yet - I plan to create builder classes for each type and the possibility to register builders for specific properties or object types.
             int i = 0;
-            foreach (var propertyInfo in this.Context.Model.GetType()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy))
+            foreach (var propertyInfo in this.GetProperties())
             {
-                if (!(propertyInfo.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true))
-                {
-                    continue;
-                }
-
-                if (propertyInfo.Name.StartsWith("Raw") || propertyInfo.Name.StartsWith("Joined"))
-                {
-                    continue;
-                }
-
                 if (propertyInfo.PropertyType == typeof(string))
                 {
                     this.BuildField<string, TextField>(propertyInfo, builder, ref i);
@@ -80,7 +70,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                 }
                 else if (propertyInfo.PropertyType.IsEnum)
                 {
-                    i = this.BuildEnumField(builder, propertyInfo, i);
+                    i = this.BuildGenericField(typeof(EnumField<>), builder, propertyInfo, i);
                 }
                 else if (propertyInfo.PropertyType.IsArray)
                 {
@@ -88,7 +78,14 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                 }
                 else if (propertyInfo.PropertyType.IsClass)
                 {
-                    i = this.BuildLookUpField(builder, propertyInfo, i);
+                    if (propertyInfo.GetCustomAttribute<MemberOfAggregateAttribute>() is { })
+                    {
+                        i = this.BuildGenericField(typeof(MemberOfAggregateField<>), builder, propertyInfo, i);
+                    }
+                    else
+                    {
+                        i = this.BuildGenericField(typeof(LookupField<>), builder, propertyInfo, i);
+                    }
                 }
                 else if (propertyInfo.PropertyType.IsInterface
                          && propertyInfo.PropertyType.IsGenericType
@@ -103,24 +100,24 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
             }
         }
 
-        private int BuildEnumField(RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
+        private IEnumerable<PropertyInfo> GetProperties()
         {
-            var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
-                .Where(m => m.Name == nameof(this.BuildField))
-                .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
-                .MakeGenericMethod(propertyInfo.PropertyType, typeof(EnumField<>).MakeGenericType(propertyInfo.PropertyType));
-            var parameters = new object[] {propertyInfo, builder, i};
-            method.Invoke(this, parameters);
-            i = (int)parameters[2];
-            return i;
+            return this.Context.Model.GetType()
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+                .Where(p => p.GetCustomAttribute<TransientAttribute>() is null)
+                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true)
+                .Where(p => !p.Name.StartsWith("Raw") && !p.Name.StartsWith("Joined"))
+                .OrderByDescending(p => p.PropertyType == typeof(string))
+                .ThenByDescending(p => p.PropertyType.IsValueType)
+                .ThenByDescending(p => !p.PropertyType.IsGenericType);
         }
 
-        private int BuildLookUpField(RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
+        private int BuildGenericField(Type genericBaseComponentType, RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
         {
             var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(m => m.Name == nameof(this.BuildField))
                 .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
-                .MakeGenericMethod(propertyInfo.PropertyType, typeof(LookupField<>).MakeGenericType(propertyInfo.PropertyType));
+                .MakeGenericMethod(propertyInfo.PropertyType, genericBaseComponentType.MakeGenericType(propertyInfo.PropertyType));
             var parameters = new object[] { propertyInfo, builder, i };
             method.Invoke(this, parameters);
             i = (int)parameters[2];

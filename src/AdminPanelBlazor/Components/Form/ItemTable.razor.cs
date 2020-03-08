@@ -6,9 +6,11 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using Blazored.Modal;
     using Blazored.Modal.Services;
     using Microsoft.AspNetCore.Components;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -43,9 +45,11 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
         {
             base.OnInitialized();
             this.isEditable = typeof(TItem).Namespace?.StartsWith(nameof(MUnique)) ?? false;
-            this.isPlayerData = !((System.Linq.Expressions.MemberExpression)this.ValueExpression.Body).Expression.Type.IsConfigurationType();
-            this.isAddingSupported = (this.isPlayerData && typeof(TItem).IsConfigurationType()) || !this.isPlayerData;
-            this.isCreatingSupported = (this.isPlayerData && !typeof(TItem).IsConfigurationType()) || !this.isPlayerData;
+            this.isPlayerData = !this.ValueExpression.GetAccessedMemberType().IsConfigurationType();
+
+            var isMemberOfAggregate = this.ValueExpression.IsAccessToMemberOfAggregate();
+            this.isAddingSupported = !isMemberOfAggregate;
+            this.isCreatingSupported = isMemberOfAggregate;
             this.isStartingCollapsed = this.Value.Count > 10;
             this.isCollapsed = this.isStartingCollapsed;
         }
