@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
     using System;
     using System.Collections.Concurrent;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Reflection;
 
     /// <summary>
@@ -61,6 +62,21 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             }
 
             return (string)nameProperty.GetValue(item);
+        }
+
+        /// <summary>
+        /// Creates an expression for a function which accesses the specified property.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="owner">The owner of the property.</param>
+        /// <param name="propertyInfo">The property information.</param>
+        /// <returns>The created expression for a function which accesses the specified property.</returns>
+        public static Expression<Func<TProperty>> CreatePropertyExpression<TProperty>(this object owner, PropertyInfo propertyInfo)
+        {
+            var constantExpr = Expression.Constant(owner, owner.GetType());
+            var memberExpr = Expression.Property(constantExpr, propertyInfo.Name);
+            var delegateType = typeof(Func<>).MakeGenericType(typeof(TProperty));
+            return (Expression<Func<TProperty>>)Expression.Lambda(delegateType, memberExpr);
         }
     }
 }

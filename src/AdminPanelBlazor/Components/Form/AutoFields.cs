@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Reflection;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
@@ -32,6 +31,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
         /// <inheritdoc />
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
+            // The next code is not clean yet - I plan to create builder classes for each type and the possibility to register builders for specific properties or object types.
             int i = 0;
             foreach (var propertyInfo in this.Context.Model.GetType()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy))
@@ -92,9 +92,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                 }
                 else if (propertyInfo.PropertyType.IsInterface
                          && propertyInfo.PropertyType.IsGenericType
-                         && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IList<>))
+                         && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
                 {
-                    i = this.BuildMultiLookUpField(builder, propertyInfo, i);
+                    i = this.BuiltItemTableField(builder, propertyInfo, i);
                 }
                 else
                 {
@@ -127,12 +127,12 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
             return i;
         }
 
-        private int BuildMultiLookUpField(RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
+        private int BuiltItemTableField(RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
         {
             var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(m => m.Name == nameof(this.BuildField))
                 .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
-                .MakeGenericMethod(propertyInfo.PropertyType, typeof(MultiLookupField<>).MakeGenericType(propertyInfo.PropertyType.GenericTypeArguments[0]));
+                .MakeGenericMethod(propertyInfo.PropertyType, typeof(ItemTable<>).MakeGenericType(propertyInfo.PropertyType.GenericTypeArguments[0]));
             var parameters = new object[] { propertyInfo, builder, i };
             method.Invoke(this, parameters);
             i = (int)parameters[2];
@@ -149,7 +149,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
             builder.OpenComponent(i++, componentType);
             try
             {
-                builder.AddAttribute(i++, "ValueExpression", this.CreateExpression<TValue>(propertyInfo));
+                builder.AddAttribute(i++, "ValueExpression", this.Context.Model.CreatePropertyExpression<TValue>(propertyInfo));
                 builder.AddAttribute(i++, "Value", propertyInfo.GetValue(this.Context.Model));
                 builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<TValue>(this, EventCallback.Factory.Create<TValue>(
                     this,
@@ -165,15 +165,6 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
             {
                 builder.CloseComponent();
             }
-        }
-
-        private Expression<Func<T>> CreateExpression<T>(PropertyInfo propertyInfo)
-        {
-            var classType = this.Context.Model.GetType();
-            var constantExpr = Expression.Constant(this.Context.Model, classType);
-            var memberExpr = Expression.Property(constantExpr, propertyInfo.Name);
-            var delegateType = typeof(Func<>).MakeGenericType(typeof(T));
-            return (Expression<Func<T>>)Expression.Lambda(delegateType, memberExpr);
         }
     }
 }

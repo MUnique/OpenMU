@@ -1,0 +1,50 @@
+﻿@typeparam TItem
+
+@using MUnique.OpenMU.Persistence
+@inherits InputBase<ICollection<TItem>>
+
+@inject IContext CommonContext
+@inject IPlayerContext PlayerContext
+@inject IModalService Modal
+
+<div class="jumbotron">
+    <h2><FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" /></h2>
+    <table>
+        <tbody>
+            @foreach (var item in this.Value)
+            {
+                <tr>
+                    <td>
+                        @item.GetName()
+                    </td>
+                    <td>
+                        @if (this.isEditable)
+                        {
+                            <NavLink href="@("edit/" + typeof(TItem).FullName + "/" + item.GetId())">Edit</NavLink>
+                        }
+                    </td>
+                    <td>
+                        @if (this.isEditable)
+                        {
+                            <NavLink @onclick="@(() => OnRemoveClick(item))">Remove</NavLink>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfooter>
+            <tr>
+                <td>
+                    @if (this.isAddingSupported)
+                    {
+                        <button class="btn-primary" @onclick="@OnAddClick">Add</button>
+                    }
+
+                    @if (this.isCreatingSupported)
+                    {
+                        <button class="btn-primary" @onclick="@OnCreateClick">Create</button>
+                    }
+                </td></tr>
+                </tfooter>
+    </table>
+</div>
