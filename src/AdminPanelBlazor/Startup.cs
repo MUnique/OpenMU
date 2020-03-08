@@ -48,6 +48,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             services.AddServerSideBlazor();
             services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
             services.AddControllers();
+            services.AddBlazoredModal();
 
             services.AddSingleton<ServerService>();
             services.AddSingleton<ConnectServerService>();
