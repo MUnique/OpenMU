@@ -1,4 +1,5 @@
-﻿@inherits InputNumber<int>
+﻿@typeparam TNumber
+@inherits InputNumber<TNumber>
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />

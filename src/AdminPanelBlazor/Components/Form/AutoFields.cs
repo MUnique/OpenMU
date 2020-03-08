@@ -34,11 +34,16 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
         {
             int i = 0;
             foreach (var propertyInfo in this.Context.Model.GetType()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy))
             {
                 if (!(propertyInfo.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true))
                 {
-                    return;
+                    continue;
+                }
+
+                if (propertyInfo.Name.StartsWith("Raw") || propertyInfo.Name.StartsWith("Joined"))
+                {
+                    continue;
                 }
 
                 if (propertyInfo.PropertyType == typeof(string))
@@ -47,7 +52,23 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                 }
                 else if (propertyInfo.PropertyType == typeof(int))
                 {
-                    this.BuildField<int, NumberField>(propertyInfo, builder, ref i);
+                    this.BuildField<int, NumberField<int>>(propertyInfo, builder, ref i);
+                }
+                else if (propertyInfo.PropertyType == typeof(float))
+                {
+                    this.BuildField<float, NumberField<float>>(propertyInfo, builder, ref i);
+                }
+                else if (propertyInfo.PropertyType == typeof(double))
+                {
+                    this.BuildField<double, NumberField<double>>(propertyInfo, builder, ref i);
+                }
+                else if (propertyInfo.PropertyType == typeof(long))
+                {
+                    this.BuildField<long, NumberField<long>>(propertyInfo, builder, ref i);
+                }
+                else if (propertyInfo.PropertyType == typeof(byte))
+                {
+                    this.BuildField<byte, ByteField>(propertyInfo, builder, ref i);
                 }
                 else if (propertyInfo.PropertyType == typeof(bool))
                 {
@@ -65,7 +86,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                 {
                     // not supported.
                 }
-                else if (propertyInfo.PropertyType.IsClass && !propertyInfo.Name.StartsWith("Raw"))
+                else if (propertyInfo.PropertyType.IsClass)
                 {
                     i = this.BuildLookUpField(builder, propertyInfo, i);
                 }
