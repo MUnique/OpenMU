@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{this.Skill}{(this.Level > 0 ? ", Level: " + this.Level : string.Empty)}";
+            return $"{this.Skill?.Name}{(this.Level > 0 ? ", Level: " + this.Level : string.Empty)}";
         }
 
         private void OnPropertyChanged(string propertyName)
