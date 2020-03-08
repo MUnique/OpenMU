@@ -71,7 +71,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map.ViewPlugIns
                     when (e.Message.StartsWith("Could not find '") && e.Message.Contains("' in 'window'."))
                 {
                     // In this case, try again in a moment.
-                    await Task.Delay(500, this.CancellationToken);
+                    await Task.Delay(500, this.CancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
