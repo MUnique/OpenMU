@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -77,17 +78,20 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the stat attributes.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<StatAttributeDefinition> StatAttributes { get; protected set; }
 
         /// <summary>
         /// Gets or sets the attribute combinations.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<AttributeRelationship> AttributeCombinations { get; protected set; }
 
         /// <summary>
         /// Gets or sets the base attribute values.
         /// For example the amount of health a character got without any added stat point.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ConstValueAttribute> BaseAttributeValues { get; protected set; }
 
         /// <summary>

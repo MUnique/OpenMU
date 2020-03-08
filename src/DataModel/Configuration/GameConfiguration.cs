@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.PlugIns;
 
@@ -13,6 +14,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// Defines the game configuration.
     /// A game configuration contains the whole configuration of a game, directly or indirectly.
     /// </summary>
+    [AggregateRoot]
     public class GameConfiguration
     {
         /// <summary>
@@ -94,81 +96,97 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the possible jewel mixes.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<JewelMix> JewelMixes { get; protected set; }
 
         /// <summary>
         /// Gets or sets the warp list.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<WarpInfo> WarpList { get; protected set; }
 
         /// <summary>
         /// Gets or sets the drop item groups which can be assigned to maps and characters.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
 
         /// <summary>
         /// Gets or sets the skills of this game configuration.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<Skill> Skills { get; protected set; }
 
         /// <summary>
         /// Gets or sets the character classes.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<CharacterClass> CharacterClasses { get; protected set; }
 
         /// <summary>
         /// Gets or sets the item definitions.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemDefinition> Items { get; protected set; }
 
         /// <summary>
         /// Gets or sets the item slot types.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemSlotType> ItemSlotTypes { get; protected set; }
 
         /// <summary>
         /// Gets or sets the item option definitions.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemOptionDefinition> ItemOptions { get; protected set; }
 
         /// <summary>
         /// Gets or sets the item option types.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemOptionType> ItemOptionTypes { get; protected set; }
 
         /// <summary>
         /// Gets or sets the item set groups.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemSetGroup> ItemSetGroups { get; protected set; }
 
         /// <summary>
         /// Gets or sets the map definitions.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<GameMapDefinition> Maps { get; protected set; }
 
         /// <summary>
         /// Gets or sets the monster definitions.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<MonsterDefinition> Monsters { get; protected set; }
 
         /// <summary>
         /// Gets or sets the attributes.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<AttributeDefinition> Attributes { get; protected set; }
 
         /// <summary>
         /// Gets or sets the magic effects.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<MagicEffectDefinition> MagicEffects { get; protected set; }
 
         /// <summary>
         /// Gets or sets the master skill roots.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<MasterSkillRoot> MasterSkillRoots { get; protected set; }
 
         /// <summary>
         /// Gets or sets the plug in configurations.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<PlugInConfiguration> PlugInConfigurations { get; protected set; }
     }
 }

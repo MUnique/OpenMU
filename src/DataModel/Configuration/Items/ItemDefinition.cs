@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
     using System.Collections.Generic;
-
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
@@ -114,11 +114,13 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the requirements for wearing this item.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<AttributeRequirement> Requirements { get; protected set; }
 
         /// <summary>
         /// Gets or sets the base PowerUps of this item, for example min/max damage for weapons.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemBasePowerUpDefinition> BasePowerUpAttributes { get; protected set; }
     }
 }

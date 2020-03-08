@@ -5,11 +5,13 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// The body of a letter.
     /// </summary>
+    [AggregateRoot]
     public class LetterBody
     {
         /// <summary>
@@ -40,6 +42,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the sender appearance data.
         /// </summary>
+        [MemberOfAggregate]
         public virtual AppearanceData SenderAppearance { get; set; }
 
         /// <inheritdoc />

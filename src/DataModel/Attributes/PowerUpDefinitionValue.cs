@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// The power up definition value which can consist of a constant value and several related values which are all added together to get the result.
@@ -16,11 +17,13 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// <summary>
         /// Gets or sets the constant value part of the value.
         /// </summary>
+        [MemberOfAggregate]
         public SimpleElement ConstantValue { get; protected set; }
 
         /// <summary>
         /// Gets or sets the related values.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<AttributeRelationship> RelatedValues { get; protected set; }
 
         /// <inheritdoc />

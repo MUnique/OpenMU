@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
     using System.Globalization;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// The power up definition which describes the boost of an target attribute.
@@ -21,6 +22,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// <summary>
         /// Gets or sets the boost.
         /// </summary>
+        [MemberOfAggregate]
         public virtual PowerUpDefinitionValue Boost { get; set; }
 
         /// <inheritdoc/>

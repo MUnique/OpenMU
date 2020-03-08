@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Defines a constant bonus, depending on item level.
@@ -37,6 +38,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the additional value element to the base value.
         /// </summary>
+        [Transient]
         public ConstantElement AdditionalValueElement { get; set; }
 
         /// <summary>

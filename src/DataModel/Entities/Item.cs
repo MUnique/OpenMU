@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.DataModel.Entities
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -42,6 +43,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the item options.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemOptionLink> ItemOptions { get; protected set; }
 
         /// <summary>

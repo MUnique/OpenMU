@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
@@ -47,6 +48,7 @@ namespace MUnique.OpenMU.DataModel.Entities
     /// <summary>
     /// The account of a player.
     /// </summary>
+    [AggregateRoot]
     public class Account
     {
         /// <summary>
@@ -100,6 +102,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the vault.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ItemStorage Vault { get; set; }
 
         /// <summary>
@@ -110,6 +113,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the characters.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<Character> Characters { get; protected set; }
 
         /// <inheritdoc />

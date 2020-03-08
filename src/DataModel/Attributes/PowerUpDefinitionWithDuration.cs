@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Attributes
 {
+    using MUnique.OpenMU.DataModel.Composition;
+
     /// <summary>
     /// A power up definition which got a duration.
     /// </summary>
@@ -12,6 +14,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// <summary>
         /// Gets or sets the duration which describes how long the boost applies.
         /// </summary>
+        [MemberOfAggregate]
         public virtual PowerUpDefinitionValue Duration { get; set; }
     }
 }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using MUnique.OpenMU.DataModel.Attributes;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Magic Effect Definition. It can be an effect from an consumed item, or by a buff.
@@ -52,6 +53,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the powerUp definition which is used to create the actual power up element.
         /// </summary>
+        [MemberOfAggregate]
         public virtual PowerUpDefinitionWithDuration PowerUpDefinition { get; set; }
     }
 }

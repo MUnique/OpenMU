@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Defines by which "level" the option is increased with <see cref="IncreasableItemOption.LevelDependentOptions"/>.
@@ -44,6 +45,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the level dependent options for option levels over 1.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemOptionOfLevel> LevelDependentOptions { get; protected set; }
     }
 }

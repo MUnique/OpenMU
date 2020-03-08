@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Defines an item base power up definition.
@@ -20,11 +21,13 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the base value.
         /// </summary>
+        [Transient]
         public ConstantElement BaseValueElement { get; set; }
 
         /// <summary>
         /// Gets or sets the bonus per level.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<LevelBonus> BonusPerLevel { get; protected set; }
 
         /// <summary>

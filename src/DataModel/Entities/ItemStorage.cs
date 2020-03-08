@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// A storage where items can be stored.
@@ -14,6 +15,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the items which are stored.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<Item> Items { get; protected set; }
 
         /// <summary>
