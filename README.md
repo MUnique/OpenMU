@@ -32,8 +32,7 @@ This project is released under the MIT license (see LICENSE file).
 ## Used technologies ##
 The project is mainly written in C# and targets .NET Standard 2.1 and .NET Core 3.1.
 
-The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel)
-and uses the [React](https://reactjs.org) and [Redux](https://redux.js.org/) libraries for the user interface.
+The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel) and implemented as Blazor Server App.
 
 At the moment the persistence layer uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 and [PostgreSQL](https://www.postgresql.org) as database. Additionally, it's also possible to start it in a non-persistent in-memory mode.
