@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -112,11 +113,13 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the character class.
         /// </summary>
+        [Required]
         public virtual CharacterClass CharacterClass { get; set; }
 
         /// <summary>

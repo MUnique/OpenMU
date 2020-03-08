@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Attributes
 {
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Composition;
@@ -18,6 +19,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// Gets or sets the constant value part of the value.
         /// </summary>
         [MemberOfAggregate]
+        [Browsable(false)]
         public SimpleElement ConstantValue { get; protected set; }
 
         /// <summary>

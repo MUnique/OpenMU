@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
 
@@ -54,6 +55,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the unique login name.
         /// </summary>
+        [Required]
         public string LoginName { get; set; }
 
         /// <summary>
