@@ -53,17 +53,31 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Map.ViewPlugIns
         /// <returns>The <see cref="ValueTask"/> of this async operation.</returns>
         protected async ValueTask InvokeAsync(params object[] args)
         {
-            try
+            const int maximumRetries = 10;
+            var tryAgain = true;
+            for (int i = 0; i < maximumRetries && tryAgain && !this.CancellationToken.IsCancellationRequested; i++)
             {
-                await this.JsRuntime.InvokeVoidAsync(this.JsMethodName, this.CancellationToken, args);
-            }
-            catch (TaskCanceledException)
-            {
-                // don't need to handle that.
-            }
-            catch (Exception e)
-            {
-                Log.Error($"Error in {this.GetType().Name}; params: {string.Join(';', args)}", e);
+                try
+                {
+                    await this.JsRuntime.InvokeVoidAsync(this.JsMethodName, this.CancellationToken, args);
+                    tryAgain = false;
+                }
+                catch (TaskCanceledException)
+                {
+                    // don't need to handle that.
+                    tryAgain = false;
+                }
+                catch (JSException e)
+                    when (e.Message.StartsWith("Could not find '") && e.Message.Contains("' in 'window'."))
+                {
+                    // In this case, try again in a moment.
+                    await Task.Delay(500, this.CancellationToken);
+                }
+                catch (Exception e)
+                {
+                    tryAgain = false;
+                    Log.Error($"Error in {this.GetType().Name}; params: {string.Join(';', args)}", e);
+                }
             }
         }
     }
