@@ -58,18 +58,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             this.RegisterRepository(new ConfigurationTypeRepository<PlugInConfiguration>(contextProvider, config => config.RawPlugInConfigurations));
 
             var registeredTypes = this.Repositories.Keys.ToList();
-            using (var entityContext = new EntityDataContext())
+            using var entityContext = new EntityDataContext();
+            var modelTypes = entityContext.Model.GetEntityTypes().Select(e => e.ClrType);
+            var missingTypes = modelTypes.Where(t => !registeredTypes.Contains(t.BaseType));
+            foreach (var type in missingTypes)
             {
-                var modelTypes = entityContext.Model.GetEntityTypes().Select(e => e.ClrType);
-                var missingTypes = modelTypes.Where(t => !registeredTypes.Contains(t.BaseType) && !(t.BaseType?.Namespace?.Contains("Configuration") ?? false)).ToList();
-                foreach (var type in missingTypes)
-                {
-                    Log.Debug($"No repository registered for type {type}, creating a generic one.");
-                    var repositoryType = typeof(GenericRepository<>).MakeGenericType(type);
-                    var repository = Activator.CreateInstance(repositoryType, contextProvider) as IRepository;
+                Log.Debug($"No repository registered for type {type}, creating a generic one.");
+                var repositoryType = typeof(GenericRepository<>).MakeGenericType(type);
+                var repository = Activator.CreateInstance(repositoryType, contextProvider) as IRepository;
 
-                    this.RegisterRepository(type, repository);
-                }
+                this.RegisterRepository(type, repository);
             }
         }
 
