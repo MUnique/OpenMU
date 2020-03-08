@@ -1,4 +1,7 @@
-﻿@inject NavigationManager navigationManager
+﻿@using MUnique.OpenMU.DataModel.Configuration
+
+@inject NavigationManager navigationManager
+@inject GameConfiguration GameConfiguration
 
 <nav>
     <div>
@@ -27,6 +30,14 @@
                     <span class="oi oi-list" aria-hidden="true"></span> Accounts
                 </NavLink>
             </li>
+            @if (this.GameConfiguration != null)
+            {
+            <li>
+                <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this.GameConfiguration.GetId())">
+                    <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
+                </NavLink>
+            </li>
+            }
             <li>
                 <NavLink href="plugins">
                     <span class="oi oi-puzzle-piece" aria-hidden="true"></span> Plugins

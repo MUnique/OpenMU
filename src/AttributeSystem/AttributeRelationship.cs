@@ -97,6 +97,11 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <inheritdoc/>
         public override string ToString()
         {
+            if (this.TargetAttribute is null)
+            {
+                return $"{this.InputAttribute} {this.InputOperator.AsString()} {this.InputOperand}";
+            }
+
             return $"{this.TargetAttribute} += {this.InputAttribute} {this.InputOperator.AsString()} {this.InputOperand}";
         }
     }

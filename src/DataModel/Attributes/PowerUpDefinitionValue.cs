@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Attributes
 {
     using System.Collections.Generic;
+    using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
 
     /// <summary>
@@ -21,5 +22,11 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// Gets or sets the related values.
         /// </summary>
         public virtual ICollection<AttributeRelationship> RelatedValues { get; protected set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.ConstantValue?.Value ?? 0} + {string.Join(" + ", this.RelatedValues.Select(v => $"({v})"))}";
+        }
     }
 }
