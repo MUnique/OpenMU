@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.AdminPanelBlazor
 {
+    using System.Linq;
     using Blazored.Modal;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -14,7 +15,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor
     using MUnique.OpenMU.AdminPanelBlazor.Map;
     using MUnique.OpenMU.AdminPanelBlazor.Models;
     using MUnique.OpenMU.AdminPanelBlazor.Services;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// The startup class for the blazor app.
@@ -65,6 +68,25 @@ namespace MUnique.OpenMU.AdminPanelBlazor
 
             services.AddScoped<IMapFactory, JavascriptMapFactory>();
             services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
+
+            services.AddScoped(provider =>
+            {
+                var contextProvider = provider.GetService<IPersistenceContextProvider>();
+                using var initialContext = contextProvider.CreateNewConfigurationContext();
+                return initialContext.Get<GameConfiguration>().First();
+            });
+
+            services.AddScoped(provider =>
+            {
+                var contextProvider = provider.GetService<IPersistenceContextProvider>();
+                return contextProvider.CreateNewContext(provider.GetService<GameConfiguration>());
+            });
+
+            services.AddScoped(provider =>
+            {
+                var contextProvider = provider.GetService<IPersistenceContextProvider>();
+                return contextProvider.CreateNewPlayerContext(provider.GetService<GameConfiguration>());
+            });
         }
 
         /// <summary>

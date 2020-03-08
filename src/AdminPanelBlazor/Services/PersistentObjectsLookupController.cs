@@ -21,16 +21,22 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="PersistentObjectsLookupController"/> class.
         /// </summary>
-        /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public PersistentObjectsLookupController(IPersistenceContextProvider persistenceContextProvider)
+        /// <param name="context">The persistence context.</param>
+        public PersistentObjectsLookupController(IContext context)
         {
-            this.context = persistenceContextProvider.CreateNewConfigurationContext();
+            this.context = context;
         }
 
         /// <inheritdoc />
         public Task<IEnumerable<T>> GetSuggestionsAsync<T>(string text)
             where T : class
         {
+            if (!typeof(T).IsConfigurationType())
+            {
+                // Only config data should be searchable
+                return Task.FromResult(Enumerable.Empty<T>());
+            }
+
             var values = this.context.Get<T>();
             if (string.IsNullOrEmpty(text))
             {
