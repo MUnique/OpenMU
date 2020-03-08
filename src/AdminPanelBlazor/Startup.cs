@@ -57,8 +57,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             services.AddSingleton<ServerService>();
             services.AddSingleton<ConnectServerService>();
 
-            services.AddSingleton<AccountService>();
-            services.AddSingleton<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>());
+            services.AddScoped<AccountService>();
+            services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>());
 
             services.AddScoped<PlugInController>();
             services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>());

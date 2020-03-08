@@ -8,24 +8,33 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Blazored.Modal;
+    using Blazored.Modal.Services;
+    using MUnique.OpenMU.AdminPanelBlazor.Components.Form;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Service for <see cref="Account"/>s.
     /// </summary>
-    public class AccountService : IDataService<Account>
+    public class AccountService : IDataService<Account>, ISupportDataChangedNotification
     {
-        private readonly IPersistenceContextProvider persistenceContextProvider;
+        private readonly IPlayerContext playerContext;
+        private readonly IModalService modalService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountService"/> class.
         /// </summary>
-        /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public AccountService(IPersistenceContextProvider persistenceContextProvider)
+        /// <param name="playerContext">The player context.</param>
+        /// <param name="modalService">The modal service.</param>
+        public AccountService(IPlayerContext playerContext, IModalService modalService)
         {
-            this.persistenceContextProvider = persistenceContextProvider;
+            this.playerContext = playerContext;
+            this.modalService = modalService;
         }
+
+        /// <inheritdoc />
+        public event EventHandler DataChanged;
 
         /// <summary>
         /// Returns a slice of the account list, defined by an offset and a count.
@@ -37,8 +46,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         {
             try
             {
-                using var context = this.persistenceContextProvider.CreateNewPlayerContext(null);
-                return Task.FromResult(context.GetAccountsOrderedByLoginName(offset, count).ToList());
+                return Task.FromResult(this.playerContext.GetAccountsOrderedByLoginName(offset, count).ToList());
             }
             catch (NotImplementedException)
             {
@@ -52,10 +60,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         /// <param name="account">The account.</param>
         public void Ban(Account account)
         {
-            using var context = this.persistenceContextProvider.CreateNewPlayerContext(null);
-            context.Attach(account);
             account.State = AccountState.Banned;
-            context.SaveChanges();
+            this.playerContext.SaveChanges();
         }
 
         /// <summary>
@@ -64,10 +70,42 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
         /// <param name="account">The account.</param>
         public void Unban(Account account)
         {
-            using var context = this.persistenceContextProvider.CreateNewPlayerContext(null);
-            context.Attach(account);
             account.State = AccountState.Normal;
-            context.SaveChanges();
+            this.playerContext.SaveChanges();
         }
+
+        /// <summary>
+        /// Creates a new Account in a <see cref="ModalCreateNew{Account}"/> dialog.
+        /// </summary>
+        public void CreateNewInModalDialog()
+        {
+            var item = this.playerContext.CreateNew<Account>();
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ModalCreateNew<Account>.Item), item);
+            var options = new ModalOptions
+            {
+                DisableBackgroundCancel = true,
+            };
+
+            void OnModalClose(ModalResult result)
+            {
+                if (result.Cancelled)
+                {
+                    this.playerContext.Delete(item);
+                }
+                else
+                {
+                    this.playerContext.SaveChanges();
+                    this.RaiseDataChanged();
+                }
+
+                this.modalService.OnClose -= OnModalClose;
+            }
+
+            this.modalService.OnClose += OnModalClose;
+            this.modalService.Show<ModalCreateNew<Account>>($"Create {typeof(Account).Name}", parameters, options);
+        }
+
+        private void RaiseDataChanged() => this.DataChanged?.Invoke(this, EventArgs.Empty);
     }
 }

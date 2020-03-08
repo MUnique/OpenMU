@@ -2,7 +2,7 @@
 @using MUnique.OpenMU.DataModel.Entities;
 @using MUnique.OpenMU.AdminPanelBlazor.Services
 
-@inject AccountService accountService;
+@inject AccountService AccountService;
 
 <h1>Accounts</h1>
 
@@ -23,14 +23,10 @@
             </td>
         </ItemTemplate>
         <TableFooter>
-            <td><button type="button" class="btn btn-sm btn-success">Create</button></td>
+            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this.AccountService.CreateNewInModalDialog">Create</button></td>
             <td></td>
             <td></td>
             <td></td>
         </TableFooter>
-    </DataTable>    
+    </DataTable>
 </div>
-
-@code {
-
-}

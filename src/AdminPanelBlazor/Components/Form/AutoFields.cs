@@ -91,7 +91,14 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
                          && propertyInfo.PropertyType.IsGenericType
                          && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
                 {
-                    i = this.BuiltItemTableField(builder, propertyInfo, i);
+                    if (propertyInfo.PropertyType.GenericTypeArguments[0].IsValueType)
+                    {
+                        // todo, example: ICollection<int> in ItemSlotType
+                    }
+                    else
+                    {
+                        i = this.BuiltItemTableField(builder, propertyInfo, i);
+                    }
                 }
                 else
                 {
@@ -100,7 +107,11 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
             }
         }
 
-        private IEnumerable<PropertyInfo> GetProperties()
+        /// <summary>
+        /// Gets the properties which should be shown in this component.
+        /// </summary>
+        /// <returns>The properties which should be shown in this component.</returns>
+        protected virtual IEnumerable<PropertyInfo> GetProperties()
         {
             return this.Context.Model.GetType()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
@@ -114,19 +125,20 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
 
         private int BuildGenericField(Type genericBaseComponentType, RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
         {
-            var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+            var method = typeof(AutoFields).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(m => m.Name == nameof(this.BuildField))
-                .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
-                .MakeGenericMethod(propertyInfo.PropertyType, genericBaseComponentType.MakeGenericType(propertyInfo.PropertyType));
-            var parameters = new object[] { propertyInfo, builder, i };
+                .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 1)
+                .MakeGenericMethod(propertyInfo.PropertyType);
+            var componentType = genericBaseComponentType.MakeGenericType(propertyInfo.PropertyType);
+            var parameters = new object[] { componentType, propertyInfo, builder, i };
             method.Invoke(this, parameters);
-            i = (int)parameters[2];
+            i = (int)parameters[3];
             return i;
         }
 
         private int BuiltItemTableField(RenderTreeBuilder builder, PropertyInfo propertyInfo, int i)
         {
-            var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+            var method = typeof(AutoFields).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(m => m.Name == nameof(this.BuildField))
                 .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
                 .MakeGenericMethod(propertyInfo.PropertyType, typeof(ItemTable<>).MakeGenericType(propertyInfo.PropertyType.GenericTypeArguments[0]));

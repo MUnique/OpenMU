@@ -79,6 +79,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <remarks>
         /// Some classes are only available when the player reached a certain level before, or when he paid for some unlock ticket.
         /// </remarks>
+        [HiddenAtCreation]
         public virtual ICollection<CharacterClass> UnlockedCharacterClasses { get; protected set; }
 
         /// <summary>
@@ -99,12 +100,14 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the vault password.
         /// </summary>
+        [HiddenAtCreation]
         public string VaultPassword { get; set; }
 
         /// <summary>
         /// Gets or sets the vault.
         /// </summary>
         [MemberOfAggregate]
+        [HiddenAtCreation]
         public virtual ItemStorage Vault { get; set; }
 
         /// <summary>
@@ -116,6 +119,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the characters.
         /// </summary>
         [MemberOfAggregate]
+        [HiddenAtCreation]
         public virtual ICollection<Character> Characters { get; protected set; }
 
         /// <inheritdoc />
