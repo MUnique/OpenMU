@@ -2,18 +2,17 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Generic;
-using MUnique.OpenMU.DataModel.Configuration.Items;
-
 namespace MUnique.OpenMU.GameLogic.PlugIns
 {
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.PlugIns;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A chat command plugin which handles item creation command.
@@ -33,22 +32,34 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// <summary>
         /// arguments
         /// </summary>
-        private struct Arguments
+        private struct Arguments : IEquatable<Arguments>
         {
             public byte Group { get; set; }
+
             public short Number { get; set; }
+
             public byte Level { get; set; }
+
             public byte Exc { get; set; }
+
             public bool Skill { get; set; }
+
             public bool Luck { get; set; }
+
             public byte Opt { get; set; }
+
+            // Not implemented yet
+            public bool Equals(Arguments other)
+            {
+                return false;
+            }
         }
 
         /// <inheritdoc />
         public string Key => CommandKey;
 
         /// <summary>
-        /// Min character status to use command
+        /// Gets Min character status to use command
         /// </summary>
         public int MinStatusRequirement => (byte)CharacterStatus.GameMaster;
 
@@ -58,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
             var dropCoordinates = player.CurrentMap.Terrain.GetRandomDropCoordinate(player.Position, 1);
             try
             {
-                var arguments = MarshallArguments(command.Split(' ').Skip(1).ToList());
+                var arguments = ParseArguments(command.Split(' ').Skip(1).ToList());
                 var item = CreateItem(player, arguments);
                 var droppedItem = new DroppedItem(item, dropCoordinates, player.CurrentMap, player);
                 player.CurrentMap.Add(droppedItem);
@@ -78,18 +89,19 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
             {
                 throw new ArgumentException($"[GM][/item] {arguments.Group} {arguments.Number} does not exists");
             }
+
             item.Definition = itemDefinition;
             item.Level = arguments.Level;
             item.Durability = itemDefinition.Durability;
-            item.HasSkill = arguments.Skill;
-            
+            item.HasSkill = itemDefinition.Skill != null && arguments.Skill;
+
             if (arguments.Opt > 0)
             {
                 var optionLink = new ItemOptionLink
                 {
                     ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
                         .First(o => o.OptionType == ItemOptionTypes.Option),
-                    Level = arguments.Opt
+                    Level = arguments.Opt,
                 };
                 item.ItemOptions.Add(optionLink);
             }
@@ -99,7 +111,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
                 var optionLink = new ItemOptionLink
                 {
                     ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                        .First(o => o.OptionType == ItemOptionTypes.Luck)
+                        .First(o => o.OptionType == ItemOptionTypes.Luck),
                 };
                 item.ItemOptions.Add(optionLink);
             }
@@ -108,36 +120,43 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
             {
                 var excellentOptions = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
                     .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                    .Take(arguments.Exc);
-                
+                    .Where(o => (o.Number & arguments.Exc) > 0);
+                var appliedOptions = 0;
+
                 excellentOptions.ForEach(option =>
                 {
-                    var optionLink = new ItemOptionLink()
+                    var optionLink = new ItemOptionLink
                     {
-                        ItemOption = option
+                        ItemOption = option,
                     };
                     item.ItemOptions.Add(optionLink);
+                    appliedOptions++;
                 });
+
+                // every excellent item has skill (if is in item definition)
+                if (appliedOptions > 0 && itemDefinition.Skill != null)
+                {
+                    item.HasSkill = true;
+                }
             }
 
             return item;
         }
 
-        private static Arguments MarshallArguments(List<string> argumentsList)
+        private static Arguments ParseArguments(List<string> argumentsList)
         {
             if (argumentsList.ElementAtOrDefault(0) == null || argumentsList.ElementAtOrDefault(1) == null)
             {
                 throw new ArgumentException(Usage);
             }
 
-            return new Arguments()
+            return new Arguments
             {
                 Group = byte.Parse(argumentsList.ElementAt(0)),
                 Number = short.Parse(argumentsList.ElementAt(1)),
                 Level = byte.Parse(argumentsList.ElementAtOrDefault(2) ?? "0"),
                 Exc = byte.Parse(argumentsList.ElementAtOrDefault(3) ?? "0"),
-                // Every excellent item has Skill
-                Skill = byte.Parse(argumentsList.ElementAtOrDefault(3) ?? "0") > 0 || (argumentsList.ElementAtOrDefault(4) ?? "0") == "1",
+                Skill = (argumentsList.ElementAtOrDefault(4) ?? "0") == "1",
                 Luck = (argumentsList.ElementAtOrDefault(5) ?? "0") == "1",
                 Opt = byte.Parse(argumentsList.ElementAtOrDefault(6) ?? "0"),
             };
