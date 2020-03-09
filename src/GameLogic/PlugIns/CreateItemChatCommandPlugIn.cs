@@ -106,7 +106,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
 
             if (arguments.Exc > 0)
             {
-
                 var excellentOptions = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
                     .Where(o => o.OptionType == ItemOptionTypes.Excellent)
                     .Take(arguments.Exc);
