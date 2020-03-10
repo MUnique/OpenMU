@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <summary>
         /// Min Status Requirement to run a command
         /// </summary>
-        public CharacterStatus MinStatusRequirement { get; }
+        public CharacterStatus MinCharacterStatusRequirement { get; }
 
         /// <summary>
         /// Handles the chat command.

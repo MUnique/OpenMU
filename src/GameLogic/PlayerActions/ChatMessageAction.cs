@@ -57,9 +57,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 case ChatMessageType.Command:
                     var commandKey = message.Split(' ').First();
                     var commandHandler = sender.GameContext.PlugInManager.GetStrategy<IChatCommandPlugIn>(commandKey);
-                    if ((int)sender.SelectedCharacter.CharacterStatus >= (int)commandHandler.MinStatusRequirement)
+                    if (sender.SelectedCharacter.CharacterStatus >= commandHandler.MinCharacterStatusRequirement)
                     {
                         commandHandler?.HandleCommand(sender, message);
+                    }
+                    else
+                    {
+                        Log.WarnFormat($"{sender.Name} is trying to execute {commandKey} command without meet the requirements");
                     }
 
                     break;
