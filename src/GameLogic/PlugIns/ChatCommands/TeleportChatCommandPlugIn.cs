@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.Pathfinding;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,6 +24,9 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
         /// <inheritdoc />
         public string Key => CommandKey;
+
+        /// <inheritdoc />
+        public CharacterStatus MinStatusRequirement => CharacterStatus.GameMaster;
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)

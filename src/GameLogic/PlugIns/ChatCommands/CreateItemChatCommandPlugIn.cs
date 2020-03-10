@@ -58,10 +58,8 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <inheritdoc />
         public string Key => CommandKey;
 
-        /// <summary>
-        /// Gets Min character status to use command
-        /// </summary>
-        public int MinStatusRequirement => (byte)CharacterStatus.GameMaster;
+        /// <inheritdoc />
+        public CharacterStatus MinStatusRequirement => CharacterStatus.GameMaster;
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)

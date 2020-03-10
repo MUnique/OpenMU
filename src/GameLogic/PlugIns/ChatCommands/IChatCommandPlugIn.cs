@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel.Entities;
+
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Runtime.InteropServices;
@@ -14,6 +16,11 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     [PlugInPoint("Chat commands", "Plugins which will be executed when a chat message arrives with a slash prefix.")]
     public interface IChatCommandPlugIn : IStrategyPlugIn<string>
     {
+        /// <summary>
+        /// Min Status Requirement to run a command
+        /// </summary>
+        public CharacterStatus MinStatusRequirement { get; }
+
         /// <summary>
         /// Handles the chat command.
         /// </summary>
