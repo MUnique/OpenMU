@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel.Entities;
-
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.PlugIns;
+    using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
     /// A plugin interface for chat commands.
