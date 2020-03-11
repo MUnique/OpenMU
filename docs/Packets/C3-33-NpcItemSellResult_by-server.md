@@ -16,4 +16,4 @@ The amount of specified money is set at the players inventory.
 | 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x33  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | Success |
-| 4 | 4 | IntegerBigEndian |  | Money |
+| 4 | 4 | IntegerLittleEndian |  | Money |

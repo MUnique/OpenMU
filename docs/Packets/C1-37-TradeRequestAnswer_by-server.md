@@ -17,5 +17,5 @@ If the trade was accepted, a trade dialog is opened. Otherwise, a message is sho
 | 2 | 1 |    Byte   | 0x37  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | Accepted |
 | 4 | 10 | String |  | Name |
-| 14 | 2 | Short |  | TradePartnerLevel |
-| 16 | 4 | IntegerBigEndian |  | GuildId |
+| 14 | 2 | ShortBigEndian |  | TradePartnerLevel |
+| 16 | 4 | IntegerLittleEndian |  | GuildId |

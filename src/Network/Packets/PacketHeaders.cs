@@ -13,6 +13,7 @@
 namespace MUnique.OpenMU.Network.Packets
 {
     using System;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// The structure for a C1 packet header. Usually encrypted by Xor32..
@@ -143,8 +144,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public ushort Length
         {
-            get => this.data.Slice(1).GetShortLittleEndian();
-            set => this.data.Slice(1).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(1));
+            set => WriteUInt16BigEndian(this.data.Slice(1), value);
         }
 
         /// <summary>
@@ -188,8 +189,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public ushort Length
         {
-            get => this.data.Slice(1).GetShortLittleEndian();
-            set => this.data.Slice(1).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(1));
+            set => WriteUInt16BigEndian(this.data.Slice(1), value);
         }
 
         /// <summary>
@@ -341,8 +342,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public ushort Length
         {
-            get => this.data.Slice(1).GetShortLittleEndian();
-            set => this.data.Slice(1).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(1));
+            set => WriteUInt16BigEndian(this.data.Slice(1), value);
         }
 
         /// <summary>
@@ -386,8 +387,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public ushort Length
         {
-            get => this.data.Slice(1).GetShortLittleEndian();
-            set => this.data.Slice(1).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(1));
+            set => WriteUInt16BigEndian(this.data.Slice(1), value);
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ The money is moved, if possible.
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x81  | Packet header - packet type identifier |
 | 3 | 1 | VaultMoneyMoveDirection |  | Direction |
-| 4 | 4 | IntegerBigEndian |  | Amount |
+| 4 | 4 | IntegerLittleEndian |  | Amount |
 
 ### VaultMoneyMoveDirection Enum
 

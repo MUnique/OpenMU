@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// The field is a short value and has a length of two bytes.
         /// It's encoded as little endian.
         /// </summary>
-        Short,
+        ShortLittleEndian,
 
         /// <summary>
         /// The field is a short value and has a length of two bytes.
@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// The field is an integer value and has a length of four bytes.
         /// It's encoded as little endian.
         /// </summary>
-        Integer,
+        IntegerLittleEndian,
 
         /// <summary>
         /// The field is an integer value and has a length of four bytes.
@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// The field is a long integer value and has a length of eight bytes.
         /// It's encoded as little endian.
         /// </summary>
-        Long,
+        LongLittleEndian,
 
         /// <summary>
         /// The field is a long integer value and has a length of eight bytes.

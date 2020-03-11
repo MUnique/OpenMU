@@ -24,7 +24,7 @@ Contains the data about a dropped item.
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 2 | Short |  | Id |
+| 0 | 2 | ShortBigEndian |  | Id |
 | 0 << 7 | 1 bit | Boolean |  | IsFreshDrop; If this flag is set, the item is added to the map with an animation and sound. Otherwise it's just added like it was already on the ground before. |
 | 2 | 1 | Byte |  | PositionX |
 | 3 | 1 | Byte |  | PositionY |

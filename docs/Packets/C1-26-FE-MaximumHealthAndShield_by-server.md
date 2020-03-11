@@ -16,5 +16,5 @@ The health and shield bar is updated on the game client user interface.
 | 1 | 1 |    Byte   |   9   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x26  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0xFE  | Packet header - sub packet type identifier |
-| 4 | 2 | Short |  | Health |
-| 7 | 2 | Short |  | Shield |
+| 4 | 2 | ShortBigEndian |  | Health |
+| 7 | 2 | ShortBigEndian |  | Shield |

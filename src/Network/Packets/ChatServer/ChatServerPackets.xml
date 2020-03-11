@@ -14,7 +14,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>RoomId</Name>
         </Field>
         <Field>

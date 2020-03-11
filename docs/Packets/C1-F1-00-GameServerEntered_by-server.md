@@ -17,6 +17,6 @@ It shows the login dialog.
 | 2 | 1 |    Byte   | 0xF1  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x00  | Packet header - sub packet type identifier |
 | 4 | 1 | Boolean | true | Success |
-| 5 | 2 | Short |  | PlayerId |
+| 5 | 2 | ShortBigEndian |  | PlayerId |
 | 7 | 5 | String |  | VersionString |
 | 7 | 5 | Binary |  | Version |

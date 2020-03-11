@@ -26,8 +26,8 @@ Length: 10 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 2 | Short |  | Id |
-| 2 | 2 | Short |  | TypeNumber |
+| 0 | 2 | ShortBigEndian |  | Id |
+| 2 | 2 | ShortBigEndian |  | TypeNumber |
 | 4 | 1 | Byte |  | CurrentPositionX |
 | 5 | 1 | Byte |  | CurrentPositionY |
 | 6 | 1 | Byte |  | TargetPositionX |

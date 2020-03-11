@@ -16,4 +16,4 @@ The letter is removed from the letter list.
 | 1 | 1 |    Byte   |   6   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xC8  | Packet header - packet type identifier |
 | 3 | 1 | Boolean | true | RequestSuccessful |
-| 4 | 2 | ShortBigEndian |  | LetterIndex |
+| 4 | 2 | ShortLittleEndian |  | LetterIndex |

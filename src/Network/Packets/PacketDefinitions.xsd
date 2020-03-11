@@ -124,11 +124,11 @@
     <xs:restriction base="xs:string">
       <xs:enumeration value="Boolean" />
       <xs:enumeration value="Byte" />
-      <xs:enumeration value="Short" />
+      <xs:enumeration value="ShortSmallEndian" />
       <xs:enumeration value="ShortBigEndian" />
-      <xs:enumeration value="Integer" />
+      <xs:enumeration value="IntegerSmallEndian" />
       <xs:enumeration value="IntegerBigEndian" />
-      <xs:enumeration value="Long" />
+      <xs:enumeration value="LongSmallEndian" />
       <xs:enumeration value="LongBigEndian" />
       <xs:enumeration value="Float" />
       <xs:enumeration value="String" />

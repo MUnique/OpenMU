@@ -15,7 +15,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>ServerId</Name>
         </Field>
       </Fields>
@@ -38,7 +38,7 @@
         </Field>
         <Field>
           <Index>20</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Port</Name>
         </Field>
       </Fields>
@@ -65,7 +65,7 @@
       <Fields>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ServerCount</Name>
         </Field>
         <Field>
@@ -83,7 +83,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>ShortBigEndian</Type>
+              <Type>ShortLittleEndian</Type>
               <Name>ServerId</Name>
             </Field>
             <Field>

@@ -16,5 +16,5 @@ The user interface updates itself. If it's the effect of the own player, it's sh
 | 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x07  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | IsActive |
-| 4 | 2 | Short |  | PlayerId |
+| 4 | 2 | ShortBigEndian |  | PlayerId |
 | 6 | 1 | Byte |  | EffectId |

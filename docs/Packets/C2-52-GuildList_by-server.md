@@ -17,7 +17,7 @@ The list of player is available at the client.
 | 3 | 1 |    Byte   | 0x52  | Packet header - packet type identifier |
 | 4 | 1 | Boolean |  | IsInGuild |
 | 5 | 1 | Byte |  | GuildMemberCount |
-| 8 | 4 | IntegerBigEndian |  | TotalScore |
+| 8 | 4 | IntegerLittleEndian |  | TotalScore |
 | 12 | 1 | Byte |  | CurrentScore |
 | 13 | 8 | String |  | RivalGuildName |
 | 24 | GuildMember.Length * GuildMemberCount | Array of GuildMember |  | Members |

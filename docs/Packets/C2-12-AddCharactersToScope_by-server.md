@@ -24,7 +24,7 @@ Contains the data of an NPC.
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 2 | Short |  | Id |
+| 0 | 2 | ShortBigEndian |  | Id |
 | 2 | 1 | Byte |  | CurrentPositionX |
 | 3 | 1 | Byte |  | CurrentPositionY |
 | 4 | 18 | Binary |  | Appearance |

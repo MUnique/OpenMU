@@ -16,5 +16,5 @@ The game client updates the money values of vault and inventory.
 | 1 | 1 |    Byte   |   12   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x81  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | Success |
-| 4 | 4 | IntegerBigEndian |  | VaultMoney |
-| 8 | 4 | IntegerBigEndian |  | InventoryMoney |
+| 4 | 4 | IntegerLittleEndian |  | VaultMoney |
+| 8 | 4 | IntegerLittleEndian |  | InventoryMoney |

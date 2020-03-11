@@ -15,7 +15,7 @@ The letter is sent to the other character, if it exists and the player has the r
 | 0 | 1 |   Byte   | 0xC4  | [Packet type](PacketTypes.md) |
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0xC5  | Packet header - packet type identifier |
-| 4 | 4 | IntegerBigEndian |  | LetterId |
+| 4 | 4 | IntegerLittleEndian |  | LetterId |
 | 8 | 10 | String |  | Receiver |
 | 18 | 60 | String |  | Title |
 | 78 | 1 | Byte |  | Rotation |

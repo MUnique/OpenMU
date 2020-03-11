@@ -15,4 +15,4 @@ It's taken from the available money of the inventory. If the new money amount is
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x3A  | Packet header - packet type identifier |
-| 4 | 4 | IntegerBigEndian |  | Amount |
+| 4 | 4 | IntegerLittleEndian |  | Amount |

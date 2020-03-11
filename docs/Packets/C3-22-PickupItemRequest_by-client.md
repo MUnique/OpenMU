@@ -15,4 +15,4 @@ If the player is allowed to pick the item up, and is the first player which trie
 | 0 | 1 |   Byte   | 0xC3  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x22  | Packet header - packet type identifier |
-| 3 | 2 | Short |  | ItemId |
+| 3 | 2 | ShortBigEndian |  | ItemId |

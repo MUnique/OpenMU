@@ -13,6 +13,7 @@
 namespace MUnique.OpenMU.Network.Packets.ConnectServer
 {
     using System;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// Is sent by the client when: This packet is sent by the client after the user clicked on an entry of the server list.
@@ -75,8 +76,8 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// </summary>
         public ushort ServerId
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -170,8 +171,8 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// </summary>
         public ushort Port
         {
-            get => this.data.Slice(20).GetShortBigEndian();
-            set => this.data.Slice(20).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(20));
+            set => WriteUInt16LittleEndian(this.data.Slice(20), value);
         }
 
         /// <summary>
@@ -323,8 +324,8 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// </summary>
         public ushort ServerCount
         {
-            get => this.data.Slice(5).GetShortLittleEndian();
-            set => this.data.Slice(5).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(5));
+            set => WriteUInt16BigEndian(this.data.Slice(5), value);
         }
 
         /// <summary>
@@ -379,8 +380,8 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// </summary>
         public ushort ServerId
         {
-            get => this.data.Slice(0).GetShortBigEndian();
-            set => this.data.Slice(0).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(0));
+            set => WriteUInt16LittleEndian(this.data.Slice(0), value);
         }
 
         /// <summary>

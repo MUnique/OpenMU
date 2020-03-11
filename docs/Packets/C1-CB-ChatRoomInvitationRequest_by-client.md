@@ -16,5 +16,5 @@ The player additional gets authentication data sent to his game client. It then 
 | 1 | 1 |    Byte   |   13   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xCB  | Packet header - packet type identifier |
 | 3 | 10 | String |  | FriendName |
-| 13 | 2 | Short |  | RoomId |
-| 15 | 4 | Integer |  | RequestId |
+| 13 | 2 | ShortBigEndian |  | RoomId |
+| 15 | 4 | IntegerBigEndian |  | RequestId |
