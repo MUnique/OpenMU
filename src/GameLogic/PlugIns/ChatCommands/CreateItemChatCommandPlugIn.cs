@@ -59,8 +59,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         public string Key => CommandKey;
 
         /// <inheritdoc />
-        /// todo: increase requirement to game master
-        public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
+        public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
