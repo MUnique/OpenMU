@@ -10,8 +10,10 @@
 | Windows        | ![Windows Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU?branchName=master) |
 | Linux (Docker) | [![Docker Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU%20Docker?branchName=master)](https://hub.docker.com/r/munique/openmu)  |
 
+NuGet Packages:
+[![NuGet Badge](https://img.shields.io/nuget/v/MUnique.OpenMU.Network)](https://www.nuget.org/packages/MUnique.OpenMU.Network.Packages/)
+[![NuGet Badge](https://img.shields.io/nuget/v/MUnique.OpenMU.Network.Packets)](https://www.nuget.org/packages/MUnique.OpenMU.Network/)
 
-Welcome to the OpenMU project. 
 
 This project aims to create an easy to use, extendable and customizable server for a MMORPG called "MU Online".
 The server supports multiple versions of the game, but the main focus is version of Season 6 Episode 3 using the ENG (english) protocol. 
