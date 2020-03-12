@@ -42,6 +42,11 @@ namespace MUnique.OpenMU.Interfaces
         int ClientListenerPort { get; }
 
         /// <summary>
+        /// Gets the client which is expected to connect.
+        /// </summary>
+        IGameClientVersion Client { get; }
+
+        /// <summary>
         /// Gets the timeout after which clients without activity get disconnected.
         /// </summary>
         TimeSpan Timeout { get; }

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Interfaces
 {
+    using System.Collections.Generic;
     using System.Net;
 
     /// <summary>
@@ -11,6 +12,11 @@ namespace MUnique.OpenMU.Interfaces
     /// </summary>
     public interface IGameServerStateObserver
     {
+        /// <summary>
+        /// Gets the registered game servers. The first value is the server id.
+        /// </summary>
+        ICollection<(ushort Id, IPEndPoint Endpoint)> GameServerEndPoints { get; }
+
         /// <summary>
         /// Registers the game server, so that it can be accessed through the connect server.
         /// </summary>
