@@ -6,13 +6,7 @@
   <xsl:param name="resultFileName" />
   <xsl:param name="subNamespace" />
   <xsl:output method="text" indent="yes" />
-    <xsl:variable name='newline'>
-      <xsl:text xml:space='preserve'>
-</xsl:text>
-    </xsl:variable>
-    <xsl:variable name="upperCaseLetters">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
-    <xsl:variable name="lowerCaseLetters">abcdefghijklmnopqrstuvwxyz</xsl:variable>
-    <xsl:variable name="digits">0123456789</xsl:variable>
+  <xsl:include href="Common.xslt" />
 
   <xsl:template match="pd:PacketDefinitions">
     <xsl:text>// &lt;copyright file="</xsl:text><xsl:value-of select="$resultFileName"/><xsl:text>" company="MUnique"&gt;
@@ -541,30 +535,6 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
 
   <xsl:template match="text()"></xsl:template>
     
-    <xsl:template match="pd:Name">
-      <xsl:value-of select="translate(., ' ()/-:', '')"/>
-    </xsl:template>
-
-    <!-- Type mapping: -->
-    <xsl:template match="pd:Type[. = 'Boolean']" mode="type">bool</xsl:template>
-    <xsl:template match="pd:Type[. = 'Byte']" mode="type">byte</xsl:template>
-    <xsl:template match="pd:Type[. = 'ShortLittleEndian' or . = 'ShortBigEndian']" mode="type">ushort</xsl:template>
-    <xsl:template match="pd:Type[. = 'IntegerLittleEndian' or . = 'IntegerBigEndian']" mode="type">uint</xsl:template>
-    <xsl:template match="pd:Type[. = 'LongLittleEndian' or . = 'LongBigEndian']" mode="type">ulong</xsl:template>
-    <xsl:template match="pd:Type[. = 'Float']" mode="type">float</xsl:template>
-    <xsl:template match="pd:Type[. = 'String']" mode="type">string</xsl:template>
-    <xsl:template match="pd:Type[. = 'Binary']" mode="type">Span&lt;byte&gt;</xsl:template>
-    <xsl:template match="pd:Type[. = 'Enum']" mode="type">
-      <xsl:value-of select="./../pd:TypeName"/>
-    </xsl:template>
-    <xsl:template match="pd:Type[. = 'Structure[]']" mode="type">
-      <xsl:text>Span&lt;</xsl:text>
-      <xsl:value-of select="./../pd:TypeName"/>
-      <xsl:text>&gt;</xsl:text>
-    </xsl:template>
-
-    <xsl:template match="text()" mode="type"></xsl:template>
-
     <!-- Getter/Setter implementations: -->
     <xsl:template match="pd:Field[pd:Type = 'Boolean']" mode="get">
       <xsl:value-of select="$newline"/>
@@ -800,35 +770,6 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
         <xsl:otherwise>[0] = (byte)value</xsl:otherwise>
       </xsl:choose>
       <xsl:text>;</xsl:text>
-    </xsl:template>
-
-  <!-- Splits a name by inserting a space before each upper case letter and additionally lowering this letter -->
-    <xsl:template name="splitName">
-      <xsl:param name="name" />
-
-      <xsl:if test="$name != ''">
-        <xsl:variable name="currentLetter" select="substring($name, 1, 1)" />
-        <xsl:variable name="isUpperCase" select="contains($upperCaseLetters, $currentLetter)" />
-        <xsl:variable name="isDigit" select="contains($digits, $currentLetter)" />
-        <xsl:choose>
-          <xsl:when test="$isUpperCase">
-            <xsl:text xml:space="preserve"> </xsl:text>
-            <xsl:value-of select="translate($currentLetter, $upperCaseLetters, $lowerCaseLetters)" />
-          </xsl:when>
-          <xsl:when test="contains($digits, $currentLetter)">
-            <xsl:text xml:space="preserve"> </xsl:text>
-            <xsl:value-of select="$currentLetter" />
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="$currentLetter"/>
-          </xsl:otherwise>
-        </xsl:choose>
-
-        <!-- Call this template again to handle the next letter. -->
-        <xsl:call-template name="splitName">
-          <xsl:with-param name="name" select="substring-after($name, $currentLetter)" />
-        </xsl:call-template>
-      </xsl:if>
     </xsl:template>
 
     <xsl:template match="text()" mode="get"></xsl:template>

@@ -2348,7 +2348,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the direction.
         /// </summary>
-        public VaultMoneyMoveDirection Direction
+        public VaultMoveMoneyRequest.VaultMoneyMoveDirection Direction
         {
             get => (VaultMoneyMoveDirection)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -2529,7 +2529,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the operation.
         /// </summary>
-        public MixType Operation
+        public LahapJewelMixRequest.MixType Operation
         {
             get => (MixType)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -2538,7 +2538,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the item.
         /// </summary>
-        public ItemType Item
+        public LahapJewelMixRequest.ItemType Item
         {
             get => (ItemType)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -2547,7 +2547,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the mixing stack size.
         /// </summary>
-        public StackSize MixingStackSize
+        public LahapJewelMixRequest.StackSize MixingStackSize
         {
             get => (StackSize)this.data.Slice(5)[0];
             set => this.data.Slice(5)[0] = (byte)value;
@@ -5887,7 +5887,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the identifier which tells the server which kind of mix should be executed.
         /// </summary>
-        public ChaosMachineMixType MixType
+        public ChaosMachineMixRequest.ChaosMachineMixType MixType
         {
             get => (ChaosMachineMixType)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
