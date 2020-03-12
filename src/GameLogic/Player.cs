@@ -646,22 +646,29 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void Regenerate()
         {
-            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
+            try
             {
-                if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() && this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
                 {
-                    // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
-                    // This attribute is usually provided by a level 380 armor and a Guardian Option.
-                    continue;
+                    if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() && this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                    {
+                        // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
+                        // This attribute is usually provided by a level 380 armor and a Guardian Option.
+                        continue;
+                    }
+
+                    this.Attributes[r.CurrentAttribute] = Math.Min(
+                        this.Attributes[r.CurrentAttribute] + ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) + this.Attributes[r.AbsoluteAttribute]),
+                        this.Attributes[r.MaximumAttribute]);
                 }
 
-                this.Attributes[r.CurrentAttribute] = Math.Min(
-                    this.Attributes[r.CurrentAttribute] + ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) + this.Attributes[r.AbsoluteAttribute]),
-                    this.Attributes[r.MaximumAttribute]);
+                this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
+                this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
             }
-
-            this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
-            this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
+            catch (InvalidOperationException)
+            {
+                // may happen after a character disconnected in the mean time.
+            }
         }
 
         /// <summary>

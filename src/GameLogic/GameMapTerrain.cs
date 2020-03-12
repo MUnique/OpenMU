@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
-    using System.IO;
     using log4net;
 
     using MUnique.OpenMU.DataModel.Configuration;
@@ -40,12 +39,9 @@ namespace MUnique.OpenMU.GameLogic
                 return;
             }
 
-            using (var memoryStream = new MemoryStream(terrainData))
-            {
-                Log.Debug($"Start reading terrain data for {mapName}.");
-                this.ReadTerrainData(memoryStream);
-                Log.Debug($"Finished reading terrain data for {mapName}.");
-            }
+            Log.Debug($"Start reading terrain data for {mapName}.");
+            this.ReadTerrainData(terrainData.AsSpan(3));
+            Log.Debug($"Finished reading terrain data for {mapName}.");
         }
 
         /// <summary>
@@ -92,17 +88,13 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Reads the terrain data from a stream.
         /// </summary>
-        /// <param name="stream">The stream.</param>
-        private void ReadTerrainData(Stream stream)
+        /// <param name="data">The data.</param>
+        private void ReadTerrainData(ReadOnlySpan<byte> data)
         {
             this.WalkMap = new bool[256, 256];
             this.SafezoneMap = new bool[256, 256];
             this.AIgrid = new byte[256, 256];
-            stream.ReadByte();
-            stream.ReadByte();
-            stream.ReadByte();
-            var data = new byte[0x10000];
-            stream.Read(data, 0, 0x10000);
+
             for (int i = 0; i < data.Length; i++)
             {
                 byte x = (byte)(i & 0xFF);

@@ -20,7 +20,9 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private IContainer components = null;
+#pragma warning disable 649
+        private readonly IContainer components;
+#pragma warning restore 649
 
         private TextBox packetTextBox;
         private Button sendButton;
@@ -149,7 +151,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.sendButton.TabIndex = 7;
             this.sendButton.Text = "Send";
             this.sendButton.UseVisualStyleBackColor = true;
-            this.sendButton.Click += new System.EventHandler(this.SendButtonClick);
+            this.sendButton.Click += this.SendButtonClick;
             // 
             // toClientRadioButton
             // 

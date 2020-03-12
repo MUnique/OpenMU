@@ -5,12 +5,19 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>MUnique</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <RepositoryUrl>https://github.com/MUnique/OpenMU</RepositoryUrl>
+    <RepositoryUrl>https://github.com/MUnique/OpenMU/tree/master/src/Network</RepositoryUrl>
     <PackageProjectUrl>https://munique.net</PackageProjectUrl>
-    <PackageLicenseUrl>http://opensource.org/licenses/mit-license.php</PackageLicenseUrl>
-    <PackageTags>MUnique OpenMU tcp</PackageTags>
-    <PackageId>munique.openmu.network</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>MUnique OpenMU MUOnline Network TCP</PackageTags>
+    <PackageId>MUnique.OpenMU.Network</PackageId>
+    <Description>
+      MUnique.OpenMU.Network contains all what's required to connect from and to a MU Online game, connect or chat server. It implements the MU Online network protocol.
+      It also contains several the encryption algorithms and keys which were used until a few years ago up to Season 6 Episode 3.
+    </Description>
+    <PackageVersion>0.3.2</PackageVersion>
+    <Version>0.3.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-	  <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Network.xml</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Network.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Analyzer\**" />
@@ -42,7 +49,7 @@
 
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="Pipelines.Sockets.Unofficial" Version="2.1.0" />
+    <PackageReference Include="Pipelines.Sockets.Unofficial" Version="2.1.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

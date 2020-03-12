@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using log4net;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
     /// <summary>
     /// Action to send chat messages.
@@ -51,29 +52,37 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 Log.WarnFormat("Maybe Hacker, Charname in chat packet != charname\t [{0}] <> [{1}]", sender.SelectedCharacter.Name, playerName);
             }
 
-            if (messageType == ChatMessageType.Command)
+            switch (messageType)
             {
-                var commandKey = message.Split(' ').First();
-                sender.GameContext.PlugInManager.GetStrategy<IChatCommandPlugIn>(commandKey)?.HandleCommand(sender, message);
-                return;
-            }
-
-            if (messageType == ChatMessageType.Whisper)
-            {
-                var whisperReceiver = sender.GameContext.GetPlayerByCharacterName(playerName);
-                if (whisperReceiver != null)
-                {
-                    var eventArgs = new CancelEventArgs();
-                    sender.GameContext.PlugInManager.GetPlugInPoint<IWhisperMessageReceivedPlugIn>()?.WhisperMessageReceived(sender, whisperReceiver, message, eventArgs);
-                    if (!eventArgs.Cancel)
+                case ChatMessageType.Command:
+                    var commandKey = message.Split(' ').First();
+                    var commandHandler = sender.GameContext.PlugInManager.GetStrategy<IChatCommandPlugIn>(commandKey);
+                    if (sender.SelectedCharacter.CharacterStatus >= commandHandler.MinCharacterStatusRequirement)
                     {
-                        whisperReceiver.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
+                        commandHandler?.HandleCommand(sender, message);
                     }
-                }
-            }
-            else
-            {
-                this.HandleChatMessage(sender, message, messageType);
+                    else
+                    {
+                        Log.WarnFormat($"{sender.Name} is trying to execute {commandKey} command without meet the requirements");
+                    }
+
+                    break;
+                case ChatMessageType.Whisper:
+                    var whisperReceiver = sender.GameContext.GetPlayerByCharacterName(playerName);
+                    if (whisperReceiver != null)
+                    {
+                        var eventArgs = new CancelEventArgs();
+                        sender.GameContext.PlugInManager.GetPlugInPoint<IWhisperMessageReceivedPlugIn>()?.WhisperMessageReceived(sender, whisperReceiver, message, eventArgs);
+                        if (!eventArgs.Cancel)
+                        {
+                            whisperReceiver.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
+                        }
+                    }
+
+                    break;
+                default:
+                    this.HandleChatMessage(sender, message, messageType);
+                    break;
             }
         }
 

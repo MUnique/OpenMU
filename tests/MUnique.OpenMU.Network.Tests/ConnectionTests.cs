@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.Tests
 {
+    using System.IO.Pipelines;
     using System.Threading.Tasks;
     using NUnit.Framework;
 
@@ -46,39 +47,21 @@ namespace MUnique.OpenMU.Network.Tests
         }
 
         /// <summary>
-        /// Tests if the connection is disconnected after a malformed packet was sent.
+        /// Tests if the reader (e.g. SocketConnection) gets an exception when it reads a malformed packet which leads to an exception.
+        /// The consumer (e.g. SocketConnection) will take care to call <see cref="PipeReader.Complete"/> or <see cref="PipeReader.CompleteAsync"/>.
         /// </summary>
         /// <returns>The async task.</returns>
         [Test]
-        public async Task DisconnectedByFailingEncryptionOfSentPacket()
+        public async Task ExceptionWhenFailingToEncryptSentPacket()
         {
             var malformedData = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
             var duplexPipe = new DuplexPipe();
-            using (var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output)))
-            {
-                var disconnected = false;
-                connection.Disconnected += (sender, args) => disconnected = true;
-                _ = connection.BeginReceive();
+            using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output));
 
-                try
-                {
-                    await connection.Output.WriteAsync(malformedData);
-                    await connection.Output.FlushAsync();
-                    await duplexPipe.SendPipe.Reader.ReadAsync();
-                }
-                catch
-                {
-                    // we need to swallow the exception for this test, so we can check the connected flag afterwards.
-                }
+            _ = connection.BeginReceive();
+            await connection.Output.WriteAsync(malformedData).ConfigureAwait(false);
 
-                for (int i = 0; i < 10 && !disconnected; i++)
-                {
-                    await Task.Delay(10).ConfigureAwait(false);
-                }
-
-                Assert.That(disconnected, Is.True);
-                Assert.That(connection.Connected, Is.False);
-            }
+            Assert.Throws<InvalidPacketHeaderException>(() => duplexPipe.SendPipe.Reader.ReadAsync().GetAwaiter().GetResult());
         }
 
         /// <summary>
@@ -88,10 +71,8 @@ namespace MUnique.OpenMU.Network.Tests
         public void InitiallyConnected()
         {
             var duplexPipe = new DuplexPipe();
-            using (var connection = new Connection(duplexPipe, null, null))
-            {
-                Assert.That(connection.Connected, Is.True);
-            }
+            using var connection = new Connection(duplexPipe, null, null);
+            Assert.That(connection.Connected, Is.True);
         }
     }
 }

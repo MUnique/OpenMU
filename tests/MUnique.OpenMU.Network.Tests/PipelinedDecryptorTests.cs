@@ -123,7 +123,8 @@ namespace MUnique.OpenMU.Network.Tests
             var pipe = new Pipe();
             var decryptor = new PipelinedDecryptor(pipe.Reader);
             pipe.Writer.Write(new byte[] { 0xC1, 0x03, 0x01 });
-            pipe.Writer.Complete();
+            await pipe.Writer.CompleteAsync().ConfigureAwait(false);
+            await Task.Delay(10).ConfigureAwait(false);
             var result = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
             Assert.That(result.IsCompleted, Is.True);
         }
@@ -137,13 +138,11 @@ namespace MUnique.OpenMU.Network.Tests
         {
             var pipe = new Pipe();
             var decryptor = new PipelinedDecryptor(pipe.Reader);
-            var completed = false;
-            decryptor.Reader.OnWriterCompleted((e, o) => completed = true, null);
-            var reading = decryptor.Reader.ReadAsync();
-            pipe.Writer.Complete();
+            var reading = decryptor.Reader.ReadAsync().ConfigureAwait(false);
+            await pipe.Writer.CompleteAsync().ConfigureAwait(false);
             var result = await reading;
             await Task.Delay(10).ConfigureAwait(false);
-            Assert.That(completed && result.IsCompleted, Is.True);
+            Assert.That(result.IsCompleted, Is.True);
         }
 
         /// <summary>
