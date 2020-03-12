@@ -10,10 +10,10 @@
 | Windows        | ![Windows Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU?branchName=master) |
 | Linux (Docker) | [![Docker Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU%20Docker?branchName=master)](https://hub.docker.com/r/munique/openmu)  |
 
-| NuGet Packages |
-|----------------|
-| [![NuGet Badge](https://buildstats.info/nuget/MUnique.OpenMU.Network)](https://www.nuget.org/packages/MUnique.OpenMU.Network/) |
-| [![NuGet Badge](https://buildstats.info/nuget/MUnique.OpenMU.Network.Packets)](https://www.nuget.org/packages/MUnique.OpenMU.Network.Packets/) |
+| NuGet Packages |   |
+|----------------|---|
+| MUnique.OpenMU.Network | [![NuGet Badge](https://img.shields.io/nuget/v/MUnique.OpenMU.Network)](https://www.nuget.org/packages/MUnique.OpenMU.Network/) |
+| MUnique.OpenMU.Network.Packets | [![NuGet Badge](https://img.shields.io/nuget/v/MUnique.OpenMU.Network.Packets)](https://www.nuget.org/packages/MUnique.OpenMU.Network.Packets/) |
 
 
 This project aims to create an easy to use, extendable and customizable server for a MMORPG called "MU Online".
