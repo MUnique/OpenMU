@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Interfaces
 {
+    using System;
     using System.ComponentModel;
 
     /// <summary>
@@ -15,6 +16,11 @@ namespace MUnique.OpenMU.Interfaces
         /// Gets the identifier of the server.
         /// </summary>
         int Id { get; }
+
+        /// <summary>
+        /// Gets the identifier of the configuration of the server.
+        /// </summary>
+        Guid ConfigurationId { get; }
 
         /// <summary>
         /// Gets the description.

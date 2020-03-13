@@ -89,6 +89,11 @@ namespace MUnique.OpenMU.AdminPanelBlazor
             {
                 throw new NotImplementedException();
             }
+
+            public IContext CreateNewTypedContext<T>()
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

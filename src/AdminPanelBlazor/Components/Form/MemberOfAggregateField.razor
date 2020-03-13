@@ -3,8 +3,7 @@
 @using MUnique.OpenMU.Persistence
 @inherits InputBase<TObject>
 
-@inject IContext CommonContext
-@inject IPlayerContext PlayerContext
+@inject IPersistenceContextProvider ContextProvider
 
     <div class="card">
         <h5 class="card-header">
@@ -26,8 +25,6 @@
         </div>
     </div>
 @code {
-    private bool isPlayerData;
-
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
     /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
@@ -35,13 +32,13 @@
     [Parameter]
     public string Label { get; set; }
 
-    private IContext Context => this.isPlayerData ? this.PlayerContext : this.CommonContext;
+    private IContext context;
 
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        this.isPlayerData = !this.ValueExpression.GetAccessedMemberType().IsConfigurationType();
+        this.context = this.ContextProvider.CreateNewTypedContext<TObject>();
     }
 
     /// <inheritdoc />
@@ -52,6 +49,6 @@
 
     private void OnCreateClick()
     {
-        this.Value = this.Context.CreateNew<TObject>();
+        this.Value = this.context.CreateNew<TObject>();
     }
 }

@@ -6,11 +6,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
 {
     using System;
     using System.Collections.Generic;
-    using System.Reflection;
     using Blazored.Modal;
     using Blazored.Modal.Services;
     using Microsoft.AspNetCore.Components;
-    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -20,9 +18,9 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
     public partial class ItemTable<TItem>
         where TItem : class
     {
-        private bool isEditable;
+        private IContext context;
 
-        private bool isPlayerData;
+        private bool isEditable;
 
         private bool isAddingSupported;
 
@@ -38,26 +36,32 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
         [Parameter]
         public string Label { get; set; }
 
-        private IContext Context => this.isPlayerData ? this.PlayerContext : this.CommonContext;
-
         /// <inheritdoc />
         protected override void OnInitialized()
         {
             base.OnInitialized();
             this.isEditable = typeof(TItem).Namespace?.StartsWith(nameof(MUnique)) ?? false;
-            this.isPlayerData = !this.ValueExpression.GetAccessedMemberType().IsConfigurationType();
-
             var isMemberOfAggregate = this.ValueExpression.IsAccessToMemberOfAggregate();
             this.isAddingSupported = !isMemberOfAggregate;
             this.isCreatingSupported = isMemberOfAggregate;
             this.isStartingCollapsed = this.Value.Count > 10;
             this.isCollapsed = this.isStartingCollapsed;
+
+            this.context = this.ContextProvider.CreateNewTypedContext<TItem>();
         }
 
         /// <inheritdoc />
         protected override bool TryParseValueFromString(string value, out ICollection<TItem> result, out string validationErrorMessage)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            this.context?.Dispose();
+            this.context = null;
         }
 
         private void OnToggleCollapseClick()
@@ -84,7 +88,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
 
         private void OnCreateClick()
         {
-            var item = this.Context.CreateNew<TItem>();
+            var item = this.context.CreateNew<TItem>();
             var parameters = new ModalParameters();
             parameters.Add(nameof(ModalCreateNew<TItem>.Item), item);
             var options = new ModalOptions
@@ -96,12 +100,12 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
             {
                 if (result.Cancelled)
                 {
-                    this.Context.Delete(item);
+                    this.context.Delete(item);
                 }
                 else
                 {
                     this.Value.Add(item);
-                    this.Context.SaveChanges();
+                    this.context.SaveChanges();
                     this.StateHasChanged();
                 }
 
@@ -115,12 +119,15 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Components.Form
         private void OnRemoveClick(TItem item)
         {
             this.Value.Remove(item);
-            if (this.isPlayerData && !typeof(TItem).IsConfigurationType())
+
+            // use the MemberOfAggregateAttribute here!
+            if (!this.ValueExpression.GetAccessedMemberType().IsConfigurationType()
+                && !typeof(TItem).IsConfigurationType())
             {
-                this.Context.Delete(item);
+                this.context.Delete(item);
             }
 
-            this.Context.SaveChanges();
+            this.context.SaveChanges();
         }
     }
 }

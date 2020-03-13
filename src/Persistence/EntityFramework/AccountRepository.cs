@@ -13,21 +13,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <summary>
     /// Repository for accounts.
     /// </summary>
-    internal class AccountRepository : GenericRepository<Account>
+    internal class AccountRepository : CachingGenericRepository<Account>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AccountRepository"/> class.
+        /// Initializes a new instance of the <see cref="AccountRepository" /> class.
         /// </summary>
-        /// <param name="contextProvider">The context provider.</param>
-        public AccountRepository(PersistenceContextProvider contextProvider)
-            : base(contextProvider)
+        /// <param name="repositoryManager">The repository manager.</param>
+        public AccountRepository(CachingRepositoryManager repositoryManager)
+            : base(repositoryManager)
         {
         }
 
         /// <inheritdoc />
         public override Account GetById(Guid id)
         {
-            this.ContextProvider.RepositoryManager.EnsureCachesForCurrentGameConfiguration();
+            ((CachingRepositoryManager)this.RepositoryManager).EnsureCachesForCurrentGameConfiguration();
             using var context = this.GetContext();
             context.Context.Database.OpenConnection();
             try
@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             return account;
         }
 
-        private Account LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContext context)
+        private Account LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContextBase context)
         {
             var accountInfo = context.Context.Set<Account>()
                 .Select(a => new { a.Id, a.LoginName, a.PasswordHash })

@@ -16,15 +16,15 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
     /// <seealso cref="MUnique.OpenMU.AdminPanelBlazor.Services.ILookupController" />
     public class PersistentObjectsLookupController : ILookupController
     {
-        private readonly IContext context;
+        private readonly IPersistenceContextProvider contextProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PersistentObjectsLookupController"/> class.
         /// </summary>
-        /// <param name="context">The persistence context.</param>
-        public PersistentObjectsLookupController(IContext context)
+        /// <param name="contextProvider">The persistence context provider.</param>
+        public PersistentObjectsLookupController(IPersistenceContextProvider contextProvider)
         {
-            this.context = context;
+            this.contextProvider = contextProvider;
         }
 
         /// <inheritdoc />
@@ -37,7 +37,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Services
                 return Task.FromResult(Enumerable.Empty<T>());
             }
 
-            var values = this.context.Get<T>();
+            using var context = this.contextProvider.CreateNewTypedContext<T>();
+            var values = context.Get<T>();
             if (string.IsNullOrEmpty(text))
             {
                 return Task.FromResult(values);

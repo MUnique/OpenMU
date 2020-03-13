@@ -76,13 +76,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor
                 return initialContext.Get<GameConfiguration>().First();
             });
 
-            services.AddScoped(provider =>
-            {
-                var contextProvider = provider.GetService<IPersistenceContextProvider>();
-                return contextProvider.CreateNewContext(provider.GetService<GameConfiguration>());
-            });
-
-            services.AddScoped(provider =>
+            services.AddTransient(provider =>
             {
                 var contextProvider = provider.GetService<IPersistenceContextProvider>();
                 return contextProvider.CreateNewPlayerContext(provider.GetService<GameConfiguration>());

@@ -28,9 +28,11 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         /// <param name="connectServerSettings">The settings.</param>
         /// <param name="clientVersion">The client version.</param>
-        public ConnectServer(IConnectServerSettings connectServerSettings, ClientVersion clientVersion)
+        /// <param name="configurationId">The configuration identifier.</param>
+        public ConnectServer(IConnectServerSettings connectServerSettings, ClientVersion clientVersion, Guid configurationId)
         {
             this.ClientVersion = clientVersion;
+            this.ConfigurationId = configurationId;
             this.Settings = connectServerSettings;
 
             this.ConnectInfos = new Dictionary<ushort, byte[]>();
@@ -69,6 +71,9 @@ namespace MUnique.OpenMU.ConnectServer
 
         /// <inheritdoc/>
         public int Id => SpecialServerIds.ConnectServer + this.Settings.ServerId;
+
+        /// <inheritdoc />
+        public Guid ConfigurationId { get; }
 
         /// <inheritdoc/>
         public IDictionary<ushort, byte[]> ConnectInfos { get; }

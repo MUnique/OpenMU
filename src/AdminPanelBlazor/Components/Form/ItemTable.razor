@@ -3,8 +3,7 @@
 @using MUnique.OpenMU.Persistence
 @inherits InputBase<ICollection<TItem>>
 
-@inject IContext CommonContext
-@inject IPlayerContext PlayerContext
+@inject IPersistenceContextProvider ContextProvider
 @inject IModalService Modal
 @inject NavigationManager NavigationManager
 
@@ -28,22 +27,24 @@
         <div class="card-body card-text">
             <table>
                 <tbody>
-                    @foreach (var item in this.Value)
+                    @foreach (var item in this.Value
+                        .Select(i => (Name : i.GetName(), Id : i.GetId(), Item : i))
+                        .OrderBy(i => i.Name))
                     {
                     <tr>
                         <td>
-                            @item.GetName()
+                            @item.Name
                         </td>
                         <td>
                             @if (this.isEditable)
                             {
-                            <button class="btn-info" @onclick="@(() => this.NavigationManager.NavigateTo("edit/" + typeof(TItem).FullName + "/" + item.GetId()))">Edit</button>
+                            <button class="btn-info" @onclick="@(() => this.NavigationManager.NavigateTo("edit/" + typeof(TItem).FullName + "/" + item.Id))">Edit</button>
                             }
                         </td>
                         <td>
                             @if (this.isEditable)
                             {
-                            <button class="btn-danger" @onclick="@(() => OnRemoveClick(item))">Remove</button>
+                            <button class="btn-danger" @onclick="@(() => OnRemoveClick(item.Item))">Remove</button>
                             }
                         </td>
                     </tr>

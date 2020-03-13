@@ -16,16 +16,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <see cref="JsonObjectLoader"/>, to speed up loading the whole object graph.
     /// Additionally it fills the experience table, because the entity framework can't map arrays.
     /// </summary>
-    internal class GameConfigurationRepository : GenericRepository<GameConfiguration>
+    internal class GameConfigurationRepository : CachingGenericRepository<GameConfiguration>
     {
         private readonly JsonObjectLoader objectLoader;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameConfigurationRepository"/> class.
+        /// Initializes a new instance of the <see cref="GameConfigurationRepository" /> class.
         /// </summary>
-        /// <param name="contextProvider">The context provider.</param>
-        public GameConfigurationRepository(PersistenceContextProvider contextProvider)
-            : base(contextProvider)
+        /// <param name="repositoryManager">The repository manager.</param>
+        public GameConfigurationRepository(RepositoryManager repositoryManager)
+            : base(repositoryManager)
         {
             this.objectLoader = new GameConfigurationJsonObjectLoader();
         }
@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public override GameConfiguration GetById(Guid id)
         {
-            var currentContext = this.ContextProvider.GetCurrentContext() as EntityFrameworkContext;
+            var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext;
             if (currentContext == null)
             {
                 throw new InvalidOperationException("There is no current context set.");
@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public override IEnumerable<GameConfiguration> GetAll()
         {
-            var currentContext = this.ContextProvider.GetCurrentContext() as EntityFrameworkContext;
+            var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext;
             if (currentContext == null)
             {
                 throw new InvalidOperationException("There is no current context set.");

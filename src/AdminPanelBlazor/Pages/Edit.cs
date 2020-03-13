@@ -10,7 +10,6 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Pages
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Rendering;
     using MUnique.OpenMU.AdminPanelBlazor.Components.Form;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -81,20 +80,8 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Pages
                 throw new ArgumentException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
             }
 
-            GameConfiguration gameConfiguration;
-            using (var tempContext = this.PersistenceContextProvider.CreateNewContext())
-            {
-                gameConfiguration = tempContext.Get<GameConfiguration>().First();
-            }
-
-            if (this.type.IsConfigurationType())
-            {
-                this.persistenceContext = this.PersistenceContextProvider.CreateNewContext(gameConfiguration);
-            }
-            else
-            {
-                this.persistenceContext = this.PersistenceContextProvider.CreateNewPlayerContext(gameConfiguration);
-            }
+            var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext)).MakeGenericMethod(this.type);
+            this.persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, Array.Empty<object>());
 
             var method = typeof(IContext).GetMethod(nameof(IContext.GetById)).MakeGenericMethod(this.type);
 

@@ -94,6 +94,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
+            stringBuilder.Append("Slot ").Append(this.ItemSlot).Append(": ");
 
             if (this.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent))
             {
@@ -114,7 +115,7 @@ namespace MUnique.OpenMU.DataModel.Entities
 
             foreach (var option in this.ItemOptions.OrderBy(o => o.ItemOption.OptionType == ItemOptionTypes.Option))
             {
-                stringBuilder.Append("+").Append(option.ItemOption.PowerUpDefinition.ToString());
+                stringBuilder.Append("+").Append(option.ItemOption.PowerUpDefinition);
             }
 
             if (this.HasSkill)

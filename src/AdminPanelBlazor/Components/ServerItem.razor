@@ -1,4 +1,5 @@
 ﻿@using System.ComponentModel
+@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Interfaces
 @implements IDisposable
 
@@ -12,7 +13,21 @@
         }
     </td>
     <td>
-        <div>@this.Server.Description</div>
+        @switch (this.Server.Type)
+        {
+            case ServerType.GameServer:
+                <NavLink href="@("edit/" + typeof(GameServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                break;
+            case ServerType.ConnectServer:
+                <NavLink href="@("edit/" + typeof(ConnectServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                break;
+            case ServerType.ChatServer:
+                <NavLink href="@("edit/" + typeof(ChatServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                break;
+            default:
+                @this.Server.Description
+                break;
+        }
 
         @if (this.isExpanded && this.Server.Type == ServerType.GameServer)
         {
@@ -37,7 +52,7 @@
     </td>
     <td>@this.GetStateCaption()</td>
     <td>
-        <button type="button" disabled=@(!this.IsActionAvailable()) @onclick="OnActionClick" class=@this.GetActionClass()>@this.GetActionCaption()</button>
+        <button type="button" disabled=@(!this.IsActionAvailable()) @onclick="@OnActionClick" class=@this.GetActionClass()>@this.GetActionCaption()</button>
     </td>
 </tr>
 

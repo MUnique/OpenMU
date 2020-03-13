@@ -49,10 +49,12 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
-        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver)
+        /// <param name="configurationId">The configuration identifier.</param>
+        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver, Guid configurationId = default)
         {
             this.settings = settings;
             this.addressResolver = addressResolver;
+            this.ConfigurationId = configurationId;
             this.manager = new ChatRoomManager();
             this.randomNumberGenerator = RandomNumberGenerator.Create();
             this.clientCleanupTimer = new Timer(this.settings.ClientCleanUpInterval.TotalMilliseconds);
@@ -80,6 +82,9 @@ namespace MUnique.OpenMU.ChatServer
 
         /// <inheritdoc/>
         public int Id => this.settings.ServerId;
+
+        /// <inheritdoc />
+        public Guid ConfigurationId { get; }
 
         /// <inheritdoc />
         public ServerType Type => ServerType.ChatServer;

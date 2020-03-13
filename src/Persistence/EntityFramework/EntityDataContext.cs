@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
     using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
     /// Context for all types of the data model.

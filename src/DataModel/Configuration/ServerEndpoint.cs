@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </returns>
         public override string ToString()
         {
-            return $"Client: {this.Client}; Port: {this.NetworkPort}";
+            return $"Client: {this.Client?.Description}; Port: {this.NetworkPort}";
         }
     }
 }

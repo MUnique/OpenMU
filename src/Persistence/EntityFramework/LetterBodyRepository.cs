@@ -10,14 +10,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <summary>
     /// Repository which is able to load <see cref="LetterBody"/>s for a specific letter header.
     /// </summary>
-    internal class LetterBodyRepository : GenericRepository<LetterBody>
+    internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LetterBodyRepository"/> class.
+        /// Initializes a new instance of the <see cref="LetterBodyRepository" /> class.
         /// </summary>
-        /// <param name="contextProvider">The context provider.</param>
-        public LetterBodyRepository(PersistenceContextProvider contextProvider)
-            : base(contextProvider)
+        /// <param name="repositoryManager">The repository manager.</param>
+        public LetterBodyRepository(RepositoryManager repositoryManager)
+            : base(repositoryManager)
         {
         }
 
@@ -28,16 +28,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>The body of the header.</returns>
         public LetterBody GetBodyByHeaderId(Guid headerId)
         {
-            using (var context = this.GetContext())
+            using var context = this.GetContext();
+            var letterBody = context.Context.Set<LetterBody>().FirstOrDefault(body => body.HeaderId == headerId);
+            if (letterBody != null)
             {
-                var letterBody = context.Context.Set<LetterBody>().FirstOrDefault(body => body.HeaderId == headerId);
-                if (letterBody != null)
-                {
-                    this.LoadDependentData(letterBody, context.Context);
-                }
-
-                return letterBody;
+                this.LoadDependentData(letterBody, context.Context);
             }
+
+            return letterBody;
         }
     }
 }

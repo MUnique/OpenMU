@@ -1,4 +1,4 @@
-﻿// <copyright file="GenericRepository{T}.cs" company="MUnique">
+﻿// <copyright file="GenericRepositoryBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,39 +15,35 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
     /// <summary>
-    /// A generic repository which wraps the access to the dbset of the <see cref="EntityDataContext"/>.
+    /// Base class for a generic repository which wraps the access to the DBSet of the <see cref="EntityDataContext"/>.
     /// Entities are getting eagerly (=completely) loaded automatically.
     /// </summary>
     /// <typeparam name="T">The type which this repository should manage.</typeparam>
-    internal class GenericRepository<T> : IRepository<T>, ILoadByProperty
+    internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProperty
         where T : class
     {
-        private readonly PersistenceContextProvider contextProvider;
-
         /// <summary>
-        /// The complete meta model of the entity type in <see cref="EntityDataContext"/>.
+        /// Initializes a new instance of the <see cref="GenericRepositoryBase{T}"/> class.
         /// </summary>
-        private readonly IEntityType fullEntityType;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericRepository{T}"/> class.
-        /// </summary>
-        /// <param name="contextProvider">The repository manager.</param>
-        public GenericRepository(PersistenceContextProvider contextProvider)
+        /// <param name="repositoryManager">The repository manager.</param>
+        protected GenericRepositoryBase(RepositoryManager repositoryManager)
         {
-            this.contextProvider = contextProvider;
-            using (var completeContext = new EntityDataContext())
-            {
-                this.fullEntityType = completeContext.Model.FindEntityType(typeof(T));
-            }
+            this.RepositoryManager = repositoryManager;
+            using var completeContext = new EntityDataContext();
+            this.FullEntityType = completeContext.Model.FindEntityType(typeof(T));
         }
 
         /// <summary>
         /// Gets the repository manager.
         /// </summary>
-        protected PersistenceContextProvider ContextProvider => this.contextProvider;
+        protected RepositoryManager RepositoryManager { get; }
 
-        private static ILog Log { get; } = LogManager.GetLogger(typeof(GenericRepository<>).MakeGenericType(typeof(T)));
+        /// <summary>
+        /// Gets the complete meta model of the entity type in <see cref="EntityDataContext"/>.
+        /// </summary>
+        protected IEntityType FullEntityType { get; }
+
+        private static ILog Log { get; } = LogManager.GetLogger(typeof(CachingGenericRepository<>).MakeGenericType(typeof(T)));
 
         /// <inheritdoc/>
         public bool Delete(Guid id)
@@ -58,41 +54,35 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public bool Delete(object obj)
         {
-            using (var context = this.GetContext())
-            {
-                return context.Context.Remove(obj) != null;
-            }
+            using var context = this.GetContext();
+            return context.Context.Remove(obj) != null;
         }
 
         /// <inheritdoc/>
         public virtual IEnumerable<T> GetAll()
         {
-            using (var context = this.GetContext())
-            {
-                var result = context.Context.Set<T>().ToList();
-                this.LoadDependentData(result, context.Context);
-                var newItems = context.Context.ChangeTracker.Entries<T>().Where(e => e.State == EntityState.Added).Select(e => e.Entity);
-                return result.Concat(newItems);
-            }
+            using var context = this.GetContext();
+            var result = context.Context.Set<T>().ToList();
+            this.LoadDependentData(result, context.Context);
+            var newItems = context.Context.ChangeTracker.Entries<T>().Where(e => e.State == EntityState.Added).Select(e => e.Entity);
+            return result.Concat(newItems);
         }
 
         /// <inheritdoc/>
         public virtual T GetById(Guid id)
         {
-            using (var context = this.GetContext())
+            using var context = this.GetContext();
+            var result = context.Context.Set<T>().Find(id);
+            if (result == null)
             {
-                var result = context.Context.Set<T>().Find(id);
-                if (result == null)
-                {
-                    Log.Debug($"Object with id {id} could not be found.");
-                }
-                else
-                {
-                    this.LoadDependentData(result, context.Context);
-                }
-
-                return result;
+                Log.Debug($"Object with id {id} could not be found.");
             }
+            else
+            {
+                this.LoadDependentData(result, context.Context);
+            }
+
+            return result;
         }
 
         /// <inheritdoc/>
@@ -104,12 +94,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public IEnumerable LoadByProperty(IProperty property, object propertyValue)
         {
-            using (var context = this.GetContext())
-            {
-                var result = this.LoadByPropertyInternal(property, propertyValue, context.Context).OfType<T>().ToList();
-                this.LoadDependentData(result, context.Context);
-                return result;
-            }
+            using var context = this.GetContext();
+            var result = this.LoadByPropertyInternal(property, propertyValue, context.Context).OfType<T>().ToList();
+            this.LoadDependentData(result, context.Context);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the navigations which should be considered when loading the data.
+        /// By default, we just load what the meta model of the current context contains.
+        /// </summary>
+        /// <param name="entityEntry">The entity entry.</param>
+        /// <returns>The navigations which should be considered when loading the data.</returns>
+        protected virtual IEnumerable<INavigation> GetNavigations(EntityEntry entityEntry)
+        {
+            return entityEntry.Navigations.Select(n => n.Metadata);
         }
 
         /// <summary>
@@ -121,11 +120,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             var entityEntry = currentContext.Entry(obj);
 
-            foreach (var navigation in this.fullEntityType.GetNavigations())
+            foreach (var navigation in this.GetNavigations(entityEntry))
             {
                 if (!navigation.IsCollection())
                 {
-                    if (this.fullEntityType.FindPrimaryKey().Properties[0] == navigation.ForeignKey.Properties[0])
+                    if (this.FullEntityType.FindPrimaryKey().Properties[0] == navigation.ForeignKey.Properties[0])
                     {
                         // The entity type is a many-to-many join entity and the property of the navigation is the "owner" of it.
                         // Therefore, we don't need to load it. It would be nice to set the object reference somehow, though.
@@ -173,7 +172,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             loadStatusAware.LoadingStatus = LoadingStatus.Loading;
 
-            if (this.contextProvider.RepositoryManager.GetRepository(foreignKeyProperty.DeclaringEntityType.ClrType) is ILoadByProperty repository)
+            if (this.RepositoryManager.GetRepository(foreignKeyProperty.DeclaringEntityType.ClrType) is ILoadByProperty repository)
             {
                 var foreignKeyValue = entityEntry.Property(navigation.ForeignKey.PrincipalKey.Properties.First().Name).CurrentValue;
                 var items = repository.LoadByProperty(foreignKeyProperty, foreignKeyValue);
@@ -224,7 +223,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 IRepository repository = null;
                 try
                 {
-                    repository = this.contextProvider.RepositoryManager.GetRepository(navigation.GetTargetType().ClrType);
+                    repository = this.RepositoryManager.GetRepository(navigation.GetTargetType().ClrType);
                 }
                 catch (RepositoryNotFoundException ex)
                 {
@@ -234,7 +233,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 if (repository != null)
                 {
                     if (navigation is Navigation concreteNavigation
-                            && concreteNavigation.Setter != null)
+                        && concreteNavigation.Setter != null)
                     {
                         concreteNavigation.Setter.SetClrValue(entityEntry.Entity, repository.GetById(id));
                     }
@@ -267,12 +266,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Gets a context to work with. If no context is currently registered at the repository manager, a new one is getting created.
         /// </summary>
         /// <returns>The context.</returns>
-        protected virtual EntityFrameworkContext GetContext()
-        {
-            var context = this.contextProvider.GetCurrentContext() as EntityFrameworkContext;
-
-            return new EntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.contextProvider, context == null);
-        }
+        protected abstract EntityFrameworkContextBase GetContext();
 
         private IEnumerable LoadByPropertyInternal(IProperty property, object propertyValue, DbContext context)
         {

@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.Startup
             var loginServer = new LoginServer();
 
             var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
-            var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), ipResolver);
+            var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), ipResolver, chatServerDefinition.GetId());
             this.servers.Add(chatServer);
             var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
             var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.Startup
             foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
             {
                 var clientVersion = new ClientVersion(connectServerDefinition.Client.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
-                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion);
+                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
                 this.servers.Add(connectServer);
                 if (!connectServers.TryGetValue(connectServerDefinition.Client, out var observer))
                 {

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.AdminPanelBlazor.Models
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// A view item for the <see cref="ConnectServerDefinition"/>.

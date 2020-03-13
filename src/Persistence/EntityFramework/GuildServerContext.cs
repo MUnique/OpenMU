@@ -11,15 +11,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <summary>
     /// The EF Core implementation of a context which is used by the guild server.
     /// </summary>
-    public class GuildServerContext : EntityFrameworkContext, IGuildServerContext
+    internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuildServerContext"/> class.
+        /// Initializes a new instance of the <see cref="GuildServerContext" /> class.
         /// </summary>
         /// <param name="guildContext">The guild context.</param>
-        /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public GuildServerContext(GuildContext guildContext, PersistenceContextProvider persistenceContextProvider)
-            : base(guildContext, persistenceContextProvider)
+        /// <param name="repositoryManager">The repository manager.</param>
+        public GuildServerContext(GuildContext guildContext, RepositoryManager repositoryManager)
+            : base(guildContext, repositoryManager)
         {
         }
 
