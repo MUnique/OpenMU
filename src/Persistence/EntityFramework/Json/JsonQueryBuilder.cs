@@ -71,28 +71,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         }
 
         /// <summary>
-        /// Determines whether only references should be selected instead of the whole type.
-        /// </summary>
-        /// <param name="parentAlias">The parent alias.</param>
-        /// <param name="navigation">The navigation.</param>
-        /// <returns>True, if only references should be selected; Otherwise, false.</returns>
-        protected virtual bool SelectReferences(string parentAlias, INavigation navigation)
-        {
-            return !navigation.IsMemberOfAggregate();
-        }
-
-        /// <summary>
-        /// Determines whether only references should be selected instead of the whole type.
-        /// </summary>
-        /// <param name="parentAlias">The parent alias.</param>
-        /// <param name="targetType">The target type.</param>
-        /// <returns>True, if only references should be selected; Otherwise, false.</returns>
-        protected virtual bool SelectReferences(string parentAlias, IEntityType targetType)
-        {
-            return parentAlias[0] > 'a' && this.referencableTypes.Contains(targetType);
-        }
-
-        /// <summary>
         /// Gets the navigations of the entity type.
         /// </summary>
         /// <param name="entityType">Type of the entity.</param>
@@ -180,7 +158,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             }
 
             stringBuilder.Append(", (");
-            if (this.SelectReferences(parentAlias, navigation) || isBackReference)
+            if (!navigation.IsMemberOfAggregate() || isBackReference)
             {
                 stringBuilder.Append("json_build_object('$ref', ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).Append("\")");
             }
@@ -206,32 +184,32 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             }
             else
             {
-                this.AddOneToManyCollection(navigationType, stringBuilder, parentAlias, keyProperty);
+                this.AddOneToManyCollection(navigation, navigationType, stringBuilder, parentAlias, keyProperty);
             }
 
             stringBuilder.Append(") as \"").Append(navigation.Name.Replace("Joined", string.Empty)).AppendLine("\"");
         }
 
-        private void AddOneToManyCollection(IEntityType navigationType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
+        private void AddOneToManyCollection(INavigation navigation, IEntityType navigationType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
         {
             var navigationAlias = this.GetNextAlias(parentAlias);
             var primaryKeyName = navigationType.FindDeclaredPrimaryKey().Properties[0].GetColumnName();
             stringBuilder.AppendLine(", (")
                 .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
 
-            if (this.SelectReferences(parentAlias, navigationType))
+            if (navigation.IsMemberOfAggregate())
+            {
+                this.AddTypeToQuery(navigationType, stringBuilder, navigationAlias);
+                stringBuilder.Append(") ").AppendLine(navigationAlias)
+                    .Append("where ").Append(navigationAlias).Append(".\"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(primaryKeyName).AppendLine("\"");
+            }
+            else
             {
                 var primaryKeyProperty = navigationType.FindPrimaryKey().Properties[0]; // It's always one property, usually called "Id"
                 stringBuilder.Append("select \"").Append(primaryKeyProperty.GetColumnName()).AppendLine("\" as \"$ref\"");
                 stringBuilder.Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")
                     .Append("where \"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(primaryKeyName).AppendLine("\"")
                     .Append(") as ").AppendLine(navigationAlias);
-            }
-            else
-            {
-                this.AddTypeToQuery(navigationType, stringBuilder, navigationAlias);
-                stringBuilder.Append(") ").AppendLine(navigationAlias)
-                    .Append("where ").Append(navigationAlias).Append(".\"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(primaryKeyName).AppendLine("\"");
             }
         }
 
@@ -263,6 +241,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 .Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")
                 .Append("where ").Append("\"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(entityTypePrimaryKeyName).AppendLine("\"")
                 .Append(") as ").AppendLine(navigationAlias);
+        }
+
+        /// <summary>
+        /// Determines whether only references should be selected instead of the whole type.
+        /// </summary>
+        /// <param name="parentAlias">The parent alias.</param>
+        /// <param name="targetType">The target type.</param>
+        /// <returns>True, if only references should be selected; Otherwise, false.</returns>
+        private bool SelectReferences(string parentAlias, IEntityType targetType)
+        {
+            return parentAlias[0] > 'a' && this.referencableTypes.Contains(targetType);
         }
     }
 }
