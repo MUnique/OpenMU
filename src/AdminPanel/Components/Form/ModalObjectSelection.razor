@@ -18,13 +18,19 @@
     [Required]
     public TItem Item { get; set; }
 
+    /// <summary>
+    /// Gets or sets the modal instance.
+    /// </summary>
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+
     private void Submit()
     {
-        ModalService.Close(ModalResult.Ok(this.Item));
+        this.BlazoredModal.Close(ModalResult.Ok(this.Item));
     }
 
     private void Cancel()
     {
-        ModalService.Cancel();
+        this.BlazoredModal.Cancel();
     }
 }

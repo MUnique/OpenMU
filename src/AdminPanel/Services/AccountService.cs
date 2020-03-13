@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         /// <summary>
         /// Creates a new Account in a <see cref="ModalCreateNew{Account}"/> dialog.
         /// </summary>
-        public void CreateNewInModalDialog()
+        public async Task CreateNewInModalDialog()
         {
             var item = this.playerContext.CreateNew<Account>();
             var parameters = new ModalParameters();
@@ -87,23 +87,17 @@ namespace MUnique.OpenMU.AdminPanel.Services
                 DisableBackgroundCancel = true,
             };
 
-            void OnModalClose(ModalResult result)
+            var modal = this.modalService.Show<ModalCreateNew<Account>>($"Create {typeof(Account).Name}", parameters, options);
+            var result = await modal.Result;
+            if (result.Cancelled)
             {
-                if (result.Cancelled)
-                {
-                    this.playerContext.Delete(item);
-                }
-                else
-                {
-                    this.playerContext.SaveChanges();
-                    this.RaiseDataChanged();
-                }
-
-                this.modalService.OnClose -= OnModalClose;
+                this.playerContext.Delete(item);
             }
-
-            this.modalService.OnClose += OnModalClose;
-            this.modalService.Show<ModalCreateNew<Account>>($"Create {typeof(Account).Name}", parameters, options);
+            else
+            {
+                this.playerContext.SaveChanges();
+                this.RaiseDataChanged();
+            }
         }
 
         private void RaiseDataChanged() => this.DataChanged?.Invoke(this, EventArgs.Empty);

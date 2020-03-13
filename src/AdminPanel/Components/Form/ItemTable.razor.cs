@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Blazored.Modal;
-    using Blazored.Modal.Services;
     using Microsoft.AspNetCore.Components;
     using MUnique.OpenMU.Persistence;
 
@@ -69,24 +69,18 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             this.isCollapsed = !this.isCollapsed;
         }
 
-        private void OnAddClick()
+        private async Task OnAddClick()
         {
-            void OnModalClose(ModalResult result)
+            var modal = this.Modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}");
+            var result = await modal.Result;
+            if (!result.Cancelled && result.Data is TItem item)
             {
-                if (!result.Cancelled && result.Data is TItem item)
-                {
-                    this.Value.Add(item);
-                    this.StateHasChanged();
-                }
-
-                this.Modal.OnClose -= OnModalClose;
+                this.Value.Add(item);
+                this.StateHasChanged();
             }
-
-            this.Modal.OnClose += OnModalClose;
-            this.Modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}");
         }
 
-        private void OnCreateClick()
+        private async Task OnCreateClick()
         {
             var item = this.context.CreateNew<TItem>();
             var parameters = new ModalParameters();
@@ -96,24 +90,18 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
                 DisableBackgroundCancel = true,
             };
 
-            void OnModalClose(ModalResult result)
+            var modal = this.Modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).Name}", parameters, options);
+            var result = await modal.Result;
+            if (result.Cancelled)
             {
-                if (result.Cancelled)
-                {
-                    this.context.Delete(item);
-                }
-                else
-                {
-                    this.Value.Add(item);
-                    this.context.SaveChanges();
-                    this.StateHasChanged();
-                }
-
-                this.Modal.OnClose -= OnModalClose;
+                this.context.Delete(item);
             }
-
-            this.Modal.OnClose += OnModalClose;
-            this.Modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).Name}", parameters, options);
+            else
+            {
+                this.Value.Add(item);
+                this.context.SaveChanges();
+                this.StateHasChanged();
+            }
         }
 
         private void OnRemoveClick(TItem item)

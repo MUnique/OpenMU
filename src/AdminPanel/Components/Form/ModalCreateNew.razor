@@ -1,7 +1,5 @@
 ﻿@typeparam TItem
 
-@inject IModalService ModalService;
-
 <EditForm Model="@Item">
     <DataAnnotationsValidator />
     <CreationAutoFields />
@@ -15,29 +13,24 @@
 @code {
 
     /// <summary>
-    /// Gets or sets the parameters which were provided to this component by the <see cref="IModalService"/>.
+    /// Gets or sets the modal instance.
     /// </summary>
-    [CascadingParameter] ModalParameters Parameters { get; set; }
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
 
     /// <summary>
     /// Gets or sets the item which should be created.
     /// </summary>
+    [Parameter]
     public TItem Item { get; set; }
-
-    /// <inheritdoc />
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        this.Item = Parameters.Get<TItem>(nameof(Item));
-    }
 
     private void Submit()
     {
-        ModalService.Close(ModalResult.Ok(Item));
+        this.BlazoredModal.Close(ModalResult.Ok(Item));
     }
 
     private void Cancel()
     {
-        ModalService.Cancel();
+        this.BlazoredModal.Cancel();
     }
 }
