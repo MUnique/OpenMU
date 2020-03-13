@@ -43,6 +43,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             try
             {
                 var config = this.objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context);
+                currentContext.Attach(config);
                 return config;
             }
             finally
@@ -65,6 +66,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             try
             {
                 var configs = this.objectLoader.LoadAllObjects<GameConfiguration>(currentContext.Context).ToList();
+                configs.ForEach(currentContext.Attach);
                 return configs;
             }
             finally
