@@ -74,7 +74,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
                 if (IsMemberOfAggregate(navigation) || navigation.PropertyInfo.Name.StartsWith("Joined"))
                 {
-                    // yield return navigation.GetTargetType();
                     foreach (var navEditType in this.DetermineNavigationTypes(navigation.GetTargetType()))
                     {
                         yield return navEditType;
