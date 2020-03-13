@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <param name="settings">The settings.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
         /// <param name="configurationId">The configuration identifier.</param>
-        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver, Guid configurationId = default)
+        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver, Guid configurationId)
         {
             this.settings = settings;
             this.addressResolver = addressResolver;

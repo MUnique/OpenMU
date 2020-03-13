@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                 // To make the chat server use our configured encryption key, we need to trick a bit. We add an endpoint with a special client version which is defined in the plugin.
                 var configuration = new ChatServerSettings();
                 configuration.Endpoints.Add(new ChatServerEndpoint { ClientVersion = ConfigurableNetworkEncryptionPlugIn.Version, NetworkPort = chatServerListenerPort });
-                var chatServer = new ChatServer(configuration, addressResolver);
+                var chatServer = new ChatServer(configuration, addressResolver, default);
 
                 chatServer.Start();
                 var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort);
