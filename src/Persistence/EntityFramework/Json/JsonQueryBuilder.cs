@@ -26,11 +26,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         private static readonly ILog Log = LogManager.GetLogger(typeof(JsonQueryBuilder));
 
         /// <summary>
-        /// This set holds the types which are directly hold as collection in the main type and can therefore be referenced by other objects.
-        /// </summary>
-        private ISet<IEntityType> referencableTypes = new HashSet<IEntityType>();
-
-        /// <summary>
         /// Builds the json query for the given entity type.
         /// </summary>
         /// <remarks>
@@ -48,13 +43,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         public string BuildJsonQueryForEntity(IEntityType entityType)
         {
             Log.Debug($"Building the json query for {entityType.Name}.");
-            this.referencableTypes.Clear();
-            this.referencableTypes = new HashSet<IEntityType>(entityType.GetNavigations().Select(this.GetNavigationType));
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug($"Determined the following referencable types: {this.referencableTypes.Aggregate(string.Empty, (sum, t) => sum + ", " + t.Name)}");
-            }
-
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("select result.\"Id\" \"$id\", result.\"Id\" id, row_to_json(result) as ").AppendLine(entityType.GetTableName())
                 .AppendLine("from (");
@@ -82,16 +70,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         protected virtual IEnumerable<INavigation> GetNavigations(IEntityType entityType)
         {
             return entityType.GetNavigations();
-        }
-
-        private IEntityType GetNavigationType(INavigation navigation)
-        {
-            if (navigation.IsCollection())
-            {
-                return navigation.ForeignKey.Properties.First().DeclaringEntityType;
-            }
-
-            return navigation.GetTargetType();
         }
 
         private void AddTypeToQuery(IEntityType entityType, StringBuilder stringBuilder, string alias)
@@ -241,17 +219,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 .Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")
                 .Append("where ").Append("\"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(entityTypePrimaryKeyName).AppendLine("\"")
                 .Append(") as ").AppendLine(navigationAlias);
-        }
-
-        /// <summary>
-        /// Determines whether only references should be selected instead of the whole type.
-        /// </summary>
-        /// <param name="parentAlias">The parent alias.</param>
-        /// <param name="targetType">The target type.</param>
-        /// <returns>True, if only references should be selected; Otherwise, false.</returns>
-        private bool SelectReferences(string parentAlias, IEntityType targetType)
-        {
-            return parentAlias[0] > 'a' && this.referencableTypes.Contains(targetType);
         }
     }
 }
