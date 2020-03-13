@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Startup
     using System.Threading;
     using log4net;
     using log4net.Config;
-    using MUnique.OpenMU.AdminPanelBlazor;
+    using MUnique.OpenMU.AdminPanel;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.ConnectServer;
     using MUnique.OpenMU.DataModel.Configuration;

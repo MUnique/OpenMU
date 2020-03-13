@@ -97,7 +97,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{820453DE-DA7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Packets", "Network\Packets\MUnique.OpenMU.Network.Packets.csproj", "{482217F9-BBA8-4DA9-BEE0-03E278E0684B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AdminPanelBlazor", "AdminPanelBlazor\MUnique.OpenMU.AdminPanelBlazor.csproj", "{401B1520-00B9-468D-9107-EEEF33C0084F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AdminPanel", "AdminPanel\MUnique.OpenMU.AdminPanel.csproj", "{401B1520-00B9-468D-9107-EEEF33C0084F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

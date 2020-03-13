@@ -1,0 +1,33 @@
+﻿@page "/accounts"
+@using MUnique.OpenMU.AdminPanel.Services
+@using MUnique.OpenMU.DataModel.Entities;
+@using MUnique.OpenMU.Persistence;
+
+@inject AccountService AccountService;
+
+<h1>Accounts</h1>
+
+<div>
+    <DataTable TItem=@Account>
+        <TableHeader>
+            <th class="col-1">Login Name</th>
+            <th class="col-1">State</th>
+            <th class="col-2">E-Mail</th>
+            <th class="col-2">Action</th>
+        </TableHeader>
+        <ItemTemplate Context="item">
+            <td>@item.LoginName</td>
+            <td>@item.State</td>
+            <td>@item.EMail</td>
+            <td>
+                <NavLink href="@("edit/" + typeof(Account).FullName + "/" + item.GetId())">Edit</NavLink>
+            </td>
+        </ItemTemplate>
+        <TableFooter>
+            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this.AccountService.CreateNewInModalDialog">Create</button></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </TableFooter>
+    </DataTable>
+</div>
