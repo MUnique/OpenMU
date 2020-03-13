@@ -38,16 +38,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
         }
 
-        private static bool IsMemberOfAggregate(IMutableNavigation navigation)
-        {
-            var propertyInfo = navigation.PropertyInfo;
-            if (propertyInfo.Name.StartsWith("Raw"))
-            {
-                propertyInfo = propertyInfo.DeclaringType?.GetProperty(propertyInfo.Name.Substring(3), BindingFlags.Instance | BindingFlags.Public);
-            }
-
-            return propertyInfo?.GetCustomAttribute<MemberOfAggregateAttribute>() is { };
-        }
 
         private IEnumerable<IMutableEntityType> DetermineEditTypes(IList<IMutableEntityType> types)
         {
@@ -72,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             {
                 yield return navigation.GetTargetType();
 
-                if (IsMemberOfAggregate(navigation) || navigation.PropertyInfo.Name.StartsWith("Joined"))
+                if (navigation.IsMemberOfAggregate() || navigation.PropertyInfo.Name.StartsWith("Joined"))
                 {
                     foreach (var navEditType in this.DetermineNavigationTypes(navigation.GetTargetType()))
                     {

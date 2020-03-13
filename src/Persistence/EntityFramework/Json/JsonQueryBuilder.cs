@@ -78,7 +78,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <returns>True, if only references should be selected; Otherwise, false.</returns>
         protected virtual bool SelectReferences(string parentAlias, INavigation navigation)
         {
-            return this.SelectReferences(parentAlias, navigation.GetTargetType());
+            return !navigation.IsMemberOfAggregate();
         }
 
         /// <summary>
