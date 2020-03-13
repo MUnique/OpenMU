@@ -50,6 +50,7 @@ namespace MUnique.OpenMU.GameServer
         {
             this.Id = gameServerDefinition.ServerID;
             this.Description = gameServerDefinition.Description;
+            this.ConfigurationId = gameServerDefinition.GetId();
 
             try
             {
@@ -75,6 +76,9 @@ namespace MUnique.OpenMU.GameServer
         /// Gets the identifier of the server.
         /// </summary>
         public byte Id { get; }
+
+        /// <inheritdoc />
+        public Guid ConfigurationId { get; }
 
         /// <inheritdoc/>
         public string Description { get; }
@@ -129,12 +133,26 @@ namespace MUnique.OpenMU.GameServer
             using (this.PushServerLogContext())
             {
                 this.ServerState = ServerState.Starting;
-                foreach (var listener in this.listeners)
+                try
                 {
-                    listener.Start();
-                }
 
-                this.ServerState = ServerState.Started;
+                    foreach (var listener in this.listeners)
+                    {
+                        listener.Start();
+                    }
+
+                    this.ServerState = ServerState.Started;
+                }
+                catch (Exception e)
+                {
+                    log4net.LogManager.GetLogger(this.GetType()).Error($"Could not start the server listeners: {e.Message}", e);
+                    foreach (var listener in this.listeners)
+                    {
+                        listener.Stop();
+                    }
+
+                    this.ServerState = ServerState.Stopped;
+                }
             }
         }
 
