@@ -14,11 +14,11 @@
         {
             @if (this.isCollapsed)
             {
-            <button class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value.Count) Items)</button>
+            <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value.Count) Items)</button>
             }
             else
             {
-            <button class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+            <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
             }
         }
         </h5>
