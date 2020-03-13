@@ -22,6 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         public virtual void RegisterRepositories()
         {
+            this.RegisterRepository(new GameConfigurationRepository(this));
             this.RegisterMissingRepositoriesAsGeneric();
         }
 

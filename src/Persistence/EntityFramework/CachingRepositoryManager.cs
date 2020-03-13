@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             this.RegisterRepository(new AccountRepository(this));
             this.RegisterRepository(new LetterBodyRepository(this));
-            this.RegisterRepository(new CachedRepository<GameConfiguration>(new GameConfigurationRepository(this)));
+            this.RegisterRepository(new CachedRepository<GameConfiguration>(new CachingGameConfigurationRepository(this)));
             this.RegisterRepository(new CachingGenericRepository<GameServerConfiguration>(this));
             this.RegisterRepository(new CachingGenericRepository<GameClientDefinition>(this));
             this.RegisterRepository(new CachingGenericRepository<ConnectServerDefinition>(this));
