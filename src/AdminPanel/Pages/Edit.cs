@@ -7,8 +7,12 @@ namespace MUnique.OpenMU.AdminPanel.Pages
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Blazored.Modal;
+    using Blazored.Modal.Services;
+    using log4net;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Rendering;
+    using MUnique.OpenMU.AdminPanel.Components;
     using MUnique.OpenMU.AdminPanel.Components.Form;
     using MUnique.OpenMU.Persistence;
 
@@ -48,6 +52,12 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         /// </summary>
         [Inject]
         public IPersistenceContextProvider PersistenceContextProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets the modal service.
+        /// </summary>
+        [Inject]
+        public IModalService ModalService { get; set; }
 
         /// <inheritdoc />
         public void Dispose()
@@ -91,7 +101,20 @@ namespace MUnique.OpenMU.AdminPanel.Pages
 
         private void SaveChanges()
         {
-            this.persistenceContext.SaveChanges();
+            var messageParams = new ModalParameters();
+            string text;
+            try
+            {
+                text = this.persistenceContext.SaveChanges() ? "The changes have been saved." : "There were no changes to save.";
+            }
+            catch (Exception ex)
+            {
+                LogManager.GetLogger(this.GetType()).Error($"Error during saving {this.Id}", ex);
+                text = $"An unexpected error occured: {ex.Message}.";
+            }
+
+            messageParams.Add(nameof(ModalMessage.Text), text);
+            this.ModalService.Show<ModalMessage>("Save", messageParams);
         }
     }
 }
