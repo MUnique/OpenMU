@@ -6,26 +6,25 @@ namespace MUnique.OpenMU.AdminPanel.Pages
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Blazored.Modal;
     using Blazored.Modal.Services;
     using log4net;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Rendering;
-    using MUnique.OpenMU.AdminPanel.Components;
     using MUnique.OpenMU.AdminPanel.Components.Form;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// A generic edit page, which shows an <see cref="AutoForm{T}"/> for the given <see cref="TypeString"/> and <see cref="Id"/>.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Components.ComponentBase" />
     [Route("/edit/{typeString}/{id:guid}")]
     public sealed class Edit : ComponentBase, IDisposable
     {
         private object model;
         private Type type;
         private IContext persistenceContext;
+        private CancellationTokenSource disposeCts;
 
         /// <summary>
         /// Gets or sets the identifier of the object which should be edited.
@@ -62,6 +61,9 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         /// <inheritdoc />
         public void Dispose()
         {
+            this.disposeCts?.Cancel();
+            this.disposeCts?.Dispose();
+            this.disposeCts = null;
             if (this.persistenceContext is IDisposable disposable)
             {
                 disposable.Dispose();
@@ -72,36 +74,65 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         /// <inheritdoc />
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
-            builder.AddMarkupContent(0, $"<h1>Edit {this.type.Name}</h1>\r\n");
-            var autoFormType = typeof(AutoForm<>).MakeGenericType(this.type);
-            builder.OpenComponent(1, autoFormType);
-            builder.AddAttribute(2, nameof(AutoForm<object>.Model), this.model);
-            builder.AddAttribute(3, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChanges));
-            builder.CloseComponent();
+            if (this.model is { })
+            {
+                builder.AddMarkupContent(0, $"<h1>Edit {this.type.Name}</h1>\r\n");
+                var autoFormType = typeof(AutoForm<>).MakeGenericType(this.type);
+                builder.OpenComponent(1, autoFormType);
+                builder.AddAttribute(2, nameof(AutoForm<object>.Model), this.model);
+                builder.AddAttribute(3, nameof(AutoForm<object>.OnValidSubmit),
+                    EventCallback.Factory.Create(this, this.SaveChanges));
+                builder.CloseComponent();
+            }
         }
 
         /// <inheritdoc />
         protected override Task OnParametersSetAsync()
         {
+            this.disposeCts?.Cancel();
+            this.disposeCts?.Dispose();
+            this.disposeCts = new CancellationTokenSource();
+            this.model = null;
+            Task.Run(() => this.LoadData(this.disposeCts.Token), this.disposeCts.Token);
+            return base.OnParametersSetAsync();
+        }
+
+        private async Task LoadData(CancellationToken cancellationToken)
+        {
+            // using var modal = this.ModalService.ShowLoadingIndicator();
+            IDisposable modal = null;
+            var showModalTask = this.InvokeAsync(() => modal = this.ModalService.ShowLoadingIndicator());
             this.type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.StartsWith(nameof(MUnique)))
                 .Select(assembly => assembly.GetType(this.TypeString)).FirstOrDefault(t => t != null);
             if (this.type == null)
             {
-                throw new ArgumentException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
+                throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
             }
 
             var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext)).MakeGenericMethod(this.type);
             this.persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, Array.Empty<object>());
 
             var method = typeof(IContext).GetMethod(nameof(IContext.GetById)).MakeGenericMethod(this.type);
-
-            this.model = method.Invoke(this.persistenceContext, new object[] { this.Id });
-            return base.OnParametersSetAsync();
+            try
+            {
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    this.model = method.Invoke(this.persistenceContext, new object[] { this.Id });
+                    await showModalTask;
+                    modal.Dispose();
+                    await this.InvokeAsync(this.StateHasChanged);
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                // Happens when the user navigated away (shouldn't happen with the modal loading indicator, but we check it anyway).
+                // It would be great to have an async api with cancellation token support in the persistence layer
+                // For the moment, we swallow the exception
+            }
         }
 
-        private void SaveChanges()
+        private Task SaveChanges()
         {
-            var messageParams = new ModalParameters();
             string text;
             try
             {
@@ -113,8 +144,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                 text = $"An unexpected error occured: {ex.Message}.";
             }
 
-            messageParams.Add(nameof(ModalMessage.Text), text);
-            this.ModalService.Show<ModalMessage>("Save", messageParams);
+            return this.ModalService.ShowMessageAsync("Save", text);
         }
     }
 }
