@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.AdminPanel
         public static IDisposable ShowLoadingIndicator(this IModalService modalService)
         {
             var cts = new CancellationTokenSource();
-            var modalOptions = new ModalOptions()
+            var modalOptions = new ModalOptions
             {
                 DisableBackgroundCancel = true,
                 HideCloseButton = true,
