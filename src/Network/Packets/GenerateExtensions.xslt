@@ -146,8 +146,8 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
         /// Sends a &lt;see cref="</xsl:text>
     <xsl:apply-templates select="pd:Name" />
     <xsl:text>" /&gt; to this connection.
-        /// &lt;/summary&gt;</xsl:text>
-        /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;
+        /// &lt;/summary&gt;
+        /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;</xsl:text>
     <xsl:apply-templates select="pd:Fields/pd:Field" mode="paramdoc">
       <xsl:sort select="pd:DefaultValue"/>
     </xsl:apply-templates>
@@ -174,6 +174,56 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:text>            writer.Commit();</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>        }</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="pd:Packet[not(pd:Length) and not(pd:Fields/pd:Field/pd:Type = 'Structure[]')]" mode="ext2">
+    <xsl:value-of select="$newline" />
+    <xsl:text>
+        /// &lt;summary&gt;
+        /// Sends a &lt;see cref="</xsl:text>
+    <xsl:apply-templates select="pd:Name" />
+    <xsl:text>" /&gt; to this connection.
+        /// &lt;/summary&gt;
+        /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;</xsl:text>
+    <xsl:apply-templates select="pd:Fields/pd:Field" mode="paramdoc">
+      <xsl:sort select="pd:DefaultValue"/>
+    </xsl:apply-templates>
+    <xsl:call-template name="WriteRemarks" />
+    <xsl:text>        public static </xsl:text>
+    <xsl:text>void Send</xsl:text>
+    <xsl:apply-templates select="pd:Name" />
+    <xsl:text>(this IConnection connection</xsl:text>
+    <xsl:apply-templates select="pd:Fields/pd:Field" mode="params">
+      <xsl:sort select="pd:DefaultValue"/>
+    </xsl:apply-templates>
+    <xsl:text>)</xsl:text>
+    <xsl:value-of select="$newline"/>
+    <xsl:text>        {
+            using var writer = connection.StartSafeWrite(</xsl:text>
+    <xsl:apply-templates select="pd:Name" />
+    <xsl:text>.HeaderType, </xsl:text>
+    <xsl:apply-templates select="pd:Name" />
+    <xsl:text>.GetRequiredSize(</xsl:text>
+    <xsl:apply-templates select="pd:Fields/pd:Field[(pd:Type = 'Binary' or pd:Type = 'String') and not(pd:Length)]" mode="length"/>
+    <xsl:text>));</xsl:text>
+    <xsl:value-of select="$newline"/>
+    <xsl:if test="pd:Fields/pd:Field">
+      <xsl:text>            var packet = new </xsl:text>
+      <xsl:apply-templates select="pd:Name" />
+      <xsl:text>(writer.Span);</xsl:text>
+      <xsl:value-of select="$newline"/>
+      <xsl:apply-templates select="pd:Fields/pd:Field" mode="assignment" />
+    </xsl:if>
+    <xsl:text>            writer.Commit();</xsl:text>
+    <xsl:value-of select="$newline"/>
+    <xsl:text>        }</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="pd:Field" mode="length">
+    <xsl:call-template name="LowerCaseName" />
+    <xsl:if test="pd:Type = 'Binary'">
+      <xsl:text>.Length</xsl:text>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="pd:Field" mode="paramdoc">
@@ -264,6 +314,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
   <xsl:template match="text()" mode="assignment"></xsl:template>
   <xsl:template match="text()" mode="ext"></xsl:template>
   <xsl:template match="text()" mode="ext2"></xsl:template>
+  <xsl:template match="text()" mode="length"></xsl:template>
   <xsl:template match="text()" mode="writer"></xsl:template>
   <xsl:template match="text()"></xsl:template>
 

@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -58,6 +58,11 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x00;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 16;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -542,7 +547,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -555,6 +560,11 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x05;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
 
         /// <summary>
         /// Gets the header of this packet.

@@ -25,6 +25,19 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
     {
 
         /// <summary>
+        /// Starts a safe write of a <see cref="Authenticate" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client after it connected to the server, to authenticate itself.
+        /// Causes reaction on server side: The server will check the token. If it's correct, the client gets added to the requested chat room.
+        /// </remarks>
+        public static AuthenticateThreadSafeWriter StartWriteAuthenticate(this IConnection connection)
+        {
+          return new AuthenticateThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="ChatRoomClientJoined" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -51,10 +64,41 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="KeepAlive" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client in a fixed interval.
+        /// Causes reaction on server side: The server will keep the connection and chat room intact as long as the clients sends a message in a certain period of time.
+        /// </remarks>
+        public static KeepAliveThreadSafeWriter StartWriteKeepAlive(this IConnection connection)
+        {
+          return new KeepAliveThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Sends a <see cref="Authenticate" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="roomId">The room id.</param>
+        /// <param name="token">A token (integer number), formatted as string. This value is also "encrypted" with the 3-byte XOR key (FC CF AB).</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client after it connected to the server, to authenticate itself.
+        /// Causes reaction on server side: The server will check the token. If it's correct, the client gets added to the requested chat room.
+        /// </remarks>
+        public static void SendAuthenticate(this IConnection connection, ushort @roomId, string @token)
+        {
+            using var writer = connection.StartWriteAuthenticate();
+            var packet = writer.Packet;
+            packet.RoomId = @roomId;
+            packet.Token = @token;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="ChatRoomClientJoined" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="clientIndex">The client index.</param>
         /// <param name="name">The name.</param>
         /// <remarks>
@@ -74,7 +118,6 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// Sends a <see cref="ChatRoomClientLeft" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="clientIndex">The client index.</param>
         /// <param name="name">The name.</param>
         /// <remarks>
@@ -88,7 +131,95 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
             packet.ClientIndex = @clientIndex;
             packet.Name = @name;
             writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="ChatMessage" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="senderIndex">The sender index.</param>
+        /// <param name="messageLength">The message length.</param>
+        /// <param name="message">The message. It's "encrypted" with the 3-byte XOR key (FC CF AB).</param>
+        /// <remarks>
+        /// Is sent by the server when: This packet is sent by the server after another chat client sent a message to the current chat room.
+        /// Causes reaction on client side: The client will show the message.
+        /// </remarks>
+        public static void SendChatMessage(this IConnection connection, byte @senderIndex, byte @messageLength, string @message)
+        {
+            using var writer = connection.StartSafeWrite(ChatMessage.HeaderType, ChatMessage.GetRequiredSize(message));
+            var packet = new ChatMessage(writer.Span);
+            packet.SenderIndex = @senderIndex;
+            packet.MessageLength = @messageLength;
+            packet.Message = @message;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="KeepAlive" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client in a fixed interval.
+        /// Causes reaction on server side: The server will keep the connection and chat room intact as long as the clients sends a message in a certain period of time.
+        /// </remarks>
+        public static void SendKeepAlive(this IConnection connection)
+        {
+            using var writer = connection.StartWriteKeepAlive();
+            writer.Commit();
         }    }
+    /// <summary>
+    /// A helper struct to write a <see cref="Authenticate"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct AuthenticateThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticateThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public AuthenticateThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new Authenticate(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(Authenticate.Length).Slice(0, Authenticate.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public Authenticate Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="Authenticate" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(Authenticate.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
     /// <summary>
     /// A helper struct to write a <see cref="ChatRoomClientJoined"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
@@ -183,6 +314,59 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         public void Commit()
         {
             this.connection.Output.Advance(ChatRoomClientLeft.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="KeepAlive"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct KeepAliveThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeepAliveThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public KeepAliveThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new KeepAlive(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(KeepAlive.Length).Slice(0, KeepAlive.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public KeepAlive Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="KeepAlive" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(KeepAlive.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

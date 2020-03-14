@@ -1042,7 +1042,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="Ping" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="tickCount">The tick count.</param>
         /// <param name="speed1">The speed 1.</param>
         /// <param name="speed2">The speed 2.</param>
@@ -1065,10 +1064,47 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="PublicChatMessage" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="character">The character.</param>
+        /// <param name="message">The message.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player sends a public chat message.
+        /// Causes reaction on server side: The message is forwarded to all surrounding players, including the sender.
+        /// </remarks>
+        public static void SendPublicChatMessage(this IConnection connection, string @character, string @message)
+        {
+            using var writer = connection.StartSafeWrite(PublicChatMessage.HeaderType, PublicChatMessage.GetRequiredSize(message));
+            var packet = new PublicChatMessage(writer.Span);
+            packet.Character = @character;
+            packet.Message = @message;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="WhisperMessage" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="receiverName">The receiver name.</param>
+        /// <param name="message">The message.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player sends a private chat message to a specific target player.
+        /// Causes reaction on server side: The message is forwarded to the target player.
+        /// </remarks>
+        public static void SendWhisperMessage(this IConnection connection, string @receiverName, string @message)
+        {
+            using var writer = connection.StartSafeWrite(WhisperMessage.HeaderType, WhisperMessage.GetRequiredSize(message));
+            var packet = new WhisperMessage(writer.Span);
+            packet.ReceiverName = @receiverName;
+            packet.Message = @message;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="LoginLongPassword" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="username">The user name, "encrypted" with Xor3.</param>
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
@@ -1092,7 +1128,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="LoginShortPassword" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="username">The user name, "encrypted" with Xor3.</param>
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
@@ -1116,7 +1151,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="Login075" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="username">The user name, "encrypted" with Xor3.</param>
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
@@ -1140,7 +1174,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="LogOut" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="type">The type.</param>
         /// <remarks>
         /// Is sent by the client when: When the client wants to leave the game in various ways.
@@ -1158,7 +1191,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PlayerShopSetItemPrice" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="itemSlot">The item slot.</param>
         /// <param name="price">The price.</param>
         /// <remarks>
@@ -1178,7 +1210,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PlayerShopOpen" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="storeName">The store name.</param>
         /// <remarks>
         /// Is sent by the client when: The player wants to open his personal item shop.
@@ -1196,7 +1227,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PlayerShopClose" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: The player wants to close his personal item shop.
         /// Causes reaction on server side: The personal item shop is closed and the surrounding players are informed about it, including the own player.
@@ -1211,7 +1241,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PlayerShopItemListRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="playerId">The player id.</param>
         /// <param name="playerName">The player name.</param>
         /// <remarks>
@@ -1231,7 +1260,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PlayerShopItemBuyRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="playerId">The player id.</param>
         /// <param name="playerName">The player name.</param>
         /// <param name="itemSlot">The item slot.</param>
@@ -1253,7 +1281,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PickupItemRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="itemId">The item id.</param>
         /// <remarks>
         /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
@@ -1271,7 +1298,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PickupItemRequest075" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="itemId">The item id.</param>
         /// <remarks>
         /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
@@ -1289,7 +1315,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="DropItemRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="targetX">The target x.</param>
         /// <param name="targetY">The target y.</param>
         /// <param name="itemSlot">The item slot.</param>
@@ -1311,7 +1336,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="ItemMoveRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="fromStorage">The from storage.</param>
         /// <param name="fromSlot">The from slot.</param>
         /// <param name="itemData">The item data.</param>
@@ -1337,7 +1361,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="ConsumeItemRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="itemSlot">The inventory slot index of the item which should be consumed.</param>
         /// <param name="targetSlot">If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</param>
         /// <param name="itemUseType">Unknown field, we don't know what it's good for.</param>
@@ -1359,7 +1382,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="TalkToNpcRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="npcId">The npc id.</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to talk to an NPC.
@@ -1377,7 +1399,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="CloseNpcRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: A player closes the dialog which was opened by an interaction with a NPC.
         /// Causes reaction on server side: The server updates the state of the player accordingly.
@@ -1392,7 +1413,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="BuyItemFromNpcRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="itemSlot">Item Slot (NPC Store)</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to buy an item from an opened NPC merchant.
@@ -1410,7 +1430,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="SellItemToNpcRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="itemSlot">Item Slot (Inventory)</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to sell an item of his inventory to the opened NPC merchant.
@@ -1428,7 +1447,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="RepairItemRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="itemSlot">Inventory item slot of the target item. If it's 0xFF, the player wants to repair all items - this is only possible with some opened NPC dialogs. Repairing the pet item slot (8) is only possible when the pet trainer npc is opened.</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to repair an item of his inventory.
@@ -1446,7 +1464,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="WarpCommandRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="warpInfoIndex">The index of the entry in the warp list.</param>
         /// <remarks>
         /// Is sent by the client when: A player selected to warp by selecting an entry in the warp list (configured in game client files).
@@ -1464,7 +1481,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="EnterGateRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="gateNumber">The gate number.</param>
         /// <remarks>
         /// Is sent by the client when: When the player enters an area on the game map which is configured as gate at the client data files.
@@ -1482,7 +1498,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="VaultClosed" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: The player closed an opened vault dialog.
         /// Causes reaction on server side: The state on the server is updated.
@@ -1497,7 +1512,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="VaultMoveMoneyRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="direction">The direction.</param>
         /// <param name="amount">The amount.</param>
         /// <remarks>
@@ -1517,7 +1531,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="LahapJewelMixRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="operation">The operation.</param>
         /// <param name="item">The item.</param>
         /// <param name="mixingStackSize">The mixing stack size.</param>
@@ -1541,7 +1554,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PartyListRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: When the player opens the party menu in the game client.
         /// Causes reaction on server side: If the player is in a party, the server sends back a list with information about all players of the party.
@@ -1556,7 +1568,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PartyPlayerKickRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="playerIndex">The player index.</param>
         /// <remarks>
         /// Is sent by the client when: A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
@@ -1574,7 +1585,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PartyInviteRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="targetPlayerId">The target player id.</param>
         /// <remarks>
         /// Is sent by the client when: A party master wants to invite another player to his party.
@@ -1592,7 +1602,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="PartyInviteResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="accepted">The accepted.</param>
         /// <remarks>
         /// Is sent by the client when: A player was invited by another player to join a party and this player sent the response back.
@@ -1607,10 +1616,30 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="WalkRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="sourceX">The source x.</param>
+        /// <param name="sourceY">The source y.</param>
+        /// <param name="directions">The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player wants to walk on the game map.
+        /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
+        /// </remarks>
+        public static void SendWalkRequest(this IConnection connection, byte @sourceX, byte @sourceY, Span<byte> @directions)
+        {
+            using var writer = connection.StartSafeWrite(WalkRequest.HeaderType, WalkRequest.GetRequiredSize(directions.Length));
+            var packet = new WalkRequest(writer.Span);
+            packet.SourceX = @sourceX;
+            packet.SourceY = @sourceY;
+            @directions.CopyTo(packet.Directions);
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="InstantMoveRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="targetX">The target x.</param>
         /// <param name="targetY">The target y.</param>
         /// <remarks>
@@ -1630,7 +1659,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="AnimationRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="rotation">The rotation.</param>
         /// <param name="animationNumber">The animation number.</param>
         /// <remarks>
@@ -1650,7 +1678,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="RequestCharacterList" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: After a successful login or after the player decided to leave the game world to go back to the character selection screen.
         /// Causes reaction on server side: The server sends the character list with all available characters.
@@ -1665,7 +1692,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="CreateCharacter" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="name">The name of the character which should be created.</param>
         /// <param name="class">The character class of the character which should be created.</param>
         /// <remarks>
@@ -1685,7 +1711,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="DeleteCharacter" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="name">The name of the character which should be deleted.</param>
         /// <param name="securityCode">A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes.</param>
         /// <remarks>
@@ -1705,7 +1730,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="SelectCharacter" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="name">The name of the character with which the player wants to join the game world</param>
         /// <remarks>
         /// Is sent by the client when: The player selects a character to enter the game world on the character selection screen.
@@ -1723,7 +1747,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="FocusCharacter" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="name">The name.</param>
         /// <remarks>
         /// Is sent by the client when: The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
@@ -1741,7 +1764,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="IncreaseCharacterStatPoint" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="statType">The stat type.</param>
         /// <remarks>
         /// Is sent by the client when: The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.
@@ -1759,7 +1781,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="ClientReadyAfterMapChange" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: After the server sent a map change message and the client has initialized the game map visualization.
         /// Causes reaction on server side: The character is added to the internal game map and ready to interact with other entities.
@@ -1771,10 +1792,26 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="SaveKeyConfiguration" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="configuration">The binary data of the key configuration</param>
+        /// <remarks>
+        /// Is sent by the client when: When leaving the game world with a character.
+        /// Causes reaction on server side: The server saves this configuration in its database.
+        /// </remarks>
+        public static void SendSaveKeyConfiguration(this IConnection connection, Span<byte> @configuration)
+        {
+            using var writer = connection.StartSafeWrite(SaveKeyConfiguration.HeaderType, SaveKeyConfiguration.GetRequiredSize(configuration.Length));
+            var packet = new SaveKeyConfiguration(writer.Span);
+            @configuration.CopyTo(packet.Configuration);
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="AddMasterSkillPoint" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="skillId">The skill id.</param>
         /// <remarks>
         /// Is sent by the client when: The player wants to add or increase the level of a specific master skill of the master skill tree.
@@ -1792,7 +1829,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="HitRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="targetId">The target id.</param>
         /// <param name="attackAnimation">The attack animation.</param>
         /// <param name="lookingDirection">The looking direction.</param>
@@ -1814,7 +1850,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="TargetedSkill" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="skillId">The skill id.</param>
         /// <param name="targetId">The target id.</param>
         /// <remarks>
@@ -1834,7 +1869,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="TargetedSkill075" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="skillId">The skill id.</param>
         /// <param name="targetId">The target id.</param>
         /// <remarks>
@@ -1854,7 +1888,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="AreaSkill" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="skillId">The skill id.</param>
         /// <param name="targetX">The target x.</param>
         /// <param name="targetY">The target y.</param>
@@ -1882,7 +1915,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="AreaSkillHit" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="skillId">The skill id.</param>
         /// <param name="targetX">The target x.</param>
         /// <param name="targetY">The target y.</param>
@@ -1910,7 +1942,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="TradeCancel" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: The player wants to cancel the trade.
         /// Causes reaction on server side: The trade is cancelled and the previous inventory state is restored.
@@ -1925,7 +1956,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="TradeButtonStateChange" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="newState">The new state.</param>
         /// <remarks>
         /// Is sent by the client when: The player presses the trade button.
@@ -1943,7 +1973,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="TradeRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="playerId">The player id.</param>
         /// <remarks>
         /// Is sent by the client when: The player requests to open a trade with another player.
@@ -1961,7 +1990,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="TradeRequestResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="tradeAccepted">The trade accepted.</param>
         /// <remarks>
         /// Is sent by the client when: A requested player responded to a trade request of another player.
@@ -1979,7 +2007,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="SetTradeMoney" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="amount">The amount.</param>
         /// <remarks>
         /// Is sent by the client when: A player requests to set an amount of money in the trade.
@@ -1997,7 +2024,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="LetterDeleteRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="letterIndex">The letter index.</param>
         /// <remarks>
         /// Is sent by the client when: A player requests to delete a letter.
@@ -2012,10 +2038,36 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="LetterSendRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="letterId">The letter id.</param>
+        /// <param name="receiver">The receiver.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <param name="animation">The animation.</param>
+        /// <param name="message">The message.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player wants to send a letter to another players character.
+        /// Causes reaction on server side: The letter is sent to the other character, if it exists and the player has the required money.
+        /// </remarks>
+        public static void SendLetterSendRequest(this IConnection connection, uint @letterId, string @receiver, string @title, byte @rotation, byte @animation, string @message)
+        {
+            using var writer = connection.StartSafeWrite(LetterSendRequest.HeaderType, LetterSendRequest.GetRequiredSize(message));
+            var packet = new LetterSendRequest(writer.Span);
+            packet.LetterId = @letterId;
+            packet.Receiver = @receiver;
+            packet.Title = @title;
+            packet.Rotation = @rotation;
+            packet.Animation = @animation;
+            packet.Message = @message;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="LetterReadRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="letterIndex">The letter index.</param>
         /// <remarks>
         /// Is sent by the client when: A player requests to read a specific letter of his letter list.
@@ -2030,10 +2082,28 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="GuildKickPlayerRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="playerName">The player name.</param>
+        /// <param name="securityCode">The security code.</param>
+        /// <remarks>
+        /// Is sent by the client when: A guild member wants to kick himself or a guild master wants to kick another player from its guild.
+        /// Causes reaction on server side: If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.
+        /// </remarks>
+        public static void SendGuildKickPlayerRequest(this IConnection connection, string @playerName, string @securityCode)
+        {
+            using var writer = connection.StartSafeWrite(GuildKickPlayerRequest.HeaderType, GuildKickPlayerRequest.GetRequiredSize(securityCode));
+            var packet = new GuildKickPlayerRequest(writer.Span);
+            packet.PlayerName = @playerName;
+            packet.SecurityCode = @securityCode;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="GuildJoinRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="guildMasterPlayerId">The guild master player id.</param>
         /// <remarks>
         /// Is sent by the client when: A player (non-guild member) requests to join a guild.
@@ -2051,7 +2121,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="GuildJoinResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="accepted">The accepted.</param>
         /// <remarks>
         /// Is sent by the client when: A guild master responded to a previously sent request.
@@ -2069,7 +2138,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="GuildListRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: A guild player opens its guild menu in the game client.
         /// Causes reaction on server side: A list of all guild members and their state is sent back as response.
@@ -2084,7 +2152,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="GuildCreateRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="guildName">The guild name.</param>
         /// <param name="guildEmblem">The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</param>
         /// <remarks>
@@ -2104,7 +2171,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="GuildMasterAnswer" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="showCreationDialog">A value whether the guild creation dialog should be shown. Otherwise, the guild creation is cancelled and the dialog was closed.</param>
         /// <remarks>
         /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
@@ -2122,7 +2188,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="GuildInfoRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="guildId">The guild id.</param>
         /// <remarks>
         /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
@@ -2140,7 +2205,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="ItemRepair" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="inventoryItemSlot">The inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
@@ -2158,7 +2222,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="ChaosMachineMixRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="mixType">The identifier which tells the server which kind of mix should be executed.</param>
         /// <remarks>
         /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
@@ -2176,7 +2239,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="CloseChaosMachineRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
         /// Causes reaction on server side: The server updates the state of the player accordingly.
@@ -2191,7 +2253,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="FriendAddRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="friendName">The friend name.</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to add another players character into his friend list of the messenger.
@@ -2209,7 +2270,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="FriendDelete" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="friendName">The friend name.</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to delete another players character from his friend list of the messenger.
@@ -2227,7 +2287,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="ChatRoomCreateRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="friendName">The friend name.</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to open a chat with another player of his friend list.
@@ -2245,7 +2304,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="FriendAddResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="accepted">The accepted.</param>
         /// <param name="friendRequesterName">The friend requester name.</param>
         /// <remarks>
@@ -2265,7 +2323,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="SetFriendOnlineState" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="onlineState">The online state.</param>
         /// <remarks>
         /// Is sent by the client when: A player wants to set himself on- or offline.
@@ -2283,7 +2340,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="ChatRoomInvitationRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="friendName">The friend name.</param>
         /// <param name="roomId">The room id.</param>
         /// <param name="requestId">The request id.</param>
@@ -2305,7 +2361,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="LegacyQuestStateRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: After the player entered the game world with a character.
         /// Causes reaction on server side: The quest state is sent back as response.
@@ -2320,7 +2375,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="LegacyQuestStateSetRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="questNumber">The quest number.</param>
         /// <param name="newState">The new state.</param>
         /// <remarks>
@@ -2340,7 +2394,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="QuestStartRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="questNumber">The quest number.</param>
         /// <param name="questGroup">The quest group.</param>
         /// <param name="unknownField">A value between 1 and 3, probably depending on how many quests are already running. Should not be trusted or considered.</param>
@@ -2362,7 +2415,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="QuestProceedRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="questNumber">The quest number.</param>
         /// <param name="questGroup">The quest group.</param>
         /// <param name="nextState">The next state.</param>
@@ -2384,7 +2436,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="QuestCompletionRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="questNumber">The quest number.</param>
         /// <param name="questGroup">The quest group.</param>
         /// <remarks>
@@ -2404,7 +2455,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="QuestCancelRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="questNumber">The quest number.</param>
         /// <param name="questGroup">The quest group.</param>
         /// <remarks>
@@ -2424,7 +2474,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="QuestClientActionRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="questNumber">The quest number.</param>
         /// <param name="questGroup">The quest group.</param>
         /// <remarks>
@@ -2444,7 +2493,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="ActiveQuestListRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: The clients requests the states of all quests, usually after entering the game.
         /// Causes reaction on server side: The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
@@ -2459,7 +2507,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="QuestStateRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="questNumber">The quest number.</param>
         /// <param name="questGroup">The quest group.</param>
         /// <remarks>
@@ -2479,7 +2526,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="EventQuestStateListRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: The game client requests the list of event quests, usually after entering the game.
         /// Causes reaction on server side: The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
@@ -2494,7 +2540,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="AvailableQuestsRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: The client opened an quest NPC dialog and requests a list of available quests.
         /// Causes reaction on server side: The list of available quests of this NPC is sent back (F60A).
@@ -2509,7 +2554,6 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="NpcBuffRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the client when: The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).
         /// Causes reaction on server side: The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.

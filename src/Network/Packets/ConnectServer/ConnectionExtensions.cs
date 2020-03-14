@@ -25,6 +25,19 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
     {
 
         /// <summary>
+        /// Starts a safe write of a <see cref="ConnectionInfoRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client after the user clicked on an entry of the server list.
+        /// Causes reaction on server side: The server will send a ConnectionInfo back to the client.
+        /// </remarks>
+        public static ConnectionInfoRequestThreadSafeWriter StartWriteConnectionInfoRequest(this IConnection connection)
+        {
+          return new ConnectionInfoRequestThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="ConnectionInfo" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -35,6 +48,32 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         public static ConnectionInfoThreadSafeWriter StartWriteConnectionInfo(this IConnection connection)
         {
           return new ConnectionInfoThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="ServerListRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client after it connected and received the 'Hello' message.
+        /// Causes reaction on server side: The server will send a ServerListResponse back to the client.
+        /// </remarks>
+        public static ServerListRequestThreadSafeWriter StartWriteServerListRequest(this IConnection connection)
+        {
+          return new ServerListRequestThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="ServerListRequestOld" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client (below season 1) after it connected and received the 'Hello' message.
+        /// Causes reaction on server side: The server will send a ServerListResponseOld back to the client.
+        /// </remarks>
+        public static ServerListRequestOldThreadSafeWriter StartWriteServerListRequestOld(this IConnection connection)
+        {
+          return new ServerListRequestOldThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -90,10 +129,26 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         }
 
         /// <summary>
+        /// Sends a <see cref="ConnectionInfoRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="serverId">The server id.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client after the user clicked on an entry of the server list.
+        /// Causes reaction on server side: The server will send a ConnectionInfo back to the client.
+        /// </remarks>
+        public static void SendConnectionInfoRequest(this IConnection connection, ushort @serverId)
+        {
+            using var writer = connection.StartWriteConnectionInfoRequest();
+            var packet = writer.Packet;
+            packet.ServerId = @serverId;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="ConnectionInfo" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="ipAddress">The ip address.</param>
         /// <param name="port">The port.</param>
         /// <remarks>
@@ -110,10 +165,37 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         }
 
         /// <summary>
+        /// Sends a <see cref="ServerListRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client after it connected and received the 'Hello' message.
+        /// Causes reaction on server side: The server will send a ServerListResponse back to the client.
+        /// </remarks>
+        public static void SendServerListRequest(this IConnection connection)
+        {
+            using var writer = connection.StartWriteServerListRequest();
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="ServerListRequestOld" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: This packet is sent by the client (below season 1) after it connected and received the 'Hello' message.
+        /// Causes reaction on server side: The server will send a ServerListResponseOld back to the client.
+        /// </remarks>
+        public static void SendServerListRequestOld(this IConnection connection)
+        {
+            using var writer = connection.StartWriteServerListRequestOld();
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="Hello" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the server when: This packet is sent by the server after the client connected to the server.
         /// Causes reaction on client side: A game client will request the server list. The launcher would request the patch state.
@@ -128,7 +210,6 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// Sends a <see cref="PatchCheckRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="majorVersion">The major version.</param>
         /// <param name="minorVersion">The minor version.</param>
         /// <param name="patchVersion">The patch version.</param>
@@ -150,7 +231,6 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// Sends a <see cref="PatchVersionOkay" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <remarks>
         /// Is sent by the server when: This packet is sent by the server after the client (launcher) requested the to check the patch version and it was high enough.
         /// Causes reaction on client side: The launcher will activate its start button.
@@ -165,7 +245,6 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         /// Sends a <see cref="ClientNeedsPatch" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-    
         /// <param name="patchVersion">The patch version.</param>
         /// <param name="patchAddress">The patch address, usually to a ftp server. The address is usually "encrypted" with the 3-byte XOR key (FC CF AB).</param>
         /// <remarks>
@@ -180,6 +259,59 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
             packet.PatchAddress = @patchAddress;
             writer.Commit();
         }    }
+    /// <summary>
+    /// A helper struct to write a <see cref="ConnectionInfoRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct ConnectionInfoRequestThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectionInfoRequestThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public ConnectionInfoRequestThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new ConnectionInfoRequest(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(ConnectionInfoRequest.Length).Slice(0, ConnectionInfoRequest.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public ConnectionInfoRequest Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="ConnectionInfoRequest" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(ConnectionInfoRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
     /// <summary>
     /// A helper struct to write a <see cref="ConnectionInfo"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
@@ -221,6 +353,112 @@ namespace MUnique.OpenMU.Network.Packets.ConnectServer
         public void Commit()
         {
             this.connection.Output.Advance(ConnectionInfo.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="ServerListRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct ServerListRequestThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerListRequestThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public ServerListRequestThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new ServerListRequest(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(ServerListRequest.Length).Slice(0, ServerListRequest.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public ServerListRequest Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="ServerListRequest" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(ServerListRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="ServerListRequestOld"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct ServerListRequestOldThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerListRequestOldThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public ServerListRequestOldThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new ServerListRequestOld(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(ServerListRequestOld.Length).Slice(0, ServerListRequestOld.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public ServerListRequestOld Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="ServerListRequestOld" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(ServerListRequestOld.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
