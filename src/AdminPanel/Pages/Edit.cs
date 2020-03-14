@@ -99,7 +99,6 @@ namespace MUnique.OpenMU.AdminPanel.Pages
 
         private async Task LoadData(CancellationToken cancellationToken)
         {
-            // using var modal = this.ModalService.ShowLoadingIndicator();
             IDisposable modal = null;
             var showModalTask = this.InvokeAsync(() => modal = this.ModalService.ShowLoadingIndicator());
             this.type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.StartsWith(nameof(MUnique)))
