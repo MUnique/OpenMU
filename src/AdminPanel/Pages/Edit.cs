@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
 {
     using System;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Blazored.Modal.Services;
@@ -121,6 +122,9 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                     modal.Dispose();
                     await this.InvokeAsync(this.StateHasChanged);
                 }
+            }
+            catch (TargetInvocationException ex) when (ex.InnerException is ObjectDisposedException)
+            {
             }
             catch (ObjectDisposedException)
             {
