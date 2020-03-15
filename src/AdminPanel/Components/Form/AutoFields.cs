@@ -41,6 +41,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             Builders.Add(new EmbeddedFormFieldBuilder());
             Builders.Add(new ObjectCollectionFieldBuilder());
             Builders.Add(new IntCollectionFieldBuilder());
+            Builders.Add(new ByteArrayFieldBuilder());
         }
 
         /// <summary>

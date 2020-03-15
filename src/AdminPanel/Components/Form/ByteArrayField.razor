@@ -1,0 +1,36 @@
+﻿@using System.IO
+@inherits InputBase<byte[]>
+
+@inject IModalService ModalService
+
+    <div>
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        <p>Current size: @(this.Value?.Length ?? 0) bytes</p>
+        <p>Load file: <InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
+    </div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the label.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string value, out byte[] result, out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task OnSelectedFile(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            await using var memoryStream = new MemoryStream();
+            await file.Data.CopyToAsync(memoryStream);
+            this.CurrentValue = memoryStream.ToArray();
+            await this.ModalService.ShowMessageAsync(this.FieldIdentifier.FieldName, $"Loaded {file.Name} with {this.CurrentValue.Length} bytes.");
+        }
+    }
+}
