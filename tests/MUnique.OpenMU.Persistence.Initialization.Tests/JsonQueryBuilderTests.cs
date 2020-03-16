@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
                 stopwatch.Start();
                 try
                 {
-                    var builder = new AccountJsonQueryBuilder();
+                    var builder = new JsonQueryBuilder();
                     result = builder.BuildJsonQueryForEntity(type);
                 }
                 finally
