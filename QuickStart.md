@@ -65,7 +65,7 @@ If you have that, you'll need to do:
   * You can reinstall the database by adding a '-reinit' parameter
   * Optional: you can add the parameter '-resolveIP:' to bind the servers tcp listeners to an ip address of a local network interface. See this [Readme](src/Startup/Readme.md) for more information.
   * Optional: you can add the parameter '-autostart' to save the next step.
-* When the Admin Panel is initialized, go to http://localhost:1234/admin. Then you should see three gameservers,
+* When the Admin Panel is initialized, go to http://localhost:1234/. Then you should see three gameservers,
 the chat server and the connect server. Start the connect server and at least one gameserver.
 If all goes well, you should be able to expand a gameserver and see the hosted game maps.
 * Then you can connect to the server through the game client.
