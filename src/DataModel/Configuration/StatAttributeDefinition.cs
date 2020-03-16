@@ -53,5 +53,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets a value indicating whether this stat is increasable by the player in any way.
         /// </summary>
         public bool IncreasableByPlayer { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.Attribute}: {this.BaseValue}";
+        }
     }
 }

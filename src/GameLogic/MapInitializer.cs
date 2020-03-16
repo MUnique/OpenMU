@@ -21,20 +21,17 @@ namespace MUnique.OpenMU.GameLogic
         private static readonly ILog Logger = LogManager.GetLogger(typeof(MapInitializer));
         private readonly IDropGenerator defaultDropGenerator;
         private readonly GameConfiguration configuration;
-        private readonly IMapStateObserver mapStateObserver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MapInitializer"/> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="mapStateObserver">The map state observer.</param>
-        public MapInitializer(GameConfiguration configuration, IMapStateObserver mapStateObserver)
+        public MapInitializer(GameConfiguration configuration)
         {
             this.defaultDropGenerator = new DefaultDropGenerator(configuration, Rand.GetRandomizer());
             this.configuration = configuration;
             this.ItemDropDuration = 60;
             this.ChunkSize = 8;
-            this.mapStateObserver = mapStateObserver;
         }
 
         /// <summary>
@@ -120,7 +117,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </returns>
         protected virtual GameMap InternalCreateGameMap(GameMapDefinition definition)
         {
-            return new GameMap(definition, this.ItemDropDuration, this.ChunkSize, this.mapStateObserver);
+            return new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
         }
     }
 }

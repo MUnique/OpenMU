@@ -5,10 +5,12 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Defines the game server configuration.
     /// </summary>
+    [AggregateRoot]
     public class GameServerConfiguration
     {
         /// <summary>

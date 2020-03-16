@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System.ComponentModel;
-
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
@@ -49,6 +49,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the power up element of this skill of this player. It is a "cached" element which will be created on demand and can be applied multiple times.
         /// </summary>
+        [Transient]
         public IElement BuffPowerUp { get; set; }
 
         /// <summary>
@@ -57,7 +58,14 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <remarks>
         /// It is an IElement, because the duration can be dependent from the player attributes.
         /// </remarks>
+        [Transient]
         public IElement PowerUpDuration { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.Skill?.Name}{(this.Level > 0 ? ", Level: " + this.Level : string.Empty)}";
+        }
 
         private void OnPropertyChanged(string propertyName)
         {

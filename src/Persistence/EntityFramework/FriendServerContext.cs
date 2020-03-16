@@ -12,15 +12,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <summary>
     /// A context which is used by the <see cref="IFriendServer"/>.
     /// </summary>
-    internal class FriendServerContext : EntityFrameworkContext, IFriendServerContext
+    internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServerContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FriendServerContext"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <param name="contextProvider">The contextProvider.</param>
-        public FriendServerContext(FriendContext context, PersistenceContextProvider contextProvider)
-            : base(context, contextProvider)
+        /// <param name="repositoryManager">The repositoryManager.</param>
+        public FriendServerContext(FriendContext context, RepositoryManager repositoryManager)
+            : base(context, repositoryManager)
         {
         }
 

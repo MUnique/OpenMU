@@ -11,7 +11,6 @@ namespace MUnique.OpenMU.GameLogic
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.PlugIns;
-    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
 
@@ -26,8 +25,6 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly Timer recoverTimer;
 
-        private readonly IGameStateObserver stateObserver;
-
         private readonly IMapInitializer mapInitializer;
 
         /// <summary>
@@ -35,9 +32,8 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        /// <param name="stateObserver">The state observer.</param>
         /// <param name="mapInitializer">The map initializer.</param>
-        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IGameStateObserver stateObserver, IMapInitializer mapInitializer)
+        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer)
         {
             try
             {
@@ -53,9 +49,22 @@ namespace MUnique.OpenMU.GameLogic
                 throw;
             }
 
-            this.stateObserver = stateObserver;
             this.mapInitializer = mapInitializer;
         }
+
+        /// <summary>
+        /// Occurs when a game map got created.
+        /// </summary>
+        public event EventHandler<GameMapEventArgs> GameMapCreated;
+
+        /// <summary>
+        /// Occurs when a game map got removed.
+        /// </summary>
+        /// <remarks>
+        /// Currently, maps are never removed.
+        /// It may make sense to remove unused maps after a certain period.
+        /// </remarks>
+        public event EventHandler<GameMapEventArgs> GameMapRemoved;
 
         /// <summary>
         /// Gets the initialized maps which are hosted on this context.
@@ -113,6 +122,7 @@ namespace MUnique.OpenMU.GameLogic
 
             // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
             this.mapInitializer.InitializeState(createdMap);
+            this.GameMapCreated?.Invoke(this, new GameMapEventArgs(createdMap, null));
 
             return createdMap;
         }
@@ -127,7 +137,6 @@ namespace MUnique.OpenMU.GameLogic
             player.PlayerEnteredWorld += this.PlayerEnteredWorld;
             player.PlayerDisconnected += this.PlayerDisconnected;
             this.PlayerList.Add(player);
-            this.stateObserver?.PlayerCountChanged(this.PlayerList.Count);
         }
 
         /// <summary>
@@ -149,7 +158,6 @@ namespace MUnique.OpenMU.GameLogic
             player.CurrentMap?.Remove(player);
 
             this.PlayerList.Remove(player);
-            this.stateObserver?.PlayerCountChanged(this.PlayerList.Count);
 
             player.PlayerDisconnected -= this.PlayerDisconnected;
             player.PlayerEnteredWorld -= this.PlayerEnteredWorld;

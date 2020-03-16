@@ -27,5 +27,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         ///   <c>true</c> if this instance is spawn gate; otherwise, <c>false</c>.
         /// </value>
         public bool IsSpawnGate { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.Map?.Name} @ {base.ToString()}";
+        }
     }
 }

@@ -66,5 +66,14 @@ namespace MUnique.OpenMU.Persistence
         /// </summary>
         /// <returns>A new context which is used by the guild server.</returns>
         IGuildServerContext CreateNewGuildContext();
+
+        /// <summary>
+        /// Creates the new context which can be used to load and edit an object of <typeparamref name="T" />.
+        /// </summary>
+        /// <typeparam name="T">The type of object which should be handled.</typeparam>
+        /// <returns>
+        /// A new context which can be used to load and edit an object of <typeparamref name="T" />.
+        /// </returns>
+        IContext CreateNewTypedContext<T>();
     }
 }

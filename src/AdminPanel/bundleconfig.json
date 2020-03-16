@@ -1,9 +1,0 @@
-[
-  {
-    "outputFileName": "wwwroot/content/css/app.css",
-    "inputFiles": [
-      "content/css/*.css"
-    ],
-    "includeInProject": false
-  }
-]

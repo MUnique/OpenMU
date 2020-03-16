@@ -6,10 +6,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System;
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Settings for the chat server.
     /// </summary>
+    [AggregateRoot]
     public class ChatServerDefinition
     {
         /// <summary>
@@ -49,6 +51,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the endpoints of the game server.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ChatServerEndpoint> Endpoints { get; protected set; }
 
         /// <inheritdoc/>

@@ -6,10 +6,12 @@ namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// A guild is a group of players who like to play together.
     /// </summary>
+    [AggregateRoot]
     public class Guild : OpenMU.Interfaces.Guild
     {
         /// <summary>

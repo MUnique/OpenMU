@@ -1,0 +1,26 @@
+﻿@using MUnique.OpenMU.AdminPanel.Services
+@inject LogController logController;
+@inject LogService logService;
+
+<div>
+    Filters:
+    <datalist id="loggers">
+        @foreach (var logger in this.logService.Loggers ?? Enumerable.Empty<string>())
+        {
+            <option value=@logger />
+        }
+    </datalist>
+    <input id="server" type="text" placeholder="Server" @bind-value=@this.logController.ServerFilter />
+    <input id="character" type="text" placeholder="Character" @bind-value=@this.logController.CharacterFilter />
+    <input id="logger" type="text" list="loggers" placeholder="Logger" @bind-value=@this.logController.LoggerFilter width="200" />
+</div>
+
+@code
+{
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await this.logService.Initialization;
+    }
+}

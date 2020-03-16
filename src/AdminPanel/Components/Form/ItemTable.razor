@@ -1,0 +1,71 @@
+﻿@typeparam TItem
+
+@using MUnique.OpenMU.Persistence
+@inherits InputBase<ICollection<TItem>>
+
+@inject IPersistenceContextProvider ContextProvider
+@inject IModalService Modal
+@inject NavigationManager NavigationManager
+
+    <div class="card">
+        <h5 class="card-header">
+            <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+            @if (this.isStartingCollapsed)
+        {
+            @if (this.isCollapsed)
+            {
+            <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value.Count) Items)</button>
+            }
+            else
+            {
+            <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+            }
+        }
+        </h5>
+        @if (!this.isCollapsed)
+        {
+        <div class="card-body card-text">
+            <table>
+                <tbody>
+                    @foreach (var item in this.Value
+                        .Select(i => (Name : i.GetName(), Id : i.GetId(), Item : i))
+                        .OrderBy(i => i.Name))
+                    {
+                    <tr>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            @if (this.isEditable)
+                            {
+                            <button type="button" class="btn-info" @onclick="@(() => this.NavigationManager.NavigateTo("edit/" + typeof(TItem).FullName + "/" + item.Id, true))">Edit</button>
+                            }
+                        </td>
+                        <td>
+                            @if (this.isEditable)
+                            {
+                            <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClick(item.Item))">Remove</button>
+                            }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+                <tfooter>
+                    <tr>
+                        <td colspan="3">
+                            @if (this.isAddingSupported)
+                            {
+                            <button type="button" class="btn-primary" @onclick="@OnAddClick">Add</button>
+                            }
+
+                            @if (this.isCreatingSupported)
+                            {
+                            <button type="button" class="btn-primary" @onclick="@OnCreateClick">Create</button>
+                            }
+                        </td>
+                    </tr>
+                </tfooter>
+            </table>
+        </div>
+            }
+        </div>

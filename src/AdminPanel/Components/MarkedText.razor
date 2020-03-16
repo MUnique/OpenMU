@@ -1,0 +1,54 @@
+﻿@if (this.elements == null || !this.elements.Any())
+{
+    @this.Text;
+}
+else 
+{
+    @foreach (var element in this.elements){@if (element.IsMarked){<mark>@element.Text</mark>}else{<span>@element.Text</span>}}
+}
+
+@code {
+    private IList<(bool IsMarked, string Text)> elements;
+
+    /// <summary>
+    /// Gets or sets the text which should be shown.
+    /// </summary>
+    [Parameter]
+    public string Text { get; set; }
+
+    /// <summary>
+    /// Gets or sets the marked part of the <see cref="Text"/>.
+    /// </summary>
+    [Parameter]
+    public string Marked { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        this.elements?.Clear();
+        if (string.IsNullOrEmpty(this.Marked))
+        {
+            return;
+        }
+
+        this.elements ??= new List<(bool, string)>();
+        var currentIndex = 0;
+        while (currentIndex < this.Text.Length)
+        {
+            var nextMarkStart = this.Text.IndexOf(this.Marked, currentIndex, StringComparison.InvariantCultureIgnoreCase);
+            if (nextMarkStart >= 0) {
+                var end = nextMarkStart + this.Marked.Length;
+                elements.Add((false, this.Text.Substring(currentIndex, nextMarkStart - currentIndex)));
+                elements.Add((true, this.Text.Substring(nextMarkStart, end - nextMarkStart)));
+                currentIndex = end;
+            }
+            else
+            {
+                var rest = this.Text.Substring(currentIndex);
+                elements.Add((false, rest));
+                currentIndex += rest.Length;
+            }
+        }
+    }
+}

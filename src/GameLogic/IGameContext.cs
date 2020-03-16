@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using System;
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence;
@@ -14,6 +15,16 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public interface IGameContext
     {
+        /// <summary>
+        /// Occurs when a game map got created.
+        /// </summary>
+        event EventHandler<GameMapEventArgs> GameMapCreated;
+
+        /// <summary>
+        /// Occurs when a game map got removed.
+        /// </summary>
+        event EventHandler<GameMapEventArgs> GameMapRemoved;
+
         /// <summary>
         /// Gets the repository manager. Used to retrieve data, e.g. from a database.
         /// </summary>

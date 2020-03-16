@@ -1,0 +1,76 @@
+﻿@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Persistence;
+
+@inject NavigationManager navigationManager
+@inject GameConfiguration GameConfiguration
+
+<nav>
+    <div>
+        <a href="">OpenMU</a>
+        <button @onclick="ToggleNavMenu">
+            <span></span>
+        </button>
+    </div>
+
+    <!-- Hiding it programmatically is not a good idea here, because we want to hide it based on the width of the device/window. -->
+    <div class="@NavMenuCssClass">
+        <ul>
+
+            <li>
+                <NavLink href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </li>
+            <li>
+                <NavLink href="servers">
+                    <span class="oi oi-project" aria-hidden="true"></span> Servers
+                </NavLink>
+            </li>
+            <li>
+                <NavLink href="accounts">
+                    <span class="oi oi-list" aria-hidden="true"></span> Accounts
+                </NavLink>
+            </li>
+            @if (this.GameConfiguration != null)
+            {
+            <li>
+                <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this.GameConfiguration.GetId())">
+                    <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
+                </NavLink>
+            </li>
+            }
+            <li>
+                <NavLink href="plugins">
+                    <span class="oi oi-puzzle-piece" aria-hidden="true"></span> Plugins
+                </NavLink>
+            </li>
+            <li>
+                <NavLink href="log">
+                    <span class="oi oi-list" aria-hidden="true"></span> Log 
+                    @if (!navigationManager.Uri.EndsWith("/log"))
+                    {
+                        <LogNotifications/>
+                    }
+                </NavLink>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    /// <summary>
+    /// Returns the class for the entries of the navigation menu.
+    /// "collapse" is a class of bootstrap which hides it.
+    /// In our css we also define to show it anyway, if the width sufficient.
+    /// </summary>
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

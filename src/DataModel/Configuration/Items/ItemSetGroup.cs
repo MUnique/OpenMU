@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Defines an item set group. With (partial) completion of the set, addional options are getting applied.
@@ -66,6 +67,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <remarks>
         /// The order is defined by <see cref="ItemOption.Number"/>.
         /// </remarks>
+        [MemberOfAggregate]
         public virtual ICollection<IncreasableItemOption> Options { get; protected set; }
 
         /// <summary>
@@ -74,6 +76,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <remarks>
         /// Here we can define additional bonus options, like the ancient options (e.g. +5 / +10 Str etc.).
         /// </remarks>
+        [MemberOfAggregate]
         public virtual ICollection<ItemOfItemSet> Items { get; protected set; }
     }
 }

@@ -6,6 +6,7 @@
 // </auto-generated>
 
 using System.Collections.Specialized;
+using System.ComponentModel;
 using Mapster;
 using MUnique.OpenMU.Persistence.Json;
 
@@ -63,6 +64,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// The entity framework will not name the foreign keys in a proper way, so they would collide.
         /// </remarks>
         [InverseProperty(nameof(PowerUpDefinitionWithDuration.RawBoost))]
+        [Browsable(false)]
         public PowerUpDefinitionWithDuration ParentAsBoost { get; set; }
 
         /// <summary>
@@ -82,6 +84,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// The entity framework will not name the foreign keys in a proper way, so they would collide.
         /// </remarks>
         [InverseProperty(nameof(PowerUpDefinitionWithDuration.RawDuration))]
+        [Browsable(false)]
         public PowerUpDefinitionWithDuration ParentAsDuration { get; set; }
     }
 

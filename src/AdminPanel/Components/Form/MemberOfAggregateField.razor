@@ -1,0 +1,54 @@
+﻿@typeparam TObject
+@using System.ComponentModel.DataAnnotations
+@using MUnique.OpenMU.Persistence
+@inherits InputBase<TObject>
+
+@inject IPersistenceContextProvider ContextProvider
+
+    <div class="card">
+        <h5 class="card-header">
+            <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        </h5>
+        <div class="card-body card-text">
+            @if (this.Value is null)
+            {
+                <button class="btn-primary" @onclick="this.OnCreateClick">Create</button>
+            }
+            else
+            {
+                <EditForm Model="@this.Value">
+                    <DataAnnotationsValidator />
+                    <AutoFields />
+                    <ValidationSummary />
+                </EditForm>
+            }
+        </div>
+    </div>
+@code {
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; }
+
+    private IContext context;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        this.context = this.ContextProvider.CreateNewTypedContext<TObject>();
+    }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string value, out TObject result, out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void OnCreateClick()
+    {
+        this.Value = this.context.CreateNew<TObject>();
+    }
+}

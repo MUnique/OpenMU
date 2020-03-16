@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TestPlayerEntersMap()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
             player1.Object.Position = new Point(100, 100);
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TestPlayerMovesInMap()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
 
@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void PlayerMovesOutOfRange()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
             player1.Object.Position = new Point(101, 100);
@@ -102,7 +102,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void PlayerMovesOutAndIntoTheRange()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
             player1.Object.Position = new Point(101, 100);
@@ -135,7 +135,7 @@ namespace MUnique.OpenMU.Tests
         /// [Test]
         public void TestPerformanceMove()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
 
@@ -163,7 +163,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TestPlayerLeavesMap()
         {
-            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize, null);
+            var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
             player1.Setup(p => p.Id).Returns(1);
             player1.Object.Position = new Point(100, 100);

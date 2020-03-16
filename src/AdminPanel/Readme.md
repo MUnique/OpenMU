@@ -2,43 +2,45 @@
 
 The admin panel is meant to offer functions for administrative tasks.
 
-The user interface is implemented with [React](https://facebook.github.io/react/), the backend with ASP.NET Core and [SignalR](http://signalr.net/).
-Please don't wonder if the frontend code and my javascript "build system" is not perfect here - I'm not doing javascript development in my daily job ;-)
-
-It's accessible via http://localhost:1234/admin
+It's implemented with ASP.NET Core Blazor Server and it's accessible via http://localhost:1234/
 The current features are:
 
 ## Server list
   * Start / Shutdown
   * Player count monitoring
-  * Links to show (embedded) live maps
+  * Links to show live maps (see below)
 
 Ideas for the future:
   * Expand-Buttons to show the players which are playing on a server
   * Button to disconnect a player
 
+## Edit Pages
+To be able edit most of the data without writing some SQL, there are a generic edit pages which is generated automatically by reflection.
+Some fields can't be edited or created yet, because not all have a corresponding Component yet.
+Also keep in mind, this pages are a very technical and generic view of the data, so you need to know what you're doing.
+
+More user-friendly configuration and account/character editors are planned for the future.
+
 ## Account list
 It shows the list of accounts, ordered by the login name. Functions:
   * Creating new accounts
   * Banning/deactivating accounts
+  * Clicking on Edit sends you to the generic edit page for the account. 
+    For example, creating Characters involves some initialization logic which is not done yet on the web interface.
 
-Feature ideas for the future:
-  * Changing password of an account
-  * Account editor which allows to even edit characters and their items
-    
+## Game Configuration
+It's possible to edit every bit of the game configuration by the generic edit page.
+
 ## Log view
 It's possible to view a real-time log of the server. Because a server can generate a lot of log messages,
 there are some filter-features to see only messages of a specific player, server, and/or logger.
-
-## System view
-A very basic real-time view of the cpu utilization, caused by the OpenMU process.
 
 ## Live map
 It's a graphical representation of a specific map to monitor some kind of actions on it: 
   * player / npc movements
   * player attacks
 
-It's implemented in WebGL (by three.js) and communicates with the server via SignalR.
+It's implemented in WebGL (by three.js) and makes use of Blazors javascript interop to update the visible entites.
 
 Ideas for the future:
   * Zooming in to monitor players more closely
@@ -56,6 +58,4 @@ Ideas for the future:
     * Sending global messages (the golden ones)
 
 ## Other feature ideas
-
-  * Configuration editor
   * Based on the Live Map, we could create a graphical editor for monster spawn areas, gates, etc.

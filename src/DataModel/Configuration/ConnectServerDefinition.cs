@@ -5,11 +5,13 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// The definition of a connect server.
     /// </summary>
+    [AggregateRoot]
     public class ConnectServerDefinition : IConnectServerSettings
     {
         /// <summary>

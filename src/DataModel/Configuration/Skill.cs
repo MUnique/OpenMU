@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -183,11 +184,13 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the requirements to execute the skill.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<AttributeRequirement> Requirements { get; protected set; }
 
         /// <summary>
         /// Gets or sets the attributes which values will be consumed by executing this skill.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<AttributeRequirement> ConsumeRequirements { get; protected set; }
 
         /// <summary>
@@ -259,6 +262,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the master skill definition. Only relevant for master skills.
         /// </summary>
+        [MemberOfAggregate]
         public virtual MasterSkillDefinition MasterDefinition { get; set; }
 
         /// <summary>

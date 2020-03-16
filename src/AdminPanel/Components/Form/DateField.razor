@@ -1,0 +1,30 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inherits InputBase<DateTime>
+
+    <div>
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        <input type="date" @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
+        <ValidationMessage For=@this.ValueExpression />
+    </div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string value, out DateTime result, out string validationErrorMessage)
+    {
+        if (DateTime.TryParse(value, out result))
+        {
+            validationErrorMessage = null;
+            return true;
+        }
+
+        validationErrorMessage = "Wrong Format";
+        return false;
+    }
+}

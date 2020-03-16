@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
@@ -47,11 +49,13 @@ namespace MUnique.OpenMU.DataModel.Entities
     /// <summary>
     /// The account of a player.
     /// </summary>
+    [AggregateRoot]
     public class Account
     {
         /// <summary>
         /// Gets or sets the unique login name.
         /// </summary>
+        [Required]
         public string LoginName { get; set; }
 
         /// <summary>
@@ -75,6 +79,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <remarks>
         /// Some classes are only available when the player reached a certain level before, or when he paid for some unlock ticket.
         /// </remarks>
+        [HiddenAtCreation]
         public virtual ICollection<CharacterClass> UnlockedCharacterClasses { get; protected set; }
 
         /// <summary>
@@ -95,11 +100,14 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the vault password.
         /// </summary>
+        [HiddenAtCreation]
         public string VaultPassword { get; set; }
 
         /// <summary>
         /// Gets or sets the vault.
         /// </summary>
+        [MemberOfAggregate]
+        [HiddenAtCreation]
         public virtual ItemStorage Vault { get; set; }
 
         /// <summary>
@@ -110,6 +118,14 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the characters.
         /// </summary>
+        [MemberOfAggregate]
+        [HiddenAtCreation]
         public virtual ICollection<Character> Characters { get; protected set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return this.LoginName;
+        }
     }
 }

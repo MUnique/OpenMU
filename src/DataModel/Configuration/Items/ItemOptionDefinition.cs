@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// The definition of an item option.
@@ -37,6 +38,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the possible options.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<IncreasableItemOption> PossibleOptions { get; protected set; }
     }
 }

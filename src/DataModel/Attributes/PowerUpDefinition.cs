@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
     using System.Globalization;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// The power up definition which describes the boost of an target attribute.
@@ -21,6 +22,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// <summary>
         /// Gets or sets the boost.
         /// </summary>
+        [MemberOfAggregate]
         public virtual PowerUpDefinitionValue Boost { get; set; }
 
         /// <inheritdoc/>
@@ -34,7 +36,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
             else if (this.Boost?.RelatedValues != null && this.Boost.RelatedValues.Any())
             {
                 var relation = this.Boost.RelatedValues.First();
-                value = relation.InputAttribute.Designation + OperatorAsString(relation.InputOperator) + relation.InputOperand;
+                value = relation.InputAttribute.Designation + relation.InputOperator.AsString() + relation.InputOperand;
             }
             else
             {
@@ -43,17 +45,6 @@ namespace MUnique.OpenMU.DataModel.Attributes
             }
 
             return value + " " + this.TargetAttribute.Designation;
-        }
-
-        private static string OperatorAsString(InputOperator inputOperator)
-        {
-            switch (inputOperator)
-            {
-                case InputOperator.Add: return "+";
-                case InputOperator.Multiply: return "*";
-                case InputOperator.Exponentiate: return "^";
-                default: return string.Empty;
-            }
         }
     }
 }

@@ -18,7 +18,6 @@ namespace MUnique.OpenMU.GameServer
     {
         private readonly GameServerDefinition serverDefinition;
         private readonly byte serverId;
-        private readonly IServerStateObserver serverStateObserver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameServerMapInitializer"/> class.
@@ -26,12 +25,11 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="serverDefinition">The server definition.</param>
         /// <param name="serverId">The server identifier.</param>
         /// <param name="serverStateObserver">The server state observer.</param>
-        public GameServerMapInitializer(GameServerDefinition serverDefinition, byte serverId, IServerStateObserver serverStateObserver)
-            : base(serverDefinition.GameConfiguration, serverStateObserver?.GetMapStateObserver(serverId))
+        public GameServerMapInitializer(GameServerDefinition serverDefinition, byte serverId)
+            : base(serverDefinition.GameConfiguration)
         {
             this.serverDefinition = serverDefinition;
             this.serverId = serverId;
-            this.serverStateObserver = serverStateObserver;
         }
 
         /// <summary>
@@ -48,7 +46,6 @@ namespace MUnique.OpenMU.GameServer
         protected override GameMap InternalCreateGameMap(GameMapDefinition definition)
         {
             var gameMap = base.InternalCreateGameMap(definition);
-            this.serverStateObserver?.MapAdded(this.serverId, new GameMapInfoAdapter(gameMap, Enumerable.Empty<Player>()));
             return gameMap;
         }
     }

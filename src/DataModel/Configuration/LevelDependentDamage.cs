@@ -18,5 +18,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the damage belonging to this level.
         /// </summary>
         public int Damage { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"Level {this.Level}: {this.Damage}";
+        }
     }
 }

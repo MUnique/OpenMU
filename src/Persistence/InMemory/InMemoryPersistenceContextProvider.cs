@@ -53,5 +53,11 @@ namespace MUnique.OpenMU.Persistence.InMemory
         {
             return new GuildServerInMemoryContext(this.repositoryManager);
         }
+
+        /// <inheritdoc />
+        public IContext CreateNewTypedContext<T>()
+        {
+            return new InMemoryContext(this.repositoryManager);
+        }
     }
 }

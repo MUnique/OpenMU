@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
 
     /// <summary>
@@ -35,6 +36,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the equipped items.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemAppearance> EquippedItems { get; protected set; }
 
         /// <inheritdoc />

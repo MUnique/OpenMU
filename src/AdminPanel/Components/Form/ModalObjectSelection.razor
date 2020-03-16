@@ -1,0 +1,36 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+@typeparam TItem
+
+@inject IModalService ModalService;
+
+<EditForm Model="@this">
+    <LookupField TObject="TItem" @bind-Value="@Item" Label="@typeof(TItem).Name"/>
+
+    <button type="submit" @onclick="@Submit" class="btn-primary">OK</button>
+    <button @onclick="@Cancel" class="btn-secondary">Cancel</button>
+</EditForm>
+
+@code {
+    /// <summary>
+    /// Gets or sets the selected item.
+    /// </summary>
+    [Required]
+    public TItem Item { get; set; }
+
+    /// <summary>
+    /// Gets or sets the modal instance.
+    /// </summary>
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+
+    private void Submit()
+    {
+        this.BlazoredModal.Close(ModalResult.Ok(this.Item));
+    }
+
+    private void Cancel()
+    {
+        this.BlazoredModal.Cancel();
+    }
+}

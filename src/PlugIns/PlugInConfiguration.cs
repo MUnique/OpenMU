@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.PlugIns
 {
     using System;
     using System.ComponentModel;
+    using System.Linq;
+    using System.Reflection;
     using System.Runtime.CompilerServices;
 
     /// <summary>
@@ -50,6 +52,17 @@ namespace MUnique.OpenMU.PlugIns
         /// Gets or sets the name of the external assembly which will be loaded at run-time.
         /// </summary>
         public string ExternalAssemblyName { get; set; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            var plugInType = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.DefinedTypes)
+                .FirstOrDefault(t => t.GUID == this.TypeId);
+            var plugInAttribute = plugInType?.GetCustomAttribute<PlugInAttribute>();
+
+            return plugInAttribute?.Name ?? this.TypeId.ToString();
+        }
 
         /// <summary>
         /// Triggers the <see cref="PropertyChanged"/> event.

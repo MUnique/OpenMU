@@ -1,0 +1,48 @@
+﻿@page "/servers"
+@using MUnique.OpenMU.AdminPanel.Services
+@using MUnique.OpenMU.Interfaces
+
+@inject ServerService serverService
+
+<h1>Servers</h1>
+
+@if (servers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th class="col-sm-7">Server Name</th>
+                <th class="col-sm-1">Players</th>
+                <th class="col-sm-2">Current State</th>
+                <th class="col-sm-2">Action</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <TotalOnlineCounter />
+        </tfoot>
+        <tbody>
+            @foreach (var server in this.servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
+            {
+                <ServerItem Server=@server />
+            }
+        </tbody>
+    </table>
+</div>
+}
+
+@code {
+    private IList<IManageableServer> servers;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.servers = this.serverService.Servers;
+    }
+}

@@ -143,8 +143,7 @@ namespace MUnique.OpenMU.Tests
                 new Mock<ILoginServer>().Object,
                 new Mock<IFriendServer>().Object,
                 new InMemoryPersistenceContextProvider(),
-                null,
-                new MapInitializer(gameConfiguration, null));
+                new MapInitializer(gameConfiguration));
             return gameServer;
         }
     }

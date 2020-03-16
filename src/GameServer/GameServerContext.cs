@@ -24,7 +24,6 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="loginServer">The login server.</param>
         /// <param name="friendServer">The friend server.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        /// <param name="stateObserver">The state observer.</param>
         /// <param name="mapInitializer">The map initializer.</param>
         public GameServerContext(
             GameServerDefinition gameServerDefinition,
@@ -32,9 +31,8 @@ namespace MUnique.OpenMU.GameServer
             ILoginServer loginServer,
             IFriendServer friendServer,
             IPersistenceContextProvider persistenceContextProvider,
-            IServerStateObserver stateObserver,
             IMapInitializer mapInitializer)
-            : base(gameServerDefinition.GameConfiguration, persistenceContextProvider, new ServerStateToGameStateObserverAdapter(stateObserver, gameServerDefinition.ServerID), mapInitializer)
+            : base(gameServerDefinition.GameConfiguration, persistenceContextProvider, mapInitializer)
         {
             this.Id = gameServerDefinition.ServerID;
             this.GuildServer = guildServer;

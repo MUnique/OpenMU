@@ -1,0 +1,74 @@
+﻿@using System.Globalization
+@using System.IO
+@using MUnique.OpenMU.Network
+@using MUnique.OpenMU.Persistence
+@inherits InputBase<byte[]>
+
+@inject IModalService ModalService
+
+    <div>
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        @if (this.Value != null)
+        {
+            @if (this.Value.Length > 32)
+            {
+                <p>Current size: @(this.Value.Length) bytes (<a href="download/@this.EditContext.Model.GetType()/@this.EditContext.Model.GetId()/@this.FieldIdentifier.FieldName">Download</a>)</p>
+                <p>Load file: <InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
+            }
+            else
+            {
+                <input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
+            }
+        }
+    </div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the label.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string value, out byte[] result, out string validationErrorMessage)
+    {
+        var values = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        result = new byte[values.Length];
+        int i = 0;
+        foreach (var strValue in values)
+        {
+            if (byte.TryParse(strValue, NumberStyles.HexNumber, null, out var parsedByte))
+            {
+                result[i] = parsedByte;
+                i++;
+            }
+            else
+            {
+                result = null;
+                validationErrorMessage = "Wrong format. Expected example: AB 03 DC";
+                return false;
+            }
+        }
+
+        validationErrorMessage = null;
+        return true;
+    }
+
+    /// <inheritdoc />
+    protected override string FormatValueAsString(byte[] value)
+    {
+        return value.AsString();
+    }
+
+    private async Task OnSelectedFile(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            await using var memoryStream = new MemoryStream();
+            await file.Data.CopyToAsync(memoryStream);
+            this.CurrentValue = memoryStream.ToArray();
+            await this.ModalService.ShowMessageAsync(this.FieldIdentifier.FieldName, $"Loaded {file.Name} with {this.CurrentValue.Length} bytes.");
+        }
+    }
+}
