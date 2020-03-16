@@ -32,6 +32,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </summary>
         public virtual GameClientDefinition Client { get; set; }
 
+        /// <inheritdoc/>
+        IGameClientVersion IConnectServerSettings.Client => this.Client;
+
         /// <summary>
         /// Gets or sets a value indicating whether the client should get disconnected when a unknown packet is getting received.
         /// </summary>

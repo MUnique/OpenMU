@@ -9,6 +9,7 @@
       <Code>F4</Code>
       <SubCode>03</SubCode>
       <Name>ConnectionInfoRequest</Name>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>This packet is sent by the client after the user clicked on an entry of the server list.</SentWhen>
       <CausedReaction>The server will send a ConnectionInfo back to the client.</CausedReaction>
@@ -48,6 +49,7 @@
       <Code>F4</Code>
       <SubCode>06</SubCode>
       <Name>ServerListRequest</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>This packet is sent by the client after it connected and received the 'Hello' message.</SentWhen>
       <CausedReaction>The server will send a ServerListResponse back to the client.</CausedReaction>
@@ -100,6 +102,7 @@
       <Code>F4</Code>
       <SubCode>02</SubCode>
       <Name>ServerListRequestOld</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>This packet is sent by the client (below season 1) after it connected and received the 'Hello' message.</SentWhen>
       <CausedReaction>The server will send a ServerListResponseOld back to the client.</CausedReaction>

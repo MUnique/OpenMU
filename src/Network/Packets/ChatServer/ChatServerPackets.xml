@@ -8,6 +8,7 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>00</Code>
       <Name>Authenticate</Name>
+      <Length>16</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>This packet is sent by the client after it connected to the server, to authenticate itself.</SentWhen>
       <CausedReaction>The server will check the token. If it's correct, the client gets added to the requested chat room.</CausedReaction>
@@ -144,6 +145,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>05</Code>
       <Name>KeepAlive</Name>
+      <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>This packet is sent by the client in a fixed interval.</SentWhen>
       <CausedReaction>The server will keep the connection and chat room intact as long as the clients sends a message in a certain period of time.</CausedReaction>

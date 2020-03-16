@@ -98,6 +98,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Packets", "Network\Packets\MUnique.OpenMU.Network.Packets.csproj", "{482217F9-BBA8-4DA9-BEE0-03E278E0684B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AdminPanel", "AdminPanel\MUnique.OpenMU.AdminPanel.csproj", "{401B1520-00B9-468D-9107-EEEF33C0084F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.PublicApi", "PublicApi\MUnique.OpenMU.PublicApi.csproj", "{956BE8E9-2889-472B-9567-8577A34ECE63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -233,6 +234,10 @@ Global
 		{401B1520-00B9-468D-9107-EEEF33C0084F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{401B1520-00B9-468D-9107-EEEF33C0084F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{401B1520-00B9-468D-9107-EEEF33C0084F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{956BE8E9-2889-472B-9567-8577A34ECE63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{956BE8E9-2889-472B-9567-8577A34ECE63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{956BE8E9-2889-472B-9567-8577A34ECE63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{956BE8E9-2889-472B-9567-8577A34ECE63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -269,6 +274,7 @@ Global
 		{89669CA5-E5C8-4854-B318-3903459236A2} = {6443D0E9-82F8-4A04-BB9C-72CE36E1D952}
 		{482217F9-BBA8-4DA9-BEE0-03E278E0684B} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 		{401B1520-00B9-468D-9107-EEEF33C0084F} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
+		{956BE8E9-2889-472B-9567-8577A34ECE63} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28C13837-B616-4790-84D6-4BDCB4A8166D}

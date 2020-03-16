@@ -15,8 +15,8 @@
     <PackageTags>MUnique OpenMU MUOnline Network Packets</PackageTags>
     <PackageId>MUnique.OpenMU.Network.Packets</PackageId>
     <Description>This package contains message structs for the MMORPG "MU Online", which are primarily focused on the english version of Season 6 Episode 3.</Description>
-    <PackageVersion>0.3.2</PackageVersion>
-    <Version>0.3.2</Version>
+    <PackageVersion>0.3.5</PackageVersion>
+    <Version>0.3.5</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -43,16 +43,26 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MUnique.OpenMU.Network.csproj" />
+  </ItemGroup>
+
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(ci)'!='true'">
     <!-- We only run the transformation locally on our dev environment with visual studio.
         The CI environment is identified by the parameter 'ci'. It's set in the azure pipelines and Dockerfile.
         If you run into errors here under Linux/Mac OS, it might help to add this parameter, too. -->
     <XslTransformation OutputPaths="PacketHeaders.cs" XmlInputPaths="PacketHeaders.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='PacketHeaders.cs'/&gt;" />
     <XslTransformation OutputPaths="CommonEnums.cs" XmlInputPaths="CommonEnums.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='CommonEnums.cs'/&gt;" />
+    
     <XslTransformation OutputPaths="ClientToServer\ClientToServerPackets.cs" XmlInputPaths="ClientToServer\ClientToServerPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ClientToServerPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ClientToServer'/&gt;" />
     <XslTransformation OutputPaths="ServerToClient\ServerToClientPackets.cs" XmlInputPaths="ServerToClient\ServerToClientPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ServerToClientPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ServerToClient'/&gt;" />
     <XslTransformation OutputPaths="ChatServer\ChatServerPackets.cs" XmlInputPaths="ChatServer\ChatServerPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ChatServerPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ChatServer'/&gt;" />
     <XslTransformation OutputPaths="ConnectServer\ConnectServerPackets.cs" XmlInputPaths="ConnectServer\ConnectServerPackets.xml" XslInputPath="GenerateRefStructs.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ConnectServerPackets.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ConnectServer'/&gt;" />
+    
+    <XslTransformation OutputPaths="ClientToServer\ConnectionExtensions.cs" XmlInputPaths="ClientToServer\ClientToServerPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ClientToServer'/&gt;" />
+    <XslTransformation OutputPaths="ServerToClient\ConnectionExtensions.cs" XmlInputPaths="ServerToClient\ServerToClientPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ServerToClient'/&gt;" />
+    <XslTransformation OutputPaths="ChatServer\ConnectionExtensions.cs" XmlInputPaths="ChatServer\ChatServerPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ChatServer'/&gt;" />
+    <XslTransformation OutputPaths="ConnectServer\ConnectionExtensions.cs" XmlInputPaths="ConnectServer\ConnectServerPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ConnectServer'/&gt;" />
   </Target>
 
 </Project>

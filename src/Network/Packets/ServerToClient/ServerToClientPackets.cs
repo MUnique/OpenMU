@@ -2484,7 +2484,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the state.
         /// </summary>
-        public TradeButtonState State
+        public TradeButtonStateChanged.TradeButtonState State
         {
             get => (TradeButtonState)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -2935,7 +2935,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public TradeResult Result
+        public TradeFinished.TradeResult Result
         {
             get => (TradeResult)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -3269,7 +3269,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the success.
         /// </summary>
-        public LoginResult Success
+        public LoginResponse.LoginResult Success
         {
             get => (LoginResult)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -3445,7 +3445,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
-        public ChatMessageType Type
+        public ChatMessage.ChatMessageType Type
         {
             get => (ChatMessageType)this.data.Slice(2)[0];
             set => this.data.Slice(2)[0] = (byte)value;
@@ -3621,7 +3621,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the kind.
         /// </summary>
-        public DamageKind Kind
+        public ObjectHit.DamageKind Kind
         {
             get => (DamageKind)this.data.Slice(7).GetByteValue(4, 0);
             set => this.data.Slice(7).SetByteValue((byte)value, 4, 0);
@@ -4740,7 +4740,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the fail reason.
         /// </summary>
-        public ItemPickUpFailReason FailReason
+        public ItemPickUpRequestFailed.ItemPickUpFailReason FailReason
         {
             get => (ItemPickUpFailReason)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -5673,7 +5673,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the item type.
         /// </summary>
-        public ConsumedItemType ItemType
+        public ConsumeItemWithEffect.ConsumedItemType ItemType
         {
             get => (ConsumedItemType)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -5984,7 +5984,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the window.
         /// </summary>
-        public NpcWindow Window
+        public NpcWindowResponse.NpcWindow Window
         {
             get => (NpcWindow)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -6459,7 +6459,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public ItemPriceSetResult Result
+        public PlayerShopSetItemPriceResponse.ItemPriceSetResult Result
         {
             get => (ItemPriceSetResult)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -6834,7 +6834,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the action.
         /// </summary>
-        public ActionKind Action
+        public PlayerShopItemList.ActionKind Action
         {
             get => (ActionKind)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -8732,7 +8732,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public CharacterDeleteResult Result
+        public CharacterDeleteResponse.CharacterDeleteResult Result
         {
             get => (CharacterDeleteResult)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -10172,7 +10172,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
-        public MessageType Type
+        public ServerMessage.MessageType Type
         {
             get => (MessageType)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -10391,7 +10391,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public GuildJoinRequestResult Result
+        public GuildJoinResponse.GuildJoinRequestResult Result
         {
             get => (GuildJoinRequestResult)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -10671,7 +10671,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public GuildKickSuccess Result
+        public GuildKickResponse.GuildKickSuccess Result
         {
             get => (GuildKickSuccess)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -10915,7 +10915,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the error.
         /// </summary>
-        public GuildCreationErrorType Error
+        public GuildCreationResult.GuildCreationErrorType Error
         {
             get => (GuildCreationErrorType)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -11543,7 +11543,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the protection state.
         /// </summary>
-        public VaultProtectionState ProtectionState
+        public VaultProtectionInformation.VaultProtectionState ProtectionState
         {
             get => (VaultProtectionState)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -12160,7 +12160,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public LetterSendRequestResult Result
+        public LetterSendResponse.LetterSendRequestResult Result
         {
             get => (LetterSendRequestResult)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -12296,7 +12296,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the state.
         /// </summary>
-        public LetterState State
+        public AddLetter.LetterState State
         {
             get => (LetterState)this.data.Slice(78)[0];
             set => this.data.Slice(78)[0] = (byte)value;

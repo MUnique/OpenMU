@@ -5,13 +5,14 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using MUnique.OpenMU.DataModel.Composition;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// Defines a game client.
     /// </summary>
     [AggregateRoot]
-    public class GameClientDefinition
+    public class GameClientDefinition : IGameClientVersion
     {
         /// <summary>
         /// Gets or sets the season.

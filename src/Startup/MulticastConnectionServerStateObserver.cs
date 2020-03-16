@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Startup
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using MUnique.OpenMU.Interfaces;
 
@@ -16,6 +17,9 @@ namespace MUnique.OpenMU.Startup
     internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
     {
         private readonly IList<IGameServerStateObserver> observers = new List<IGameServerStateObserver>();
+
+        /// <inheritdoc />
+        public ICollection<(ushort Id, IPEndPoint Endpoint)> GameServerEndPoints => this.observers.SelectMany(o => o.GameServerEndPoints).Distinct().ToList();
 
         /// <summary>
         /// Adds the observer which wants to get notified about changes.

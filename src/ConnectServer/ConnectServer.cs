@@ -102,6 +102,9 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         public int CurrentConnections => this.ClientListener.Clients.Count;
 
+        /// <inheritdoc />
+        public ICollection<(ushort, IPEndPoint)> GameServerEndPoints => this.ServerList.Servers.Select(s => (s.ServerId, s.EndPoint)).ToList();
+
         /// <inheritdoc/>
         public void Start()
         {

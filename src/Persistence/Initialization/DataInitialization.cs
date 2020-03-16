@@ -68,6 +68,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateTestAccounts(10);
                 this.CreateTestAccount("test300", 300);
                 this.CreateTestAccount("test400", 400);
+                var testGmAccount = this.CreateTestAccount("testgm", 400);
+                testGmAccount.State = AccountState.GameMaster;
+                testGmAccount.Characters.ForEach(c => c.CharacterStatus = CharacterStatus.GameMaster);
                 if (!AppDomain.CurrentDomain.GetAssemblies().Contains(typeof(GameServer).Assembly))
                 {
                     // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
@@ -117,7 +120,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256));
         }
 
-        private void CreateTestAccount(string loginName, int level)
+        private Account CreateTestAccount(string loginName, int level)
         {
             var account = this.context.CreateNew<Account>();
             account.LoginName = loginName;
@@ -128,6 +131,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             account.Characters.Add(this.CreateElf(loginName + "Elf", level));
             account.Characters.Add(this.CreateWizard(loginName + "Wiz", level));
             account.Characters.Add(this.CreateDarkLord(loginName + "Dl", level));
+            return account;
         }
 
         private Character CreateWizard(string name, int level)
