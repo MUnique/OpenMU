@@ -51,7 +51,10 @@ namespace MUnique.OpenMU.AdminPanel
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
-            services.AddControllers();
+            services.AddControllers()
+                .ConfigureApplicationPartManager(setup =>
+                    setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
+
             services.AddBlazoredModal();
 
             services.AddSingleton<ServerService>();

@@ -211,6 +211,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public Character Character { get; set; }
     }
 
+    internal partial class Account : IConvertibleTo<BasicModel.Account>
+    {
+        public BasicModel.Account Convert()
+        {
+            MapsterConfigurator.EnsureConfigured();
+
+            return this.Adapt<BasicModel.Account>();
+        }
+    }
+
     internal partial class GameConfiguration : IConvertibleTo<BasicModel.GameConfiguration>
     {
         public BasicModel.GameConfiguration Convert()

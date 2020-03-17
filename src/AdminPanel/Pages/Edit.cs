@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Rendering;
     using MUnique.OpenMU.AdminPanel.Components.Form;
+    using MUnique.OpenMU.AdminPanel.Services;
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
@@ -77,7 +78,8 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         {
             if (this.model is { })
             {
-                builder.AddMarkupContent(0, $"<h1>Edit {this.type.Name}</h1>\r\n");
+                var downloadMarkup = this.GetDownloadMarkup();
+                builder.AddMarkupContent(0, $"<h1>Edit {this.type.Name}</h1>{downloadMarkup}\r\n");
                 builder.OpenComponent<CascadingValue<IContext>>(1);
                 builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this.persistenceContext);
                 builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), true);
@@ -103,6 +105,17 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             this.model = null;
             Task.Run(() => this.LoadData(this.disposeCts.Token), this.disposeCts.Token);
             return base.OnParametersSetAsync();
+        }
+
+        private string GetDownloadMarkup()
+        {
+            if (GenericControllerFeatureProvider.SupportedTypes.Any(t => t.Item1 == type))
+            {
+                var uri = $"/download/{this.type.Name}/{this.type.Name}_{this.Id}.json";
+                return $"<p>Download as json: <a href=\"{uri}\" download><span class=\"oi oi-data-transfer-download\"></span></a></p>";
+            }
+
+            return null;
         }
 
         private async Task LoadData(CancellationToken cancellationToken)
