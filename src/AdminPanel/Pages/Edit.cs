@@ -78,11 +78,18 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             if (this.model is { })
             {
                 builder.AddMarkupContent(0, $"<h1>Edit {this.type.Name}</h1>\r\n");
-                var autoFormType = typeof(AutoForm<>).MakeGenericType(this.type);
-                builder.OpenComponent(1, autoFormType);
-                builder.AddAttribute(2, nameof(AutoForm<object>.Model), this.model);
-                builder.AddAttribute(3, nameof(AutoForm<object>.OnValidSubmit),
-                    EventCallback.Factory.Create(this, this.SaveChanges));
+                builder.OpenComponent<CascadingValue<IContext>>(1);
+                builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this.persistenceContext);
+                builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), true);
+                builder.AddAttribute(4, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
+                {
+                    builder2.OpenComponent(5, typeof(AutoForm<>).MakeGenericType(this.type));
+                    builder2.AddAttribute(6, nameof(AutoForm<object>.Model), this.model);
+                    builder2.AddAttribute(7, nameof(AutoForm<object>.OnValidSubmit),
+                        EventCallback.Factory.Create(this, this.SaveChanges));
+                    builder2.CloseComponent();
+                }));
+
                 builder.CloseComponent();
             }
         }

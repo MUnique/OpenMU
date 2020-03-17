@@ -9,9 +9,9 @@
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
     <BlazoredTypeahead TItem="TObject" TValue="TObject"
-                       SearchMethod="@(text => this.lookupController.GetSuggestionsAsync<TObject>(text))"
                        ValueExpression="@this.ValueExpression"
                        Value="@this.Value"
+                       SearchMethod="@(text => this.lookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
                        EnableDropDown="true"
                        ValueChanged="@this.ValueChanged"
                        placeholder="Search ..."
@@ -40,6 +40,12 @@
     /// </summary>
     [Parameter]
     public string Label { get; set; }
+
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [CascadingParameter]
+    public IContext PersistenceContext { get; set; }
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string value, out TObject result, out string validationErrorMessage)
