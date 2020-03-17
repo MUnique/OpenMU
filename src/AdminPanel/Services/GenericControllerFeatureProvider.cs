@@ -13,12 +13,12 @@ namespace MUnique.OpenMU.AdminPanel.Services
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
-    /// A feature to create generic <see cref="DataController{T,TPersistent}"/> for supported types.
+    /// A feature to create generic <see cref="JsonDownloadController{T,TSerializable}"/> for supported types.
     /// </summary>
     public class GenericControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
     {
         /// <summary>
-        /// Gets the pair of types which are supported. For each of them, a <see cref="DataController{T,TSerializable}"/> is created.
+        /// Gets the pair of types which are supported. For each of them, a <see cref="JsonDownloadController{T,TSerializable}"/> is created.
         /// </summary>
         public static (Type, Type)[] SupportedTypes { get; } =
         {
@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         {
             foreach (var typePair in SupportedTypes)
             {
-                var controllerType = typeof(DataController<,>).MakeGenericType(typePair.Item1, typePair.Item2).GetTypeInfo();
+                var controllerType = typeof(JsonDownloadController<,>).MakeGenericType(typePair.Item1, typePair.Item2).GetTypeInfo();
                 feature.Controllers.Add(controllerType);
             }
         }
