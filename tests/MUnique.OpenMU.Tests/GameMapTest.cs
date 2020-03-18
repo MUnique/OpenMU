@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// An interface which combines several other interfaces which are needed in combination for this test.
         /// </summary>
-        public interface ITestPlayer : ILocateable, IBucketMapObserver, IObservable
+        public interface ITestPlayer : ILocateable, IBucketMapObserver, IObservable, ISupportIdUpdate
         {
         }
 
@@ -36,11 +36,9 @@ namespace MUnique.OpenMU.Tests
         {
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
-            player1.Setup(p => p.Id).Returns(1);
             player1.Object.Position = new Point(100, 100);
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
-            player2.Setup(p => p.Id).Returns(2);
             player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
             player1.Verify(p => p.NewLocateablesInScope(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
@@ -57,11 +55,9 @@ namespace MUnique.OpenMU.Tests
         {
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
-            player1.Setup(p => p.Id).Returns(1);
 
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
-            player2.Setup(p => p.Id).Returns(2);
             player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
 
@@ -82,11 +78,9 @@ namespace MUnique.OpenMU.Tests
         {
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
-            player1.Setup(p => p.Id).Returns(1);
             player1.Object.Position = new Point(101, 100);
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
-            player2.Setup(p => p.Id).Returns(2);
             player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
 
@@ -104,11 +98,9 @@ namespace MUnique.OpenMU.Tests
         {
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
-            player1.Setup(p => p.Id).Returns(1);
             player1.Object.Position = new Point(101, 100);
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
-            player2.Setup(p => p.Id).Returns(2);
             player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
 
@@ -137,11 +129,8 @@ namespace MUnique.OpenMU.Tests
         {
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
-            player1.Setup(p => p.Id).Returns(1);
-
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
-            player2.Setup(p => p.Id).Returns(2);
             player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
 
@@ -165,11 +154,9 @@ namespace MUnique.OpenMU.Tests
         {
             var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
             var player1 = this.GetPlayer();
-            player1.Setup(p => p.Id).Returns(1);
             player1.Object.Position = new Point(100, 100);
             map.Add(player1.Object);
             var player2 = this.GetPlayer();
-            player2.Setup(p => p.Id).Returns(2);
             player2.Object.Position = new Point(101, 100);
             map.Add(player2.Object);
             map.Remove(player2.Object);
@@ -184,6 +171,8 @@ namespace MUnique.OpenMU.Tests
         {
             var player = new Mock<ITestPlayer>();
             player.SetupAllProperties();
+            player.As<ILocateable>().SetupGet(p => p.Id).Returns(() => (player.Object as ISupportIdUpdate).Id);
+
             player.Setup(p => p.ObservingBuckets).Returns(new List<Bucket<ILocateable>>());
             player.Setup(p => p.Observers).Returns(new HashSet<IWorldObserver>());
             player.Setup(p => p.ObserverLock).Returns(new System.Threading.ReaderWriterLockSlim());

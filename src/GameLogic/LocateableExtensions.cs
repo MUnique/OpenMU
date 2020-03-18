@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.GameLogic
         public static bool IsAtSafezone(this ILocateable obj)
         {
             var map = obj.CurrentMap;
-            if (map == null)
+            if (map?.Terrain?.SafezoneMap == null)
             {
                 return true;
             }
