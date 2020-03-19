@@ -95,9 +95,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             {
                 this.mapDefinition.SafezoneMap = this.mapDefinition;
             }
-
-            var lorencia = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == Lorencia.Number);
-            this.mapDefinition.SafezoneMap = lorencia;
+            else
+            {
+                var lorencia = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == Lorencia.Number);
+                this.mapDefinition.SafezoneMap = lorencia;
+            }
         }
 
         /// <summary>
