@@ -2173,7 +2173,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 5;
+        public static int Length => 8;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -2185,8 +2185,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort GateNumber
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>

@@ -549,14 +549,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>1C</Code>
       <Name>EnterGateRequest</Name>
-      <Length>5</Length>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>When the player enters an area on the game map which is configured as gate at the client data files.</SentWhen>
       <CausedReaction>If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.</CausedReaction>
       <Fields>
         <Field>
-          <Index>3</Index>
-          <Type>ShortBigEndian</Type>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
           <Name>GateNumber</Name>
         </Field>
       </Fields>
