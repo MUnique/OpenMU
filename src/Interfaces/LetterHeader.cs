@@ -48,5 +48,11 @@ namespace MUnique.OpenMU.Interfaces
         /// Gets or sets a value indicating whether the letter has been read.
         /// </summary>
         public bool ReadFlag { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.SenderName} -> {this.ReceiverName} - {this.Subject} ({this.LetterDate})";
+        }
     }
 }

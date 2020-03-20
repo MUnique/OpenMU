@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Crafting settings for the simple item crafting handler.
@@ -29,11 +30,13 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// Gets or sets the required items.
         /// </summary>
+        [MemberOfAggregate]
         public virtual IList<ItemCraftingRequiredItem> RequiredItems { get; protected set; }
 
         /// <summary>
         /// Gets or sets the result items, which are generated when the crafting succeeded.
         /// </summary>
+        [MemberOfAggregate]
         public virtual IList<ItemCraftingResultItem> ResultItems { get; protected set; }
 
         /// <summary>

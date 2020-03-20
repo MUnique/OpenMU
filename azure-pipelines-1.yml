@@ -1,7 +1,17 @@
 # Build and Push Docker Container
 
 trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - docs/*
+    - tests/*
+
+pr:
 - master
+- releases/*
 
 pool:
   vmImage: 'ubuntu-latest'

@@ -84,7 +84,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <exception cref="NotImplementedException">At the moment only Npgsql engine (PostgreSQL) is implemented.</exception>
         internal static void Configure(this DbContext context, DbContextOptionsBuilder optionsBuilder)
         {
-            if (Settings.TryGetValue(context.GetType(), out ConnectionSetting setting))
+            var type = context.GetType();
+            if (type.IsGenericType)
+            {
+                type = type.GetGenericTypeDefinition();
+            }
+
+            if (Settings.TryGetValue(type, out ConnectionSetting setting))
             {
                 switch (setting.DatabaseEngine)
                 {

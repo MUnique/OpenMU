@@ -376,6 +376,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                     item.BasePowerUpAttributes.Add(staffRisePowerUpMaxDmg);
                 }
             }
+
+            if (group == (int)ItemGroups.Bows && height > 1)
+            {
+                var ammunitionConsumption = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+                ammunitionConsumption.TargetAttribute = Stats.AmmunitionConsumptionRate.GetPersistent(this.GameConfiguration);
+                ammunitionConsumption.BaseValue = 1.0f;
+                item.BasePowerUpAttributes.Add(ammunitionConsumption);
+            }
+
+            item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
         }
 
         private void AddGuardianOptions()

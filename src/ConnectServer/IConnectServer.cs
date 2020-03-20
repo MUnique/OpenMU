@@ -31,9 +31,6 @@ namespace MUnique.OpenMU.ConnectServer
         /// <summary>
         /// Gets the client version.
         /// </summary>
-        /// <value>
-        /// The client version.
-        /// </value>
         ClientVersion ClientVersion { get; }
     }
 }

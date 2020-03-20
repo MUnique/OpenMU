@@ -5,10 +5,12 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Defines the configuration of a game server.
     /// </summary>
+    [AggregateRoot]
     public class GameServerDefinition
     {
         /// <summary>
@@ -34,6 +36,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the endpoints of the game server.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<GameServerEndpoint> Endpoints { get; protected set; }
 
         /// <inheritdoc/>

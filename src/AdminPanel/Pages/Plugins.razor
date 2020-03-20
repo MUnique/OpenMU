@@ -1,0 +1,69 @@
+﻿@page "/plugins"
+@using MUnique.OpenMU.AdminPanel.Models;
+@using MUnique.OpenMU.AdminPanel.Services
+
+@inject PlugInController plugInController;
+
+<h1>Plugins</h1>
+
+<div>
+    <DataTable TItem=@PlugInConfigurationViewItem>
+        <TableHeader>
+            <th class="col-1">Extension Point</th>
+            <th class="col-1">Plugin Name</th>
+            <th class="col-1">Plugin Type</th>
+            <th class="col-1">Action</th>
+        </TableHeader>
+        <FilterHeader>
+            <th><PlugInExtensionPointSelection SelectedPointId="@this.plugInController.PointFilter" ExtensionPoints="@this.plugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
+            <th><input type="search" placeholder="Search" @bind="@this.plugInController.NameFilter" @bind:event="oninput"/></th>
+            <th><input type="search" placeholder="Search" @bind="@this.plugInController.TypeFilter" @bind:event="oninput"/></th>
+            <th></th>
+        </FilterHeader>
+        <ItemTemplate Context="item">
+            <td title=@item.PlugInPointDescription>@item.PlugInPointName</td>
+            <td title=@item.PlugInDescription>
+                <MarkedText Marked=@this.plugInController.NameFilter Text=@item.PlugInName />
+            </td>
+            <td title=@item.TypeId>
+                <MarkedText Marked=@this.plugInController.TypeFilter Text=@item.TypeName />
+            </td>
+            <td>
+                @if (item.IsActive)
+                {
+                    <Button class="btn-warning" @onclick="() => this.plugInController.Deactivate(item)">Deactivate</Button>
+                }
+                else
+                {
+                    <Button class="btn-success" @onclick="() => this.plugInController.Activate(item)">Activate</Button>
+                }
+            </td>
+        </ItemTemplate>
+        <TableFooter>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </TableFooter>
+    </DataTable>
+</div>
+
+@code {
+    
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.plugInController.DataChanged += (s, e) => this.StateHasChanged();
+    }
+
+    private void OnPlugInPointSelected(ChangeEventArgs args)
+    {
+        if (args.Value is string guidString
+            && Guid.TryParse(guidString, out var result))
+        {
+            this.plugInController.PointFilter = result;
+        }
+    }
+}

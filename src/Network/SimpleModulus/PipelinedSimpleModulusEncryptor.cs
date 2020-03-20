@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     using System.IO.Pipelines;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// The standard encryptor (server-side) which encrypts 0xC3 and 0xC4-packets with the "simple modulus" algorithm.
@@ -102,7 +103,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             var byteOffset = GetByteOffset(resultIndex);
             var bitOffset = GetBitOffset(resultIndex);
             var firstMask = GetFirstBitMask(resultIndex);
-            var swapped = result.SwapBytes();
+            var swapped = ReverseEndianness(result);
             target[byteOffset++] |= (byte)(swapped >> (24 + bitOffset) & firstMask);
             target[byteOffset++] = (byte)(swapped >> (16 + bitOffset));
             target[byteOffset] = (byte)((swapped >> (8 + bitOffset)) & (0xFF << (8 - bitOffset)));

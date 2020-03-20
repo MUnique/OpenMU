@@ -1,0 +1,43 @@
+﻿@using log4net.Core
+@using MUnique.OpenMU.AdminPanel.Services
+
+@inject LogService logService;
+
+<div class="log-notifications">
+    @if (this.showWarning)
+    {
+        <span class="oi oi-warning"></span>
+    }
+
+    @if (this.showError)
+    {
+        <span class="oi oi-fire"></span>
+    }
+</div>
+
+@code {
+    private bool showWarning;
+    private bool showError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await this.logService.Initialization;
+        this.logService.LogEventReceived += this.OnLogEventReceived;
+    }
+
+    private void OnLogEventReceived(object sender, LogEntryReceivedEventArgs e)
+    {
+        if (!this.showError && e.Data.Level.Value == Level.Error.Value)
+        {
+            this.showError = true;
+            this.InvokeAsync(this.StateHasChanged);
+        }
+
+        if (this.showWarning && e.Data.Level.Value == Level.Warn.Value)
+        {
+            this.showWarning = true;
+            this.InvokeAsync(this.StateHasChanged);
+        }
+    }
+}

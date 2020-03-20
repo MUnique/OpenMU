@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -45,11 +46,13 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the defined monster spawn areas.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<MonsterSpawnArea> MonsterSpawns { get; protected set; }
 
         /// <summary>
         /// Gets or sets the enter gates, though which the player can move to other maps.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<EnterGate> EnterGates { get; protected set; }
 
         /// <summary>
@@ -69,6 +72,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the spawn gates.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ExitGate> ExitGates { get; protected set; }
 
         /// <summary>
@@ -80,6 +84,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the map requirements for player to use this map.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<AttributeRequirement> MapRequirements { get; protected set; }
 
         /// <inheritdoc/>

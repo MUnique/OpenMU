@@ -11,14 +11,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// Repository for the <see cref="GameServerDefinition"/>.
     /// It sets the <see cref="EntityDataContext.CurrentGameConfiguration"/> before loading other dependent data which tries to load the configured maps of a server.
     /// </summary>
-    internal class GameServerDefinitionRepository : GenericRepository<GameServerDefinition>
+    internal class GameServerDefinitionRepository : CachingGenericRepository<GameServerDefinition>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GameServerDefinitionRepository"/> class.
         /// </summary>
-        /// <param name="contextProvider">The repository manager.</param>
-        public GameServerDefinitionRepository(PersistenceContextProvider contextProvider)
-            : base(contextProvider)
+        /// <param name="repositoryManager">The repository manager.</param>
+        public GameServerDefinitionRepository(RepositoryManager repositoryManager)
+            : base(repositoryManager)
         {
         }
 
@@ -27,29 +27,29 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             if (obj is GameServerDefinition definition)
             {
-                if (definition.GameConfigurationId.HasValue)
-                {
-                    definition.RawGameConfiguration =
-                        this.ContextProvider.RepositoryManager.GetRepository<GameConfiguration>()
-                            .GetById(definition.GameConfigurationId.Value);
-
-                    if (currentContext is EntityDataContext context)
-                    {
-                        context.CurrentGameConfiguration = definition.RawGameConfiguration;
-                    }
-                }
-
-                if (definition.ServerConfigurationId.HasValue)
-                {
-                    definition.ServerConfiguration = this.ContextProvider.RepositoryManager.GetRepository<GameServerConfiguration>()
-                        .GetById(definition.ServerConfigurationId.Value);
-                }
-
                 var entityEntry = currentContext.Entry(obj);
                 foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded))
                 {
                     this.LoadCollection(entityEntry, collection.Metadata, currentContext);
                     collection.IsLoaded = true;
+                }
+
+                if (definition.GameConfigurationId.HasValue)
+                {
+                    definition.RawGameConfiguration =
+                        this.RepositoryManager.GetRepository<GameConfiguration>()
+                            .GetById(definition.GameConfigurationId.Value);
+
+                    if (currentContext is EntityDataContext context)
+                    {
+                       context.CurrentGameConfiguration = definition.RawGameConfiguration;
+                    }
+                }
+
+                if (definition.ServerConfigurationId.HasValue)
+                {
+                    definition.ServerConfiguration = this.RepositoryManager.GetRepository<GameServerConfiguration>()
+                        .GetById(definition.ServerConfigurationId.Value);
                 }
             }
         }

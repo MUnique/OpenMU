@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         {
             if (obj is TValue value)
             {
-                this.values.Add(key, value);
+                this.values[key] = value;
             }
             else
             {

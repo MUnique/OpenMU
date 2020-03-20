@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.AdminPanel
 {
     using System.Collections.Generic;
     using apache.log4net.Extensions.Logging;
-    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.AdminPanel
 
             // you might need to allow it first with netsh:
             // netsh http add urlacl http://+:1234/ user=[Username]
-            var host = WebHost.CreateDefaultBuilder()
+            var host = Host.CreateDefaultBuilder()
                 .ConfigureLogging(configureLogging =>
                 {
                     configureLogging.ClearProviders();
@@ -48,16 +48,17 @@ namespace MUnique.OpenMU.AdminPanel
                     serviceCollection.AddSingleton(persistenceContextProvider);
                     serviceCollection.AddSingleton(changeListener);
                 })
-                .UseKestrel(options =>
+                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    // Default port
-                    options.ListenAnyIP(port);
+                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStaticWebAssets();
+
+                    // For testing purposes, we use http. Later we need to switch to https.
+                    // The self-signed certificate would otherwise cause a lot of warnings in the browser.
+                    webBuilder.UseUrls($"http://*:{port}");
                 })
-                .UseStartup<Startup>()
                 .Build();
             host.Start();
-            SignalRGameServerStateObserver.Services = host.Services;
-            SignalRMapStateObserver.Services = host.Services;
         }
     }
 }

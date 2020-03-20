@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.DataModel.Entities
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -42,6 +43,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the item options.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemOptionLink> ItemOptions { get; protected set; }
 
         /// <summary>
@@ -92,6 +94,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
+            stringBuilder.Append("Slot ").Append(this.ItemSlot).Append(": ");
 
             if (this.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent))
             {
@@ -112,7 +115,7 @@ namespace MUnique.OpenMU.DataModel.Entities
 
             foreach (var option in this.ItemOptions.OrderBy(o => o.ItemOption.OptionType == ItemOptionTypes.Option))
             {
-                stringBuilder.Append("+").Append(option.ItemOption.PowerUpDefinition.ToString());
+                stringBuilder.Append("+").Append(option.ItemOption.PowerUpDefinition);
             }
 
             if (this.HasSkill)

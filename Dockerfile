@@ -7,10 +7,10 @@ RUN npm i -g typescript
 
 COPY src/ ./app/src
 COPY tests/ ./app/tests
-COPY doc/ ./app/doc
+COPY docs/ ./app/docs
 
 WORKDIR /app
-RUN dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj -o out -p:ci=true
+RUN dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj -o out -c Release -p:ci=true
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 
@@ -23,5 +23,4 @@ EXPOSE 55980
 
 WORKDIR /app
 COPY --from=build /app/out ./
-COPY --from=build /app/bin/Debug/wwwroot/content/js ./wwwroot/content/js
 ENTRYPOINT ["dotnet", "MUnique.OpenMU.Startup.dll", "-autostart"]

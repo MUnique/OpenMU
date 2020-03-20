@@ -40,8 +40,8 @@ namespace MUnique.OpenMU.Tests
             gameConfig.Object.RecoveryInterval = int.MaxValue;
             gameConfig.Object.Maps.Add(map.Object);
 
-            var mapInitializer = new MapInitializer(gameConfig.Object, null);
-            var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), null, mapInitializer);
+            var mapInitializer = new MapInitializer(gameConfig.Object);
+            var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer);
             return GetPlayer(gameContext);
         }
 

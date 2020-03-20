@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// Initializes a new instance of the <see cref="AccountJsonObjectLoader"/> class.
         /// </summary>
         public AccountJsonObjectLoader()
-            : base(new AccountJsonQueryBuilder(), new JsonObjectDeserializer(), new MultipleSourceReferenceResolver(new IdReferenceResolver(), ConfigurationIdReferenceResolver.Instance))
+            : base(new JsonQueryBuilder(), new JsonObjectDeserializer(), new MultipleSourceReferenceResolver(new IdReferenceResolver(), ConfigurationIdReferenceResolver.Instance))
         {
         }
     }

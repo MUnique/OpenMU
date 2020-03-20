@@ -29,10 +29,18 @@ namespace MUnique.OpenMU.Network
             this.connection = connection;
             this.expectedPacketSize = expectedPacketSize;
             Monitor.Enter(connection);
-            var span = this.Span;
-            span.Clear();
-            span[0] = packetType;
-            span.SetPacketSize();
+            try
+            {
+                var span = this.Span;
+                span.Clear();
+                span[0] = packetType;
+                span.SetPacketSize();
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(connection);
+                throw;
+            }
         }
 
         /// <summary>

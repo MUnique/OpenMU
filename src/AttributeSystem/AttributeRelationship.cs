@@ -93,5 +93,16 @@ namespace MUnique.OpenMU.AttributeSystem
         /// Gets or sets the operand which is applied to the input attribute before adding to the target attribute.
         /// </summary>
         public float InputOperand { get; set; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            if (this.TargetAttribute is null)
+            {
+                return $"{this.InputAttribute} {this.InputOperator.AsString()} {this.InputOperand}";
+            }
+
+            return $"{this.TargetAttribute} += {this.InputAttribute} {this.InputOperator.AsString()} {this.InputOperand}";
+        }
     }
 }

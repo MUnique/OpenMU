@@ -1,0 +1,46 @@
+﻿@using MUnique.OpenMU.AdminPanel.Services
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.GameLogic
+
+<table>
+    <thead>
+    <tr>
+        <td>Player Name</td>
+        <td>ID</td>
+        <td>Actions</td>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var player in this.MapController.Objects.Values.OfType<Player>()) // todo: not using the Player class, introduce an interface!
+        {
+            <tr>
+                <td>@player.Name</td>
+                <td>@player.Id</td>
+                <td>
+                    <button type="button" class="oi oi-account-logout" @onclick=@(() => player.Disconnect()) title="Disconnect"></button>
+                    <button type="button" class="oi oi-ban" @onclick=@(() =>
+                                                                     {
+                                                                         player.Account.State = AccountState.TemporarilyBanned;
+                                                                         player.Disconnect();
+                                                                     }) title="Temporarily ban"></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the map controller.
+    /// </summary>
+    [Parameter]
+    public IMapController MapController { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        this.MapController.ObjectsChanged += (_, __) => this.InvokeAsync(this.StateHasChanged);
+    }
+}

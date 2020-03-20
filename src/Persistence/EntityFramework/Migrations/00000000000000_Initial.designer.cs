@@ -1231,6 +1231,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("ItemSlotId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("IsAmmunition")
+                        .HasColumnType("boolean");
+
                     b.Property<byte>("MaximumItemLevel")
                         .HasColumnType("smallint");
 

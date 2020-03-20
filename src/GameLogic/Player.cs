@@ -47,6 +47,7 @@ namespace MUnique.OpenMU.GameLogic
         private Character selectedCharacter;
 
         private ICustomPlugInContainer<IViewPlugIn> viewPlugIns;
+        private GameMap currentMap;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Player" /> class.
@@ -195,7 +196,19 @@ namespace MUnique.OpenMU.GameLogic
         public int TradingMoney { get; set; }
 
         /// <inheritdoc/>
-        public GameMap CurrentMap { get; private set; }
+        public GameMap CurrentMap
+        {
+            get => this.currentMap;
+
+            private set
+            {
+                if (this.currentMap != value)
+                {
+                    this.currentMap = value;
+                    this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public ISet<IWorldObserver> Observers { get; } = new HashSet<IWorldObserver>();
@@ -233,8 +246,12 @@ namespace MUnique.OpenMU.GameLogic
 
             set
             {
-                this.SelectedCharacter.PositionX = value.X;
-                this.SelectedCharacter.PositionY = value.Y;
+                if (this.Position != value)
+                {
+                    this.SelectedCharacter.PositionX = value.X;
+                    this.SelectedCharacter.PositionY = value.Y;
+                    this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+                }
             }
         }
 
@@ -317,6 +334,8 @@ namespace MUnique.OpenMU.GameLogic
                 (attacker as Player)?.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
                 return;
             }
+
+            attacker.ApplyAmmunitionConsumption(hitInfo);
 
             if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
             {
@@ -628,22 +647,29 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void Regenerate()
         {
-            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
+            try
             {
-                if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() && this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
                 {
-                    // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
-                    // This attribute is usually provided by a level 380 armor and a Guardian Option.
-                    continue;
+                    if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() && this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                    {
+                        // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
+                        // This attribute is usually provided by a level 380 armor and a Guardian Option.
+                        continue;
+                    }
+
+                    this.Attributes[r.CurrentAttribute] = Math.Min(
+                        this.Attributes[r.CurrentAttribute] + ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) + this.Attributes[r.AbsoluteAttribute]),
+                        this.Attributes[r.MaximumAttribute]);
                 }
 
-                this.Attributes[r.CurrentAttribute] = Math.Min(
-                    this.Attributes[r.CurrentAttribute] + ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) + this.Attributes[r.AbsoluteAttribute]),
-                    this.Attributes[r.MaximumAttribute]);
+                this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
+                this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
             }
-
-            this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
-            this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
+            catch (InvalidOperationException)
+            {
+                // may happen after a character disconnected in the mean time.
+            }
         }
 
         /// <summary>
@@ -928,6 +954,23 @@ namespace MUnique.OpenMU.GameLogic
             this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, killer);
         }
 
+        private Item GetAmmunitionItem()
+        {
+            if (this.Inventory.GetItem(InventoryConstants.LeftHandSlot) is { } leftItem
+                && leftItem.Definition.IsAmmunition)
+            {
+                return leftItem;
+            }
+
+            if (this.Inventory.GetItem(InventoryConstants.RightHandSlot) is { } rightItem
+                && rightItem.Definition.IsAmmunition)
+            {
+                return rightItem;
+            }
+
+            return null;
+        }
+
         private void OnPlayerEnteredWorld(object sender, EventArgs e)
         {
             this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter);
@@ -946,6 +989,9 @@ namespace MUnique.OpenMU.GameLogic
             this.Attributes.GetOrCreateAttribute(Stats.MaximumAbility).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumHealth).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumShield).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
+            var ammoAttribute = this.Attributes.GetOrCreateAttribute(Stats.AmmunitionAmount);
+            this.Attributes[Stats.AmmunitionAmount] = this.GetAmmunitionItem()?.Durability ?? 0;
+            ammoAttribute.ValueChanged += (a, b) => this.OnAmmunitionAmountChanged();
 
             this.ClientReadyAfterMapChange();
 
@@ -981,6 +1027,26 @@ namespace MUnique.OpenMU.GameLogic
             this.Attributes[Stats.CurrentShield] = Math.Min(this.Attributes[Stats.CurrentShield], this.Attributes[Stats.MaximumShield]);
             this.ViewPlugIns.GetPlugIn<IUpdateMaximumHealthPlugIn>()?.UpdateMaximumHealth();
             this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
+        }
+
+        private void OnAmmunitionAmountChanged()
+        {
+            var value = Math.Max((byte)this.Attributes[Stats.AmmunitionAmount], (byte)0);
+            if (this.GetAmmunitionItem() is { } ammoItem
+                && ammoItem.Durability != value)
+            {
+                ammoItem.Durability = value;
+                if (ammoItem.Durability == 0)
+                {
+                    this.Inventory.RemoveItem(ammoItem);
+                    this.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(ammoItem.ItemSlot);
+                    this.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(ammoItem);
+                }
+                else
+                {
+                    this.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(ammoItem, false);
+                }
+            }
         }
 
         private void OnMaximumManaOrAbilityChanged()

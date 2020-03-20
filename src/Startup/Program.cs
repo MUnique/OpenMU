@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.Startup
     using System.Threading;
     using log4net;
     using log4net.Config;
-    using Microsoft.EntityFrameworkCore.Internal;
     using MUnique.OpenMU.AdminPanel;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.ConnectServer;
@@ -29,6 +28,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.Initialization;
     using MUnique.OpenMU.Persistence.InMemory;
+    using MUnique.OpenMU.PublicApi;
 
     /// <summary>
     /// The startup class for an all-in-one game server.
@@ -63,13 +63,12 @@ namespace MUnique.OpenMU.Startup
             var ipResolver = IpAddressResolverFactory.DetermineIpResolver(args);
 
             Log.Info("Start initializing sub-components");
-            var signalRServerObserver = new SignalRGameServerStateObserver();
-            var serverConfigListener = new ServerConfigurationChangeListener(this.servers, signalRServerObserver);
+            var serverConfigListener = new ServerConfigurationChangeListener(this.servers);
             var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
             var loginServer = new LoginServer();
 
             var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
-            var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), signalRServerObserver, ipResolver);
+            var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), ipResolver, chatServerDefinition.GetId());
             this.servers.Add(chatServer);
             var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
             var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
@@ -84,7 +83,7 @@ namespace MUnique.OpenMU.Startup
             foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
             {
                 var clientVersion = new ClientVersion(connectServerDefinition.Client.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
-                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, signalRServerObserver, clientVersion);
+                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
                 this.servers.Add(connectServer);
                 if (!connectServers.TryGetValue(connectServerDefinition.Client, out var observer))
                 {
@@ -110,7 +109,7 @@ namespace MUnique.OpenMU.Startup
             {
                 using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
                 {
-                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer, signalRServerObserver);
+                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer);
                     foreach (var endpoint in gameServerDefinition.Endpoints)
                     {
                         gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, connectServers[endpoint.Client], ipResolver));
@@ -124,9 +123,13 @@ namespace MUnique.OpenMU.Startup
 
             stopwatch.Stop();
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
+
+            Log.Info("Start API...");
+            ApiHost.RunAsync(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
+            Log.Info("Started API");
+
             var adminPort = this.DetermineAdminPort(args);
             Log.Info($"Start initializing admin panel for port {adminPort}.");
-
             this.adminPanel = new AdminPanel(adminPort, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
             Log.Info($"Admin panel initialized, port {adminPort}.");
 

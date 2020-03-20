@@ -1,0 +1,29 @@
+﻿@using Nito.AsyncEx
+
+<div class="livemap-target" id=@this.Id></div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the id of the maps DOM-Element.
+    /// </summary>
+    [Parameter]
+    public string Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the lazy map controller. It'll be initialized after the first render.
+    /// </summary>
+    [Parameter]
+    public AsyncLazy<IMapController> MapController { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            await this.MapController;
+            this.StateHasChanged();
+        }
+    }
+}

@@ -1463,6 +1463,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Number = table.Column<short>(nullable: false),
                     Width = table.Column<byte>(nullable: false),
                     Height = table.Column<byte>(nullable: false),
+                    IsAmmunition = table.Column<bool>(nullable: false),
                     DropsFromMonsters = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     DropLevel = table.Column<byte>(nullable: false),

@@ -1,0 +1,158 @@
+﻿@using System.ComponentModel
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Interfaces
+@implements IDisposable
+
+<tr class=@(this.Server.ServerState == ServerState.Started ? "success" : "warning") >
+    <td>
+        @if (this.Server.Type == ServerType.GameServer || this.Server.Type == ServerType.ConnectServer)
+        {
+            <button type="button" @onclick="OnExpandClick">
+                <span class=@this.GetExpandIconClass() ></span>
+            </button>
+        }
+    </td>
+    <td>
+        @switch (this.Server.Type)
+        {
+            case ServerType.GameServer:
+                <NavLink href="@("edit/" + typeof(GameServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                break;
+            case ServerType.ConnectServer:
+                <NavLink href="@("edit/" + typeof(ConnectServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                break;
+            case ServerType.ChatServer:
+                <NavLink href="@("edit/" + typeof(ChatServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                break;
+            default:
+                @this.Server.Description
+                break;
+        }
+
+        @if (this.isExpanded && this.Server.Type == ServerType.GameServer)
+        {
+            <div class="jumbotron jumbotron-fluid">
+                <div class="container">
+                    <MapList GameServer=@(this.Server as IGameServer) />
+                </div>
+            </div>
+        }
+
+        @if (this.isExpanded && this.Server.Type == ServerType.ConnectServer)
+        {
+            <div class="jumbotron jumbotron-fluid">
+                <div class="container">
+                    <ConnectServerConfiguration Server=@(this.Server as IConnectServer) />
+                </div>
+            </div>
+        }
+    </td>
+    <td>
+        <div>@this.Server.CurrentConnections / @(this.Server.MaximumConnections < int.MaxValue ? this.Server.MaximumConnections.ToString() : "∞")</div>
+    </td>
+    <td>@this.GetStateCaption()</td>
+    <td>
+        <button type="button" disabled=@(!this.IsActionAvailable()) @onclick="@OnActionClick" class=@this.GetActionClass()>@this.GetActionCaption()</button>
+    </td>
+</tr>
+
+@code {
+
+    private bool isExpanded;
+
+    /// <summary>
+    /// Gets or sets the server which is shown in this component.
+    /// </summary>
+    [Parameter]
+    public IManageableServer Server { get; set; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.Server.PropertyChanged -= this.OnServerPropertyChanged;
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.Server.PropertyChanged += this.OnServerPropertyChanged;
+    }
+
+    private async void OnServerPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)
+    {
+        await this.InvokeAsync(this.StateHasChanged);
+    }
+
+    private string GetExpandIconClass()
+    {
+        if (this.isExpanded)
+        {
+            return "oi oi-minus";
+        }
+
+        if (this.Server.Type == ServerType.GameServer)
+        {
+            return "oi oi-plus";
+        }
+
+        return "oi oi-cog";
+    }
+
+    private string GetActionClass()
+    {
+
+        if (this.Server.ServerState == ServerState.Started)
+            return "btn-success";
+        else
+            return "btn-warning";
+    }
+
+    private void OnExpandClick(MouseEventArgs eventArgs)
+    {
+        this.isExpanded = !this.isExpanded;
+        this.StateHasChanged();
+    }
+
+    private void OnActionClick(MouseEventArgs eventArgs)
+    {
+        if (this.Server.ServerState == ServerState.Started)
+        {
+            this.Server.Shutdown();
+        }
+        else
+        {
+            this.Server.Start();
+        }
+    }
+
+    private bool IsActionAvailable()
+    {
+        return (this.Server.ServerState == ServerState.Started || this.Server.ServerState == ServerState.Stopped);
+    }
+
+    private string GetActionCaption()
+    {
+        if (this.Server.ServerState == ServerState.Started)
+            return "Shutdown";
+        else
+            return "Start";
+    }
+
+    private string GetStateCaption()
+    {
+        switch (this.Server.ServerState)
+        {
+            case ServerState.Stopped:
+                return "Stopped";
+            case ServerState.Starting:
+                return "Starting ...";
+            case ServerState.Started:
+                return "Started";
+            case ServerState.Stopping:
+                return "Stopping ...";
+        }
+
+        return string.Empty;
+    }
+}

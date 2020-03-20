@@ -1226,6 +1226,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("Height")
                         .HasColumnType("smallint");
 
+                    b.Property<bool>("IsAmmunition");
+                       .HasColumnType("boolean");
+
                     b.Property<Guid?>("ItemSlotId")
                         .HasColumnType("uuid");
 

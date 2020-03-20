@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
@@ -73,6 +74,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
                     break;
                 case NpcWindow.VaultStorage:
+                    player.Account.Vault ??= player.PersistenceContext.CreateNew<ItemStorage>();
                     player.Vault = new Storage(InventoryConstants.WarehouseSize, player.Account.Vault);
                     player.ViewPlugIns.GetPlugIn<IShowVaultPlugIn>()?.ShowVault();
                     break;

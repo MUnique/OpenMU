@@ -3,14 +3,18 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/eee4aebcd9fd46888013530bd8f96a17)](https://www.codacy.com/project/sven-n/OpenMU/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MUnique/OpenMU&amp;utm_campaign=Badge_Grade_Dashboard)
 [![Gitter chat](https://badges.gitter.im/OpenMU-Project/gitter.svg)](https://gitter.im/OpenMU-Project/Lobby)
+[![Discord chat](https://img.shields.io/discord/669595902750490698?logo=discord)](https://discord.gg/2u5Agkd)
 
 | Platform       |Build Status          |
 |----------------|----------------------|
 | Windows        | ![Windows Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU?branchName=master) |
 | Linux (Docker) | [![Docker Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU%20Docker?branchName=master)](https://hub.docker.com/r/munique/openmu)  |
 
+| NuGet Packages |   |
+|----------------|---|
+| MUnique.OpenMU.Network | [![NuGet Badge](https://img.shields.io/nuget/v/MUnique.OpenMU.Network)](https://www.nuget.org/packages/MUnique.OpenMU.Network/) |
+| MUnique.OpenMU.Network.Packets | [![NuGet Badge](https://img.shields.io/nuget/v/MUnique.OpenMU.Network.Packets)](https://www.nuget.org/packages/MUnique.OpenMU.Network.Packets/) |
 
-Welcome to the OpenMU project. 
 
 This project aims to create an easy to use, extendable and customizable server for a MMORPG called "MU Online".
 The server supports multiple versions of the game, but the main focus is version of Season 6 Episode 3 using the ENG (english) protocol. 
@@ -31,8 +35,7 @@ This project is released under the MIT license (see LICENSE file).
 ## Used technologies ##
 The project is mainly written in C# and targets .NET Standard 2.1 and .NET Core 3.1.
 
-The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel)
-and uses the [React](https://reactjs.org) and [Redux](https://redux.js.org/) libraries for the user interface.
+The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel) and implemented as Blazor Server App.
 
 At the moment the persistence layer uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 and [PostgreSQL](https://www.postgresql.org) as database. Additionally, it's also possible to start it in a non-persistent in-memory mode.
@@ -46,12 +49,12 @@ Contributions are welcome if they meet the following criteria:
 * No code copied/converted from the well-known decompiled source of the original server.
 
 If you want to contribute, please create a new issue for the feature or bug (if the issue doesn't exist yet) so we
-can see who is working on something and can discuss possible solutions.
+can see who is working on something and can discuss possible solutions. If it's a small thing, you can also just send a pull request without adding an issue.
 
 Apart of that, contributions from non-developers are welcome as well. You can test the server, submit issues or
 suggestions, packet descriptions or documentations about the concepts and mechanics of the game itself. Please use markdown files/syntax for this purpose.
 
-If you have questions about that, don't hesitate to ask by submitting an issue.
+If you have questions about that, don't hesitate to ask in our [discord channel](https://discord.gg/2u5Agkd) or by submitting an issue.
 
 ## How to contribute code ##
 If you want to contribute code, please do the following steps:

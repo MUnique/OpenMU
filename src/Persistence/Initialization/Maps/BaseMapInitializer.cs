@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     /// <summary>
     /// Base class for a map initializer which provides some common basic functionality.
     /// </summary>
-    internal abstract class BaseMapInitializer : IInitializer
+    internal abstract class BaseMapInitializer : IMapInitializer
     {
         private GameMapDefinition mapDefinition;
 
@@ -86,6 +86,20 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
 
             this.InitializeDropItemGroups();
             this.GameConfiguration.Maps.Add(this.mapDefinition);
+        }
+
+        /// <inheritdoc/>
+        public virtual void SetSafezoneMap()
+        {
+            if (this.mapDefinition.ExitGates.Any(g => g.IsSpawnGate))
+            {
+                this.mapDefinition.SafezoneMap = this.mapDefinition;
+            }
+            else
+            {
+                var lorencia = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == Lorencia.Number);
+                this.mapDefinition.SafezoneMap = lorencia;
+            }
         }
 
         /// <summary>

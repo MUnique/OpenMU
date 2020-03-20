@@ -1,0 +1,36 @@
+﻿@typeparam T;
+
+<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <AutoFields />
+
+    <ValidationSummary />
+    <div>
+        <button type="submit" class="primary-button">Save</button>
+        @if (this.OnCancel != null)
+        {
+            <button type="button" onClick=@this.OnCancel>Cancel</button>
+        }
+    </div>
+</EditForm>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the model of the form, <see cref="EditForm.Model"/>.
+    /// </summary>
+    [Parameter]
+    public T Model { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="EditForm.OnValidSubmit"/> event callback.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the task which should be executed when the cancel button gets clicked. If null, no cancel button is shown.
+    /// </summary>
+    [Parameter]
+    public Task OnCancel { get; set; }
+}

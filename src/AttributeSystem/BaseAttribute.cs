@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <param name="aggregateType">Type of the aggregate.</param>
         protected BaseAttribute(AttributeDefinition definition, AggregateType aggregateType)
         {
-            this.definition = definition;
+            this.Definition = definition;
             this.AggregateType = aggregateType;
         }
 
@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{this.Definition.Designation}: {this.Value}";
+            return $"{this.Definition?.Designation}: {this.Value}";
         }
 
         /// <summary>

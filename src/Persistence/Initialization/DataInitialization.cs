@@ -32,6 +32,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private readonly IPersistenceContextProvider persistenceContextProvider;
         private GameConfiguration gameConfiguration;
         private IContext context;
+        private IList<Maps.IMapInitializer> mapInitializers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataInitialization"/> class.
@@ -63,17 +64,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateGameServerDefinitions(gameServerConfiguration, 3);
                 this.CreateConnectServerDefinitions();
                 this.context.SaveChanges();
-
-                var lorencia = this.gameConfiguration.Maps.First(map => map.Number == 0);
-                foreach (var map in this.gameConfiguration.Maps)
-                {
-                    // set safezone to lorencia for now...
-                    map.SafezoneMap = lorencia;
-                }
-
+                this.SetSafezoneMaps();
                 this.CreateTestAccounts(10);
                 this.CreateTestAccount("test300", 300);
                 this.CreateTestAccount("test400", 400);
+                var testGmAccount = this.CreateTestAccount("testgm", 400);
+                testGmAccount.State = AccountState.GameMaster;
+                testGmAccount.Characters.ForEach(c => c.CharacterStatus = CharacterStatus.GameMaster);
                 if (!AppDomain.CurrentDomain.GetAssemblies().Contains(typeof(GameServer).Assembly))
                 {
                     // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
@@ -123,7 +120,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             return (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256));
         }
 
-        private void CreateTestAccount(string loginName, int level)
+        private Account CreateTestAccount(string loginName, int level)
         {
             var account = this.context.CreateNew<Account>();
             account.LoginName = loginName;
@@ -134,6 +131,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             account.Characters.Add(this.CreateElf(loginName + "Elf", level));
             account.Characters.Add(this.CreateWizard(loginName + "Wiz", level));
             account.Characters.Add(this.CreateDarkLord(loginName + "Dl", level));
+            return account;
         }
 
         private Character CreateWizard(string name, int level)
@@ -966,7 +964,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private void CreateGameMapDefinitions()
         {
-            var mapInitializers = new[]
+            var mapInitializerTypes = new[]
             {
                 typeof(Lorencia),
                 typeof(Dungeon),
@@ -1039,10 +1037,22 @@ namespace MUnique.OpenMU.Persistence.Initialization
             };
 
             var parameters = new object[] { this.context, this.gameConfiguration };
-            foreach (var map in mapInitializers)
+            this.mapInitializers = mapInitializerTypes
+                .Select(type => type.GetConstructors().First().Invoke(parameters) as Maps.IMapInitializer)
+                .Where(i => i != null)
+                .ToList();
+
+            foreach (var mapInitializer in this.mapInitializers)
             {
-                var mapInitializer = map.GetConstructors().First().Invoke(parameters) as IInitializer;
-                mapInitializer?.Initialize();
+                mapInitializer.Initialize();
+            }
+        }
+
+        private void SetSafezoneMaps()
+        {
+            foreach (var mapInitializer in this.mapInitializers)
+            {
+                mapInitializer.SetSafezoneMap();
             }
         }
 

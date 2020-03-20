@@ -1,6 +1,6 @@
 ﻿# Network
 
-MUnique.OpenMU.Network contains all what's required to connect from and to a game server, using the MU Online network protocol.
+MUnique.OpenMU.Network contains all what's required to connect from and to a MU Online game, connect or chat server, using the MU Online network protocol.
 
 ## Packet structure
 As you might know, every MU Online data packet has the following structure:

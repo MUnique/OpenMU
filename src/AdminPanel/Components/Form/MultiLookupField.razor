@@ -1,0 +1,55 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using MUnique.OpenMU.AdminPanel.Services
+@using MUnique.OpenMU.Persistence
+
+@typeparam TObject 
+@inherits InputBase<IList<TObject>>
+@inject ILookupController lookupController;
+
+<div>
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <BlazoredTypeahead TItem="TObject" TValue="TObject"
+                       SearchMethod="@(text => this.lookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
+                       ValuesExpression="@this.ValueExpression"
+                       Values="@this.Value"
+                       EnableDropDown="true"
+                       ValuesChanged="@this.ValueChanged"
+                       placeholder="Search ..."
+                       id="@this.FieldIdentifier.FieldName">
+        <SelectedTemplate Context="item">
+            @if (typeof(TObject).Namespace?.StartsWith(nameof(MUnique)) ?? false)
+            {
+                <NavLink href="@("edit/" + typeof(TObject).FullName + "/" + item.GetId())">@item.GetName()</NavLink>
+            }
+            else
+            {
+                @item.GetName()
+            }
+        </SelectedTemplate>
+        <ResultTemplate Context="item">
+            @item.GetName()
+        </ResultTemplate>
+    </BlazoredTypeahead>
+    <ValidationMessage For=@this.ValueExpression />
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; }
+
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [CascadingParameter (Name = "PersistenceContext")]
+    protected IContext PersistenceContext { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string value, out IList<TObject> result, out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

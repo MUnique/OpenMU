@@ -1,0 +1,7 @@
+theme: jekyll-theme-hacker
+future: true
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true

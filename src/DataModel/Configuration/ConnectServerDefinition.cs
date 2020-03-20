@@ -5,11 +5,13 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// The definition of a connect server.
     /// </summary>
+    [AggregateRoot]
     public class ConnectServerDefinition : IConnectServerSettings
     {
         /// <summary>
@@ -29,6 +31,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the client which is expected to connect.
         /// </summary>
         public virtual GameClientDefinition Client { get; set; }
+
+        /// <inheritdoc/>
+        IGameClientVersion IConnectServerSettings.Client => this.Client;
 
         /// <summary>
         /// Gets or sets a value indicating whether the client should get disconnected when a unknown packet is getting received.

@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 {
+    using MUnique.OpenMU.DataModel.Composition;
+
     /// <summary>
     /// Description of IItemCrafting.
     /// </summary>
@@ -30,6 +32,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// Gets or sets the simple crafting settings.
         /// </summary>
+        [MemberOfAggregate]
         public virtual SimpleCraftingSettings SimpleCraftingSettings { get; set; }
     }
 }

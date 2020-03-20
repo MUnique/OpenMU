@@ -20,13 +20,14 @@ namespace MUnique.OpenMU.Persistence
 
         /// <summary>
         /// Detaches the specified item from the context, if required.
-        /// All reachable navigations are recursively detached from the context, too.
+        /// All reachable navigation properties are recursively detached from the context, too.
         /// </summary>
         /// <param name="item">The item which should be detached.</param>
+        /// <returns><c>true</c>, if the object was persisted.</returns>
         /// <remarks>
         /// When calling this method, be sure to clear a back reference property before. Otherwise you might detach more than you intended.
         /// </remarks>
-        void Detach(object item);
+        bool Detach(object item);
 
         /// <summary>
         /// Attaches the specified item to the context in an unmodified state.

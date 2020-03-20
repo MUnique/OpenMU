@@ -27,7 +27,6 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 {
     using System;
     using System.Collections.Generic;
-    using Newtonsoft.Json;
     using MUnique.OpenMU.Persistence.Json;
 
 <#
@@ -116,11 +115,13 @@ foreach (Type type in customTypes)
         /// <summary>
         /// Gets the raw dictionary of <see cref="<#=property.Name#>" />.
         /// </summary>
-        [JsonProperty("<#=property.Name#>")]
+        [Newtonsoft.Json.JsonProperty("<#=ToCamelCase(property.Name)#>")]
+        [System.Text.Json.Serialization.JsonPropertyName("<#=ToCamelCase(property.Name)#>")]
         public IDictionary<<#=keyType.Name#>, <#=persistentClassName#>> Raw<#=property.Name#> { get; } = new Dictionary<<#=keyType.Name#>, <#=persistentClassName#>>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override <#=originalPropertyTypeName#> <#=property.Name#>
         {
             get
@@ -159,11 +160,13 @@ foreach (Type type in customTypes)
         /// <summary>
         /// Gets the raw collection of <see cref="<#=property.Name#>" />.
         /// </summary>
-        [JsonProperty("<#=property.Name#>")]
+        [Newtonsoft.Json.JsonProperty("<#=ToCamelCase(property.Name)#>")]
+        [System.Text.Json.Serialization.JsonPropertyName("<#=ToCamelCase(property.Name)#>")]
         public <#=propertyTypeName#> Raw<#=property.Name#> { get; } = new List<<#=persistentClassName#>>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override <#=originalPropertyTypeName#> <#=property.Name#>
         {
             get
@@ -208,7 +211,8 @@ foreach (Type type in customTypes)
         /// <summary>
         /// Gets the raw object of <see cref="<#=property.Name#>" />.
         /// </summary>
-        [JsonProperty("<#=property.Name#>")]
+        [Newtonsoft.Json.JsonProperty("<#=ToCamelCase(property.Name)#>")]
+        [System.Text.Json.Serialization.JsonPropertyName("<#=ToCamelCase(property.Name)#>")]
         public <#=propertyTypeName#> Raw<#=property.Name#>
         { 
             get { return base.<#=property.Name#> as <#=propertyTypeName#>; }
@@ -217,7 +221,8 @@ foreach (Type type in customTypes)
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override <#=propertyType.FullName#> <#=property.Name#>
         {
             get

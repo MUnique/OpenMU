@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
+  <Description>This file contains all packet definitions for packets which are sent from game client to the chat server.</Description>
+  <Structures>
+  </Structures>
+  <Packets>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>00</Code>
+      <Name>Authenticate</Name>
+      <Length>16</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client after it connected to the server, to authenticate itself.</SentWhen>
+      <CausedReaction>The server will check the token. If it's correct, the client gets added to the requested chat room.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RoomId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>Token</Name>
+          <Description>A token (integer number), formatted as string. This value is also "encrypted" with the 3-byte XOR key (FC CF AB).</Description>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>01</Code>
+      <SubCode>00</SubCode>
+      <Name>ChatRoomClientJoined</Name>
+      <Length>15</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server after another chat client joined the chat room.</SentWhen>
+      <CausedReaction>The client will add the client in its list (if over 2 clients are connected to the same room), or show its name in the title bar.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ClientIndex</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>01</Code>
+      <SubCode>01</SubCode>
+      <Name>ChatRoomClientLeft</Name>
+      <Length>15</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server after a chat client left the chat room.</SentWhen>
+      <CausedReaction>The client will remove the client from its list, or mark its name in the title bar as offline.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ClientIndex</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>02</Code>
+      <Name>ChatRoomClients</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server after another chat client sent a message to the current chat room.</SentWhen>
+      <CausedReaction>The client will show the message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ClientCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ChatClient</TypeName>
+          <Name>Clients</Name>
+          <ItemCountField>ClientCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>ChatClient</Name>
+          <Description>Contains the index and the name of a connected chat client in the room.</Description>
+          <Length>11</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>Index</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>04</Code>
+      <Name>ChatMessage</Name>
+      <Direction>Bidirectional</Direction>
+      <SentWhen>This packet is sent by the server after another chat client sent a message to the current chat room.</SentWhen>
+      <CausedReaction>The client will show the message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SenderIndex</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>MessageLength</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+          <Description>The message. It's "encrypted" with the 3-byte XOR key (FC CF AB).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>05</Code>
+      <Name>KeepAlive</Name>
+      <Length>3</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client in a fixed interval.</SentWhen>
+      <CausedReaction>The server will keep the connection and chat room intact as long as the clients sends a message in a certain period of time.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+  </Packets>
+  <Enums>
+  </Enums>
+</PacketDefinitions>

@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
 
@@ -111,11 +113,13 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the character class.
         /// </summary>
+        [Required]
         public virtual CharacterClass CharacterClass { get; set; }
 
         /// <summary>
@@ -216,21 +220,25 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the stat attributes.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<StatAttribute> Attributes { get; protected set; }
 
         /// <summary>
         /// Gets or sets the letters.
         /// </summary>
+        [MemberOfAggregate]
         public virtual IList<LetterHeader> Letters { get; protected set; }
 
         /// <summary>
         /// Gets or sets the learned skills.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<SkillEntry> LearnedSkills { get; protected set; }
 
         /// <summary>
         /// Gets or sets the inventory.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ItemStorage Inventory { get; set; }
 
         /// <summary>
@@ -242,5 +250,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the quest states.
         /// </summary>
         public virtual ICollection<CharacterQuestState> QuestStates { get; protected set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

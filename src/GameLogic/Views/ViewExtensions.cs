@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// <summary>
         /// The constant player identifier which is sent to the player of a view to identify itself.
         /// </summary>
-        public static readonly ushort ConstantPlayerId = 0x0102;
+        public static readonly ushort ConstantPlayerId = 0x0200;
 
         /// <summary>
         /// Gets the <see cref="IIdentifiable.Id"/> of the <paramref name="identifiable"/> if it's not the same object

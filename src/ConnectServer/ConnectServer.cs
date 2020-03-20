@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Runtime.CompilerServices;
+
 namespace MUnique.OpenMU.ConnectServer
 {
     using System;
@@ -19,19 +21,18 @@ namespace MUnique.OpenMU.ConnectServer
     internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectServer));
-        private readonly IServerStateObserver stateObserver;
         private ServerState serverState;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectServer" /> class.
         /// </summary>
         /// <param name="connectServerSettings">The settings.</param>
-        /// <param name="stateObserver">The state observer.</param>
         /// <param name="clientVersion">The client version.</param>
-        public ConnectServer(IConnectServerSettings connectServerSettings, IServerStateObserver stateObserver, ClientVersion clientVersion)
+        /// <param name="configurationId">The configuration identifier.</param>
+        public ConnectServer(IConnectServerSettings connectServerSettings, ClientVersion clientVersion, Guid configurationId)
         {
-            this.stateObserver = stateObserver;
             this.ClientVersion = clientVersion;
+            this.ConfigurationId = configurationId;
             this.Settings = connectServerSettings;
 
             this.ConnectInfos = new Dictionary<ushort, byte[]>();
@@ -39,9 +40,14 @@ namespace MUnique.OpenMU.ConnectServer
 
             this.ClientListener = new ClientListener(this);
             this.ClientListener.ConnectedClientsChanged += (sender, args) =>
-                this.stateObserver.PlayerCountChanged(this.Id, this.CurrentConnections);
+            {
+                this.RaisePropertyChanged(nameof(this.CurrentConnections));
+            };
             this.CreatePlugins();
         }
+
+        /// <inheritdoc />
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <inheritdoc/>
         public ServerState ServerState
@@ -52,7 +58,7 @@ namespace MUnique.OpenMU.ConnectServer
                 if (value != this.serverState)
                 {
                     this.serverState = value;
-                    this.stateObserver.ServerStateChanged(this.Id, value);
+                    this.RaisePropertyChanged();
                 }
             }
         }
@@ -65,6 +71,9 @@ namespace MUnique.OpenMU.ConnectServer
 
         /// <inheritdoc/>
         public int Id => SpecialServerIds.ConnectServer + this.Settings.ServerId;
+
+        /// <inheritdoc />
+        public Guid ConfigurationId { get; }
 
         /// <inheritdoc/>
         public IDictionary<ushort, byte[]> ConnectInfos { get; }
@@ -92,6 +101,9 @@ namespace MUnique.OpenMU.ConnectServer
         /// Gets the current connection count.
         /// </summary>
         public int CurrentConnections => this.ClientListener.Clients.Count;
+
+        /// <inheritdoc />
+        public ICollection<(ushort, IPEndPoint)> GameServerEndPoints => this.ServerList.Servers.Select(s => (s.ServerId, s.EndPoint)).ToList();
 
         /// <inheritdoc/>
         public void Start()
@@ -137,7 +149,6 @@ namespace MUnique.OpenMU.ConnectServer
                 };
                 if (gameServer is INotifyPropertyChanged notifier)
                 {
-                    // TODO: gameServer did never implement INotifyPropertyChanged, so this never worked!
                     notifier.PropertyChanged += this.HandleServerPropertyChanged;
                 }
 
@@ -203,6 +214,15 @@ namespace MUnique.OpenMU.ConnectServer
             }
 
             serverListItem.ServerLoad = (byte)(server.OnlinePlayerCount * 100f / server.MaximumPlayers);
+        }
+
+        /// <summary>
+        /// Called when a property changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

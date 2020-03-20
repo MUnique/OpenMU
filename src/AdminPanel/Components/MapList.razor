@@ -1,0 +1,79 @@
+﻿@using System.ComponentModel
+@using log4net
+@using MUnique.OpenMU.Interfaces
+
+@implements IDisposable
+@inject IJSRuntime jsRuntime;
+
+@if (this.Maps == null)
+{
+    <span>Initializing...</span>
+}
+else if (Maps.Count == 0)
+{
+    <span>No game maps hosted. They are created as soon as a player enters a map.</span>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <td class="col-sm-10">Map Name</td>
+                <td class="col-sm-1">Players</td>
+                <td>Spectate</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var map in this.Maps)
+            {
+                <tr>
+                    <td>@map.MapName</td>
+                    <td>@map.PlayerCount</td>
+                    <td>
+                        <NavLink href="@($"map/{this.GameServer.Id}/{map.MapNumber}")">
+                            <span class="oi oi-map" aria-hidden="true"></span>
+                        </NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the game server of the maps which are shown in this component.
+    /// </summary>
+    [Parameter]
+    public IGameServer GameServer { get; set; }
+
+    private IList<IGameMapInfo> Maps => this.GameServer?.ServerInfo.Maps;
+
+    /// <inheritdoc />
+    public void Dispose() => this.GameServer.ServerInfo.PropertyChanged -= this.OnServerInfoChanged;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.GameServer.ServerInfo.PropertyChanged += this.OnServerInfoChanged;
+    }
+
+    private async void OnServerInfoChanged(object sender, PropertyChangedEventArgs e)
+    {
+        try
+        {
+            if (e.PropertyName != nameof(IGameServerInfo.Maps))
+            {
+                return;
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            LogManager.GetLogger(this.GetType()).Debug("Error occured in handling ServerInfo.PropertyChanged", ex);
+        }
+    }
+}

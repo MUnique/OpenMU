@@ -15,7 +15,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
-    using Newtonsoft.Json;
     using Mapster;
     using MUnique.OpenMU.Persistence;
 
@@ -4136,11 +4135,13 @@ public ICollection<IncreasableItemOption> RawOptions { get; } = new List<Increas
         public Guid Id { get; set; }
 
 [Column("ItemSlots")]
-        [JsonProperty("ItemSlots")]
+        [Newtonsoft.Json.JsonProperty("ItemSlots")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemSlots")]
         public string RawItemSlots { get; set; }
                 
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         [NotMapped]
         public override ICollection<System.Int32> ItemSlots
         {

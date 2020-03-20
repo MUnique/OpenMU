@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.GameServer
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
@@ -28,7 +30,6 @@ namespace MUnique.OpenMU.GameServer
         private readonly GameServerContext gameContext;
 
         private readonly ICollection<IGameServerListener> listeners = new List<IGameServerListener>();
-        private readonly IServerStateObserver stateObserver;
 
         private ServerState serverState;
 
@@ -40,23 +41,24 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="loginServer">The login server.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="friendServer">The friend server.</param>
-        /// <param name="stateObserver">The state observer.</param>
         public GameServer(
             GameServerDefinition gameServerDefinition,
             IGuildServer guildServer,
             ILoginServer loginServer,
             IPersistenceContextProvider persistenceContextProvider,
-            IFriendServer friendServer,
-            IServerStateObserver stateObserver)
+            IFriendServer friendServer)
         {
             this.Id = gameServerDefinition.ServerID;
             this.Description = gameServerDefinition.Description;
-            this.stateObserver = stateObserver;
+            this.ConfigurationId = gameServerDefinition.GetId();
 
             try
             {
-                var mapInitializer = new GameServerMapInitializer(gameServerDefinition, this.Id, stateObserver);
-                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, stateObserver, mapInitializer);
+                var mapInitializer = new GameServerMapInitializer(gameServerDefinition, this.Id);
+                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, mapInitializer);
+                this.gameContext.GameMapCreated += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
+                this.gameContext.GameMapRemoved += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
+                mapInitializer.PlugInManager = this.gameContext.PlugInManager;
             }
             catch (Exception ex)
             {
@@ -67,10 +69,16 @@ namespace MUnique.OpenMU.GameServer
             this.ServerInfo = new GameServerInfoAdapter(this, gameServerDefinition.ServerConfiguration);
         }
 
+        /// <inheritdoc />
+        public event PropertyChangedEventHandler PropertyChanged;
+
         /// <summary>
         /// Gets the identifier of the server.
         /// </summary>
         public byte Id { get; }
+
+        /// <inheritdoc />
+        public Guid ConfigurationId { get; }
 
         /// <inheritdoc/>
         public string Description { get; }
@@ -89,7 +97,7 @@ namespace MUnique.OpenMU.GameServer
                 if (this.serverState != value)
                 {
                     this.serverState = value;
-                    this.stateObserver?.ServerStateChanged(this.Id, value);
+                    this.OnPropertyChanged();
                 }
             }
         }
@@ -125,12 +133,26 @@ namespace MUnique.OpenMU.GameServer
             using (this.PushServerLogContext())
             {
                 this.ServerState = ServerState.Starting;
-                foreach (var listener in this.listeners)
+                try
                 {
-                    listener.Start();
-                }
 
-                this.ServerState = ServerState.Started;
+                    foreach (var listener in this.listeners)
+                    {
+                        listener.Start();
+                    }
+
+                    this.ServerState = ServerState.Started;
+                }
+                catch (Exception e)
+                {
+                    log4net.LogManager.GetLogger(this.GetType()).Error($"Could not start the server listeners: {e.Message}", e);
+                    foreach (var listener in this.listeners)
+                    {
+                        listener.Stop();
+                    }
+
+                    this.ServerState = ServerState.Stopped;
+                }
             }
         }
 
@@ -366,6 +388,7 @@ namespace MUnique.OpenMU.GameServer
             player.ViewPlugIns.GetPlugIn<IShowLoginWindowPlugIn>()?.ShowLoginWindow();
             player.PlayerState.TryAdvanceTo(PlayerState.LoginScreen);
             e.ConntectedPlayer.PlayerDisconnected += (s, args) => this.OnPlayerDisconnected(player);
+            this.OnPropertyChanged(nameof(this.CurrentConnections));
         }
 
         private void OnPlayerDisconnected(Player remotePlayer)
@@ -374,6 +397,7 @@ namespace MUnique.OpenMU.GameServer
             this.SaveSessionOfPlayer(remotePlayer);
             this.SetOfflineAtLoginServer(remotePlayer);
             remotePlayer.Dispose();
+            this.OnPropertyChanged(nameof(this.CurrentConnections));
         }
 
         private void SetOfflineAtLoginServer(Player player)
@@ -428,6 +452,11 @@ namespace MUnique.OpenMU.GameServer
             }
 
             return log4net.ThreadContext.Stacks["gameserver"].Push(this.Id.ToString());
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

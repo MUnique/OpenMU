@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
+    using MUnique.OpenMU.DataModel.Composition;
+
     /// <summary>
     /// Defines additional bonus options for this item of a set.
     /// </summary>
@@ -20,6 +22,13 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the bonus option.
         /// </summary>
+        [MemberOfAggregate]
         public virtual IncreasableItemOption BonusOption { get; set; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return this.BonusOption?.PowerUpDefinition?.ToString() ?? string.Empty;
+        }
     }
 }

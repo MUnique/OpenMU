@@ -20,5 +20,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the minimum value the attribute needs to have.
         /// </summary>
         public int MinimumValue { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.Attribute}: {this.MinimumValue}";
+        }
     }
 }

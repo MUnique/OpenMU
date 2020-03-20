@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public MonsterDefinition Definition { get; set; }
 
         /// <inheritdoc/>
-        public Point Position { get; set; }
+        public virtual Point Position { get; set; }
 
         /// <inheritdoc/>
         public Direction Rotation { get; set; }

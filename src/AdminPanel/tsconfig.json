@@ -1,5 +1,4 @@
 {
-
   "compilerOptions": {
     "module": "system",
     "moduleResolution": "node",
@@ -8,7 +7,7 @@
     "preserveConstEnums": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "outFile": "wwwroot/content/js/app.js",
+    "outFile": "wwwroot/js/app.js",
     "sourceMap": true,
     "jsx": "react",
     "target": "es5",
@@ -16,19 +15,12 @@
     "baseUrl": ".",
     "paths": {
       "*": [ "*" ],
-      "react": [ "Scripts/react/index" ],
-      "react-dom": [ "Scripts/react-dom/index" ],
-      "react-redux": [ "Scripts/react-redux/index" ],
-      "redux": [ "Scripts/redux/index" ],
-      "redux-thunk": [ "Scripts/redux-thunk/index" ],
-      "jquery": [ "Scripts/jquery/index" ],
-      "signalr": [ "Scripts/signalr/index" ],
       "three": [ "Scripts/three/index" ],
       "tween": [ "Scripts/tween/index" ]
     }
   },
   "include": [
-    "content/**/*.ts*"
+    "**/*.ts*"
   ],
   "exclude": [
     "**/bin",

@@ -11,7 +11,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
@@ -36,14 +35,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < 8)
+            if (packet.Length < EnterGateRequest.Length)
             {
                 return;
             }
 
             EnterGateRequest request = packet;
             var gateNumber = request.GateNumber;
-            EnterGate gate = player.SelectedCharacter.CurrentMap.EnterGates.FirstOrDefault(g => NumberConversionExtensions.ToUnsigned(g.Number) == gateNumber);
+            EnterGate gate = player.SelectedCharacter.CurrentMap.EnterGates.FirstOrDefault(g => g.Number == gateNumber);
             if (gate == null)
             {
                 Logger.WarnFormat("Gate {0} not found in current map {1}", gateNumber,  player.SelectedCharacter.CurrentMap);

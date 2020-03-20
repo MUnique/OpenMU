@@ -1,0 +1,44 @@
+﻿@using System.Threading
+@using Nito.AsyncEx.Synchronous
+@implements IDisposable
+
+<LoadingIndicator />
+@code
+{
+    private CancellationTokenRegistration tokenRegistration;
+    /// <summary>
+    /// The reference to the opened modal.
+    /// </summary>
+    [CascadingParameter]
+    BlazoredModalInstance  Modal { get; set; }
+
+    /// <summary>
+    /// The cancellation token which closes this loading indicator.
+    /// </summary>
+    [Parameter]
+    public CancellationToken CancellationToken { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        if (this.CancellationToken.IsCancellationRequested)
+        {
+            // await this.InvokeAsync(this.Modal.Close);
+            // await this.InvokeAsync(this.StateHasChanged);
+            return;
+        }
+
+        this.tokenRegistration = this.CancellationToken.Register(() =>
+        {
+            this.InvokeAsync(this.Modal.Close).WaitWithoutException();
+            this.InvokeAsync(this.StateHasChanged).WaitWithoutException();
+        });
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.tokenRegistration.Dispose();
+    }
+}

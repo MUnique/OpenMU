@@ -25,13 +25,13 @@ namespace MUnique.OpenMU.Network.Analyzer
                 case FieldType.Boolean:
                     return 1;
                 case FieldType.Float:
-                case FieldType.Integer:
+                case FieldType.IntegerLittleEndian:
                 case FieldType.IntegerBigEndian:
                     return sizeof(int);
-                case FieldType.Long:
+                case FieldType.LongLittleEndian:
                 case FieldType.LongBigEndian:
                     return sizeof(long);
-                case FieldType.Short:
+                case FieldType.ShortLittleEndian:
                 case FieldType.ShortBigEndian:
                     return sizeof(short);
                 case FieldType.String:

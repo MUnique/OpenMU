@@ -13,6 +13,7 @@
 namespace MUnique.OpenMU.Network.Packets.ClientToServer
 {
     using System;
+    using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
     /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
@@ -80,8 +81,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -344,7 +345,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -364,6 +365,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 43;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -391,8 +397,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => this.data.Slice(34).GetIntegerLittleEndian();
-            set => this.data.Slice(34).SetIntegerLittleEndian(value);
+            get => ReadUInt32BigEndian(this.data.Slice(34));
+            set => WriteUInt32BigEndian(this.data.Slice(34), value);
         }
 
         /// <summary>
@@ -449,7 +455,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -469,6 +475,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 33;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -496,8 +507,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => this.data.Slice(24).GetIntegerLittleEndian();
-            set => this.data.Slice(24).SetIntegerLittleEndian(value);
+            get => ReadUInt32BigEndian(this.data.Slice(24));
+            set => WriteUInt32BigEndian(this.data.Slice(24), value);
         }
 
         /// <summary>
@@ -554,7 +565,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -574,6 +585,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 31;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -601,8 +617,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => this.data.Slice(24).GetIntegerLittleEndian();
-            set => this.data.Slice(24).SetIntegerLittleEndian(value);
+            get => ReadUInt32BigEndian(this.data.Slice(24));
+            set => WriteUInt32BigEndian(this.data.Slice(24), value);
         }
 
         /// <summary>
@@ -659,7 +675,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -679,6 +695,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x02;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -740,7 +761,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -762,6 +783,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte SubCode => 0x01;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 9;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
@@ -780,8 +806,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint Price
         {
-            get => this.data.Slice(5).GetIntegerBigEndian();
-            set => this.data.Slice(5).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(5));
+            set => WriteUInt32LittleEndian(this.data.Slice(5), value);
         }
 
         /// <summary>
@@ -830,7 +856,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -850,6 +876,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x02;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 30;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -911,7 +942,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -931,6 +962,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x03;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -983,7 +1019,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -1005,6 +1041,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte SubCode => 0x05;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 16;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
@@ -1014,8 +1055,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort PlayerId
         {
-            get => this.data.Slice(4).GetShortLittleEndian();
-            set => this.data.Slice(4).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -1073,7 +1114,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -1095,6 +1136,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte SubCode => 0x06;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 17;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
@@ -1104,8 +1150,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort PlayerId
         {
-            get => this.data.Slice(4).GetShortLittleEndian();
-            set => this.data.Slice(4).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -1172,7 +1218,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1187,6 +1233,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x22;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3Header Header => new C3Header(this.data);
@@ -1196,8 +1247,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort ItemId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -1246,7 +1297,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1261,6 +1312,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x22;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -1270,8 +1326,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort ItemId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -1320,7 +1376,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1333,6 +1389,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x23;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -1412,7 +1473,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1425,6 +1486,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x24;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 19;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -1521,7 +1587,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1534,6 +1600,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x26;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -1613,7 +1684,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1628,6 +1699,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x30;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3Header Header => new C3Header(this.data);
@@ -1637,8 +1713,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort NpcId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -1687,7 +1763,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1700,6 +1776,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x31;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -1752,7 +1833,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1765,6 +1846,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x32;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -1826,7 +1912,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1839,6 +1925,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x33;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -1900,7 +1991,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -1913,6 +2004,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x34;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -1974,7 +2070,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -1996,6 +2092,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte SubCode => 0x02;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 10;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
@@ -2005,8 +2106,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort WarpInfoIndex
         {
-            get => this.data.Slice(8).GetShortBigEndian();
-            set => this.data.Slice(8).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(8));
+            set => WriteUInt16LittleEndian(this.data.Slice(8), value);
         }
 
         /// <summary>
@@ -2055,7 +2156,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2070,6 +2171,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x1C;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -2079,8 +2185,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort GateNumber
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -2129,7 +2235,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2142,6 +2248,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x82;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -2175,8 +2286,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public enum VaultMoneyMoveDirection
         {
+            /// <summary>
+            /// The money is moved from the inventory to the vault.
+            /// </summary>
             InventoryToVault = 0,
 
+            /// <summary>
+            /// The money is moved from the vault to the inventory.
+            /// </summary>
             VaultToInventory = 1,
         }
 
@@ -2204,7 +2321,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2219,6 +2336,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x81;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -2226,7 +2348,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the direction.
         /// </summary>
-        public VaultMoneyMoveDirection Direction
+        public VaultMoveMoneyRequest.VaultMoneyMoveDirection Direction
         {
             get => (VaultMoneyMoveDirection)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -2237,8 +2359,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint Amount
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -2305,24 +2427,54 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public enum ItemType
         {
+            /// <summary>
+            /// Jewel of Bless.
+            /// </summary>
             JewelOfBless = 0,
 
+            /// <summary>
+            /// Jewel of Soul.
+            /// </summary>
             JewelOfSoul = 1,
 
+            /// <summary>
+            /// Jewel of Life.
+            /// </summary>
             JewelOfLife = 2,
 
+            /// <summary>
+            /// Jewel of Creation.
+            /// </summary>
             JewelOfCreation = 3,
 
+            /// <summary>
+            /// Jewel of Guardian.
+            /// </summary>
             JewelOfGuardian = 4,
 
+            /// <summary>
+            /// The gemstone.
+            /// </summary>
             Gemstone = 5,
 
+            /// <summary>
+            /// Jewel of Harmony.
+            /// </summary>
             JewelOfHarmony = 6,
 
+            /// <summary>
+            /// Jewel of Chaos.
+            /// </summary>
             JewelOfChaos = 7,
 
+            /// <summary>
+            /// Lower refine stone.
+            /// </summary>
             LowerRefineStone = 8,
 
+            /// <summary>
+            /// Higher refine stone.
+            /// </summary>
             HigherRefineStone = 9,
         }
 
@@ -2350,7 +2502,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2365,6 +2517,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0xBC;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -2372,7 +2529,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the operation.
         /// </summary>
-        public MixType Operation
+        public LahapJewelMixRequest.MixType Operation
         {
             get => (MixType)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
@@ -2381,7 +2538,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the item.
         /// </summary>
-        public ItemType Item
+        public LahapJewelMixRequest.ItemType Item
         {
             get => (ItemType)this.data.Slice(4)[0];
             set => this.data.Slice(4)[0] = (byte)value;
@@ -2390,7 +2547,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the mixing stack size.
         /// </summary>
-        public StackSize MixingStackSize
+        public LahapJewelMixRequest.StackSize MixingStackSize
         {
             get => (StackSize)this.data.Slice(5)[0];
             set => this.data.Slice(5)[0] = (byte)value;
@@ -2451,7 +2608,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2464,6 +2621,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x42;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -2516,7 +2678,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2529,6 +2691,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x43;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -2590,7 +2757,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2605,6 +2772,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x40;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -2614,8 +2786,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetPlayerId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -2664,7 +2836,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2677,6 +2849,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x41;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -2835,7 +3012,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2848,6 +3025,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x15;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -2918,7 +3100,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -2931,6 +3113,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x18;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3001,7 +3188,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -3021,6 +3208,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x00;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3073,7 +3265,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -3093,6 +3285,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 15;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3163,7 +3360,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -3183,6 +3380,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x02;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 24;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3259,7 +3461,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -3279,6 +3481,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x03;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 14;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3340,7 +3547,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -3360,6 +3567,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x15;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 14;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3421,7 +3633,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -3441,6 +3653,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x06;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3502,7 +3719,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -3522,6 +3739,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// The <see cref="Code" /> is used as a grouping key.
         /// </summary>
         public static byte SubCode => 0x12;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3660,7 +3882,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
             }
         }
@@ -3682,6 +3904,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte SubCode => 0x52;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
@@ -3691,8 +3918,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort SkillId
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -3741,7 +3968,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -3756,6 +3983,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x11;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -3765,8 +3997,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -3833,7 +4065,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -3848,6 +4080,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x19;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3Header Header => new C3Header(this.data);
@@ -3857,8 +4094,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort SkillId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -3866,8 +4103,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => this.data.Slice(5).GetShortLittleEndian();
-            set => this.data.Slice(5).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(5));
+            set => WriteUInt16BigEndian(this.data.Slice(5), value);
         }
 
         /// <summary>
@@ -3916,7 +4153,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -3929,6 +4166,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x19;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -3949,8 +4191,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => this.data.Slice(4).GetShortLittleEndian();
-            set => this.data.Slice(4).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -3999,7 +4241,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4014,6 +4256,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x1E;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 13;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3Header Header => new C3Header(this.data);
@@ -4023,8 +4270,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort SkillId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -4059,8 +4306,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort ExtraTargetId
         {
-            get => this.data.Slice(9).GetShortLittleEndian();
-            set => this.data.Slice(9).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(9));
+            set => WriteUInt16BigEndian(this.data.Slice(9), value);
         }
 
         /// <summary>
@@ -4118,7 +4365,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4133,6 +4380,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0xDB;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3Header Header => new C3Header(this.data);
@@ -4142,8 +4394,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort SkillId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -4178,8 +4430,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => this.data.Slice(9).GetShortLittleEndian();
-            set => this.data.Slice(9).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(9));
+            set => WriteUInt16BigEndian(this.data.Slice(9), value);
         }
 
         /// <summary>
@@ -4237,7 +4489,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4250,6 +4502,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x3D;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -4302,7 +4559,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4315,6 +4572,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x3C;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -4376,7 +4638,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4391,6 +4653,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x36;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C3Header Header => new C3Header(this.data);
@@ -4400,8 +4667,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort PlayerId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -4450,7 +4717,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4463,6 +4730,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x37;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -4524,7 +4796,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4539,6 +4811,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x3A;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -4548,8 +4825,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint Amount
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -4598,7 +4875,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4613,6 +4890,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0xC8;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -4622,8 +4904,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort LetterIndex
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -4696,8 +4978,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint LetterId
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -4797,7 +5079,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4812,6 +5094,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0xC7;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -4821,8 +5108,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort LetterIndex
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -4960,7 +5247,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -4975,6 +5262,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x50;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -4984,8 +5276,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort GuildMasterPlayerId
         {
-            get => this.data.Slice(3).GetShortLittleEndian();
-            set => this.data.Slice(3).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
         }
 
         /// <summary>
@@ -5034,7 +5326,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5047,6 +5339,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x51;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5108,7 +5405,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5121,6 +5418,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x52;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5173,7 +5475,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5186,6 +5488,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x55;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 44;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5255,7 +5562,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5268,6 +5575,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x54;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5329,7 +5641,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5344,6 +5656,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x66;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -5353,8 +5670,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint GuildId
         {
-            get => this.data.Slice(4).GetIntegerBigEndian();
-            set => this.data.Slice(4).SetIntegerBigEndian(value);
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -5403,7 +5720,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5416,6 +5733,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x34;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5538,7 +5860,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5553,6 +5875,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static byte Code => 0x86;
 
         /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
         /// Gets the header of this packet.
         /// </summary>
         public C1Header Header => new C1Header(this.data);
@@ -5560,10 +5887,10 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets or sets the identifier which tells the server which kind of mix should be executed.
         /// </summary>
-        public ChaosMachineMixType MixType
+        public ChaosMachineMixRequest.ChaosMachineMixType MixType
         {
-            get => (ChaosMachineMixType)this.data.Slice(2)[0];
-            set => this.data.Slice(2)[0] = (byte)value;
+            get => (ChaosMachineMixType)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>
@@ -5612,7 +5939,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5625,6 +5952,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0x87;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5677,7 +6009,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5690,6 +6022,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0xC1;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 13;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5751,7 +6088,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5764,6 +6101,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0xC3;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 13;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5825,7 +6167,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5838,6 +6180,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0xCA;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 13;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5899,7 +6246,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5912,6 +6259,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0xC2;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 14;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5982,7 +6334,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -5995,6 +6347,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0xC4;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -6073,7 +6430,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 13;
+        public static int Length => 19;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -6094,8 +6451,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort RoomId
         {
-            get => this.data.Slice(13).GetShortLittleEndian();
-            set => this.data.Slice(13).SetShortLittleEndian(value);
+            get => ReadUInt16BigEndian(this.data.Slice(13));
+            set => WriteUInt16BigEndian(this.data.Slice(13), value);
         }
 
         /// <summary>
@@ -6103,8 +6460,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint RequestId
         {
-            get => this.data.Slice(15).GetIntegerLittleEndian();
-            set => this.data.Slice(15).SetIntegerLittleEndian(value);
+            get => ReadUInt32BigEndian(this.data.Slice(15));
+            set => WriteUInt32BigEndian(this.data.Slice(15), value);
         }
 
         /// <summary>
@@ -6153,7 +6510,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -6166,6 +6523,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0xA0;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -6218,7 +6580,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (byte)Math.Min(data.Length, Length);
             }
         }
 
@@ -6231,6 +6593,11 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Gets the operation code of this data packet.
         /// </summary>
         public static byte Code => 0xA2;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -6337,8 +6704,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6346,8 +6713,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6441,8 +6808,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6450,8 +6817,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6545,8 +6912,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6554,8 +6921,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6640,8 +7007,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6649,8 +7016,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6735,8 +7102,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6744,8 +7111,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -6907,8 +7274,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestNumber
         {
-            get => this.data.Slice(4).GetShortBigEndian();
-            set => this.data.Slice(4).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -6916,8 +7283,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => this.data.Slice(6).GetShortBigEndian();
-            set => this.data.Slice(6).SetShortBigEndian(value);
+            get => ReadUInt16LittleEndian(this.data.Slice(6));
+            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>

@@ -49,9 +49,14 @@ namespace MUnique.OpenMU.Network.Packets
         ServerToClient,
 
         /// <summary>
-        /// TThe data packet is sent from the game client to the (game) server.
+        /// The data packet is sent from the game client to the (game) server.
         /// </summary>
         ClientToServer,
+
+        /// <summary>
+        /// The data packet is sent in both directions.
+        /// </summary>
+        Bidirectional,
     }
 
     /// <summary>
@@ -61,7 +66,7 @@ namespace MUnique.OpenMU.Network.Packets
     [Serializable]
     public class PacketDefinition
     {
-        private string headerType;
+        private string? headerType;
 
         private PacketType? type;
 
@@ -71,7 +76,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// <value>
         /// The type of the header.
         /// </value>
-        public string HeaderType
+        public string? HeaderType
         {
             get => this.headerType;
             set
@@ -91,7 +96,7 @@ namespace MUnique.OpenMU.Network.Packets
             {
                 if (!this.type.HasValue)
                 {
-                    this.type = (PacketType)byte.Parse(this.HeaderType.Substring(0, 2), NumberStyles.HexNumber);
+                    this.type = this.HeaderType == null ? default : (PacketType)byte.Parse(this.HeaderType.Substring(0, 2), NumberStyles.HexNumber);
                 }
 
                 return this.type.Value;
@@ -161,61 +166,58 @@ namespace MUnique.OpenMU.Network.Packets
         /// <summary>
         /// Gets or sets the name of the packet.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public string Caption { get; set; }
+        /// <summary>
+        /// Gets or sets the caption.
+        /// </summary>
+        public string? Caption { get; set; }
 
+        /// <summary>
+        /// Gets or sets the length.
+        /// </summary>
         public int Length { get; set; }
 
+        /// <summary>
+        /// Gets or sets the direction of the packet.
+        /// </summary>
         public Direction Direction { get; set; }
 
         /// <summary>
-        /// Gets or sets the description of the packet.
+        /// Gets or sets the 'sent when' description of the packet.
         /// </summary>
         [XmlElement(IsNullable = true)]
-        public string SentWhen { get; set; }
+        public string? SentWhen { get; set; }
 
-        [XmlElement(IsNullable = true)] public string CausedReaction { get; set; }
+        /// <summary>
+        /// Gets or sets the 'caused reaction' description of the packet.
+        /// </summary>
+        [XmlElement(IsNullable = true)]
+        public string? CausedReaction { get; set; }
 
         /// <summary>
         /// Gets or sets the field definitions of the packets.
         /// </summary>
         [XmlArray(IsNullable = true)]
         [XmlArrayItem("Field", IsNullable = false)]
-        public Field[] Fields { get; set; }
+#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
+        public Field[]? Fields { get; set; }
+#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 
+        /// <summary>
+        /// Gets or sets the structures which are exclusively used by this packet.
+        /// </summary>
         [XmlArrayItem("Structure", IsNullable = false)]
-        public Structure[] Structures { get; set; }
+#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
+        public Structure[]? Structures { get; set; }
+#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 
+        /// <summary>
+        /// Gets or sets the enums which are exclusively used by this packet.
+        /// </summary>
         [XmlArrayItem(IsNullable = false)]
-        public Enum[] Enums { get; set; }
-    }
-
-
-    [XmlType(Namespace = PacketDefinitions.XmlNamespace)]
-    [Serializable]
-    public class EnumValue
-    {
-        /// <remarks/>
-        [XmlElement(DataType = "Name")]
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        /// <remarks/>
-        public byte Value { get; set; }
-    }
-
-    [XmlType(Namespace = PacketDefinitions.XmlNamespace)]
-    [Serializable]
-    public class Enum
-    {
-        [XmlElement(DataType = "Name")]
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        [XmlArrayItem(IsNullable = false)]
-        public EnumValue[] Values { get; set; }
+#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
+        public Enum[]? Enums { get; set; }
+#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
     }
 }

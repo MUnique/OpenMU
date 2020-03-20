@@ -36,7 +36,7 @@
         </Field>
         <Field>
           <Index>16</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>Price</Name>
         </Field>
       </Fields>
@@ -145,7 +145,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -178,7 +178,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -217,7 +217,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>Id</Name>
             </Field>
             <Field>
@@ -325,7 +325,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>Id</Name>
             </Field>
             <Field>
@@ -432,12 +432,12 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>Id</Name>
             </Field>
             <Field>
               <Index>2</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>TypeNumber</Name>
             </Field>
             <Field>
@@ -506,7 +506,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>Id</Name>
             </Field>
             <Field>
@@ -598,7 +598,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>Id</Name>
             </Field>
           </Fields>
@@ -616,12 +616,12 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>KilledId</Name>
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>KillerId</Name>
         </Field>
       </Fields>
@@ -637,7 +637,7 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ObjectId</Name>
         </Field>
         <Field>
@@ -652,7 +652,7 @@
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
         </Field>
       </Fields>
@@ -668,12 +668,12 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>SkillId</Name>
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -704,17 +704,17 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>SkillId</Name>
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
         </Field>
       </Fields>
@@ -729,7 +729,7 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ChangedPlayerId</Name>
         </Field>
         <Field>
@@ -749,7 +749,7 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ObjectId</Name>
         </Field>
         <Field>
@@ -770,7 +770,7 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>RequesterId</Name>
         </Field>
       </Fields>
@@ -831,12 +831,12 @@
             </Field>
             <Field>
               <Index>16</Index>
-              <Type>IntegerBigEndian</Type>
+              <Type>IntegerLittleEndian</Type>
               <Name>CurrentHealth</Name>
             </Field>
             <Field>
               <Index>20</Index>
-              <Type>IntegerBigEndian</Type>
+              <Type>IntegerLittleEndian</Type>
               <Name>MaximumHealth</Name>
             </Field>
           </Fields>
@@ -985,7 +985,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>MoneyAmount</Name>
         </Field>
       </Fields>
@@ -1012,12 +1012,12 @@
         </Field>
         <Field>
           <Index>14</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TradePartnerLevel</Name>
         </Field>
         <Field>
           <Index>16</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>GuildId</Name>
         </Field>
       </Fields>
@@ -1305,12 +1305,12 @@
         </Field>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ObjectId</Name>
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>HealthDamage</Name>
         </Field>
         <Field>
@@ -1335,7 +1335,7 @@
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ShieldDamage</Name>
         </Field>
       </Fields>
@@ -1404,7 +1404,7 @@
         </Field>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ObjectId</Name>
         </Field>
         <Field>
@@ -1434,7 +1434,7 @@
         </Field>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ObjectId</Name>
         </Field>
         <Field>
@@ -1479,17 +1479,17 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>KilledObjectId</Name>
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>AddedExperience</Name>
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>DamageOfLastHit</Name>
         </Field>
       </Fields>
@@ -1512,7 +1512,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>MapNumber</Name>
         </Field>
         <Field>
@@ -1577,7 +1577,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>Id</Name>
             </Field>
             <Field>
@@ -1635,7 +1635,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>Id</Name>
             </Field>
           </Fields>
@@ -1664,7 +1664,7 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
-      <Code>22</Code>
+      <Code>23</Code>
       <Name>ItemDropResponse</Name>
       <Length>5</Length>
       <Direction>ServerToClient</Direction>
@@ -1735,7 +1735,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Integer</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>Money</Name>
         </Field>
       </Fields>
@@ -1794,12 +1794,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Health</Name>
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Shield</Name>
         </Field>
       </Fields>
@@ -1816,12 +1816,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Health</Name>
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Shield</Name>
         </Field>
       </Fields>
@@ -1838,12 +1838,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Health</Name>
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Shield</Name>
         </Field>
       </Fields>
@@ -1860,12 +1860,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Mana</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Ability</Name>
         </Field>
       </Fields>
@@ -1882,12 +1882,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Mana</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Ability</Name>
         </Field>
       </Fields>
@@ -1932,7 +1932,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>EffectTimeInSeconds</Name>
         </Field>
       </Fields>
@@ -2142,7 +2142,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ItemCount</Name>
         </Field>
         <Field>
@@ -2202,7 +2202,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>Money</Name>
         </Field>
       </Fields>
@@ -2291,7 +2291,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
       </Fields>
@@ -2331,7 +2331,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
       </Fields>
@@ -2359,7 +2359,7 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -2436,7 +2436,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>PlayerId</Name>
             </Field>
             <Field>
@@ -2505,7 +2505,7 @@
             </Field>
             <Field>
               <Index>12</Index>
-              <Type>ShortBigEndian</Type>
+              <Type>ShortLittleEndian</Type>
               <Name>Level</Name>
             </Field>
             <Field>
@@ -2580,7 +2580,7 @@
             </Field>
             <Field>
               <Index>11</Index>
-              <Type>ShortBigEndian</Type>
+              <Type>ShortLittleEndian</Type>
               <Name>Level</Name>
             </Field>
             <Field>
@@ -2636,7 +2636,7 @@
         </Field>
         <Field>
           <Index>16</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Level</Name>
         </Field>
         <Field>
@@ -2681,7 +2681,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -2715,7 +2715,7 @@
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>SkillNumber</Name>
         </Field>
         <Field>
@@ -2748,7 +2748,7 @@
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>SkillNumber</Name>
         </Field>
       </Fields>
@@ -2789,7 +2789,7 @@
             </Field>
             <Field>
               <Index>1</Index>
-              <Type>ShortBigEndian</Type>
+              <Type>ShortLittleEndian</Type>
               <Name>SkillNumber</Name>
             </Field>
             <Field>
@@ -2824,7 +2824,7 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>SkillNumberAndLevel</Name>
         </Field>
       </Fields>
@@ -2852,7 +2852,7 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>SkillNumberAndLevel</Name>
         </Field>
       </Fields>
@@ -2893,7 +2893,7 @@
             </Field>
             <Field>
               <Index>1</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>SkillNumberAndLevel</Name>
             </Field>
           </Fields>
@@ -2943,17 +2943,17 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>UpdatedDependentMaximumStat</Name>
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>UpdatedMaximumShield</Name>
         </Field>
         <Field>
           <Index>10</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>UpdatedMaximumAbility</Name>
         </Field>
       </Fields>
@@ -3011,52 +3011,52 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Level</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>LevelUpPoints</Name>
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumHealth</Name>
         </Field>
         <Field>
           <Index>10</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumMana</Name>
         </Field>
         <Field>
           <Index>12</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumShield</Name>
         </Field>
         <Field>
           <Index>14</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumAbility</Name>
         </Field>
         <Field>
           <Index>16</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>FruitPoints</Name>
         </Field>
         <Field>
           <Index>18</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumFruitPoints</Name>
         </Field>
         <Field>
           <Index>20</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>NegativeFruitPoints</Name>
         </Field>
         <Field>
           <Index>22</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumNegativeFruitPoints</Name>
         </Field>
       </Fields>
@@ -3083,87 +3083,87 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MapId</Name>
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>Long</Type>
+          <Type>LongBigEndian</Type>
           <Name>CurrentExperience</Name>
         </Field>
         <Field>
           <Index>16</Index>
-          <Type>Long</Type>
+          <Type>LongBigEndian</Type>
           <Name>ExperienceForNextLevel</Name>
         </Field>
         <Field>
           <Index>24</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>LevelUpPoints</Name>
         </Field>
         <Field>
           <Index>26</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Strength</Name>
         </Field>
         <Field>
           <Index>28</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Agility</Name>
         </Field>
         <Field>
           <Index>30</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Vitality</Name>
         </Field>
         <Field>
           <Index>32</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Energy</Name>
         </Field>
         <Field>
           <Index>34</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>CurrentHealth</Name>
         </Field>
         <Field>
           <Index>36</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumHealth</Name>
         </Field>
         <Field>
           <Index>38</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>CurrentMana</Name>
         </Field>
         <Field>
           <Index>40</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumMana</Name>
         </Field>
         <Field>
           <Index>42</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>CurrentShield</Name>
         </Field>
         <Field>
           <Index>44</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumShield</Name>
         </Field>
         <Field>
           <Index>46</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>CurrentAbility</Name>
         </Field>
         <Field>
           <Index>48</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumAbility</Name>
         </Field>
         <Field>
           <Index>52</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>Money</Name>
         </Field>
         <Field>
@@ -3180,27 +3180,27 @@
         </Field>
         <Field>
           <Index>58</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>UsedFruitPoints</Name>
         </Field>
         <Field>
           <Index>60</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaxFruitPoints</Name>
         </Field>
         <Field>
           <Index>62</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Leadership</Name>
         </Field>
         <Field>
           <Index>64</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>UsedNegativeFruitPoints</Name>
         </Field>
         <Field>
           <Index>66</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaxNegativeFruitPoints</Name>
         </Field>
         <Field>
@@ -3237,62 +3237,62 @@
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>CurrentExperience</Name>
         </Field>
         <Field>
           <Index>12</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>ExperienceForNextLevel</Name>
         </Field>
         <Field>
           <Index>16</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>LevelUpPoints</Name>
         </Field>
         <Field>
           <Index>18</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Strength</Name>
         </Field>
         <Field>
           <Index>20</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Agility</Name>
         </Field>
         <Field>
           <Index>22</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Vitality</Name>
         </Field>
         <Field>
           <Index>24</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Energy</Name>
         </Field>
         <Field>
           <Index>26</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>CurrentHealth</Name>
         </Field>
         <Field>
           <Index>28</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumHealth</Name>
         </Field>
         <Field>
           <Index>30</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>CurrentMana</Name>
         </Field>
         <Field>
           <Index>32</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumMana</Name>
         </Field>
         <Field>
           <Index>36</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>Money</Name>
         </Field>
         <Field>
@@ -3365,42 +3365,42 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MasterLevel</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Long</Type>
+          <Type>LongBigEndian</Type>
           <Name>MasterExperience</Name>
         </Field>
         <Field>
           <Index>14</Index>
-          <Type>Long</Type>
+          <Type>LongBigEndian</Type>
           <Name>MasterExperienceOfNextLevel</Name>
         </Field>
         <Field>
           <Index>22</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MasterLevelUpPoints</Name>
         </Field>
         <Field>
           <Index>24</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumHealth</Name>
         </Field>
         <Field>
           <Index>26</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumMana</Name>
         </Field>
         <Field>
           <Index>28</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumShield</Name>
         </Field>
         <Field>
           <Index>30</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MaximumAbility</Name>
         </Field>
       </Fields>
@@ -3422,7 +3422,7 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MasterLevelUpPoints</Name>
         </Field>
         <Field>
@@ -3433,7 +3433,7 @@
         </Field>
         <Field>
           <Index>12</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MasterSkillNumber</Name>
         </Field>
         <Field>
@@ -3464,7 +3464,7 @@
       <Fields>
         <Field>
           <Index>8</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>MasterSkillCount</Name>
         </Field>
         <Field>
@@ -3551,38 +3551,6 @@
       </Enums>
     </Packet>
     <Packet>
-      <HeaderType>C2Header</HeaderType>
-      <Code>12</Code>
-      <Name>PlayerMeet</Name>
-      <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>PlayerCount</Name>
-        </Field>
-        <!-- TODO: Structures -->
-      </Fields>
-    </Packet>
-    <Packet>
-      <HeaderType>C2Header</HeaderType>
-      <Code>13</Code>
-      <Name>NpcMeet</Name>
-      <Direction>ServerToClient</Direction>
-      <SentWhen></SentWhen>
-      <CausedReaction></CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>NpcCount</Name>
-        </Field>
-        <!-- TODO: Structures -->
-      </Fields>
-    </Packet>
-    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>50</Code>
       <Name>GuildJoinRequest</Name>
@@ -3593,7 +3561,7 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>RequesterId</Name>
         </Field>
       </Fields>
@@ -3683,7 +3651,7 @@
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>TotalScore</Name>
         </Field>
         <Field>
@@ -3851,7 +3819,7 @@
         <Field>
           <Index>3</Index>
           <LeftShifted>0</LeftShifted>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
           <Length>7</Length>
         </Field>
@@ -3892,7 +3860,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>IntegerBigEndian</Type>
+              <Type>IntegerLittleEndian</Type>
               <Name>GuildId</Name>
             </Field>
             <Field>
@@ -3909,7 +3877,7 @@
             </Field>
             <Field>
               <Index>7</Index>
-              <Type>Short</Type>
+              <Type>ShortBigEndian</Type>
               <Name>PlayerId</Name>
             </Field>
           </Fields>
@@ -3927,7 +3895,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>GuildId</Name>
         </Field>
         <Field>
@@ -3971,12 +3939,12 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>VaultMoney</Name>
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>InventoryMoney</Name>
         </Field>
       </Fields>
@@ -4317,7 +4285,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>LetterId</Name>
         </Field>
         <Field>
@@ -4377,7 +4345,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>LetterIndex</Name>
         </Field>
         <Field>
@@ -4439,12 +4407,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>LetterIndex</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>MessageSize</Name>
         </Field>
         <Field>
@@ -4488,7 +4456,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>LetterIndex</Name>
         </Field>
       </Fields>
@@ -4510,12 +4478,12 @@
         </Field>
         <Field>
           <Index>18</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>ChatRoomId</Name>
         </Field>
         <Field>
           <Index>20</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>AuthenticationToken</Name>
         </Field>
         <Field>
@@ -4553,7 +4521,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>Integer</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>RequestId</Name>
         </Field>
       </Fields>

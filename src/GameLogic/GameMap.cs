@@ -14,7 +14,6 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.Persistence;
 
@@ -31,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly IdGenerator objectIdGenerator;
 
-        private readonly IMapStateObserver stateObserver;
+        private readonly IdGenerator dropIdGenerator;
 
         private int playerCount;
 
@@ -41,17 +40,16 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="mapDefinition">The map definition.</param>
         /// <param name="itemDropDuration">Duration of the item drop.</param>
         /// <param name="chunkSize">Size of the chunk.</param>
-        /// <param name="stateObserver">The map state observer.</param>
-        public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize, IMapStateObserver stateObserver)
+        public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
         {
             this.Definition = mapDefinition;
             this.ItemDropDuration = itemDropDuration;
-            this.stateObserver = stateObserver;
             Log.DebugFormat("Creating GameMap {0}", this.Definition);
             this.Terrain = new GameMapTerrain(this.Definition);
 
             this.areaOfInterestManager = new BucketAreaOfInterestManager(chunkSize);
             this.objectIdGenerator = new IdGenerator(ViewExtensions.ConstantPlayerId + 1, 0x7FFF);
+            this.dropIdGenerator = new IdGenerator(0, ViewExtensions.ConstantPlayerId - 1);
         }
 
         /// <summary>
@@ -126,13 +124,19 @@ namespace MUnique.OpenMU.GameLogic
             this.areaOfInterestManager.RemoveObject(locateable);
             if (this.objectsInMap.Remove(locateable.Id) && locateable.Id != 0)
             {
-                this.objectIdGenerator.GiveBack(locateable.Id);
+                if (locateable is DroppedItem)
+                {
+                    this.dropIdGenerator.GiveBack(locateable.Id);
+                }
+                else
+                {
+                    this.objectIdGenerator.GiveBack(locateable.Id);
+                }
 
                 if (locateable is Player player)
                 {
                     player.Id = 0;
                     Interlocked.Decrement(ref this.playerCount);
-                    this.stateObserver?.PlayerCountChanged(this.MapId, this.playerCount);
                 }
 
                 this.ObjectRemoved?.Invoke(this, new GameMapEventArgs(this, locateable));
@@ -145,24 +149,27 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="locateable">The locateable object.</param>
         public void Add(ILocateable locateable)
         {
-            if (locateable is DroppedItem droppedItem)
+            switch (locateable)
             {
-                droppedItem.Id = (ushort)this.objectIdGenerator.GetId();
-                Log.DebugFormat("{0}: Added drop {1}, {2}", this.Definition, droppedItem.Id, droppedItem.Item);
-            }
-
-            if (locateable is Player player)
-            {
-                player.Id = (ushort)this.objectIdGenerator.GetId();
-                Log.DebugFormat("{0}: Added player {1}, {2}, ", this.Definition, player.Id, player);
-                Interlocked.Increment(ref this.playerCount);
-                this.stateObserver?.PlayerCountChanged(this.MapId, this.playerCount);
-            }
-
-            if (locateable is NonPlayerCharacter npc)
-            {
-                npc.Id = (ushort)this.objectIdGenerator.GetId();
-                Log.DebugFormat("{0}: Added npc {1}, {2}", this.Definition, npc.Id, npc.Definition.Designation);
+                case DroppedItem droppedItem:
+                    droppedItem.Id = (ushort)this.dropIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added drop {1}, {2}", this.Definition, droppedItem.Id, droppedItem.Item);
+                    break;
+                case Player player:
+                    player.Id = (ushort)this.objectIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added player {1}, {2}, ", this.Definition, player.Id, player);
+                    Interlocked.Increment(ref this.playerCount);
+                    break;
+                case NonPlayerCharacter npc:
+                    npc.Id = (ushort)this.objectIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added npc {1}, {2}", this.Definition, npc.Id, npc.Definition.Designation);
+                    break;
+                case ISupportIdUpdate idUpdate:
+                    idUpdate.Id = (ushort)this.objectIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added {1}", this.Definition, locateable);
+                    break;
+                default:
+                    throw new ArgumentException($"Adding an object of type {locateable.GetType()} is not supported.");
             }
 
             this.objectsInMap.Add(locateable.Id, locateable);

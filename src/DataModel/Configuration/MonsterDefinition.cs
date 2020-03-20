@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -243,11 +244,13 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the items of the merchant store. Is only relevant for merchant NPCs.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ItemStorage MerchantStore { get; set; }
 
         /// <summary>
         /// Gets or sets the item craftings. Is only relevant for crafting NPCs (chaos goblin etc.).
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<ItemCrafting.ItemCrafting> ItemCraftings { get; protected set; }
 
         /// <summary>
@@ -259,7 +262,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the attributes of this monster.
         /// </summary>
-        //// public IDictionary<AttributeDefinition, float> Attributes { get; }
+        [MemberOfAggregate]
         public virtual ICollection<MonsterAttribute> Attributes { get; protected set; }
 
         /// <summary>

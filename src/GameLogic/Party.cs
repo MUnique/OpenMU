@@ -73,9 +73,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="sender">The sender.</param>
         public void KickMySelf(IPartyMember sender)
         {
-            int i = 0;
-
-            for (i = 0; i < this.PartyList.Count; i++)
+            for (int i = 0; i < this.PartyList.Count; i++)
             {
                 if (this.PartyList[i].Id == sender.Id)
                 {

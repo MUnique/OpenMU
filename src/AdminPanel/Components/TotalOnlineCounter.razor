@@ -1,0 +1,26 @@
+﻿@using MUnique.OpenMU.AdminPanel.Services
+@using MUnique.OpenMU.Interfaces
+
+@inject ServerService serverService
+
+<tr class="info">
+    <td colspan="5">
+        <span>Total Players: @this.GetPlayerCount()</span>
+    </td>
+</tr>
+
+@code {
+    private IList<IManageableServer> servers;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        servers = this.serverService.Servers;
+    }
+
+    private int GetPlayerCount()
+    {
+        return this.servers.Where(s => s.Id < 0x10000).Sum(s => s.CurrentConnections);
+    }
+}

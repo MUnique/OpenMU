@@ -221,7 +221,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.adaptee.ViewPlugIns.GetPlugIn<INewNpcsInScopePlugIn>()?.NewNpcsInScope(npcs);
             }
 
-            var droppedItems = newItems.OfType<DroppedItem>();
+            var droppedItems = newObjects.OfType<DroppedItem>();
             if (droppedItems.Any())
             {
                 this.adaptee.ViewPlugIns.GetPlugIn<IShowDroppedItemsPlugIn>()?.ShowDroppedItems(droppedItems, false);

@@ -30,5 +30,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets gets the mixed jewel item definition.
         /// </summary>
         public virtual ItemDefinition MixedJewel { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.SingleJewel?.Name} <> {this.MixedJewel.Name}";
+        }
     }
 }

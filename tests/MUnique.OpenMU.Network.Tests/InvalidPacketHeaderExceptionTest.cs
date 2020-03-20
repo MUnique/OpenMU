@@ -60,21 +60,23 @@ namespace MUnique.OpenMU.Network.Tests
         {
             bool thrown = false;
             var duplexPipe = new DuplexPipe();
-            using (var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output)))
+            using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output));
+            _ = connection.BeginReceive();
+            try
             {
-                _ = connection.BeginReceive();
-                try
-                {
-                    await duplexPipe.ReceivePipe.Writer.WriteAsync(this.malformedData);
-                }
-                catch (InvalidPacketHeaderException e)
-                {
-                    thrown = true;
-                    check(e);
-                }
-
-                Assert.That(thrown);
+                await duplexPipe.ReceivePipe.Writer.WriteAsync(this.malformedData);
             }
+            catch (InvalidPacketHeaderException e)
+            {
+                thrown = true;
+                check(e);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail($"Wrong exception type {e}", e);
+            }
+
+            Assert.That(thrown);
         }
     }
 }

@@ -1,0 +1,70 @@
+﻿@page "/map/{serverId:int}/{mapId:int}"
+
+@using Nito.AsyncEx
+
+@implements IAsyncDisposable
+@implements IDisposable
+
+<div class="livemap">
+    <LiveMap Id="@this.MapFactory.GetMapContainerIdentifier(this.ServerId, this.MapId)" MapController="@this.lazyController" />
+    @if (this.controller is { })
+    {
+        <div class="livemap-players">
+            <div><MapPlayerList MapController="@this.controller" /></div>
+            <!-- TODO -->
+            <div id="selected_info" style="padding-left: 8px; position: absolute; bottom: 0; display: none">
+                <p>Name: <span id="objectData_name"></span>, ID: <span id="objectData_id"></span>, Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</p>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the map factory.
+    /// </summary>
+    [Inject]
+    IMapFactory MapFactory { get; set; }
+
+    /// <summary>
+    /// Gets or sets the server id on which the map is hosted.
+    /// </summary>
+    [Parameter]
+    public int ServerId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the map id.
+    /// </summary>
+    [Parameter]
+    public int MapId { get; set; }
+
+    private IMapController controller;
+
+    private AsyncLazy<IMapController> lazyController;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        lazyController = new AsyncLazy<IMapController>(async () =>
+        {
+            this.controller = await this.MapFactory.CreateMap(this.ServerId, this.MapId);
+            await this.InvokeAsync(this.StateHasChanged);
+            return this.controller;
+        });
+        base.OnInitialized();
+    }
+
+    /// <inheritdoc />
+    public void Dispose() => Task.Run(this.DisposeAsync).Wait();
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        if (this.controller is IAsyncDisposable disposable)
+        {
+            await disposable.DisposeAsync();
+        }
+
+        this.controller = null;
+    }
+}

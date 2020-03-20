@@ -16,7 +16,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>TickCount</Name>
         </Field>
         <Field>
@@ -88,6 +88,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>LoginLongPassword</Name>
+      <Length>43</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -108,7 +109,7 @@
         </Field>
         <Field>
           <Index>34</Index>
-          <Type>Integer</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>TickCount</Name>
         </Field>
         <Field>
@@ -124,6 +125,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>LoginShortPassword</Name>
+      <Length>33</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -144,7 +146,7 @@
         </Field>
         <Field>
           <Index>24</Index>
-          <Type>Integer</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>TickCount</Name>
         </Field>
         <Field>
@@ -160,6 +162,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>Login075</Name>
+      <Length>31</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -180,7 +183,7 @@
         </Field>
         <Field>
           <Index>24</Index>
-          <Type>Integer</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>TickCount</Name>
         </Field>
         <Field>
@@ -196,6 +199,7 @@
       <Code>F1</Code>
       <SubCode>02</SubCode>
       <Name>LogOut</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>When the client wants to leave the game in various ways.</SentWhen>
       <CausedReaction>Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.</CausedReaction>
@@ -214,6 +218,7 @@
       <SubCode>01</SubCode>
       <Name>PlayerShopSetItemPrice</Name>
       <Caption>Player Shop - Set Item Price</Caption>
+      <Length>9</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to set a price of an item which is inside his personal item shop.</SentWhen>
       <CausedReaction>The price is set for the specified item. Works only if the shop is currently closed.</CausedReaction>
@@ -225,7 +230,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>Price</Name>
         </Field>
       </Fields>
@@ -236,6 +241,7 @@
       <SubCode>02</SubCode>
       <Name>PlayerShopOpen</Name>
       <Caption>Player Shop - Open</Caption>
+      <Length>30</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to open his personal item shop.</SentWhen>
       <CausedReaction>The personal item shop is opened and the surrounding players are informed about it, including the own player.</CausedReaction>
@@ -254,6 +260,7 @@
       <SubCode>03</SubCode>
       <Name>PlayerShopClose</Name>
       <Caption>Player Shop - Close</Caption>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to close his personal item shop.</SentWhen>
       <CausedReaction>The personal item shop is closed and the surrounding players are informed about it, including the own player.</CausedReaction>
@@ -265,13 +272,14 @@
       <SubCode>05</SubCode>
       <Name>PlayerShopItemListRequest</Name>
       <Caption>Player Shop - Item List Request</Caption>
+      <Length>16</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player opens a shop of another player.</SentWhen>
       <CausedReaction>The list of items is sent back, if the shop of the player is currently open.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -288,13 +296,14 @@
       <SubCode>06</SubCode>
       <Name>PlayerShopItemBuyRequest</Name>
       <Caption>Player Shop - Item Buy Request</Caption>
+      <Length>17</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to buy the item of another players shop.</SentWhen>
       <CausedReaction>If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -314,13 +323,14 @@
       <HeaderType>C3Header</HeaderType>
       <Code>22</Code>
       <Name>PickupItemRequest</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requests to pick up an item which is laying on the ground in the near of the players character.</SentWhen>
       <CausedReaction>If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ItemId</Name>
         </Field>
       </Fields>
@@ -329,13 +339,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>22</Code>
       <Name>PickupItemRequest075</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requests to pick up an item which is laying on the ground in the near of the players character.</SentWhen>
       <CausedReaction>If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ItemId</Name>
         </Field>
       </Fields>
@@ -344,6 +355,7 @@
       <HeaderType>C3Header</HeaderType>
       <Code>23</Code>
       <Name>DropItemRequest</Name>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requests to drop on item of his inventory on the ground.</SentWhen>
       <CausedReaction>When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.</CausedReaction>
@@ -369,6 +381,7 @@
       <HeaderType>C3Header</HeaderType>
       <Code>24</Code>
       <Name>ItemMoveRequest</Name>
+      <Length>19</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.</SentWhen>
       <CausedReaction></CausedReaction>
@@ -407,6 +420,7 @@
       <HeaderType>C3Header</HeaderType>
       <Code>26</Code>
       <Name>ConsumeItemRequest</Name>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.</SentWhen>
       <CausedReaction>The server tries to 'consume' the specified item and responses accordingly.</CausedReaction>
@@ -436,13 +450,14 @@
       <Code>30</Code>
       <Name>TalkToNpcRequest</Name>
       <Caption>Talk to NPC</Caption>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to talk to an NPC.</SentWhen>
       <CausedReaction>Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>NpcId</Name>
         </Field>
       </Fields>
@@ -452,6 +467,7 @@
       <Code>31</Code>
       <Name>CloseNpcRequest</Name>
       <Caption>Close NPC</Caption>
+      <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player closes the dialog which was opened by an interaction with a NPC.</SentWhen>
       <CausedReaction>The server updates the state of the player accordingly.</CausedReaction>
@@ -462,6 +478,7 @@
       <Code>32</Code>
       <Name>BuyItemFromNpcRequest</Name>
       <Caption>Buy Item From NPC Request</Caption>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to buy an item from an opened NPC merchant.</SentWhen>
       <CausedReaction>If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.</CausedReaction>
@@ -479,6 +496,7 @@
       <Code>33</Code>
       <Name>SellItemToNpcRequest</Name>
       <Caption>Sell Item To NPC</Caption>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to sell an item of his inventory to the opened NPC merchant.</SentWhen>
       <CausedReaction>The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.</CausedReaction>
@@ -495,6 +513,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>34</Code>
       <Name>RepairItemRequest</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to repair an item of his inventory.</SentWhen>
       <CausedReaction>The item is repaired if the player has enough money in its inventory. A corresponding response is sent.</CausedReaction>
@@ -513,13 +532,14 @@
       <SubCode>02</SubCode>
       <Name>WarpCommandRequest</Name>
       <Caption>Warp Command (pre-season 6)</Caption>
+      <Length>10</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player selected to warp by selecting an entry in the warp list (configured in game client files).</SentWhen>
       <CausedReaction>If the player has enough money and is allowed to enter the map, it's getting moved to there.</CausedReaction>
       <Fields>
         <Field>
           <Index>8</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>WarpInfoIndex</Name>
           <Description>The index of the entry in the warp list.</Description>
         </Field>
@@ -529,13 +549,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>1C</Code>
       <Name>EnterGateRequest</Name>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>When the player enters an area on the game map which is configured as gate at the client data files.</SentWhen>
       <CausedReaction>If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.</CausedReaction>
       <Fields>
         <Field>
-          <Index>3</Index>
-          <Type>Short</Type>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
           <Name>GateNumber</Name>
         </Field>
       </Fields>
@@ -544,6 +565,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>82</Code>
       <Name>VaultClosed</Name>
+      <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player closed an opened vault dialog.</SentWhen>
       <CausedReaction>The state on the server is updated.</CausedReaction>
@@ -553,6 +575,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>81</Code>
       <Name>VaultMoveMoneyRequest</Name>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to move money from or to the vault storage.</SentWhen>
       <CausedReaction>The money is moved, if possible.</CausedReaction>
@@ -565,7 +588,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>Amount</Name>
         </Field>
       </Fields>
@@ -576,10 +599,12 @@
           <Values>
             <EnumValue>
               <Name>InventoryToVault</Name>
+              <Description>The money is moved from the inventory to the vault.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>VaultToInventory</Name>
+              <Description>The money is moved from the vault to the inventory.</Description>
               <Value>1</Value>
             </EnumValue>
           </Values>
@@ -591,6 +616,7 @@
       <Code>BC</Code>
       <Name>LahapJewelMixRequest</Name>
       <Caption>Jewel Mix (Lahap)</Caption>
+      <Length>7</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.</SentWhen>
       <CausedReaction>If successful, the inventory is updated and the game client gets corresponding responses.</CausedReaction>
@@ -663,42 +689,52 @@
           <Values>
             <EnumValue>
               <Name>JewelOfBless</Name>
+              <Description>Jewel of Bless.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfSoul</Name>
+              <Description>Jewel of Soul.</Description>
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfLife</Name>
+              <Description>Jewel of Life.</Description>
               <Value>2</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfCreation</Name>
+              <Description>Jewel of Creation.</Description>
               <Value>3</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfGuardian</Name>
+              <Description>Jewel of Guardian.</Description>
               <Value>4</Value>
             </EnumValue>
             <EnumValue>
               <Name>Gemstone</Name>
+              <Description>The gemstone.</Description>
               <Value>5</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfHarmony</Name>
+              <Description>Jewel of Harmony.</Description>
               <Value>6</Value>
             </EnumValue>
             <EnumValue>
               <Name>JewelOfChaos</Name>
+              <Description>Jewel of Chaos.</Description>
               <Value>7</Value>
             </EnumValue>
             <EnumValue>
               <Name>LowerRefineStone</Name>
+              <Description>Lower refine stone.</Description>
               <Value>8</Value>
             </EnumValue>
             <EnumValue>
               <Name>HigherRefineStone</Name>
+              <Description>Higher refine stone.</Description>
               <Value>9</Value>
             </EnumValue>
           </Values>
@@ -709,6 +745,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>42</Code>
       <Name>PartyListRequest</Name>
+      <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>When the player opens the party menu in the game client.</SentWhen>
       <CausedReaction>If the player is in a party, the server sends back a list with information about all players of the party.</CausedReaction>
@@ -718,6 +755,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>43</Code>
       <Name>PartyPlayerKickRequest</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A party master wants to kick another player from his party, or when a player wants to kick himself from his party.</SentWhen>
       <CausedReaction>If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.</CausedReaction>
@@ -733,13 +771,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>40</Code>
       <Name>PartyInviteRequest</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A party master wants to invite another player to his party.</SentWhen>
       <CausedReaction>If the requesting player has no party, or is the party master, a request is sent to the target player.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetPlayerId</Name>
         </Field>
       </Fields>
@@ -748,6 +787,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>41</Code>
       <Name>PartyInviteResponse</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player was invited by another player to join a party and this player sent the response back.</SentWhen>
       <CausedReaction>If the sender accepts the request, it's added to the party.</CausedReaction>
@@ -789,6 +829,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>15</Code>
       <Name>InstantMoveRequest</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>It's sent when the player performs specific skills.</SentWhen>
       <CausedReaction>Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.</CausedReaction>
@@ -809,6 +850,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>18</Code>
       <Name>AnimationRequest</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player does any kind of animation.</SentWhen>
       <CausedReaction>The animation number and rotation is forwarded to all surrounding players.</CausedReaction>
@@ -831,6 +873,7 @@
       <SubCode>00</SubCode>
       <Name>RequestCharacterList</Name>
       <Caption>Request Character List</Caption>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>After a successful login or after the player decided to leave the game world to go back to the character selection screen.</SentWhen>
       <CausedReaction>The server sends the character list with all available characters.</CausedReaction>
@@ -841,6 +884,7 @@
       <Code>F3</Code>
       <SubCode>01</SubCode>
       <Name>CreateCharacter</Name>
+      <Length>15</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client is at the character selection screen and the player requests to add a new character.</SentWhen>
       <CausedReaction>The server checks if the player is allowed to create the character and sends a response back.</CausedReaction>
@@ -868,6 +912,7 @@
       <Code>F3</Code>
       <SubCode>02</SubCode>
       <Name>DeleteCharacter</Name>
+      <Length>24</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client is at the character selection screen and the player requests to delete an existing character.</SentWhen>
       <CausedReaction>The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.</CausedReaction>
@@ -892,6 +937,7 @@
       <Code>F3</Code>
       <SubCode>03</SubCode>
       <Name>SelectCharacter</Name>
+      <Length>14</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player selects a character to enter the game world on the character selection screen.</SentWhen>
       <CausedReaction>The player joins the game world with the specified character.</CausedReaction>
@@ -910,6 +956,7 @@
       <Code>F3</Code>
       <SubCode>15</SubCode>
       <Name>FocusCharacter</Name>
+      <Length>14</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.</SentWhen>
       <CausedReaction>The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.</CausedReaction>
@@ -928,6 +975,7 @@
       <SubCode>06</SubCode>
       <Name>IncreaseCharacterStatPoint</Name>
       <Caption>Character - Stat Point Increase</Caption>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.</SentWhen>
       <CausedReaction>The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.</CausedReaction>
@@ -946,6 +994,7 @@
       <Code>F3</Code>
       <SubCode>12</SubCode>
       <Name>ClientReadyAfterMapChange</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>After the server sent a map change message and the client has initialized the game map visualization.</SentWhen>
       <CausedReaction>The character is added to the internal game map and ready to interact with other entities.</CausedReaction>
@@ -975,13 +1024,14 @@
       <Code>F3</Code>
       <SubCode>52</SubCode>
       <Name>AddMasterSkillPoint</Name>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to add or increase the level of a specific master skill of the master skill tree.</SentWhen>
       <CausedReaction>Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>SkillId</Name>
         </Field>
       </Fields>
@@ -991,13 +1041,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>11</Code>
       <Name>HitRequest</Name>
+      <Length>7</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player attacks a target without using a skill.</SentWhen>
       <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
         </Field>
         <Field>
@@ -1016,18 +1067,19 @@
       <HeaderType>C3Header</HeaderType>
       <Code>19</Code>
       <Name>TargetedSkill</Name>
+      <Length>7</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
       <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>SkillId</Name>
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
         </Field>
       </Fields>
@@ -1036,6 +1088,7 @@
       <HeaderType>C3Header</HeaderType>
       <Code>19</Code>
       <Name>TargetedSkill075</Name>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
       <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
@@ -1047,7 +1100,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
         </Field>
       </Fields>
@@ -1056,13 +1109,14 @@
       <HeaderType>C3Header</HeaderType>
       <Code>1E</Code>
       <Name>AreaSkill</Name>
+      <Length>13</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player is performing an skill which affects an area of the map.</SentWhen>
       <CausedReaction>It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>SkillId</Name>
         </Field>
         <Field>
@@ -1082,7 +1136,7 @@
         </Field>
         <Field>
           <Index>9</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>ExtraTargetId</Name>
         </Field>
         <Field>
@@ -1097,13 +1151,14 @@
       <HeaderType>C3Header</HeaderType>
       <Code>DB</Code>
       <Name>AreaSkillHit</Name>
+      <Length>12</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>An area skill was performed and the client decided to hit a target.</SentWhen>
       <CausedReaction>The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>SkillId</Name>
         </Field>
         <Field>
@@ -1124,7 +1179,7 @@
         </Field>
         <Field>
           <Index>9</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
         </Field>
         <Field>
@@ -1139,6 +1194,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>3D</Code>
       <Name>TradeCancel</Name>
+      <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to cancel the trade.</SentWhen>
       <CausedReaction>The trade is cancelled and the previous inventory state is restored.</CausedReaction>
@@ -1148,6 +1204,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>3C</Code>
       <Name>TradeButtonStateChange</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player presses the trade button.</SentWhen>
       <CausedReaction>The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.</CausedReaction>
@@ -1164,13 +1221,14 @@
       <HeaderType>C3Header</HeaderType>
       <Code>36</Code>
       <Name>TradeRequest</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player requests to open a trade with another player.</SentWhen>
       <CausedReaction>The request is forwarded to the requested player.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
       </Fields>
@@ -1179,6 +1237,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>37</Code>
       <Name>TradeRequestResponse</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A requested player responded to a trade request of another player.</SentWhen>
       <CausedReaction>When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. </CausedReaction>
@@ -1194,13 +1253,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>3A</Code>
       <Name>SetTradeMoney</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requests to set an amount of money in the trade.</SentWhen>
       <CausedReaction>It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>Amount</Name>
         </Field>
       </Fields>
@@ -1209,13 +1269,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>C8</Code>
       <Name>LetterDeleteRequest</Name>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requests to delete a letter.</SentWhen>
       <CausedReaction>The letter is getting deleted.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>LetterIndex</Name>
         </Field>
       </Fields>
@@ -1230,7 +1291,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>LetterId</Name>
         </Field>
         <Field>
@@ -1266,13 +1327,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>C7</Code>
       <Name>LetterReadRequest</Name>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requests to read a specific letter of his letter list.</SentWhen>
       <CausedReaction>The server sends the requested letter content back to the game client.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>LetterIndex</Name>
         </Field>
       </Fields>
@@ -1280,8 +1342,8 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>53</Code>
-      <Name>GuildKickPlayerRequest</Name>
       <Caption>Guild - Kick Player</Caption>
+      <Name>GuildKickPlayerRequest</Name>
       <Direction>ClientToServer</Direction>
       <SentWhen>A guild member wants to kick himself or a guild master wants to kick another player from its guild.</SentWhen>
       <CausedReaction>If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.</CausedReaction>
@@ -1303,13 +1365,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>50</Code>
       <Name>GuildJoinRequest</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player (non-guild member) requests to join a guild.</SentWhen>
       <CausedReaction>The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>GuildMasterPlayerId</Name>
         </Field>
       </Fields>
@@ -1318,6 +1381,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>51</Code>
       <Name>GuildJoinResponse</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A guild master responded to a previously sent request.</SentWhen>
       <CausedReaction>If the request was accepted by the guild master, the previously requesting player is added to the guild.</CausedReaction>
@@ -1333,6 +1397,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>52</Code>
       <Name>GuildListRequest</Name>
+      <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A guild player opens its guild menu in the game client.</SentWhen>
       <CausedReaction>A list of all guild members and their state is sent back as response.</CausedReaction>
@@ -1342,6 +1407,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>55</Code>
       <Name>GuildCreateRequest</Name>
+      <Length>44</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>When a player wants to create a guild.</SentWhen>
       <CausedReaction>The guild is created and the player is set as the new guild master of the guild.</CausedReaction>
@@ -1365,6 +1431,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>54</Code>
       <Name>GuildMasterAnswer</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player has the dialog of the guild master NPC opened and decided about its next step.</SentWhen>
       <CausedReaction>It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.</CausedReaction>
@@ -1381,13 +1448,14 @@
       <HeaderType>C1Header</HeaderType>
       <Code>66</Code>
       <Name>GuildInfoRequest</Name>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.</SentWhen>
       <CausedReaction>The server sends a response which includes the guild name and emblem.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>GuildId</Name>
         </Field>
       </Fields>
@@ -1396,6 +1464,7 @@
       <HeaderType>C3Header</HeaderType>
       <Code>34</Code>
       <Name>ItemRepair</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to repair an item of his inventory, either himself or with the usage of an NPC.</SentWhen>
       <CausedReaction>If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.</CausedReaction>
@@ -1412,12 +1481,13 @@
       <HeaderType>C1Header</HeaderType>
       <Code>86</Code>
       <Name>ChaosMachineMixRequest</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.</SentWhen>
       <CausedReaction>Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.</CausedReaction>
       <Fields>
         <Field>
-          <Index>2</Index>
+          <Index>3</Index>
           <Type>Enum</Type>
           <TypeName>ChaosMachineMixType</TypeName>
           <Name>MixType</Name>
@@ -1493,6 +1563,7 @@
       <Code>87</Code>
       <Name>CloseChaosMachineRequest</Name>
       <Caption>Close Chaos Machine</Caption>
+      <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player closes the dialog which was opened by an interaction with the chaos machine goblin.</SentWhen>
       <CausedReaction>The server updates the state of the player accordingly.</CausedReaction>
@@ -1502,6 +1573,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>C1</Code>
       <Name>FriendAddRequest</Name>
+      <Length>13</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to add another players character into his friend list of the messenger.</SentWhen>
       <CausedReaction>A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.</CausedReaction>
@@ -1518,6 +1590,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>C3</Code>
       <Name>FriendDelete</Name>
+      <Length>13</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to delete another players character from his friend list of the messenger.</SentWhen>
       <CausedReaction>The entry in the friend list is removed. The player is shown as offline in the other players friends list.</CausedReaction>
@@ -1534,6 +1607,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>CA</Code>
       <Name>ChatRoomCreateRequest</Name>
+      <Length>13</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to open a chat with another player of his friend list.</SentWhen>
       <CausedReaction>If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.</CausedReaction>
@@ -1550,6 +1624,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>C2</Code>
       <Name>FriendAddResponse</Name>
+      <Length>14</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player received a friend request from another player and responded to it.</SentWhen>
       <CausedReaction>If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.</CausedReaction>
@@ -1571,6 +1646,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>C4</Code>
       <Name>SetFriendOnlineState</Name>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to set himself on- or offline.</SentWhen>
       <CausedReaction>Depending on the state, the player is shown as offline or online in all friend lists of his friends.</CausedReaction>
@@ -1587,7 +1663,7 @@
       <Code>CB</Code>
       <Name>ChatRoomInvitationRequest</Name>
       <Direction>ClientToServer</Direction>
-      <Length>13</Length>
+      <Length>19</Length>
       <SentWhen>A player wants to invite additional players from his friend list to an existing chat room.</SentWhen>
       <CausedReaction>The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.</CausedReaction>
       <Fields>
@@ -1599,12 +1675,12 @@
         </Field>
         <Field>
           <Index>13</Index>
-          <Type>Short</Type>
+          <Type>ShortBigEndian</Type>
           <Name>RoomId</Name>
         </Field>
         <Field>
           <Index>15</Index>
-          <Type>Integer</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>RequestId</Name>
         </Field>
       </Fields>
@@ -1613,6 +1689,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>A0</Code>
       <Name>LegacyQuestStateRequest</Name>
+      <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>After the player entered the game world with a character.</SentWhen>
       <CausedReaction>The quest state is sent back as response.</CausedReaction>
@@ -1622,6 +1699,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>A2</Code>
       <Name>LegacyQuestStateSetRequest</Name>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to change the state of a quest, e.g. to start or to finish a quest.</SentWhen>
       <CausedReaction>Depending on the requested new state, a response is sent back.</CausedReaction>
@@ -1651,12 +1729,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
         <Field>
@@ -1679,12 +1757,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
         <Field>
@@ -1706,12 +1784,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
       </Fields>
@@ -1728,12 +1806,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
       </Fields>
@@ -1750,12 +1828,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
       </Fields>
@@ -1783,12 +1861,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
       </Fields>

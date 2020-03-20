@@ -1,0 +1,36 @@
+﻿@typeparam TItem
+
+<EditForm Model="@Item">
+    <DataAnnotationsValidator />
+    <CreationAutoFields />
+
+    <ValidationSummary />
+
+    <button type="submit" @onclick="@Submit" class="btn-primary">Submit</button>
+    <button @onclick="@Cancel" class="btn-secondary">Cancel</button>
+</EditForm>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the modal instance.
+    /// </summary>
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item which should be created.
+    /// </summary>
+    [Parameter]
+    public TItem Item { get; set; }
+
+    private void Submit()
+    {
+        this.BlazoredModal.Close(ModalResult.Ok(Item));
+    }
+
+    private void Cancel()
+    {
+        this.BlazoredModal.Cancel();
+    }
+}
