@@ -139,7 +139,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
   </xsl:template>
 
 
-  <xsl:template match="pd:Packet[pd:Length]" mode="ext2">
+  <xsl:template match="pd:Packet[pd:Length and not(pd:Fields/pd:Field/pd:Type = 'Structure[]')]" mode="ext2">
     <xsl:value-of select="$newline" />
     <xsl:text>
         /// &lt;summary&gt;

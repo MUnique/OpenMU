@@ -324,11 +324,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="QuestStates" />.
         /// </summary>
-        [JsonProperty("QuestStates")]
+        [Newtonsoft.Json.JsonProperty("questStates")]
+        [System.Text.Json.Serialization.JsonPropertyName("questStates")]
         public ICollection<CharacterQuestState> RawQuestStates { get; } = new List<CharacterQuestState>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates
         {
             get
@@ -461,11 +463,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="RequirementStates" />.
         /// </summary>
-        [JsonProperty("RequirementStates")]
+        [Newtonsoft.Json.JsonProperty("requirementStates")]
+        [System.Text.Json.Serialization.JsonPropertyName("requirementStates")]
         public ICollection<QuestMonsterKillRequirementState> RawRequirementStates { get; } = new List<QuestMonsterKillRequirementState>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState> RequirementStates
         {
             get
@@ -485,7 +489,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="LastFinishedQuest" />.
         /// </summary>
-        [JsonProperty("LastFinishedQuest")]
+        [Newtonsoft.Json.JsonProperty("lastFinishedQuest")]
+        [System.Text.Json.Serialization.JsonPropertyName("lastFinishedQuest")]
         public QuestDefinition RawLastFinishedQuest
         { 
             get { return base.LastFinishedQuest as QuestDefinition; }
@@ -493,7 +498,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition LastFinishedQuest
         {
             get
@@ -510,7 +516,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ActiveQuest" />.
         /// </summary>
-        [JsonProperty("ActiveQuest")]
+        [Newtonsoft.Json.JsonProperty("activeQuest")]
+        [System.Text.Json.Serialization.JsonPropertyName("activeQuest")]
         public QuestDefinition RawActiveQuest
         { 
             get { return base.ActiveQuest as QuestDefinition; }
@@ -518,7 +525,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition ActiveQuest
         {
             get
@@ -1105,7 +1113,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Requirement" />.
         /// </summary>
-        [JsonProperty("Requirement")]
+        [Newtonsoft.Json.JsonProperty("requirement")]
+        [System.Text.Json.Serialization.JsonPropertyName("requirement")]
         public QuestMonsterKillRequirement RawRequirement
         { 
             get { return base.Requirement as QuestMonsterKillRequirement; }
@@ -1113,7 +1122,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement Requirement
         {
             get
@@ -3147,11 +3157,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Quests" />.
         /// </summary>
-        [JsonProperty("Quests")]
+        [Newtonsoft.Json.JsonProperty("quests")]
+        [System.Text.Json.Serialization.JsonPropertyName("quests")]
         public ICollection<QuestDefinition> RawQuests { get; } = new List<QuestDefinition>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests
         {
             get
@@ -3662,11 +3674,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="RequiredMonsterKills" />.
         /// </summary>
-        [JsonProperty("RequiredMonsterKills")]
+        [Newtonsoft.Json.JsonProperty("requiredMonsterKills")]
+        [System.Text.Json.Serialization.JsonPropertyName("requiredMonsterKills")]
         public ICollection<QuestMonsterKillRequirement> RawRequiredMonsterKills { get; } = new List<QuestMonsterKillRequirement>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement> RequiredMonsterKills
         {
             get
@@ -3686,11 +3700,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="RequiredItems" />.
         /// </summary>
-        [JsonProperty("RequiredItems")]
+        [Newtonsoft.Json.JsonProperty("requiredItems")]
+        [System.Text.Json.Serialization.JsonPropertyName("requiredItems")]
         public ICollection<QuestItemRequirement> RawRequiredItems { get; } = new List<QuestItemRequirement>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement> RequiredItems
         {
             get
@@ -3710,11 +3726,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw collection of <see cref="Rewards" />.
         /// </summary>
-        [JsonProperty("Rewards")]
+        [Newtonsoft.Json.JsonProperty("rewards")]
+        [System.Text.Json.Serialization.JsonPropertyName("rewards")]
         public ICollection<QuestReward> RawRewards { get; } = new List<QuestReward>();
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward> Rewards
         {
             get
@@ -3734,7 +3752,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="QuestGiver" />.
         /// </summary>
-        [JsonProperty("QuestGiver")]
+        [Newtonsoft.Json.JsonProperty("questGiver")]
+        [System.Text.Json.Serialization.JsonPropertyName("questGiver")]
         public MonsterDefinition RawQuestGiver
         { 
             get { return base.QuestGiver as MonsterDefinition; }
@@ -3742,7 +3761,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition QuestGiver
         {
             get
@@ -3791,7 +3811,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Item" />.
         /// </summary>
-        [JsonProperty("Item")]
+        [Newtonsoft.Json.JsonProperty("item")]
+        [System.Text.Json.Serialization.JsonPropertyName("item")]
         public ItemDefinition RawItem
         { 
             get { return base.Item as ItemDefinition; }
@@ -3799,7 +3820,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Item
         {
             get
@@ -3848,7 +3870,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="Monster" />.
         /// </summary>
-        [JsonProperty("Monster")]
+        [Newtonsoft.Json.JsonProperty("monster")]
+        [System.Text.Json.Serialization.JsonPropertyName("monster")]
         public MonsterDefinition RawMonster
         { 
             get { return base.Monster as MonsterDefinition; }
@@ -3856,7 +3879,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
         {
             get
@@ -3905,7 +3929,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="ItemReward" />.
         /// </summary>
-        [JsonProperty("ItemReward")]
+        [Newtonsoft.Json.JsonProperty("itemReward")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemReward")]
         public Item RawItemReward
         { 
             get { return base.ItemReward as Item; }
@@ -3913,7 +3938,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.DataModel.Entities.Item ItemReward
         {
             get
@@ -3930,7 +3956,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <summary>
         /// Gets the raw object of <see cref="AttributeReward" />.
         /// </summary>
-        [JsonProperty("AttributeReward")]
+        [Newtonsoft.Json.JsonProperty("attributeReward")]
+        [System.Text.Json.Serialization.JsonPropertyName("attributeReward")]
         public AttributeDefinition RawAttributeReward
         { 
             get { return base.AttributeReward as AttributeDefinition; }
@@ -3938,7 +3965,8 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
         
         /// <inheritdoc/>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public override MUnique.OpenMU.AttributeSystem.AttributeDefinition AttributeReward
         {
             get

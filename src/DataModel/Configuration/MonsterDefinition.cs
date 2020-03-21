@@ -268,6 +268,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the quests which can be started through this npc.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<QuestDefinition> Quests { get; protected set; }
 
         /// <summary>
