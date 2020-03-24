@@ -2,9 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
-
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Linq;
@@ -12,7 +9,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlayerActions;
-    using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
