@@ -19,15 +19,24 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
     [PlugIn("Teleport chat command", "Handles the chat command '/teleport x y'. Teleports the character to the specified coordinates.")]
-    public abstract class TeleportChatCommandPlugIn : IChatCommandPlugIn
+    public class TeleportChatCommandPlugIn : IChatCommandPlugIn
     {
-        private const string CommandKey = "/teleport";
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeleportChatCommandPlugIn"/> class.
+        /// </summary>
+        public TeleportChatCommandPlugIn()
+        {
+            this.Usage = CommandExtensions.CreateUsage<Arguments>(this.Key);
+        }
 
         /// <inheritdoc />
-        public string Key => CommandKey;
+        public string Key => "/teleport";
 
         /// <inheritdoc />
         public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+
+        /// <inheritdoc/>
+        public string Usage { get; }
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
@@ -37,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 var arguments = command.ParseArguments<Arguments>();
                 player.Move(arguments.Point);
             }
-            catch (Exception e)
+            catch (ArgumentException e)
             {
                 player.ShowMessage(e.Message);
             }
@@ -48,8 +57,10 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// </summary>
         private class Arguments : ArgumentsBase
         {
+            [CommandsAttributes.Argument("x")]
             public byte X { get; set; }
 
+            [CommandsAttributes.Argument("y")]
             public byte Y { get; set; }
 
             public Point Point => new Point(this.X, this.Y);

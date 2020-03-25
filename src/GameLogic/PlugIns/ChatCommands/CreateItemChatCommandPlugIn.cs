@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -25,15 +26,22 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     [PlugIn("Create Item chat command", "Handles the chat command '/create'")]
     public class CreateItemChatCommandPlugIn : IChatCommandPlugIn
     {
-        private const string CommandKey = "/item";
-
-        private const string Usage = "[GM][/item] usage /item {Group} {Number} {Level} {Exc} {Skill} {Luck} {Opt}";
-
-        /// <inheritdoc />
-        public string Key => CommandKey;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateItemChatCommandPlugIn"/> class.
+        /// </summary>
+        public CreateItemChatCommandPlugIn()
+        {
+            this.Usage = CommandExtensions.CreateUsage<Arguments>(this.Key);
+        }
 
         /// <inheritdoc />
         public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+
+        /// <inheritdoc />
+        public string Usage { get; }
+
+        /// <inheritdoc />
+        public string Key => "/item";
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
@@ -120,19 +128,26 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// </summary>
         private class Arguments : ArgumentsBase
         {
+            [CommandsAttributes.Argument("g")]
             public byte Group { get; set; }
 
+            [CommandsAttributes.Argument("n")]
             public short Number { get; set; }
 
-            public byte Level { get; set; }
+            [CommandsAttributes.Argument("l")]
+            public byte Level { get; set; } = 1;
 
-            public byte Exc { get; set; }
+            [CommandsAttributes.Argument("e")]
+            public byte Exc { get; set; } = 0;
 
-            public bool Skill { get; set; }
+            [CommandsAttributes.Argument("s")]
+            public bool Skill { get; set; } = false;
 
-            public bool Luck { get; set; }
+            [CommandsAttributes.Argument("lu")]
+            public bool Luck { get; set; } = false;
 
-            public byte Opt { get; set; }
+            [CommandsAttributes.Argument("o")]
+            public byte Opt { get; set; } = 0;
         }
     }
 }
