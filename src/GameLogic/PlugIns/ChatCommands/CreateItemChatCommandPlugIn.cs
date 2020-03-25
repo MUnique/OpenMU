@@ -29,32 +29,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
         private const string Usage = "[GM][/item] usage /item {Group} {Number} {Level} {Exc} {Skill} {Luck} {Opt}";
 
-        /// <summary>
-        /// arguments
-        /// </summary>
-        private struct Arguments : IEquatable<Arguments>
-        {
-            public byte Group { get; set; }
-
-            public short Number { get; set; }
-
-            public byte Level { get; set; }
-
-            public byte Exc { get; set; }
-
-            public bool Skill { get; set; }
-
-            public bool Luck { get; set; }
-
-            public byte Opt { get; set; }
-
-            // Not implemented yet
-            public bool Equals(Arguments other)
-            {
-                return false;
-            }
-        }
-
         /// <inheritdoc />
         public string Key => CommandKey;
 
@@ -67,15 +41,15 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             var dropCoordinates = player.CurrentMap.Terrain.GetRandomDropCoordinate(player.Position, 1);
             try
             {
-                var arguments = ParseArguments(command.Split(' ').Skip(1).ToList());
+                var arguments = command.ParseArguments<Arguments>();
                 var item = CreateItem(player, arguments);
                 var droppedItem = new DroppedItem(item, dropCoordinates, player.CurrentMap, player);
                 player.CurrentMap.Add(droppedItem);
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"[GM][/item] {item} created", MessageType.BlueNormal);
+                player.ShowMessage($"[GM][/item] {item} created");
             }
             catch (ArgumentException e)
             {
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(e.Message, MessageType.BlueNormal);
+                player.ShowMessage(e.Message);
             }
         }
 
@@ -141,23 +115,24 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             return item;
         }
 
-        private static Arguments ParseArguments(List<string> argumentsList)
+        /// <summary>
+        /// arguments
+        /// </summary>
+        private class Arguments : ArgumentsBase
         {
-            if (argumentsList.ElementAtOrDefault(0) == null || argumentsList.ElementAtOrDefault(1) == null)
-            {
-                throw new ArgumentException(Usage);
-            }
+            public byte Group { get; set; }
 
-            return new Arguments
-            {
-                Group = byte.Parse(argumentsList.ElementAt(0)),
-                Number = short.Parse(argumentsList.ElementAt(1)),
-                Level = byte.Parse(argumentsList.ElementAtOrDefault(2) ?? "0"),
-                Exc = byte.Parse(argumentsList.ElementAtOrDefault(3) ?? "0"),
-                Skill = (argumentsList.ElementAtOrDefault(4) ?? "0") == "1",
-                Luck = (argumentsList.ElementAtOrDefault(5) ?? "0") == "1",
-                Opt = byte.Parse(argumentsList.ElementAtOrDefault(6) ?? "0"),
-            };
+            public short Number { get; set; }
+
+            public byte Level { get; set; }
+
+            public byte Exc { get; set; }
+
+            public bool Skill { get; set; }
+
+            public bool Luck { get; set; }
+
+            public byte Opt { get; set; }
         }
     }
 }
