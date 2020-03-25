@@ -57,9 +57,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 case ChatMessageType.Command:
                     var commandKey = message.Split(' ').First();
                     var commandHandler = sender.GameContext.PlugInManager.GetStrategy<IChatCommandPlugIn>(commandKey);
+                    if (commandHandler == null)
+                    {
+                        break;
+                    }
+
                     if (sender.SelectedCharacter.CharacterStatus >= commandHandler.MinCharacterStatusRequirement)
                     {
-                        commandHandler?.HandleCommand(sender, message);
+                        commandHandler.HandleCommand(sender, message);
                     }
                     else
                     {
