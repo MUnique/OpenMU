@@ -19,24 +19,18 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
     [PlugIn("Teleport chat command", "Handles the chat command '/teleport x y'. Teleports the character to the specified coordinates.")]
+    [ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
     public class TeleportChatCommandPlugIn : IChatCommandPlugIn
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeleportChatCommandPlugIn"/> class.
-        /// </summary>
-        public TeleportChatCommandPlugIn()
-        {
-            this.Usage = CommandExtensions.CreateUsage<Arguments>(this.Key);
-        }
+        private const string Command = "/teleport";
+
+        private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
 
         /// <inheritdoc />
-        public string Key => "/teleport";
+        public string Key => Command;
 
         /// <inheritdoc />
-        public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
-
-        /// <inheritdoc/>
-        public string Usage { get; }
+        public CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
@@ -52,9 +46,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             }
         }
 
-        /// <summary>
-        /// Arguments
-        /// </summary>
         private class Arguments : ArgumentsBase
         {
             [CommandsAttributes.Argument("x")]

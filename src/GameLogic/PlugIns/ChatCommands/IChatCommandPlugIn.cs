@@ -21,11 +21,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         public CharacterStatus MinCharacterStatusRequirement { get; }
 
         /// <summary>
-        /// Gets usage string.
-        /// </summary>
-        string Usage { get; }
-
-        /// <summary>
         /// Handles the chat command.
         /// </summary>
         /// <param name="player">The player.</param>

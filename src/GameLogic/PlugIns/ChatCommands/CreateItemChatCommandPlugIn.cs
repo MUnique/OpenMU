@@ -5,14 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -21,27 +17,20 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <remarks>
     /// This should be deactivated by default or limited to game masters.
     /// </remarks>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799887")]
     [PlugIn("Create Item chat command", "Handles the chat command '/create'")]
+    [ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
     public class CreateItemChatCommandPlugIn : IChatCommandPlugIn
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CreateItemChatCommandPlugIn"/> class.
-        /// </summary>
-        public CreateItemChatCommandPlugIn()
-        {
-            this.Usage = CommandExtensions.CreateUsage<Arguments>(this.Key);
-        }
+        private const string Command = "/item";
+
+        private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
 
         /// <inheritdoc />
-        public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+        public CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
         /// <inheritdoc />
-        public string Usage { get; }
-
-        /// <inheritdoc />
-        public string Key => "/item";
+        public string Key => Command;
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
@@ -123,9 +112,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             return item;
         }
 
-        /// <summary>
-        /// arguments
-        /// </summary>
         private class Arguments : ArgumentsBase
         {
             [CommandsAttributes.Argument("g")]

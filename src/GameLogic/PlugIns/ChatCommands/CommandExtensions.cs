@@ -114,12 +114,22 @@
         /// <typeparam name="T">ArgumentBase.</typeparam>
         /// <param name="commandKey">The command name.</param>
         /// <returns>Returns the usage string.</returns>
-        public static string CreateUsage<T>(string commandKey)
+        public static string CreateUsage<T>(string commandKey) => CreateUsage(typeof(T), commandKey);
+
+        /// <summary>
+        /// Create the usage string for the command using the argument class.`
+        /// </summary>
+        /// <param name="argumentsType">Type of the arguments.</param>
+        /// <param name="commandName">The command name.</param>
+        /// <returns>
+        /// Returns the usage string.
+        /// </returns>
+        public static string CreateUsage(Type argumentsType, string commandName)
         {
-            var properties = typeof(T).GetProperties();
+            var properties = argumentsType.GetProperties();
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.Append($"{commandKey} ");
+            stringBuilder.Append($"{commandName} ");
 
             foreach (var property in properties)
             {
