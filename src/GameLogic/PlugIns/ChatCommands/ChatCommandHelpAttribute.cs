@@ -21,9 +21,38 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
         /// </summary>
         /// <param name="command">The command.</param>
+        public ChatCommandHelpAttribute(string command)
+            : this(command, CharacterStatus.Normal)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <param name="minimumCharacterStatus">The minimum character status.</param>
+        public ChatCommandHelpAttribute(string command, CharacterStatus minimumCharacterStatus)
+            : this(command, null, minimumCharacterStatus)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <param name="argumentsType">Type of the arguments.</param>
+        public ChatCommandHelpAttribute(string command, Type argumentsType)
+            : this(command, argumentsType, CharacterStatus.Normal)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
+        /// </summary>
+        /// <param name="command">The command.</param>
         /// <param name="argumentsType">Type of the arguments.</param>
         /// <param name="minimumCharacterStatus">The minimum character status.</param>
-        public ChatCommandHelpAttribute(string command, Type argumentsType = null, CharacterStatus minimumCharacterStatus = CharacterStatus.Normal)
+        public ChatCommandHelpAttribute(string command, Type argumentsType, CharacterStatus minimumCharacterStatus)
         {
             this.Command = command;
             this.argumentsType = argumentsType;
