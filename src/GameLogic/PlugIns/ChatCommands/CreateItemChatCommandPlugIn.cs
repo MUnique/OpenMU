@@ -114,26 +114,26 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
         private class Arguments : ArgumentsBase
         {
-            [CommandsAttributes.Argument("g")]
+            [Argument("g")]
             public byte Group { get; set; }
 
-            [CommandsAttributes.Argument("n")]
+            [Argument("n")]
             public short Number { get; set; }
 
-            [CommandsAttributes.Argument("l")]
+            [Argument("l")]
             public byte Level { get; set; } = 1;
 
-            [CommandsAttributes.Argument("e")]
-            public byte Exc { get; set; } = 0;
+            [Argument("e")]
+            public byte Exc { get; set; }
 
-            [CommandsAttributes.Argument("s")]
-            public bool Skill { get; set; } = false;
+            [Argument("s")]
+            public bool Skill { get; set; }
 
-            [CommandsAttributes.Argument("lu")]
-            public bool Luck { get; set; } = false;
+            [Argument("lu")]
+            public bool Luck { get; set; }
 
-            [CommandsAttributes.Argument("o")]
-            public byte Opt { get; set; } = 0;
+            [Argument("o")]
+            public byte Opt { get; set; }
         }
     }
 }

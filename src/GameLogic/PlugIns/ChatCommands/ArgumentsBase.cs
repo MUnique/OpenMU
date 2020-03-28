@@ -1,6 +1,9 @@
-﻿namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
+﻿// <copyright file="ArgumentsBase.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
-    using System.Linq;
     using System.Text;
 
     /// <summary>
@@ -16,16 +19,16 @@
         {
             var properties = this.GetType().GetProperties();
             var stringBuilder = new StringBuilder();
-
+            bool isFirst = true;
             foreach (var property in properties)
             {
-                stringBuilder.Append($"{property.Name}:{property.GetValue(this)}");
-
-                // TODO this could be better
-                if (property != properties.Last())
+                if (!isFirst)
                 {
                     stringBuilder.Append(" ");
                 }
+
+                stringBuilder.Append($"{property.Name}:{property.GetValue(this)}");
+                isFirst = false;
             }
 
             return stringBuilder.ToString();

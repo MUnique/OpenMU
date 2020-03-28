@@ -48,10 +48,10 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
         private class Arguments : ArgumentsBase
         {
-            [CommandsAttributes.Argument("x")]
+            [Argument("x")]
             public byte X { get; set; }
 
-            [CommandsAttributes.Argument("y")]
+            [Argument("y")]
             public byte Y { get; set; }
 
             public Point Point => new Point(this.X, this.Y);
