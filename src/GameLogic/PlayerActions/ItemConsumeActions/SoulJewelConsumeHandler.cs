@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             if (this.randomizer.NextRandomBool(percent))
             {
                 item.Level++;
-                return true; // true doesnt mean that it was successful, just that the consumption happend.
+                return true; // true doesn't mean that it was successful, just that the consumption happened.
             }
 
             if (item.Level > 6)
