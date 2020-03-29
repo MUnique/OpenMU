@@ -109,6 +109,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition MasterExperienceRate { get; } = new AttributeDefinition(new Guid("E367A231-C8A4-4F92-B553-C665F98DB1FC"), "Master experience rate", string.Empty);
 
         /// <summary>
+        /// Gets the reset quantity attribute definition.
+        /// </summary>
+        public static AttributeDefinition Resets { get; } = new AttributeDefinition(new Guid("89A891A7-F9F9-4AB5-AF36-12056E53A5F7"), "Resets", "Reset quantity of current character");
+
+        /// <summary>
         /// Gets the zen amount rate attribute definition.
         /// </summary>
         public static AttributeDefinition MoneyAmountRate { get; } = new AttributeDefinition(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "zenAmountRate", string.Empty);
