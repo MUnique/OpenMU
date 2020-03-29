@@ -4,14 +4,17 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.NPC;
+    using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -90,10 +93,29 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     }
 
                     break;
+                case NpcWindow.LegacyQuest:
+                    this.ShowLegacyQuestDialog(player);
+                    break;
                 default:
                     player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(npcStats.NpcWindow);
                     break;
             }
+        }
+
+        private void ShowLegacyQuestDialog(Player player)
+        {
+            var quests = player.OpenedNpc.Definition.Quests
+                .Where(q => q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass);
+
+            if (!quests.Any(quest => quest.MinimumCharacterLevel <= player.Level))
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(
+                    "I have nothing for you. Come back with more power.", player.OpenedNpc);
+                player.OpenedNpc = null;
+                player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+            }
+
+            player.ViewPlugIns.GetPlugIn<ILegacyQuestStateDialogPlugIn>()?.Show();
         }
 
         private bool IsPlayedAllowedToCreateGuild(Player player)

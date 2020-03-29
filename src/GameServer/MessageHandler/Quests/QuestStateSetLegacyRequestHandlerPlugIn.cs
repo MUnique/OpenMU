@@ -39,7 +39,16 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
             switch (request.NewState)
             {
                 case LegacyQuestState.Active:
-                    this.questStartAction.StartQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                    var state = player.GetQuestState(QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                    if (state == null)
+                    {
+                        this.questStartAction.StartQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                    }
+                    else
+                    {
+                        this.questCompletionAction.CompleteQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                    }
+
                     break;
                 case LegacyQuestState.Complete:
                     this.questCompletionAction.CompleteQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);

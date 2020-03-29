@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.0.0")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Account", b =>
@@ -558,6 +558,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("ItemType")
                         .HasColumnType("integer");
 
+                    b.Property<byte?>("MaximumMonsterLevel")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte?>("MinimumMonsterLevel")
+                        .HasColumnType("smallint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");
@@ -910,8 +916,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AllianceGuildId")
-                        .IsUnique();
+                    b.HasIndex("AllianceGuildId");
 
                     b.HasIndex("HostilityId");
 
@@ -1228,11 +1233,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("Height")
                         .HasColumnType("smallint");
 
-                    b.Property<Guid?>("ItemSlotId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsAmmunition")
                         .HasColumnType("boolean");
+
+                    b.Property<bool>("IsBoundToCharacter")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ItemSlotId")
+                        .HasColumnType("uuid");
 
                     b.Property<byte>("MaximumItemLevel")
                         .HasColumnType("smallint");
@@ -2020,11 +2028,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<short>("Number")
                         .HasColumnType("smallint");
 
+                    b.Property<Guid?>("QualifiedCharacterId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("QuestGiverId")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("Repeatable")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("RequiredStartMoney")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("RequiresClientAction")
                         .HasColumnType("boolean");
@@ -2032,6 +2046,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MonsterDefinitionId");
+
+                    b.HasIndex("QualifiedCharacterId");
 
                     b.HasIndex("QuestGiverId");
 
@@ -2044,6 +2060,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("DropItemGroupId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ItemId")
                         .HasColumnType("uuid");
 
@@ -2054,6 +2073,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DropItemGroupId");
 
                     b.HasIndex("ItemId");
 
@@ -2236,8 +2257,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("MagicEffectDefId");
 
-                    b.HasIndex("MasterDefinitionId")
-                        .IsUnique();
+                    b.HasIndex("MasterDefinitionId");
 
                     b.ToTable("Skill","config");
                 });
@@ -2647,8 +2667,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Guild", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", "RawAllianceGuild")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Guild", "AllianceGuildId");
+                        .WithMany()
+                        .HasForeignKey("AllianceGuildId");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", "RawHostility")
                         .WithMany()
@@ -3110,6 +3130,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawQuests")
                         .HasForeignKey("MonsterDefinitionId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawQualifiedCharacter")
+                        .WithMany()
+                        .HasForeignKey("QualifiedCharacterId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawQuestGiver")
                         .WithMany()
                         .HasForeignKey("QuestGiverId");
@@ -3117,6 +3141,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestItemRequirement", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "RawDropItemGroup")
+                        .WithMany()
+                        .HasForeignKey("DropItemGroupId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItem")
                         .WithMany()
                         .HasForeignKey("ItemId");
@@ -3178,8 +3206,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("MagicEffectDefId");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "RawMasterDefinition")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Skill", "MasterDefinitionId");
+                        .WithMany()
+                        .HasForeignKey("MasterDefinitionId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillCharacterClass", b =>

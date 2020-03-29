@@ -157,8 +157,13 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// The specific npc dialog. The client knows which dialog should be shown.
         /// </summary>
-        /// <remarks>Npc Numbers: 257, 543, 544, 566, 567, 568, 581.</remarks>
+        /// <remarks>
+        /// Npc Numbers: 257, 543, 544, 566, 567, 568, 581.
+        /// Warning: If the game client doesn't have a dialog for this npc, it will crash.
+        /// </remarks>
         NpcDialog,
+
+        LegacyQuest,
     }
 
     /// <summary>

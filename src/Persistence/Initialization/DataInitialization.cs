@@ -68,6 +68,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateTestAccounts(10);
                 this.CreateTestAccount("test300", 300);
                 this.CreateTestAccount("test400", 400);
+                this.CreateTestAccount("quest1", 150);
                 var testGmAccount = this.CreateTestAccount("testgm", 400);
                 testGmAccount.State = AccountState.GameMaster;
                 testGmAccount.Characters.ForEach(c => c.CharacterStatus = CharacterStatus.GameMaster);
@@ -253,6 +254,27 @@ namespace MUnique.OpenMU.Persistence.Initialization
             Character character;
             switch (level)
             {
+                case 150:
+                    character = this.CreateCharacter(name, CharacterClassNumber.DarkKnight, level, 0);
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 200;
+                    character.Attributes.First(a => a.Definition == Stats.BaseVitality).Value += 100;
+                    character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 100;
+                    character.LevelUpPoints -= 700;
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 1, 3, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Tomahawk+13+16+L+ExcDmg
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 5, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Armor
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 5, 7, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Helm
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 5, 9, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Pants
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 5, 10, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Gloves
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 5, 11, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Boots
+                    character.Inventory.Items.Add(this.CreateJewel(47, Items.Quest.ScrollOfEmperorNumber));
+                    character.CurrentMap = this.gameConfiguration.Maps.First(map => map.Number == Devias.Number);
+                    character.PositionX = 184;
+                    character.PositionY = 31;
+                    character.Inventory.Money = 10000000;
+                    break;
+
                 case 300:
                     character = this.CreateCharacter(name, CharacterClassNumber.BladeKnight, level, 0);
 
@@ -319,6 +341,24 @@ namespace MUnique.OpenMU.Persistence.Initialization
             Character character;
             switch (level)
             {
+                case 150:
+                    character = this.CreateCharacter(name, CharacterClassNumber.DarkLord, level, 3);
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 200;
+                    character.Attributes.First(a => a.Definition == Stats.BaseVitality).Value += 100;
+                    character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 100;
+                    character.LevelUpPoints -= 700;
+                    character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 5, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Armor
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 5, 7, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Helm
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 5, 9, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Pants
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 5, 10, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Gloves
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 5, 11, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Boots
+                    character.CurrentMap = this.gameConfiguration.Maps.First(map => map.Number == Devias.Number);
+                    character.PositionX = 184;
+                    character.PositionY = 31;
+                    character.Inventory.Money = 10000000;
+                    break;
                 case 300:
                     character = this.CreateCharacter(name, CharacterClassNumber.DarkLord, level, 3);
 
@@ -1138,6 +1178,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.CreateGameMapDefinitions();
             this.AssignCharacterClassHomeMaps();
             new Gates().Initialize(this.context, this.gameConfiguration);
+            new Items.Quest(this.context, this.gameConfiguration).Initialize();
+            new Quests(this.context, this.gameConfiguration).Initialize();
             //// TODO: ItemSetGroups
         }
 

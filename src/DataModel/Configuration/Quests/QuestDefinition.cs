@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Quests
 {
     using System.Collections.Generic;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// The definition of a quest.
@@ -47,6 +48,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         public bool RequiresClientAction { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this quest requires a certain amount of money in the characters
+        /// inventory before it can be started.
+        /// </summary>
+        public int RequiredStartMoney { get; set; }
+
+        /// <summary>
         /// Gets or sets the minimum character level.
         /// </summary>
         public int MinimumCharacterLevel { get; set; }
@@ -57,28 +64,27 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         public int MaximumCharacterLevel { get; set; }
 
         /// <summary>
+        /// Gets or sets the qualified character class. If <c>null</c>, it's valid for all character classes.
+        /// </summary>
+        public virtual CharacterClass QualifiedCharacter { get; set; }
+
+        /// <summary>
         /// Gets or sets the required monster kills to be able to complete this quest.
         /// </summary>
-        /// <value>
-        /// The required monster kills.
-        /// </value>
+        [MemberOfAggregate]
         public virtual ICollection<QuestMonsterKillRequirement> RequiredMonsterKills { get; protected set; }
 
         /// <summary>
         /// Gets or sets the required items which should be in the characters inventory when the
         /// player requests to complete the quest.
         /// </summary>
-        /// <value>
-        /// The required items.
-        /// </value>
+        [MemberOfAggregate]
         public virtual ICollection<QuestItemRequirement> RequiredItems { get; protected set; }
 
         /// <summary>
         /// Gets or sets the rewards when completing the quest successfully.
         /// </summary>
-        /// <value>
-        /// The rewards when completing the quest successfully.
-        /// </value>
+        [MemberOfAggregate]
         public virtual ICollection<QuestReward> Rewards { get; protected set; }
     }
 }

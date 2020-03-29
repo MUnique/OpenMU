@@ -17,6 +17,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     internal class Devias : BaseMapInitializer
     {
         /// <summary>
+        /// The number of this map.
+        /// </summary>
+        internal const byte Number = 2;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Devias"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -27,7 +32,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         }
 
         /// <inheritdoc/>
-        protected override byte MapNumber => 2;
+        protected override byte MapNumber => Number;
 
         /// <inheritdoc/>
         protected override string MapName => "Devias";

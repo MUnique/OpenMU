@@ -3775,6 +3775,33 @@ namespace MUnique.OpenMU.Persistence.BasicModel
                 base.QuestGiver = value;
             }
         }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="QualifiedCharacter" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("qualifiedCharacter")]
+        [System.Text.Json.Serialization.JsonPropertyName("qualifiedCharacter")]
+        public CharacterClass RawQualifiedCharacter
+        { 
+            get { return base.QualifiedCharacter as CharacterClass; }
+            set { base.QualifiedCharacter = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass QualifiedCharacter
+        {
+            get
+            {
+                return base.QualifiedCharacter;
+            }
+            
+            set
+            {
+                base.QualifiedCharacter = value;
+            }
+        }
         
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -3832,6 +3859,33 @@ namespace MUnique.OpenMU.Persistence.BasicModel
             set
             {
                 base.Item = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="DropItemGroup" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("dropItemGroup")]
+        [System.Text.Json.Serialization.JsonPropertyName("dropItemGroup")]
+        public DropItemGroup RawDropItemGroup
+        { 
+            get { return base.DropItemGroup as DropItemGroup; }
+            set { base.DropItemGroup = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup DropItemGroup
+        {
+            get
+            {
+                return base.DropItemGroup;
+            }
+            
+            set
+            {
+                base.DropItemGroup = value;
             }
         }
         

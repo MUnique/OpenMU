@@ -61,6 +61,16 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public double Chance { get; set; }
 
         /// <summary>
+        /// Gets or sets the minimum monster level. If <c>null</c>, then it doesn't apply.
+        /// </summary>
+        public byte? MinimumMonsterLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum monster level. If <c>null</c>, then it doesn't apply.
+        /// </summary>
+        public byte? MaximumMonsterLevel { get; set; }
+
+        /// <summary>
         /// Gets or sets the special type of the item.
         /// </summary>
         public SpecialItemType ItemType { get; set; }

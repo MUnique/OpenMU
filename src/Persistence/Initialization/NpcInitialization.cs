@@ -93,6 +93,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 235;
                 def.Designation = "Sevina the Priestess";
+                def.NpcWindow = NpcWindow.LegacyQuest;
                 this.gameConfiguration.Monsters.Add(def);
             }
 

@@ -66,7 +66,14 @@ namespace MUnique.OpenMU.GameLogic
             var character = player.SelectedCharacter;
             var map = player.CurrentMap.Definition;
             var dropGroups =
-                this.CombineDropGroups(monster.DropItemGroups, character.DropItemGroups, map.DropItemGroups)
+                CombineDropGroups(
+                        monster.DropItemGroups,
+                        character.DropItemGroups,
+                        map.DropItemGroups,
+                        character.QuestStates.SelectMany(q => q.ActiveQuest?.RequiredItems
+                            .Where(i => i.DropItemGroup is { })
+                            .Select(i => i.DropItemGroup)))
+                    .Where(group => IsGroupRelevant(monster, group))
                     .OrderBy(group => group.Chance);
 
             for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
@@ -212,6 +219,51 @@ namespace MUnique.OpenMU.GameLogic
             return item;
         }
 
+        private static IEnumerable<DropItemGroup> CombineDropGroups(
+            IEnumerable<DropItemGroup> monsterGroup,
+            IEnumerable<DropItemGroup> characterGroup,
+            IEnumerable<DropItemGroup> mapGroup,
+            IEnumerable<DropItemGroup> questsGroups)
+        {
+            IEnumerable<DropItemGroup> dropGroups = Enumerable.Empty<DropItemGroup>();
+            if (monsterGroup != null)
+            {
+                dropGroups = dropGroups.Concat(monsterGroup);
+            }
+
+            if (characterGroup != null)
+            {
+                dropGroups = dropGroups.Concat(characterGroup);
+            }
+
+            if (mapGroup != null)
+            {
+                dropGroups = dropGroups.Concat(mapGroup);
+            }
+
+            if (questsGroups != null)
+            {
+                dropGroups = dropGroups.Concat(questsGroups);
+            }
+
+            return dropGroups;
+        }
+
+        private static bool IsGroupRelevant(MonsterDefinition monsterDefinition, DropItemGroup group)
+        {
+            if (group.MinimumMonsterLevel.HasValue && monsterDefinition[Stats.Level] < group.MinimumMonsterLevel)
+            {
+                return false;
+            }
+
+            if (group.MaximumMonsterLevel.HasValue && monsterDefinition[Stats.Level] > group.MaximumMonsterLevel)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private void AddRandomExcOptions(Item item)
         {
             var possibleItemOptions = item.Definition.PossibleItemOptions;
@@ -244,30 +296,6 @@ namespace MUnique.OpenMU.GameLogic
                     item.ItemOptions.Add(itemOptionLink);
                 }
             }
-        }
-
-        private IEnumerable<DropItemGroup> CombineDropGroups(
-            IEnumerable<DropItemGroup> monsterGroup,
-            IEnumerable<DropItemGroup> characterGroup,
-            IEnumerable<DropItemGroup> mapGroup)
-        {
-            IEnumerable<DropItemGroup> dropGroups = Enumerable.Empty<DropItemGroup>();
-            if (monsterGroup != null)
-            {
-                dropGroups = dropGroups.Concat(monsterGroup);
-            }
-
-            if (characterGroup != null)
-            {
-                dropGroups = dropGroups.Concat(characterGroup);
-            }
-
-            if (mapGroup != null)
-            {
-                dropGroups = dropGroups.Concat(mapGroup);
-            }
-
-            return dropGroups;
         }
 
         private Item GetItemDrop(MonsterDefinition monster, DropItemGroup selectedGroup)

@@ -8,8 +8,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
     using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.GameServer.MessageHandler.Quests;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -36,26 +34,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             if (quest.Group == QuestConstants.LegacyQuestGroup)
             {
-                using var writer = this.player.Connection.StartSafeWrite(LegacySetQuestStateResponse.HeaderType, LegacySetQuestStateResponse.Length);
-                _ = new LegacySetQuestStateResponse(writer.Span)
-                {
-                    NewState = LegacyQuestState.Complete,
-                    QuestIndex = (byte)quest.Number,
-                };
-
-                writer.Commit();
+                this.player.Connection.SendLegacySetQuestStateResponse((byte)quest.Number, 0, this.player.GetLegacyQuestStateByte());
             }
             else
             {
-                using var writer = this.player.Connection.StartSafeWrite(QuestCompletionResponse.HeaderType, QuestCompletionResponse.Length);
-                _ = new QuestCompletionResponse(writer.Span)
-                {
-                    QuestNumber = (ushort)quest.Number,
-                    QuestGroup = (ushort)quest.Group,
-                    IsQuestCompleted = true,
-                };
-
-                writer.Commit();
+                this.player.Connection.SendQuestCompletionResponse((ushort)quest.Number, (ushort)quest.Group, true);
             }
         }
     }

@@ -4112,6 +4112,28 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>A1</Code>
+      <Name>LegacyQuestStateDialog</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the player clicks on the quest npc.</SentWhen>
+      <CausedReaction>The game client shows the next steps in the quest dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>QuestIndex</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>State</Name>
+          <Description>This is the complete byte with the state of four quests within the same byte.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>A2</Code>
       <Name>LegacySetQuestStateResponse</Name>
       <Length>6</Length>
@@ -4128,14 +4150,124 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Result</Name>
+          <Description>This value is 0 if successful. Otherwise, 0xFF or even other magic values.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>NewState</Name>
+          <Description>This is the complete byte with the state of four quests within the same byte.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A3</Code>
+      <Name>LegacyQuestReward</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>As response to the completed quest of a player in scope.</SentWhen>
+      <CausedReaction>The game client shows the reward accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
         </Field>
         <Field>
           <Index>5</Index>
           <Type>Enum</Type>
-          <TypeName>LegacyQuestState</TypeName>
-          <Name>NewState</Name>
+          <TypeName>QuestRewardType</TypeName>
+          <Name>Reward</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>QuestRewardType</Name>
+          <Description>Defines the reward type in the quest reward message.</Description>
+          <Values>
+            <EnumValue>
+              <Name>LevelUpPoints</Name>
+              <Description>The character receives additional points.</Description>
+              <Value>200</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterEvolutionFirstToSecond</Name>
+              <Description>The character class changes from the first to the second class.</Description>
+              <Value>201</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LevelUpPointsByNewClass</Name>
+              <Description>The character receives additional points because of the class change.</Description>
+              <Value>202</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ComboSkill</Name>
+              <Description>The character receives the ability to perform skill combinations.</Description>
+              <Value>203</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterEvolutionSecondToThird</Name>
+              <Description>The character class changes from the second to the third class.</Description>
+              <Value>204</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>A4</Code>
+      <SubCode>00</SubCode>
+      <Name>LegacyQuestMonsterKillInfo</Name>
+      <Length>48</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>As response when a player opens the quest npc with a running quest which requires monster kills.</SentWhen>
+      <CausedReaction>The game client shows the current state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>QuestIndex</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>MonsterKillInfo</TypeName>
+          <Name>Kills</Name>
+          <Length>5</Length>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>MonsterKillInfo</Name>
+          <Description>A pair of Monster number and the current kill count.</Description>
+          <Length>8</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>MonsterNumber</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>KillCount</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>

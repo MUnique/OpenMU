@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.Views.Quest
     /// Interface of a view whose implementation informs about the requested quest completion.
     /// </summary>
     /// <remarks>
-    /// Could send C1A2, C1A3 and C1F60D.
+    /// Could send C1A2 and C1F60D.
     /// </remarks>
     public interface IQuestCompletionResponsePlugIn : IViewPlugIn
     {

@@ -292,6 +292,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     Chance = table.Column<double>(nullable: false),
+                    MinimumMonsterLevel = table.Column<byte>(nullable: true),
+                    MaximumMonsterLevel = table.Column<byte>(nullable: true),
                     ItemType = table.Column<int>(nullable: false),
                     GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
@@ -1463,8 +1465,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Number = table.Column<short>(nullable: false),
                     Width = table.Column<byte>(nullable: false),
                     Height = table.Column<byte>(nullable: false),
-                    IsAmmunition = table.Column<bool>(nullable: false),
                     DropsFromMonsters = table.Column<bool>(nullable: false),
+                    IsAmmunition = table.Column<bool>(nullable: false),
+                    IsBoundToCharacter = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     DropLevel = table.Column<byte>(nullable: false),
                     MaximumItemLevel = table.Column<byte>(nullable: false),
@@ -2079,9 +2082,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Number = table.Column<short>(nullable: false),
                     Repeatable = table.Column<bool>(nullable: false),
                     RequiresClientAction = table.Column<bool>(nullable: false),
+                    RequiredStartMoney = table.Column<int>(nullable: false),
                     MinimumCharacterLevel = table.Column<int>(nullable: false),
                     MaximumCharacterLevel = table.Column<int>(nullable: false),
                     QuestGiverId = table.Column<Guid>(nullable: true),
+                    QualifiedCharacterId = table.Column<Guid>(nullable: true),
                     MonsterDefinitionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -2092,6 +2097,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.MonsterDefinitionId,
                         principalSchema: "config",
                         principalTable: "MonsterDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_QuestDefinition_CharacterClass_QualifiedCharacterId",
+                        column: x => x.QualifiedCharacterId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -2221,11 +2233,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     MinimumNumber = table.Column<int>(nullable: false),
                     ItemId = table.Column<Guid>(nullable: true),
+                    DropItemGroupId = table.Column<Guid>(nullable: true),
                     QuestDefinitionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_QuestItemRequirement", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_QuestItemRequirement_DropItemGroup_DropItemGroupId",
+                        column: x => x.DropItemGroupId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuestItemRequirement_ItemDefinition_ItemId",
                         column: x => x.ItemId,
@@ -2889,10 +2909,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "MonsterDefinitionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuestDefinition_QualifiedCharacterId",
+                schema: "config",
+                table: "QuestDefinition",
+                column: "QualifiedCharacterId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuestDefinition_QuestGiverId",
                 schema: "config",
                 table: "QuestDefinition",
                 column: "QuestGiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuestItemRequirement_DropItemGroupId",
+                schema: "config",
+                table: "QuestItemRequirement",
+                column: "DropItemGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuestItemRequirement_ItemId",
@@ -2958,8 +2990,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 name: "IX_Skill_MasterDefinitionId",
                 schema: "config",
                 table: "Skill",
-                column: "MasterDefinitionId",
-                unique: true);
+                column: "MasterDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SkillCharacterClass_CharacterClassId",
@@ -3177,8 +3208,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 name: "IX_Guild_AllianceGuildId",
                 schema: "guild",
                 table: "Guild",
-                column: "AllianceGuildId",
-                unique: true);
+                column: "AllianceGuildId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Guild_HostilityId",
@@ -3571,20 +3601,20 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
-                name: "CharacterClass",
-                schema: "config");
-
-            migrationBuilder.DropTable(
                 name: "MonsterDefinition",
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "GameMapDefinition",
+                name: "CharacterClass",
                 schema: "config");
 
             migrationBuilder.DropTable(
                 name: "ItemStorage",
                 schema: "data");
+
+            migrationBuilder.DropTable(
+                name: "GameMapDefinition",
+                schema: "config");
 
             migrationBuilder.DropTable(
                 name: "GameConfiguration",

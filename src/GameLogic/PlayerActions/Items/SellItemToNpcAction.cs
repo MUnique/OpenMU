@@ -52,6 +52,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return;
             }
 
+            if (item.Definition.IsBoundToCharacter)
+            {
+                player.ViewPlugIns.GetPlugIn<IItemSoldToNpcPlugIn>()?.ItemSoldToNpc(false);
+                return;
+            }
+
             this.SellItem(player, item);
         }
 

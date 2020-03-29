@@ -3096,6 +3096,34 @@ public ICollection<AttributeRequirement> RawRequirements { get; } = new List<Att
             }
         }
 
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="QualifiedCharacter"/>.
+        /// </summary>
+        public Guid? QualifiedCharacterId { get; set; }
+        
+        [ForeignKey("QualifiedCharacterId")]
+        public CharacterClass RawQualifiedCharacter
+        { 
+            get { return base.QualifiedCharacter as CharacterClass; }
+            set { base.QualifiedCharacter = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass QualifiedCharacter
+        {
+            get
+            {
+                return base.QualifiedCharacter;
+            }
+            
+            set
+            {
+                base.QualifiedCharacter = value;
+                this.QualifiedCharacterId = this.RawQualifiedCharacter?.Id;
+            }
+        }
+
         public ICollection<QuestMonsterKillRequirement> RawRequiredMonsterKills { get; } = new List<QuestMonsterKillRequirement>();        
         /// <inheritdoc/>
         [NotMapped]
@@ -3190,6 +3218,34 @@ public ICollection<AttributeRequirement> RawRequirements { get; } = new List<Att
             {
                 base.Item = value;
                 this.ItemId = this.RawItem?.Id;
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="DropItemGroup"/>.
+        /// </summary>
+        public Guid? DropItemGroupId { get; set; }
+        
+        [ForeignKey("DropItemGroupId")]
+        public DropItemGroup RawDropItemGroup
+        { 
+            get { return base.DropItemGroup as DropItemGroup; }
+            set { base.DropItemGroup = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup DropItemGroup
+        {
+            get
+            {
+                return base.DropItemGroup;
+            }
+            
+            set
+            {
+                base.DropItemGroup = value;
+                this.DropItemGroupId = this.RawDropItemGroup?.Id;
             }
         }
 

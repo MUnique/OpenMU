@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -22,6 +24,44 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         public static CharacterQuestState GetQuestState(this Player player, short group, short number)
         {
             return player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == group && state.ActiveQuest?.Number == number);
+        }
+
+        /// <summary>
+        /// Gets the state of the quest of a group.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="group">The group of the quest.</param>
+        /// <returns>The quest state, if found; Otherwise, <c>null</c>.</returns>
+        public static CharacterQuestState GetQuestState(this Player player, short group)
+        {
+            return player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == group);
+        }
+
+        /// <summary>
+        /// Gets the quest definition for the specified group and number depending on the players character class.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="group">The group.</param>
+        /// <param name="number">The number.</param>
+        /// <returns>The quest definition for the specified group and number depending on the players character class.</returns>
+        public static QuestDefinition GetQuest(this Player player, short group, short number)
+        {
+            return player.OpenedNpc?.Definition.Quests
+                .FirstOrDefault(q => q.Group == group && q.Number == number && (q.QualifiedCharacter == null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass));
+        }
+
+        /// <summary>
+        /// Gets the available quests of the currently opened NPC depending on the players character class.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <returns>The available quests of the currently opened NPC depending on the players character class.</returns>
+        public static IEnumerable<QuestDefinition> GetAvailableQuestsOfOpenedNpc(this Player player)
+        {
+            return player.OpenedNpc?.Definition.Quests
+                .Where(q => q.QualifiedCharacter == null
+                            || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass)
+                .Where(q => q.MinimumCharacterLevel <= player.Level
+                            && (q.MaximumCharacterLevel == default || q.MaximumCharacterLevel >= player.Level));
         }
     }
 }

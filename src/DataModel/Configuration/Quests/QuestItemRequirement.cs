@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Quests
 {
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -16,6 +17,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         /// Gets or sets the required item.
         /// </summary>
         public virtual ItemDefinition Item { get; set; }
+
+        /// <summary>
+        /// Gets or sets the drop item group which should be considered when this quest is active and this requirement applies.
+        /// </summary>
+        [MemberOfAggregate]
+        public virtual DropItemGroup DropItemGroup { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum number of <see cref="Item"/>s.

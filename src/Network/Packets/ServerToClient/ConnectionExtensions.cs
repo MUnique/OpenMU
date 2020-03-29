@@ -883,6 +883,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="LegacyQuestStateDialog" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: When the player clicks on the quest npc.
+        /// Causes reaction on client side: The game client shows the next steps in the quest dialog.
+        /// </remarks>
+        public static LegacyQuestStateDialogThreadSafeWriter StartWriteLegacyQuestStateDialog(this IConnection connection)
+        {
+          return new LegacyQuestStateDialogThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="LegacySetQuestStateResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -893,6 +906,32 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static LegacySetQuestStateResponseThreadSafeWriter StartWriteLegacySetQuestStateResponse(this IConnection connection)
         {
           return new LegacySetQuestStateResponseThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="LegacyQuestReward" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: As response to the completed quest of a player in scope.
+        /// Causes reaction on client side: The game client shows the reward accordingly.
+        /// </remarks>
+        public static LegacyQuestRewardThreadSafeWriter StartWriteLegacyQuestReward(this IConnection connection)
+        {
+          return new LegacyQuestRewardThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="LegacyQuestMonsterKillInfo" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: As response when a player opens the quest npc with a running quest which requires monster kills.
+        /// Causes reaction on client side: The game client shows the current state.
+        /// </remarks>
+        public static LegacyQuestMonsterKillInfoThreadSafeWriter StartWriteLegacyQuestMonsterKillInfo(this IConnection connection)
+        {
+          return new LegacyQuestMonsterKillInfoThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -2724,23 +2763,63 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Sends a <see cref="LegacyQuestStateDialog" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="questIndex">The quest index.</param>
+        /// <param name="state">This is the complete byte with the state of four quests within the same byte.</param>
+        /// <remarks>
+        /// Is sent by the server when: When the player clicks on the quest npc.
+        /// Causes reaction on client side: The game client shows the next steps in the quest dialog.
+        /// </remarks>
+        public static void SendLegacyQuestStateDialog(this IConnection connection, byte @questIndex, byte @state)
+        {
+            using var writer = connection.StartWriteLegacyQuestStateDialog();
+            var packet = writer.Packet;
+            packet.QuestIndex = @questIndex;
+            packet.State = @state;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="LegacySetQuestStateResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="questIndex">The quest index.</param>
-        /// <param name="result">The result.</param>
-        /// <param name="newState">The new state.</param>
+        /// <param name="result">This value is 0 if successful. Otherwise, 0xFF or even other magic values.</param>
+        /// <param name="newState">This is the complete byte with the state of four quests within the same byte.</param>
         /// <remarks>
         /// Is sent by the server when: As response to the set state request (C1A2).
         /// Causes reaction on client side: The game client shows the new quest state.
         /// </remarks>
-        public static void SendLegacySetQuestStateResponse(this IConnection connection, byte @questIndex, byte @result, LegacyQuestState @newState)
+        public static void SendLegacySetQuestStateResponse(this IConnection connection, byte @questIndex, byte @result, byte @newState)
         {
             using var writer = connection.StartWriteLegacySetQuestStateResponse();
             var packet = writer.Packet;
             packet.QuestIndex = @questIndex;
             packet.Result = @result;
             packet.NewState = @newState;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="LegacyQuestReward" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="playerId">The player id.</param>
+        /// <param name="reward">The reward.</param>
+        /// <param name="count">The count.</param>
+        /// <remarks>
+        /// Is sent by the server when: As response to the completed quest of a player in scope.
+        /// Causes reaction on client side: The game client shows the reward accordingly.
+        /// </remarks>
+        public static void SendLegacyQuestReward(this IConnection connection, ushort @playerId, LegacyQuestReward.QuestRewardType @reward, byte @count)
+        {
+            using var writer = connection.StartWriteLegacyQuestReward();
+            var packet = writer.Packet;
+            packet.PlayerId = @playerId;
+            packet.Reward = @reward;
+            packet.Count = @count;
             writer.Commit();
         }
 
@@ -6526,6 +6605,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="LegacyQuestStateDialog"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct LegacyQuestStateDialogThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateDialogThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public LegacyQuestStateDialogThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new LegacyQuestStateDialog(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestStateDialog.Length).Slice(0, LegacyQuestStateDialog.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public LegacyQuestStateDialog Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="LegacyQuestStateDialog" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(LegacyQuestStateDialog.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="LegacySetQuestStateResponse"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct LegacySetQuestStateResponseThreadSafeWriter
@@ -6566,6 +6698,112 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(LegacySetQuestStateResponse.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="LegacyQuestReward"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct LegacyQuestRewardThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestRewardThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public LegacyQuestRewardThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new LegacyQuestReward(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestReward.Length).Slice(0, LegacyQuestReward.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public LegacyQuestReward Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="LegacyQuestReward" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(LegacyQuestReward.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="LegacyQuestMonsterKillInfo"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct LegacyQuestMonsterKillInfoThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestMonsterKillInfoThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public LegacyQuestMonsterKillInfoThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new LegacyQuestMonsterKillInfo(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestMonsterKillInfo.Length).Slice(0, LegacyQuestMonsterKillInfo.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public LegacyQuestMonsterKillInfo Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="LegacyQuestMonsterKillInfo" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(LegacyQuestMonsterKillInfo.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

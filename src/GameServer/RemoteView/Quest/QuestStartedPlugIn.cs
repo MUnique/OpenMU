@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.GameLogic.Views.Quest;
-    using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.GameServer.MessageHandler.Quests;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -32,17 +32,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// <inheritdoc/>
         public void QuestStarted(QuestDefinition quest)
         {
-            using var writer = this.player.Connection.StartSafeWrite(
-                Network.Packets.ServerToClient.QuestStarted.HeaderType,
-                Network.Packets.ServerToClient.QuestStarted.Length);
-
-            _ = new QuestStarted(writer.Span)
+            if (quest.Group == QuestConstants.LegacyQuestGroup)
             {
-                QuestGroup = (ushort)quest.Group,
-                QuestNumber = (ushort)quest.Number,
-            };
-
-            writer.Commit();
+                this.player.Connection.SendLegacySetQuestStateResponse((byte)quest.Number, 0, this.player.GetLegacyQuestStateByte());
+            }
+            else
+            {
+                this.player.Connection.SendQuestStarted((ushort)quest.Number, (ushort)quest.Group);
+            }
         }
     }
 }

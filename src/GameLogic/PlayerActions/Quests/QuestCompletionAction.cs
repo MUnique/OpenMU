@@ -5,6 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 {
     using System.Linq;
+    using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Configuration.Quests;
+    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.Quest;
 
     /// <summary>
@@ -21,13 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         public void CompleteQuest(Player player, short group, short number)
         {
             var questState = player.GetQuestState(group, number);
-            if (questState == null)
-            {
-                // todo log
-                return;
-            }
-
-            var activeQuest = questState.ActiveQuest;
+            var activeQuest = questState?.ActiveQuest;
             if (activeQuest == null)
             {
                 // todo log
@@ -57,6 +55,78 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             {
                 // todo log
                 return;
+            }
+
+            foreach (var requiredItem in activeQuest.RequiredItems)
+            {
+                var items = player.Inventory.Items
+                    .Where(item => item.Definition == requiredItem.Item)
+                    .Take(requiredItem.MinimumNumber)
+                    .ToList();
+
+                foreach (var item in items)
+                {
+                    player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(item.ItemSlot);
+                    player.Inventory.RemoveItem(item);
+                    player.PersistenceContext.Delete(item);
+                }
+            }
+
+            foreach (var reward in activeQuest.Rewards)
+            {
+                switch (reward.RewardType)
+                {
+                    case QuestRewardType.Attribute:
+                        var attribute =
+                            player.SelectedCharacter.Attributes.FirstOrDefault(a =>
+                                a.Definition == reward.AttributeReward);
+                        if (attribute == null)
+                        {
+                            attribute = player.PersistenceContext.CreateNew<StatAttribute>(
+                                reward.AttributeReward,
+                                0);
+                            player.SelectedCharacter.Attributes.Add(attribute);
+                        }
+
+                        attribute.Value += reward.Value;
+                        player.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.Attribute, reward.Value);
+                        break;
+                    case QuestRewardType.Item:
+                        var item = player.PersistenceContext.CreateNew<Item>();
+                        item.AssignValues(reward.ItemReward);
+                        if (player.Inventory.AddItem(item))
+                        {
+                            player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(item);
+                        }
+                        else
+                        {
+                            player.CurrentMap.Add(new DroppedItem(item, player.Position, player.CurrentMap, player, player.GetAsEnumerable()));
+                        }
+
+                        break;
+                    case QuestRewardType.LevelUpPoints:
+                        player.SelectedCharacter.LevelUpPoints += reward.Value;
+                        player.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.LevelUpPoints, reward.Value);
+                        break;
+                    case QuestRewardType.CharacterEvolutionFirstToSecond:
+                        player.SelectedCharacter.CharacterClass = player.SelectedCharacter.CharacterClass.NextGenerationClass;
+                        player.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.CharacterEvolutionFirstToSecond, reward.Value), true);
+                        break;
+                    case QuestRewardType.CharacterEvolutionSecondToThird:
+                        player.SelectedCharacter.CharacterClass = player.SelectedCharacter.CharacterClass.NextGenerationClass;
+                        player.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.CharacterEvolutionSecondToThird, reward.Value), true);
+                        break;
+                    case QuestRewardType.Experience:
+                        player.AddExperience(reward.Value, null);
+                        break;
+                    case QuestRewardType.Money:
+                        player.TryAddMoney(reward.Value);
+                        player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+                        break;
+                    case QuestRewardType.GensAttribution:
+                        // not yet implemented.
+                        break;
+                }
             }
 
             questState.LastFinishedQuest = activeQuest;
