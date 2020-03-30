@@ -595,7 +595,7 @@ namespace MUnique.OpenMU.GameLogic
                 if (lvlup)
                 {
                     this.Attributes[Stats.Level]++;
-                    this.SelectedCharacter.LevelUpPoints += this.SelectedCharacter.CharacterClass.PointsPerLevelUp;
+                    this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
                     this.SetReclaimableAttributesToMaximum();
                     Logger.DebugFormat("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
                     this.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()?.UpdateLevel();

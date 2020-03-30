@@ -615,7 +615,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     CanGetCreated = table.Column<bool>(nullable: false),
                     LevelRequirementByCreation = table.Column<short>(nullable: false),
                     CreationAllowedFlag = table.Column<byte>(nullable: false),
-                    PointsPerLevelUp = table.Column<short>(nullable: false),
                     IsMasterClass = table.Column<bool>(nullable: false),
                     LevelWarpRequirementReductionPercent = table.Column<int>(nullable: false),
                     FruitCalculation = table.Column<int>(nullable: false),

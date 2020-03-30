@@ -339,9 +339,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("Number")
                         .HasColumnType("smallint");
 
-                    b.Property<short>("PointsPerLevelUp")
-                        .HasColumnType("smallint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");

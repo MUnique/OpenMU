@@ -437,7 +437,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
             character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
             character.Experience = this.CalculateNeededExperience(level);
-            character.LevelUpPoints = (int)(character.Attributes.First(a => a.Definition == Stats.Level).Value - 1) * character.CharacterClass.PointsPerLevelUp;
+            character.LevelUpPoints = (int)((character.Attributes.First(a => a.Definition == Stats.Level).Value - 1)
+                                      * character.CharacterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
             character.Inventory = this.context.CreateNew<ItemStorage>();
             character.Inventory.Money = 1000000;
             return character;
