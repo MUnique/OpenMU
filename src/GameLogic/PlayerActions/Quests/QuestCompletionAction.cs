@@ -74,64 +74,78 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 
             foreach (var reward in activeQuest.Rewards)
             {
-                switch (reward.RewardType)
-                {
-                    case QuestRewardType.Attribute:
-                        var attribute =
-                            player.SelectedCharacter.Attributes.FirstOrDefault(a =>
-                                a.Definition == reward.AttributeReward);
-                        if (attribute == null)
-                        {
-                            attribute = player.PersistenceContext.CreateNew<StatAttribute>(
-                                reward.AttributeReward,
-                                0);
-                            player.SelectedCharacter.Attributes.Add(attribute);
-                        }
-
-                        attribute.Value += reward.Value;
-                        player.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.Attribute, reward.Value);
-                        break;
-                    case QuestRewardType.Item:
-                        var item = player.PersistenceContext.CreateNew<Item>();
-                        item.AssignValues(reward.ItemReward);
-                        if (player.Inventory.AddItem(item))
-                        {
-                            player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(item);
-                        }
-                        else
-                        {
-                            player.CurrentMap.Add(new DroppedItem(item, player.Position, player.CurrentMap, player, player.GetAsEnumerable()));
-                        }
-
-                        break;
-                    case QuestRewardType.LevelUpPoints:
-                        player.SelectedCharacter.LevelUpPoints += reward.Value;
-                        player.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.LevelUpPoints, reward.Value);
-                        break;
-                    case QuestRewardType.CharacterEvolutionFirstToSecond:
-                        player.SelectedCharacter.CharacterClass = player.SelectedCharacter.CharacterClass.NextGenerationClass;
-                        player.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.CharacterEvolutionFirstToSecond, reward.Value), true);
-                        break;
-                    case QuestRewardType.CharacterEvolutionSecondToThird:
-                        player.SelectedCharacter.CharacterClass = player.SelectedCharacter.CharacterClass.NextGenerationClass;
-                        player.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.CharacterEvolutionSecondToThird, reward.Value), true);
-                        break;
-                    case QuestRewardType.Experience:
-                        player.AddExperience(reward.Value, null);
-                        break;
-                    case QuestRewardType.Money:
-                        player.TryAddMoney(reward.Value);
-                        player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
-                        break;
-                    case QuestRewardType.GensAttribution:
-                        // not yet implemented.
-                        break;
-                }
+                AddReward(player, reward);
             }
 
             questState.LastFinishedQuest = activeQuest;
             questState.Clear(player.PersistenceContext);
             player.ViewPlugIns.GetPlugIn<IQuestCompletionResponsePlugIn>()?.QuestCompleted(activeQuest);
+        }
+
+        private static void AddReward(Player player, QuestReward reward)
+        {
+            switch (reward.RewardType)
+            {
+                case QuestRewardType.Attribute:
+                    var attribute =
+                        player.SelectedCharacter.Attributes.FirstOrDefault(a => a.Definition == reward.AttributeReward);
+                    if (attribute == null)
+                    {
+                        attribute = player.PersistenceContext.CreateNew<StatAttribute>(reward.AttributeReward, 0);
+                        player.SelectedCharacter.Attributes.Add(attribute);
+                    }
+
+                    attribute.Value += reward.Value;
+
+                    player.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.Attribute, reward.Value, attribute.Definition);
+                    break;
+                case QuestRewardType.Item:
+                    var item = player.PersistenceContext.CreateNew<Item>();
+                    item.AssignValues(reward.ItemReward);
+                    if (player.Inventory.AddItem(item))
+                    {
+                        player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(item);
+                    }
+                    else
+                    {
+                        player.CurrentMap.Add(new DroppedItem(item, player.Position, player.CurrentMap, player, player.GetAsEnumerable()));
+                    }
+
+                    break;
+                case QuestRewardType.LevelUpPoints:
+                    player.SelectedCharacter.LevelUpPoints += reward.Value;
+                    player.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()
+                        ?.Show(player, QuestRewardType.LevelUpPoints, reward.Value, null);
+                    break;
+                case QuestRewardType.CharacterEvolutionFirstToSecond:
+                    player.SelectedCharacter.CharacterClass = player.SelectedCharacter.CharacterClass.NextGenerationClass;
+                    player.ForEachWorldObserver(
+                        o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(
+                            player,
+                            QuestRewardType.CharacterEvolutionFirstToSecond,
+                            reward.Value,
+                            null), true);
+                    break;
+                case QuestRewardType.CharacterEvolutionSecondToThird:
+                    player.SelectedCharacter.CharacterClass = player.SelectedCharacter.CharacterClass.NextGenerationClass;
+                    player.ForEachWorldObserver(
+                        o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(
+                            player,
+                            QuestRewardType.CharacterEvolutionSecondToThird,
+                            reward.Value,
+                            null), true);
+                    break;
+                case QuestRewardType.Experience:
+                    player.AddExperience(reward.Value, null);
+                    break;
+                case QuestRewardType.Money:
+                    player.TryAddMoney(reward.Value);
+                    player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+                    break;
+                case QuestRewardType.GensAttribution:
+                    // not yet implemented.
+                    break;
+            }
         }
     }
 }

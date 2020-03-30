@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Views.Quest
 {
+    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
 
     /// <summary>
@@ -20,6 +21,7 @@ namespace MUnique.OpenMU.GameLogic.Views.Quest
         /// <param name="player">The player.</param>
         /// <param name="rewardType">Type of the reward.</param>
         /// <param name="value">The value.</param>
-        void Show(Player player, QuestRewardType rewardType, int value);
+        /// <param name="attributeReward">The attribute reward.</param>
+        void Show(Player player, QuestRewardType rewardType, int value, AttributeDefinition attributeReward);
     }
 }

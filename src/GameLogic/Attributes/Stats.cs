@@ -260,6 +260,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition ComboBonus { get; } = new AttributeDefinition(new Guid("53A479FE-8A73-4A45-AACA-5B1AA4362CF9"), "comboBonus", string.Empty);
 
         /// <summary>
+        /// Gets the attribute if skill combos are available.
+        /// </summary>
+        public static AttributeDefinition IsSkillComboAvailable { get; } = new AttributeDefinition(new Guid("{0B648F95-E9C1-4AFD-90A6-3DD954BF6995}"), nameof(IsSkillComboAvailable), string.Empty);
+
+        /// <summary>
         /// Gets the final damage increase PVP attribute definition.
         /// </summary>
         public static AttributeDefinition FinalDamageIncreasePvp { get; } = new AttributeDefinition(new Guid("20BE9BFA-A2DC-4868-8ABF-B6DE4B51D4D2"), "finalDamageIncreasePvp", string.Empty);

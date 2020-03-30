@@ -4202,8 +4202,8 @@
               <Value>201</Value>
             </EnumValue>
             <EnumValue>
-              <Name>LevelUpPointsByNewClass</Name>
-              <Description>The character receives additional points because of the class change.</Description>
+              <Name>LevelUpPointsPerLevelIncrease</Name>
+              <Description>The character receives additional points per level.</Description>
               <Value>202</Value>
             </EnumValue>
             <EnumValue>

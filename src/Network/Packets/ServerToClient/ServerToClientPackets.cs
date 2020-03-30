@@ -12093,9 +12093,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             CharacterEvolutionFirstToSecond = 201,
 
             /// <summary>
-            /// The character receives additional points because of the class change.
+            /// The character receives additional points per level.
             /// </summary>
-            LevelUpPointsByNewClass = 202,
+            LevelUpPointsPerLevelIncrease = 202,
 
             /// <summary>
             /// The character receives the ability to perform skill combinations.
