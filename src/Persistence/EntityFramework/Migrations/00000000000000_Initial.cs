@@ -292,6 +292,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     Chance = table.Column<double>(nullable: false),
+                    ItemLevel = table.Column<byte>(nullable: true),
                     MinimumMonsterLevel = table.Column<byte>(nullable: true),
                     MaximumMonsterLevel = table.Column<byte>(nullable: true),
                     ItemType = table.Column<int>(nullable: false),

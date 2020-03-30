@@ -306,6 +306,11 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     var item = new TemporaryItem();
                     item.Definition = selectedGroup.PossibleItems.SelectRandom(this.randomizer);
+                    if (selectedGroup.ItemLevel is byte itemLevel)
+                    {
+                        item.Level = itemLevel;
+                    }
+
                     this.ApplyRandomOptions(item);
                     return item;
                 }

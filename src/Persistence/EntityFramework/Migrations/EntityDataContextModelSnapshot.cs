@@ -550,6 +550,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
+                    b.Property<byte?>("ItemLevel")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ItemType")
                         .HasColumnType("integer");
 
