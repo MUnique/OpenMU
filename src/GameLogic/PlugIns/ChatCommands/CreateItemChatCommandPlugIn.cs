@@ -5,13 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -20,46 +17,20 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <remarks>
     /// This should be deactivated by default or limited to game masters.
     /// </remarks>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799887")]
     [PlugIn("Create Item chat command", "Handles the chat command '/create'")]
+    [ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
     public class CreateItemChatCommandPlugIn : IChatCommandPlugIn
     {
-        private const string CommandKey = "/item";
+        private const string Command = "/item";
 
-        private const string Usage = "[GM][/item] usage /item {Group} {Number} {Level} {Exc} {Skill} {Luck} {Opt}";
-
-        /// <summary>
-        /// arguments
-        /// </summary>
-        private struct Arguments : IEquatable<Arguments>
-        {
-            public byte Group { get; set; }
-
-            public short Number { get; set; }
-
-            public byte Level { get; set; }
-
-            public byte Exc { get; set; }
-
-            public bool Skill { get; set; }
-
-            public bool Luck { get; set; }
-
-            public byte Opt { get; set; }
-
-            // Not implemented yet
-            public bool Equals(Arguments other)
-            {
-                return false;
-            }
-        }
+        private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
 
         /// <inheritdoc />
-        public string Key => CommandKey;
+        public CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
         /// <inheritdoc />
-        public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+        public string Key => Command;
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
@@ -67,15 +38,15 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             var dropCoordinates = player.CurrentMap.Terrain.GetRandomDropCoordinate(player.Position, 1);
             try
             {
-                var arguments = ParseArguments(command.Split(' ').Skip(1).ToList());
+                var arguments = command.ParseArguments<Arguments>();
                 var item = CreateItem(player, arguments);
                 var droppedItem = new DroppedItem(item, dropCoordinates, player.CurrentMap, player);
                 player.CurrentMap.Add(droppedItem);
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"[GM][/item] {item} created", MessageType.BlueNormal);
+                player.ShowMessage($"[GM][/item] {item} created");
             }
             catch (ArgumentException e)
             {
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(e.Message, MessageType.BlueNormal);
+                player.ShowMessage(e.Message);
             }
         }
 
@@ -141,23 +112,28 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             return item;
         }
 
-        private static Arguments ParseArguments(List<string> argumentsList)
+        private class Arguments : ArgumentsBase
         {
-            if (argumentsList.ElementAtOrDefault(0) == null || argumentsList.ElementAtOrDefault(1) == null)
-            {
-                throw new ArgumentException(Usage);
-            }
+            [Argument("g")]
+            public byte Group { get; set; }
 
-            return new Arguments
-            {
-                Group = byte.Parse(argumentsList.ElementAt(0)),
-                Number = short.Parse(argumentsList.ElementAt(1)),
-                Level = byte.Parse(argumentsList.ElementAtOrDefault(2) ?? "0"),
-                Exc = byte.Parse(argumentsList.ElementAtOrDefault(3) ?? "0"),
-                Skill = (argumentsList.ElementAtOrDefault(4) ?? "0") == "1",
-                Luck = (argumentsList.ElementAtOrDefault(5) ?? "0") == "1",
-                Opt = byte.Parse(argumentsList.ElementAtOrDefault(6) ?? "0"),
-            };
+            [Argument("n")]
+            public short Number { get; set; }
+
+            [Argument("l")]
+            public byte Level { get; set; } = 1;
+
+            [Argument("e")]
+            public byte Exc { get; set; }
+
+            [Argument("s")]
+            public bool Skill { get; set; }
+
+            [Argument("lu")]
+            public bool Luck { get; set; }
+
+            [Argument("o")]
+            public byte Opt { get; set; }
         }
     }
 }

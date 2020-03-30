@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     /// <summary>
     /// Consume handler to modify items which are specified by the target slot.
     /// </summary>
-    public abstract class ItemModifyConsumeHandler : IItemConsumeHandler
+    public abstract class ItemModifyConsumeHandler : BaseConsumeHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemModifyConsumeHandler"/> class.
@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         protected IPersistenceContextProvider PersistenceContextProvider { get; }
 
         /// <inheritdoc/>
-        public bool ConsumeItem(Player player, Item item, Item targetItem)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem)
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
@@ -51,10 +51,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
+            if (!this.CheckPreconditions(player, item, targetItem))
+            {
+                return false;
+            }
+
             if (!this.ModifyItem(targetItem, player.PersistenceContext))
             {
                 return false;
             }
+
+            this.ConsumeSourceItem(player, item);
 
             player.ViewPlugIns.GetPlugIn<IItemUpgradedPlugIn>()?.ItemUpgraded(targetItem);
             return true;

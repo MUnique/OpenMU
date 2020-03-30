@@ -4,9 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
+    using System;
     using System.Runtime.InteropServices;
-    using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -18,24 +19,42 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
     [PlugIn("Teleport chat command", "Handles the chat command '/teleport x y'. Teleports the character to the specified coordinates.")]
+    [ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
     public class TeleportChatCommandPlugIn : IChatCommandPlugIn
     {
-        private const string CommandKey = "/teleport";
+        private const string Command = "/teleport";
+
+        private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
 
         /// <inheritdoc />
-        public string Key => CommandKey;
+        public string Key => Command;
 
         /// <inheritdoc />
-        public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+        public CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
         {
-            var arguments = command.Split(' ');
-            if (arguments.Length > 2 && byte.TryParse(arguments[1], out var x) && byte.TryParse(arguments[2], out var y))
+            try
             {
-                player.Move(new Point(x, y));
+                var arguments = command.ParseArguments<Arguments>();
+                player.Move(arguments.Point);
             }
+            catch (ArgumentException e)
+            {
+                player.ShowMessage(e.Message);
+            }
+        }
+
+        private class Arguments : ArgumentsBase
+        {
+            [Argument("x")]
+            public byte X { get; set; }
+
+            [Argument("y")]
+            public byte Y { get; set; }
+
+            public Point Point => new Point(this.X, this.Y);
         }
     }
 }

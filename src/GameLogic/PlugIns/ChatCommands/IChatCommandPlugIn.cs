@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Runtime.InteropServices;
-    using MUnique.OpenMU.PlugIns;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A plugin interface for chat commands.
@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     public interface IChatCommandPlugIn : IStrategyPlugIn<string>
     {
         /// <summary>
-        /// Min Status Requirement to run a command
+        /// Gets min Status Requirement to run a command
         /// </summary>
         public CharacterStatus MinCharacterStatusRequirement { get; }
 
