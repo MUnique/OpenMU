@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.PlugIns
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
 
@@ -66,17 +67,19 @@ namespace MUnique.OpenMU.PlugIns
         protected override void ActivatePlugIn(TPlugIn plugIn)
         {
             base.ActivatePlugIn(plugIn);
-            var viewInterface = GetInterfaceType(plugIn);
-            if (this.currentlyEffectivePlugIns.TryGetValue(viewInterface, out var currentEffectivePlugIn))
+            foreach (var viewInterface in GetInterfaceTypes(plugIn))
             {
-                if (this.IsNewPlugInReplacingOld(currentEffectivePlugIn, plugIn))
+                if (this.currentlyEffectivePlugIns.TryGetValue(viewInterface, out var currentEffectivePlugIn))
                 {
-                    this.currentlyEffectivePlugIns.TryUpdate(viewInterface, plugIn, currentEffectivePlugIn);
+                    if (this.IsNewPlugInReplacingOld(currentEffectivePlugIn, plugIn))
+                    {
+                        this.currentlyEffectivePlugIns.TryUpdate(viewInterface, plugIn, currentEffectivePlugIn);
+                    }
                 }
-            }
-            else
-            {
-                this.currentlyEffectivePlugIns.TryAdd(viewInterface, plugIn);
+                else
+                {
+                    this.currentlyEffectivePlugIns.TryAdd(viewInterface, plugIn);
+                }
             }
         }
 
@@ -84,14 +87,16 @@ namespace MUnique.OpenMU.PlugIns
         protected override void DeactivatePlugIn(TPlugIn plugIn)
         {
             base.DeactivatePlugIn(plugIn);
-            var viewInterface = GetInterfaceType(plugIn);
-            if (this.currentlyEffectivePlugIns.TryGetValue(viewInterface, out var currentEffectivePlugIn)
-                && currentEffectivePlugIn == plugIn
-                && this.currentlyEffectivePlugIns.TryRemove(viewInterface, out _))
+            foreach (var viewInterface in GetInterfaceTypes(plugIn))
             {
-                if (this.DetermineEffectivePlugIn(viewInterface) is TPlugIn newEffectivePlugIn)
+                if (this.currentlyEffectivePlugIns.TryGetValue(viewInterface, out var currentEffectivePlugIn)
+                    && currentEffectivePlugIn == plugIn
+                    && this.currentlyEffectivePlugIns.TryRemove(viewInterface, out _))
                 {
-                    this.currentlyEffectivePlugIns.TryAdd(viewInterface, newEffectivePlugIn);
+                    if (this.DetermineEffectivePlugIn(viewInterface) is { } newEffectivePlugIn)
+                    {
+                        this.currentlyEffectivePlugIns.TryAdd(viewInterface, newEffectivePlugIn);
+                    }
                 }
             }
         }
@@ -131,6 +136,6 @@ namespace MUnique.OpenMU.PlugIns
             }
         }
 
-        private static Type GetInterfaceType(TPlugIn plugIn) => plugIn.GetType().GetInterfaces().First(i => i.GetInterfaces().Contains(typeof(TPlugIn)));
+        private static IEnumerable<Type> GetInterfaceTypes(TPlugIn plugIn) => plugIn.GetType().GetInterfaces().Where(i => i.GetInterfaces().Contains(typeof(TPlugIn)));
     }
 }
