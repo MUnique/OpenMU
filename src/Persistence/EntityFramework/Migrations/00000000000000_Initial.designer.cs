@@ -553,7 +553,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<byte?>("ItemLevel")
-                        .HasColumnType("integer");
+                        .HasColumnType("smallint");
 
                     b.Property<int>("ItemType")
                         .HasColumnType("integer");
@@ -564,9 +564,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte?>("MinimumMonsterLevel")
                         .HasColumnType("smallint");
 
+                    b.Property<Guid?>("MonsterId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");
+
+                    b.HasIndex("MonsterId");
 
                     b.ToTable("DropItemGroup","config");
                 });
@@ -2566,6 +2571,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
                         .WithMany("RawDropItemGroups")
                         .HasForeignKey("GameConfigurationId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonster")
+                        .WithMany()
+                        .HasForeignKey("MonsterId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroupItemDefinition", b =>

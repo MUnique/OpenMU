@@ -1593,6 +1593,33 @@ namespace MUnique.OpenMU.Persistence.BasicModel
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="Monster" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("monster")]
+        [System.Text.Json.Serialization.JsonPropertyName("monster")]
+        public MonsterDefinition RawMonster
+        { 
+            get { return base.Monster as MonsterDefinition; }
+            set { base.Monster = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
+        {
+            get
+            {
+                return base.Monster;
+            }
+            
+            set
+            {
+                base.Monster = value;
+            }
+        }
         
         /// <inheritdoc/>
         public override bool Equals(object obj)

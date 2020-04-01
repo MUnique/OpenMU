@@ -285,32 +285,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DropItemGroup",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    Chance = table.Column<double>(nullable: false),
-                    ItemLevel = table.Column<byte>(nullable: true),
-                    MinimumMonsterLevel = table.Column<byte>(nullable: true),
-                    MaximumMonsterLevel = table.Column<byte>(nullable: true),
-                    ItemType = table.Column<int>(nullable: false),
-                    GameConfigurationId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DropItemGroup", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DropItemGroup_GameConfiguration_GameConfigurationId",
-                        column: x => x.GameConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GameMapDefinition",
                 schema: "config",
                 columns: table => new
@@ -673,33 +647,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "GameMapDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GameMapDefinitionDropItemGroup",
-                schema: "config",
-                columns: table => new
-                {
-                    GameMapDefinitionId = table.Column<Guid>(nullable: false),
-                    DropItemGroupId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameMapDefinitionDropItemGroup", x => new { x.GameMapDefinitionId, x.DropItemGroupId });
-                    table.ForeignKey(
-                        name: "FK_GameMapDefinitionDropItemGroup_DropItemGroup_DropItemGroupId",
-                        column: x => x.DropItemGroupId,
-                        principalSchema: "config",
-                        principalTable: "DropItemGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GameMapDefinitionDropItemGroup_GameMapDefinition_GameMapDef~",
-                        column: x => x.GameMapDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1149,33 +1096,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "PowerUpDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CharacterDropItemGroup",
-                schema: "data",
-                columns: table => new
-                {
-                    CharacterId = table.Column<Guid>(nullable: false),
-                    DropItemGroupId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CharacterDropItemGroup", x => new { x.CharacterId, x.DropItemGroupId });
-                    table.ForeignKey(
-                        name: "FK_CharacterDropItemGroup_Character_CharacterId",
-                        column: x => x.CharacterId,
-                        principalSchema: "data",
-                        principalTable: "Character",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CharacterDropItemGroup_DropItemGroup_DropItemGroupId",
-                        column: x => x.DropItemGroupId,
-                        principalSchema: "config",
-                        principalTable: "DropItemGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1638,33 +1558,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DropItemGroupItemDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    DropItemGroupId = table.Column<Guid>(nullable: false),
-                    ItemDefinitionId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DropItemGroupItemDefinition", x => new { x.DropItemGroupId, x.ItemDefinitionId });
-                    table.ForeignKey(
-                        name: "FK_DropItemGroupItemDefinition_DropItemGroup_DropItemGroupId",
-                        column: x => x.DropItemGroupId,
-                        principalSchema: "config",
-                        principalTable: "DropItemGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DropItemGroupItemDefinition_ItemDefinition_ItemDefinitionId",
-                        column: x => x.ItemDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "ItemDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ItemCraftingRequiredItem",
                 schema: "config",
                 columns: table => new
@@ -1950,6 +1843,40 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DropItemGroup",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    Chance = table.Column<double>(nullable: false),
+                    MinimumMonsterLevel = table.Column<byte>(nullable: true),
+                    MaximumMonsterLevel = table.Column<byte>(nullable: true),
+                    ItemLevel = table.Column<byte>(nullable: true),
+                    ItemType = table.Column<int>(nullable: false),
+                    MonsterId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DropItemGroup", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DropItemGroup_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DropItemGroup_MonsterDefinition_MonsterId",
+                        column: x => x.MonsterId,
+                        principalSchema: "config",
+                        principalTable: "MonsterDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemCrafting",
                 schema: "config",
                 columns: table => new
@@ -2007,33 +1934,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "MonsterDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MonsterDefinitionDropItemGroup",
-                schema: "config",
-                columns: table => new
-                {
-                    MonsterDefinitionId = table.Column<Guid>(nullable: false),
-                    DropItemGroupId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MonsterDefinitionDropItemGroup", x => new { x.MonsterDefinitionId, x.DropItemGroupId });
-                    table.ForeignKey(
-                        name: "FK_MonsterDefinitionDropItemGroup_DropItemGroup_DropItemGroupId",
-                        column: x => x.DropItemGroupId,
-                        principalSchema: "config",
-                        principalTable: "DropItemGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MonsterDefinitionDropItemGroup_MonsterDefinition_MonsterDef~",
-                        column: x => x.MonsterDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "MonsterDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2221,6 +2121,114 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.ItemOptionTypeId,
                         principalSchema: "config",
                         principalTable: "ItemOptionType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DropItemGroupItemDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    DropItemGroupId = table.Column<Guid>(nullable: false),
+                    ItemDefinitionId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DropItemGroupItemDefinition", x => new { x.DropItemGroupId, x.ItemDefinitionId });
+                    table.ForeignKey(
+                        name: "FK_DropItemGroupItemDefinition_DropItemGroup_DropItemGroupId",
+                        column: x => x.DropItemGroupId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DropItemGroupItemDefinition_ItemDefinition_ItemDefinitionId",
+                        column: x => x.ItemDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "ItemDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GameMapDefinitionDropItemGroup",
+                schema: "config",
+                columns: table => new
+                {
+                    GameMapDefinitionId = table.Column<Guid>(nullable: false),
+                    DropItemGroupId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameMapDefinitionDropItemGroup", x => new { x.GameMapDefinitionId, x.DropItemGroupId });
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinitionDropItemGroup_DropItemGroup_DropItemGroupId",
+                        column: x => x.DropItemGroupId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinitionDropItemGroup_GameMapDefinition_GameMapDef~",
+                        column: x => x.GameMapDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MonsterDefinitionDropItemGroup",
+                schema: "config",
+                columns: table => new
+                {
+                    MonsterDefinitionId = table.Column<Guid>(nullable: false),
+                    DropItemGroupId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MonsterDefinitionDropItemGroup", x => new { x.MonsterDefinitionId, x.DropItemGroupId });
+                    table.ForeignKey(
+                        name: "FK_MonsterDefinitionDropItemGroup_DropItemGroup_DropItemGroupId",
+                        column: x => x.DropItemGroupId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MonsterDefinitionDropItemGroup_MonsterDefinition_MonsterDef~",
+                        column: x => x.MonsterDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MonsterDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CharacterDropItemGroup",
+                schema: "data",
+                columns: table => new
+                {
+                    CharacterId = table.Column<Guid>(nullable: false),
+                    DropItemGroupId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CharacterDropItemGroup", x => new { x.CharacterId, x.DropItemGroupId });
+                    table.ForeignKey(
+                        name: "FK_CharacterDropItemGroup_Character_CharacterId",
+                        column: x => x.CharacterId,
+                        principalSchema: "data",
+                        principalTable: "Character",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CharacterDropItemGroup_DropItemGroup_DropItemGroupId",
+                        column: x => x.DropItemGroupId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -2509,6 +2517,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "DropItemGroup",
                 column: "GameConfigurationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DropItemGroup_MonsterId",
+                schema: "config",
+                table: "DropItemGroup",
+                column: "MonsterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DropItemGroupItemDefinition_ItemDefinitionId",

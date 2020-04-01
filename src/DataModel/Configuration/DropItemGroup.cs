@@ -71,6 +71,13 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public byte? MaximumMonsterLevel { get; set; }
 
         /// <summary>
+        /// Gets or sets a specific monster for which this drop group is valid.
+        /// If <c>null</c>, then it doesn't apply and it's valid for all monsters.
+        /// </summary>
+        /// <remarks>This is required for some quest items which should drop only from specific monsters.</remarks>
+        public virtual MonsterDefinition Monster { get; set; }
+
+        /// <summary>
         /// Gets or sets the item level which will be assigned to the dropped instance of <see cref="PossibleItems"/>.
         /// </summary>
         /// <remarks>

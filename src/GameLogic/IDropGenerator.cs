@@ -261,6 +261,11 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
+            if (group.Monster is { } monster && !monster.Equals(monsterDefinition))
+            {
+                return false;
+            }
+
             return true;
         }
 

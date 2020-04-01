@@ -1376,7 +1376,35 @@ public ICollection<ChatServerEndpoint> RawEndpoints { get; } = new List<ChatServ
         /// </summary>
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Monster"/>.
+        /// </summary>
+        public Guid? MonsterId { get; set; }
         
+        [ForeignKey("MonsterId")]
+        public MonsterDefinition RawMonster
+        { 
+            get { return base.Monster as MonsterDefinition; }
+            set { base.Monster = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
+        {
+            get
+            {
+                return base.Monster;
+            }
+            
+            set
+            {
+                base.Monster = value;
+                this.MonsterId = this.RawMonster?.Id;
+            }
+        }
+
+                
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
