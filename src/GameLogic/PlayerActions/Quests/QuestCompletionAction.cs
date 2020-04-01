@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.Quest;
 
@@ -134,6 +135,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                             QuestRewardType.CharacterEvolutionSecondToThird,
                             reward.Value,
                             null), true);
+                    player.ViewPlugIns.GetPlugIn<IUpdateMasterStatsPlugIn>()?.SendMasterStats();
                     break;
                 case QuestRewardType.Experience:
                     player.AddExperience(reward.Value, null);

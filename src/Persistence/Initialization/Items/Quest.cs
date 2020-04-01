@@ -38,6 +38,21 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         internal const byte EyeOfAbyssalNumber = 68;
 
         /// <summary>
+        /// The flame of death beam knight number.
+        /// </summary>
+        internal const byte FlameOfDeathBeamKnightNumber = 65;
+
+        /// <summary>
+        /// The horn of hell maine number.
+        /// </summary>
+        internal const byte HornOfHellMaineNumber = 66;
+
+        /// <summary>
+        /// The feather of dark phoenix number.
+        /// </summary>
+        internal const byte FeatherOfDarkPhoenixNumber = 67;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Quest"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -55,6 +70,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateQuestItem(TearOfElfNumber, "Tear of Elf", 0, 1);
             this.CreateQuestItem(SoulShardOfWizardNumber, "Soul Shard of Wizard", 0, 1);
             this.CreateQuestItem(EyeOfAbyssalNumber, "Eye of Abyssal", 0, 2);
+            this.CreateQuestItem(FlameOfDeathBeamKnightNumber, "Flame of Death Beam Knight", 0, 1);
+            this.CreateQuestItem(HornOfHellMaineNumber, "Horn of Hell Maine", 0, 2);
+            this.CreateQuestItem(FeatherOfDarkPhoenixNumber, "Feather of Dark Phoenix", 0, 2);
         }
 
         private void CreateQuestItem(byte number, string name, byte dropLevel, byte height)

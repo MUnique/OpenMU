@@ -45,6 +45,109 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.GainHeroStatus(CharacterClassNumber.MuseElf);
             this.GainHeroStatus(CharacterClassNumber.BloodySummoner);
             this.SecretOfTheDarkStone();
+
+            // Level 380 Quest:
+            this.EvidenceOfStrength();
+
+            // Level 400 Quests:
+            this.InfiltrationOfBarracksOfBallgass();
+            this.IntoTheDarknessZone();
+        }
+
+        // See also http://muonlinefanz.com/guide/quests/master/#ibb
+        private void InfiltrationOfBarracksOfBallgass()
+        {
+            var apostleDevin = this.GameConfiguration.Monsters.First(m => m.Number == 406);
+            var infiltrationOfBarracks = this.Context.CreateNew<QuestDefinition>();
+            apostleDevin.Quests.Add(infiltrationOfBarracks);
+            infiltrationOfBarracks.QuestGiver = apostleDevin;
+            infiltrationOfBarracks.Name = "Infiltrate The Barracks of Balgass";
+            infiltrationOfBarracks.Group = QuestConstants.LegacyQuestGroup;
+            infiltrationOfBarracks.Number = 5;
+            infiltrationOfBarracks.RequiredStartMoney = 7000000;
+            infiltrationOfBarracks.MinimumCharacterLevel = 400;
+
+            var balram = this.Context.CreateNew<QuestMonsterKillRequirement>();
+            balram.MinimumNumber = 20;
+            balram.Monster = this.GameConfiguration.Monsters.First(m => m.Number == 409);
+            infiltrationOfBarracks.RequiredMonsterKills.Add(balram);
+
+            var deathSpirit = this.Context.CreateNew<QuestMonsterKillRequirement>();
+            deathSpirit.MinimumNumber = 20;
+            deathSpirit.Monster = this.GameConfiguration.Monsters.First(m => m.Number == 410);
+            infiltrationOfBarracks.RequiredMonsterKills.Add(deathSpirit);
+
+            var soram = this.Context.CreateNew<QuestMonsterKillRequirement>();
+            soram.MinimumNumber = 20;
+            soram.Monster = this.GameConfiguration.Monsters.First(m => m.Number == 411);
+            infiltrationOfBarracks.RequiredMonsterKills.Add(soram);
+
+            // Rewards:
+            var pointReward = this.Context.CreateNew<QuestReward>();
+            pointReward.Value = 10;
+            pointReward.RewardType = QuestRewardType.LevelUpPoints;
+            infiltrationOfBarracks.Rewards.Add(pointReward);
+        }
+
+        // See also http://muonlinefanz.com/guide/quests/master/#itrod
+        private void IntoTheDarknessZone()
+        {
+            var apostleDevin = this.GameConfiguration.Monsters.First(m => m.Number == 406);
+            var intoTheDarkness = this.Context.CreateNew<QuestDefinition>();
+            apostleDevin.Quests.Add(intoTheDarkness);
+            intoTheDarkness.QuestGiver = apostleDevin;
+            intoTheDarkness.Name = "Into the 'Darkness' Zone";
+            intoTheDarkness.Group = QuestConstants.LegacyQuestGroup;
+            intoTheDarkness.Number = 6;
+            intoTheDarkness.RequiredStartMoney = 10000000;
+            intoTheDarkness.MinimumCharacterLevel = 400;
+
+            var darkElf = this.Context.CreateNew<QuestMonsterKillRequirement>();
+            darkElf.MinimumNumber = 1;
+            darkElf.Monster = this.GameConfiguration.Monsters.First(m => m.Number == 412);
+            intoTheDarkness.RequiredMonsterKills.Add(darkElf);
+
+            // Rewards:
+            var pointReward = this.Context.CreateNew<QuestReward>();
+            pointReward.Value = 30;
+            pointReward.RewardType = QuestRewardType.LevelUpPoints;
+            intoTheDarkness.Rewards.Add(pointReward);
+
+            var characterClassEvolution = this.Context.CreateNew<QuestReward>();
+            characterClassEvolution.RewardType = QuestRewardType.CharacterEvolutionSecondToThird;
+            intoTheDarkness.Rewards.Add(characterClassEvolution);
+        }
+
+        /// <summary>
+        /// Evidences the of strength.
+        /// </summary>
+        /// <remarks>
+        /// Actually, this quest is just available for the corresponding evolved character classes.
+        /// However, we can safely implicitly rely that only these classes will be able to
+        /// start the quest - because the previous quests must be finished.
+        /// See also http://muonlinefanz.com/guide/quests/master/#eos.
+        /// </remarks>
+        private void EvidenceOfStrength()
+        {
+            var apostleDevin = this.GameConfiguration.Monsters.First(m => m.Number == 406);
+            var evidenceOfStrength = this.Context.CreateNew<QuestDefinition>();
+            apostleDevin.Quests.Add(evidenceOfStrength);
+            evidenceOfStrength.QuestGiver = apostleDevin;
+            evidenceOfStrength.Name = "Evidence of Strength";
+            evidenceOfStrength.Group = QuestConstants.LegacyQuestGroup;
+            evidenceOfStrength.Number = 4;
+            evidenceOfStrength.RequiredStartMoney = 5000000;
+            evidenceOfStrength.MinimumCharacterLevel = 380;
+
+            this.AddItemRequirement(evidenceOfStrength, 14, Items.Quest.FlameOfDeathBeamKnightNumber, 0, 63, 3.0 / 100.0);
+            this.AddItemRequirement(evidenceOfStrength, 14, Items.Quest.HornOfHellMaineNumber, 0, 309, 4.0 / 100.0);
+            this.AddItemRequirement(evidenceOfStrength, 14, Items.Quest.FeatherOfDarkPhoenixNumber, 0, 77, 5.0 / 100.0);
+
+            // Rewards:
+            var pointReward = this.Context.CreateNew<QuestReward>();
+            pointReward.Value = 20;
+            pointReward.RewardType = QuestRewardType.LevelUpPoints;
+            evidenceOfStrength.Rewards.Add(pointReward);
         }
 
         // See also http://muonlinefanz.com/guide/quests/darkstone/
@@ -147,6 +250,22 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private void AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel, byte minimumMonsterLevel, byte maximumMonsterLevel)
         {
+            var itemRequirement = this.AddItemRequirement(quest, itemGroup, itemNumber, itemLevel);
+            var dropItemGroup = itemRequirement.DropItemGroup;
+            dropItemGroup.MinimumMonsterLevel = minimumMonsterLevel;
+            dropItemGroup.MaximumMonsterLevel = maximumMonsterLevel;
+        }
+
+        private void AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel, short monsterNumber, double dropRate)
+        {
+            var itemRequirement = this.AddItemRequirement(quest, itemGroup, itemNumber, itemLevel);
+            var dropItemGroup = itemRequirement.DropItemGroup;
+            dropItemGroup.Monster = this.GameConfiguration.Monsters.First(m => m.Number == monsterNumber);
+            dropItemGroup.Chance = dropRate;
+        }
+
+        private QuestItemRequirement AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel)
+        {
             var itemRequirement = this.Context.CreateNew<QuestItemRequirement>();
             itemRequirement.MinimumNumber = 1;
             itemRequirement.Item = this.GameConfiguration.Items.First(item => item.Group == itemGroup && item.Number == itemNumber);
@@ -155,14 +274,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
             dropItemGroup.Description = $"Quest Item '{itemRequirement.Item.Name}'";
             dropItemGroup.PossibleItems.Add(itemRequirement.Item);
             dropItemGroup.Chance = 10.0 / 10000.0;
-            dropItemGroup.MinimumMonsterLevel = minimumMonsterLevel;
-            dropItemGroup.MaximumMonsterLevel = maximumMonsterLevel;
             dropItemGroup.ItemLevel = itemLevel;
 
             itemRequirement.DropItemGroup = dropItemGroup;
             this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
 
             quest.RequiredItems.Add(itemRequirement);
+            return itemRequirement;
         }
     }
 }
