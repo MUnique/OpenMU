@@ -105,6 +105,33 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>0F</Code>
+      <Name>WeatherStatusUpdate</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The weather on the current map has been changed or the player entered the map.</SentWhen>
+      <CausedReaction>The game client updates the weather effects.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>Weather</Name>
+          <Description>A random value between 0 and 2 (inclusive).</Description>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Byte</Type>
+          <Name>Variation</Name>
+          <Description>A random value between 0 and 9 (inclusive).</Description>
+          <Length>4</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C2Header</HeaderType>
       <Code>12</Code>
       <Name>AddCharactersToScope</Name>

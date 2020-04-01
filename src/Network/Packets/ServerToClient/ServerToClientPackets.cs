@@ -316,6 +316,94 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: The weather on the current map has been changed or the player entered the map.
+    /// Causes reaction on client side: The game client updates the weather effects.
+    /// </summary>
+    public readonly ref struct WeatherStatusUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeatherStatusUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public WeatherStatusUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeatherStatusUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private WeatherStatusUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x0F;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets a random value between 0 and 2 (inclusive).
+        /// </summary>
+        public byte Weather
+        {
+            get => this.data.Slice(3).GetByteValue(4, 4);
+            set => this.data.Slice(3).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets a random value between 0 and 9 (inclusive).
+        /// </summary>
+        public byte Variation
+        {
+            get => this.data.Slice(3).GetByteValue(4, 0);
+            set => this.data.Slice(3).SetByteValue(value, 4, 0);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="WeatherStatusUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator WeatherStatusUpdate(Span<byte> packet) => new WeatherStatusUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="WeatherStatusUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(WeatherStatusUpdate packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: One or more character got into the observed scope of the player.
     /// Causes reaction on client side: The client adds the character to the shown map.
     /// </summary>

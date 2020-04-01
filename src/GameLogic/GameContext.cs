@@ -27,6 +27,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly IMapInitializer mapInitializer;
 
+        private readonly Timer tasksTimer;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GameContext" /> class.
         /// </summary>
@@ -42,6 +44,8 @@ namespace MUnique.OpenMU.GameLogic
                 this.PlugInManager = new PlugInManager(configuration.PlugInConfigurations);
                 this.mapList = new Dictionary<ushort, GameMap>();
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
+
+                this.tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
             }
             catch (Exception ex)
             {
@@ -191,9 +195,15 @@ namespace MUnique.OpenMU.GameLogic
             if (managed)
             {
                 this.recoverTimer.Dispose();
+                this.tasksTimer.Dispose();
             }
 
             GC.SuppressFinalize(this);
+        }
+
+        private void ExecutePeriodicTasks(object state)
+        {
+            this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>()?.ExecuteTask(this);
         }
 
         private void RecoverTimerElapsed(object state)

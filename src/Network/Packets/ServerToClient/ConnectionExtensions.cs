@@ -51,6 +51,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="WeatherStatusUpdate" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The weather on the current map has been changed or the player entered the map.
+        /// Causes reaction on client side: The game client updates the weather effects.
+        /// </remarks>
+        public static WeatherStatusUpdateThreadSafeWriter StartWriteWeatherStatusUpdate(this IConnection connection)
+        {
+          return new WeatherStatusUpdateThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="ObjectGotKilled" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1040,6 +1053,25 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             packet.IsActive = @isActive;
             packet.PlayerId = @playerId;
             packet.EffectId = @effectId;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="WeatherStatusUpdate" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="weather">A random value between 0 and 2 (inclusive).</param>
+        /// <param name="variation">A random value between 0 and 9 (inclusive).</param>
+        /// <remarks>
+        /// Is sent by the server when: The weather on the current map has been changed or the player entered the map.
+        /// Causes reaction on client side: The game client updates the weather effects.
+        /// </remarks>
+        public static void SendWeatherStatusUpdate(this IConnection connection, byte @weather, byte @variation)
+        {
+            using var writer = connection.StartWriteWeatherStatusUpdate();
+            var packet = writer.Packet;
+            packet.Weather = @weather;
+            packet.Variation = @variation;
             writer.Commit();
         }
 
@@ -2920,6 +2952,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(MagicEffectStatus.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="WeatherStatusUpdate"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct WeatherStatusUpdateThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeatherStatusUpdateThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public WeatherStatusUpdateThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new WeatherStatusUpdate(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(WeatherStatusUpdate.Length).Slice(0, WeatherStatusUpdate.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public WeatherStatusUpdate Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="WeatherStatusUpdate" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(WeatherStatusUpdate.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
