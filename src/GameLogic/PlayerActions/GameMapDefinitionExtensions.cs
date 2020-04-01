@@ -28,8 +28,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             {
                 foreach (var requirement in gameMapDefinition.MapRequirements)
                 {
-                    var floatDiff = player.Attributes[requirement.Attribute] - requirement.MinimumValue;
-                    if (Math.Abs(floatDiff) > 0.01)
+                    if (player.Attributes[requirement.Attribute] < requirement.MinimumValue)
                     {
                         errorMessage = $"Missing requirement to enter the map: {requirement.Attribute.Description}";
                         return true;
