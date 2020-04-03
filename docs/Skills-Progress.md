@@ -35,7 +35,7 @@ Some general notes:
 | 21     | Uppercut                    | works                                                            |
 | 22     | Cyclone                     | works                                                            |
 | 23     | Slash                       | works                                                            |
-| 24     | Triple Shot                 | works, doesn't consume arrows/bolts yet                          |
+| 24     | Triple Shot                 | works,                                                           |
 | 26     | Heal                        | works                                                            |
 | 27     | Greater Defense             | works                                                            |
 | 28     | Greater Damage              | works                                                            |
@@ -57,7 +57,7 @@ Some general notes:
 | 46     | Starfall                    | ?                                                                |
 | 47     | Impale                      | works                                                            |
 | 48     | Swell Life                  | works                                                            |
-| 49     | Fire Breath                 | ?                                                                |
+| 49     | Fire Breath                 | works                                                            |
 | 50     | Flame of Evil (Monster)     |                                                                  |
 | 51     | Ice Arrow                   | works, icing isn't applied yet                                   |
 | 52     | Penetration                 | works, untested                                                  |
