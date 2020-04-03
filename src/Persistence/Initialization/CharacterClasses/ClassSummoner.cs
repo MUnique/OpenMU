@@ -16,17 +16,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
     {
         private CharacterClass CreateBloodySummoner(CharacterClass dimensionMaster)
         {
-            return this.CreateSummoner(CharacterClassNumber.BloodySummoner, "Bloody Summoner", 6, false, dimensionMaster, false);
+            return this.CreateSummoner(CharacterClassNumber.BloodySummoner, "Bloody Summoner", false, dimensionMaster, false);
         }
 
         private CharacterClass CreateDimensionMaster()
         {
-            var result = this.CreateSummoner(CharacterClassNumber.DimensionMaster, "Dimension Master", 6, true, null, false);
+            var result = this.CreateSummoner(CharacterClassNumber.DimensionMaster, "Dimension Master", true, null, false);
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
             return result;
         }
 
-        private CharacterClass CreateSummoner(CharacterClassNumber number, string name, short pointsPerLevelUp, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
+        private CharacterClass CreateSummoner(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
             var result = this.Context.CreateNew<CharacterClass>();
             this.GameConfiguration.CharacterClasses.Add(result);
@@ -34,10 +34,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == ElvenlandMapId);
             result.Number = (byte)number;
             result.Name = name;
-            result.PointsPerLevelUp = pointsPerLevelUp;
             result.IsMasterClass = isMaster;
             result.NextGenerationClass = nextGenerationClass;
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
+            result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 5, false));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 21, true));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseAgility, 21, true));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseVitality, 18, true));

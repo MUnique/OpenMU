@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using log4net;
@@ -19,12 +20,18 @@ namespace MUnique.OpenMU.GameLogic
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(DroppedItem));
 
+        private static readonly TimeSpan TimeUntilDropIsFree = TimeSpan.FromSeconds(10);
+
         /// <summary>
         /// Gets the pickup lock. Used to synchronize pick up requests from the players.
         /// </summary>
         private readonly object pickupLock;
 
+        private readonly DateTime dropTimestamp = DateTime.UtcNow;
+
         private Player dropper;
+
+        private IEnumerable<object> owners;
 
         private Timer removeTimer;
 
@@ -44,12 +51,26 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="map">The map.</param>
         /// <param name="dropper">The dropper.</param>
         public DroppedItem(Item item, Point position, GameMap map, Player dropper)
+            : this(item, position, map, dropper, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DroppedItem" /> class.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="position">The position where the item was dropped on the map.</param>
+        /// <param name="map">The map.</param>
+        /// <param name="dropper">The dropper.</param>
+        /// <param name="owners">The owners.</param>
+        public DroppedItem(Item item, Point position, GameMap map, Player dropper, IEnumerable<object> owners)
         {
             this.Item = item;
             this.pickupLock = new object();
             this.Position = position;
             this.CurrentMap = map;
             this.dropper = dropper;
+            this.owners = owners;
             this.removeTimer = new Timer(this.DisposeAndDelete, null, map.ItemDropDuration * 1000, Timeout.Infinite);
         }
 
@@ -103,6 +124,17 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
+            if (this.Item.Definition.IsBoundToCharacter && !this.IsPlayerAnOwner(player))
+            {
+                return false;
+            }
+
+            if (!this.IsPlayerAnOwner(player)
+                && DateTime.UtcNow < this.dropTimestamp.Add(TimeUntilDropIsFree))
+            {
+                return false;
+            }
+
             return this.TryPickUp(player);
         }
 
@@ -122,6 +154,7 @@ namespace MUnique.OpenMU.GameLogic
                 timer.Dispose();
                 this.CurrentMap.Remove(this);
                 this.dropper = null;
+                this.owners = null;
             }
         }
 
@@ -141,6 +174,11 @@ namespace MUnique.OpenMU.GameLogic
                 // we have to catch all errors, because it runs under a pooled thread without an additional safety net ;-)
                 Log.Error("Error during DroppedItem.DisposeAndDelete", ex);
             }
+        }
+
+        private bool IsPlayerAnOwner(Player player)
+        {
+            return this.owners?.Contains(player) ?? true;
         }
 
         private bool TryPickUp(Player player)

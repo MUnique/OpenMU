@@ -29,10 +29,20 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="definition">The definition.</param>
         /// <param name="duration">The duration.</param>
         public MagicEffect(IElement powerUp, MagicEffectDefinition definition, TimeSpan duration)
+            : this(duration, definition, new ElementWithTarget(powerUp, definition.PowerUpDefinition.TargetAttribute))
         {
-            this.PowerUpElements = Enumerable.Repeat(new ElementWithTarget(powerUp, definition.PowerUpDefinition.TargetAttribute), 1);
-            this.Definition = definition;
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MagicEffect"/> class.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <param name="definition">The definition.</param>
+        /// <param name="powerUps">The power ups.</param>
+        public MagicEffect(TimeSpan duration, MagicEffectDefinition definition, params ElementWithTarget[] powerUps)
+        {
+            this.PowerUpElements = powerUps;
+            this.Definition = definition;
             this.Duration = duration;
             this.finishTimer = new Timer(o => this.OnEffectTimeOut(), null, (int)this.Duration.TotalMilliseconds, Timeout.Infinite);
         }

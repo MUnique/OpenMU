@@ -61,6 +61,32 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public double Chance { get; set; }
 
         /// <summary>
+        /// Gets or sets the minimum monster level. If <c>null</c>, then it doesn't apply.
+        /// </summary>
+        public byte? MinimumMonsterLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum monster level. If <c>null</c>, then it doesn't apply.
+        /// </summary>
+        public byte? MaximumMonsterLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets a specific monster for which this drop group is valid.
+        /// If <c>null</c>, then it doesn't apply and it's valid for all monsters.
+        /// </summary>
+        /// <remarks>This is required for some quest items which should drop only from specific monsters.</remarks>
+        public virtual MonsterDefinition Monster { get; set; }
+
+        /// <summary>
+        /// Gets or sets the item level which will be assigned to the dropped instance of <see cref="PossibleItems"/>.
+        /// </summary>
+        /// <remarks>
+        /// Use cases: Quest items (e.g. Broken Sword+1 = Dark Stone), Event Ticket Items, Summoning Orbs, etc. where one item type is used
+        /// for multiple "visible" items.
+        /// </remarks>
+        public byte? ItemLevel { get; set; }
+
+        /// <summary>
         /// Gets or sets the special type of the item.
         /// </summary>
         public SpecialItemType ItemType { get; set; }

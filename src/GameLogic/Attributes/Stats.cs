@@ -94,6 +94,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition Level { get; } = new AttributeDefinition(new Guid("560931AD-0901-4342-B7F4-FD2E2FCC0563"), "Level", "The level of the character.");
 
         /// <summary>
+        /// Gets the points per level up.
+        /// </summary>
+        public static AttributeDefinition PointsPerLevelUp { get; } = new AttributeDefinition(new Guid("48074BC6-DDC9-4264-8F1E-004D46D5B6EC"), "Points per Level up", "Defines the level up points per achieved level." );
+
+        /// <summary>
         /// Gets the experience rate attribute definition.
         /// </summary>
         public static AttributeDefinition ExperienceRate { get; } = new AttributeDefinition(new Guid("1AD454D4-BEF9-416E-BC49-82A5B0277FC7"), "experienceRate", string.Empty);
@@ -253,6 +258,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// TODO.
         /// </summary>
         public static AttributeDefinition ComboBonus { get; } = new AttributeDefinition(new Guid("53A479FE-8A73-4A45-AACA-5B1AA4362CF9"), "comboBonus", string.Empty);
+
+        /// <summary>
+        /// Gets the attribute if skill combos are available.
+        /// </summary>
+        public static AttributeDefinition IsSkillComboAvailable { get; } = new AttributeDefinition(new Guid("{0B648F95-E9C1-4AFD-90A6-3DD954BF6995}"), nameof(IsSkillComboAvailable), string.Empty);
 
         /// <summary>
         /// Gets the final damage increase PVP attribute definition.

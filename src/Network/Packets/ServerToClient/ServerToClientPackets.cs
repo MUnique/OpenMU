@@ -106,6 +106,172 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Defines the information which identifies a quest..
+    /// </summary>
+    public readonly ref struct QuestIdentification
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestIdentification"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestIdentification(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets or sets the number.
+        /// </summary>
+        public ushort Number
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(0));
+            set => WriteUInt16BigEndian(this.data.Slice(0), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the group.
+        /// </summary>
+        public ushort Group
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(2));
+            set => WriteUInt16BigEndian(this.data.Slice(2), value);
+        }
+    }
+
+
+    /// <summary>
+    /// Defines a condition which must be fulfilled to complete the quest..
+    /// </summary>
+    public readonly ref struct QuestCondition
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCondition"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestCondition(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 24;
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public ConditionType Type
+        {
+            get => (ConditionType)this.data.Slice(0)[0];
+            set => this.data.Slice(0)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.
+        /// </summary>
+        public ushort RequirementId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the required count.
+        /// </summary>
+        public uint RequiredCount
+        {
+            get => ReadUInt32BigEndian(this.data.Slice(6));
+            set => WriteUInt32BigEndian(this.data.Slice(6), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current count.
+        /// </summary>
+        public uint CurrentCount
+        {
+            get => ReadUInt32BigEndian(this.data.Slice(10));
+            set => WriteUInt32BigEndian(this.data.Slice(10), value);
+        }
+
+        /// <summary>
+        /// Gets or sets if the condition type is 'Item', this field contains the item data, excluding the item id. The item id can be found in the RequirementId field.
+        /// </summary>
+        public Span<byte> RequiredItemData
+        {
+            get => this.data.Slice(14, 10);
+        }
+    }
+
+
+    /// <summary>
+    /// Defines a reward which is given when the quest is completed..
+    /// </summary>
+    public readonly ref struct QuestReward
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestReward"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestReward(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 22;
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public RewardType Type
+        {
+            get => (RewardType)this.data.Slice(0)[0];
+            set => this.data.Slice(0)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.
+        /// </summary>
+        public ushort RewardId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the reward count.
+        /// </summary>
+        public uint RewardCount
+        {
+            get => ReadUInt32BigEndian(this.data.Slice(6));
+            set => WriteUInt32BigEndian(this.data.Slice(6), value);
+        }
+
+        /// <summary>
+        /// Gets or sets if the reward type is 'Item', this field contains its item data.
+        /// </summary>
+        public Span<byte> RewardedItemData
+        {
+            get => this.data.Slice(10, 12);
+        }
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: After a game client has connected to the game.
     /// Causes reaction on client side: It shows the login dialog.
     /// </summary>
@@ -11654,6 +11820,616 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: After the player entered the game with his character.
+    /// Causes reaction on client side: The game client updates the quest state for the quest dialog accordingly.
+    /// </summary>
+    public readonly ref partial struct LegacyQuestStateList
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LegacyQuestStateList(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LegacyQuestStateList(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                this.QuestCount = 6;
+                this.ScrollOfEmperorState = LegacyQuestState.Inactive;
+                this.ThreeTreasuresOfMuState = LegacyQuestState.Inactive;
+                this.GainHeroStatusState = LegacyQuestState.Inactive;
+                this.SecretOfDarkStoneState = LegacyQuestState.Inactive;
+                this.CertificateOfStrengthState = LegacyQuestState.Inactive;
+                this.InfiltrationOfBarrackState = LegacyQuestState.Inactive;
+                this.InfiltrationOfRefugeState = LegacyQuestState.Inactive;
+                this.UnusedQuestState = LegacyQuestState.Undefined;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA0;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest count.
+        /// </summary>
+        public byte QuestCount
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the scroll of emperor state.
+        /// </summary>
+        public LegacyQuestState ScrollOfEmperorState
+        {
+            get => (LegacyQuestState)this.data.Slice(4).GetByteValue(2, 0);
+            set => this.data.Slice(4).SetByteValue((byte)value, 2, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the three treasures of mu state.
+        /// </summary>
+        public LegacyQuestState ThreeTreasuresOfMuState
+        {
+            get => (LegacyQuestState)this.data.Slice(4).GetByteValue(2, 2);
+            set => this.data.Slice(4).SetByteValue((byte)value, 2, 2);
+        }
+
+        /// <summary>
+        /// Gets or sets the gain hero status state.
+        /// </summary>
+        public LegacyQuestState GainHeroStatusState
+        {
+            get => (LegacyQuestState)this.data.Slice(4).GetByteValue(2, 4);
+            set => this.data.Slice(4).SetByteValue((byte)value, 2, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the secret of dark stone state.
+        /// </summary>
+        public LegacyQuestState SecretOfDarkStoneState
+        {
+            get => (LegacyQuestState)this.data.Slice(4).GetByteValue(2, 6);
+            set => this.data.Slice(4).SetByteValue((byte)value, 2, 6);
+        }
+
+        /// <summary>
+        /// Gets or sets the certificate of strength state.
+        /// </summary>
+        public LegacyQuestState CertificateOfStrengthState
+        {
+            get => (LegacyQuestState)this.data.Slice(5).GetByteValue(2, 0);
+            set => this.data.Slice(5).SetByteValue((byte)value, 2, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the infiltration of barrack state.
+        /// </summary>
+        public LegacyQuestState InfiltrationOfBarrackState
+        {
+            get => (LegacyQuestState)this.data.Slice(5).GetByteValue(2, 2);
+            set => this.data.Slice(5).SetByteValue((byte)value, 2, 2);
+        }
+
+        /// <summary>
+        /// Gets or sets the infiltration of refuge state.
+        /// </summary>
+        public LegacyQuestState InfiltrationOfRefugeState
+        {
+            get => (LegacyQuestState)this.data.Slice(5).GetByteValue(2, 4);
+            set => this.data.Slice(5).SetByteValue((byte)value, 2, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the unused quest state.
+        /// </summary>
+        public LegacyQuestState UnusedQuestState
+        {
+            get => (LegacyQuestState)this.data.Slice(5).GetByteValue(2, 6);
+            set => this.data.Slice(5).SetByteValue((byte)value, 2, 6);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestStateList"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LegacyQuestStateList(Span<byte> packet) => new LegacyQuestStateList(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LegacyQuestStateList"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LegacyQuestStateList packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: When the player clicks on the quest npc.
+    /// Causes reaction on client side: The game client shows the next steps in the quest dialog.
+    /// </summary>
+    public readonly ref struct LegacyQuestStateDialog
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LegacyQuestStateDialog(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LegacyQuestStateDialog(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA1;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest index.
+        /// </summary>
+        public byte QuestIndex
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets this is the complete byte with the state of four quests within the same byte.
+        /// </summary>
+        public byte State
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestStateDialog"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LegacyQuestStateDialog(Span<byte> packet) => new LegacyQuestStateDialog(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LegacyQuestStateDialog"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LegacyQuestStateDialog packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: As response to the set state request (C1A2).
+    /// Causes reaction on client side: The game client shows the new quest state.
+    /// </summary>
+    public readonly ref struct LegacySetQuestStateResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacySetQuestStateResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LegacySetQuestStateResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacySetQuestStateResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LegacySetQuestStateResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA2;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest index.
+        /// </summary>
+        public byte QuestIndex
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets this value is 0 if successful. Otherwise, 0xFF or even other magic values.
+        /// </summary>
+        public byte Result
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets this is the complete byte with the state of four quests within the same byte.
+        /// </summary>
+        public byte NewState
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacySetQuestStateResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LegacySetQuestStateResponse(Span<byte> packet) => new LegacySetQuestStateResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LegacySetQuestStateResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LegacySetQuestStateResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: As response to the completed quest of a player in scope.
+    /// Causes reaction on client side: The game client shows the reward accordingly.
+    /// </summary>
+    public readonly ref struct LegacyQuestReward
+    {
+        /// <summary>
+        /// Defines the reward type in the quest reward message.
+        /// </summary>
+        public enum QuestRewardType
+        {
+            /// <summary>
+            /// The character receives additional points.
+            /// </summary>
+            LevelUpPoints = 200,
+
+            /// <summary>
+            /// The character class changes from the first to the second class.
+            /// </summary>
+            CharacterEvolutionFirstToSecond = 201,
+
+            /// <summary>
+            /// The character receives additional points per level.
+            /// </summary>
+            LevelUpPointsPerLevelIncrease = 202,
+
+            /// <summary>
+            /// The character receives the ability to perform skill combinations.
+            /// </summary>
+            ComboSkill = 203,
+
+            /// <summary>
+            /// The character class changes from the second to the third class.
+            /// </summary>
+            CharacterEvolutionSecondToThird = 204,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestReward"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LegacyQuestReward(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestReward"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LegacyQuestReward(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA3;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the reward.
+        /// </summary>
+        public LegacyQuestReward.QuestRewardType Reward
+        {
+            get => (QuestRewardType)this.data.Slice(5)[0];
+            set => this.data.Slice(5)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the count.
+        /// </summary>
+        public byte Count
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestReward"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LegacyQuestReward(Span<byte> packet) => new LegacyQuestReward(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LegacyQuestReward"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LegacyQuestReward packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: As response when a player opens the quest npc with a running quest which requires monster kills.
+    /// Causes reaction on client side: The game client shows the current state.
+    /// </summary>
+    public readonly ref struct LegacyQuestMonsterKillInfo
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestMonsterKillInfo"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public LegacyQuestMonsterKillInfo(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestMonsterKillInfo"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private LegacyQuestMonsterKillInfo(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+                this.Result = 1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA4;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x00;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 48;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public byte Result
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the quest index.
+        /// </summary>
+        public byte QuestIndex
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="MonsterKillInfo"/> of the specified index.
+        /// </summary>
+        public MonsterKillInfo this[int index] => new MonsterKillInfo(this.data.Slice(8 + (index * MonsterKillInfo.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestMonsterKillInfo"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator LegacyQuestMonsterKillInfo(Span<byte> packet) => new LegacyQuestMonsterKillInfo(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LegacyQuestMonsterKillInfo"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(LegacyQuestMonsterKillInfo packet) => packet.data; 
+
+
+    /// <summary>
+    /// A pair of Monster number and the current kill count..
+    /// </summary>
+    public readonly ref struct MonsterKillInfo
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MonsterKillInfo"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MonsterKillInfo(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets or sets the monster number.
+        /// </summary>
+        public uint MonsterNumber
+        {
+            get => ReadUInt32LittleEndian(this.data.Slice(0));
+            set => WriteUInt32LittleEndian(this.data.Slice(0), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the kill count.
+        /// </summary>
+        public uint KillCount
+        {
+            get => ReadUInt32LittleEndian(this.data.Slice(4));
+            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
+        }
+    }
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: After entering the game with a character.
     /// Causes reaction on client side: 
     /// </summary>
@@ -12830,6 +13606,919 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(FriendInvitationResult packet) => packet.data; 
     }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the game client requested the list of event quests after entering the game. It seems to be sent only if the character is not a member of a Gen.
+    /// Causes reaction on client side: Unknown.
+    /// </summary>
+    public readonly ref struct QuestEventResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestEventResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestEventResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestEventResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestEventResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x03;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets the <see cref="QuestIdentification"/> of the specified index.
+        /// </summary>
+        public QuestIdentification this[int index] => new QuestIdentification(this.data.Slice(4 + (index * QuestIdentification.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestEventResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestEventResponse(Span<byte> packet) => new QuestEventResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestEventResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestEventResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the game client requested the list of available quests through an NPC dialog.
+    /// Causes reaction on client side: The client shows the available quests for the currently interacting NPC.
+    /// </summary>
+    public readonly ref struct AvailableQuests
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AvailableQuests"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AvailableQuests(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AvailableQuests"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AvailableQuests(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0A;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest npc number.
+        /// </summary>
+        public ushort QuestNpcNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest count.
+        /// </summary>
+        public ushort QuestCount
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(6));
+            set => WriteUInt16BigEndian(this.data.Slice(6), value);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="QuestIdentification"/> of the specified index.
+        /// </summary>
+        public QuestIdentification this[int index] => new QuestIdentification(this.data.Slice(8 + (index * QuestIdentification.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AvailableQuests"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AvailableQuests(Span<byte> packet) => new AvailableQuests(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AvailableQuests"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AvailableQuests packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="QuestIdentification"/>.
+        /// </summary>
+        /// <param name="questsCount">The count of <see cref="QuestIdentification"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int questsCount) => questsCount * QuestIdentification.Length + 8;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the game client requested to initialize a quest and it was successful.
+    /// Causes reaction on client side: The client shows the quest data and state accordingly. I guess this only shows the description of the quest in the dialog.
+    /// </summary>
+    public readonly ref struct QuestStarted
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStarted"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestStarted(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStarted"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestStarted(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0B;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 11;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(6));
+            set => WriteUInt16BigEndian(this.data.Slice(6), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestStarted"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestStarted(Span<byte> packet) => new QuestStarted(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestStarted"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestStarted packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: First, after the game client requested to initialize a quest and the quest is already active. Second, after the game client requested the next quest step.
+    /// Causes reaction on client side: The client shows the quest progress accordingly.
+    /// </summary>
+    public readonly ref struct QuestProgress
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestProgress"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestProgress(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestProgress"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestProgress(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0C;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 241;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(6));
+            set => WriteUInt16BigEndian(this.data.Slice(6), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the condition count.
+        /// </summary>
+        public byte ConditionCount
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the reward count.
+        /// </summary>
+        public byte RewardCount
+        {
+            get => this.data[9];
+            set => this.data[9] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="QuestCondition"/> of the specified index.
+        /// </summary>
+        public QuestCondition GetQuestCondition(int index) => new QuestCondition(this.data.Slice(11 + (index * QuestCondition.Length)));
+
+        /// <summary>
+        /// Gets the <see cref="QuestReward"/> of the specified index.
+        /// </summary>
+        public QuestReward GetQuestReward(int index) => new QuestReward(this.data.Slice(131 + (index * QuestReward.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestProgress"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestProgress(Span<byte> packet) => new QuestProgress(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestProgress"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestProgress packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="QuestCondition"/>.
+        /// </summary>
+        /// <param name="conditionsCount">The count of <see cref="QuestCondition"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int conditionsCount) => conditionsCount * QuestCondition.Length + 11;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The server acknowledges the completion of a quest.
+    /// Causes reaction on client side: The client shows the success and possibly requests for the next available quests.
+    /// </summary>
+    public readonly ref struct QuestCompletionResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCompletionResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestCompletionResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCompletionResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestCompletionResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0D;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 9;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(6));
+            set => WriteUInt16BigEndian(this.data.Slice(6), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the is quest completed.
+        /// </summary>
+        public bool IsQuestCompleted
+        {
+            get => this.data.Slice(8).GetBoolean();
+            set => this.data.Slice(8).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestCompletionResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestCompletionResponse(Span<byte> packet) => new QuestCompletionResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestCompletionResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestCompletionResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The server acknowledges the requested cancellation of a quest.
+    /// Causes reaction on client side: The client resets the state of the quest and can request a new list of available quests again. This list would then probably contain the cancelled quest again.
+    /// </summary>
+    public readonly ref struct QuestCancelled
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCancelled"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestCancelled(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCancelled"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestCancelled(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0F;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the current quest number. In this message, it's always 0, because the group is relevant for the client.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(6));
+            set => WriteUInt16BigEndian(this.data.Slice(6), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestCancelled"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestCancelled(Span<byte> packet) => new QuestCancelled(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestCancelled"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestCancelled packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the game client requested the list of all quests which are currently in progress or accepted.
+    /// Causes reaction on client side: Unknown.
+    /// </summary>
+    public readonly ref struct QuestStateList
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStateList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestStateList(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStateList"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestStateList(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x1A;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest count.
+        /// </summary>
+        public byte QuestCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="QuestIdentification"/> of the specified index.
+        /// </summary>
+        public QuestIdentification this[int index] => new QuestIdentification(this.data.Slice(5 + (index * QuestIdentification.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestStateList"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestStateList(Span<byte> packet) => new QuestStateList(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestStateList"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestStateList packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="QuestIdentification"/>.
+        /// </summary>
+        /// <param name="questsCount">The count of <see cref="QuestIdentification"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int questsCount) => questsCount * QuestIdentification.Length + 5;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the game client requested it.
+    /// Causes reaction on client side: The client shows the quest progress accordingly.
+    /// </summary>
+    public readonly ref struct QuestState
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public QuestState(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private QuestState(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF6;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x1B;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 241;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the quest number.
+        /// </summary>
+        public ushort QuestNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the quest group.
+        /// </summary>
+        public ushort QuestGroup
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(6));
+            set => WriteUInt16BigEndian(this.data.Slice(6), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the condition count.
+        /// </summary>
+        public byte ConditionCount
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the reward count.
+        /// </summary>
+        public byte RewardCount
+        {
+            get => this.data[9];
+            set => this.data[9] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="QuestCondition"/> of the specified index.
+        /// </summary>
+        public QuestCondition GetQuestCondition(int index) => new QuestCondition(this.data.Slice(11 + (index * QuestCondition.Length)));
+
+        /// <summary>
+        /// Gets the <see cref="QuestReward"/> of the specified index.
+        /// </summary>
+        public QuestReward GetQuestReward(int index) => new QuestReward(this.data.Slice(131 + (index * QuestReward.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestState"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator QuestState(Span<byte> packet) => new QuestState(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="QuestState"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(QuestState packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="QuestCondition"/>.
+        /// </summary>
+        /// <param name="conditionsCount">The count of <see cref="QuestCondition"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int conditionsCount) => conditionsCount * QuestCondition.Length + 11;
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The server acknowledges the requested opening of an npc dialog.
+    /// Causes reaction on client side: The client opens the dialog of the specified npc.
+    /// </summary>
+    public readonly ref struct OpenNpcDialog
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenNpcDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public OpenNpcDialog(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenNpcDialog"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private OpenNpcDialog(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF9;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the npc number.
+        /// </summary>
+        public ushort NpcNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="OpenNpcDialog"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator OpenNpcDialog(Span<byte> packet) => new OpenNpcDialog(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="OpenNpcDialog"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(OpenNpcDialog packet) => packet.data; 
+    }
         /// <summary>
         /// Defines the role of a guild member.
         /// </summary>
@@ -12875,6 +14564,78 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             /// The character is a game master.
             /// </summary>
             GameMaster = 32,
+        }
+
+        /// <summary>
+        /// Defines the type of the condition.
+        /// </summary>
+        public enum ConditionType
+        {
+            /// <summary>
+            /// No condition is defined.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// The condition is to kill a specified amount of specified monsters.
+            /// </summary>
+            MonsterKills = 1,
+
+            /// <summary>
+            /// The condition is to learn a specified skill.
+            /// </summary>
+            Skill = 2,
+
+            /// <summary>
+            /// The condition is to find a specified item and to have it in the inventory.
+            /// </summary>
+            Item = 4,
+
+            /// <summary>
+            /// The condition is to reach the specified character level.
+            /// </summary>
+            Level = 8,
+
+            /// <summary>
+            /// The condition is a client action. For example, this may be the completion of a tutorial.
+            /// </summary>
+            ClientAction = 16,
+
+            /// <summary>
+            /// The condition is to request a buff from an NPC.
+            /// </summary>
+            RequestBuff = 32,
+        }
+
+        /// <summary>
+        /// Defines the reward which is given when the quest is completed.
+        /// </summary>
+        public enum RewardType
+        {
+            /// <summary>
+            /// No reward is defined.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// The reward is added experience to the character.
+            /// </summary>
+            Experience = 1,
+
+            /// <summary>
+            /// The reward is added money to the inventory.
+            /// </summary>
+            Money = 2,
+
+            /// <summary>
+            /// The reward is an item which is added to the inventory.
+            /// </summary>
+            Item = 4,
+
+            /// <summary>
+            /// The reward is added gens contribution points.
+            /// </summary>
+            GensContribution = 16,
         }
 
 }

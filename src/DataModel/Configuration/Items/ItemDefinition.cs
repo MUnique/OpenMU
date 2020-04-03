@@ -44,6 +44,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         public bool IsAmmunition { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether items of this kind are bound to character.
+        /// That means, it can't be traded, moved to the vault/personal shop or picked up from the ground by other players.
+        /// </summary>
+        public bool IsBoundToCharacter { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the item.
         /// </summary>
         public string Name { get; set; }

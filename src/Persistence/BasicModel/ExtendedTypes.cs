@@ -322,6 +322,32 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
+        /// Gets the raw collection of <see cref="QuestStates" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("questStates")]
+        [System.Text.Json.Serialization.JsonPropertyName("questStates")]
+        public ICollection<CharacterQuestState> RawQuestStates { get; } = new List<CharacterQuestState>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates
+        {
+            get
+            {
+                return base.QuestStates ?? (base.QuestStates = new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, CharacterQuestState>(this.RawQuestStates)); 
+            }
+            protected set
+            {
+                this.QuestStates.Clear();
+                foreach (var item in value)
+                {
+                    this.QuestStates.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the raw object of <see cref="CharacterClass" />.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("characterClass")]
@@ -422,6 +448,118 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 
         /// <inheritdoc/>
         public Character Convert() => this;
+    }
+
+    /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Entities.CharacterQuestState"/>.
+    /// </summary>
+    public partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.CharacterQuestState, IIdentifiable, IConvertibleTo<CharacterQuestState>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="RequirementStates" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("requirementStates")]
+        [System.Text.Json.Serialization.JsonPropertyName("requirementStates")]
+        public ICollection<QuestMonsterKillRequirementState> RawRequirementStates { get; } = new List<QuestMonsterKillRequirementState>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState> RequirementStates
+        {
+            get
+            {
+                return base.RequirementStates ?? (base.RequirementStates = new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, QuestMonsterKillRequirementState>(this.RawRequirementStates)); 
+            }
+            protected set
+            {
+                this.RequirementStates.Clear();
+                foreach (var item in value)
+                {
+                    this.RequirementStates.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="LastFinishedQuest" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("lastFinishedQuest")]
+        [System.Text.Json.Serialization.JsonPropertyName("lastFinishedQuest")]
+        public QuestDefinition RawLastFinishedQuest
+        { 
+            get { return base.LastFinishedQuest as QuestDefinition; }
+            set { base.LastFinishedQuest = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition LastFinishedQuest
+        {
+            get
+            {
+                return base.LastFinishedQuest;
+            }
+            
+            set
+            {
+                base.LastFinishedQuest = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="ActiveQuest" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("activeQuest")]
+        [System.Text.Json.Serialization.JsonPropertyName("activeQuest")]
+        public QuestDefinition RawActiveQuest
+        { 
+            get { return base.ActiveQuest as QuestDefinition; }
+            set { base.ActiveQuest = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition ActiveQuest
+        {
+            get
+            {
+                return base.ActiveQuest;
+            }
+            
+            set
+            {
+                base.ActiveQuest = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public CharacterQuestState Convert() => this;
     }
 
     /// <summary>
@@ -963,6 +1101,65 @@ namespace MUnique.OpenMU.Persistence.BasicModel
     }
 
     /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState"/>.
+    /// </summary>
+    public partial class QuestMonsterKillRequirementState : MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, IIdentifiable, IConvertibleTo<QuestMonsterKillRequirementState>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="Requirement" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("requirement")]
+        [System.Text.Json.Serialization.JsonPropertyName("requirement")]
+        public QuestMonsterKillRequirement RawRequirement
+        { 
+            get { return base.Requirement as QuestMonsterKillRequirement; }
+            set { base.Requirement = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement Requirement
+        {
+            get
+            {
+                return base.Requirement;
+            }
+            
+            set
+            {
+                base.Requirement = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public QuestMonsterKillRequirementState Convert() => this;
+    }
+
+    /// <summary>
     /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Entities.SkillEntry"/>.
     /// </summary>
     public partial class SkillEntry : MUnique.OpenMU.DataModel.Entities.SkillEntry, IIdentifiable, IConvertibleTo<SkillEntry>
@@ -1394,6 +1591,33 @@ namespace MUnique.OpenMU.Persistence.BasicModel
                 {
                     this.PossibleItems.Add(item);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="Monster" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("monster")]
+        [System.Text.Json.Serialization.JsonPropertyName("monster")]
+        public MonsterDefinition RawMonster
+        { 
+            get { return base.Monster as MonsterDefinition; }
+            set { base.Monster = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
+        {
+            get
+            {
+                return base.Monster;
+            }
+            
+            set
+            {
+                base.Monster = value;
             }
         }
         
@@ -2958,6 +3182,32 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
+        /// Gets the raw collection of <see cref="Quests" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("quests")]
+        [System.Text.Json.Serialization.JsonPropertyName("quests")]
+        public ICollection<QuestDefinition> RawQuests { get; } = new List<QuestDefinition>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests
+        {
+            get
+            {
+                return base.Quests ?? (base.Quests = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, QuestDefinition>(this.RawQuests)); 
+            }
+            protected set
+            {
+                this.Quests.Clear();
+                foreach (var item in value)
+                {
+                    this.Quests.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the raw object of <see cref="AttackSkill" />.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("attackSkill")]
@@ -3436,6 +3686,401 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 
         /// <inheritdoc/>
         public WarpInfo Convert() => this;
+    }
+
+    /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition"/>.
+    /// </summary>
+    public partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, IIdentifiable, IConvertibleTo<QuestDefinition>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="RequiredMonsterKills" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("requiredMonsterKills")]
+        [System.Text.Json.Serialization.JsonPropertyName("requiredMonsterKills")]
+        public ICollection<QuestMonsterKillRequirement> RawRequiredMonsterKills { get; } = new List<QuestMonsterKillRequirement>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement> RequiredMonsterKills
+        {
+            get
+            {
+                return base.RequiredMonsterKills ?? (base.RequiredMonsterKills = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement, QuestMonsterKillRequirement>(this.RawRequiredMonsterKills)); 
+            }
+            protected set
+            {
+                this.RequiredMonsterKills.Clear();
+                foreach (var item in value)
+                {
+                    this.RequiredMonsterKills.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="RequiredItems" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("requiredItems")]
+        [System.Text.Json.Serialization.JsonPropertyName("requiredItems")]
+        public ICollection<QuestItemRequirement> RawRequiredItems { get; } = new List<QuestItemRequirement>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement> RequiredItems
+        {
+            get
+            {
+                return base.RequiredItems ?? (base.RequiredItems = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement, QuestItemRequirement>(this.RawRequiredItems)); 
+            }
+            protected set
+            {
+                this.RequiredItems.Clear();
+                foreach (var item in value)
+                {
+                    this.RequiredItems.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="Rewards" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("rewards")]
+        [System.Text.Json.Serialization.JsonPropertyName("rewards")]
+        public ICollection<QuestReward> RawRewards { get; } = new List<QuestReward>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward> Rewards
+        {
+            get
+            {
+                return base.Rewards ?? (base.Rewards = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward, QuestReward>(this.RawRewards)); 
+            }
+            protected set
+            {
+                this.Rewards.Clear();
+                foreach (var item in value)
+                {
+                    this.Rewards.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="QuestGiver" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("questGiver")]
+        [System.Text.Json.Serialization.JsonPropertyName("questGiver")]
+        public MonsterDefinition RawQuestGiver
+        { 
+            get { return base.QuestGiver as MonsterDefinition; }
+            set { base.QuestGiver = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition QuestGiver
+        {
+            get
+            {
+                return base.QuestGiver;
+            }
+            
+            set
+            {
+                base.QuestGiver = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="QualifiedCharacter" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("qualifiedCharacter")]
+        [System.Text.Json.Serialization.JsonPropertyName("qualifiedCharacter")]
+        public CharacterClass RawQualifiedCharacter
+        { 
+            get { return base.QualifiedCharacter as CharacterClass; }
+            set { base.QualifiedCharacter = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass QualifiedCharacter
+        {
+            get
+            {
+                return base.QualifiedCharacter;
+            }
+            
+            set
+            {
+                base.QualifiedCharacter = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public QuestDefinition Convert() => this;
+    }
+
+    /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement"/>.
+    /// </summary>
+    public partial class QuestItemRequirement : MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement, IIdentifiable, IConvertibleTo<QuestItemRequirement>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="Item" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("item")]
+        [System.Text.Json.Serialization.JsonPropertyName("item")]
+        public ItemDefinition RawItem
+        { 
+            get { return base.Item as ItemDefinition; }
+            set { base.Item = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Item
+        {
+            get
+            {
+                return base.Item;
+            }
+            
+            set
+            {
+                base.Item = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="DropItemGroup" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("dropItemGroup")]
+        [System.Text.Json.Serialization.JsonPropertyName("dropItemGroup")]
+        public DropItemGroup RawDropItemGroup
+        { 
+            get { return base.DropItemGroup as DropItemGroup; }
+            set { base.DropItemGroup = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup DropItemGroup
+        {
+            get
+            {
+                return base.DropItemGroup;
+            }
+            
+            set
+            {
+                base.DropItemGroup = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public QuestItemRequirement Convert() => this;
+    }
+
+    /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement"/>.
+    /// </summary>
+    public partial class QuestMonsterKillRequirement : MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement, IIdentifiable, IConvertibleTo<QuestMonsterKillRequirement>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="Monster" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("monster")]
+        [System.Text.Json.Serialization.JsonPropertyName("monster")]
+        public MonsterDefinition RawMonster
+        { 
+            get { return base.Monster as MonsterDefinition; }
+            set { base.Monster = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
+        {
+            get
+            {
+                return base.Monster;
+            }
+            
+            set
+            {
+                base.Monster = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public QuestMonsterKillRequirement Convert() => this;
+    }
+
+    /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward"/>.
+    /// </summary>
+    public partial class QuestReward : MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward, IIdentifiable, IConvertibleTo<QuestReward>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="ItemReward" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("itemReward")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemReward")]
+        public Item RawItemReward
+        { 
+            get { return base.ItemReward as Item; }
+            set { base.ItemReward = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Entities.Item ItemReward
+        {
+            get
+            {
+                return base.ItemReward;
+            }
+            
+            set
+            {
+                base.ItemReward = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="AttributeReward" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("attributeReward")]
+        [System.Text.Json.Serialization.JsonPropertyName("attributeReward")]
+        public AttributeDefinition RawAttributeReward
+        { 
+            get { return base.AttributeReward as AttributeDefinition; }
+            set { base.AttributeReward = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition AttributeReward
+        {
+            get
+            {
+                return base.AttributeReward;
+            }
+            
+            set
+            {
+                base.AttributeReward = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public QuestReward Convert() => this;
     }
 
     /// <summary>

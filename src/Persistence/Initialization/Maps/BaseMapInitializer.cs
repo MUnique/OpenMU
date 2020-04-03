@@ -108,9 +108,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// </summary>
         protected virtual void InitializeDropItemGroups()
         {
-            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.Money));
-            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.RandomItem));
-            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.FirstOrDefault(g => g.ItemType == SpecialItemType.Excellent));
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.First(g => g.ItemType == SpecialItemType.Money));
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.First(g => g.ItemType == SpecialItemType.RandomItem));
+            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.First(g => g.ItemType == SpecialItemType.Excellent));
         }
 
         /// <summary>

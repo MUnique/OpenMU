@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Pathfinding;
@@ -21,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="target">The target coordinates.</param>
         public void DropItem(Player player, byte slot, Point target)
         {
-            Item item = player.Inventory.GetItem(slot);
+            var item = player.Inventory.GetItem(slot);
 
             if (player.CurrentMap.Terrain.WalkMap[target.X, target.Y] && item != null)
             {
@@ -35,7 +36,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private void DropItem(Player player, Item item, Point target)
         {
-            var droppedItem = new DroppedItem(item, target, player.CurrentMap, player);
+            var owners = item.Definition.IsBoundToCharacter
+                ? player.GetAsEnumerable()
+                : player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
+            var droppedItem = new DroppedItem(item, target, player.CurrentMap, player, owners);
             player.CurrentMap.Add(droppedItem);
             player.Inventory.RemoveItem(item);
             player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(item.ItemSlot, true);

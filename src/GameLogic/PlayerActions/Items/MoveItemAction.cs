@@ -141,41 +141,25 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             switch (storageType)
             {
                 case Storages.Inventory:
-                    result = new StorageInfo
-                    {
-                        Rows = InventoryRows,
-                        StartIndex = EquippableSlotsCount,
-                        EndIndex = (byte)(EquippableSlotsCount + GetInventorySize(player)),
-                        Storage = player.Inventory,
-                    };
+                    result = new StorageInfo(
+                        player.Inventory,
+                        InventoryRows,
+                        EquippableSlotsCount,
+                        (byte)(EquippableSlotsCount + GetInventorySize(player)));
                     break;
                 case Storages.PersonalStore:
-                    result = new StorageInfo
-                    {
-                        Rows = StoreRows,
-                        StartIndex = FirstStoreItemSlotIndex,
-                        EndIndex = (byte)(FirstStoreItemSlotIndex + StoreSize),
-                        Storage = player.ShopStorage,
-                    };
+                    result = new StorageInfo(
+                        player.ShopStorage,
+                        StoreRows,
+                        FirstStoreItemSlotIndex,
+                        (byte)(FirstStoreItemSlotIndex + StoreSize));
                     break;
                 case Storages.Vault:
-                    result = new StorageInfo
-                    {
-                        Rows = WarehouseRows,
-                        EndIndex = WarehouseSize,
-                        Storage = player.Vault,
-                        StartIndex = 0,
-                    };
+                    result = new StorageInfo(player.Vault, WarehouseRows, 0, WarehouseSize);
                     break;
                 case Storages.Trade:
                 case Storages.ChaosMachine:
-                    result = new StorageInfo
-                    {
-                        Storage = player.TemporaryStorage,
-                        Rows = TemporaryStorageRows,
-                        EndIndex = TemporaryStorageSize,
-                        StartIndex = 0,
-                    };
+                    result = new StorageInfo(player.TemporaryStorage, TemporaryStorageRows, 0, TemporaryStorageSize);
                     break;
                 default:
                     throw new NotImplementedException($"Moving to {storageType} is not implemented.");
@@ -211,6 +195,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 }
 
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You can't wear this Item.", MessageType.BlueNormal);
+                return Movement.None;
+            }
+
+            if (item.Definition.IsBoundToCharacter && toStorage != fromStorage)
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("This item is bound to the inventory of this character.", MessageType.BlueNormal);
                 return Movement.None;
             }
 
@@ -311,15 +301,63 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
         }
 
-        private class StorageInfo
+        private class StorageInfo : IEquatable<StorageInfo>
         {
-            public IStorage Storage { get; set; }
+            public IStorage Storage { get; }
 
-            public byte Rows { get; set; }
+            public byte Rows { get; }
 
-            public byte StartIndex { get; set; }
+            public byte StartIndex { get; }
 
-            public byte EndIndex { get; set; }
+            public byte EndIndex { get; }
+
+            public StorageInfo(IStorage storage, byte rows, byte startIndex, byte endIndex)
+            {
+                this.Storage = storage;
+                this.Rows = rows;
+                this.StartIndex = startIndex;
+                this.EndIndex = endIndex;
+            }
+
+            public static bool operator ==(StorageInfo left, StorageInfo right)
+            {
+                return Equals(left, right);
+            }
+
+            public static bool operator !=(StorageInfo left, StorageInfo right)
+            {
+                return !Equals(left, right);
+            }
+
+            /// <inheritdoc />
+            public override bool Equals(object obj)
+            {
+                return obj is StorageInfo typedObj
+                       && typedObj.Equals(this);
+            }
+
+            public bool Equals(StorageInfo other)
+            {
+                if (ReferenceEquals(null, other))
+                {
+                    return false;
+                }
+
+                if (ReferenceEquals(this, other))
+                {
+                    return true;
+                }
+
+                return this.Storage.Equals(other.Storage)
+                       && this.Rows == other.Rows
+                       && this.StartIndex == other.StartIndex
+                       && this.EndIndex == other.EndIndex;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(this.Storage, this.Rows, this.StartIndex, this.EndIndex);
+            }
         }
     }
 }

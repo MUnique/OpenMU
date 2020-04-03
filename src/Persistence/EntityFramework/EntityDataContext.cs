@@ -97,6 +97,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawRoot);
             modelBuilder.Entity<LetterBody>().HasOne(body => body.RawHeader);
             modelBuilder.Entity<LetterHeader>().Ignore(header => header.ReceiverName);
+            modelBuilder.Entity<MonsterDefinition>().HasMany<QuestDefinition>().WithOne(q => q.RawQuestGiver);
 
             // TODO:
             modelBuilder.Entity<GameConfiguration>().Ignore(c => c.ExperienceTable)

@@ -16,17 +16,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
     {
         private CharacterClass CreateBladeMaster()
         {
-            var result = this.CreateDarkKnight(CharacterClassNumber.BladeMaster, "Blade Master", 6, true, null, false);
+            var result = this.CreateDarkKnight(CharacterClassNumber.BladeMaster, "Blade Master", true, null, false);
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
             return result;
         }
 
         private CharacterClass CreateBladeKnight(CharacterClass bladeMaster)
         {
-            return this.CreateDarkKnight(CharacterClassNumber.BladeKnight, "Blade Knight", 6, false, bladeMaster, false);
+            return this.CreateDarkKnight(CharacterClassNumber.BladeKnight, "Blade Knight", false, bladeMaster, false);
         }
 
-        private CharacterClass CreateDarkKnight(CharacterClassNumber number, string name, short pointsPerLevelUp, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
+        private CharacterClass CreateDarkKnight(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
             var result = this.Context.CreateNew<CharacterClass>();
             this.GameConfiguration.CharacterClasses.Add(result);
@@ -34,10 +34,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
             result.Number = (byte)number;
             result.Name = name;
-            result.PointsPerLevelUp = pointsPerLevelUp;
             result.IsMasterClass = isMaster;
             result.NextGenerationClass = nextGenerationClass;
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
+            result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 5, false));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 28, true));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseAgility, 20, true));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseVitality, 25, true));

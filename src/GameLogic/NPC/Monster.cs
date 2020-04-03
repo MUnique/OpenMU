@@ -293,7 +293,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
                     dropCoordinates = this.CurrentMap.Terrain.GetRandomDropCoordinate(this.Position, 4);
                 }
 
-                var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null);
+                var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
+                var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, killer, owners);
                 this.CurrentMap.Add(droppedItem);
             }
         }
