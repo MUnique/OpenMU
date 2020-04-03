@@ -91,6 +91,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                     i++;
                 }
             }
+            else
+            {
+                // no requirement states available
+            }
 
             int r = 0;
             foreach (var reward in activeQuest.Rewards)
