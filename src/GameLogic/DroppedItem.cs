@@ -50,8 +50,20 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="position">The position where the item was dropped on the map.</param>
         /// <param name="map">The map.</param>
         /// <param name="dropper">The dropper.</param>
+        public DroppedItem(Item item, Point position, GameMap map, Player dropper)
+            : this(item, position, map, dropper, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DroppedItem" /> class.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="position">The position where the item was dropped on the map.</param>
+        /// <param name="map">The map.</param>
+        /// <param name="dropper">The dropper.</param>
         /// <param name="owners">The owners.</param>
-        public DroppedItem(Item item, Point position, GameMap map, Player dropper, IEnumerable<object> owners = null)
+        public DroppedItem(Item item, Point position, GameMap map, Player dropper, IEnumerable<object> owners)
         {
             this.Item = item;
             this.pickupLock = new object();
