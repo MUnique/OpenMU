@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 {
+    using System;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
@@ -104,15 +105,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             }
         }
 
-        private static void AssignTo(this QuestItemRequirement itemRequirement, QuestCondition condition, Player player)
+        private static void AssignTo(this QuestItemRequirement itemRequirement, QuestCondition condition, RemotePlayer player)
         {
             condition.Type = ConditionType.Item;
             condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
             condition.CurrentCount = (uint)player.Inventory.Items.Count(item => item.Definition == itemRequirement.Item);
             condition.RequirementId = itemRequirement.Item.GetItemType();
 
-            // itemSerializer.SerializeItem(questCondition.RequiredItemData, requiredItem.Item);
-            // The requirement does not contain an item, but only the ItemDefinition
+            // The requirement does not contain an item, but only the ItemDefinition.
+            // We could create and serialize a temporary item and copy just a part of the result.
+            // However, we can also keep it simple and just set the last 5 socket bytes to 0xFF (No Socket).
+            condition.RequiredItemData.Slice(condition.RequiredItemData.Length - 5).Fill(0xFF);
         }
 
         private static void AssignTo(this QuestMonsterKillRequirement killRequirement, QuestCondition condition, CharacterQuestState questState)
