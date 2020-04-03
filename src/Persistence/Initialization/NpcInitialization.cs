@@ -53,6 +53,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 229;
                 def.Designation = "Marlon";
+                def.NpcWindow = NpcWindow.LegacyQuest;
                 this.gameConfiguration.Monsters.Add(def);
             }
 
@@ -542,6 +543,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 406;
                 def.Designation = "Priest Devin";
+                def.NpcWindow = NpcWindow.LegacyQuest;
                 this.gameConfiguration.Monsters.Add(def);
             }
 
