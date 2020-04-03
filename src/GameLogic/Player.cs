@@ -772,6 +772,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.Attributes[requirement.Attribute] -= requirement.MinimumValue;
             }
 
+            this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
             return true;
         }
 
