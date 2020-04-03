@@ -69,6 +69,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateTestAccount("test300", 300);
                 this.CreateTestAccount("test400", 400);
                 this.CreateTestAccount("quest1", 150);
+                this.CreateTestAccount("quest2", 220);
+                this.CreateTestAccount("quest3", 400);
                 var testGmAccount = this.CreateTestAccount("testgm", 400);
                 testGmAccount.State = AccountState.GameMaster;
                 testGmAccount.Characters.ForEach(c => c.CharacterStatus = CharacterStatus.GameMaster);
@@ -196,6 +198,47 @@ namespace MUnique.OpenMU.Persistence.Initialization
             Character character;
             switch (level)
             {
+                case 150:
+                case 220:
+                case 400 when name == "quest3Elf":
+                    character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 200;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 500;
+                    character.LevelUpPoints -= 700; // for the added strength and agility
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+                    var bow = this.CreateShortBow(1);
+                    bow.Level = 13;
+                    bow.HasSkill = true;
+                    character.Inventory.Items.Add(bow);
+                    character.Inventory.Items.Add(this.CreateArrows(0));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 12, 8, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 12, 7, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 12, 9, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 12, 10, null, 15, 4, true));
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 12, 11, null, 15, 4, true));
+
+                    character.Inventory.Items.Add(this.CreateJewel(47, Items.Quest.ScrollOfEmperorNumber));
+                    character.Inventory.Items.Add(this.CreateJewel(48, Items.Quest.TearOfElfNumber));
+                    if (level >= 220)
+                    {
+                        var ringOfHonor = this.CreateJewel(49, Items.Quest.ScrollOfEmperorNumber);
+                        ringOfHonor.Level = 1;
+                        character.Inventory.Items.Add(ringOfHonor);
+                    }
+
+                    if (level == 400)
+                    {
+                        character.Inventory.Items.Add(this.CreateJewel(52, Items.Quest.FeatherOfDarkPhoenixNumber));
+                        character.Inventory.Items.Add(this.CreateJewel(53, Items.Quest.FlameOfDeathBeamKnightNumber));
+                        character.Inventory.Items.Add(this.CreateJewel(55, Items.Quest.HornOfHellMaineNumber));
+                    }
+
+                    character.CurrentMap = this.gameConfiguration.Maps.First(map => map.Number == Devias.Number);
+                    character.PositionX = 184;
+                    character.PositionY = 31;
+                    character.Inventory.Money = 90000000;
+                    break;
                 case 300:
                     character = this.CreateCharacter(name, CharacterClassNumber.MuseElf, level, 2);
 
@@ -222,6 +265,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
                     character.MasterLevelUpPoints = 100; // To test master skill tree
 
+                    character.Inventory.Items.Add(this.CreateShortBow(1));
+                    character.Inventory.Items.Add(this.CreateArrows(0));
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 31, 8, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 31, 7, null, 15, 4, true));
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 31, 9, null, 15, 4, true));
@@ -255,6 +300,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             switch (level)
             {
                 case 150:
+                case 220:
+                case 400 when name == "quest3Dk":
                     character = this.CreateCharacter(name, CharacterClassNumber.DarkKnight, level, 0);
                     character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
                     character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 200;
@@ -269,10 +316,28 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 5, 10, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Gloves
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 5, 11, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Boots
                     character.Inventory.Items.Add(this.CreateJewel(47, Items.Quest.ScrollOfEmperorNumber));
+                    character.Inventory.Items.Add(this.CreateJewel(48, Items.Quest.BrokenSwordNumber));
+                    if (level >= 220)
+                    {
+                        var ringOfHonor = this.CreateJewel(49, Items.Quest.ScrollOfEmperorNumber);
+                        ringOfHonor.Level = 1;
+                        character.Inventory.Items.Add(ringOfHonor);
+                        var darkStone = this.CreateJewel(50, Items.Quest.BrokenSwordNumber);
+                        darkStone.Level = 1;
+                        character.Inventory.Items.Add(darkStone);
+                    }
+
+                    if (level == 400)
+                    {
+                        character.Inventory.Items.Add(this.CreateJewel(52, Items.Quest.FeatherOfDarkPhoenixNumber));
+                        character.Inventory.Items.Add(this.CreateJewel(53, Items.Quest.FlameOfDeathBeamKnightNumber));
+                        character.Inventory.Items.Add(this.CreateJewel(55, Items.Quest.HornOfHellMaineNumber));
+                    }
+
                     character.CurrentMap = this.gameConfiguration.Maps.First(map => map.Number == Devias.Number);
                     character.PositionX = 184;
                     character.PositionY = 31;
-                    character.Inventory.Money = 10000000;
+                    character.Inventory.Money = 90000000;
                     break;
 
                 case 300:
@@ -342,6 +407,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             switch (level)
             {
                 case 150:
+                case 220:
+                case 400 when name == "quest3Dl":
                     character = this.CreateCharacter(name, CharacterClassNumber.DarkLord, level, 3);
                     character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
                     character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 200;
@@ -354,6 +421,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 5, 9, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Pants
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 5, 10, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Gloves
                     character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 5, 11, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Boots
+
+                    if (level == 400)
+                    {
+                        character.Inventory.Items.Add(this.CreateJewel(52, Items.Quest.FeatherOfDarkPhoenixNumber));
+                        character.Inventory.Items.Add(this.CreateJewel(53, Items.Quest.FlameOfDeathBeamKnightNumber));
+                        character.Inventory.Items.Add(this.CreateJewel(55, Items.Quest.HornOfHellMaineNumber));
+                    }
                     character.CurrentMap = this.gameConfiguration.Maps.First(map => map.Number == Devias.Number);
                     character.PositionX = 184;
                     character.PositionY = 31;
