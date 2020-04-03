@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
     /// </summary>
     public class QuestCompletionAction
     {
-        private static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Tries to completes the quest of the given group and number for the specified player.

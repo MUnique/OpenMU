@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 {
     using System.Linq;
+    using System.Reflection;
+    using log4net;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -16,6 +18,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
     /// </summary>
     public class QuestStartAction
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Tries to start the quest of the given group and number for the specified player.
         /// </summary>
@@ -27,13 +31,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             var quest = player.GetQuest(group, number);
             if (quest == null)
             {
-                // todo log
+                Log.Debug("Failed, quest not found");
                 return;
             }
 
             if (quest.MinimumCharacterLevel > player.Level || (quest.MaximumCharacterLevel > 0 && quest.MaximumCharacterLevel < player.Level))
             {
-                // todo log
+                Log.DebugFormat("Failed, character level {0} not in allowed range {1} to {2}.", player.Level, quest.MinimumCharacterLevel, quest.MaximumCharacterLevel);
                 return;
             }
 
@@ -47,13 +51,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 
             if (questState.ActiveQuest != null)
             {
-                // todo log
+                Log.Debug("There is already an active quest of this group.");
                 return;
             }
 
             if (questState.LastFinishedQuest == quest && !quest.Repeatable)
             {
-                // todo log
+                Log.Debug("The quest is not repeatable.");
                 return;
             }
 
