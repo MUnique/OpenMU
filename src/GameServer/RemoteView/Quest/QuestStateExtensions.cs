@@ -45,19 +45,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             }
 
             var quest = legacyQuestState.ActiveQuest ?? player.GetNextLegacyQuest() ?? legacyQuestState.LastFinishedQuest;
-            var startIndex = quest.Number / 4; // 4 quests per byte
-
+            var startOffset = (quest.Number / 4) * 4; // 4 quests per byte
             var result = 0;
-            for (int i = startIndex; i < startIndex + 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 var shift = i * 2;
-                if (legacyQuestState.LastFinishedQuest.Number >= i)
+                if (legacyQuestState.LastFinishedQuest.Number >= i + startOffset)
                 {
                     // This case is a bit simplified. There may be previous quests which are not meant for the character class.
                     // For the sake of simplicity, we leave it like that, for now.
                     result |= (byte)LegacyQuestState.Complete << shift;
                 }
-                else if (legacyQuestState.ActiveQuest == quest && quest.Number == i)
+                else if (legacyQuestState.ActiveQuest == quest && quest.Number == i + startOffset)
                 {
                     result |= (byte)LegacyQuestState.Active << shift;
                 }
@@ -82,7 +81,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             var legacyQuestState = player.GetQuestState(QuestConstants.LegacyQuestGroup);
             return player.GetAvailableQuestsOfOpenedNpc()?
                 .OrderBy(quest => quest.Number)
-                .FirstOrDefault(quest => quest.Number > legacyQuestState?.LastFinishedQuest?.Number);
+                .FirstOrDefault(quest => quest.Number > (legacyQuestState?.LastFinishedQuest?.Number ?? 0));
         }
     }
 }
