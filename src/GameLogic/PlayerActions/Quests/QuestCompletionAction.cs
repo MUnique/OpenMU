@@ -151,6 +151,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                 case QuestRewardType.GensAttribution:
                     // not yet implemented.
                     break;
+                default:
+                    Log.WarnFormat("Unknown reward type: {0}", reward.RewardType);
+                    break;
             }
         }
     }
