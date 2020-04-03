@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 {
     using System.Linq;
+    using System.Reflection;
+    using log4net;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.DataModel.Entities;
@@ -17,6 +19,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
     /// </summary>
     public class QuestCompletionAction
     {
+        private static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Tries to completes the quest of the given group and number for the specified player.
         /// </summary>
@@ -29,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             var activeQuest = questState?.ActiveQuest;
             if (activeQuest == null)
             {
-                // todo log
+                Log.Debug("Failed, no active quest");
                 return;
             }
 
@@ -37,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             {
                 if (requiredItem.MinimumNumber > player.Inventory.Items.Count(i => i.Definition == requiredItem.Item))
                 {
-                    // todo log
+                    Log.DebugFormat("Failed, required item not found: {0}", requiredItem.Item.Name);
                     return;
                 }
             }
@@ -47,14 +51,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                 var currentKillCount = questState.RequirementStates.FirstOrDefault(r => r.Requirement == requiredKills)?.KillCount ?? 0;
                 if (currentKillCount < requiredKills.MinimumNumber)
                 {
-                    // todo log
+                    Log.DebugFormat("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster.Designation, currentKillCount, requiredKills.MinimumNumber);
                     return;
                 }
             }
 
             if (activeQuest.RequiresClientAction && !questState.ClientActionPerformed)
             {
-                // todo log
+                Log.Debug("Failed, client action not performed.");
                 return;
             }
 
