@@ -72,7 +72,8 @@ namespace MUnique.OpenMU.GameLogic
                         map.DropItemGroups,
                         character.QuestStates.SelectMany(q => q.ActiveQuest?.RequiredItems
                             .Where(i => i.DropItemGroup is { })
-                            .Select(i => i.DropItemGroup)))
+                            .Select(i => i.DropItemGroup)
+                            ?? Enumerable.Empty<DropItemGroup>()))
                     .Where(group => IsGroupRelevant(monster, group))
                     .OrderBy(group => group.Chance);
 
@@ -251,6 +252,11 @@ namespace MUnique.OpenMU.GameLogic
 
         private static bool IsGroupRelevant(MonsterDefinition monsterDefinition, DropItemGroup group)
         {
+            if (group is null)
+            {
+                return false;
+            }
+
             if (group.MinimumMonsterLevel.HasValue && monsterDefinition[Stats.Level] < group.MinimumMonsterLevel)
             {
                 return false;
