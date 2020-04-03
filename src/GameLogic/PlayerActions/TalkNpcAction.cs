@@ -107,12 +107,34 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             var quests = player.OpenedNpc.Definition.Quests
                 .Where(q => q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass);
 
-            if (!quests.Any(quest => quest.MinimumCharacterLevel <= player.Level))
+            if (!quests.Any())
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(
-                    "I have nothing for you. Come back with more power.", player.OpenedNpc);
+                    "I have no quests for you.", player.OpenedNpc);
                 player.OpenedNpc = null;
                 player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                return;
+            }
+
+            if (quests.All(quest => quest.MinimumCharacterLevel > player.Level))
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(
+                    "I have nothing to do for you. Come back with more power.", player.OpenedNpc);
+                player.OpenedNpc = null;
+                player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                return;
+            }
+
+            var maxQuestNumber = quests.Max(q => q.Number);
+            var questGroup = quests.FirstOrDefault(q => q.Number == maxQuestNumber)?.Group;
+            var questState = player.GetQuestState(questGroup ?? 0);
+            if (questState?.LastFinishedQuest?.Number >= maxQuestNumber)
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(
+                    "I have nothing to do for you. You solved all my quests already.", player.OpenedNpc);
+                player.OpenedNpc = null;
+                player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                return;
             }
 
             player.ViewPlugIns.GetPlugIn<ILegacyQuestStateDialogPlugIn>()?.Show();
