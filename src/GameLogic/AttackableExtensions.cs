@@ -71,7 +71,7 @@ namespace MUnique.OpenMU.GameLogic
                     defense += (int)(defense * defender.Attributes[Stats.DefenseIncreaseWithEquippedShield]);
                 }
 
-                dmg -= (int)defender.Attributes[defenseAttribute];
+                dmg -= defense;
             }
             else
             {
