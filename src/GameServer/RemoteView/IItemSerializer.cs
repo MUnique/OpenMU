@@ -123,12 +123,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 target[4] |= (byte)(ancientSet.AncientSetDiscriminator & AncientDiscriminatorMask);
 
-                // an ancient item always has an ancient bonus option (e.g. 5 Vitality). If that's not the case, we should throw an exception.
-                var ancientBonus =
-                    item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus)
-                    ?? throw new ArgumentException($"Item '{item}' belongs to an ancient set but doesn't have an ancient bonus option");
-
-                target[4] |= (byte)((ancientBonus.Level << 2) & AncientBonusLevelMask);
+                // An ancient item may or may not have an ancient bonus option. Example without bonus: Gywen Pendant.
+                var ancientBonus = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus);
+                if (ancientBonus != null)
+                {
+                    target[4] |= (byte)((ancientBonus.Level << 2) & AncientBonusLevelMask);
+                }
             }
 
             target[5] = (byte)(item.Definition.Group << 4);
@@ -291,10 +291,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                              ?? throw new ArgumentException($"Couldn't find ancient set (discriminator {setDiscriminator}) for item ({item.Definition.Number}, {item.Definition.Group}).");
             item.ItemSetGroups.Add(ancientSet);
             var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
-            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = itemOfSet.BonusOption;
-            optionLink.Level = bonusLevel;
-            item.ItemOptions.Add(optionLink);
+            if (bonusLevel > 0)
+            {
+                var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = itemOfSet.BonusOption;
+                optionLink.Level = bonusLevel;
+                item.ItemOptions.Add(optionLink);
+            }
         }
 
         private static void ReadLevel380Option(byte option380Byte, IContext persistenceContext, Item item)

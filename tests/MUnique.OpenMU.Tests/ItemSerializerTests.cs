@@ -149,9 +149,51 @@ namespace MUnique.OpenMU.Tests
             var ancientBonus = context.CreateNew<ItemOptionLink>();
             ancientBonus.ItemOption = ancientSet.Items.First(i => i.ItemDefinition == item.Definition).BonusOption;
             ancientBonus.Level = 2; // 10 Str
-            //    def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.AncientBonus && p.PowerUpDefinition.TargetAttribute == Stats.TotalStrength)).First();
             item.ItemOptions.Add(ancientBonus);
 
+            item.ItemSetGroups.Add(ancientSet);
+
+            var array = new byte[this.itemSerializer.NeededSpace];
+            this.itemSerializer.SerializeItem(array, item);
+
+            var deserializedItem = this.itemSerializer.DeserializeItem(array, this.gameConfiguration, context);
+            return new Tuple<Item, Item>(item, deserializedItem);
+        }
+
+        /// <summary>
+        /// Tests if ancient items without bonus option are correctly (de)serialized.
+        /// </summary>
+        [Test]
+        public void AncientWithoutBonus()
+        {
+            var tuple = this.SerializeAndDeserializeGywenPendant();
+            var item = tuple.Item1;
+            var deserializedItem = tuple.Item2;
+            Assert.That(deserializedItem.ItemOptions.Count, Is.EqualTo(item.ItemOptions.Count));
+            foreach (var optionLink in item.ItemOptions)
+            {
+                var deserializedOptionLink = deserializedItem.ItemOptions
+                    .FirstOrDefault(link => link.Level == optionLink.Level
+                                            && link.ItemOption.OptionType == optionLink.ItemOption.OptionType
+                                            && link.ItemOption.Number == optionLink.ItemOption.Number);
+                Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption.OptionType.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
+            }
+
+            Assert.That(deserializedItem.ItemSetGroups.Count, Is.EqualTo(item.ItemSetGroups.Count));
+            foreach (var setGroup in item.ItemSetGroups)
+            {
+                Assert.That(deserializedItem.ItemSetGroups, Contains.Item(setGroup));
+            }
+        }
+
+        private Tuple<Item, Item> SerializeAndDeserializeGywenPendant()
+        {
+            using var context = this.contextProvider.CreateNewContext(this.gameConfiguration);
+            var item = context.CreateNew<Item>();
+            item.Definition = this.gameConfiguration.Items.First(i => i.Name == "Pendant of Ability");
+            item.Durability = 10;
+
+            var ancientSet = this.gameConfiguration.ItemSetGroups.First(i => i.Name == "Gywen");
             item.ItemSetGroups.Add(ancientSet);
 
             var array = new byte[this.itemSerializer.NeededSpace];
