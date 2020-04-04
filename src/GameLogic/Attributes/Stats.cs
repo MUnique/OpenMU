@@ -336,6 +336,16 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new AttributeDefinition(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "shieldBlockDamageDecrement", string.Empty);
 
         /// <summary>
+        /// Gets the defense increase with equipped shield attribute definition.
+        /// </summary>
+        public static AttributeDefinition DefenseIncreaseWithEquippedShield { get; } = new AttributeDefinition(new Guid("41BCEC8D-A7A8-4930-AB2E-A07D8BF1B86C"), "DefenseIncreaseWithEquippedShield", string.Empty);
+
+        /// <summary>
+        /// Gets the 'is shield equipped' attribute definition.
+        /// </summary>
+        public static AttributeDefinition IsShieldEquipped { get; } = new AttributeDefinition(new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "IsShieldEquipped", string.Empty);
+
+        /// <summary>
         /// Gets the ice resistance attribute definition.
         /// </summary>
         public static AttributeDefinition IceResistance { get; } = new AttributeDefinition(new Guid("47235C36-41BB-44B4-8823-6FC415709F59"), "iceResistance", string.Empty);

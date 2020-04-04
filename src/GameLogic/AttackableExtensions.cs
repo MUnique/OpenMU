@@ -65,6 +65,12 @@ namespace MUnique.OpenMU.GameLogic
             if (!isIgnoringDefense)
             {
                 var defenseAttribute = defender.GetDefenseAttribute(attacker);
+                var defense = (int)defender.Attributes[defenseAttribute];
+                if (defender.Attributes[Stats.IsShieldEquipped] > 0)
+                {
+                    defense += (int)(defense * defender.Attributes[Stats.DefenseIncreaseWithEquippedShield]);
+                }
+
                 dmg -= (int)defender.Attributes[defenseAttribute];
             }
             else
