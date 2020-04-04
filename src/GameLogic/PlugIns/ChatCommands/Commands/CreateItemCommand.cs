@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799887")]
     [PlugIn("Create Item chat command", "Handles the chat command '/create'")]
     [ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
-    public class CreateItemChatCommandPlugIn : IChatCommandPlugIn
+    public class CreateItemCommand : IChatCommandPlugIn
     {
         private const string Command = "/item";
 

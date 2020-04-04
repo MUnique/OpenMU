@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
     [PlugIn("Move chat command", "Handles the chat command '/move map'. Move the character to the specified map.")]
-    public class MoveChatCommandPlugIn : IChatCommandPlugIn
+    public class MoveCommand : IChatCommandPlugIn
     {
         private const string CommandKey = "/move";
 
