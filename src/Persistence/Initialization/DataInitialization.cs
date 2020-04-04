@@ -1248,6 +1248,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Jewels(this.context, this.gameConfiguration).Initialize();
             new PackedJewels(this.context, this.gameConfiguration).Initialize();
             new Jewellery(this.context, this.gameConfiguration).Initialize();
+            new AncientSets(this.context, this.gameConfiguration).Initialize();
             this.CreateJewelMixes();
             this.CreateNpcs();
             this.CreateGameMapDefinitions();

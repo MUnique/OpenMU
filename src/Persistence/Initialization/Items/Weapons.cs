@@ -386,6 +386,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
+
+            if (group != (int)ItemGroups.Bows && width == 2)
+            {
+                var isTwoHandedWeapon = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+                isTwoHandedWeapon.TargetAttribute = Stats.IsTwoHandedWeaponEquipped.GetPersistent(this.GameConfiguration);
+                isTwoHandedWeapon.BaseValue = 1.0f;
+                item.BasePowerUpAttributes.Add(isTwoHandedWeapon);
+            }
         }
 
         private void AddGuardianOptions()
