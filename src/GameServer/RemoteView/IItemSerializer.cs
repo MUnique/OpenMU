@@ -281,19 +281,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var bonusLevel = (ancientByte & AncientBonusLevelMask) >> 2;
             var setDiscriminator = ancientByte & AncientDiscriminatorMask;
             var ancientSets = item.Definition.PossibleItemSetGroups
-                .Where(set => set.AncientSetDiscriminator == setDiscriminator && set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientBonus)).ToList();
+                .Where(set => set.AncientSetDiscriminator == setDiscriminator && set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).ToList();
             if (ancientSets.Count > 1)
             {
-                throw new ArgumentException($"Ambigious ancient set discriminator: {ancientSets.Count} sets with discriminator {setDiscriminator} found for item definition ({item.Definition.Number}, {item.Definition.Group}).");
+                throw new ArgumentException($"Ambiguous ancient set discriminator: {ancientSets.Count} sets with discriminator {setDiscriminator} found for item definition ({item.Definition.Number}, {item.Definition.Group}).");
             }
 
             var ancientSet = ancientSets.FirstOrDefault()
                              ?? throw new ArgumentException($"Couldn't find ancient set (discriminator {setDiscriminator}) for item ({item.Definition.Number}, {item.Definition.Group}).");
             item.ItemSetGroups.Add(ancientSet);
-            var ancientBonus = ancientSet.Options.First(o => o.OptionType == ItemOptionTypes.AncientBonus);
+            var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = ancientBonus;
+            optionLink.ItemOption = itemOfSet.BonusOption;
             optionLink.Level = bonusLevel;
+            item.ItemOptions.Add(optionLink);
         }
 
         private static void ReadLevel380Option(byte option380Byte, IContext persistenceContext, Item item)
