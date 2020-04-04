@@ -21,7 +21,6 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         /// <summary>
         /// Gets or sets the drop item group which should be considered when this quest is active and this requirement applies.
         /// </summary>
-        [MemberOfAggregate]
         public virtual DropItemGroup DropItemGroup { get; set; }
 
         /// <summary>
