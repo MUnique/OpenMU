@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.randomizer = randomizer;
             this.droppableItems = config.Items.Where(i => i.DropsFromMonsters).ToList();
-            this.ancientItems = this.droppableItems.Where(i => i.PossibleItemSetGroups.Any(o => o.Items.Any(n => n.BonusOption.OptionType == ItemOptionTypes.AncientBonus))).ToList();
+            this.ancientItems = this.droppableItems.Where(i => i.PossibleItemSetGroups.Any(o => o.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption))).ToList();
         }
 
         /// <inheritdoc/>
