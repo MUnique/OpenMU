@@ -123,12 +123,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             {
                 target[4] |= (byte)(ancientSet.AncientSetDiscriminator & AncientDiscriminatorMask);
 
-                // an ancient item always has an ancient bonus option (e.g. 5 Vitality). If that's not the case, we should throw an exception.
-                var ancientBonus =
-                    item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus)
-                    ?? throw new ArgumentException($"Item '{item}' belongs to an ancient set but doesn't have an ancient bonus option");
-
-                target[4] |= (byte)((ancientBonus.Level << 2) & AncientBonusLevelMask);
+                // An ancient item may or may not have an ancient bonus option. Example without bonus: Gywen Pendant.
+                var ancientBonus = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus);
+                if (ancientBonus != null)
+                {
+                    target[4] |= (byte)((ancientBonus.Level << 2) & AncientBonusLevelMask);
+                }
             }
 
             target[5] = (byte)(item.Definition.Group << 4);
@@ -281,19 +281,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             var bonusLevel = (ancientByte & AncientBonusLevelMask) >> 2;
             var setDiscriminator = ancientByte & AncientDiscriminatorMask;
             var ancientSets = item.Definition.PossibleItemSetGroups
-                .Where(set => set.AncientSetDiscriminator == setDiscriminator && set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientBonus)).ToList();
+                .Where(set => set.AncientSetDiscriminator == setDiscriminator && set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).ToList();
             if (ancientSets.Count > 1)
             {
-                throw new ArgumentException($"Ambigious ancient set discriminator: {ancientSets.Count} sets with discriminator {setDiscriminator} found for item definition ({item.Definition.Number}, {item.Definition.Group}).");
+                throw new ArgumentException($"Ambiguous ancient set discriminator: {ancientSets.Count} sets with discriminator {setDiscriminator} found for item definition ({item.Definition.Number}, {item.Definition.Group}).");
             }
 
             var ancientSet = ancientSets.FirstOrDefault()
                              ?? throw new ArgumentException($"Couldn't find ancient set (discriminator {setDiscriminator}) for item ({item.Definition.Number}, {item.Definition.Group}).");
             item.ItemSetGroups.Add(ancientSet);
-            var ancientBonus = ancientSet.Options.First(o => o.OptionType == ItemOptionTypes.AncientBonus);
-            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = ancientBonus;
-            optionLink.Level = bonusLevel;
+            var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
+            if (bonusLevel > 0)
+            {
+                var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+                optionLink.ItemOption = itemOfSet.BonusOption;
+                optionLink.Level = bonusLevel;
+                item.ItemOptions.Add(optionLink);
+            }
         }
 
         private static void ReadLevel380Option(byte option380Byte, IContext persistenceContext, Item item)

@@ -475,6 +475,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 this.defenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
                 shield.BasePowerUpAttributes.Add(powerUp);
             }
+
+            var isShieldEquipped = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+            isShieldEquipped.TargetAttribute = Stats.IsShieldEquipped.GetPersistent(this.GameConfiguration);
+            isShieldEquipped.BaseValue = 1;
+            shield.BasePowerUpAttributes.Add(isShieldEquipped);
         }
 
         private ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)

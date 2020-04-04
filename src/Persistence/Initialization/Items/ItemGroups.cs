@@ -77,6 +77,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         Orbs = 12,
 
         /// <summary>
+        /// Pets, Rings, Pendants & Misc.
+        /// </summary>
+        Misc1 = 13,
+
+        /// <summary>
+        /// Pots & Misc.
+        /// </summary>
+        Misc2 = 14,
+
+        /// <summary>
         /// The scrolls group.
         /// </summary>
         Scrolls = 15,

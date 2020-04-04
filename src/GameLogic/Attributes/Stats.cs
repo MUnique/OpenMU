@@ -244,6 +244,21 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition SkillMultiplier { get; } = new AttributeDefinition(new Guid("D9FB3323-6DF5-48F7-8253-FDBB5EF82114"), "skillMultiplier", string.Empty);
 
         /// <summary>
+        /// Gets the skill damage bonus attribute definition.
+        /// </summary>
+        public static AttributeDefinition SkillDamageBonus { get; } = new AttributeDefinition(new Guid("B8B214B1-396B-4CA8-9A77-240AA70A989B"), "SkillDamageBonus", "A bonus value which gets added to the damage calculation when the damage is calculated with a skill.");
+
+        /// <summary>
+        /// Gets the critical damage bonus attribute definition.
+        /// </summary>
+        public static AttributeDefinition CriticalDamageBonus { get; } = new AttributeDefinition(new Guid("33F53519-16F3-44C2-9D36-432C36329C78"), "CriticalDamageBonus", "A bonus value which gets added to the damage calculation when the damage is calculated and critical damage applies.");
+
+        /// <summary>
+        /// Gets the excellent damage bonus attribute definition.
+        /// </summary>
+        public static AttributeDefinition ExcellentDamageBonus { get; } = new AttributeDefinition(new Guid("9CB8705A-398D-4158-BC60-D6ADBED36A28"), "ExcellentDamageBonus", "A bonus value which gets added to the damage calculation when the damage is calculated and excellent damage applies.");
+
+        /// <summary>
         /// Gets the attack speed attribute definition.
         /// </summary>
         public static AttributeDefinition AttackSpeed { get; } = new AttributeDefinition(new Guid("BACC1115-1E8B-4E62-B952-8F8DDB58A949"), "attackSpeed", string.Empty);
@@ -252,6 +267,21 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// Gets the attack damage increase attribute definition.
         /// </summary>
         public static AttributeDefinition AttackDamageIncrease { get; } = new AttributeDefinition(new Guid("0765CCD2-C70A-4338-BF49-0D652364C223"), "attackDamageIncrease", string.Empty);
+
+        /// <summary>
+        /// Gets the wizardry attack damage increase attribute definition.
+        /// </summary>
+        public static AttributeDefinition WizardryAttackDamageIncrease { get; } = new AttributeDefinition(new Guid("8F1CD5A5-3792-42FC-89B8-E6D50F997F4B"), "WizardryAttackDamageIncrease", "The wizardry damage increase which is multiplied with the min/max wiz base damage and added to it.");
+
+        /// <summary>
+        /// Gets the two handed weapon damage increase attribute definition.
+        /// </summary>
+        public static AttributeDefinition TwoHandedWeaponDamageIncrease { get; } = new AttributeDefinition(new Guid("BA3D57E9-68A5-47AC-A6E9-43793F4DDE2A"), "TwoHandedWeaponDamageIncrease", "The damage increase which is multiplied with the min/max base damage and added to it when using a two-handed weapon.");
+
+        /// <summary>
+        /// Gets the is two handed weapon equipped.
+        /// </summary>
+        public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new AttributeDefinition(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "IsTwoHandedWeaponEquipped", null);
 
         /// <summary>
         /// Gets the combo bonus attribute definition.
@@ -304,6 +334,16 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// TODO: Usage in a shield skill handler.
         /// </summary>
         public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new AttributeDefinition(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "shieldBlockDamageDecrement", string.Empty);
+
+        /// <summary>
+        /// Gets the defense increase with equipped shield attribute definition.
+        /// </summary>
+        public static AttributeDefinition DefenseIncreaseWithEquippedShield { get; } = new AttributeDefinition(new Guid("41BCEC8D-A7A8-4930-AB2E-A07D8BF1B86C"), "DefenseIncreaseWithEquippedShield", string.Empty);
+
+        /// <summary>
+        /// Gets the 'is shield equipped' attribute definition.
+        /// </summary>
+        public static AttributeDefinition IsShieldEquipped { get; } = new AttributeDefinition(new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "IsShieldEquipped", string.Empty);
 
         /// <summary>
         /// Gets the ice resistance attribute definition.
