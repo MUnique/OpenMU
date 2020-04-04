@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
     [PlugIn("Teleport chat command", "Handles the chat command '/teleport x y'. Teleports the character to the specified coordinates.")]
     [ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
-    public class TeleportChatCommandPlugIn : IChatCommandPlugIn
+    public class TeleportCommand : IChatCommandPlugIn
     {
         private const string Command = "/teleport";
 
