@@ -202,8 +202,10 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = this.GetAncientSet(5, 1);
+            var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
+            Assert.That(bonusOptions.Count(), Is.EqualTo(1));
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
-            Assert.That(result.Count(), Is.EqualTo(1));
+            Assert.That(result, Is.Empty);
         }
 
         /// <summary>
@@ -218,7 +220,10 @@ namespace MUnique.OpenMU.Tests
             var factory = this.GetPowerUpFactory();
             var items = this.GetAncientSet(5, itemCount);
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
-            Assert.That(result.Count(), Is.EqualTo(itemCount + (itemCount - 1)));
+            Assert.That(result.Count(), Is.EqualTo(itemCount - 1));
+
+            var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
+            Assert.That(bonusOptions.Count(), Is.EqualTo(itemCount));
         }
 
         /// <summary>
@@ -231,7 +236,9 @@ namespace MUnique.OpenMU.Tests
             var factory = this.GetPowerUpFactory();
             var items = this.GetAncientSet(5, 5);
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
-            Assert.That(result.Count(), Is.EqualTo(5 + 4));
+            Assert.That(result.Count(), Is.EqualTo(4));
+            var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
+            Assert.That(bonusOptions.Count(), Is.EqualTo(5));
         }
 
         private IItemPowerUpFactory GetPowerUpFactory()
@@ -341,6 +348,7 @@ namespace MUnique.OpenMU.Tests
                 var item = this.GetItem();
                 item.Definition.PossibleItemSetGroups.Add(ancientSet.Object);
                 item.ItemSetGroups.Add(ancientSet.Object);
+                item.ItemOptions.Add(new ItemOptionLink { ItemOption = bonusOption, Level = 1 });
 
                 ancientSet.Object.Items.Add(new ItemOfItemSet { BonusOption = bonusOption, ItemDefinition = item.Definition });
                 yield return item;

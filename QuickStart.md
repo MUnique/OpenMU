@@ -69,3 +69,19 @@ If you have that, you'll need to do:
 the chat server and the connect server. Start the connect server and at least one gameserver.
 If all goes well, you should be able to expand a gameserver and see the hosted game maps.
 * Then you can connect to the server through the game client.
+
+## Test Accounts
+
+To test some features of the server, test accounts are created automatically when the database is initialized.
+
+These are the user names:
+  * test0 - test9: General test accounts, level 1 to 90, in 10 level steps
+  * test300: General test account with level 300
+  * test400: General test account with level 400, master characters
+  * testgm: Test account of a game master
+  * quest1: Test account for the level 150 quests
+  * quest2: Test account for the level 220 quests
+  * quest3: Test account for the level 400 quests
+  * ancient: Test account with ancient item sets, level 330 characters
+
+The passwords of these accounts are the same as the user name.

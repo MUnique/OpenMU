@@ -74,22 +74,31 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                if (group.SetLevel > 0 && group.MinimumItemCount == group.Items.Count && activeItems.All(i => i.Level > group.SetLevel))
+                var itemsOfGroup = activeItems.Where(i => i.ItemSetGroups.Contains(group)
+                    && (group.SetLevel == 0 || i.Level >= group.SetLevel));
+                var setMustBeComplete = group.MinimumItemCount == group.Items.Count;
+                if (group.SetLevel > 0 && setMustBeComplete && itemsOfGroup.All(i => i.Level > group.SetLevel))
                 {
                     // When all items are of higher level and the set bonus is applied when all items are there, another item set group will take care.
                     // This should prevent that for example set bonus defense is applied multiple times.
                     continue;
                 }
 
-                var itemsOfGroup = activeItems.Where(i => group.SetLevel == 0 || i.Level >= group.SetLevel).Select(i => i.Definition).ToList();
+                var itemCount = group.CountDistinct ? itemsOfGroup.Select(item => item.Definition).Distinct().Count() : itemsOfGroup.Count();
+                var setIsComplete = itemCount == group.Items.Count;
+                if (setIsComplete)
+                {
+                    // Take all options when the set is complete
+                    result = result.Concat(group.Options.Select(o => o.PowerUpDefinition));
+                    continue;
+                }
 
-                // The set item bonus options are always given, regardless if the set is complete or not.
-                result = result.Concat(group.Items.Where(i => i.BonusOption != null && itemsOfGroup.Contains(i.ItemDefinition)).Select(i => i.BonusOption.PowerUpDefinition));
-
-                var itemCount = group.CountDistinct ? itemsOfGroup.Distinct().Count() : itemsOfGroup.Count;
                 if (itemCount >= group.MinimumItemCount)
                 {
-                    result = result.Concat(group.Options.OrderBy(o => o.Number).Take(itemCount - 1).Select(o => o.PowerUpDefinition));
+                    // Take the first n-1 options
+                    result = result.Concat(group.Options.OrderBy(o => o.Number)
+                        .Take(itemCount - 1)
+                        .Select(o => o.PowerUpDefinition));
                 }
             }
 
