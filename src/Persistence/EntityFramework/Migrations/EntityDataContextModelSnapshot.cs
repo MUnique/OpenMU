@@ -727,6 +727,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("CharacterNameRegex")
                         .HasColumnType("text");
+                   
+                    b.Property<byte>("PKClearMoneyCost")
+                        .HasColumnType("integer");
 
                     b.Property<byte>("InfoRange")
                         .HasColumnType("smallint");

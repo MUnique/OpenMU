@@ -23,9 +23,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public short MaximumLevel { get; set; }
 
         /// <summary>
-        /// Gets or sets the zen cost of PK Clear command.
+        /// Gets or sets the mney cost of pk clear command.
         /// </summary>
-        public int PKClearZenCost { get; set; }
+        public int PKClearMoneyCost { get; set; }
 
         /// <summary>
         /// Gets or sets the information range. This defines how far players can see other game objects.

@@ -15,49 +15,49 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// </summary>
     [Guid("8025961F-96B3-46B3-9EED-0CB05CDAC3E0")]
     [PlugIn("PKClear", "Clears players pk status")]
-
+    [ChatCommandHelp(Command, null, MinimumStatus)]
     public class PKClearCommand : IChatCommandPlugIn
     {
-        public static string Command = "/pkclear";
+        private const string Command = "/pkclear";
+
+        private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
 
         /// <inheritdoc />
         public string Key => Command;
 
         /// <inheritdoc />
-        public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
+        public CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
         {
             try
             {
-                int Cost = player.GameContext.Configuration.PKClearZenCost;
+                int cost = player.GameContext.Configuration.PKClearMoneyCost;
 
-                if ((int)player.SelectedCharacter.State >= 4 && player.Money >= Cost)
+                if (player.SelectedCharacter.State >= HeroState.PlayerKillWarning && player.TryRemoveMoney(cost))
                 {
                     player.SelectedCharacter.State = HeroState.Normal;
 
-                    if (Cost <= 0)
+                    if (cost <= 0)
                     {
                         player.ViewPlugIns.GetPlugIn<IUpdateCharacterHeroStatePlugIn>()?.UpdateCharacterHeroState();
-                        player.ShowMessage($"[PK System] Status cleard.");
+                        player.ShowMessage($"[PK System] Status cleared.");
                         return;
                     }
 
-                    player.TryRemoveMoney(Cost);
                     player.ViewPlugIns.GetPlugIn<IUpdateCharacterHeroStatePlugIn>()?.UpdateCharacterHeroState();
-                    player.ShowMessage($"[PK System] Status cleard, -{Cost} zen.");
+                    player.ShowMessage($"[PK System] Status cleared, -{cost} zen.");
                 }
                 else
                 {
-                    if ((int)player.SelectedCharacter.State <= 3 && player.Money >= Cost)
+                    if (player.SelectedCharacter.State <= HeroState.Normal)
                     {
-                        player.ShowMessage($"[PK System] Status cannot be cleard, your status is {player.SelectedCharacter.State.ToString().ToLower()}.");
+                        player.ShowMessage($"[PK System] Status cannot be cleared, your status is {player.SelectedCharacter.State.ToString().ToLower()}.");
                     }
-                    else if ((int)player.SelectedCharacter.State >= 4 && player.Money < Cost)
+                    else if (player.SelectedCharacter.State >= HeroState.PlayerKillWarning && !player.TryRemoveMoney(cost))
                     {
-
-                        player.ShowMessage($"[PK System] Status cannot be cleard, zen reqiuerd: {Cost}.");
+                        player.ShowMessage($"[PK System] Status cannot be cleared, zen required: {cost}.");
                     }
                 }
             }

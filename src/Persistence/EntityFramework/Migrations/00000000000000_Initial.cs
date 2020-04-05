@@ -70,7 +70,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     MaximumLevel = table.Column<short>(nullable: false),
-                    PKClearZenCost = table.Column<int>(nullable: false, defaultValueSql: "300000"),
+                    PKClearMoneyCost = table.Column<int>(nullable: false),
                     InfoRange = table.Column<byte>(nullable: false),
                     AreaSkillHitsPlayer = table.Column<bool>(nullable: false),
                     MaximumInventoryMoney = table.Column<int>(nullable: false),

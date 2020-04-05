@@ -1308,6 +1308,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private void InitializeGameConfiguration()
         {
             this.gameConfiguration.MaximumLevel = 400;
+            this.gameConfiguration.PKClearMoneyCost = 300000;
             this.gameConfiguration.InfoRange = 12;
             this.gameConfiguration.AreaSkillHitsPlayer = false;
             this.gameConfiguration.MaximumInventoryMoney = int.MaxValue;
