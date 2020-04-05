@@ -33,21 +33,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         {
             var killedId = killed.GetId(this.player);
             var killerId = killer.GetId(this.player);
-            using var writer = this.player.Connection.StartSafeWrite(
-                Network.Packets.ServerToClient.ObjectGotKilled.HeaderType,
-                Network.Packets.ServerToClient.ObjectGotKilled.Length);
-            _ = new ObjectGotKilled(writer.Span)
-            {
-                KilledId = killedId,
-                KillerId = killerId,
-            };
-
+            this.player.Connection.SendObjectGotKilled(killedId, killerId);
             if (this.player == killed && killer is Player killerPlayer)
             {
                 this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal);
             }
-
-            writer.Commit();
         }
     }
 }
