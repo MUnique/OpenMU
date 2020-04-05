@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.AdminPanel.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading.Tasks;
     using Blazored.Modal;
@@ -75,31 +77,65 @@ namespace MUnique.OpenMU.AdminPanel.Services
         }
 
         /// <summary>
-        /// Creates a new Account in a <see cref="ModalCreateNew{Account}"/> dialog.
+        /// Creates a new Account in a modal dialog.
         /// </summary>
         public async Task CreateNewInModalDialog()
         {
-            var item = this.playerContext.CreateNew<Account>();
+            var accountParameters = new AccountCreationParameters();
             var parameters = new ModalParameters();
-            parameters.Add(nameof(ModalCreateNew<Account>.Item), item);
+            parameters.Add(nameof(ModalCreateNew<AccountCreationParameters>.Item), accountParameters);
             var options = new ModalOptions
             {
                 DisableBackgroundCancel = true,
             };
 
-            var modal = this.modalService.Show<ModalCreateNew<Account>>($"Create {typeof(Account).Name}", parameters, options);
+            var modal = this.modalService.Show<ModalCreateNew<AccountCreationParameters>>($"Create {typeof(Account).Name}", parameters, options);
             var result = await modal.Result;
-            if (result.Cancelled)
+            if (!result.Cancelled)
             {
-                this.playerContext.Delete(item);
-            }
-            else
-            {
+                var item = this.playerContext.CreateNew<Account>();
+                item.LoginName = accountParameters.LoginName;
+                item.PasswordHash = BCrypt.Net.BCrypt.HashPassword(accountParameters.Password);
+                item.EMail = accountParameters.EMail;
+                item.State = accountParameters.State;
+                item.SecurityCode = accountParameters.SecurityCode;
+                item.RegistrationDate = DateTime.Now;
                 this.playerContext.SaveChanges();
                 this.RaiseDataChanged();
             }
         }
 
         private void RaiseDataChanged() => this.DataChanged?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Parameters for the account creation which is used for the user interface.
+        /// </summary>
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Used by data binding.")]
+        private class AccountCreationParameters
+        {
+            [Display(Name = "Login Name")]
+            [MaxLength(10)]
+            [MinLength(3)]
+            [Required]
+            public string LoginName { get; set; }
+
+            [Display(Name = "Password")]
+            [MaxLength(20)]
+            [MinLength(3)]
+            [Required]
+            public string Password { get; set; }
+
+            [Display(Name = "Security Code")]
+            [MaxLength(10)]
+            [MinLength(3)]
+            [Required]
+            public string SecurityCode { get; set; }
+
+            [Display(Name = "E-Mail")]
+            public string EMail { get; set; }
+
+            [Display(Name = "Status")]
+            public AccountState State { get; set; }
+        }
     }
 }
