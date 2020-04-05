@@ -256,7 +256,7 @@ namespace MUnique.OpenMU.GameLogic
         private void DeleteItem(Player player)
         {
             Log.InfoFormat("Item '{0}' which was dropped by player '{1}' is getting deleted.", this, player);
-            if (!player.PlayerState.Finished && !(this.Item is TemporaryItem))
+            if (!player.PlayerState.Finished)
             {
                 this.itemIsPersistent = player.PersistenceContext.Detach(this.Item);
             }

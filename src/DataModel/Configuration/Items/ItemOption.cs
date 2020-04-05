@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
     using MUnique.OpenMU.DataModel.Attributes;
-    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Defines the option of an item.
@@ -28,7 +27,6 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the power up definition which should apply when this item is carried.
         /// </summary>
-        [MemberOfAggregate]
         public virtual PowerUpDefinition PowerUpDefinition { get; set; }
 
         /// <inheritdoc />

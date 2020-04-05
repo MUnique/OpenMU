@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
-    using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
@@ -19,7 +18,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     {
         private ItemOptionType ancientBonusOptionType;
         private ItemOptionType ancientOptionType;
-        private readonly IDictionary<AttributeDefinition, IncreasableItemOption> bonusOptions = new Dictionary<AttributeDefinition, IncreasableItemOption>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AncientSets"/> class.
@@ -659,18 +657,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 return null;
             }
 
-            if (this.bonusOptions.TryGetValue(attribute, out var option))
-            {
-                return option;
-            }
-
-            var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
-            optionDefinition.Name = $"Ancient Bonus of {attribute.Designation}";
-            optionDefinition.AddsRandomly = false;
-            optionDefinition.MaximumOptionsPerItem = 1;
-            this.GameConfiguration.ItemOptions.Add(optionDefinition);
-
-            option = this.Context.CreateNew<IncreasableItemOption>();
+            var option = this.Context.CreateNew<IncreasableItemOption>();
             option.OptionType = this.ancientBonusOptionType;
             option.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
             option.PowerUpDefinition.TargetAttribute = attribute.GetPersistent(this.GameConfiguration);
@@ -691,9 +678,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             option.LevelDependentOptions.Add(level1);
             option.LevelDependentOptions.Add(level2);
-
-            optionDefinition.PossibleOptions.Add(option);
-            this.bonusOptions.Add(attribute, option);
             return option;
         }
     }
