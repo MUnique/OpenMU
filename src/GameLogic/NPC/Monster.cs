@@ -328,6 +328,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 this.DropItem(exp, player);
                 player.AfterKilledMonster();
                 player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, attacker);
+                if (player.SelectedCharacter.State > HeroState.Normal)
+                {
+                    player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
+                }
             }
         }
 
