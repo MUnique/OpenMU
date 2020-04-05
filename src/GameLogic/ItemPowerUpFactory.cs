@@ -85,8 +85,17 @@ namespace MUnique.OpenMU.GameLogic
                 }
 
                 var itemCount = group.CountDistinct ? itemsOfGroup.Select(item => item.Definition).Distinct().Count() : itemsOfGroup.Count();
+                var setIsComplete = itemCount == group.Items.Count;
+                if (setIsComplete)
+                {
+                    // Take all options when the set is complete
+                    result = result.Concat(group.Options.Select(o => o.PowerUpDefinition));
+                    continue;
+                }
+
                 if (itemCount >= group.MinimumItemCount)
                 {
+                    // Take the first n-1 options
                     result = result.Concat(group.Options.OrderBy(o => o.Number)
                         .Take(itemCount - 1)
                         .Select(o => o.PowerUpDefinition));
