@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     {
         private ItemOptionType ancientBonusOptionType;
         private ItemOptionType ancientOptionType;
-        private IDictionary<AttributeDefinition, IncreasableItemOption> bonusOptions = new Dictionary<AttributeDefinition, IncreasableItemOption>();
+        private readonly IDictionary<AttributeDefinition, IncreasableItemOption> bonusOptions = new Dictionary<AttributeDefinition, IncreasableItemOption>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AncientSets"/> class.
