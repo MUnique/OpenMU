@@ -123,7 +123,7 @@ namespace MUnique.OpenMU.GameLogic
             var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
             if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
             {
-                return new HitInfo(damage, 0, 0);
+                return new HitInfo(damage, 0, attributes);
             }
 
             var shieldRatio = 0.90;
