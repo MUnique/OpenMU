@@ -1,4 +1,4 @@
-﻿// <copyright file="PlayerEnterGameMessage.cs" company="MUnique">
+﻿// <copyright file="AutoReconnect.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,10 +8,10 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.PlugIns;
 
-    [Guid("E139CC14-1558-4FF7-8F1E-87773E6C838E")]
-    [PlugIn("Enter Game Message", "Displays a message when player connected.")]
+    [Guid("8336259B-4EC6-4280-A4F6-549F0A967F59")]
+    [PlugIn("Auto reconnection", "Automaticly reconnected to game in case of player lost disconnecting.")]
 
-    public class PlayerEnterGameMessage
+    public class AutoReconnect
     {
         // logic here
     }

@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
-    /// Help command
+    /// Help command.
     /// </summary>
     [Guid("a5b0a3e5-bb2a-4287-821a-cd97714fe209")]
     [PlugIn("List command", "Lists all the commands.")]
