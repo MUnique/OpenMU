@@ -74,7 +74,15 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
             foreach (var property in properties)
             {
-                stringBuilder.Append($"{{{property.GetName()}|{property.PropertyType.Name}}}");
+                if (property.GetCustomAttribute<ValidValuesAttribute>() is { } validValuesAttribute)
+                {
+                    stringBuilder.Append($"{{{string.Join('|', validValuesAttribute.ValidValues)}}}");
+                }
+                else
+                {
+                    stringBuilder.Append($"{{{property.GetName()}|{property.PropertyType.Name}}}");
+                }
+
                 if (property != properties.Last())
                 {
                     stringBuilder.Append(" ");
