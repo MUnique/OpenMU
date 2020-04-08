@@ -226,7 +226,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(5, 4, 0, 0, 2, 4, true, "Gorgon Staff", 52, 29, 32, 25, 65, 58, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(5, 5, 0, 0, 1, 4, true, "Legendary Staff", 59, 29, 31, 25, 66, 59, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(5, 6, 0, 0, 1, 4, true, "Staff of Resurrection", 70, 35, 39, 25, 70, 70, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-            this.CreateWeapon(5, 7, 0, 0, 2, 4, false, "Chaos Lighting Staff", 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+            this.CreateWeapon(5, 7, 0, 0, 2, 4, false, "Chaos Lightning Staff", 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(5, 8, 0, 0, 2, 4, true, "Staff of Destruction", 90, 50, 54, 30, 85, 101, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(5, 9, 0, 0, 1, 4, true, "Dragon Soul Staff", 100, 46, 48, 30, 91, 92, 0, 52, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
             this.CreateWeapon(5, 10, 0, 0, 1, 4, true, "Divine Staff of Archangel", 104, 53, 55, 20, 182, 106, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
