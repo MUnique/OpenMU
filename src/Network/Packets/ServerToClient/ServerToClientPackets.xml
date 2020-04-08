@@ -2291,7 +2291,13 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>Enum</Type>
+          <TypeName>ItemWindow</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
           <Name>ItemCount</Name>
         </Field>
         <Field>
@@ -2302,6 +2308,29 @@
           <ItemCountField>ItemCount</ItemCountField>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>ItemWindow</Name>
+          <Description>Defines the kind of npc window which should be shown on the client.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Normal</Name>
+              <Description>A normal window.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosMachine</Name>
+              <Description>A chaos machine window.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Resurrection</Name>
+              <Description>A pet resurrection window.</Description>
+              <Value>5</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -4158,6 +4187,90 @@
               <Name>RemovePinFailedByWrongPassword</Name>
               <Description>The vault is protected and the player-requested pin removal failed by using the wrong password.</Description>
               <Value>13</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>86</Code>
+      <Name>ItemCraftingResult</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to execute an item crafting, e.g. at the chaos machine.</SentWhen>
+      <CausedReaction>The game client updates the UI to show the resulting item.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>CraftingResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CraftingResult</Name>
+          <Description>Defines the crafting result.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The crafting failed.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The crafting succeeded.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughMoney</Name>
+              <Description>The crafting wasn't executed because of missing money.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>TooManyItems</Name>
+              <Description>The crafting wasn't executed because of too many items.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooLow</Name>
+              <Description>The crafting wasn't executed because the character level is too low.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LackingMixItems</Name>
+              <Description>The crafting wasn't executed because of missing items.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IncorrectMixItems</Name>
+              <Description>The crafting wasn't executed because of incorrect items.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InvalidItemLevel</Name>
+              <Description>The crafting wasn't executed because of an invalid item level.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterClassTooLow</Name>
+              <Description>The crafting wasn't executed because the character class is too low.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IncorrectBloodCastleItems</Name>
+              <Description>The blood castle ticket crafting wasn't executed because the BloodCastle items are not correct.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughMoneyForBloodCastle</Name>
+              <Description>The crafting wasn't executed because the player has not enough money for the blood castle ticket crafting.</Description>
+              <Value>11</Value>
             </EnumValue>
           </Values>
         </Enum>

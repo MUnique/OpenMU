@@ -6455,6 +6455,27 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// </summary>
     public readonly ref struct StoreItemList
     {
+        /// <summary>
+        /// Defines the kind of npc window which should be shown on the client.
+        /// </summary>
+        public enum ItemWindow
+        {
+            /// <summary>
+            /// A normal window.
+            /// </summary>
+            Normal = 0,
+
+            /// <summary>
+            /// A chaos machine window.
+            /// </summary>
+            ChaosMachine = 3,
+
+            /// <summary>
+            /// A pet resurrection window.
+            /// </summary>
+            Resurrection = 5,
+        }
+
         private readonly Span<byte> data;
 
         /// <summary>
@@ -6499,12 +6520,21 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public C2Header Header => new C2Header(this.data);
 
         /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public StoreItemList.ItemWindow Type
+        {
+            get => (ItemWindow)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
         /// Gets or sets the item count.
         /// </summary>
-        public ushort ItemCount
+        public byte ItemCount
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => this.data[5];
+            set => this.data[5] = value;
         }
 
         /// <summary>
@@ -12005,6 +12035,155 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(VaultProtectionInformation packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the player requested to execute an item crafting, e.g. at the chaos machine.
+    /// Causes reaction on client side: The game client updates the UI to show the resulting item.
+    /// </summary>
+    public readonly ref struct ItemCraftingResult
+    {
+        /// <summary>
+        /// Defines the crafting result.
+        /// </summary>
+        public enum CraftingResult
+        {
+            /// <summary>
+            /// The crafting failed.
+            /// </summary>
+            Failed = 0,
+
+            /// <summary>
+            /// The crafting succeeded.
+            /// </summary>
+            Success = 1,
+
+            /// <summary>
+            /// The crafting wasn't executed because of missing money.
+            /// </summary>
+            NotEnoughMoney = 2,
+
+            /// <summary>
+            /// The crafting wasn't executed because of too many items.
+            /// </summary>
+            TooManyItems = 3,
+
+            /// <summary>
+            /// The crafting wasn't executed because the character level is too low.
+            /// </summary>
+            CharacterLevelTooLow = 4,
+
+            /// <summary>
+            /// The crafting wasn't executed because of missing items.
+            /// </summary>
+            LackingMixItems = 6,
+
+            /// <summary>
+            /// The crafting wasn't executed because of incorrect items.
+            /// </summary>
+            IncorrectMixItems = 7,
+
+            /// <summary>
+            /// The crafting wasn't executed because of an invalid item level.
+            /// </summary>
+            InvalidItemLevel = 8,
+
+            /// <summary>
+            /// The crafting wasn't executed because the character class is too low.
+            /// </summary>
+            CharacterClassTooLow = 9,
+
+            /// <summary>
+            /// The blood castle ticket crafting wasn't executed because the BloodCastle items are not correct.
+            /// </summary>
+            IncorrectBloodCastleItems = 10,
+
+            /// <summary>
+            /// The crafting wasn't executed because the player has not enough money for the blood castle ticket crafting.
+            /// </summary>
+            NotEnoughMoneyForBloodCastle = 11,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemCraftingResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ItemCraftingResult(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemCraftingResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ItemCraftingResult(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x86;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public ItemCraftingResult.CraftingResult Result
+        {
+            get => (CraftingResult)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the item data.
+        /// </summary>
+        public Span<byte> ItemData
+        {
+            get => this.data.Slice(4);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemCraftingResult"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ItemCraftingResult(Span<byte> packet) => new ItemCraftingResult(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ItemCraftingResult"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ItemCraftingResult packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified length of <see cref="ItemData"/>.
+        /// </summary>
+        /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int itemDataLength) => itemDataLength + 4;
     }
 
 

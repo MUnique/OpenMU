@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             if (npcStats.MerchantStore != null && npcStats.MerchantStore.Items.Count > 0)
             {
                 player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant);
-                player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(npcStats.MerchantStore.Items);
+                player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(npcStats.MerchantStore.Items, StoreKind.Normal);
             }
             else
             {

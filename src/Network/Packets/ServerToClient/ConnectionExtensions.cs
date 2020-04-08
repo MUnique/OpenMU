@@ -2829,6 +2829,25 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Sends a <see cref="ItemCraftingResult" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="result">The result.</param>
+        /// <param name="itemData">The item data.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the player requested to execute an item crafting, e.g. at the chaos machine.
+        /// Causes reaction on client side: The game client updates the UI to show the resulting item.
+        /// </remarks>
+        public static void SendItemCraftingResult(this IConnection connection, ItemCraftingResult.CraftingResult @result, Span<byte> @itemData)
+        {
+            using var writer = connection.StartSafeWrite(ItemCraftingResult.HeaderType, ItemCraftingResult.GetRequiredSize(itemData.Length));
+            var packet = new ItemCraftingResult(writer.Span);
+            packet.Result = @result;
+            @itemData.CopyTo(packet.ItemData);
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="LegacyQuestStateDialog" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>

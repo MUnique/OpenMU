@@ -8,6 +8,27 @@ namespace MUnique.OpenMU.GameLogic.Views.NPC
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
+    /// The kind of a store of the shown dialog.
+    /// </summary>
+    public enum StoreKind
+    {
+        /// <summary>
+        /// The merchant store dialog.
+        /// </summary>
+        Normal = 0,
+
+        /// <summary>
+        /// The chaos machine dialog.
+        /// </summary>
+        ChaosMachine = 3,
+
+        /// <summary>
+        /// A crafting dialog (resurrection of pets).
+        /// </summary>
+        Resurrection = 5,
+    }
+
+    /// <summary>
     /// Interface of a view whose implementation informs about the available items in an opened npc merchant dialog.
     /// </summary>
     public interface IShowMerchantStoreItemListPlugIn : IViewPlugIn
@@ -16,6 +37,7 @@ namespace MUnique.OpenMU.GameLogic.Views.NPC
         /// Shows the merchant store item list.
         /// </summary>
         /// <param name="storeItems">The store items.</param>
-        void ShowMerchantStoreItemList(ICollection<Item> storeItems);
+        /// <param name="storeKind">Kind of the store.</param>
+        void ShowMerchantStoreItemList(ICollection<Item> storeItems, StoreKind storeKind);
     }
 }
