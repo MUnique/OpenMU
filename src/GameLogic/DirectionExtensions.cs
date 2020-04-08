@@ -54,47 +54,33 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The direction from the origin to the target.</returns>
         public static Direction GetDirectionTo(this Point from, Point to)
         {
-            if (from == to)
-            {
-                return Direction.Undefined;
-            }
+            double angle = Math.Atan2(to.Y - from.Y, to.X - from.X);
+            angle += Math.PI;
+            angle /= Math.PI / 4;
+            int halfQuarter = Convert.ToInt32(angle);
+            halfQuarter %= 8;
 
-            if (to.X == from.X)
+            switch (halfQuarter)
             {
-                if (to.Y > from.Y)
-                {
-                    return Direction.NorthEast;
-                }
-
-                return Direction.SouthWest;
-            }
-
-            if (to.Y == from.Y)
-            {
-                if (to.X > from.X)
-                {
+                case 7:
+                    return Direction.North;
+                case 0:
+                    return Direction.NorthWest;
+                case 1:
+                    return Direction.West;
+                case 2:
+                    return Direction.SouthWest;
+                case 3:
+                    return Direction.South;
+                case 4:
                     return Direction.SouthEast;
-                }
-
-                return Direction.NorthWest;
-            }
-
-            if (to.X > from.X)
-            {
-                if (to.Y > from.Y)
-                {
+                case 5:
                     return Direction.East;
-                }
-
-                return Direction.North;
+                case 6:
+                    return Direction.NorthEast;
+                default:
+                    return Direction.Undefined;
             }
-
-            if (to.Y > from.Y)
-            {
-                return Direction.South;
-            }
-
-            return Direction.West;
         }
     }
 }
