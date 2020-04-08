@@ -41,6 +41,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(this.CreateAntidotePotion());
             this.GameConfiguration.Items.Add(this.CreateTownPortalScroll());
             this.GameConfiguration.Items.Add(this.CreateFruits());
+            this.GameConfiguration.Items.Add(this.CreateSiegePotion());
         }
 
         private ItemDefinition CreateAlcohol()
@@ -296,6 +297,20 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Value = 30;
             definition.Width = 1;
             definition.Height = 2;
+            return definition;
+        }
+
+        private ItemDefinition CreateSiegePotion()
+        {
+            var definition = this.Context.CreateNew<ItemDefinition>();
+            definition.Name = "Siege Potion";
+            definition.Number = 7;
+            definition.Group = 14;
+            // todo definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SiegePotionConsumeHandler).FullName;
+            definition.Durability = 1;
+            definition.Value = 30;
+            definition.Width = 1;
+            definition.Height = 1;
             return definition;
         }
 

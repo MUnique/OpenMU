@@ -19,9 +19,14 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public virtual ItemDefinition ItemDefinition { get; set; }
 
         /// <summary>
-        /// Gets or sets the minimum level.
+        /// Gets or sets the minimum item level.
         /// </summary>
-        public byte MinLvl { get; set; }
+        public byte MinimumItemLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum item level.
+        /// </summary>
+        public byte MaximumItemLevel { get; set; }
 
         /// <summary>
         /// Gets or sets the required item options.
@@ -31,7 +36,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// Gets or sets the minimum amount.
         /// </summary>
-        public byte MinAmount { get; set; }
+        public byte MinimumAmount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum amount.
+        /// </summary>
+        public byte MaximumAmount { get; set; }
 
         /// <summary>
         /// Gets or sets the success result.
@@ -57,8 +67,9 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public byte AddPercentage { get; set; }
 
         /// <summary>
-        /// Gets or sets the reference identifier.
+        /// Gets or sets the reference identifier to the corresponding <see cref="ItemCraftingResultItem.Reference"/>.
+        /// If <c>0</c>, no reference exists.
         /// </summary>
-        public byte RefID { get; set; }
+        public byte Reference { get; set; }
     }
 }

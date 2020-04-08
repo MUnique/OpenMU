@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
+    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.Views.NPC;
+
     /// <summary>
     /// Interface for an item crafting handler.
     /// </summary>
@@ -13,8 +16,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// Mixes the items of the <see cref="Player.TemporaryStorage"/> with this crafting handler.
         /// </summary>
         /// <param name="player">The mixing player.</param>
-        /// <returns>The success.</returns>
-        bool DoMix(Player player);
+        /// <returns>The crafting result and the resulting item; if there are multiple, only the last one is returned.</returns>
+        (CraftingResult, Item) DoMix(Player player);
     }
 
     /*
@@ -59,26 +62,26 @@ switch (mixTypeId)
         CHAOS_TYPE_SOUL_POTION = 0x10,
         CHAOS_TYPE_LIFE_STONE = 0x11,
 
-        CHAOS_TYPE_CASTLE_ITEM = 0x12,
+            CHAOS_TYPE_CASTLE_ITEM = 0x12,
 
-        CHAOS_TYPE_HT_BOX = 0x14,
-        CHAOS_TYPE_FENRIR_01 = 0x19,
-        CHAOS_TYPE_FENRIR_02 = 0x1a,
-        CHAOS_TYPE_FENRIR_03 = 0x1b,
-        CHAOS_TYPE_FENRIR_04 = 0x1c,
-        CHAOS_TYPE_COMPOUNDPOTION_LV1 = 0x1e,
-        CHAOS_TYPE_COMPOUNTPOTION_LV2 = 0x1f,
-        CHAOS_TYPE_COMPOUNTPOTION_LV3 = 0x20,
-        CHAOS_TYPE_JEWELOFHARMONY_PURITY = 0x21,
-        CHAOS_TYPE_JEWELOFHARMONY_MIX_SMELTINGITEM = 0x22,
-        CHAOS_TYPE_JEWELOFHARMONY_RESTORE_ITEM = 0x23,
-        CHAOS_TYPE_380_OPTIONITEM = 0x24,
-        CHAOS_TYPE_LOTTERY_MIX = 0x25,
-        CHAOS_TYPE_CONDOR_FEATHER = 0x26,
-        CHAOS_TYPE_THIRD_WING = 0x27,
-        SEED_TYPE_SEEDEXTRACT = 0x2a,
-        SEED_TYPE_SEEDSPHERE = 0x2b,
-        SEED_TYPE_SEEDCALC = 0x2c,
-        SEED_TYPE_NEWMIX2 = 0x2d,
-    }*/
+            CHAOS_TYPE_HT_BOX = 0x14,
+            CHAOS_TYPE_FENRIR_01 = 0x19,
+            CHAOS_TYPE_FENRIR_02 = 0x1a,
+            CHAOS_TYPE_FENRIR_03 = 0x1b,
+            CHAOS_TYPE_FENRIR_04 = 0x1c,
+            CHAOS_TYPE_COMPOUNDPOTION_LV1 = 0x1e,
+            CHAOS_TYPE_COMPOUNTPOTION_LV2 = 0x1f,
+            CHAOS_TYPE_COMPOUNTPOTION_LV3 = 0x20,
+            CHAOS_TYPE_JEWELOFHARMONY_PURITY = 0x21,
+            CHAOS_TYPE_JEWELOFHARMONY_MIX_SMELTINGITEM = 0x22,
+            CHAOS_TYPE_JEWELOFHARMONY_RESTORE_ITEM = 0x23,
+            CHAOS_TYPE_380_OPTIONITEM = 0x24,
+            CHAOS_TYPE_LOTTERY_MIX = 0x25,
+            CHAOS_TYPE_CONDOR_FEATHER = 0x26,
+            CHAOS_TYPE_THIRD_WING = 0x27,
+            SEED_TYPE_SEEDEXTRACT = 0x2a,
+            SEED_TYPE_SEEDSPHERE = 0x2b,
+            SEED_TYPE_SEEDCALC = 0x2c,
+            SEED_TYPE_NEWMIX2 = 0x2d,
+        }*/
 }

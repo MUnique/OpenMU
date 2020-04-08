@@ -505,7 +505,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             {
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 368;
-                def.Designation = "Elpis";
+                def.Designation = "Elphis";
+                def.NpcWindow = NpcWindow.ElphisRefinery;
                 this.gameConfiguration.Monsters.Add(def);
             }
 

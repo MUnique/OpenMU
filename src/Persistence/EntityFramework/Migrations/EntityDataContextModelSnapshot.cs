@@ -1134,16 +1134,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("ItemDefinitionId")
                         .HasColumnType("uuid");
 
-                    b.Property<byte>("MinAmount")
+                    b.Property<byte>("MaximumAmount")
                         .HasColumnType("smallint");
 
-                    b.Property<byte>("MinLvl")
+                    b.Property<byte>("MaximumItemLevel")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("MinimumAmount")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("MinimumItemLevel")
                         .HasColumnType("smallint");
 
                     b.Property<int>("NpcPriceDivisor")
                         .HasColumnType("integer");
 
-                    b.Property<byte>("RefID")
+                    b.Property<byte>("Reference")
                         .HasColumnType("smallint");
 
                     b.Property<Guid?>("SimpleCraftingSettingsId")
@@ -1185,16 +1191,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("AddLevel")
                         .HasColumnType("smallint");
 
+                    b.Property<byte?>("Durability")
+                        .HasColumnType("smallint");
+
                     b.Property<Guid?>("ItemDefinitionId")
                         .HasColumnType("uuid");
 
-                    b.Property<byte>("RandLvlMax")
+                    b.Property<byte>("RandomMaximumLevel")
                         .HasColumnType("smallint");
 
-                    b.Property<byte>("RandLvlMin")
+                    b.Property<byte>("RandomMinimumLevel")
                         .HasColumnType("smallint");
 
-                    b.Property<byte>("RefID")
+                    b.Property<byte>("Reference")
                         .HasColumnType("smallint");
 
                     b.Property<Guid?>("SimpleCraftingSettingsId")
@@ -2172,29 +2181,44 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<byte>("ExcOptionChance")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("LuckOptionChance")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("MaxExcOptions")
-                        .HasColumnType("smallint");
-
                     b.Property<int>("Money")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MoneyPerFinalSuccessPercentage")
                         .HasColumnType("integer");
 
                     b.Property<bool>("MultipleAllowed")
                         .HasColumnType("boolean");
 
+                    b.Property<byte>("ResultItemExcellentOptionChance")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("ResultItemLuckOptionChance")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("ResultItemMaxExcOptionCount")
+                        .HasColumnType("smallint");
+
                     b.Property<int>("ResultItemSelect")
                         .HasColumnType("integer");
 
-                    b.Property<byte>("SkillOptionChance")
+                    b.Property<byte>("ResultItemSkillChance")
                         .HasColumnType("smallint");
 
                     b.Property<byte>("SuccessPercent")
                         .HasColumnType("smallint");
+
+                    b.Property<int>("SuccessPercentageAdditionForAncientItem")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SuccessPercentageAdditionForExcellentItem")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SuccessPercentageAdditionForLuck")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SuccessPercentageAdditionForSocketItem")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

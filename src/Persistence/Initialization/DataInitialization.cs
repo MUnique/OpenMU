@@ -319,20 +319,23 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     break;
                 default:
                     character = this.CreateCharacter(name, CharacterClassNumber.FairyElf, level, 2);
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 20;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 30;
+
                     character.Inventory.Items.Add(this.CreateShortBow(1));
                     character.Inventory.Items.Add(this.CreateArrows(0));
-                    character.Inventory.Items.Add(this.CreateSetItem(52, 10, 8)); // Vine Armor
-                    character.Inventory.Items.Add(this.CreateSetItem(47, 10, 7)); // Vine Helm
-                    character.Inventory.Items.Add(this.CreateSetItem(49, 10, 9)); // Vine Pants
-                    character.Inventory.Items.Add(this.CreateSetItem(63, 10, 10)); // Vine Gloves
-                    character.Inventory.Items.Add(this.CreateSetItem(65, 10, 11)); // Vine Boots
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.ArmorSlot, 10, 8)); // Vine Armor
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.HelmSlot, 10, 7)); // Vine Helm
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.PantsSlot, 10, 9)); // Vine Pants
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.GlovesSlot, 10, 10)); // Vine Gloves
+                    character.Inventory.Items.Add(this.CreateSetItem(InventoryConstants.BootsSlot, 10, 11)); // Vine Boots
                     break;
             }
 
             character.Inventory.Items.Add(this.CreateOrb(67, 8)); // Healing Orb
             character.Inventory.Items.Add(this.CreateOrb(75, 9)); // Defense Orb
             character.Inventory.Items.Add(this.CreateOrb(68, 10)); // Damage Orb
-            this.AddTestJewelsAndPotions(character.Inventory);
+            this.AddElfItems(character.Inventory);
             return character;
         }
 
@@ -597,7 +600,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             character.LevelUpPoints = (int)((character.Attributes.First(a => a.Definition == Stats.Level).Value - 1)
                                       * character.CharacterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
             character.Inventory = this.context.CreateNew<ItemStorage>();
-            character.Inventory.Money = 1000000;
+            character.Inventory.Money = 10000000;
             return character;
         }
 
@@ -638,6 +641,43 @@ namespace MUnique.OpenMU.Persistence.Initialization
             inventory.Items.Add(this.CreateShieldPotion(44, 0));
             inventory.Items.Add(this.CreateShieldPotion(45, 1));
             inventory.Items.Add(this.CreateShieldPotion(46, 2));
+        }
+
+        private void AddElfItems(ItemStorage inventory)
+        {
+            inventory.Items.Add(this.CreateJewelOfBless(12));
+            inventory.Items.Add(this.CreateJewelOfBless(13));
+            inventory.Items.Add(this.CreateJewelOfBless(14));
+            inventory.Items.Add(this.CreateJewelOfBless(15));
+            inventory.Items.Add(this.CreateJewelOfBless(16));
+            inventory.Items.Add(this.CreateJewelOfBless(17));
+            inventory.Items.Add(this.CreateJewelOfBless(18));
+            inventory.Items.Add(this.CreateJewelOfBless(19));
+            inventory.Items.Add(this.CreateJewelOfSoul(20));
+            inventory.Items.Add(this.CreateJewelOfSoul(21));
+            inventory.Items.Add(this.CreateJewelOfSoul(22));
+            inventory.Items.Add(this.CreateJewelOfSoul(23));
+            inventory.Items.Add(this.CreateJewelOfSoul(24));
+            inventory.Items.Add(this.CreateJewelOfSoul(25));
+            inventory.Items.Add(this.CreateJewelOfSoul(26));
+            inventory.Items.Add(this.CreateJewelOfSoul(27));
+            inventory.Items.Add(this.CreateJewelOfLife(28));
+            inventory.Items.Add(this.CreateJewelOfLife(29));
+            inventory.Items.Add(this.CreateJewelOfLife(30));
+            inventory.Items.Add(this.CreateJewelOfLife(31));
+            inventory.Items.Add(this.CreateJewelOfCreation(32));
+            inventory.Items.Add(this.CreateJewelOfCreation(33));
+            inventory.Items.Add(this.CreateJewelOfCreation(34));
+            inventory.Items.Add(this.CreateJewelOfCreation(35));
+            inventory.Items.Add(this.CreateJewelOfChaos(36));
+            inventory.Items.Add(this.CreateJewelOfChaos(37));
+            inventory.Items.Add(this.CreateJewelOfChaos(38));
+            inventory.Items.Add(this.CreateJewelOfChaos(39));
+            inventory.Items.Add(this.CreateJewelOfChaos(40));
+            inventory.Items.Add(this.CreateJewelOfChaos(41));
+            inventory.Items.Add(this.CreateJewelOfChaos(42));
+            inventory.Items.Add(this.CreateJewelOfChaos(43));
+            inventory.Items.Add(this.CreateJewelOfChaos(44));
         }
 
         private void AddDarkKnightItems(ItemStorage inventory)
@@ -869,6 +909,20 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private Item CreateJewelOfLife(byte itemSlot)
         {
             return this.CreateJewel(itemSlot, 16);
+        }
+
+        private Item CreateJewelOfCreation(byte itemSlot)
+        {
+            return this.CreateJewel(itemSlot, 22);
+        }
+
+        private Item CreateJewelOfChaos(byte itemSlot)
+        {
+            var jewel = this.context.CreateNew<Item>();
+            jewel.Definition = this.gameConfiguration.Items.FirstOrDefault(def => def.Group == 12 && def.Number == 15);
+            jewel.Durability = 1;
+            jewel.ItemSlot = itemSlot;
+            return jewel;
         }
 
         private Item CreateJewel(byte itemSlot, byte itemNumber)
@@ -1373,6 +1427,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.CreateNpcs();
             this.CreateGameMapDefinitions();
             this.AssignCharacterClassHomeMaps();
+            new ChaosMixes(this.context, this.gameConfiguration).Initialize();
             new Gates().Initialize(this.context, this.gameConfiguration);
             new Items.Quest(this.context, this.gameConfiguration).Initialize();
             new Quests(this.context, this.gameConfiguration).Initialize();

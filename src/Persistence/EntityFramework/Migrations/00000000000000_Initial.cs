@@ -123,13 +123,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Money = table.Column<int>(nullable: false),
+                    MoneyPerFinalSuccessPercentage = table.Column<int>(nullable: false),
                     SuccessPercent = table.Column<byte>(nullable: false),
                     MultipleAllowed = table.Column<bool>(nullable: false),
                     ResultItemSelect = table.Column<int>(nullable: false),
-                    LuckOptionChance = table.Column<byte>(nullable: false),
-                    SkillOptionChance = table.Column<byte>(nullable: false),
-                    ExcOptionChance = table.Column<byte>(nullable: false),
-                    MaxExcOptions = table.Column<byte>(nullable: false)
+                    SuccessPercentageAdditionForLuck = table.Column<int>(nullable: false),
+                    SuccessPercentageAdditionForExcellentItem = table.Column<int>(nullable: false),
+                    SuccessPercentageAdditionForAncientItem = table.Column<int>(nullable: false),
+                    SuccessPercentageAdditionForSocketItem = table.Column<int>(nullable: false),
+                    ResultItemLuckOptionChance = table.Column<byte>(nullable: false),
+                    ResultItemSkillChance = table.Column<byte>(nullable: false),
+                    ResultItemExcellentOptionChance = table.Column<byte>(nullable: false),
+                    ResultItemMaxExcOptionCount = table.Column<byte>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1563,13 +1568,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    MinLvl = table.Column<byte>(nullable: false),
-                    MinAmount = table.Column<byte>(nullable: false),
+                    MinimumItemLevel = table.Column<byte>(nullable: false),
+                    MaximumItemLevel = table.Column<byte>(nullable: false),
+                    MinimumAmount = table.Column<byte>(nullable: false),
+                    MaximumAmount = table.Column<byte>(nullable: false),
                     SuccessResult = table.Column<int>(nullable: false),
                     FailResult = table.Column<int>(nullable: false),
                     NpcPriceDivisor = table.Column<int>(nullable: false),
                     AddPercentage = table.Column<byte>(nullable: false),
-                    RefID = table.Column<byte>(nullable: false),
+                    Reference = table.Column<byte>(nullable: false),
                     ItemDefinitionId = table.Column<Guid>(nullable: true),
                     SimpleCraftingSettingsId = table.Column<Guid>(nullable: true)
                 },
@@ -1598,9 +1605,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    RandLvlMin = table.Column<byte>(nullable: false),
-                    RandLvlMax = table.Column<byte>(nullable: false),
-                    RefID = table.Column<byte>(nullable: false),
+                    RandomMinimumLevel = table.Column<byte>(nullable: false),
+                    RandomMaximumLevel = table.Column<byte>(nullable: false),
+                    Durability = table.Column<byte>(nullable: true),
+                    Reference = table.Column<byte>(nullable: false),
                     AddLevel = table.Column<byte>(nullable: false),
                     ItemDefinitionId = table.Column<Guid>(nullable: true),
                     SimpleCraftingSettingsId = table.Column<Guid>(nullable: true)
