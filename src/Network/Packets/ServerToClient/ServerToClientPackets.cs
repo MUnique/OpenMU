@@ -6056,6 +6056,195 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: The player requested to consume a fruit.
+    /// Causes reaction on client side: The client updates the user interface, by changing the added stat points and used fruit points.
+    /// </summary>
+    public readonly ref struct FruitConsumptionResponse
+    {
+        /// <summary>
+        /// Defines the result of the fruit consumption request.
+        /// </summary>
+        public enum FruitConsumptionResult
+        {
+            /// <summary>
+            /// Consumption to add points was successful.
+            /// </summary>
+            PlusSuccess = 0,
+
+            /// <summary>
+            /// Consumption to add points failed.
+            /// </summary>
+            PlusFailed = 1,
+
+            /// <summary>
+            /// Consumption to add points was prevented because some conditions were not correct.
+            /// </summary>
+            PlusPrevented = 2,
+
+            /// <summary>
+            /// Consumption to remove points was successful.
+            /// </summary>
+            MinusSuccess = 3,
+
+            /// <summary>
+            /// Consumption to remove points failed.
+            /// </summary>
+            MinusFailed = 4,
+
+            /// <summary>
+            /// Consumption to remove points was prevented because some conditions were not correct.
+            /// </summary>
+            MinusPrevented = 5,
+
+            /// <summary>
+            /// Consumption to remove points was successful, removed by a fruit acquired through the cash shop.
+            /// </summary>
+            MinusSuccessCashShopFruit = 6,
+
+            /// <summary>
+            /// Consumption was prevented because an item was equipped.
+            /// </summary>
+            PreventedByEquippedItems = 16,
+
+            /// <summary>
+            /// Consumption to add points was prevented because the maximum amount of points have been added.
+            /// </summary>
+            PlusPreventedByMaximum = 33,
+
+            /// <summary>
+            /// Consumption to remove points was prevented because the maximum amount of points have been removed.
+            /// </summary>
+            MinusPreventedByMaximum = 37,
+
+            /// <summary>
+            /// Consumption to remove points was prevented because the base amount of stat points of the character class cannot be undercut.
+            /// </summary>
+            MinusPreventedByDefault = 38,
+        }
+
+        /// <summary>
+        /// Defines the type of stat which the fruit modifies.
+        /// </summary>
+        public enum FruitStatType
+        {
+            /// <summary>
+            /// Fruit which modifies the energy stat.
+            /// </summary>
+            Energy = 0,
+
+            /// <summary>
+            /// Fruit which modifies the vitality stat.
+            /// </summary>
+            Vitality = 1,
+
+            /// <summary>
+            /// Fruit which modifies the agility stat.
+            /// </summary>
+            Agility = 2,
+
+            /// <summary>
+            /// Fruit which modifies the strength stat.
+            /// </summary>
+            Strength = 3,
+
+            /// <summary>
+            /// Fruit which modifies the leadership stat.
+            /// </summary>
+            Leadership = 4,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FruitConsumptionResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public FruitConsumptionResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FruitConsumptionResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private FruitConsumptionResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x2C;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public FruitConsumptionResponse.FruitConsumptionResult Result
+        {
+            get => (FruitConsumptionResult)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the stat points.
+        /// </summary>
+        public ushort StatPoints
+        {
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the stat type.
+        /// </summary>
+        public FruitConsumptionResponse.FruitStatType StatType
+        {
+            get => (FruitStatType)this.data.Slice(6)[0];
+            set => this.data.Slice(6)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="FruitConsumptionResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator FruitConsumptionResponse(Span<byte> packet) => new FruitConsumptionResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FruitConsumptionResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(FruitConsumptionResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: After the client talked to an NPC which should cause a dialog to open on the client side.
     /// Causes reaction on client side: The client opens the specified dialog.
     /// </summary>

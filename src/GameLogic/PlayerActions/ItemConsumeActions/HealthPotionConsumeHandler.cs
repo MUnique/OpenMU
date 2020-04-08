@@ -35,9 +35,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         }
 
         /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, Item item, Item targetItem)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
-            if (base.ConsumeItem(player, item, targetItem))
+            if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
                 // maybe instead of calling UpdateCurrentHealth etc. provide a more general method where we pass this.CurrentAttribute. The view can then decide what to do with it.
                 player.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();

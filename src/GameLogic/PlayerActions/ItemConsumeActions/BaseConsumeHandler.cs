@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class BaseConsumeHandler : IItemConsumeHandler
     {
         /// <inheritdoc/>
-        public virtual bool ConsumeItem(Player player, Item item, Item targetItem)
+        public virtual bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
             if (!this.CheckPreconditions(player, item, targetItem))
             {

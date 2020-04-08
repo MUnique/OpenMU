@@ -1363,18 +1363,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="connection">The connection.</param>
         /// <param name="itemSlot">The inventory slot index of the item which should be consumed.</param>
         /// <param name="targetSlot">If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</param>
-        /// <param name="itemUseType">Unknown field, we don't know what it's good for.</param>
+        /// <param name="fruitConsumption">Defines how the fruit is used. Only applies, if the the item is a fruit.</param>
         /// <remarks>
         /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
         /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
         /// </remarks>
-        public static void SendConsumeItemRequest(this IConnection connection, byte @itemSlot, byte @targetSlot, byte @itemUseType)
+        public static void SendConsumeItemRequest(this IConnection connection, byte @itemSlot, byte @targetSlot, ConsumeItemRequest.FruitUsage @fruitConsumption)
         {
             using var writer = connection.StartWriteConsumeItemRequest();
             var packet = writer.Packet;
             packet.ItemSlot = @itemSlot;
             packet.TargetSlot = @targetSlot;
-            packet.ItemUseType = @itemUseType;
+            packet.FruitConsumption = @fruitConsumption;
             writer.Commit();
         }
 

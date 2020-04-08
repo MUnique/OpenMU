@@ -27,7 +27,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <param name="player">The player.</param>
         /// <param name="inventorySlot">The inventory slot.</param>
         /// <param name="inventoryTargetSlot">The inventory target slot.</param>
-        public void HandleConsumeRequest(Player player, byte inventorySlot, byte inventoryTargetSlot)
+        /// <param name="fruitUsage">The fruit usage.</param>
+        public void HandleConsumeRequest(Player player, byte inventorySlot, byte inventoryTargetSlot, FruitUsage fruitUsage)
         {
             Item item = player.Inventory.GetItem(inventorySlot);
             if (item == null)
@@ -45,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
             var targetItem = player.Inventory.GetItem(inventoryTargetSlot);
 
-            if (player.GameContext.PlugInManager.GetPlugInPoint<IItemConsumingPlugIn>() is IItemConsumingPlugIn plugInPoint)
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IItemConsumingPlugIn>() is { } plugInPoint)
             {
                 var eventArgs = new CancelEventArgs();
                 plugInPoint.ItemConsuming(player, item, targetItem, eventArgs);
@@ -55,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 }
             }
 
-            if (!consumeHandler.ConsumeItem(player, item, targetItem))
+            if (!consumeHandler.ConsumeItem(player, item, targetItem, fruitUsage))
             {
                 player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
                 return;

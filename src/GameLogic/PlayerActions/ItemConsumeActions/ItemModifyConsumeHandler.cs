@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         protected IPersistenceContextProvider PersistenceContextProvider { get; }
 
         /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, Item item, Item targetItem)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {

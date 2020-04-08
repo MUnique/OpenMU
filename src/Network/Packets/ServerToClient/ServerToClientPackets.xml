@@ -2015,6 +2015,128 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>2C</Code>
+      <Name>FruitConsumptionResponse</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to consume a fruit.</SentWhen>
+      <CausedReaction>The client updates the user interface, by changing the added stat points and used fruit points.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>FruitConsumptionResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>StatPoints</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Enum</Type>
+          <TypeName>FruitStatType</TypeName>
+          <Name>StatType</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>FruitConsumptionResult</Name>
+          <Description>Defines the result of the fruit consumption request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>PlusSuccess</Name>
+              <Description>Consumption to add points was successful.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PlusFailed</Name>
+              <Description>Consumption to add points failed.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PlusPrevented</Name>
+              <Description>Consumption to add points was prevented because some conditions were not correct.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusSuccess</Name>
+              <Description>Consumption to remove points was successful.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusFailed</Name>
+              <Description>Consumption to remove points failed.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusPrevented</Name>
+              <Description>Consumption to remove points was prevented because some conditions were not correct.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusSuccessCashShopFruit</Name>
+              <Description>Consumption to remove points was successful, removed by a fruit acquired through the cash shop.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PreventedByEquippedItems</Name>
+              <Description>Consumption was prevented because an item was equipped.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PlusPreventedByMaximum</Name>
+              <Description>Consumption to add points was prevented because the maximum amount of points have been added.</Description>
+              <Value>33</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusPreventedByMaximum</Name>
+              <Description>Consumption to remove points was prevented because the maximum amount of points have been removed.</Description>
+              <Value>37</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusPreventedByDefault</Name>
+              <Description>Consumption to remove points was prevented because the base amount of stat points of the character class cannot be undercut.</Description>
+              <Value>38</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>FruitStatType</Name>
+          <Description>Defines the type of stat which the fruit modifies.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Energy</Name>
+              <Description>Fruit which modifies the energy stat.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Vitality</Name>
+              <Description>Fruit which modifies the vitality stat.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Agility</Name>
+              <Description>Fruit which modifies the agility stat.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Strength</Name>
+              <Description>Fruit which modifies the strength stat.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Leadership</Name>
+              <Description>Fruit which modifies the leadership stat.</Description>
+              <Value>4</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>30</Code>
       <Name>NpcWindowResponse</Name>

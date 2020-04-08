@@ -40,6 +40,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(this.CreateAlcohol());
             this.GameConfiguration.Items.Add(this.CreateAntidotePotion());
             this.GameConfiguration.Items.Add(this.CreateTownPortalScroll());
+            this.GameConfiguration.Items.Add(this.CreateFruits());
         }
 
         private ItemDefinition CreateAlcohol()
@@ -296,6 +297,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Width = 1;
             definition.Height = 2;
             return definition;
+        }
+
+        /// <summary>
+        /// Creates the fruit definition.
+        /// </summary>
+        /// <returns>The created fruit definition.</returns>
+        private ItemDefinition CreateFruits()
+        {
+            var fruits = this.Context.CreateNew<ItemDefinition>();
+            fruits.Name = "Fruits";
+            fruits.Number = 15;
+            fruits.Group = 13;
+            fruits.MaximumItemLevel = 4;
+            fruits.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.FruitConsumeHandler).FullName;
+            fruits.Durability = 1;
+            fruits.Width = 1;
+            fruits.Height = 1;
+            return fruits;
         }
     }
 }

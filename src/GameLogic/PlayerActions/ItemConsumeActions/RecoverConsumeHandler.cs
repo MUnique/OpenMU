@@ -30,9 +30,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         protected abstract AttributeDefinition MaximumAttribute { get; }
 
         /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, Item item, Item targetItem)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
-            if (base.ConsumeItem(player, item, targetItem))
+            if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
                 var recabs = (player.Attributes[this.MaximumAttribute] * this.RecoverPercent / 100) + this.GetAdditionalRecover(player);
                 player.Attributes[this.CurrentAttribute] = (uint)Math.Min(player.Attributes[this.MaximumAttribute], player.Attributes[this.CurrentAttribute] + recabs);

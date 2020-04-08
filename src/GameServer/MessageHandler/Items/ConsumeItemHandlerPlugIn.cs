@@ -30,7 +30,17 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         public void HandlePacket(Player player, Span<byte> packet)
         {
             ConsumeItemRequest message = packet;
-            this.consumeAction.HandleConsumeRequest(player, message.ItemSlot, message.TargetSlot);
+            this.consumeAction.HandleConsumeRequest(player, message.ItemSlot, message.TargetSlot, Convert(message.FruitConsumption));
+        }
+
+        private static FruitUsage Convert(ConsumeItemRequest.FruitUsage fruitConsumption)
+        {
+            return fruitConsumption switch
+            {
+                ConsumeItemRequest.FruitUsage.AddPoints => FruitUsage.AddPoints,
+                ConsumeItemRequest.FruitUsage.RemovePoints => FruitUsage.RemovePoints,
+                _ => FruitUsage.Undefined,
+            };
         }
     }
 }
