@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -31,13 +30,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <inheritdoc/>
         public void PlayerLeftGuild(Player player)
         {
-            var writer = this.player.Connection.StartSafeWrite(GuildMemberLeftGuild.HeaderType, GuildMemberLeftGuild.Length);
-            _ = new GuildMemberLeftGuild(writer.Span)
-            {
-                PlayerId = this.player.GetId(player),
-                IsGuildMaster = player.GuildStatus?.Position == GuildPosition.GuildMaster,
-            };
-            writer.Commit();
+            this.player.Connection.SendGuildMemberLeftGuild(
+                player.GetId(this.player),
+                player.GuildStatus?.Position == GuildPosition.GuildMaster);
         }
     }
 }

@@ -3905,8 +3905,8 @@
           <Description>The result of the guild kick request.</Description>
           <Values>
             <EnumValue>
-              <Name>Failed</Name>
-              <Description>The kick request failed.</Description>
+              <Name>FailedPasswordIncorrect</Name>
+              <Description>The kick request failed because of an incorrect password.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
@@ -3915,9 +3915,24 @@
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
+              <Name>KickFailedBecausePlayerIsNotGuildMaster</Name>
+              <Description>The kick failed because player is not guild master.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The kick request failed.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
               <Name>GuildDisband</Name>
               <Description>The guild has been disbanded.</Description>
-              <Value>2</Value>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMemberWithdrawn</Name>
+              <Description>The guild member has been withdrawn.</Description>
+              <Value>5</Value>
             </EnumValue>
           </Values>
         </Enum>
