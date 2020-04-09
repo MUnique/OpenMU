@@ -378,6 +378,7 @@ namespace MUnique.OpenMU.GameServer
         {
             player.ForEachObservingPlayer(observer => observer.ViewPlugIns.GetPlugIn<IPlayerLeftGuildPlugIn>()?.PlayerLeftGuild(player), true);
             player.GuildStatus = null;
+            player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.KickSucceeded);
         }
 
         private void OnPlayerConnected(object sender, PlayerConnectedEventArgs e)
