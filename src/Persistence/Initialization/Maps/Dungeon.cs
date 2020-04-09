@@ -962,6 +962,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.Designation = "Iron Stick Trap";
                 trap.MoveRange = 0;
                 trap.AttackRange = 0;
+                trap.TrapType = TrapType.WhenPressed;
                 trap.ViewRange = 1;
                 trap.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
                 trap.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);
@@ -988,6 +989,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.Designation = "Fire Trap";
                 trap.MoveRange = 0;
                 trap.AttackRange = 2;
+                trap.TrapType = TrapType.WhenPressed;
                 trap.ViewRange = 1;
                 trap.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
                 trap.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);

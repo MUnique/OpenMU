@@ -22,3285 +22,3264 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Account", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("EMail")
-                        .HasColumnType("text");
+                b.Property<string>("EMail")
+                    .HasColumnType("text");
 
-                    b.Property<bool>("IsVaultExtended")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsVaultExtended")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("LoginName")
-                        .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                b.Property<string>("LoginName")
+                    .IsRequired()
+                    .HasColumnType("character varying(10)")
+                    .HasMaxLength(10);
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
+                b.Property<string>("PasswordHash")
+                    .HasColumnType("text");
 
-                    b.Property<DateTime>("RegistrationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                b.Property<DateTime>("RegistrationDate")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("timestamp without time zone")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("SecurityCode")
-                        .HasColumnType("text");
+                b.Property<string>("SecurityCode")
+                    .HasColumnType("text");
 
-                    b.Property<int>("State")
-                        .HasColumnType("integer");
+                b.Property<int>("State")
+                    .HasColumnType("integer");
 
-                    b.Property<short>("TimeZone")
-                        .HasColumnType("smallint");
+                b.Property<short>("TimeZone")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("VaultId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("VaultId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("VaultPassword")
-                        .HasColumnType("text");
+                b.Property<string>("VaultPassword")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("LoginName")
-                        .IsUnique();
+                b.HasIndex("LoginName")
+                    .IsUnique();
 
-                    b.HasIndex("VaultId");
+                b.HasIndex("VaultId");
 
-                    b.ToTable("Account","data");
-                });
+                b.ToTable("Account", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AccountCharacterClass", b =>
-                {
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("AccountId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("CharacterClassId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("CharacterClassId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("AccountId", "CharacterClassId");
+                b.HasKey("AccountId", "CharacterClassId");
 
-                    b.HasIndex("CharacterClassId");
+                b.HasIndex("CharacterClassId");
 
-                    b.ToTable("AccountCharacterClass","data");
-                });
+                b.ToTable("AccountCharacterClass", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CharacterClassId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CharacterClassId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("FullAncientSetEquipped")
-                        .HasColumnType("boolean");
+                b.Property<bool>("FullAncientSetEquipped")
+                    .HasColumnType("boolean");
 
-                    b.Property<byte>("Pose")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Pose")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CharacterClassId");
+                b.HasIndex("CharacterClassId");
 
-                    b.ToTable("AppearanceData","data");
-                });
+                b.ToTable("AppearanceData", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<string>("Designation")
-                        .HasColumnType("text");
+                b.Property<string>("Designation")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("AttributeDefinition","config");
-                });
+                b.ToTable("AttributeDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRelationship", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CharacterClassId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CharacterClassId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("InputAttributeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("InputAttributeId")
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("InputOperand")
-                        .HasColumnType("real");
+                b.Property<float>("InputOperand")
+                    .HasColumnType("real");
 
-                    b.Property<int>("InputOperator")
-                        .HasColumnType("integer");
+                b.Property<int>("InputOperator")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("PowerUpDefinitionValueId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("PowerUpDefinitionValueId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TargetAttributeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("TargetAttributeId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CharacterClassId");
+                b.HasIndex("CharacterClassId");
 
-                    b.HasIndex("InputAttributeId");
+                b.HasIndex("InputAttributeId");
 
-                    b.HasIndex("PowerUpDefinitionValueId");
+                b.HasIndex("PowerUpDefinitionValueId");
 
-                    b.HasIndex("TargetAttributeId");
+                b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("AttributeRelationship","config");
-                });
+                b.ToTable("AttributeRelationship", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRequirement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AttributeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("AttributeId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GameMapDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameMapDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("MinimumValue")
-                        .HasColumnType("integer");
+                b.Property<int>("MinimumValue")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("SkillId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("SkillId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("SkillId1")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("SkillId1")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AttributeId");
+                b.HasIndex("AttributeId");
 
-                    b.HasIndex("GameMapDefinitionId");
+                b.HasIndex("GameMapDefinitionId");
 
-                    b.HasIndex("ItemDefinitionId");
+                b.HasIndex("ItemDefinitionId");
 
-                    b.HasIndex("SkillId");
+                b.HasIndex("SkillId");
 
-                    b.HasIndex("SkillId1");
+                b.HasIndex("SkillId1");
 
-                    b.ToTable("AttributeRequirement","config");
-                });
+                b.ToTable("AttributeRequirement", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Character", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AccountId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("AccountId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CharacterClassId")
-                        .IsRequired()
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CharacterClassId")
+                    .IsRequired()
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("CharacterSlot")
-                        .HasColumnType("smallint");
+                b.Property<byte>("CharacterSlot")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("CharacterStatus")
-                        .HasColumnType("integer");
+                b.Property<int>("CharacterStatus")
+                    .HasColumnType("integer");
 
-                    b.Property<DateTime>("CreateDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                b.Property<DateTime>("CreateDate")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("timestamp without time zone")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<Guid?>("CurrentMapId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CurrentMapId")
+                    .HasColumnType("uuid");
 
-                    b.Property<long>("Experience")
-                        .HasColumnType("bigint");
+                b.Property<long>("Experience")
+                    .HasColumnType("bigint");
 
-                    b.Property<int>("InventoryExtensions")
-                        .HasColumnType("integer");
+                b.Property<int>("InventoryExtensions")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("InventoryId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("InventoryId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte[]>("KeyConfiguration")
-                        .HasColumnType("bytea");
+                b.Property<byte[]>("KeyConfiguration")
+                    .HasColumnType("bytea");
 
-                    b.Property<int>("LevelUpPoints")
-                        .HasColumnType("integer");
+                b.Property<int>("LevelUpPoints")
+                    .HasColumnType("integer");
 
-                    b.Property<long>("MasterExperience")
-                        .HasColumnType("bigint");
+                b.Property<long>("MasterExperience")
+                    .HasColumnType("bigint");
 
-                    b.Property<int>("MasterLevelUpPoints")
-                        .HasColumnType("integer");
+                b.Property<int>("MasterLevelUpPoints")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("character varying(10)")
+                    .HasMaxLength(10);
 
-                    b.Property<int>("PlayerKillCount")
-                        .HasColumnType("integer");
+                b.Property<int>("PlayerKillCount")
+                    .HasColumnType("integer");
 
-                    b.Property<byte>("Pose")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Pose")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("PositionX")
-                        .HasColumnType("smallint");
+                b.Property<byte>("PositionX")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("PositionY")
-                        .HasColumnType("smallint");
+                b.Property<byte>("PositionY")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte[]>("QuestInfo")
-                        .HasColumnType("bytea");
+                b.Property<byte[]>("QuestInfo")
+                    .HasColumnType("bytea");
 
-                    b.Property<int>("State")
-                        .HasColumnType("integer");
+                b.Property<int>("State")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("StateRemainingSeconds")
-                        .HasColumnType("integer");
+                b.Property<int>("StateRemainingSeconds")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("UsedFruitPoints")
-                        .HasColumnType("integer");
+                b.Property<int>("UsedFruitPoints")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("UsedNegFruitPoints")
-                        .HasColumnType("integer");
+                b.Property<int>("UsedNegFruitPoints")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                b.HasIndex("AccountId");
 
-                    b.HasIndex("CharacterClassId");
+                b.HasIndex("CharacterClassId");
 
-                    b.HasIndex("CurrentMapId");
+                b.HasIndex("CurrentMapId");
 
-                    b.HasIndex("InventoryId");
+                b.HasIndex("InventoryId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                b.HasIndex("Name")
+                    .IsUnique();
 
-                    b.ToTable("Character","data");
-                });
+                b.ToTable("Character", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("CanGetCreated")
-                        .HasColumnType("boolean");
+                b.Property<bool>("CanGetCreated")
+                    .HasColumnType("boolean");
 
-                    b.Property<byte>("CreationAllowedFlag")
-                        .HasColumnType("smallint");
+                b.Property<byte>("CreationAllowedFlag")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("FruitCalculation")
-                        .HasColumnType("integer");
+                b.Property<int>("FruitCalculation")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("HomeMapId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("HomeMapId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("IsMasterClass")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsMasterClass")
+                    .HasColumnType("boolean");
 
-                    b.Property<short>("LevelRequirementByCreation")
-                        .HasColumnType("smallint");
+                b.Property<short>("LevelRequirementByCreation")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("LevelWarpRequirementReductionPercent")
-                        .HasColumnType("integer");
+                b.Property<int>("LevelWarpRequirementReductionPercent")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("NextGenerationClassId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("NextGenerationClassId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Number")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Number")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("HomeMapId");
+                b.HasIndex("HomeMapId");
 
-                    b.HasIndex("NextGenerationClassId");
+                b.HasIndex("NextGenerationClassId");
 
-                    b.ToTable("CharacterClass","config");
-                });
+                b.ToTable("CharacterClass", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterDropItemGroup", b =>
-                {
-                    b.Property<Guid>("CharacterId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("CharacterId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("DropItemGroupId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("DropItemGroupId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("CharacterId", "DropItemGroupId");
+                b.HasKey("CharacterId", "DropItemGroupId");
 
-                    b.HasIndex("DropItemGroupId");
+                b.HasIndex("DropItemGroupId");
 
-                    b.ToTable("CharacterDropItemGroup","data");
-                });
+                b.ToTable("CharacterDropItemGroup", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterQuestState", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ActiveQuestId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ActiveQuestId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CharacterId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CharacterId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("ClientActionPerformed")
-                        .HasColumnType("boolean");
+                b.Property<bool>("ClientActionPerformed")
+                    .HasColumnType("boolean");
 
-                    b.Property<short>("Group")
-                        .HasColumnType("smallint");
+                b.Property<short>("Group")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("LastFinishedQuestId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("LastFinishedQuestId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ActiveQuestId");
+                b.HasIndex("ActiveQuestId");
 
-                    b.HasIndex("CharacterId");
+                b.HasIndex("CharacterId");
 
-                    b.HasIndex("LastFinishedQuestId");
+                b.HasIndex("LastFinishedQuestId");
 
-                    b.ToTable("CharacterQuestState","data");
-                });
+                b.ToTable("CharacterQuestState", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<TimeSpan>("ClientCleanUpInterval")
-                        .HasColumnType("interval");
+                b.Property<TimeSpan>("ClientCleanUpInterval")
+                    .HasColumnType("interval");
 
-                    b.Property<TimeSpan>("ClientTimeout")
-                        .HasColumnType("interval");
+                b.Property<TimeSpan>("ClientTimeout")
+                    .HasColumnType("interval");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<int>("MaximumConnections")
-                        .HasColumnType("integer");
+                b.Property<int>("MaximumConnections")
+                    .HasColumnType("integer");
 
-                    b.Property<TimeSpan>("RoomCleanUpInterval")
-                        .HasColumnType("interval");
+                b.Property<TimeSpan>("RoomCleanUpInterval")
+                    .HasColumnType("interval");
 
-                    b.Property<byte>("ServerId")
-                        .HasColumnType("smallint");
+                b.Property<byte>("ServerId")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("ChatServerDefinition","config");
-                });
+                b.ToTable("ChatServerDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerEndpoint", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ChatServerDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ChatServerDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ClientId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ClientId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("NetworkPort")
-                        .HasColumnType("integer");
+                b.Property<int>("NetworkPort")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ChatServerDefinitionId");
+                b.HasIndex("ChatServerDefinitionId");
 
-                    b.HasIndex("ClientId");
+                b.HasIndex("ClientId");
 
-                    b.ToTable("ChatServerEndpoint","config");
-                });
+                b.ToTable("ChatServerEndpoint", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("CheckMaxConnectionsPerAddress")
-                        .HasColumnType("boolean");
+                b.Property<bool>("CheckMaxConnectionsPerAddress")
+                    .HasColumnType("boolean");
 
-                    b.Property<Guid?>("ClientId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ClientId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("ClientListenerPort")
-                        .HasColumnType("integer");
+                b.Property<int>("ClientListenerPort")
+                    .HasColumnType("integer");
 
-                    b.Property<byte[]>("CurrentPatchVersion")
-                        .HasColumnType("bytea");
+                b.Property<byte[]>("CurrentPatchVersion")
+                    .HasColumnType("bytea");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<bool>("DisconnectOnUnknownPacket")
-                        .HasColumnType("boolean");
+                b.Property<bool>("DisconnectOnUnknownPacket")
+                    .HasColumnType("boolean");
 
-                    b.Property<int>("ListenerBacklog")
-                        .HasColumnType("integer");
+                b.Property<int>("ListenerBacklog")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("MaxConnections")
-                        .HasColumnType("integer");
+                b.Property<int>("MaxConnections")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("MaxConnectionsPerAddress")
-                        .HasColumnType("integer");
+                b.Property<int>("MaxConnectionsPerAddress")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("MaxFtpRequests")
-                        .HasColumnType("integer");
+                b.Property<int>("MaxFtpRequests")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("MaxIpRequests")
-                        .HasColumnType("integer");
+                b.Property<int>("MaxIpRequests")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("MaxServerListRequests")
-                        .HasColumnType("integer");
+                b.Property<int>("MaxServerListRequests")
+                    .HasColumnType("integer");
 
-                    b.Property<byte>("MaximumReceiveSize")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MaximumReceiveSize")
+                    .HasColumnType("smallint");
 
-                    b.Property<string>("PatchAddress")
-                        .HasColumnType("text");
+                b.Property<string>("PatchAddress")
+                    .HasColumnType("text");
 
-                    b.Property<byte>("ServerId")
-                        .HasColumnType("smallint");
+                b.Property<byte>("ServerId")
+                    .HasColumnType("smallint");
 
-                    b.Property<TimeSpan>("Timeout")
-                        .HasColumnType("interval");
+                b.Property<TimeSpan>("Timeout")
+                    .HasColumnType("interval");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ClientId");
+                b.HasIndex("ClientId");
 
-                    b.ToTable("ConnectServerDefinition","config");
-                });
+                b.ToTable("ConnectServerDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConstValueAttribute", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("CharacterClassId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("CharacterClassId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("DefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("DefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("Value")
-                        .HasColumnType("real");
+                b.Property<float>("Value")
+                    .HasColumnType("real");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CharacterClassId");
+                b.HasIndex("CharacterClassId");
 
-                    b.HasIndex("DefinitionId");
+                b.HasIndex("DefinitionId");
 
-                    b.ToTable("ConstValueAttribute","config");
-                });
+                b.ToTable("ConstValueAttribute", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<double>("Chance")
-                        .HasColumnType("double precision");
+                b.Property<double>("Chance")
+                    .HasColumnType("double precision");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte?>("ItemLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte?>("ItemLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("ItemType")
-                        .HasColumnType("integer");
+                b.Property<int>("ItemType")
+                    .HasColumnType("integer");
 
-                    b.Property<byte?>("MaximumMonsterLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte?>("MaximumMonsterLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte?>("MinimumMonsterLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte?>("MinimumMonsterLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("MonsterId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MonsterId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("MonsterId");
+                b.HasIndex("MonsterId");
 
-                    b.ToTable("DropItemGroup","config");
-                });
+                b.ToTable("DropItemGroup", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroupItemDefinition", b =>
-                {
-                    b.Property<Guid>("DropItemGroupId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("DropItemGroupId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("DropItemGroupId", "ItemDefinitionId");
+                b.HasKey("DropItemGroupId", "ItemDefinitionId");
 
-                    b.HasIndex("ItemDefinitionId");
+                b.HasIndex("ItemDefinitionId");
 
-                    b.ToTable("DropItemGroupItemDefinition","config");
-                });
+                b.ToTable("DropItemGroupItemDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.EnterGate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GameMapDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameMapDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<short>("LevelRequirement")
-                        .HasColumnType("smallint");
+                b.Property<short>("LevelRequirement")
+                    .HasColumnType("smallint");
 
-                    b.Property<short>("Number")
-                        .HasColumnType("smallint");
+                b.Property<short>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("TargetGateId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("TargetGateId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("X1")
-                        .HasColumnType("smallint");
+                b.Property<byte>("X1")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("X2")
-                        .HasColumnType("smallint");
+                b.Property<byte>("X2")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Y1")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Y1")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Y2")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Y2")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameMapDefinitionId");
+                b.HasIndex("GameMapDefinitionId");
 
-                    b.HasIndex("TargetGateId");
+                b.HasIndex("TargetGateId");
 
-                    b.ToTable("EnterGate","config");
-                });
+                b.ToTable("EnterGate", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Direction")
-                        .HasColumnType("integer");
+                b.Property<int>("Direction")
+                    .HasColumnType("integer");
 
-                    b.Property<bool>("IsSpawnGate")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsSpawnGate")
+                    .HasColumnType("boolean");
 
-                    b.Property<Guid?>("MapId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MapId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("X1")
-                        .HasColumnType("smallint");
+                b.Property<byte>("X1")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("X2")
-                        .HasColumnType("smallint");
+                b.Property<byte>("X2")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Y1")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Y1")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Y2")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Y2")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("MapId");
+                b.HasIndex("MapId");
 
-                    b.ToTable("ExitGate","config");
-                });
+                b.ToTable("ExitGate", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Friend", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("Accepted")
-                        .HasColumnType("boolean");
+                b.Property<bool>("Accepted")
+                    .HasColumnType("boolean");
 
-                    b.Property<Guid>("CharacterId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("CharacterId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("FriendId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("FriendId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("RequestOpen")
-                        .HasColumnType("boolean");
+                b.Property<bool>("RequestOpen")
+                    .HasColumnType("boolean");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasAlternateKey("CharacterId", "FriendId");
+                b.HasAlternateKey("CharacterId", "FriendId");
 
-                    b.ToTable("Friend","friend");
-                });
+                b.ToTable("Friend", "friend");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<byte>("Episode")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Episode")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("Language")
-                        .HasColumnType("integer");
+                b.Property<int>("Language")
+                    .HasColumnType("integer");
 
-                    b.Property<byte>("Season")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Season")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte[]>("Serial")
-                        .HasColumnType("bytea");
+                b.Property<byte[]>("Serial")
+                    .HasColumnType("bytea");
 
-                    b.Property<byte[]>("Version")
-                        .HasColumnType("bytea");
+                b.Property<byte[]>("Version")
+                    .HasColumnType("bytea");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GameClientDefinition","config");
-                });
+                b.ToTable("GameClientDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("AreaSkillHitsPlayer")
-                        .HasColumnType("boolean");
+                b.Property<bool>("AreaSkillHitsPlayer")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("CharacterNameRegex")
-                        .HasColumnType("text");
+                b.Property<string>("CharacterNameRegex")
+                    .HasColumnType("text");
 
-                    b.Property<byte>("InfoRange")
-                        .HasColumnType("smallint");
+                b.Property<byte>("InfoRange")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("LetterSendPrice")
-                        .HasColumnType("integer");
+                b.Property<int>("LetterSendPrice")
+                    .HasColumnType("integer");
 
-                    b.Property<byte>("MaximumCharactersPerAccount")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MaximumCharactersPerAccount")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("MaximumInventoryMoney")
-                        .HasColumnType("integer");
+                b.Property<int>("MaximumInventoryMoney")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("MaximumLetters")
-                        .HasColumnType("integer");
+                b.Property<int>("MaximumLetters")
+                    .HasColumnType("integer");
 
-                    b.Property<short>("MaximumLevel")
-                        .HasColumnType("smallint");
+                b.Property<short>("MaximumLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("MaximumPartySize")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MaximumPartySize")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("MaximumPasswordLength")
-                        .HasColumnType("integer");
+                b.Property<int>("MaximumPasswordLength")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("MaximumVaultMoney")
-                        .HasColumnType("integer");
+                b.Property<int>("MaximumVaultMoney")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("RecoveryInterval")
-                        .HasColumnType("integer");
+                b.Property<int>("RecoveryInterval")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GameConfiguration","config");
-                });
+                b.ToTable("GameConfiguration", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<double>("ExpMultiplier")
-                        .HasColumnType("double precision");
+                b.Property<double>("ExpMultiplier")
+                    .HasColumnType("double precision");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<short>("Number")
-                        .HasColumnType("smallint");
+                b.Property<short>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("SafezoneMapId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("SafezoneMapId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte[]>("TerrainData")
-                        .HasColumnType("bytea");
+                b.Property<byte[]>("TerrainData")
+                    .HasColumnType("bytea");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("SafezoneMapId");
+                b.HasIndex("SafezoneMapId");
 
-                    b.ToTable("GameMapDefinition","config");
-                });
+                b.ToTable("GameMapDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinitionDropItemGroup", b =>
-                {
-                    b.Property<Guid>("GameMapDefinitionId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("GameMapDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("DropItemGroupId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("DropItemGroupId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("GameMapDefinitionId", "DropItemGroupId");
+                b.HasKey("GameMapDefinitionId", "DropItemGroupId");
 
-                    b.HasIndex("DropItemGroupId");
+                b.HasIndex("DropItemGroupId");
 
-                    b.ToTable("GameMapDefinitionDropItemGroup","config");
-                });
+                b.ToTable("GameMapDefinitionDropItemGroup", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<short>("MaximumPlayers")
-                        .HasColumnType("smallint");
+                b.Property<short>("MaximumPlayers")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GameServerConfiguration","config");
-                });
+                b.ToTable("GameServerConfiguration", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfigurationGameMapDefinition", b =>
-                {
-                    b.Property<Guid>("GameServerConfigurationId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("GameServerConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("GameMapDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("GameMapDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("GameServerConfigurationId", "GameMapDefinitionId");
+                b.HasKey("GameServerConfigurationId", "GameMapDefinitionId");
 
-                    b.HasIndex("GameMapDefinitionId");
+                b.HasIndex("GameMapDefinitionId");
 
-                    b.ToTable("GameServerConfigurationGameMapDefinition","config");
-                });
+                b.ToTable("GameServerConfigurationGameMapDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ServerConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ServerConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("ServerID")
-                        .HasColumnType("smallint");
+                b.Property<byte>("ServerID")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("ServerConfigurationId");
+                b.HasIndex("ServerConfigurationId");
 
-                    b.ToTable("GameServerDefinition","config");
-                });
+                b.ToTable("GameServerDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerEndpoint", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ClientId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ClientId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GameServerDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameServerDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("NetworkPort")
-                        .HasColumnType("integer");
+                b.Property<int>("NetworkPort")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ClientId");
+                b.HasIndex("ClientId");
 
-                    b.HasIndex("GameServerDefinitionId");
+                b.HasIndex("GameServerDefinitionId");
 
-                    b.ToTable("GameServerEndpoint","config");
-                });
+                b.ToTable("GameServerEndpoint", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Guild", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AllianceGuildId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("AllianceGuildId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("HostilityId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("HostilityId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte[]>("Logo")
-                        .HasColumnType("bytea");
+                b.Property<byte[]>("Logo")
+                    .HasColumnType("bytea");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("character varying(8)")
-                        .HasMaxLength(8);
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("character varying(8)")
+                    .HasMaxLength(8);
 
-                    b.Property<string>("Notice")
-                        .HasColumnType("text");
+                b.Property<string>("Notice")
+                    .HasColumnType("text");
 
-                    b.Property<int>("Score")
-                        .HasColumnType("integer");
+                b.Property<int>("Score")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AllianceGuildId");
+                b.HasIndex("AllianceGuildId");
 
-                    b.HasIndex("HostilityId");
+                b.HasIndex("HostilityId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                b.HasIndex("Name")
+                    .IsUnique();
 
-                    b.ToTable("Guild","guild");
-                });
+                b.ToTable("Guild", "guild");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GuildMember", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("GuildId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("GuildId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Status")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Status")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GuildId");
+                b.HasIndex("GuildId");
 
-                    b.ToTable("GuildMember","guild");
-                });
+                b.ToTable("GuildMember", "guild");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemOptionDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemOptionDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemSetGroupId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemSetGroupId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("LevelType")
-                        .HasColumnType("integer");
+                b.Property<int>("LevelType")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("Number")
-                        .HasColumnType("integer");
+                b.Property<int>("Number")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("OptionTypeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("OptionTypeId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("PowerUpDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("PowerUpDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ItemOptionDefinitionId");
+                b.HasIndex("ItemOptionDefinitionId");
 
-                    b.HasIndex("ItemSetGroupId");
+                b.HasIndex("ItemSetGroupId");
 
-                    b.HasIndex("OptionTypeId");
+                b.HasIndex("OptionTypeId");
 
-                    b.HasIndex("PowerUpDefinitionId");
+                b.HasIndex("PowerUpDefinitionId");
 
-                    b.ToTable("IncreasableItemOption","config");
-                });
+                b.ToTable("IncreasableItemOption", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Item", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("DefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("DefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Durability")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Durability")
+                    .HasColumnType("smallint");
 
-                    b.Property<bool>("HasSkill")
-                        .HasColumnType("boolean");
+                b.Property<bool>("HasSkill")
+                    .HasColumnType("boolean");
 
-                    b.Property<byte>("ItemSlot")
-                        .HasColumnType("smallint");
+                b.Property<byte>("ItemSlot")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("ItemStorageId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemStorageId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Level")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Level")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("SocketCount")
-                        .HasColumnType("integer");
+                b.Property<int>("SocketCount")
+                    .HasColumnType("integer");
 
-                    b.Property<int?>("StorePrice")
-                        .HasColumnType("integer");
+                b.Property<int?>("StorePrice")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("DefinitionId");
+                b.HasIndex("DefinitionId");
 
-                    b.HasIndex("ItemStorageId");
+                b.HasIndex("ItemStorageId");
 
-                    b.ToTable("Item","data");
-                });
+                b.ToTable("Item", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearance", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AppearanceDataId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("AppearanceDataId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("DefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("DefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("ItemSlot")
-                        .HasColumnType("smallint");
+                b.Property<byte>("ItemSlot")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Level")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Level")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AppearanceDataId");
+                b.HasIndex("AppearanceDataId");
 
-                    b.HasIndex("DefinitionId");
+                b.HasIndex("DefinitionId");
 
-                    b.ToTable("ItemAppearance","data");
-                });
+                b.ToTable("ItemAppearance", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearanceItemOptionType", b =>
-                {
-                    b.Property<Guid>("ItemAppearanceId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("ItemAppearanceId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("ItemOptionTypeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("ItemOptionTypeId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("ItemAppearanceId", "ItemOptionTypeId");
+                b.HasKey("ItemAppearanceId", "ItemOptionTypeId");
 
-                    b.HasIndex("ItemOptionTypeId");
+                b.HasIndex("ItemOptionTypeId");
 
-                    b.ToTable("ItemAppearanceItemOptionType","data");
-                });
+                b.ToTable("ItemAppearanceItemOptionType", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemBasePowerUpDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("BaseValue")
-                        .HasColumnType("real");
+                b.Property<float>("BaseValue")
+                    .HasColumnType("real");
 
-                    b.Property<Guid?>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TargetAttributeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("TargetAttributeId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ItemDefinitionId");
+                b.HasIndex("ItemDefinitionId");
 
-                    b.HasIndex("TargetAttributeId");
+                b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("ItemBasePowerUpDefinition","config");
-                });
+                b.ToTable("ItemBasePowerUpDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCrafting", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("ItemCraftingHandlerClassName")
-                        .HasColumnType("text");
+                b.Property<string>("ItemCraftingHandlerClassName")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("MonsterDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MonsterDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<byte>("Number")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("SimpleCraftingSettingsId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("SimpleCraftingSettingsId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("MonsterDefinitionId");
+                b.HasIndex("MonsterDefinitionId");
 
-                    b.HasIndex("SimpleCraftingSettingsId");
+                b.HasIndex("SimpleCraftingSettingsId");
 
-                    b.ToTable("ItemCrafting","config");
-                });
+                b.ToTable("ItemCrafting", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("AddPercentage")
-                        .HasColumnType("smallint");
+                b.Property<byte>("AddPercentage")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("FailResult")
-                        .HasColumnType("integer");
+                b.Property<int>("FailResult")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("MaximumAmount")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MinAmount")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("MaximumItemLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MinLvl")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("MinimumAmount")
-                        .HasColumnType("smallint");
+                b.Property<int>("NpcPriceDivisor")
+                    .HasColumnType("integer");
 
-                    b.Property<byte>("MinimumItemLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("RefID")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("NpcPriceDivisor")
-                        .HasColumnType("integer");
+                b.Property<Guid?>("SimpleCraftingSettingsId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Reference")
-                        .HasColumnType("smallint");
+                b.Property<int>("SuccessResult")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("SimpleCraftingSettingsId")
-                        .HasColumnType("uuid");
+                b.HasKey("Id");
 
-                    b.Property<int>("SuccessResult")
-                        .HasColumnType("integer");
+                b.HasIndex("ItemDefinitionId");
 
-                    b.HasKey("Id");
+                b.HasIndex("SimpleCraftingSettingsId");
 
-                    b.HasIndex("ItemDefinitionId");
-
-                    b.HasIndex("SimpleCraftingSettingsId");
-
-                    b.ToTable("ItemCraftingRequiredItem","config");
-                });
+                b.ToTable("ItemCraftingRequiredItem", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemOptionType", b =>
-                {
-                    b.Property<Guid>("ItemCraftingRequiredItemId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("ItemCraftingRequiredItemId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("ItemOptionTypeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("ItemOptionTypeId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("ItemCraftingRequiredItemId", "ItemOptionTypeId");
+                b.HasKey("ItemCraftingRequiredItemId", "ItemOptionTypeId");
 
-                    b.HasIndex("ItemOptionTypeId");
+                b.HasIndex("ItemOptionTypeId");
 
-                    b.ToTable("ItemCraftingRequiredItemItemOptionType","config");
-                });
+                b.ToTable("ItemCraftingRequiredItemItemOptionType", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingResultItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("AddLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("AddLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte?>("Durability")
-                        .HasColumnType("smallint");
+                b.Property<Guid?>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<byte>("RandLvlMax")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("RandomMaximumLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("RandLvlMin")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("RandomMinimumLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("RefID")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Reference")
-                        .HasColumnType("smallint");
+                b.Property<Guid?>("SimpleCraftingSettingsId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("SimpleCraftingSettingsId")
-                        .HasColumnType("uuid");
+                b.HasKey("Id");
 
-                    b.HasKey("Id");
+                b.HasIndex("ItemDefinitionId");
 
-                    b.HasIndex("ItemDefinitionId");
+                b.HasIndex("SimpleCraftingSettingsId");
 
-                    b.HasIndex("SimpleCraftingSettingsId");
-
-                    b.ToTable("ItemCraftingResultItem","config");
-                });
+                b.ToTable("ItemCraftingResultItem", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("ConsumeHandlerClass")
-                        .HasColumnType("text");
+                b.Property<string>("ConsumeHandlerClass")
+                    .HasColumnType("text");
 
-                    b.Property<byte>("DropLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("DropLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<bool>("DropsFromMonsters")
-                        .HasColumnType("boolean");
+                b.Property<bool>("DropsFromMonsters")
+                    .HasColumnType("boolean");
 
-                    b.Property<byte>("Durability")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Durability")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Group")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Group")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Height")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Height")
+                    .HasColumnType("smallint");
 
-                    b.Property<bool>("IsAmmunition")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsAmmunition")
+                    .HasColumnType("boolean");
 
-                    b.Property<bool>("IsBoundToCharacter")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsBoundToCharacter")
+                    .HasColumnType("boolean");
 
-                    b.Property<Guid?>("ItemSlotId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemSlotId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("MaximumItemLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MaximumItemLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("MaximumSockets")
-                        .HasColumnType("integer");
+                b.Property<int>("MaximumSockets")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<short>("Number")
-                        .HasColumnType("smallint");
+                b.Property<short>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("SkillId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("SkillId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Value")
-                        .HasColumnType("integer");
+                b.Property<int>("Value")
+                    .HasColumnType("integer");
 
-                    b.Property<byte>("Width")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Width")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("ItemSlotId");
+                b.HasIndex("ItemSlotId");
 
-                    b.HasIndex("SkillId");
+                b.HasIndex("SkillId");
 
-                    b.ToTable("ItemDefinition","config");
-                });
+                b.ToTable("ItemDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionCharacterClass", b =>
-                {
-                    b.Property<Guid>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("CharacterClassId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("CharacterClassId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("ItemDefinitionId", "CharacterClassId");
+                b.HasKey("ItemDefinitionId", "CharacterClassId");
 
-                    b.HasIndex("CharacterClassId");
+                b.HasIndex("CharacterClassId");
 
-                    b.ToTable("ItemDefinitionCharacterClass","config");
-                });
+                b.ToTable("ItemDefinitionCharacterClass", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemOptionDefinition", b =>
-                {
-                    b.Property<Guid>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("ItemOptionDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("ItemOptionDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("ItemDefinitionId", "ItemOptionDefinitionId");
+                b.HasKey("ItemDefinitionId", "ItemOptionDefinitionId");
 
-                    b.HasIndex("ItemOptionDefinitionId");
+                b.HasIndex("ItemOptionDefinitionId");
 
-                    b.ToTable("ItemDefinitionItemOptionDefinition","config");
-                });
+                b.ToTable("ItemDefinitionItemOptionDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemSetGroup", b =>
-                {
-                    b.Property<Guid>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("ItemSetGroupId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("ItemSetGroupId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("ItemDefinitionId", "ItemSetGroupId");
+                b.HasKey("ItemDefinitionId", "ItemSetGroupId");
 
-                    b.HasIndex("ItemSetGroupId");
+                b.HasIndex("ItemSetGroupId");
 
-                    b.ToTable("ItemDefinitionItemSetGroup","config");
-                });
+                b.ToTable("ItemDefinitionItemSetGroup", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemItemSetGroup", b =>
-                {
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("ItemId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("ItemSetGroupId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("ItemSetGroupId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("ItemId", "ItemSetGroupId");
+                b.HasKey("ItemId", "ItemSetGroupId");
 
-                    b.HasIndex("ItemSetGroupId");
+                b.HasIndex("ItemSetGroupId");
 
-                    b.ToTable("ItemItemSetGroup","data");
-                });
+                b.ToTable("ItemItemSetGroup", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOfItemSet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BonusOptionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("BonusOptionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemSetGroupId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemSetGroupId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BonusOptionId");
+                b.HasIndex("BonusOptionId");
 
-                    b.HasIndex("ItemDefinitionId");
+                b.HasIndex("ItemDefinitionId");
 
-                    b.HasIndex("ItemSetGroupId");
+                b.HasIndex("ItemSetGroupId");
 
-                    b.ToTable("ItemOfItemSet","config");
-                });
+                b.ToTable("ItemOfItemSet", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("AddChance")
-                        .HasColumnType("real");
+                b.Property<float>("AddChance")
+                    .HasColumnType("real");
 
-                    b.Property<bool>("AddsRandomly")
-                        .HasColumnType("boolean");
+                b.Property<bool>("AddsRandomly")
+                    .HasColumnType("boolean");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("MaximumOptionsPerItem")
-                        .HasColumnType("integer");
+                b.Property<int>("MaximumOptionsPerItem")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemOptionDefinition","config");
-                });
+                b.ToTable("ItemOptionDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionLink", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemOptionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemOptionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
+                b.Property<int>("Level")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ItemId");
+                b.HasIndex("ItemId");
 
-                    b.HasIndex("ItemOptionId");
+                b.HasIndex("ItemOptionId");
 
-                    b.ToTable("ItemOptionLink","data");
-                });
+                b.ToTable("ItemOptionLink", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionOfLevel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("IncreasableItemOptionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("IncreasableItemOptionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
+                b.Property<int>("Level")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("PowerUpDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("PowerUpDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("RequiredItemLevel")
-                        .HasColumnType("integer");
+                b.Property<int>("RequiredItemLevel")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("IncreasableItemOptionId");
+                b.HasIndex("IncreasableItemOptionId");
 
-                    b.HasIndex("PowerUpDefinitionId");
+                b.HasIndex("PowerUpDefinitionId");
 
-                    b.ToTable("ItemOptionOfLevel","config");
-                });
+                b.ToTable("ItemOptionOfLevel", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsVisible")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemOptionType","config");
-                });
+                b.ToTable("ItemOptionType", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("AlwaysApplies")
-                        .HasColumnType("boolean");
+                b.Property<bool>("AlwaysApplies")
+                    .HasColumnType("boolean");
 
-                    b.Property<int>("AncientSetDiscriminator")
-                        .HasColumnType("integer");
+                b.Property<int>("AncientSetDiscriminator")
+                    .HasColumnType("integer");
 
-                    b.Property<bool>("CountDistinct")
-                        .HasColumnType("boolean");
+                b.Property<bool>("CountDistinct")
+                    .HasColumnType("boolean");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("MinimumItemCount")
-                        .HasColumnType("integer");
+                b.Property<int>("MinimumItemCount")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<int>("SetLevel")
-                        .HasColumnType("integer");
+                b.Property<int>("SetLevel")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemSetGroup","config");
-                });
+                b.ToTable("ItemSetGroup", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemSlotType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("RawItemSlots")
-                        .HasColumnName("ItemSlots")
-                        .HasColumnType("text");
+                b.Property<string>("RawItemSlots")
+                    .HasColumnName("ItemSlots")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemSlotType","config");
-                });
+                b.ToTable("ItemSlotType", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Money")
-                        .HasColumnType("integer");
+                b.Property<int>("Money")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("ItemStorage","data");
-                });
+                b.ToTable("ItemStorage", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.JewelMix", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MixedJewelId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MixedJewelId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Number")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("SingleJewelId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("SingleJewelId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("MixedJewelId");
+                b.HasIndex("MixedJewelId");
 
-                    b.HasIndex("SingleJewelId");
+                b.HasIndex("SingleJewelId");
 
-                    b.ToTable("JewelMix","config");
-                });
+                b.ToTable("JewelMix", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterBody", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Animation")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Animation")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("HeaderId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("HeaderId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Message")
-                        .HasColumnType("text");
+                b.Property<string>("Message")
+                    .HasColumnType("text");
 
-                    b.Property<byte>("Rotation")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Rotation")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("SenderAppearanceId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("SenderAppearanceId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("HeaderId");
+                b.HasIndex("HeaderId");
 
-                    b.HasIndex("SenderAppearanceId");
+                b.HasIndex("SenderAppearanceId");
 
-                    b.ToTable("LetterBody","data");
-                });
+                b.ToTable("LetterBody", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterHeader", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<DateTime>("LetterDate")
-                        .HasColumnType("timestamp without time zone");
+                b.Property<DateTime>("LetterDate")
+                    .HasColumnType("timestamp without time zone");
 
-                    b.Property<bool>("ReadFlag")
-                        .HasColumnType("boolean");
+                b.Property<bool>("ReadFlag")
+                    .HasColumnType("boolean");
 
-                    b.Property<Guid>("ReceiverId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("ReceiverId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("SenderName")
-                        .HasColumnType("text");
+                b.Property<string>("SenderName")
+                    .HasColumnType("text");
 
-                    b.Property<string>("Subject")
-                        .HasColumnType("text");
+                b.Property<string>("Subject")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ReceiverId");
+                b.HasIndex("ReceiverId");
 
-                    b.ToTable("LetterHeader","data");
-                });
+                b.ToTable("LetterHeader", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LevelBonus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("AdditionalValue")
-                        .HasColumnType("real");
+                b.Property<float>("AdditionalValue")
+                    .HasColumnType("real");
 
-                    b.Property<Guid?>("ItemBasePowerUpDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemBasePowerUpDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
+                b.Property<int>("Level")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ItemBasePowerUpDefinitionId");
+                b.HasIndex("ItemBasePowerUpDefinitionId");
 
-                    b.ToTable("LevelBonus","config");
-                });
+                b.ToTable("LevelBonus", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("InformObservers")
-                        .HasColumnType("boolean");
+                b.Property<bool>("InformObservers")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<short>("Number")
-                        .HasColumnType("smallint");
+                b.Property<short>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("PowerUpDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("PowerUpDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("SendDuration")
-                        .HasColumnType("boolean");
+                b.Property<bool>("SendDuration")
+                    .HasColumnType("boolean");
 
-                    b.Property<bool>("StopByDeath")
-                        .HasColumnType("boolean");
+                b.Property<bool>("StopByDeath")
+                    .HasColumnType("boolean");
 
-                    b.Property<byte>("SubType")
-                        .HasColumnType("smallint");
+                b.Property<byte>("SubType")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("PowerUpDefinitionId");
+                b.HasIndex("PowerUpDefinitionId");
 
-                    b.ToTable("MagicEffectDefinition","config");
-                });
+                b.ToTable("MagicEffectDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Aggregation")
-                        .HasColumnType("integer");
+                b.Property<int>("Aggregation")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("DisplayValueFormula")
-                        .HasColumnType("text");
+                b.Property<string>("DisplayValueFormula")
+                    .HasColumnType("text");
 
-                    b.Property<byte>("MaximumLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MaximumLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("MinimumLevel")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MinimumLevel")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Rank")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Rank")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("ReplacedSkillId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ReplacedSkillId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("RootId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("RootId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TargetAttributeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("TargetAttributeId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("ValueFormula")
-                        .HasColumnType("text");
+                b.Property<string>("ValueFormula")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ReplacedSkillId");
+                b.HasIndex("ReplacedSkillId");
 
-                    b.HasIndex("RootId");
+                b.HasIndex("RootId");
 
-                    b.HasIndex("TargetAttributeId");
+                b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("MasterSkillDefinition","config");
-                });
+                b.ToTable("MasterSkillDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinitionSkill", b =>
-                {
-                    b.Property<Guid>("MasterSkillDefinitionId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("MasterSkillDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("SkillId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("SkillId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("MasterSkillDefinitionId", "SkillId");
+                b.HasKey("MasterSkillDefinitionId", "SkillId");
 
-                    b.HasIndex("SkillId");
+                b.HasIndex("SkillId");
 
-                    b.ToTable("MasterSkillDefinitionSkill","config");
-                });
+                b.ToTable("MasterSkillDefinitionSkill", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillRoot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("MasterSkillRoot","config");
-                });
+                b.ToTable("MasterSkillRoot", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterAttribute", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AttributeDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("AttributeDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MonsterDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MonsterDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("Value")
-                        .HasColumnType("real");
+                b.Property<float>("Value")
+                    .HasColumnType("real");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AttributeDefinitionId");
+                b.HasIndex("AttributeDefinitionId");
 
-                    b.HasIndex("MonsterDefinitionId");
+                b.HasIndex("MonsterDefinitionId");
 
-                    b.ToTable("MonsterAttribute","config");
-                });
+                b.ToTable("MonsterAttribute", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<TimeSpan>("AttackDelay")
-                        .HasColumnType("interval");
+                b.Property<TimeSpan>("AttackDelay")
+                    .HasColumnType("interval");
 
-                    b.Property<byte>("AttackRange")
-                        .HasColumnType("smallint");
+                b.Property<byte>("AttackRange")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("AttackSkillId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("AttackSkillId")
+                    .HasColumnType("uuid");
 
-                    b.Property<byte>("Attribute")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Attribute")
+                    .HasColumnType("smallint");
 
-                    b.Property<string>("Designation")
-                        .HasColumnType("text");
+                b.Property<string>("Designation")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MerchantStoreId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MerchantStoreId")
+                    .HasColumnType("uuid");
 
-                    b.Property<TimeSpan>("MoveDelay")
-                        .HasColumnType("interval");
+                b.Property<TimeSpan>("MoveDelay")
+                    .HasColumnType("interval");
 
-                    b.Property<byte>("MoveRange")
-                        .HasColumnType("smallint");
+                b.Property<byte>("MoveRange")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("NpcWindow")
-                        .HasColumnType("integer");
+                b.Property<int>("NpcWindow")
+                    .HasColumnType("integer");
 
-                    b.Property<short>("Number")
-                        .HasColumnType("smallint");
+                b.Property<int>("TrapType")
+                    .HasColumnType("Integer");
 
-                    b.Property<int>("NumberOfMaximumItemDrops")
-                        .HasColumnType("integer");
+                b.Property<short>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<TimeSpan>("RespawnDelay")
-                        .HasColumnType("interval");
+                b.Property<int>("NumberOfMaximumItemDrops")
+                    .HasColumnType("integer");
 
-                    b.Property<short>("Skill")
-                        .HasColumnType("smallint");
+                b.Property<TimeSpan>("RespawnDelay")
+                    .HasColumnType("interval");
 
-                    b.Property<short>("ViewRange")
-                        .HasColumnType("smallint");
+                b.Property<short>("Skill")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.Property<short>("ViewRange")
+                    .HasColumnType("smallint");
 
-                    b.HasIndex("AttackSkillId");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("AttackSkillId");
 
-                    b.HasIndex("MerchantStoreId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("MonsterDefinition","config");
-                });
+                b.HasIndex("MerchantStoreId");
+
+                b.ToTable("MonsterDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinitionDropItemGroup", b =>
-                {
-                    b.Property<Guid>("MonsterDefinitionId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("MonsterDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("DropItemGroupId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("DropItemGroupId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("MonsterDefinitionId", "DropItemGroupId");
+                b.HasKey("MonsterDefinitionId", "DropItemGroupId");
 
-                    b.HasIndex("DropItemGroupId");
+                b.HasIndex("DropItemGroupId");
 
-                    b.ToTable("MonsterDefinitionDropItemGroup","config");
-                });
+                b.ToTable("MonsterDefinitionDropItemGroup", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterSpawnArea", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Direction")
-                        .HasColumnType("integer");
+                b.Property<int>("Direction")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("GameMapId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameMapId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MonsterDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MonsterDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<short>("Quantity")
-                        .HasColumnType("smallint");
+                b.Property<short>("Quantity")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("SpawnTrigger")
-                        .HasColumnType("integer");
+                b.Property<int>("SpawnTrigger")
+                    .HasColumnType("integer");
 
-                    b.Property<byte>("X1")
-                        .HasColumnType("smallint");
+                b.Property<byte>("X1")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("X2")
-                        .HasColumnType("smallint");
+                b.Property<byte>("X2")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Y1")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Y1")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("Y2")
-                        .HasColumnType("smallint");
+                b.Property<byte>("Y2")
+                    .HasColumnType("smallint");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameMapId");
+                b.HasIndex("GameMapId");
 
-                    b.HasIndex("MonsterDefinitionId");
+                b.HasIndex("MonsterDefinitionId");
 
-                    b.ToTable("MonsterSpawnArea","config");
-                });
+                b.ToTable("MonsterSpawnArea", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PlugInConfiguration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("CustomPlugInSource")
-                        .HasColumnType("text");
+                b.Property<string>("CustomPlugInSource")
+                    .HasColumnType("text");
 
-                    b.Property<string>("ExternalAssemblyName")
-                        .HasColumnType("text");
+                b.Property<string>("ExternalAssemblyName")
+                    .HasColumnType("text");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean");
 
-                    b.Property<Guid>("TypeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("TypeId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("PlugInConfiguration","config");
-                });
+                b.ToTable("PlugInConfiguration", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BoostId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("BoostId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TargetAttributeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("TargetAttributeId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BoostId");
+                b.HasIndex("BoostId");
 
-                    b.HasIndex("TargetAttributeId");
+                b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("PowerUpDefinition","config");
-                });
+                b.ToTable("PowerUpDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("AggregateType")
-                        .HasColumnType("integer");
+                b.Property<int>("AggregateType")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("ParentAsBoostId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ParentAsBoostId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ParentAsDurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ParentAsDurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("Value")
-                        .HasColumnType("real");
+                b.Property<float>("Value")
+                    .HasColumnType("real");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("PowerUpDefinitionValue","config");
-                });
+                b.ToTable("PowerUpDefinitionValue", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BoostId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("BoostId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("DurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("DurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TargetAttributeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("TargetAttributeId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BoostId")
-                        .IsUnique();
+                b.HasIndex("BoostId")
+                    .IsUnique();
 
-                    b.HasIndex("DurationId")
-                        .IsUnique();
+                b.HasIndex("DurationId")
+                    .IsUnique();
 
-                    b.HasIndex("TargetAttributeId");
+                b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("PowerUpDefinitionWithDuration","config");
-                });
+                b.ToTable("PowerUpDefinitionWithDuration", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<short>("Group")
-                        .HasColumnType("smallint");
+                b.Property<short>("Group")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("MaximumCharacterLevel")
-                        .HasColumnType("integer");
+                b.Property<int>("MaximumCharacterLevel")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("MinimumCharacterLevel")
-                        .HasColumnType("integer");
+                b.Property<int>("MinimumCharacterLevel")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("MonsterDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MonsterDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<short>("Number")
-                        .HasColumnType("smallint");
+                b.Property<short>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("QualifiedCharacterId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("QualifiedCharacterId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("QuestGiverId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("QuestGiverId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("Repeatable")
-                        .HasColumnType("boolean");
+                b.Property<bool>("Repeatable")
+                    .HasColumnType("boolean");
 
-                    b.Property<int>("RequiredStartMoney")
-                        .HasColumnType("integer");
+                b.Property<int>("RequiredStartMoney")
+                    .HasColumnType("integer");
 
-                    b.Property<bool>("RequiresClientAction")
-                        .HasColumnType("boolean");
+                b.Property<bool>("RequiresClientAction")
+                    .HasColumnType("boolean");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("MonsterDefinitionId");
+                b.HasIndex("MonsterDefinitionId");
 
-                    b.HasIndex("QualifiedCharacterId");
+                b.HasIndex("QualifiedCharacterId");
 
-                    b.HasIndex("QuestGiverId");
+                b.HasIndex("QuestGiverId");
 
-                    b.ToTable("QuestDefinition","config");
-                });
+                b.ToTable("QuestDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestItemRequirement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("DropItemGroupId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("DropItemGroupId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("MinimumNumber")
-                        .HasColumnType("integer");
+                b.Property<int>("MinimumNumber")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("QuestDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("QuestDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("DropItemGroupId");
+                b.HasIndex("DropItemGroupId");
 
-                    b.HasIndex("ItemId");
+                b.HasIndex("ItemId");
 
-                    b.HasIndex("QuestDefinitionId");
+                b.HasIndex("QuestDefinitionId");
 
-                    b.ToTable("QuestItemRequirement","config");
-                });
+                b.ToTable("QuestItemRequirement", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("MinimumNumber")
-                        .HasColumnType("integer");
+                b.Property<int>("MinimumNumber")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("MonsterId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MonsterId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("QuestDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("QuestDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("MonsterId");
+                b.HasIndex("MonsterId");
 
-                    b.HasIndex("QuestDefinitionId");
+                b.HasIndex("QuestDefinitionId");
 
-                    b.ToTable("QuestMonsterKillRequirement","config");
-                });
+                b.ToTable("QuestMonsterKillRequirement", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirementState", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CharacterQuestStateId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CharacterQuestStateId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("KillCount")
-                        .HasColumnType("integer");
+                b.Property<int>("KillCount")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("RequirementId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("RequirementId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CharacterQuestStateId");
+                b.HasIndex("CharacterQuestStateId");
 
-                    b.HasIndex("RequirementId");
+                b.HasIndex("RequirementId");
 
-                    b.ToTable("QuestMonsterKillRequirementState","data");
-                });
+                b.ToTable("QuestMonsterKillRequirementState", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestReward", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AttributeRewardId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("AttributeRewardId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemRewardId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ItemRewardId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("QuestDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("QuestDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("RewardType")
-                        .HasColumnType("integer");
+                b.Property<int>("RewardType")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("Value")
-                        .HasColumnType("integer");
+                b.Property<int>("Value")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AttributeRewardId");
+                b.HasIndex("AttributeRewardId");
 
-                    b.HasIndex("ItemRewardId");
+                b.HasIndex("ItemRewardId");
 
-                    b.HasIndex("QuestDefinitionId");
+                b.HasIndex("QuestDefinitionId");
 
-                    b.ToTable("QuestReward","config");
-                });
+                b.ToTable("QuestReward", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Money")
-                        .HasColumnType("integer");
+                b.Property<byte>("ExcOptionChance")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("MoneyPerFinalSuccessPercentage")
-                        .HasColumnType("integer");
+                b.Property<byte>("LuckOptionChance")
+                    .HasColumnType("smallint");
 
-                    b.Property<bool>("MultipleAllowed")
-                        .HasColumnType("boolean");
+                b.Property<byte>("MaxExcOptions")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("ResultItemExcellentOptionChance")
-                        .HasColumnType("smallint");
+                b.Property<int>("Money")
+                    .HasColumnType("integer");
 
-                    b.Property<byte>("ResultItemLuckOptionChance")
-                        .HasColumnType("smallint");
+                b.Property<bool>("MultipleAllowed")
+                    .HasColumnType("boolean");
 
-                    b.Property<byte>("ResultItemMaxExcOptionCount")
-                        .HasColumnType("smallint");
+                b.Property<int>("ResultItemSelect")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("ResultItemSelect")
-                        .HasColumnType("integer");
+                b.Property<byte>("SkillOptionChance")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("ResultItemSkillChance")
-                        .HasColumnType("smallint");
+                b.Property<byte>("SuccessPercent")
+                    .HasColumnType("smallint");
 
-                    b.Property<byte>("SuccessPercent")
-                        .HasColumnType("smallint");
+                b.HasKey("Id");
 
-                    b.Property<int>("SuccessPercentageAdditionForAncientItem")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SuccessPercentageAdditionForExcellentItem")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SuccessPercentageAdditionForLuck")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SuccessPercentageAdditionForSocketItem")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SimpleCraftingSettings","config");
-                });
+                b.ToTable("SimpleCraftingSettings", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Skill", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("AttackDamage")
-                        .HasColumnType("integer");
+                b.Property<int>("AttackDamage")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("DamageType")
-                        .HasColumnType("integer");
+                b.Property<int>("DamageType")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("ElementalModifierTargetId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("ElementalModifierTargetId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<short>("ImplicitTargetRange")
-                        .HasColumnType("smallint");
+                b.Property<short>("ImplicitTargetRange")
+                    .HasColumnType("smallint");
 
-                    b.Property<Guid?>("MagicEffectDefId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MagicEffectDefId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MasterDefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("MasterDefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("MovesTarget")
-                        .HasColumnType("boolean");
+                b.Property<bool>("MovesTarget")
+                    .HasColumnType("boolean");
 
-                    b.Property<bool>("MovesToTarget")
-                        .HasColumnType("boolean");
+                b.Property<bool>("MovesToTarget")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<short>("Number")
-                        .HasColumnType("smallint");
+                b.Property<short>("Number")
+                    .HasColumnType("smallint");
 
-                    b.Property<short>("Range")
-                        .HasColumnType("smallint");
+                b.Property<short>("Range")
+                    .HasColumnType("smallint");
 
-                    b.Property<int>("SkillType")
-                        .HasColumnType("integer");
+                b.Property<int>("SkillType")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("Target")
-                        .HasColumnType("integer");
+                b.Property<int>("Target")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("TargetRestriction")
-                        .HasColumnType("integer");
+                b.Property<int>("TargetRestriction")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ElementalModifierTargetId");
+                b.HasIndex("ElementalModifierTargetId");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("MagicEffectDefId");
+                b.HasIndex("MagicEffectDefId");
 
-                    b.HasIndex("MasterDefinitionId");
+                b.HasIndex("MasterDefinitionId");
 
-                    b.ToTable("Skill","config");
-                });
+                b.ToTable("Skill", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillCharacterClass", b =>
-                {
-                    b.Property<Guid>("SkillId")
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("SkillId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("CharacterClassId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("CharacterClassId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("SkillId", "CharacterClassId");
+                b.HasKey("SkillId", "CharacterClassId");
 
-                    b.HasIndex("CharacterClassId");
+                b.HasIndex("CharacterClassId");
 
-                    b.ToTable("SkillCharacterClass","config");
-                });
+                b.ToTable("SkillCharacterClass", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CharacterId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CharacterId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
+                b.Property<int>("Level")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("SkillId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("SkillId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CharacterId");
+                b.HasIndex("CharacterId");
 
-                    b.HasIndex("SkillId");
+                b.HasIndex("SkillId");
 
-                    b.ToTable("SkillEntry","data");
-                });
+                b.ToTable("SkillEntry", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttribute", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CharacterId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CharacterId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("DefinitionId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("DefinitionId")
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("Value")
-                        .HasColumnType("real");
+                b.Property<float>("Value")
+                    .HasColumnType("real");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CharacterId");
+                b.HasIndex("CharacterId");
 
-                    b.HasIndex("DefinitionId");
+                b.HasIndex("DefinitionId");
 
-                    b.ToTable("StatAttribute","data");
-                });
+                b.ToTable("StatAttribute", "data");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttributeDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AttributeId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("AttributeId")
+                    .HasColumnType("uuid");
 
-                    b.Property<float>("BaseValue")
-                        .HasColumnType("real");
+                b.Property<float>("BaseValue")
+                    .HasColumnType("real");
 
-                    b.Property<Guid?>("CharacterClassId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("CharacterClassId")
+                    .HasColumnType("uuid");
 
-                    b.Property<bool>("IncreasableByPlayer")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IncreasableByPlayer")
+                    .HasColumnType("boolean");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AttributeId");
+                b.HasIndex("AttributeId");
 
-                    b.HasIndex("CharacterClassId");
+                b.HasIndex("CharacterClassId");
 
-                    b.ToTable("StatAttributeDefinition","config");
-                });
+                b.ToTable("StatAttributeDefinition", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.WarpInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Costs")
-                        .HasColumnType("integer");
+                b.Property<int>("Costs")
+                    .HasColumnType("integer");
 
-                    b.Property<Guid?>("GameConfigurationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GameConfigurationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GateId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("GateId")
+                    .HasColumnType("uuid");
 
-                    b.Property<int>("Index")
-                        .HasColumnType("integer");
+                b.Property<int>("Index")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("LevelRequirement")
-                        .HasColumnType("integer");
+                b.Property<int>("LevelRequirement")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                b.HasIndex("GameConfigurationId");
 
-                    b.HasIndex("GateId");
+                b.HasIndex("GateId");
 
-                    b.ToTable("WarpInfo","config");
-                });
+                b.ToTable("WarpInfo", "config");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Account", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawVault")
-                        .WithMany()
-                        .HasForeignKey("VaultId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawVault")
+                    .WithMany()
+                    .HasForeignKey("VaultId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AccountCharacterClass", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Account", "Account")
-                        .WithMany("JoinedUnlockedCharacterClasses")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Account", "Account")
+                    .WithMany("JoinedUnlockedCharacterClasses")
+                    .HasForeignKey("AccountId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
-                        .WithMany()
-                        .HasForeignKey("CharacterClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
+                    .WithMany()
+                    .HasForeignKey("CharacterClassId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawCharacterClass")
-                        .WithMany()
-                        .HasForeignKey("CharacterClassId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawCharacterClass")
+                    .WithMany()
+                    .HasForeignKey("CharacterClassId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawAttributes")
-                        .HasForeignKey("GameConfigurationId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawAttributes")
+                    .HasForeignKey("GameConfigurationId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRelationship", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", null)
-                        .WithMany("RawAttributeCombinations")
-                        .HasForeignKey("CharacterClassId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", null)
+                    .WithMany("RawAttributeCombinations")
+                    .HasForeignKey("CharacterClassId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawInputAttribute")
-                        .WithMany()
-                        .HasForeignKey("InputAttributeId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawInputAttribute")
+                    .WithMany()
+                    .HasForeignKey("InputAttributeId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", null)
-                        .WithMany("RawRelatedValues")
-                        .HasForeignKey("PowerUpDefinitionValueId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", null)
+                    .WithMany("RawRelatedValues")
+                    .HasForeignKey("PowerUpDefinitionValueId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
-                        .WithMany()
-                        .HasForeignKey("TargetAttributeId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    .WithMany()
+                    .HasForeignKey("TargetAttributeId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRequirement", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttribute")
-                        .WithMany()
-                        .HasForeignKey("AttributeId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttribute")
+                    .WithMany()
+                    .HasForeignKey("AttributeId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", null)
-                        .WithMany("RawMapRequirements")
-                        .HasForeignKey("GameMapDefinitionId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", null)
+                    .WithMany("RawMapRequirements")
+                    .HasForeignKey("GameMapDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", null)
-                        .WithMany("RawRequirements")
-                        .HasForeignKey("ItemDefinitionId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", null)
+                    .WithMany("RawRequirements")
+                    .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", null)
-                        .WithMany("RawConsumeRequirements")
-                        .HasForeignKey("SkillId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", null)
+                    .WithMany("RawConsumeRequirements")
+                    .HasForeignKey("SkillId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", null)
-                        .WithMany("RawRequirements")
-                        .HasForeignKey("SkillId1");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", null)
+                    .WithMany("RawRequirements")
+                    .HasForeignKey("SkillId1");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Character", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Account", null)
-                        .WithMany("RawCharacters")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade);
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Account", null)
+                    .WithMany("RawCharacters")
+                    .HasForeignKey("AccountId")
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawCharacterClass")
-                        .WithMany()
-                        .HasForeignKey("CharacterClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawCharacterClass")
+                    .WithMany()
+                    .HasForeignKey("CharacterClassId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawCurrentMap")
-                        .WithMany()
-                        .HasForeignKey("CurrentMapId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawCurrentMap")
+                    .WithMany()
+                    .HasForeignKey("CurrentMapId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawInventory")
-                        .WithMany()
-                        .HasForeignKey("InventoryId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawInventory")
+                    .WithMany()
+                    .HasForeignKey("InventoryId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawCharacterClasses")
-                        .HasForeignKey("GameConfigurationId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawCharacterClasses")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawHomeMap")
-                        .WithMany()
-                        .HasForeignKey("HomeMapId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawHomeMap")
+                    .WithMany()
+                    .HasForeignKey("HomeMapId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawNextGenerationClass")
-                        .WithMany()
-                        .HasForeignKey("NextGenerationClassId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawNextGenerationClass")
+                    .WithMany()
+                    .HasForeignKey("NextGenerationClassId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterDropItemGroup", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Character")
-                        .WithMany("JoinedDropItemGroups")
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Character")
+                    .WithMany("JoinedDropItemGroups")
+                    .HasForeignKey("CharacterId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
-                        .WithMany()
-                        .HasForeignKey("DropItemGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
+                    .WithMany()
+                    .HasForeignKey("DropItemGroupId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterQuestState", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", "RawActiveQuest")
-                        .WithMany()
-                        .HasForeignKey("ActiveQuestId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", "RawActiveQuest")
+                    .WithMany()
+                    .HasForeignKey("ActiveQuestId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
-                        .WithMany("RawQuestStates")
-                        .HasForeignKey("CharacterId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
+                    .WithMany("RawQuestStates")
+                    .HasForeignKey("CharacterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", "RawLastFinishedQuest")
-                        .WithMany()
-                        .HasForeignKey("LastFinishedQuestId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", "RawLastFinishedQuest")
+                    .WithMany()
+                    .HasForeignKey("LastFinishedQuestId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerEndpoint", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ChatServerDefinition", null)
-                        .WithMany("RawEndpoints")
-                        .HasForeignKey("ChatServerDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ChatServerDefinition", null)
+                    .WithMany("RawEndpoints")
+                    .HasForeignKey("ChatServerDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
-                        .WithMany()
-                        .HasForeignKey("ClientId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                    .WithMany()
+                    .HasForeignKey("ClientId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
-                        .WithMany()
-                        .HasForeignKey("ClientId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                    .WithMany()
+                    .HasForeignKey("ClientId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConstValueAttribute", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
-                        .WithMany("RawBaseAttributeValues")
-                        .HasForeignKey("CharacterClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
+                    .WithMany("RawBaseAttributeValues")
+                    .HasForeignKey("CharacterClassId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawDefinition")
-                        .WithMany()
-                        .HasForeignKey("DefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawDefinition")
+                    .WithMany()
+                    .HasForeignKey("DefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawDropItemGroups")
-                        .HasForeignKey("GameConfigurationId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawDropItemGroups")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonster")
-                        .WithMany()
-                        .HasForeignKey("MonsterId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonster")
+                    .WithMany()
+                    .HasForeignKey("MonsterId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroupItemDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
-                        .WithMany("JoinedPossibleItems")
-                        .HasForeignKey("DropItemGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
+                    .WithMany("JoinedPossibleItems")
+                    .HasForeignKey("DropItemGroupId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
-                        .WithMany()
-                        .HasForeignKey("ItemDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    .WithMany()
+                    .HasForeignKey("ItemDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.EnterGate", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", null)
-                        .WithMany("RawEnterGates")
-                        .HasForeignKey("GameMapDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", null)
+                    .WithMany("RawEnterGates")
+                    .HasForeignKey("GameMapDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawTargetGate")
-                        .WithMany()
-                        .HasForeignKey("TargetGateId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawTargetGate")
+                    .WithMany()
+                    .HasForeignKey("TargetGateId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawMap")
-                        .WithMany("RawExitGates")
-                        .HasForeignKey("MapId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawMap")
+                    .WithMany("RawExitGates")
+                    .HasForeignKey("MapId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawMaps")
-                        .HasForeignKey("GameConfigurationId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawMaps")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawSafezoneMap")
-                        .WithMany()
-                        .HasForeignKey("SafezoneMapId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawSafezoneMap")
+                    .WithMany()
+                    .HasForeignKey("SafezoneMapId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinitionDropItemGroup", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
-                        .WithMany()
-                        .HasForeignKey("DropItemGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
+                    .WithMany()
+                    .HasForeignKey("DropItemGroupId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "GameMapDefinition")
-                        .WithMany("JoinedDropItemGroups")
-                        .HasForeignKey("GameMapDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "GameMapDefinition")
+                    .WithMany("JoinedDropItemGroups")
+                    .HasForeignKey("GameMapDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfigurationGameMapDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "GameMapDefinition")
-                        .WithMany()
-                        .HasForeignKey("GameMapDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "GameMapDefinition")
+                    .WithMany()
+                    .HasForeignKey("GameMapDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "GameServerConfiguration")
-                        .WithMany("JoinedMaps")
-                        .HasForeignKey("GameServerConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "GameServerConfiguration")
+                    .WithMany("JoinedMaps")
+                    .HasForeignKey("GameServerConfigurationId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", "RawGameConfiguration")
-                        .WithMany()
-                        .HasForeignKey("GameConfigurationId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", "RawGameConfiguration")
+                    .WithMany()
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "RawServerConfiguration")
-                        .WithMany()
-                        .HasForeignKey("ServerConfigurationId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "RawServerConfiguration")
+                    .WithMany()
+                    .HasForeignKey("ServerConfigurationId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerEndpoint", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
-                        .WithMany()
-                        .HasForeignKey("ClientId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                    .WithMany()
+                    .HasForeignKey("ClientId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", null)
-                        .WithMany("RawEndpoints")
-                        .HasForeignKey("GameServerDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", null)
+                    .WithMany("RawEndpoints")
+                    .HasForeignKey("GameServerDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Guild", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", "RawAllianceGuild")
-                        .WithMany()
-                        .HasForeignKey("AllianceGuildId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", "RawAllianceGuild")
+                    .WithMany()
+                    .HasForeignKey("AllianceGuildId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", "RawHostility")
-                        .WithMany()
-                        .HasForeignKey("HostilityId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", "RawHostility")
+                    .WithMany()
+                    .HasForeignKey("HostilityId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GuildMember", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", null)
-                        .WithMany("RawMembers")
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", null)
+                    .WithMany("RawMembers")
+                    .HasForeignKey("GuildId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Character")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Character")
+                    .WithMany()
+                    .HasForeignKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", null)
-                        .WithMany("RawPossibleOptions")
-                        .HasForeignKey("ItemOptionDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", null)
+                    .WithMany("RawPossibleOptions")
+                    .HasForeignKey("ItemOptionDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", null)
-                        .WithMany("RawOptions")
-                        .HasForeignKey("ItemSetGroupId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", null)
+                    .WithMany("RawOptions")
+                    .HasForeignKey("ItemSetGroupId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "RawOptionType")
-                        .WithMany()
-                        .HasForeignKey("OptionTypeId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "RawOptionType")
+                    .WithMany()
+                    .HasForeignKey("OptionTypeId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "RawPowerUpDefinition")
-                        .WithMany()
-                        .HasForeignKey("PowerUpDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "RawPowerUpDefinition")
+                    .WithMany()
+                    .HasForeignKey("PowerUpDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Item", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawDefinition")
-                        .WithMany()
-                        .HasForeignKey("DefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawDefinition")
+                    .WithMany()
+                    .HasForeignKey("DefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawItemStorage")
-                        .WithMany("RawItems")
-                        .HasForeignKey("ItemStorageId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawItemStorage")
+                    .WithMany("RawItems")
+                    .HasForeignKey("ItemStorageId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearance", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", null)
-                        .WithMany("RawEquippedItems")
-                        .HasForeignKey("AppearanceDataId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", null)
+                    .WithMany("RawEquippedItems")
+                    .HasForeignKey("AppearanceDataId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawDefinition")
-                        .WithMany()
-                        .HasForeignKey("DefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawDefinition")
+                    .WithMany()
+                    .HasForeignKey("DefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearanceItemOptionType", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearance", "ItemAppearance")
-                        .WithMany("JoinedVisibleOptions")
-                        .HasForeignKey("ItemAppearanceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearance", "ItemAppearance")
+                    .WithMany("JoinedVisibleOptions")
+                    .HasForeignKey("ItemAppearanceId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "ItemOptionType")
-                        .WithMany()
-                        .HasForeignKey("ItemOptionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "ItemOptionType")
+                    .WithMany()
+                    .HasForeignKey("ItemOptionTypeId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemBasePowerUpDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", null)
-                        .WithMany("RawBasePowerUpAttributes")
-                        .HasForeignKey("ItemDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", null)
+                    .WithMany("RawBasePowerUpAttributes")
+                    .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
-                        .WithMany()
-                        .HasForeignKey("TargetAttributeId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    .WithMany()
+                    .HasForeignKey("TargetAttributeId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCrafting", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
-                        .WithMany("RawItemCraftings")
-                        .HasForeignKey("MonsterDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
+                    .WithMany("RawItemCraftings")
+                    .HasForeignKey("MonsterDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", "RawSimpleCraftingSettings")
-                        .WithMany()
-                        .HasForeignKey("SimpleCraftingSettingsId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", "RawSimpleCraftingSettings")
+                    .WithMany()
+                    .HasForeignKey("SimpleCraftingSettingsId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
-                        .WithMany()
-                        .HasForeignKey("ItemDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
+                    .WithMany()
+                    .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", null)
-                        .WithMany("RawRequiredItems")
-                        .HasForeignKey("SimpleCraftingSettingsId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", null)
+                    .WithMany("RawRequiredItems")
+                    .HasForeignKey("SimpleCraftingSettingsId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemOptionType", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", "ItemCraftingRequiredItem")
-                        .WithMany("JoinedRequiredItemOptions")
-                        .HasForeignKey("ItemCraftingRequiredItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", "ItemCraftingRequiredItem")
+                    .WithMany("JoinedRequiredItemOptions")
+                    .HasForeignKey("ItemCraftingRequiredItemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "ItemOptionType")
-                        .WithMany()
-                        .HasForeignKey("ItemOptionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "ItemOptionType")
+                    .WithMany()
+                    .HasForeignKey("ItemOptionTypeId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingResultItem", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
-                        .WithMany()
-                        .HasForeignKey("ItemDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
+                    .WithMany()
+                    .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", null)
-                        .WithMany("RawResultItems")
-                        .HasForeignKey("SimpleCraftingSettingsId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", null)
+                    .WithMany("RawResultItems")
+                    .HasForeignKey("SimpleCraftingSettingsId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawItems")
-                        .HasForeignKey("GameConfigurationId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawItems")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSlotType", "RawItemSlot")
-                        .WithMany()
-                        .HasForeignKey("ItemSlotId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSlotType", "RawItemSlot")
+                    .WithMany()
+                    .HasForeignKey("ItemSlotId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawSkill")
-                        .WithMany()
-                        .HasForeignKey("SkillId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawSkill")
+                    .WithMany()
+                    .HasForeignKey("SkillId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionCharacterClass", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
-                        .WithMany()
-                        .HasForeignKey("CharacterClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
+                    .WithMany()
+                    .HasForeignKey("CharacterClassId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
-                        .WithMany("JoinedQualifiedCharacters")
-                        .HasForeignKey("ItemDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    .WithMany("JoinedQualifiedCharacters")
+                    .HasForeignKey("ItemDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemOptionDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
-                        .WithMany("JoinedPossibleItemOptions")
-                        .HasForeignKey("ItemDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    .WithMany("JoinedPossibleItemOptions")
+                    .HasForeignKey("ItemDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", "ItemOptionDefinition")
-                        .WithMany()
-                        .HasForeignKey("ItemOptionDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", "ItemOptionDefinition")
+                    .WithMany()
+                    .HasForeignKey("ItemOptionDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemSetGroup", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
-                        .WithMany("JoinedPossibleItemSetGroups")
-                        .HasForeignKey("ItemDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    .WithMany("JoinedPossibleItemSetGroups")
+                    .HasForeignKey("ItemDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", "ItemSetGroup")
-                        .WithMany()
-                        .HasForeignKey("ItemSetGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", "ItemSetGroup")
+                    .WithMany()
+                    .HasForeignKey("ItemSetGroupId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemItemSetGroup", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", "Item")
-                        .WithMany("JoinedItemSetGroups")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", "Item")
+                    .WithMany("JoinedItemSetGroups")
+                    .HasForeignKey("ItemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", "ItemSetGroup")
-                        .WithMany()
-                        .HasForeignKey("ItemSetGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", "ItemSetGroup")
+                    .WithMany()
+                    .HasForeignKey("ItemSetGroupId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOfItemSet", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", "RawBonusOption")
-                        .WithMany()
-                        .HasForeignKey("BonusOptionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", "RawBonusOption")
+                    .WithMany()
+                    .HasForeignKey("BonusOptionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
-                        .WithMany()
-                        .HasForeignKey("ItemDefinitionId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
+                    .WithMany()
+                    .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", null)
-                        .WithMany("RawItems")
-                        .HasForeignKey("ItemSetGroupId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", null)
+                    .WithMany("RawItems")
+                    .HasForeignKey("ItemSetGroupId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawItemOptions")
-                        .HasForeignKey("GameConfigurationId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawItemOptions")
+                    .HasForeignKey("GameConfigurationId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionLink", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", null)
-                        .WithMany("RawItemOptions")
-                        .HasForeignKey("ItemId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", null)
+                    .WithMany("RawItemOptions")
+                    .HasForeignKey("ItemId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", "RawItemOption")
-                        .WithMany()
-                        .HasForeignKey("ItemOptionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", "RawItemOption")
+                    .WithMany()
+                    .HasForeignKey("ItemOptionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionOfLevel", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", null)
-                        .WithMany("RawLevelDependentOptions")
-                        .HasForeignKey("IncreasableItemOptionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", null)
+                    .WithMany("RawLevelDependentOptions")
+                    .HasForeignKey("IncreasableItemOptionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "RawPowerUpDefinition")
-                        .WithMany()
-                        .HasForeignKey("PowerUpDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "RawPowerUpDefinition")
+                    .WithMany()
+                    .HasForeignKey("PowerUpDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawItemOptionTypes")
-                        .HasForeignKey("GameConfigurationId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawItemOptionTypes")
+                    .HasForeignKey("GameConfigurationId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawItemSetGroups")
-                        .HasForeignKey("GameConfigurationId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawItemSetGroups")
+                    .HasForeignKey("GameConfigurationId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemSlotType", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawItemSlotTypes")
-                        .HasForeignKey("GameConfigurationId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawItemSlotTypes")
+                    .HasForeignKey("GameConfigurationId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.JewelMix", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawJewelMixes")
-                        .HasForeignKey("GameConfigurationId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawJewelMixes")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawMixedJewel")
-                        .WithMany()
-                        .HasForeignKey("MixedJewelId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawMixedJewel")
+                    .WithMany()
+                    .HasForeignKey("MixedJewelId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawSingleJewel")
-                        .WithMany()
-                        .HasForeignKey("SingleJewelId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawSingleJewel")
+                    .WithMany()
+                    .HasForeignKey("SingleJewelId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterBody", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.LetterHeader", "RawHeader")
-                        .WithMany()
-                        .HasForeignKey("HeaderId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.LetterHeader", "RawHeader")
+                    .WithMany()
+                    .HasForeignKey("HeaderId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", "RawSenderAppearance")
-                        .WithMany()
-                        .HasForeignKey("SenderAppearanceId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", "RawSenderAppearance")
+                    .WithMany()
+                    .HasForeignKey("SenderAppearanceId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterHeader", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Receiver")
-                        .WithMany("RawLetters")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Receiver")
+                    .WithMany("RawLetters")
+                    .HasForeignKey("ReceiverId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LevelBonus", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemBasePowerUpDefinition", null)
-                        .WithMany("RawBonusPerLevel")
-                        .HasForeignKey("ItemBasePowerUpDefinitionId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemBasePowerUpDefinition", null)
+                    .WithMany("RawBonusPerLevel")
+                    .HasForeignKey("ItemBasePowerUpDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawMagicEffects")
-                        .HasForeignKey("GameConfigurationId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawMagicEffects")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "RawPowerUpDefinition")
-                        .WithMany()
-                        .HasForeignKey("PowerUpDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "RawPowerUpDefinition")
+                    .WithMany()
+                    .HasForeignKey("PowerUpDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawReplacedSkill")
-                        .WithMany()
-                        .HasForeignKey("ReplacedSkillId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawReplacedSkill")
+                    .WithMany()
+                    .HasForeignKey("ReplacedSkillId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillRoot", "RawRoot")
-                        .WithMany()
-                        .HasForeignKey("RootId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillRoot", "RawRoot")
+                    .WithMany()
+                    .HasForeignKey("RootId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
-                        .WithMany()
-                        .HasForeignKey("TargetAttributeId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    .WithMany()
+                    .HasForeignKey("TargetAttributeId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinitionSkill", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "MasterSkillDefinition")
-                        .WithMany("JoinedRequiredMasterSkills")
-                        .HasForeignKey("MasterSkillDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "MasterSkillDefinition")
+                    .WithMany("JoinedRequiredMasterSkills")
+                    .HasForeignKey("MasterSkillDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
-                        .WithMany()
-                        .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
+                    .WithMany()
+                    .HasForeignKey("SkillId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillRoot", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawMasterSkillRoots")
-                        .HasForeignKey("GameConfigurationId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawMasterSkillRoots")
+                    .HasForeignKey("GameConfigurationId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterAttribute", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttributeDefinition")
-                        .WithMany()
-                        .HasForeignKey("AttributeDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttributeDefinition")
+                    .WithMany()
+                    .HasForeignKey("AttributeDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
-                        .WithMany("RawAttributes")
-                        .HasForeignKey("MonsterDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
+                    .WithMany("RawAttributes")
+                    .HasForeignKey("MonsterDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawAttackSkill")
-                        .WithMany()
-                        .HasForeignKey("AttackSkillId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawAttackSkill")
+                    .WithMany()
+                    .HasForeignKey("AttackSkillId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawMonsters")
-                        .HasForeignKey("GameConfigurationId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawMonsters")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawMerchantStore")
-                        .WithMany()
-                        .HasForeignKey("MerchantStoreId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawMerchantStore")
+                    .WithMany()
+                    .HasForeignKey("MerchantStoreId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinitionDropItemGroup", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
-                        .WithMany()
-                        .HasForeignKey("DropItemGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
+                    .WithMany()
+                    .HasForeignKey("DropItemGroupId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "MonsterDefinition")
-                        .WithMany("JoinedDropItemGroups")
-                        .HasForeignKey("MonsterDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "MonsterDefinition")
+                    .WithMany("JoinedDropItemGroups")
+                    .HasForeignKey("MonsterDefinitionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterSpawnArea", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawGameMap")
-                        .WithMany("RawMonsterSpawns")
-                        .HasForeignKey("GameMapId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawGameMap")
+                    .WithMany("RawMonsterSpawns")
+                    .HasForeignKey("GameMapId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonsterDefinition")
-                        .WithMany()
-                        .HasForeignKey("MonsterDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonsterDefinition")
+                    .WithMany()
+                    .HasForeignKey("MonsterDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PlugInConfiguration", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawPlugInConfigurations")
-                        .HasForeignKey("GameConfigurationId");
-                });
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawPlugInConfigurations")
+                    .HasForeignKey("GameConfigurationId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawBoost")
-                        .WithMany()
-                        .HasForeignKey("BoostId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawBoost")
+                    .WithMany()
+                    .HasForeignKey("BoostId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
-                        .WithMany()
-                        .HasForeignKey("TargetAttributeId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    .WithMany()
+                    .HasForeignKey("TargetAttributeId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawBoost")
-                        .WithOne("ParentAsBoost")
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "BoostId")
-                        .HasConstraintName("PowerUpDefinitionWithDuration_Boost")
-                        .OnDelete(DeleteBehavior.Cascade);
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawBoost")
+                    .WithOne("ParentAsBoost")
+                    .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "BoostId")
+                    .HasConstraintName("PowerUpDefinitionWithDuration_Boost")
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawDuration")
-                        .WithOne("ParentAsDuration")
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "DurationId")
-                        .HasConstraintName("PowerUpDefinitionWithDuration_Duration")
-                        .OnDelete(DeleteBehavior.Cascade);
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawDuration")
+                    .WithOne("ParentAsDuration")
+                    .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "DurationId")
+                    .HasConstraintName("PowerUpDefinitionWithDuration_Duration")
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
-                        .WithMany()
-                        .HasForeignKey("TargetAttributeId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    .WithMany()
+                    .HasForeignKey("TargetAttributeId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
-                        .WithMany("RawQuests")
-                        .HasForeignKey("MonsterDefinitionId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
+                    .WithMany("RawQuests")
+                    .HasForeignKey("MonsterDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawQualifiedCharacter")
-                        .WithMany()
-                        .HasForeignKey("QualifiedCharacterId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawQualifiedCharacter")
+                    .WithMany()
+                    .HasForeignKey("QualifiedCharacterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawQuestGiver")
-                        .WithMany()
-                        .HasForeignKey("QuestGiverId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawQuestGiver")
+                    .WithMany()
+                    .HasForeignKey("QuestGiverId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestItemRequirement", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "RawDropItemGroup")
-                        .WithMany()
-                        .HasForeignKey("DropItemGroupId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "RawDropItemGroup")
+                    .WithMany()
+                    .HasForeignKey("DropItemGroupId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItem")
-                        .WithMany()
-                        .HasForeignKey("ItemId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItem")
+                    .WithMany()
+                    .HasForeignKey("ItemId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
-                        .WithMany("RawRequiredItems")
-                        .HasForeignKey("QuestDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
+                    .WithMany("RawRequiredItems")
+                    .HasForeignKey("QuestDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirement", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonster")
-                        .WithMany()
-                        .HasForeignKey("MonsterId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonster")
+                    .WithMany()
+                    .HasForeignKey("MonsterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
-                        .WithMany("RawRequiredMonsterKills")
-                        .HasForeignKey("QuestDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
+                    .WithMany("RawRequiredMonsterKills")
+                    .HasForeignKey("QuestDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirementState", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterQuestState", null)
-                        .WithMany("RawRequirementStates")
-                        .HasForeignKey("CharacterQuestStateId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterQuestState", null)
+                    .WithMany("RawRequirementStates")
+                    .HasForeignKey("CharacterQuestStateId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirement", "RawRequirement")
-                        .WithMany()
-                        .HasForeignKey("RequirementId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirement", "RawRequirement")
+                    .WithMany()
+                    .HasForeignKey("RequirementId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestReward", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttributeReward")
-                        .WithMany()
-                        .HasForeignKey("AttributeRewardId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttributeReward")
+                    .WithMany()
+                    .HasForeignKey("AttributeRewardId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", "RawItemReward")
-                        .WithMany()
-                        .HasForeignKey("ItemRewardId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", "RawItemReward")
+                    .WithMany()
+                    .HasForeignKey("ItemRewardId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
-                        .WithMany("RawRewards")
-                        .HasForeignKey("QuestDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
+                    .WithMany("RawRewards")
+                    .HasForeignKey("QuestDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Skill", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawElementalModifierTarget")
-                        .WithMany()
-                        .HasForeignKey("ElementalModifierTargetId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawElementalModifierTarget")
+                    .WithMany()
+                    .HasForeignKey("ElementalModifierTargetId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawSkills")
-                        .HasForeignKey("GameConfigurationId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawSkills")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", "RawMagicEffectDef")
-                        .WithMany()
-                        .HasForeignKey("MagicEffectDefId");
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", "RawMagicEffectDef")
+                    .WithMany()
+                    .HasForeignKey("MagicEffectDefId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "RawMasterDefinition")
-                        .WithMany()
-                        .HasForeignKey("MasterDefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "RawMasterDefinition")
+                    .WithMany()
+                    .HasForeignKey("MasterDefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillCharacterClass", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
-                        .WithMany()
-                        .HasForeignKey("CharacterClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
+                    .WithMany()
+                    .HasForeignKey("CharacterClassId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
-                        .WithMany("JoinedQualifiedCharacters")
-                        .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
+                    .WithMany("JoinedQualifiedCharacters")
+                    .HasForeignKey("SkillId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillEntry", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
-                        .WithMany("RawLearnedSkills")
-                        .HasForeignKey("CharacterId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
+                    .WithMany("RawLearnedSkills")
+                    .HasForeignKey("CharacterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawSkill")
-                        .WithMany()
-                        .HasForeignKey("SkillId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawSkill")
+                    .WithMany()
+                    .HasForeignKey("SkillId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttribute", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
-                        .WithMany("RawAttributes")
-                        .HasForeignKey("CharacterId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
+                    .WithMany("RawAttributes")
+                    .HasForeignKey("CharacterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawDefinition")
-                        .WithMany()
-                        .HasForeignKey("DefinitionId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawDefinition")
+                    .WithMany()
+                    .HasForeignKey("DefinitionId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttributeDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttribute")
-                        .WithMany()
-                        .HasForeignKey("AttributeId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttribute")
+                    .WithMany()
+                    .HasForeignKey("AttributeId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", null)
-                        .WithMany("RawStatAttributes")
-                        .HasForeignKey("CharacterClassId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", null)
+                    .WithMany("RawStatAttributes")
+                    .HasForeignKey("CharacterClassId");
+            });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.WarpInfo", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
-                        .WithMany("RawWarpList")
-                        .HasForeignKey("GameConfigurationId");
+            {
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    .WithMany("RawWarpList")
+                    .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawGate")
-                        .WithMany()
-                        .HasForeignKey("GateId");
-                });
+                b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawGate")
+                    .WithMany()
+                    .HasForeignKey("GateId");
+            });
 #pragma warning restore 612, 618
         }
     }

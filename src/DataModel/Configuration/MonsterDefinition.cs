@@ -167,6 +167,27 @@ namespace MUnique.OpenMU.DataModel.Configuration
     }
 
     /// <summary>
+    /// Type of the trap.
+    /// </summary>
+    public enum TrapType
+    {
+        /// <summary>
+        /// Attack always
+        /// </summary>
+        Normal,
+
+        /// <summary>
+        /// Activeted when pressed
+        /// </summary>
+        WhenPressed,
+
+        /// <summary>
+        /// Activeted when pressed and attacks everyone is near
+        /// </summary>
+        WhenPressedAttackArea,
+    }
+
+    /// <summary>
     /// A definition for a monster (or NPC in general).
     /// </summary>
     public class MonsterDefinition
@@ -240,6 +261,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the id of the npc window.
         /// </summary>
         public NpcWindow NpcWindow { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the trap.
+        /// </summary>
+        public TrapType TrapType { get; set; }
 
         /// <summary>
         /// Gets or sets the skill with which this monster is attacking. Also known as "Attack type".

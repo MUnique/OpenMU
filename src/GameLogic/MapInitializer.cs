@@ -79,7 +79,12 @@ namespace MUnique.OpenMU.GameLogic
                     NonPlayerCharacter npc;
 
                     // TODO: Check if the condition is correct... NPCs are not attackable, but some might need to be (castle gates etc.). Also some NPCs are attacking, but should not be attackable (Traps).
-                    if (monsterDef.AttackDelay > TimeSpan.Zero)
+                    if (monsterDef.MoveRange == 0)
+                    {
+                        Logger.Debug($"Creating trap {spawn}");
+                        npc = new Trap(spawn, monsterDef, createdMap, new BasicTrapIntelligence(createdMap));
+                    }
+                    else if (monsterDef.AttackDelay > TimeSpan.Zero)
                     {
                         Logger.Debug($"Creating monster {spawn}");
                         npc = new Monster(spawn, monsterDef, createdMap, this.defaultDropGenerator, new BasicMonsterIntelligence(createdMap), this.PlugInManager);
