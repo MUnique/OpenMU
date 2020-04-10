@@ -36,6 +36,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var chaosGoblin = this.GameConfiguration.Monsters.First(m => m.NpcWindow == NpcWindow.ChaosMachine);
             chaosGoblin.ItemCraftings.Add(this.ChaosWeaponCrafting());
             chaosGoblin.ItemCraftings.Add(this.FruitCrafting());
+            chaosGoblin.ItemCraftings.Add(this.DinorantCrafting());
             chaosGoblin.ItemCraftings.Add(this.PotionOfBlessCrafting());
             chaosGoblin.ItemCraftings.Add(this.PotionOfSoulCrafting());
             chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(3, 10, 1_000_000));
@@ -293,6 +294,43 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var harmony = this.Context.CreateNew<ItemCraftingResultItem>();
             harmony.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony");
             crafting.SimpleCraftingSettings.ResultItems.Add(harmony);
+
+            return crafting;
+        }
+
+        private ItemCrafting DinorantCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Dinorant";
+            crafting.Number = 5;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+
+            crafting.SimpleCraftingSettings = craftingSettings;
+            craftingSettings.Money = 500_000;
+            craftingSettings.SuccessPercent = 70;
+            craftingSettings.ResultItemExcellentOptionChance = 10;
+
+            // Requirements:
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            chaos.SuccessResult = MixResult.Disappear;
+            chaos.FailResult = MixResult.Disappear;
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var horn = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            horn.MinimumAmount = 10;
+            horn.MaximumAmount = 10;
+            horn.SuccessResult = MixResult.Disappear;
+            horn.FailResult = MixResult.Disappear;
+            horn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Uniria");
+            craftingSettings.RequiredItems.Add(horn);
+
+            // Result:
+            var dinorant = this.Context.CreateNew<ItemCraftingResultItem>();
+            dinorant.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Dinorant");
+            craftingSettings.ResultItems.Add(dinorant);
 
             return crafting;
         }
