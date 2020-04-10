@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
 
         private byte GetEventLevel(IList<CraftingRequiredItemLink> requiredItems)
         {
-            var item = requiredItems.First(ri => ri.Items.Any(i => i.Definition.Name == requiredEventItemName1));
+            var item = requiredItems.First(ri => ri.Items.Any(i => i.Definition.Name == this.requiredEventItemName1));
             return item.Items.First().Level;
         }
     }
