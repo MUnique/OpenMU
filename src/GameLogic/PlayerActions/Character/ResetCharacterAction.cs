@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         // Reset System Configuration
         private readonly bool IsEnabled = true;
         private readonly int ResetLimit = -1;
-        private readonly int RequiredLevel = 1;
+        private readonly int RequiredLevel = 400;
         private readonly int RequiredZen = 1;
         private readonly bool MultiplyZenByResetCount = true;
         private readonly bool ResetStats = true;
