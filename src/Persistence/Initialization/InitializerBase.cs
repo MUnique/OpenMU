@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization
 {
+    using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
     /// <summary>
     /// Base class for an <see cref="IInitializer"/>.
@@ -73,6 +75,16 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             var requirement = this.CreateRequirement(attribute, requiredValue);
             item.Requirements.Add(requirement);
+        }
+
+        /// <summary>
+        /// Gets the character class of the specified number.
+        /// </summary>
+        /// <param name="classNumber">The class number.</param>
+        /// <returns>The character class of the specified number.</returns>
+        protected CharacterClass GetCharacterClass(CharacterClassNumber classNumber)
+        {
+            return this.GameConfiguration.CharacterClasses.FirstOrDefault(c => c.Number == (byte)classNumber);
         }
     }
 }

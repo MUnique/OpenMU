@@ -415,12 +415,12 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
 
     <xsl:template match="pd:Field[pd:UseCustomIndexer = 'true']"></xsl:template>
 
-    <!-- Example: public CharacterData this[int index] => new CharacterData(this.data.Slice(8 + index));-->
-    <xsl:template match="pd:Field[pd:Type = 'Structure[]' and not(pd:UseCustomIndexer)]">
-      <xsl:variable name="typeName" select="pd:TypeName" />
-      <xsl:variable name="arrayOfVariableStruct" select="(../../pd:Structures/pd:Structure[pd:Name = $typeName and not(pd:Length)] or ../../../../pd:Structures/pd:Structure[pd:Name = $typeName and not(pd:Length)])" />
-      <xsl:variable name="typeLengthParamName" select="concat(translate(substring(pd:TypeName, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring(pd:TypeName, 2), 'Length')" />
-      <xsl:text>
+  <!-- Example: public CharacterData this[int index] => new CharacterData(this.data.Slice(8 + index));-->
+  <xsl:template match="pd:Field[pd:Type = 'Structure[]' and not(pd:UseCustomIndexer) and count(../pd:Field[pd:Type = 'Structure[]']) = 1]">
+    <xsl:variable name="typeName" select="pd:TypeName" />
+    <xsl:variable name="arrayOfVariableStruct" select="(../../pd:Structures/pd:Structure[pd:Name = $typeName and not(pd:Length)] or ../../../../pd:Structures/pd:Structure[pd:Name = $typeName and not(pd:Length)])" />
+    <xsl:variable name="typeLengthParamName" select="concat(translate(substring(pd:TypeName, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring(pd:TypeName, 2), 'Length')" />
+    <xsl:text>
         /// &lt;summary&gt;
         /// Gets the &lt;see cref="</xsl:text><xsl:value-of select="pd:TypeName" /><xsl:text>"/&gt; of the specified index.
         /// &lt;/summary&gt;</xsl:text>
@@ -456,6 +456,30 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       
       <xsl:value-of select="$newline"/>
     </xsl:template>
+  <xsl:template match="pd:Field[pd:Type = 'Structure[]' and not(pd:UseCustomIndexer) and count(../pd:Field[pd:Type = 'Structure[]']) &gt; 1]">
+    <xsl:variable name="typeName" select="pd:TypeName" />
+    <xsl:text>
+        /// &lt;summary&gt;
+        /// Gets the &lt;see cref="</xsl:text>
+    <xsl:value-of select="pd:TypeName" />
+    <xsl:text>"/&gt; of the specified index.
+        /// &lt;/summary&gt;</xsl:text>
+    <xsl:value-of select="$newline"/>
+    <xsl:text>        public </xsl:text>
+    <xsl:value-of select="pd:TypeName"/>
+    <xsl:text> Get</xsl:text>
+    <xsl:value-of select="pd:TypeName"/>
+    <xsl:text>(int index) => new </xsl:text>
+    <xsl:value-of select="pd:TypeName"/>
+    <xsl:text>(this.data.Slice(</xsl:text>
+    <xsl:value-of select="pd:Index"/>
+    <xsl:text> + (index * </xsl:text>
+    <xsl:value-of select="pd:TypeName"/>
+    <xsl:text>.Length</xsl:text>
+    <xsl:text>)));</xsl:text>
+
+    <xsl:value-of select="$newline"/>
+  </xsl:template>
 
     <xsl:template match="pd:Field[pd:DefaultValue]" mode="init">
       <xsl:value-of select="$newline"/>

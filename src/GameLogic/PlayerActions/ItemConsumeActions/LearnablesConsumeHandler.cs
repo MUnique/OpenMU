@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class LearnablesConsumeHandler : IItemConsumeHandler
     {
         /// <inheritdoc/>
-        public bool ConsumeItem(Player player, Item item, Item targetItem)
+        public bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {

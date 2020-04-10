@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         public void ShowVault()
         {
             this.player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(NpcWindow.VaultStorage);
-            this.player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(this.player.Vault.ItemStorage.Items);
+            this.player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(this.player.Vault.ItemStorage.Items, StoreKind.Normal);
             this.player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney(true);
 
             // Currently, we don't support vault locking yet. The following message probably needs to be moved into a separate plugin when we implement it.

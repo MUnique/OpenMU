@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
     /// </summary>
     [PlugIn(nameof(TestCustomPlugIn2), "")]
     [Guid("9431C449-1F0C-47C1-BE5D-F9E356090DAB")]
-    public class TestCustomPlugIn2 : ITestCustomPlugIn
+    public class TestCustomPlugIn2 : ITestCustomPlugIn, IAnotherCustomPlugIn
     {
     }
 }

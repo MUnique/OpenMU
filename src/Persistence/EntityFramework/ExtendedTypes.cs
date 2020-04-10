@@ -307,6 +307,120 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
         }
 
+        public ICollection<CharacterQuestState> RawQuestStates { get; } = new List<CharacterQuestState>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates
+        {
+            get
+            {
+                return base.QuestStates ?? (base.QuestStates = new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, CharacterQuestState>(this.RawQuestStates)); 
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.CharacterQuestState"/>.
+    /// </summary>
+    [Table("CharacterQuestState", Schema = "data")]
+    internal partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.CharacterQuestState, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="LastFinishedQuest"/>.
+        /// </summary>
+        public Guid? LastFinishedQuestId { get; set; }
+        
+        [ForeignKey("LastFinishedQuestId")]
+        public QuestDefinition RawLastFinishedQuest
+        { 
+            get { return base.LastFinishedQuest as QuestDefinition; }
+            set { base.LastFinishedQuest = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition LastFinishedQuest
+        {
+            get
+            {
+                return base.LastFinishedQuest;
+            }
+            
+            set
+            {
+                base.LastFinishedQuest = value;
+                this.LastFinishedQuestId = this.RawLastFinishedQuest?.Id;
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="ActiveQuest"/>.
+        /// </summary>
+        public Guid? ActiveQuestId { get; set; }
+        
+        [ForeignKey("ActiveQuestId")]
+        public QuestDefinition RawActiveQuest
+        { 
+            get { return base.ActiveQuest as QuestDefinition; }
+            set { base.ActiveQuest = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition ActiveQuest
+        {
+            get
+            {
+                return base.ActiveQuest;
+            }
+            
+            set
+            {
+                base.ActiveQuest = value;
+                this.ActiveQuestId = this.RawActiveQuest?.Id;
+            }
+        }
+
+        public ICollection<QuestMonsterKillRequirementState> RawRequirementStates { get; } = new List<QuestMonsterKillRequirementState>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState> RequirementStates
+        {
+            get
+            {
+                return base.RequirementStates ?? (base.RequirementStates = new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, QuestMonsterKillRequirementState>(this.RawRequirementStates)); 
+            }
+        }
+
                 
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -813,6 +927,70 @@ public ICollection<Item> RawItems { get; } = new List<Item>();
     }
 
     /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState"/>.
+    /// </summary>
+    [Table("QuestMonsterKillRequirementState", Schema = "data")]
+    internal partial class QuestMonsterKillRequirementState : MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Requirement"/>.
+        /// </summary>
+        public Guid? RequirementId { get; set; }
+        
+        [ForeignKey("RequirementId")]
+        public QuestMonsterKillRequirement RawRequirement
+        { 
+            get { return base.Requirement as QuestMonsterKillRequirement; }
+            set { base.Requirement = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement Requirement
+        {
+            get
+            {
+                return base.Requirement;
+            }
+            
+            set
+            {
+                base.Requirement = value;
+                this.RequirementId = this.RawRequirement?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.SkillEntry"/>.
     /// </summary>
     [Table("SkillEntry", Schema = "data")]
@@ -1198,7 +1376,35 @@ public ICollection<ChatServerEndpoint> RawEndpoints { get; } = new List<ChatServ
         /// </summary>
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Monster"/>.
+        /// </summary>
+        public Guid? MonsterId { get; set; }
         
+        [ForeignKey("MonsterId")]
+        public MonsterDefinition RawMonster
+        { 
+            get { return base.Monster as MonsterDefinition; }
+            set { base.Monster = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
+        {
+            get
+            {
+                return base.Monster;
+            }
+            
+            set
+            {
+                base.Monster = value;
+                this.MonsterId = this.RawMonster?.Id;
+            }
+        }
+
+                
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
@@ -2465,6 +2671,17 @@ public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<Monste
             }
         }
 
+        public ICollection<QuestDefinition> RawQuests { get; } = new List<QuestDefinition>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests
+        {
+            get
+            {
+                return base.Quests ?? (base.Quests = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, QuestDefinition>(this.RawQuests)); 
+            }
+        }
+
                 
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -2840,6 +3057,379 @@ public ICollection<AttributeRequirement> RawRequirements { get; } = new List<Att
             {
                 base.Gate = value;
                 this.GateId = this.RawGate?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition"/>.
+    /// </summary>
+    [Table("QuestDefinition", Schema = "config")]
+    internal partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="QuestGiver"/>.
+        /// </summary>
+        public Guid? QuestGiverId { get; set; }
+        
+        [ForeignKey("QuestGiverId")]
+        public MonsterDefinition RawQuestGiver
+        { 
+            get { return base.QuestGiver as MonsterDefinition; }
+            set { base.QuestGiver = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition QuestGiver
+        {
+            get
+            {
+                return base.QuestGiver;
+            }
+            
+            set
+            {
+                base.QuestGiver = value;
+                this.QuestGiverId = this.RawQuestGiver?.Id;
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="QualifiedCharacter"/>.
+        /// </summary>
+        public Guid? QualifiedCharacterId { get; set; }
+        
+        [ForeignKey("QualifiedCharacterId")]
+        public CharacterClass RawQualifiedCharacter
+        { 
+            get { return base.QualifiedCharacter as CharacterClass; }
+            set { base.QualifiedCharacter = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass QualifiedCharacter
+        {
+            get
+            {
+                return base.QualifiedCharacter;
+            }
+            
+            set
+            {
+                base.QualifiedCharacter = value;
+                this.QualifiedCharacterId = this.RawQualifiedCharacter?.Id;
+            }
+        }
+
+        public ICollection<QuestMonsterKillRequirement> RawRequiredMonsterKills { get; } = new List<QuestMonsterKillRequirement>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement> RequiredMonsterKills
+        {
+            get
+            {
+                return base.RequiredMonsterKills ?? (base.RequiredMonsterKills = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement, QuestMonsterKillRequirement>(this.RawRequiredMonsterKills)); 
+            }
+        }
+
+        public ICollection<QuestItemRequirement> RawRequiredItems { get; } = new List<QuestItemRequirement>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement> RequiredItems
+        {
+            get
+            {
+                return base.RequiredItems ?? (base.RequiredItems = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement, QuestItemRequirement>(this.RawRequiredItems)); 
+            }
+        }
+
+        public ICollection<QuestReward> RawRewards { get; } = new List<QuestReward>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward> Rewards
+        {
+            get
+            {
+                return base.Rewards ?? (base.Rewards = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward, QuestReward>(this.RawRewards)); 
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement"/>.
+    /// </summary>
+    [Table("QuestItemRequirement", Schema = "config")]
+    internal partial class QuestItemRequirement : MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Item"/>.
+        /// </summary>
+        public Guid? ItemId { get; set; }
+        
+        [ForeignKey("ItemId")]
+        public ItemDefinition RawItem
+        { 
+            get { return base.Item as ItemDefinition; }
+            set { base.Item = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Item
+        {
+            get
+            {
+                return base.Item;
+            }
+            
+            set
+            {
+                base.Item = value;
+                this.ItemId = this.RawItem?.Id;
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="DropItemGroup"/>.
+        /// </summary>
+        public Guid? DropItemGroupId { get; set; }
+        
+        [ForeignKey("DropItemGroupId")]
+        public DropItemGroup RawDropItemGroup
+        { 
+            get { return base.DropItemGroup as DropItemGroup; }
+            set { base.DropItemGroup = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup DropItemGroup
+        {
+            get
+            {
+                return base.DropItemGroup;
+            }
+            
+            set
+            {
+                base.DropItemGroup = value;
+                this.DropItemGroupId = this.RawDropItemGroup?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement"/>.
+    /// </summary>
+    [Table("QuestMonsterKillRequirement", Schema = "config")]
+    internal partial class QuestMonsterKillRequirement : MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="Monster"/>.
+        /// </summary>
+        public Guid? MonsterId { get; set; }
+        
+        [ForeignKey("MonsterId")]
+        public MonsterDefinition RawMonster
+        { 
+            get { return base.Monster as MonsterDefinition; }
+            set { base.Monster = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
+        {
+            get
+            {
+                return base.Monster;
+            }
+            
+            set
+            {
+                base.Monster = value;
+                this.MonsterId = this.RawMonster?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward"/>.
+    /// </summary>
+    [Table("QuestReward", Schema = "config")]
+    internal partial class QuestReward : MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="ItemReward"/>.
+        /// </summary>
+        public Guid? ItemRewardId { get; set; }
+        
+        [ForeignKey("ItemRewardId")]
+        public Item RawItemReward
+        { 
+            get { return base.ItemReward as Item; }
+            set { base.ItemReward = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Entities.Item ItemReward
+        {
+            get
+            {
+                return base.ItemReward;
+            }
+            
+            set
+            {
+                base.ItemReward = value;
+                this.ItemRewardId = this.RawItemReward?.Id;
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="AttributeReward"/>.
+        /// </summary>
+        public Guid? AttributeRewardId { get; set; }
+        
+        [ForeignKey("AttributeRewardId")]
+        public AttributeDefinition RawAttributeReward
+        { 
+            get { return base.AttributeReward as AttributeDefinition; }
+            set { base.AttributeReward = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition AttributeReward
+        {
+            get
+            {
+                return base.AttributeReward;
+            }
+            
+            set
+            {
+                base.AttributeReward = value;
+                this.AttributeRewardId = this.RawAttributeReward?.Id;
             }
         }
 
@@ -4625,6 +5215,7 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Account>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AppearanceData>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Character>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CharacterQuestState>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildMember>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Item>();
@@ -4632,6 +5223,7 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemOptionLink>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemStorage>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>();
@@ -4658,6 +5250,10 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Skill>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.WarpInfo>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition>();
@@ -4751,6 +5347,9 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.Character, MUnique.OpenMU.DataModel.Entities.Character>()
                             .Include<Character, BasicModel.Character>();
 
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, MUnique.OpenMU.DataModel.Entities.CharacterQuestState>()
+                            .Include<CharacterQuestState, BasicModel.CharacterQuestState>();
+
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.Guild, MUnique.OpenMU.DataModel.Entities.Guild>()
                             .Include<Guild, BasicModel.Guild>();
 
@@ -4771,6 +5370,9 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.LetterBody, MUnique.OpenMU.DataModel.Entities.LetterBody>()
                             .Include<LetterBody, BasicModel.LetterBody>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState>()
+                            .Include<QuestMonsterKillRequirementState, BasicModel.QuestMonsterKillRequirementState>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.SkillEntry, MUnique.OpenMU.DataModel.Entities.SkillEntry>()
                             .Include<SkillEntry, BasicModel.SkillEntry>();
@@ -4849,6 +5451,18 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.WarpInfo, MUnique.OpenMU.DataModel.Configuration.WarpInfo>()
                             .Include<WarpInfo, BasicModel.WarpInfo>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition>()
+                            .Include<QuestDefinition, BasicModel.QuestDefinition>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement, MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement>()
+                            .Include<QuestItemRequirement, BasicModel.QuestItemRequirement>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement, MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement>()
+                            .Include<QuestMonsterKillRequirement, BasicModel.QuestMonsterKillRequirement>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward, MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward>()
+                            .Include<QuestReward, BasicModel.QuestReward>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement>()
                             .Include<AttributeRequirement, BasicModel.AttributeRequirement>();

@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.GameLogic.Views.Character
         /// <summary>
         /// Updates the current hero state.
         /// </summary>
-        void UpdateCharacterHeroState();
+        /// <param name="affectedPlayer">The player whose status needs an update.</param>
+        void UpdateCharacterHeroState(Player affectedPlayer);
     }
 }

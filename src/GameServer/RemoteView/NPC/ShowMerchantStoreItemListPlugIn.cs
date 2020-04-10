@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.NPC
 {
+    using System;
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
@@ -28,14 +29,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         public ShowMerchantStoreItemListPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void ShowMerchantStoreItemList(ICollection<Item> storeItems)
+        public void ShowMerchantStoreItemList(ICollection<Item> storeItems, StoreKind storeKind)
         {
             var itemSerializer = this.player.ItemSerializer;
             int sizePerItem = StoredItem.GetRequiredSize(itemSerializer.NeededSpace);
             using var writer = this.player.Connection.StartSafeWrite(StoreItemList.HeaderType, StoreItemList.GetRequiredSize(storeItems.Count, sizePerItem));
             var packet = new StoreItemList(writer.Span)
             {
-                ItemCount = (ushort)storeItems.Count,
+                ItemCount = (byte)storeItems.Count,
+                Type = Convert(storeKind),
             };
 
             int i = 0;
@@ -48,6 +50,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
             }
 
             writer.Commit();
+        }
+
+        private static StoreItemList.ItemWindow Convert(StoreKind storeKind)
+        {
+            return storeKind switch
+            {
+                StoreKind.Normal => StoreItemList.ItemWindow.Normal,
+                StoreKind.ChaosMachine => StoreItemList.ItemWindow.ChaosMachine,
+                StoreKind.Resurrection => StoreItemList.ItemWindow.Resurrection,
+                _ => throw new ArgumentException($"Unknown value {storeKind}", nameof(storeKind)),
+            };
         }
     }
 }

@@ -65,7 +65,13 @@ namespace MUnique.OpenMU.GameLogic
             if (!isIgnoringDefense)
             {
                 var defenseAttribute = defender.GetDefenseAttribute(attacker);
-                dmg -= (int)defender.Attributes[defenseAttribute];
+                var defense = (int)defender.Attributes[defenseAttribute];
+                if (defender.Attributes[Stats.IsShieldEquipped] > 0)
+                {
+                    defense += (int)(defense * defender.Attributes[Stats.DefenseIncreaseWithEquippedShield]);
+                }
+
+                dmg -= defense;
             }
             else
             {
@@ -79,7 +85,13 @@ namespace MUnique.OpenMU.GameLogic
 
             if (skill != null)
             {
+                dmg = dmg + (int)attacker.Attributes[Stats.SkillDamageBonus];
                 dmg = (int)(dmg * attacker.Attributes[Stats.SkillMultiplier]);
+            }
+
+            if (attacker.Attributes[Stats.IsTwoHandedWeaponEquipped] > 0)
+            {
+                dmg = (int)(dmg * attacker.Attributes[Stats.TwoHandedWeaponDamageIncrease]);
             }
 
             if (attacker is Player && defender is Player)
@@ -111,7 +123,7 @@ namespace MUnique.OpenMU.GameLogic
             var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
             if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
             {
-                return new HitInfo(damage, 0, 0);
+                return new HitInfo(damage, 0, attributes);
             }
 
             var shieldRatio = 0.90;
@@ -349,6 +361,10 @@ namespace MUnique.OpenMU.GameLogic
                 case DamageType.Wizardry:
                     minimumBaseDamage += (int)attackerStats[Stats.MinimumWizBaseDmg];
                     maximumBaseDamage += (int)(attackerStats[Stats.MaximumWizBaseDmg] + (attackerStats[Stats.MaximumWizBaseDmgPer20LevelItemCount] * attackerStats[Stats.Level] / 20));
+
+                    minimumBaseDamage += (int)(minimumBaseDamage * attackerStats[Stats.WizardryAttackDamageIncrease]);
+                    maximumBaseDamage += (int)(maximumBaseDamage * attackerStats[Stats.WizardryAttackDamageIncrease]);
+
                     break;
                 case DamageType.Curse:
                     minimumBaseDamage += (int)attackerStats[Stats.MinimumCurseBaseDmg];

@@ -41,6 +41,90 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>QuestIdentification</Name>
+      <Description>Defines the information which identifies a quest.</Description>
+      <Length>4</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Number</Name>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Group</Name>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>QuestCondition</Name>
+      <Description>Defines a condition which must be fulfilled to complete the quest.</Description>
+      <Length>24</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Enum</Type>
+          <TypeName>ConditionType</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>RequirementId</Name>
+          <Description>Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>RequiredCount</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>CurrentCount</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Binary</Type>
+          <Name>RequiredItemData</Name>
+          <Description>If the condition type is 'Item', this field contains the item data, excluding the item id. The item id can be found in the RequirementId field.</Description>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>QuestReward</Name>
+      <Description>Defines a reward which is given when the quest is completed.</Description>
+      <Length>22</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Enum</Type>
+          <TypeName>RewardType</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>RewardId</Name>
+          <Description>Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>RewardCount</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Binary</Type>
+          <Name>RewardedItemData</Name>
+          <Description>If the reward type is 'Item', this field contains its item data.</Description>
+          <Length>12</Length>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -101,6 +185,33 @@
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>EffectId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>0F</Code>
+      <Name>WeatherStatusUpdate</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The weather on the current map has been changed or the player entered the map.</SentWhen>
+      <CausedReaction>The game client updates the weather effects.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>Weather</Name>
+          <Description>A random value between 0 and 2 (inclusive).</Description>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Byte</Type>
+          <Name>Variation</Name>
+          <Description>A random value between 0 and 9 (inclusive).</Description>
+          <Length>4</Length>
         </Field>
       </Fields>
     </Packet>
@@ -1904,6 +2015,128 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>2C</Code>
+      <Name>FruitConsumptionResponse</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to consume a fruit.</SentWhen>
+      <CausedReaction>The client updates the user interface, by changing the added stat points and used fruit points.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>FruitConsumptionResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>StatPoints</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Enum</Type>
+          <TypeName>FruitStatType</TypeName>
+          <Name>StatType</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>FruitConsumptionResult</Name>
+          <Description>Defines the result of the fruit consumption request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>PlusSuccess</Name>
+              <Description>Consumption to add points was successful.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PlusFailed</Name>
+              <Description>Consumption to add points failed.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PlusPrevented</Name>
+              <Description>Consumption to add points was prevented because some conditions were not correct.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusSuccess</Name>
+              <Description>Consumption to remove points was successful.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusFailed</Name>
+              <Description>Consumption to remove points failed.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusPrevented</Name>
+              <Description>Consumption to remove points was prevented because some conditions were not correct.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusSuccessCashShopFruit</Name>
+              <Description>Consumption to remove points was successful, removed by a fruit acquired through the cash shop.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PreventedByEquippedItems</Name>
+              <Description>Consumption was prevented because an item was equipped.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PlusPreventedByMaximum</Name>
+              <Description>Consumption to add points was prevented because the maximum amount of points have been added.</Description>
+              <Value>33</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusPreventedByMaximum</Name>
+              <Description>Consumption to remove points was prevented because the maximum amount of points have been removed.</Description>
+              <Value>37</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MinusPreventedByDefault</Name>
+              <Description>Consumption to remove points was prevented because the base amount of stat points of the character class cannot be undercut.</Description>
+              <Value>38</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>FruitStatType</Name>
+          <Description>Defines the type of stat which the fruit modifies.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Energy</Name>
+              <Description>Fruit which modifies the energy stat.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Vitality</Name>
+              <Description>Fruit which modifies the vitality stat.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Agility</Name>
+              <Description>Fruit which modifies the agility stat.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Strength</Name>
+              <Description>Fruit which modifies the strength stat.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Leadership</Name>
+              <Description>Fruit which modifies the leadership stat.</Description>
+              <Value>4</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>30</Code>
       <Name>NpcWindowResponse</Name>
@@ -2058,7 +2291,13 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>Enum</Type>
+          <TypeName>ItemWindow</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
           <Name>ItemCount</Name>
         </Field>
         <Field>
@@ -2069,6 +2308,29 @@
           <ItemCountField>ItemCount</ItemCountField>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>ItemWindow</Name>
+          <Description>Defines the kind of npc window which should be shown on the client.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Normal</Name>
+              <Description>A normal window.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosMachine</Name>
+              <Description>A chaos machine window.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Resurrection</Name>
+              <Description>A pet resurrection window.</Description>
+              <Value>5</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -3643,8 +3905,8 @@
           <Description>The result of the guild kick request.</Description>
           <Values>
             <EnumValue>
-              <Name>Failed</Name>
-              <Description>The kick request failed.</Description>
+              <Name>FailedPasswordIncorrect</Name>
+              <Description>The kick request failed because of an incorrect password.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
@@ -3653,9 +3915,24 @@
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
+              <Name>KickFailedBecausePlayerIsNotGuildMaster</Name>
+              <Description>The kick failed because player is not guild master.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The kick request failed.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
               <Name>GuildDisband</Name>
               <Description>The guild has been disbanded.</Description>
-              <Value>2</Value>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMemberWithdrawn</Name>
+              <Description>The guild member has been withdrawn.</Description>
+              <Value>5</Value>
             </EnumValue>
           </Values>
         </Enum>
@@ -3929,6 +4206,345 @@
           </Values>
         </Enum>
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>86</Code>
+      <Name>ItemCraftingResult</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to execute an item crafting, e.g. at the chaos machine.</SentWhen>
+      <CausedReaction>The game client updates the UI to show the resulting item.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>CraftingResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CraftingResult</Name>
+          <Description>Defines the crafting result.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The crafting failed.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The crafting succeeded.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughMoney</Name>
+              <Description>The crafting wasn't executed because of missing money.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>TooManyItems</Name>
+              <Description>The crafting wasn't executed because of too many items.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooLow</Name>
+              <Description>The crafting wasn't executed because the character level is too low.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LackingMixItems</Name>
+              <Description>The crafting wasn't executed because of missing items.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IncorrectMixItems</Name>
+              <Description>The crafting wasn't executed because of incorrect items.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InvalidItemLevel</Name>
+              <Description>The crafting wasn't executed because of an invalid item level.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterClassTooLow</Name>
+              <Description>The crafting wasn't executed because the character class is too low.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IncorrectBloodCastleItems</Name>
+              <Description>The blood castle ticket crafting wasn't executed because the BloodCastle items are not correct.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughMoneyForBloodCastle</Name>
+              <Description>The crafting wasn't executed because the player has not enough money for the blood castle ticket crafting.</Description>
+              <Value>11</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A0</Code>
+      <Name>LegacyQuestStateList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player entered the game with his character.</SentWhen>
+      <CausedReaction>The game client updates the quest state for the quest dialog accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>QuestCount</Name>
+          <DefaultValue>6</DefaultValue>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Structure[]</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>States</Name>
+          <Length>0</Length>
+          <UseCustomIndexer>true</UseCustomIndexer>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>ScrollOfEmperorState</Name>
+          <Length>2</Length>
+          <DefaultValue>LegacyQuestState.Inactive</DefaultValue>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <LeftShifted>2</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>ThreeTreasuresOfMuState</Name>
+          <Length>2</Length>
+          <DefaultValue>LegacyQuestState.Inactive</DefaultValue>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>GainHeroStatusState</Name>
+          <Length>2</Length>
+          <DefaultValue>LegacyQuestState.Inactive</DefaultValue>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <LeftShifted>6</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>SecretOfDarkStoneState</Name>
+          <Length>2</Length>
+          <DefaultValue>LegacyQuestState.Inactive</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>CertificateOfStrengthState</Name>
+          <Length>2</Length>
+          <DefaultValue>LegacyQuestState.Inactive</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <LeftShifted>2</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>InfiltrationOfBarrackState</Name>
+          <Length>2</Length>
+          <DefaultValue>LegacyQuestState.Inactive</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>InfiltrationOfRefugeState</Name>
+          <Length>2</Length>
+          <DefaultValue>LegacyQuestState.Inactive</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <LeftShifted>6</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>LegacyQuestState</TypeName>
+          <Name>UnusedQuestState</Name>
+          <Length>2</Length>
+          <DefaultValue>LegacyQuestState.Undefined</DefaultValue>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A1</Code>
+      <Name>LegacyQuestStateDialog</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the player clicks on the quest npc.</SentWhen>
+      <CausedReaction>The game client shows the next steps in the quest dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>QuestIndex</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>State</Name>
+          <Description>This is the complete byte with the state of four quests within the same byte.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A2</Code>
+      <Name>LegacySetQuestStateResponse</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>As response to the set state request (C1A2).</SentWhen>
+      <CausedReaction>The game client shows the new quest state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>QuestIndex</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>This value is 0 if successful. Otherwise, 0xFF or even other magic values.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>NewState</Name>
+          <Description>This is the complete byte with the state of four quests within the same byte.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A3</Code>
+      <Name>LegacyQuestReward</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>As response to the completed quest of a player in scope.</SentWhen>
+      <CausedReaction>The game client shows the reward accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>QuestRewardType</TypeName>
+          <Name>Reward</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>QuestRewardType</Name>
+          <Description>Defines the reward type in the quest reward message.</Description>
+          <Values>
+            <EnumValue>
+              <Name>LevelUpPoints</Name>
+              <Description>The character receives additional points.</Description>
+              <Value>200</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterEvolutionFirstToSecond</Name>
+              <Description>The character class changes from the first to the second class.</Description>
+              <Value>201</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LevelUpPointsPerLevelIncrease</Name>
+              <Description>The character receives additional points per level.</Description>
+              <Value>202</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ComboSkill</Name>
+              <Description>The character receives the ability to perform skill combinations.</Description>
+              <Value>203</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterEvolutionSecondToThird</Name>
+              <Description>The character class changes from the second to the third class.</Description>
+              <Value>204</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>A4</Code>
+      <SubCode>00</SubCode>
+      <Name>LegacyQuestMonsterKillInfo</Name>
+      <Length>48</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>As response when a player opens the quest npc with a running quest which requires monster kills.</SentWhen>
+      <CausedReaction>The game client shows the current state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>QuestIndex</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>MonsterKillInfo</TypeName>
+          <Name>Kills</Name>
+          <Length>5</Length>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>MonsterKillInfo</Name>
+          <Description>A pair of Monster number and the current kill count.</Description>
+          <Length>8</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>MonsterNumber</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>KillCount</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>
@@ -4319,6 +4935,257 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>03</SubCode>
+      <Name>QuestEventResponse</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested the list of event quests after entering the game. It seems to be sent only if the character is not a member of a Gen.</SentWhen>
+      <CausedReaction>Unknown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestIdentification</TypeName>
+          <Name>Quests</Name>
+          <Length>2</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0A</SubCode>
+      <Name>AvailableQuests</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested the list of available quests through an NPC dialog.</SentWhen>
+      <CausedReaction>The client shows the available quests for the currently interacting NPC.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNpcNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestIdentification</TypeName>
+          <Name>Quests</Name>
+          <ItemCountField>QuestCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0B</SubCode>
+      <Name>QuestStarted</Name>
+      <Length>11</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested to initialize a quest and it was successful.</SentWhen>
+      <CausedReaction>The client shows the quest data and state accordingly. I guess this only shows the description of the quest in the dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0C</SubCode>
+      <Name>QuestProgress</Name>
+      <Length>241</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>First, after the game client requested to initialize a quest and the quest is already active. Second, after the game client requested the next quest step.</SentWhen>
+      <CausedReaction>The client shows the quest progress accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ConditionCount</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>RewardCount</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestCondition</TypeName><!-- Each 24 bytes -->
+          <Name>Conditions</Name>
+          <ItemCountField>ConditionCount</ItemCountField>
+        </Field>
+        <Field>
+          <Index>131</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestReward</TypeName><!-- Each 22 bytes -->
+          <Name>Rewards</Name>
+          <ItemCountField>RewardCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0D</SubCode>
+      <Name>QuestCompletionResponse</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server acknowledges the completion of a quest.</SentWhen>
+      <CausedReaction>The client shows the success and possibly requests for the next available quests.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Boolean</Type>
+          <Name>IsQuestCompleted</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>0F</SubCode>
+      <Name>QuestCancelled</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server acknowledges the requested cancellation of a quest.</SentWhen>
+      <CausedReaction>The client resets the state of the quest and can request a new list of available quests again. This list would then probably contain the cancelled quest again.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+          <Description>The current quest number. In this message, it's always 0, because the group is relevant for the client.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>1A</SubCode>
+      <Name>QuestStateList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested the list of all quests which are currently in progress or accepted.</SentWhen>
+      <CausedReaction>Unknown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>QuestCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestIdentification</TypeName>
+          <Name>Quests</Name>
+          <ItemCountField>QuestCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>1B</SubCode>
+      <Name>QuestState</Name>
+      <Length>241</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested it.</SentWhen>
+      <CausedReaction>The client shows the quest progress accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ConditionCount</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>RewardCount</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestCondition</TypeName>
+          <Name>Conditions</Name>
+          <ItemCountField>ConditionCount</ItemCountField>
+        </Field>
+        <Field>
+          <Index>131</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestReward</TypeName>
+          <Name>Rewards</Name>
+          <ItemCountField>RewardCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F9</Code>
+      <SubCode>01</SubCode>
+      <Name>OpenNpcDialog</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server acknowledges the requested opening of an npc dialog.</SentWhen>
+      <CausedReaction>The client opens the dialog of the specified npc.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>NpcNumber</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>
@@ -4365,6 +5232,78 @@
           <Name>GameMaster</Name>
           <Description>The character is a game master.</Description>
           <Value>32</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>ConditionType</Name>
+      <Description>Defines the type of the condition.</Description>
+      <Values>
+        <EnumValue>
+          <Name>None</Name>
+          <Description>No condition is defined.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MonsterKills</Name>
+          <Description>The condition is to kill a specified amount of specified monsters.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Skill</Name>
+          <Description>The condition is to learn a specified skill.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Item</Name>
+          <Description>The condition is to find a specified item and to have it in the inventory.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Level</Name>
+          <Description>The condition is to reach the specified character level.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ClientAction</Name>
+          <Description>The condition is a client action. For example, this may be the completion of a tutorial.</Description>
+          <Value>16</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>RequestBuff</Name>
+          <Description>The condition is to request a buff from an NPC.</Description>
+          <Value>32</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>RewardType</Name>
+      <Description>Defines the reward which is given when the quest is completed.</Description>
+      <Values>
+        <EnumValue>
+          <Name>None</Name>
+          <Description>No reward is defined.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Experience</Name>
+          <Description>The reward is added experience to the character.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Money</Name>
+          <Description>The reward is added money to the inventory.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Item</Name>
+          <Description>The reward is an item which is added to the inventory.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GensContribution</Name>
+          <Description>The reward is added gens contribution points.</Description>
+          <Value>16</Value>
         </EnumValue>
       </Values>
     </Enum>

@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
+    using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Pathfinding;
@@ -46,6 +47,9 @@ namespace MUnique.OpenMU.GameLogic
         private Character selectedCharacter;
 
         private ICustomPlugInContainer<IViewPlugIn> viewPlugIns;
+
+        private DateTime lastRegenerate = DateTime.UtcNow;
+
         private GameMap currentMap;
 
         /// <summary>
@@ -265,7 +269,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public bool OnlineAsFriend { get; set; } = true;
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IWorldObserver"/>
         public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns => this.viewPlugIns ?? (this.viewPlugIns = this.CreateViewPlugInContainer());
 
         /// <inheritdoc/>
@@ -382,12 +386,13 @@ namespace MUnique.OpenMU.GameLogic
                 }
                 else
                 {
-                    this.selectedCharacter.State += 1;
+                    this.selectedCharacter.State++;
                 }
             }
 
+            this.selectedCharacter.StateRemainingSeconds = this.selectedCharacter.StateRemainingSeconds + (int)TimeSpan.FromHours(1).TotalSeconds;
             this.selectedCharacter.PlayerKillCount += 1;
-            this.ViewPlugIns.GetPlugIn<IUpdateCharacterHeroStatePlugIn>()?.UpdateCharacterHeroState();
+            this.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<IUpdateCharacterHeroStatePlugIn>()?.UpdateCharacterHeroState(this), true);
         }
 
         /// <summary>
@@ -594,7 +599,7 @@ namespace MUnique.OpenMU.GameLogic
                 if (lvlup)
                 {
                     this.Attributes[Stats.Level]++;
-                    this.SelectedCharacter.LevelUpPoints += this.SelectedCharacter.CharacterClass.PointsPerLevelUp;
+                    this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
                     this.SetReclaimableAttributesToMaximum();
                     Logger.DebugFormat("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
                     this.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()?.UpdateLevel();
@@ -648,9 +653,11 @@ namespace MUnique.OpenMU.GameLogic
         {
             try
             {
-                foreach (var r in Stats.IntervalRegenerationAttributes.Where(r => this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
+                foreach (var r in Stats.IntervalRegenerationAttributes.Where(r =>
+                    this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
                 {
-                    if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() && this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                    if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() &&
+                        this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
                     {
                         // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
                         // This attribute is usually provided by a level 380 armor and a Guardian Option.
@@ -658,16 +665,24 @@ namespace MUnique.OpenMU.GameLogic
                     }
 
                     this.Attributes[r.CurrentAttribute] = Math.Min(
-                        this.Attributes[r.CurrentAttribute] + ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) + this.Attributes[r.AbsoluteAttribute]),
+                        this.Attributes[r.CurrentAttribute] +
+                        ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) +
+                         this.Attributes[r.AbsoluteAttribute]),
                         this.Attributes[r.MaximumAttribute]);
                 }
 
                 this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
                 this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
+
+                this.RegenerateHeroState();
             }
             catch (InvalidOperationException)
             {
                 // may happen after a character disconnected in the mean time.
+            }
+            finally
+            {
+                this.lastRegenerate = DateTime.UtcNow;
             }
         }
 
@@ -771,6 +786,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.Attributes[requirement.Attribute] -= requirement.MinimumValue;
             }
 
+            this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
             return true;
         }
 
@@ -861,6 +877,33 @@ namespace MUnique.OpenMU.GameLogic
         protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
         {
             return null;
+        }
+
+        private void RegenerateHeroState()
+        {
+            var currentCharacter = this.selectedCharacter;
+            if (currentCharacter?.StateRemainingSeconds > 0)
+            {
+                var secondsSinceLastRegenerate = this.lastRegenerate.Subtract(DateTime.UtcNow).TotalSeconds;
+                currentCharacter.StateRemainingSeconds -= (int)Math.Round(secondsSinceLastRegenerate);
+                if (currentCharacter.StateRemainingSeconds <= 0)
+                {
+                    // Change the status
+                    if (currentCharacter.State > HeroState.Normal)
+                    {
+                        currentCharacter.State--;
+                    }
+                    else if (currentCharacter.State < HeroState.Normal)
+                    {
+                        currentCharacter.State++;
+                    }
+
+                    this.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<IUpdateCharacterHeroStatePlugIn>()?.UpdateCharacterHeroState(this), true);
+                    currentCharacter.StateRemainingSeconds = currentCharacter.State == HeroState.Normal
+                        ? 0
+                        : (int)TimeSpan.FromHours(1).TotalSeconds;
+                }
+            }
         }
 
         /// <summary>
@@ -982,6 +1025,7 @@ namespace MUnique.OpenMU.GameLogic
             this.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.UpdateSkillList();
             this.ViewPlugIns.GetPlugIn<IUpdateCharacterStatsPlugIn>()?.UpdateCharacterStats();
             this.ViewPlugIns.GetPlugIn<IUpdateInventoryListPlugIn>()?.UpdateInventoryList();
+            this.ViewPlugIns.GetPlugIn<IQuestStateResponsePlugIn>()?.ShowQuestState(null);
 
             this.Attributes.GetOrCreateAttribute(Stats.MaximumMana).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumAbility).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();

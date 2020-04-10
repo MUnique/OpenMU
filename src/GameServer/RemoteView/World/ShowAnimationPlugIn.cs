@@ -37,16 +37,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         {
             var animatingId = animatingObj.GetId(this.player);
             var targetId = targetObj?.GetId(this.player) ?? 0;
-            using var writer = this.player.Connection.StartSafeWrite(ObjectAnimation.HeaderType, ObjectAnimation.Length);
-            _ = new ObjectAnimation(writer.Span)
-            {
-                ObjectId = animatingId,
-                TargetId = targetId,
-                Animation = animation,
-                Direction = direction.ToPacketByte(),
-            };
-
-            writer.Commit();
+            this.player.Connection.SendObjectAnimation(animatingId, direction.ToPacketByte(), animation, targetId);
         }
     }
 }

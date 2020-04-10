@@ -114,5 +114,18 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var plugIn = container.GetPlugIn<ITestCustomPlugIn>();
             Assert.That(plugIn, Is.InstanceOf<TestCustomPlugIn>());
         }
+
+        /// <summary>
+        /// Tests if a plugin can be retrieved with both of its implemented interfaces.
+        /// </summary>
+        [Test]
+        public void GetPlugInFromCustomContainerWithAllImplementedInterfaces()
+        {
+            var manager = new PlugInManager();
+            var container = new CustomTestPlugInContainer(manager);
+            container.AddPlugIn(new TestCustomPlugIn2(), true);
+            Assert.That(container.GetPlugIn<ITestCustomPlugIn>(), Is.Not.Null);
+            Assert.That(container.GetPlugIn<IAnotherCustomPlugIn>(), Is.Not.Null);
+        }
     }
 }

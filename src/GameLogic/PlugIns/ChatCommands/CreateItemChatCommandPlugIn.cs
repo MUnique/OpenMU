@@ -120,19 +120,19 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             [Argument("n")]
             public short Number { get; set; }
 
-            [Argument("l")]
-            public byte Level { get; set; } = 1;
+            [Argument("l", false)]
+            public byte Level { get; set; }
 
-            [Argument("e")]
+            [Argument("e", false)]
             public byte Exc { get; set; }
 
-            [Argument("s")]
+            [Argument("s", false)]
             public bool Skill { get; set; }
 
-            [Argument("lu")]
+            [Argument("lu", false)]
             public bool Luck { get; set; }
 
-            [Argument("o")]
+            [Argument("o", false)]
             public byte Opt { get; set; }
         }
     }

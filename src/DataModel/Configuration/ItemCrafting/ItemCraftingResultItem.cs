@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 
     /// <summary>
     /// Defines the resulting item of a crafting.
-    /// TODO: Some properties are not used yet.
     /// </summary>
     public class ItemCraftingResultItem
     {
@@ -18,24 +17,28 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public virtual ItemDefinition ItemDefinition { get; set; }
 
         /// <summary>
-        /// Gets or sets the random minimum level.
+        /// Gets or sets the random minimum level for a created item.
         /// </summary>
-        public byte RandLvlMin { get; set; }
+        public byte RandomMinimumLevel { get; set; }
 
         /// <summary>
-        /// Gets or sets the random maximum level.
+        /// Gets or sets the random maximum level for a created item.
         /// </summary>
-        public byte RandLvlMax { get; set; }
-
-        // public byte Level { get; set; }
+        public byte RandomMaximumLevel { get; set; }
 
         /// <summary>
-        /// Gets or sets the reference identifier.
+        /// Gets or sets the durability for a created item explicitly.
+        /// </summary>
+        public byte? Durability { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reference to the corresponding <see cref="ItemCraftingRequiredItem.Reference"/>.
+        /// If <c>0</c>, no reference exists.
         /// </summary>
         /// <remarks>
         /// For Item Upping.
         /// </remarks>
-        public byte RefID { get; set; }
+        public byte Reference { get; set; }
 
         /// <summary>
         /// Gets or sets the add level.

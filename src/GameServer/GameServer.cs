@@ -277,11 +277,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void SendGlobalMessage(string message, MessageType messageType)
         {
-            for (int i = this.gameContext.PlayerList.Count - 1; i >= 0; i--)
-            {
-                var player = this.gameContext.PlayerList[i];
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType);
-            }
+            this.gameContext.SendGlobalMessage(message, messageType);
         }
 
         /// <inheritdoc/>

@@ -35,8 +35,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <inheritdoc/>
         protected override void CreateMapAttributeRequirements()
         {
-            // for testing - to be removed
-            this.CreateRequirement(Stats.MoonstonePendantEquipped, 1);
         }
 
         /// <inheritdoc/>

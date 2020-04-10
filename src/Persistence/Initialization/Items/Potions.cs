@@ -40,6 +40,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(this.CreateAlcohol());
             this.GameConfiguration.Items.Add(this.CreateAntidotePotion());
             this.GameConfiguration.Items.Add(this.CreateTownPortalScroll());
+            this.GameConfiguration.Items.Add(this.CreateFruits());
+            this.GameConfiguration.Items.Add(this.CreateSiegePotion());
         }
 
         private ItemDefinition CreateAlcohol()
@@ -296,6 +298,38 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Width = 1;
             definition.Height = 2;
             return definition;
+        }
+
+        private ItemDefinition CreateSiegePotion()
+        {
+            var definition = this.Context.CreateNew<ItemDefinition>();
+            definition.Name = "Siege Potion";
+            definition.Number = 7;
+            definition.Group = 14;
+            // todo definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SiegePotionConsumeHandler).FullName;
+            definition.Durability = 1;
+            definition.Value = 30;
+            definition.Width = 1;
+            definition.Height = 1;
+            return definition;
+        }
+
+        /// <summary>
+        /// Creates the fruit definition.
+        /// </summary>
+        /// <returns>The created fruit definition.</returns>
+        private ItemDefinition CreateFruits()
+        {
+            var fruits = this.Context.CreateNew<ItemDefinition>();
+            fruits.Name = "Fruits";
+            fruits.Number = 15;
+            fruits.Group = 13;
+            fruits.MaximumItemLevel = 4;
+            fruits.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.FruitConsumeHandler).FullName;
+            fruits.Durability = 1;
+            fruits.Width = 1;
+            fruits.Height = 1;
+            return fruits;
         }
     }
 }

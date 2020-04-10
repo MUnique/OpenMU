@@ -63,8 +63,8 @@ Complexity 0 means we wont implement it.
 | BCStuff                     | 0x9B              | 0%       | 1          |                                               |
 | RequestLottoRegister        | 0x9D              | 0%       | 0          |                                               |
 | RequestEventEnterCount      | 0x9F              | 0%       | 0          |                                               |
-| RequestQuestInfo            | 0xA0              | 0%       | 4          |                                               |
-| SetQuestState               | 0xA2              | 0%       | 2          |                                               |
+| *RequestQuestInfo*            | 0xA0              | 100%     | 4          |                                               |
+| *SetQuestState*               | 0xA2              | 100%     | 2          |                                               |
 | PetItemCommand              | 0xA7              | 0%       | 5          |                                               |
 | RequestPetItemInfo          | 0xA9              | 0%       | 3          |                                               |
 | RequestDuelStart            | 0xAA              | 0%       | 4          |                                               |

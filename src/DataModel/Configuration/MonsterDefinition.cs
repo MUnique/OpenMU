@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Entities;
 
@@ -152,6 +153,17 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Used by NPC "David".
         /// </summary>
         CombineLuckyItem,
+
+        /// <summary>
+        /// The specific npc dialog. The client knows which dialog should be shown.
+        /// </summary>
+        /// <remarks>
+        /// Npc Numbers: 257, 543, 544, 566, 567, 568, 581.
+        /// Warning: If the game client doesn't have a dialog for this npc, it will crash.
+        /// </remarks>
+        NpcDialog,
+
+        LegacyQuest,
     }
 
     /// <summary>
@@ -257,6 +269,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </summary>
         [MemberOfAggregate]
         public virtual ICollection<MonsterAttribute> Attributes { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the quests which can be started through this npc.
+        /// </summary>
+        [MemberOfAggregate]
+        public virtual ICollection<QuestDefinition> Quests { get; protected set; }
 
         /// <summary>
         /// Attribute default accessor.

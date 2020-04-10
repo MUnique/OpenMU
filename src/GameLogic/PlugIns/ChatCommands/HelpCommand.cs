@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <summary>
     /// The help command which shows the usage of a command.
     /// </summary>
-    [Guid("a5b0a3e5-bb2a-4287-821a-cd97714fe209")]
+    [Guid("EFE9399A-9A14-4B94-BBC1-20718584C4C2")]
     [PlugIn("Help command", "List all the commands.")]
     [ChatCommandHelp(Command, typeof(Arguments))]
     public class HelpCommand : IChatCommandPlugIn

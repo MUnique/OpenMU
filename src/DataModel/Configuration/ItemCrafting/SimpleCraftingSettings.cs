@@ -18,6 +18,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public int Money { get; set; }
 
         /// <summary>
+        /// Gets or sets the price to do the crafting.
+        /// </summary>
+        public int MoneyPerFinalSuccessPercentage { get; set; }
+
+        /// <summary>
         /// Gets or sets the success percent.
         /// </summary>
         public byte SuccessPercent { get; set; }
@@ -45,23 +50,43 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public ResultItemSelection ResultItemSelect { get; set; }
 
         /// <summary>
-        /// Gets or sets the luck option chance.
+        /// Gets or sets the success percentage addition for a item with luck option which gets modified.
         /// </summary>
-        public byte LuckOptionChance { get; set; }
+        public int SuccessPercentageAdditionForLuck { get; set; }
 
         /// <summary>
-        /// Gets or sets the skill option chance.
+        /// Gets or sets the success percentage addition for an excellent item which gets modified.
         /// </summary>
-        public byte SkillOptionChance { get; set; }
+        public int SuccessPercentageAdditionForExcellentItem { get; set; }
 
         /// <summary>
-        /// Gets or sets the excellent option chance.
+        /// Gets or sets the success percentage addition for an ancient item which gets modified.
         /// </summary>
-        public byte ExcOptionChance { get; set; }
+        public int SuccessPercentageAdditionForAncientItem { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum excellent options.
+        /// Gets or sets the success percentage addition for a socket item which gets modified.
         /// </summary>
-        public byte MaxExcOptions { get; set; }
+        public int SuccessPercentageAdditionForSocketItem { get; set; }
+
+        /// <summary>
+        /// Gets or sets the chance in percent of getting the luck option in the random result item.
+        /// </summary>
+        public byte ResultItemLuckOptionChance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the chance in percent of getting the skill in the random result item.
+        /// </summary>
+        public byte ResultItemSkillChance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the chance in percent of getting an excellent option in the random result item.
+        /// </summary>
+        public byte ResultItemExcellentOptionChance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum excellent options in the random result item.
+        /// </summary>
+        public byte ResultItemMaxExcOptionCount { get; set; }
     }
 }

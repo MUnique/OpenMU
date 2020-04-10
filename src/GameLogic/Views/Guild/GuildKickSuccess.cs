@@ -15,6 +15,11 @@ namespace MUnique.OpenMU.GameLogic.Views.Guild
         Failed,
 
         /// <summary>
+        /// Kicking failed because the requester is not a guild master. Player stays at guild.
+        /// </summary>
+        FailedBecausePlayerIsNotGuildMaster,
+
+        /// <summary>
         /// Kicking succeeded. Player left the guild.
         /// </summary>
         KickSucceeded,

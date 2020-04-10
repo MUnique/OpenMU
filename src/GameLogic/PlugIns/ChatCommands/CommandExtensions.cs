@@ -27,7 +27,9 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         public static T ParseArguments<T>(this string command)
         {
             var instance = (T)Activator.CreateInstance(typeof(T));
-            var properties = instance.GetType().GetProperties().ToList();
+            var properties = instance.GetType().GetProperties()
+                .Where(property => property.SetMethod is { })
+                .ToList();
             var arguments = command.Split(' ').Where(x => !x.Contains("/")).ToList();
 
             if (command.Contains('='))
@@ -44,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 throw new ArgumentException($"The command needs {properties.Count} arguments and was given {arguments.Count}.");
             }
 
-            for (var i = 0; i < properties.Count(); i++)
+            for (var i = 0; i < properties.Count; i++)
             {
                 var property = properties[i];
                 var argument = arguments[i];
@@ -72,7 +74,15 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
             foreach (var property in properties)
             {
-                stringBuilder.Append($"{{{properties.GetName()}|{property.PropertyType.Name}}}");
+                if (property.GetCustomAttribute<ValidValuesAttribute>() is { } validValuesAttribute)
+                {
+                    stringBuilder.Append($"{{{string.Join('|', validValuesAttribute.ValidValues)}}}");
+                }
+                else
+                {
+                    stringBuilder.Append($"{{{property.GetName()}|{property.PropertyType.Name}}}");
+                }
+
                 if (property != properties.Last())
                 {
                     stringBuilder.Append(" ");

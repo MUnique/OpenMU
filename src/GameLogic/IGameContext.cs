@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
 
@@ -63,5 +64,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="name">The character name.</param>
         /// <returns>The player object.</returns>
         Player GetPlayerByCharacterName(string name);
+
+        /// <summary>
+        /// Sends a global message to all players of the game with the specified message type.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="messageType">Type of the message.</param>
+        void SendGlobalMessage(string message, MessageType messageType);
     }
 }

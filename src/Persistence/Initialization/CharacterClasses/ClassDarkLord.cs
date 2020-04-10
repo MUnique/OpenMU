@@ -17,12 +17,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
     {
         private CharacterClass CreateLordEmperor()
         {
-            var result = this.CreateDarkLord(CharacterClassNumber.LordEmperor, "Lord Emperor", 7, true, null, false);
+            var result = this.CreateDarkLord(CharacterClassNumber.LordEmperor, "Lord Emperor", true, null, false);
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
             return result;
         }
 
-        private CharacterClass CreateDarkLord(CharacterClassNumber number, string name, short pointsPerLevelUp, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
+        private CharacterClass CreateDarkLord(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
             var energyMinus15 = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "TotalEnergy minus 15", "TotalEnergy minus 15");
             this.GameConfiguration.Attributes.Add(energyMinus15);
@@ -33,11 +33,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
             result.Number = (byte)number;
             result.Name = name;
-            result.PointsPerLevelUp = pointsPerLevelUp;
             result.LevelRequirementByCreation = 250;
             result.IsMasterClass = isMaster;
             result.NextGenerationClass = nextGenerationClass;
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
+            result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 7, false));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 26, true));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseAgility, 20, true));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseVitality, 20, true));

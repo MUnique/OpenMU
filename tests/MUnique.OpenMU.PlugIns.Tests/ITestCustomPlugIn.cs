@@ -10,4 +10,11 @@ namespace MUnique.OpenMU.PlugIns.Tests
     public interface ITestCustomPlugIn : ICustomTestPlugInContainer
     {
     }
+
+    /// <summary>
+    /// A plugin interface for specific implementations for plugins managed by the <see cref="CustomTestPlugInContainer"/>.
+    /// </summary>
+    public interface IAnotherCustomPlugIn : ICustomTestPlugInContainer
+    {
+    }
 }

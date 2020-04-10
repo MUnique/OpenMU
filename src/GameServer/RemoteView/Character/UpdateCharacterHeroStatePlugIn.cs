@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -27,16 +27,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public UpdateCharacterHeroStatePlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void UpdateCharacterHeroState()
+        public void UpdateCharacterHeroState(Player affectedPlayer)
         {
-            using var writer = this.player.Connection.StartSafeWrite(HeroStateChanged.HeaderType, HeroStateChanged.Length);
-            _ = new HeroStateChanged(writer.Span)
-            {
-                PlayerId = this.player.GetId(this.player),
-                NewState = this.player.SelectedCharacter.State.Convert(),
-            };
-
-            writer.Commit();
+            this.player.Connection.SendHeroStateChanged(affectedPlayer.GetId(this.player), affectedPlayer.SelectedCharacter.State.Convert());
         }
     }
 }

@@ -16,9 +16,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         private const short PoisonEffectNumber = 0x37;
 
         /// <inheritdoc />
-        public override bool ConsumeItem(Player player, Item item, Item targetItem)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
-            if (base.ConsumeItem(player, item, targetItem))
+            if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
                 if (player.MagicEffectList.ActiveEffects.TryGetValue(PoisonEffectNumber, out var effect))
                 {

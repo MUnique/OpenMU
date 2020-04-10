@@ -16,17 +16,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
     {
         private CharacterClass CreateMuseElf(CharacterClass highElf)
         {
-            return this.CreateFairyElf(CharacterClassNumber.MuseElf, "Muse Elf", 6, false, highElf, false);
+            return this.CreateFairyElf(CharacterClassNumber.MuseElf, "Muse Elf", false, highElf, false);
         }
 
         private CharacterClass CreateHighElf()
         {
-            var result = this.CreateFairyElf(CharacterClassNumber.HighElf, "High Elf", 6, true, null, false);
+            var result = this.CreateFairyElf(CharacterClassNumber.HighElf, "High Elf", true, null, false);
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
             return result;
         }
 
-        private CharacterClass CreateFairyElf(CharacterClassNumber number, string name, short pointsPerLevelUp, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
+        private CharacterClass CreateFairyElf(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
         {
             var result = this.Context.CreateNew<CharacterClass>();
             this.GameConfiguration.CharacterClasses.Add(result);
@@ -34,10 +34,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == NoriaMapId);
             result.Number = (byte)number;
             result.Name = name;
-            result.PointsPerLevelUp = pointsPerLevelUp;
             result.IsMasterClass = isMaster;
             result.NextGenerationClass = nextGenerationClass;
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
+            result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 5, false));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 22, true));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseAgility, 25, true));
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseVitality, 20, true));

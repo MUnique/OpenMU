@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.PlugIns
                 return result;
             }
 
-            return Enumerable.Empty<Type>();
+            return this.knownPlugIns.Values.Where(p => typeof(T).IsAssignableFrom(p));
         }
 
         /// <summary>

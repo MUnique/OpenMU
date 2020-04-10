@@ -11,6 +11,8 @@ namespace MUnique.OpenMU.GameLogic
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
 
@@ -27,6 +29,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly IMapInitializer mapInitializer;
 
+        private readonly Timer tasksTimer;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GameContext" /> class.
         /// </summary>
@@ -42,6 +46,8 @@ namespace MUnique.OpenMU.GameLogic
                 this.PlugInManager = new PlugInManager(configuration.PlugInConfigurations);
                 this.mapList = new Dictionary<ushort, GameMap>();
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
+
+                this.tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
             }
             catch (Exception ex)
             {
@@ -176,6 +182,16 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
+        public void SendGlobalMessage(string message, MessageType messageType)
+        {
+            for (int i = this.PlayerList.Count - 1; i >= 0; i--)
+            {
+                var player = this.PlayerList[i];
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType);
+            }
+        }
+
+        /// <inheritdoc/>
         public void Dispose()
         {
             this.Dispose(true);
@@ -191,9 +207,15 @@ namespace MUnique.OpenMU.GameLogic
             if (managed)
             {
                 this.recoverTimer.Dispose();
+                this.tasksTimer.Dispose();
             }
 
             GC.SuppressFinalize(this);
+        }
+
+        private void ExecutePeriodicTasks(object state)
+        {
+            this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>()?.ExecuteTask(this);
         }
 
         private void RecoverTimerElapsed(object state)

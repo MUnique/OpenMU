@@ -35,25 +35,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
         {
             var bladeMaster = this.CreateBladeMaster();
             var bladeKnight = this.CreateBladeKnight(bladeMaster);
-            this.CreateDarkKnight(CharacterClassNumber.DarkKnight, "Dark Knight", 5, false, bladeKnight, true);
+            this.CreateDarkKnight(CharacterClassNumber.DarkKnight, "Dark Knight", false, bladeKnight, true);
 
             var grandMaster = this.CreateGrandMaster();
             var soulMaster = this.CreateSoulMaster(grandMaster);
-            this.CreateDarkWizard(CharacterClassNumber.DarkWizard, "Dark Wizard", 5, false, soulMaster, true);
+            this.CreateDarkWizard(CharacterClassNumber.DarkWizard, "Dark Wizard", false, soulMaster, true);
 
             var highElf = this.CreateHighElf();
             var museElf = this.CreateMuseElf(highElf);
-            this.CreateFairyElf(CharacterClassNumber.FairyElf, "Fairy Elf", 5, false, museElf, true);
+            this.CreateFairyElf(CharacterClassNumber.FairyElf, "Fairy Elf", false, museElf, true);
 
             var dimensionMaster = this.CreateDimensionMaster();
             var bloodySummoner = this.CreateBloodySummoner(dimensionMaster);
-            this.CreateSummoner(CharacterClassNumber.Summoner, "Summoner", 5, false, bloodySummoner, true);
+            this.CreateSummoner(CharacterClassNumber.Summoner, "Summoner", false, bloodySummoner, true);
 
             var duelMaster = this.CreateDuelMaster();
             this.CreateMagicGladiator(CharacterClassNumber.MagicGladiator, "Magic Gladiator", false, duelMaster, true);
 
             var lordEmperor = this.CreateLordEmperor();
-            this.CreateDarkLord(CharacterClassNumber.DarkLord, "Dark Lord", 7, false, lordEmperor, true);
+            this.CreateDarkLord(CharacterClassNumber.DarkLord, "Dark Lord", false, lordEmperor, true);
 
             var fistMaster = this.CreateFistMaster();
             this.CreateRageFighter(CharacterClassNumber.RageFighter, "Rage Fighter", false, fistMaster, true);

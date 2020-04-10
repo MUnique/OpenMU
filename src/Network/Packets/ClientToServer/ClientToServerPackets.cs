@@ -1563,6 +1563,22 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// </summary>
     public readonly ref struct ConsumeItemRequest
     {
+        /// <summary>
+        /// Defines how the fruit is used. Only applies, if the the item is a fruit.
+        /// </summary>
+        public enum FruitUsage
+        {
+            /// <summary>
+            /// Adds 1~3 stat points to the character.
+            /// </summary>
+            AddPoints = 0,
+
+            /// <summary>
+            /// Removes 1~9 stat points from the character.
+            /// </summary>
+            RemovePoints = 1,
+        }
+
         private readonly Span<byte> data;
 
         /// <summary>
@@ -1630,12 +1646,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Gets or sets unknown field, we don't know what it's good for.
+        /// Gets or sets defines how the fruit is used. Only applies, if the the item is a fruit.
         /// </summary>
-        public byte ItemUseType
+        public ConsumeItemRequest.FruitUsage FruitConsumption
         {
-            get => this.data[5];
-            set => this.data[5] = value;
+            get => (FruitUsage)this.data.Slice(5)[0];
+            set => this.data.Slice(5)[0] = (byte)value;
         }
 
         /// <summary>

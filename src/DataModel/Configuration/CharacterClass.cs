@@ -50,11 +50,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public byte CreationAllowedFlag { get; set; }
 
         /// <summary>
-        /// Gets or sets the upgrade points per level up.
-        /// </summary>
-        public short PointsPerLevelUp { get; set; }
-
-        /// <summary>
         /// Gets or sets the next generation class, to which a character can upgrade after
         /// fulfilling certain requirements, like quests.
         /// </summary>

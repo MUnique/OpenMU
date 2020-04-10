@@ -6,18 +6,19 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using System.Collections.Generic;
     using System.Linq;
-
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.PlugIns;
-    using MUnique.OpenMU.GameLogic.Views.Inventory;
+    using MUnique.OpenMU.GameLogic.Views.NPC;
 
     /// <summary>
     /// The simple item crafting handler which can be configured to handle the most crafting requirements.
     /// </summary>
-    public class SimpleItemCraftingHandler : IItemCraftingHandler
+    public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(SimpleItemCraftingHandler));
+
+        private readonly ItemPriceCalculator priceCalculator = new ItemPriceCalculator();
 
         private readonly SimpleCraftingSettings settings;
 
@@ -30,104 +31,187 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             this.settings = settings;
         }
 
-        /// <inheritdoc/>
-        public bool DoMix(Player player)
+        /// <inheritdoc />
+        protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
         {
-            var successRate = this.settings.SuccessPercent;
+            return this.settings.Money + (this.settings.MoneyPerFinalSuccessPercentage * successRate);
+        }
 
-            // Find all Required Items first
-            var items = new List<CraftingRequiredItemLink>(this.settings.RequiredItems.Count);
+        /// <inheritdoc />
+        protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+        {
+            successRate = this.settings.SuccessPercent;
+            items = new List<CraftingRequiredItemLink>(this.settings.RequiredItems.Count);
             var storage = player.TemporaryStorage.Items.ToList();
-            foreach (var requiredItems in this.settings.RequiredItems)
+            foreach (var requiredItem in this.settings.RequiredItems)
             {
                 var foundItems = storage
-                    .Where(item => item.Definition == requiredItems.ItemDefinition)
-                    .Where(item => requiredItems.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r)))
-                    .Where(item => item.Level >= requiredItems.MinLvl).ToList();
+                    .Where(item => requiredItem.ItemDefinition == null || item.Definition == requiredItem.ItemDefinition)
+                    .Where(item =>
+                        requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r)))
+                    .Where(item => item.Level >= requiredItem.MinimumItemLevel
+                                   && item.Level <= requiredItem.MaximumItemLevel).ToList();
 
-                if (foundItems.Count < requiredItems.MinAmount)
+                if (foundItems.Count < requiredItem.MinimumAmount)
                 {
-                    Log.WarnFormat("Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
-                    return false;
+                    Log.WarnFormat("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
+                    {
+                        return CraftingResult.LackingMixItems;
+                    }
+                }
+
+                if (foundItems.Count > requiredItem.MaximumAmount && requiredItem.MaximumAmount > 0)
+                {
+                    Log.WarnFormat("TooManyItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
+                    {
+                        return CraftingResult.TooManyItems;
+                    }
+                }
+
+                successRate += (byte) (requiredItem.AddPercentage * (foundItems.Count - requiredItem.MinimumAmount));
+                if (requiredItem.NpcPriceDivisor > 0)
+                {
+                    successRate += (byte)(foundItems.Sum(this.priceCalculator.CalculateBuyingPrice) /
+                                                  requiredItem.NpcPriceDivisor);
+                }
+
+                foreach (var item in foundItems)
+                {
+                    if (this.settings.SuccessPercentageAdditionForLuck != default
+                        && item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck))
+                    {
+                        successRate = (byte)(successRate + this.settings.SuccessPercentageAdditionForLuck);
+                    }
+
+                    if (this.settings.SuccessPercentageAdditionForExcellentItem != default
+                        && item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent))
+                    {
+                        successRate = (byte)(successRate + this.settings.SuccessPercentageAdditionForExcellentItem);
+                    }
+
+                    if (this.settings.SuccessPercentageAdditionForAncientItem != default
+                        && item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus))
+                    {
+                        successRate = (byte)(successRate + this.settings.SuccessPercentageAdditionForAncientItem);
+                    }
+
+                    if (this.settings.SuccessPercentageAdditionForSocketItem != default && item.SocketCount > 0)
+                    {
+                        successRate = (byte)(successRate + this.settings.SuccessPercentageAdditionForSocketItem);
+                    }
                 }
 
                 foundItems.ForEach(i => storage.Remove(i));
-                items.Add(new CraftingRequiredItemLink(foundItems, requiredItems));
+                items.Add(new CraftingRequiredItemLink(foundItems, requiredItem));
             }
 
-            var success = Rand.NextRandomBool(successRate);
-            if (success)
+            // The list of unprocessed items must be empty now; otherwise, something is wrong.
+            if (storage.Any())
             {
-                this.DoTheMix(items, player);
-            }
-            else
-            {
-                items.ForEach(i => this.RequiredItemChange(player, i, false));
+                return CraftingResult.IncorrectMixItems;
             }
 
-            return success;
+            return default;
         }
 
-        private void DoTheMix(IList<CraftingRequiredItemLink> items, Player player)
+        /// <inheritdoc />
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> referencedItems, Player player)
         {
-            var referencedItems = new List<CraftingRequiredItemLink>();
+            var resultItems = this.settings.ResultItemSelect == ResultItemSelection.All
+                ? this.settings.ResultItems
+                : this.settings.ResultItems.SelectRandom().GetAsEnumerable();
 
-            foreach (var i in items)
+            foreach (var craftingResultItem in resultItems)
             {
-                if (i.ItemRequirement.RefID != 0)
+                if (craftingResultItem.Reference > 0
+                    && referencedItems.FirstOrDefault(i => i.ItemRequirement.Reference == craftingResultItem.Reference) is { } referencedItem)
                 {
-                    referencedItems.Add(i);
-                }
-
-                this.RequiredItemChange(player, i, true);
-            }
-
-            foreach (var i in this.settings.ResultItems)
-            {
-                if (i.ItemDefinition == null)
-                {
-                    return;
-                }
-
-                // Create new Item
-                var resultItem = player.PersistenceContext.CreateNew<Item>();
-                resultItem.Definition = i.ItemDefinition;
-                resultItem.Level = (byte)Rand.NextInt(i.RandLvlMin, i.RandLvlMax);
-                resultItem.Durability = resultItem.GetMaximumDurabilityOfOnePiece(); // TODO: I think sometimes that's not correct, e.g. Potions of Bless/Soul!
-                player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(resultItem); // TODO: item appear needs to know in which storage the item appears
-            }
-        }
-
-        private void RequiredItemChange(Player player, CraftingRequiredItemLink i, bool success)
-        {
-            MixResult mr = success ? i.ItemRequirement.SuccessResult : i.ItemRequirement.FailResult;
-
-            switch (mr)
-            {
-                case MixResult.Disappear:
-                    var point = player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>();
-                    foreach (var item in i.StoredItem)
+                    foreach (var item in referencedItem.Items)
                     {
-                        player.TemporaryStorage.RemoveItem(item);
-                        player.PersistenceContext.Delete(item);
-                        point.ItemDestroyed(item);
+                        item.Level += craftingResultItem.AddLevel;
                     }
 
-                    //// TODO: Send ItemDisappear?
-                    break;
-                case MixResult.DowngradedRandom:
-                    i.StoredItem.ForEach(item => item.Level = (byte)Rand.NextInt(0, item.Level));
+                    continue;
+                }
 
-                    // TODO: Send item updated
-                    break;
-                case MixResult.DowngradedTo0:
-                    i.StoredItem.ForEach(item => item.Level = 0);
+                if (craftingResultItem.ItemDefinition == null)
+                {
+                    // Should never happen
+                    Log.Warn($"CraftingResultItem has no {nameof(ItemCraftingResultItem.Reference)} and no {nameof(ItemCraftingResultItem.ItemDefinition)}. It's ignored.");
+                    continue;
+                }
 
-                    // TODO: Send item updated
-                    break;
-                default:
-                    // The item stays as is.
-                    break;
+                foreach (var resultItem in this.CreateResultItems(player, referencedItems, craftingResultItem))
+                {
+                    yield return resultItem;
+                }
+            }
+        }
+
+        private IEnumerable<Item> CreateResultItems(Player player, IList<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem)
+        {
+            int resultItemCount = referencedItems.FirstOrDefault()?.Items.Count() ?? 1;
+            for (int i = 0; i < resultItemCount; i++)
+            {
+                // Create new Item
+                var resultItem = player.PersistenceContext.CreateNew<Item>();
+                resultItem.Definition = craftingResultItem.ItemDefinition;
+                resultItem.Level = (byte) Rand.NextInt(
+                    craftingResultItem.RandomMinimumLevel,
+                    craftingResultItem.RandomMaximumLevel + 1);
+                resultItem.Durability =
+                    craftingResultItem.Durability ?? resultItem.GetMaximumDurabilityOfOnePiece();
+
+                this.AddRandomLuckOption(resultItem, player);
+                this.AddRandomExcellentOptions(resultItem, player);
+                if (!resultItem.HasSkill
+                    && this.settings.ResultItemSkillChance > 0
+                    && Rand.NextRandomBool(this.settings.ResultItemSkillChance)
+                    && resultItem.Definition.Skill is { })
+                {
+                    resultItem.HasSkill = true;
+                }
+
+                player.TemporaryStorage.AddItem(resultItem);
+                yield return resultItem;
+            }
+        }
+
+        private void AddRandomLuckOption(Item resultItem, Player player)
+        {
+            if (this.settings.ResultItemLuckOptionChance > 0
+                && Rand.NextRandomBool(this.settings.ResultItemLuckOptionChance)
+                && resultItem.Definition.PossibleItemOptions
+                        .FirstOrDefault(o => o.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.Luck))
+                    is { } luck)
+            {
+                var luckOption = player.PersistenceContext.CreateNew<ItemOptionLink>();
+                luckOption.ItemOption = luck.PossibleOptions.First();
+                resultItem.ItemOptions.Add(luckOption);
+                if (resultItem.Definition.Skill != null)
+                {
+                    // Excellent items always have skill.
+                    resultItem.HasSkill = true;
+                }
+            }
+        }
+
+        private void AddRandomExcellentOptions(Item resultItem, Player player)
+        {
+            if (this.settings.ResultItemExcellentOptionChance > 0
+                && resultItem.Definition.PossibleItemOptions.FirstOrDefault(o =>
+                        o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent))
+                    is { } optionDefinition)
+            {
+                for (int j = 0;
+                    j < optionDefinition.MaximumOptionsPerItem && Rand.NextRandomBool(this.settings.ResultItemExcellentOptionChance);
+                    j++)
+                {
+                    var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
+                    link.ItemOption = optionDefinition.PossibleOptions
+                        .Except(resultItem.ItemOptions.Select(io => io.ItemOption)).SelectRandom();
+                    resultItem.ItemOptions.Add(link);
+                }
             }
         }
     }

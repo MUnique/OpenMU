@@ -246,6 +246,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// </summary>
         public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
 
+        /// <summary>
+        /// Gets or sets the quest states.
+        /// </summary>
+        public virtual ICollection<CharacterQuestState> QuestStates { get; protected set; }
+
         /// <inheritdoc />
         public override string ToString()
         {

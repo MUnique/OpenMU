@@ -4,14 +4,17 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.NPC;
+    using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -41,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             if (npcStats.MerchantStore != null && npcStats.MerchantStore.Items.Count > 0)
             {
                 player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant);
-                player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(npcStats.MerchantStore.Items);
+                player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(npcStats.MerchantStore.Items, StoreKind.Normal);
             }
             else
             {
@@ -90,10 +93,51 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     }
 
                     break;
+                case NpcWindow.LegacyQuest:
+                    this.ShowLegacyQuestDialog(player);
+                    break;
                 default:
                     player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(npcStats.NpcWindow);
                     break;
             }
+        }
+
+        private void ShowLegacyQuestDialog(Player player)
+        {
+            var quests = player.OpenedNpc.Definition.Quests
+                .Where(q => q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass);
+
+            if (!quests.Any())
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(
+                    "I have no quests for you.", player.OpenedNpc);
+                player.OpenedNpc = null;
+                player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                return;
+            }
+
+            if (quests.All(quest => quest.MinimumCharacterLevel > player.Level))
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(
+                    "I have nothing to do for you. Come back with more power.", player.OpenedNpc);
+                player.OpenedNpc = null;
+                player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                return;
+            }
+
+            var maxQuestNumber = quests.Max(q => q.Number);
+            var questGroup = quests.FirstOrDefault(q => q.Number == maxQuestNumber)?.Group;
+            var questState = player.GetQuestState(questGroup ?? 0);
+            if (questState?.LastFinishedQuest?.Number >= maxQuestNumber)
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(
+                    "I have nothing to do for you. You solved all my quests already.", player.OpenedNpc);
+                player.OpenedNpc = null;
+                player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                return;
+            }
+
+            player.ViewPlugIns.GetPlugIn<ILegacyQuestStateDialogPlugIn>()?.Show();
         }
 
         private bool IsPlayedAllowedToCreateGuild(Player player)

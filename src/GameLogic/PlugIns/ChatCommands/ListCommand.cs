@@ -31,13 +31,10 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         {
             var commands = player.GetAvailableChatCommands();
 
-            var stringBuilder = new StringBuilder();
             foreach (var commandUsage in commands.Select(x => x.Usage))
             {
-                stringBuilder.AppendLine(commandUsage);
+                player.ShowMessage(commandUsage);
             }
-
-            player.ShowMessage(stringBuilder.ToString());
         }
     }
 }

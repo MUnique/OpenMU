@@ -439,11 +439,30 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Byte</Type>
-          <Name>ItemUseType</Name>
-          <Description>Unknown field, we don't know what it's good for.</Description>
+          <Type>Enum</Type>
+          <TypeName>FruitUsage</TypeName>
+          <Name>FruitConsumption</Name>
+          <Description>Defines how the fruit is used. Only applies, if the the item is a fruit.</Description>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>FruitUsage</Name>
+          <Description>Defines how the fruit is used. Only applies, if the the item is a fruit.</Description>
+          <Values>
+            <EnumValue>
+              <Name>AddPoints</Name>
+              <Description>Adds 1~3 stat points to the character.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RemovePoints</Name>
+              <Description>Removes 1~9 stat points from the character.</Description>
+              <Value>1</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C3Header</HeaderType>

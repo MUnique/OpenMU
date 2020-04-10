@@ -51,6 +51,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="WeatherStatusUpdate" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The weather on the current map has been changed or the player entered the map.
+        /// Causes reaction on client side: The game client updates the weather effects.
+        /// </remarks>
+        public static WeatherStatusUpdateThreadSafeWriter StartWriteWeatherStatusUpdate(this IConnection connection)
+        {
+          return new WeatherStatusUpdateThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="ObjectGotKilled" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -451,6 +464,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static ItemDurabilityChangedThreadSafeWriter StartWriteItemDurabilityChanged(this IConnection connection)
         {
           return new ItemDurabilityChangedThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="FruitConsumptionResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requested to consume a fruit.
+        /// Causes reaction on client side: The client updates the user interface, by changing the added stat points and used fruit points.
+        /// </remarks>
+        public static FruitConsumptionResponseThreadSafeWriter StartWriteFruitConsumptionResponse(this IConnection connection)
+        {
+          return new FruitConsumptionResponseThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -883,6 +909,58 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="LegacyQuestStateDialog" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: When the player clicks on the quest npc.
+        /// Causes reaction on client side: The game client shows the next steps in the quest dialog.
+        /// </remarks>
+        public static LegacyQuestStateDialogThreadSafeWriter StartWriteLegacyQuestStateDialog(this IConnection connection)
+        {
+          return new LegacyQuestStateDialogThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="LegacySetQuestStateResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: As response to the set state request (C1A2).
+        /// Causes reaction on client side: The game client shows the new quest state.
+        /// </remarks>
+        public static LegacySetQuestStateResponseThreadSafeWriter StartWriteLegacySetQuestStateResponse(this IConnection connection)
+        {
+          return new LegacySetQuestStateResponseThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="LegacyQuestReward" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: As response to the completed quest of a player in scope.
+        /// Causes reaction on client side: The game client shows the reward accordingly.
+        /// </remarks>
+        public static LegacyQuestRewardThreadSafeWriter StartWriteLegacyQuestReward(this IConnection connection)
+        {
+          return new LegacyQuestRewardThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="LegacyQuestMonsterKillInfo" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: As response when a player opens the quest npc with a running quest which requires monster kills.
+        /// Causes reaction on client side: The game client shows the current state.
+        /// </remarks>
+        public static LegacyQuestMonsterKillInfoThreadSafeWriter StartWriteLegacyQuestMonsterKillInfo(this IConnection connection)
+        {
+          return new LegacyQuestMonsterKillInfoThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="FriendAdded" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1000,6 +1078,97 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="QuestEventResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the game client requested the list of event quests after entering the game. It seems to be sent only if the character is not a member of a Gen.
+        /// Causes reaction on client side: Unknown.
+        /// </remarks>
+        public static QuestEventResponseThreadSafeWriter StartWriteQuestEventResponse(this IConnection connection)
+        {
+          return new QuestEventResponseThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="QuestStarted" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the game client requested to initialize a quest and it was successful.
+        /// Causes reaction on client side: The client shows the quest data and state accordingly. I guess this only shows the description of the quest in the dialog.
+        /// </remarks>
+        public static QuestStartedThreadSafeWriter StartWriteQuestStarted(this IConnection connection)
+        {
+          return new QuestStartedThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="QuestProgress" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: First, after the game client requested to initialize a quest and the quest is already active. Second, after the game client requested the next quest step.
+        /// Causes reaction on client side: The client shows the quest progress accordingly.
+        /// </remarks>
+        public static QuestProgressThreadSafeWriter StartWriteQuestProgress(this IConnection connection)
+        {
+          return new QuestProgressThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="QuestCompletionResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The server acknowledges the completion of a quest.
+        /// Causes reaction on client side: The client shows the success and possibly requests for the next available quests.
+        /// </remarks>
+        public static QuestCompletionResponseThreadSafeWriter StartWriteQuestCompletionResponse(this IConnection connection)
+        {
+          return new QuestCompletionResponseThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="QuestCancelled" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The server acknowledges the requested cancellation of a quest.
+        /// Causes reaction on client side: The client resets the state of the quest and can request a new list of available quests again. This list would then probably contain the cancelled quest again.
+        /// </remarks>
+        public static QuestCancelledThreadSafeWriter StartWriteQuestCancelled(this IConnection connection)
+        {
+          return new QuestCancelledThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="QuestState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the game client requested it.
+        /// Causes reaction on client side: The client shows the quest progress accordingly.
+        /// </remarks>
+        public static QuestStateThreadSafeWriter StartWriteQuestState(this IConnection connection)
+        {
+          return new QuestStateThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="OpenNpcDialog" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The server acknowledges the requested opening of an npc dialog.
+        /// Causes reaction on client side: The client opens the dialog of the specified npc.
+        /// </remarks>
+        public static OpenNpcDialogThreadSafeWriter StartWriteOpenNpcDialog(this IConnection connection)
+        {
+          return new OpenNpcDialogThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Sends a <see cref="GameServerEntered" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1040,6 +1209,25 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             packet.IsActive = @isActive;
             packet.PlayerId = @playerId;
             packet.EffectId = @effectId;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="WeatherStatusUpdate" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="weather">A random value between 0 and 2 (inclusive).</param>
+        /// <param name="variation">A random value between 0 and 9 (inclusive).</param>
+        /// <remarks>
+        /// Is sent by the server when: The weather on the current map has been changed or the player entered the map.
+        /// Causes reaction on client side: The game client updates the weather effects.
+        /// </remarks>
+        public static void SendWeatherStatusUpdate(this IConnection connection, byte @weather, byte @variation)
+        {
+            using var writer = connection.StartWriteWeatherStatusUpdate();
+            var packet = writer.Packet;
+            packet.Weather = @weather;
+            packet.Variation = @variation;
             writer.Commit();
         }
 
@@ -1821,6 +2009,27 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             packet.InventorySlot = @inventorySlot;
             packet.Durability = @durability;
             packet.ByConsumption = @byConsumption;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="FruitConsumptionResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="result">The result.</param>
+        /// <param name="statPoints">The stat points.</param>
+        /// <param name="statType">The stat type.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requested to consume a fruit.
+        /// Causes reaction on client side: The client updates the user interface, by changing the added stat points and used fruit points.
+        /// </remarks>
+        public static void SendFruitConsumptionResponse(this IConnection connection, FruitConsumptionResponse.FruitConsumptionResult @result, ushort @statPoints, FruitConsumptionResponse.FruitStatType @statType)
+        {
+            using var writer = connection.StartWriteFruitConsumptionResponse();
+            var packet = writer.Packet;
+            packet.Result = @result;
+            packet.StatPoints = @statPoints;
+            packet.StatType = @statType;
             writer.Commit();
         }
 
@@ -2620,6 +2829,86 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Sends a <see cref="ItemCraftingResult" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="result">The result.</param>
+        /// <param name="itemData">The item data.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the player requested to execute an item crafting, e.g. at the chaos machine.
+        /// Causes reaction on client side: The game client updates the UI to show the resulting item.
+        /// </remarks>
+        public static void SendItemCraftingResult(this IConnection connection, ItemCraftingResult.CraftingResult @result, Span<byte> @itemData)
+        {
+            using var writer = connection.StartSafeWrite(ItemCraftingResult.HeaderType, ItemCraftingResult.GetRequiredSize(itemData.Length));
+            var packet = new ItemCraftingResult(writer.Span);
+            packet.Result = @result;
+            @itemData.CopyTo(packet.ItemData);
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="LegacyQuestStateDialog" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="questIndex">The quest index.</param>
+        /// <param name="state">This is the complete byte with the state of four quests within the same byte.</param>
+        /// <remarks>
+        /// Is sent by the server when: When the player clicks on the quest npc.
+        /// Causes reaction on client side: The game client shows the next steps in the quest dialog.
+        /// </remarks>
+        public static void SendLegacyQuestStateDialog(this IConnection connection, byte @questIndex, byte @state)
+        {
+            using var writer = connection.StartWriteLegacyQuestStateDialog();
+            var packet = writer.Packet;
+            packet.QuestIndex = @questIndex;
+            packet.State = @state;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="LegacySetQuestStateResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="questIndex">The quest index.</param>
+        /// <param name="result">This value is 0 if successful. Otherwise, 0xFF or even other magic values.</param>
+        /// <param name="newState">This is the complete byte with the state of four quests within the same byte.</param>
+        /// <remarks>
+        /// Is sent by the server when: As response to the set state request (C1A2).
+        /// Causes reaction on client side: The game client shows the new quest state.
+        /// </remarks>
+        public static void SendLegacySetQuestStateResponse(this IConnection connection, byte @questIndex, byte @result, byte @newState)
+        {
+            using var writer = connection.StartWriteLegacySetQuestStateResponse();
+            var packet = writer.Packet;
+            packet.QuestIndex = @questIndex;
+            packet.Result = @result;
+            packet.NewState = @newState;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="LegacyQuestReward" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="playerId">The player id.</param>
+        /// <param name="reward">The reward.</param>
+        /// <param name="count">The count.</param>
+        /// <remarks>
+        /// Is sent by the server when: As response to the completed quest of a player in scope.
+        /// Causes reaction on client side: The game client shows the reward accordingly.
+        /// </remarks>
+        public static void SendLegacyQuestReward(this IConnection connection, ushort @playerId, LegacyQuestReward.QuestRewardType @reward, byte @count)
+        {
+            using var writer = connection.StartWriteLegacyQuestReward();
+            var packet = writer.Packet;
+            packet.PlayerId = @playerId;
+            packet.Reward = @reward;
+            packet.Count = @count;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="FriendAdded" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2825,6 +3114,82 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             packet.Success = @success;
             packet.RequestId = @requestId;
             writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="QuestStarted" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="questNumber">The quest number.</param>
+        /// <param name="questGroup">The quest group.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the game client requested to initialize a quest and it was successful.
+        /// Causes reaction on client side: The client shows the quest data and state accordingly. I guess this only shows the description of the quest in the dialog.
+        /// </remarks>
+        public static void SendQuestStarted(this IConnection connection, ushort @questNumber, ushort @questGroup)
+        {
+            using var writer = connection.StartWriteQuestStarted();
+            var packet = writer.Packet;
+            packet.QuestNumber = @questNumber;
+            packet.QuestGroup = @questGroup;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="QuestCompletionResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="questNumber">The quest number.</param>
+        /// <param name="questGroup">The quest group.</param>
+        /// <param name="isQuestCompleted">The is quest completed.</param>
+        /// <remarks>
+        /// Is sent by the server when: The server acknowledges the completion of a quest.
+        /// Causes reaction on client side: The client shows the success and possibly requests for the next available quests.
+        /// </remarks>
+        public static void SendQuestCompletionResponse(this IConnection connection, ushort @questNumber, ushort @questGroup, bool @isQuestCompleted)
+        {
+            using var writer = connection.StartWriteQuestCompletionResponse();
+            var packet = writer.Packet;
+            packet.QuestNumber = @questNumber;
+            packet.QuestGroup = @questGroup;
+            packet.IsQuestCompleted = @isQuestCompleted;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="QuestCancelled" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="questNumber">The current quest number. In this message, it's always 0, because the group is relevant for the client.</param>
+        /// <param name="questGroup">The quest group.</param>
+        /// <remarks>
+        /// Is sent by the server when: The server acknowledges the requested cancellation of a quest.
+        /// Causes reaction on client side: The client resets the state of the quest and can request a new list of available quests again. This list would then probably contain the cancelled quest again.
+        /// </remarks>
+        public static void SendQuestCancelled(this IConnection connection, ushort @questNumber, ushort @questGroup)
+        {
+            using var writer = connection.StartWriteQuestCancelled();
+            var packet = writer.Packet;
+            packet.QuestNumber = @questNumber;
+            packet.QuestGroup = @questGroup;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="OpenNpcDialog" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="npcNumber">The npc number.</param>
+        /// <remarks>
+        /// Is sent by the server when: The server acknowledges the requested opening of an npc dialog.
+        /// Causes reaction on client side: The client opens the dialog of the specified npc.
+        /// </remarks>
+        public static void SendOpenNpcDialog(this IConnection connection, ushort @npcNumber)
+        {
+            using var writer = connection.StartWriteOpenNpcDialog();
+            var packet = writer.Packet;
+            packet.NpcNumber = @npcNumber;
+            writer.Commit();
         }    }
     /// <summary>
     /// A helper struct to write a <see cref="GameServerEntered"/> safely to a <see cref="IConnection.Output" />.
@@ -2920,6 +3285,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(MagicEffectStatus.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="WeatherStatusUpdate"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct WeatherStatusUpdateThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeatherStatusUpdateThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public WeatherStatusUpdateThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new WeatherStatusUpdate(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(WeatherStatusUpdate.Length).Slice(0, WeatherStatusUpdate.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public WeatherStatusUpdate Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="WeatherStatusUpdate" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(WeatherStatusUpdate.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
@@ -4563,6 +4981,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(ItemDurabilityChanged.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="FruitConsumptionResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct FruitConsumptionResponseThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FruitConsumptionResponseThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public FruitConsumptionResponseThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new FruitConsumptionResponse(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(FruitConsumptionResponse.Length).Slice(0, FruitConsumptionResponse.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public FruitConsumptionResponse Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="FruitConsumptionResponse" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(FruitConsumptionResponse.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
@@ -6325,6 +6796,218 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="LegacyQuestStateDialog"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct LegacyQuestStateDialogThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestStateDialogThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public LegacyQuestStateDialogThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new LegacyQuestStateDialog(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestStateDialog.Length).Slice(0, LegacyQuestStateDialog.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public LegacyQuestStateDialog Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="LegacyQuestStateDialog" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(LegacyQuestStateDialog.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="LegacySetQuestStateResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct LegacySetQuestStateResponseThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacySetQuestStateResponseThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public LegacySetQuestStateResponseThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new LegacySetQuestStateResponse(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacySetQuestStateResponse.Length).Slice(0, LegacySetQuestStateResponse.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public LegacySetQuestStateResponse Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="LegacySetQuestStateResponse" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(LegacySetQuestStateResponse.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="LegacyQuestReward"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct LegacyQuestRewardThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestRewardThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public LegacyQuestRewardThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new LegacyQuestReward(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestReward.Length).Slice(0, LegacyQuestReward.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public LegacyQuestReward Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="LegacyQuestReward" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(LegacyQuestReward.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="LegacyQuestMonsterKillInfo"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct LegacyQuestMonsterKillInfoThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegacyQuestMonsterKillInfoThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public LegacyQuestMonsterKillInfoThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new LegacyQuestMonsterKillInfo(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestMonsterKillInfo.Length).Slice(0, LegacyQuestMonsterKillInfo.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public LegacyQuestMonsterKillInfo Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="LegacyQuestMonsterKillInfo" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(LegacyQuestMonsterKillInfo.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="FriendAdded"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct FriendAddedThreadSafeWriter
@@ -6789,6 +7472,377 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(FriendInvitationResult.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="QuestEventResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct QuestEventResponseThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestEventResponseThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public QuestEventResponseThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new QuestEventResponse(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestEventResponse.Length).Slice(0, QuestEventResponse.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public QuestEventResponse Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="QuestEventResponse" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(QuestEventResponse.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="QuestStarted"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct QuestStartedThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStartedThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public QuestStartedThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new QuestStarted(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestStarted.Length).Slice(0, QuestStarted.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public QuestStarted Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="QuestStarted" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(QuestStarted.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="QuestProgress"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct QuestProgressThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestProgressThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public QuestProgressThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new QuestProgress(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestProgress.Length).Slice(0, QuestProgress.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public QuestProgress Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="QuestProgress" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(QuestProgress.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="QuestCompletionResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct QuestCompletionResponseThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCompletionResponseThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public QuestCompletionResponseThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new QuestCompletionResponse(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestCompletionResponse.Length).Slice(0, QuestCompletionResponse.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public QuestCompletionResponse Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="QuestCompletionResponse" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(QuestCompletionResponse.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="QuestCancelled"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct QuestCancelledThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCancelledThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public QuestCancelledThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new QuestCancelled(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestCancelled.Length).Slice(0, QuestCancelled.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public QuestCancelled Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="QuestCancelled" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(QuestCancelled.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="QuestState"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct QuestStateThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestStateThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public QuestStateThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new QuestState(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestState.Length).Slice(0, QuestState.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public QuestState Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="QuestState" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(QuestState.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="OpenNpcDialog"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct OpenNpcDialogThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenNpcDialogThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public OpenNpcDialogThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new OpenNpcDialog(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(OpenNpcDialog.Length).Slice(0, OpenNpcDialog.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public OpenNpcDialog Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="OpenNpcDialog" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(OpenNpcDialog.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

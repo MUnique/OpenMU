@@ -72,6 +72,21 @@ namespace MUnique.OpenMU.GameLogic
         public static readonly byte PetSlot = 8;
 
         /// <summary>
+        /// The pendant inventory slot index.
+        /// </summary>
+        public static readonly byte PendantSlot = 9;
+
+        /// <summary>
+        /// The first ring inventory slot index.
+        /// </summary>
+        public static readonly byte Ring1Slot = 10;
+
+        /// <summary>
+        /// The second ring inventory slot index.
+        /// </summary>
+        public static readonly byte Ring2Slot = 11;
+
+        /// <summary>
         /// The size of a row.
         /// </summary>
         public static readonly int RowSize = 8;

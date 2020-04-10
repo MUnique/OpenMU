@@ -15,9 +15,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class AlcoholConsumeHandler : BaseConsumeHandler
     {
         /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, Item item, Item targetItem)
+        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
-            if (base.ConsumeItem(player, item, targetItem))
+            if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
                 player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()?.DrinkAlcohol();
                 return true;

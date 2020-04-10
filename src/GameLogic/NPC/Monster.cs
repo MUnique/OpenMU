@@ -293,7 +293,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
                     dropCoordinates = this.CurrentMap.Terrain.GetRandomDropCoordinate(this.Position, 4);
                 }
 
-                var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null);
+                var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
+                var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, killer, owners);
                 this.CurrentMap.Add(droppedItem);
             }
         }
@@ -327,6 +328,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 this.DropItem(exp, player);
                 player.AfterKilledMonster();
                 player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, attacker);
+                if (player.SelectedCharacter.State > HeroState.Normal)
+                {
+                    player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
+                }
             }
         }
 
