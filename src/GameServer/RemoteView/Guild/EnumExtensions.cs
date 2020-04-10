@@ -77,6 +77,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             return success switch
             {
                 GuildKickSuccess.Failed => GuildKickResponse.GuildKickSuccess.Failed,
+                GuildKickSuccess.FailedBecausePlayerIsNotGuildMaster => GuildKickResponse.GuildKickSuccess.KickFailedBecausePlayerIsNotGuildMaster,
                 GuildKickSuccess.KickSucceeded => GuildKickResponse.GuildKickSuccess.KickSucceeded,
                 GuildKickSuccess.GuildDisband => GuildKickResponse.GuildKickSuccess.GuildDisband,
                 _ => throw new NotImplementedException($"The case {success} is not implemented."),
