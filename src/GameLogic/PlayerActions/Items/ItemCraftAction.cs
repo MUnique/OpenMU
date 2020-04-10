@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
             if (!this.craftingHandlerCache.TryGetValue(crafting, out var craftingHandler))
             {
-                craftingHandler = this.CreateCraftingHandler(player, crafting);
+                craftingHandler = this.CreateCraftingHandler(crafting);
                 this.craftingHandlerCache.Add(crafting, craftingHandler);
             }
 
@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(itemList, StoreKind.ChaosMachine);
         }
 
-        private IItemCraftingHandler CreateCraftingHandler(Player player, ItemCrafting crafting)
+        private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)
         {
             if (crafting.SimpleCraftingSettings != null)
             {
@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 var type = Type.GetType(crafting.ItemCraftingHandlerClassName);
                 if (type != null)
                 {
-                    return Activator.CreateInstance(type, player.GameContext) as IItemCraftingHandler;
+                    return Activator.CreateInstance(type) as IItemCraftingHandler;
                 }
 
                 throw new ArgumentException($"Item crafting handler '{crafting.ItemCraftingHandlerClassName}' not found.", nameof(crafting));

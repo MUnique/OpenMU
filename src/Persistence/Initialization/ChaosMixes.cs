@@ -44,6 +44,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(23, 13, 8_000_000));
             chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(49, 14, 10_000_000));
             chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(50, 15, 12_000_000));
+            chaosGoblin.ItemCraftings.Add(this.BloodCastleTicketCrafting());
+            chaosGoblin.ItemCraftings.Add(this.DevilSquareTicketCrafting());
+            chaosGoblin.ItemCraftings.Add(this.IllusionTempleTicketCrafting());
 
             var elphis = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ElphisRefinery);
             elphis.ItemCraftings.Add(this.GemstoneRefinery());
@@ -291,6 +294,33 @@ namespace MUnique.OpenMU.Persistence.Initialization
             harmony.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony");
             crafting.SimpleCraftingSettings.ResultItems.Add(harmony);
 
+            return crafting;
+        }
+
+        private ItemCrafting BloodCastleTicketCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Blood Castle Ticket";
+            crafting.Number = 8;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.BloodCastleTicketCrafting).FullName;
+            return crafting;
+        }
+
+        private ItemCrafting DevilSquareTicketCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Devil's Square Ticket";
+            crafting.Number = 2;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.DevilSquareTicketCrafting).FullName;
+            return crafting;
+        }
+
+        private ItemCrafting IllusionTempleTicketCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Illusion Temple Ticket";
+            crafting.Number = 37;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.IllusionTempleTicketCrafting).FullName;
             return crafting;
         }
     }
