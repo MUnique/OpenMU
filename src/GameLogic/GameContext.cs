@@ -11,6 +11,8 @@ namespace MUnique.OpenMU.GameLogic
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
 
@@ -177,6 +179,16 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.PlayersByCharacterName.TryGetValue(name, out Player player);
             return player;
+        }
+
+        /// <inheritdoc/>
+        public void SendGlobalMessage(string message, MessageType messageType)
+        {
+            for (int i = this.PlayerList.Count - 1; i >= 0; i--)
+            {
+                var player = this.PlayerList[i];
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType);
+            }
         }
 
         /// <inheritdoc/>
