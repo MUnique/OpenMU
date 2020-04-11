@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         /// <summary>
         /// Is reset system enabled.
         /// </summary>
-        public static readonly bool IsEnabled = true;
+        public static readonly bool IsEnabled = false;
         private readonly Player player;
         private readonly LogoutAction logoutAction = new LogoutAction();
 
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         {
             if (!IsEnabled)
             {
-                throw new ResetCharacterException("[Reset system] reset is not disabled");
+                throw new ResetCharacterException("Reset is not disabled");
             }
         }
 
@@ -71,7 +71,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         {
             if (this.player.OpenedNpc != null && this.player.OpenedNpc.Definition.NpcWindow != NpcWindow.Undefined)
             {
-                throw new ResetCharacterException("[Reset System] cannot do reset with npc window opened");
+                throw new ResetCharacterException("Cannot do reset with npc window opened");
             }
         }
 
@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         {
             if (this.player.Level < this.requiredLevel)
             {
-                throw new ResetCharacterException($"[Reset System] Required level is {this.requiredLevel}");
+                throw new ResetCharacterException($"Required level for reset is {this.requiredLevel}");
             }
         }
 
@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         {
             if (this.resetLimit > 0 && (this.GetResetCount() + 1) > this.resetLimit)
             {
-                throw new ResetCharacterException($"[Reset System] Max reset is {this.resetLimit}");
+                throw new ResetCharacterException($"Max reset is {this.resetLimit}");
             }
         }
 
@@ -106,7 +106,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 
             if (!this.player.TryRemoveMoney(calculatedRequiredZen))
             {
-                throw new ResetCharacterException($"[Reset System] You don't have enough Money, required zen is {calculatedRequiredZen}");
+                throw new ResetCharacterException($"You don't have enough money for reset, required zen is {calculatedRequiredZen}");
             }
         }
 
