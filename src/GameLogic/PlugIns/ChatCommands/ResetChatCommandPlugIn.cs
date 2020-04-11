@@ -12,17 +12,18 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
-    /// A chat command plugin which handles move commands.
+    /// A chat command plugin which handles reset command.
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
     [PlugIn("Reset chat command", "Handles the chat command '/reset'.")]
+    [ChatCommandHelp(Command, null)]
     public class ResetChatCommandPlugIn : IChatCommandPlugIn
     {
-        private const string CommandKey = "/reset";
+        private const string Command = "/reset";
 
         /// <inheritdoc />
-        public string Key => CommandKey;
+        public string Key => Command;
 
         /// <inheritdoc />
         public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
