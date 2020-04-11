@@ -25,7 +25,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         /// Reset System Configuration.
         /// </summary>
         private readonly int resetLimit = -1;
-        private readonly int requiredLevel = 1;
+        private readonly int requiredLevel = 400;
+        private readonly int levelAfterReset = 10;
         private readonly int requiredZen = 1;
         private readonly bool multiplyZenByResetCount = true;
         private readonly bool resetStats = true;
@@ -97,15 +98,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 
         private void ConsumeZen()
         {
-            var requiredZen = this.requiredZen;
+            var calculatedRequiredZen = this.requiredZen;
             if (this.multiplyZenByResetCount)
             {
-                requiredZen *= this.GetResetCount() + 1;
+                calculatedRequiredZen *= this.GetResetCount() + 1;
             }
 
-            if (!this.player.TryRemoveMoney(requiredZen))
+            if (!this.player.TryRemoveMoney(calculatedRequiredZen))
             {
-                throw new ResetCharacterException($"[Reset System] You don't have enough Money, required zen is {requiredZen}");
+                throw new ResetCharacterException($"[Reset System] You don't have enough Money, required zen is {calculatedRequiredZen}");
             }
         }
 
@@ -116,24 +117,26 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 
         private void ResetLevel()
         {
-            this.player.Attributes[Stats.Level] = 1;
+            this.player.Attributes[Stats.Level] = this.levelAfterReset;
             this.player.SelectedCharacter.Experience = 0;
         }
 
         private void UpdateStats()
         {
-            var pointsPerReset = this.pointsPerReset;
+            var calculatedPointsPerReset = this.pointsPerReset;
             if (this.multiplyPointsByResetCount)
             {
-                pointsPerReset *= this.GetResetCount();
+                calculatedPointsPerReset *= this.GetResetCount();
             }
 
             if (this.resetStats)
             {
-                this.player.SelectedCharacter.CharacterClass.StatAttributes.ForEach(stat => this.player.Attributes[stat.Attribute] = stat.BaseValue);
+                this.player.SelectedCharacter.CharacterClass.StatAttributes
+                    .Where(s => s.IncreasableByPlayer)
+                    .ForEach(stat => this.player.Attributes[stat.Attribute] = stat.BaseValue);
             }
 
-            this.player.SelectedCharacter.LevelUpPoints = pointsPerReset;
+            this.player.SelectedCharacter.LevelUpPoints = calculatedPointsPerReset;
         }
 
         private void MoveHome()
