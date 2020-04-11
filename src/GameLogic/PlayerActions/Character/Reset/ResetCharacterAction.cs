@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 {
     using System.Linq;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Login;
 
@@ -13,18 +14,23 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
     /// </summary>
     public class ResetCharacterAction
     {
+        /// <summary>
+        /// Is reset system enabled.
+        /// </summary>
+        public static readonly bool IsEnabled = true;
         private readonly Player player;
         private readonly LogoutAction logoutAction = new LogoutAction();
 
-        // Reset System Configuration
-        public static readonly bool IsEnabled = true;
-        private readonly int ResetLimit = -1;
-        private readonly int RequiredLevel = 400;
-        private readonly int RequiredZen = 1;
-        private readonly bool MultiplyZenByResetCount = true;
-        private readonly bool ResetStats = true;
-        private readonly bool MultiplyPointsByResetCount = true;
-        private readonly int PointsPerReset = 1500;
+        /// <summary>
+        /// Reset System Configuration.
+        /// </summary>
+        private readonly int resetLimit = -1;
+        private readonly int requiredLevel = 1;
+        private readonly int requiredZen = 1;
+        private readonly bool multiplyZenByResetCount = true;
+        private readonly bool resetStats = true;
+        private readonly bool multiplyPointsByResetCount = true;
+        private readonly int pointsPerReset = 1500;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResetCharacterAction"/> class.
@@ -41,28 +47,38 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         public void ResetCharacter()
         {
             this.CheckEnabled();
+            this.CheckNpcWindow();
             this.CheckLevel();
             this.CheckResetLimit();
             this.ConsumeZen();
             this.AddReset();
             this.ResetLevel();
             this.UpdateStats();
-            this.UpdatePlayer();
+            this.MoveHome();
+            this.Logout();
         }
 
         private void CheckEnabled()
         {
             if (!IsEnabled)
             {
-                throw new ResetCharacterException("Reset system is disabled");
+                throw new ResetCharacterException("[Reset system] reset is not disabled");
+            }
+        }
+
+        private void CheckNpcWindow()
+        {
+            if (this.player.OpenedNpc != null && this.player.OpenedNpc.Definition.NpcWindow != NpcWindow.Undefined)
+            {
+                throw new ResetCharacterException("[Reset System] cannot do reset with npc window opened");
             }
         }
 
         private void CheckLevel()
         {
-            if (this.player.Level < this.RequiredLevel)
+            if (this.player.Level < this.requiredLevel)
             {
-                throw new ResetCharacterException($"[Reset System] Required level is {this.RequiredLevel}");
+                throw new ResetCharacterException($"[Reset System] Required level is {this.requiredLevel}");
             }
         }
 
@@ -73,16 +89,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 
         private void CheckResetLimit()
         {
-            if (this.ResetLimit > 0 && (this.GetResetCount() + 1) > this.ResetLimit)
+            if (this.resetLimit > 0 && (this.GetResetCount() + 1) > this.resetLimit)
             {
-                throw new ResetCharacterException($"[Reset System] Max reset is {this.ResetLimit}");
+                throw new ResetCharacterException($"[Reset System] Max reset is {this.resetLimit}");
             }
         }
 
         private void ConsumeZen()
         {
-            var requiredZen = this.RequiredZen;
-            if (this.MultiplyZenByResetCount)
+            var requiredZen = this.requiredZen;
+            if (this.multiplyZenByResetCount)
             {
                 requiredZen *= this.GetResetCount() + 1;
             }
@@ -106,13 +122,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 
         private void UpdateStats()
         {
-            var pointsPerReset = this.PointsPerReset;
-            if (this.MultiplyPointsByResetCount)
+            var pointsPerReset = this.pointsPerReset;
+            if (this.multiplyPointsByResetCount)
             {
                 pointsPerReset *= this.GetResetCount();
             }
 
-            if (this.ResetStats)
+            if (this.resetStats)
             {
                 this.player.SelectedCharacter.CharacterClass.StatAttributes.ForEach(stat => this.player.Attributes[stat.Attribute] = stat.BaseValue);
             }
@@ -120,7 +136,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
             this.player.SelectedCharacter.LevelUpPoints = pointsPerReset;
         }
 
-        private void UpdatePlayer()
+        private void MoveHome()
         {
             var homeMap = this.player.SelectedCharacter.CharacterClass.HomeMap;
             var randomSpawn = homeMap.SafezoneMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
@@ -128,6 +144,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
             this.player.SelectedCharacter.PositionY = (byte)Rand.NextInt(randomSpawn.Y1, randomSpawn.Y2);
             this.player.SelectedCharacter.CurrentMap = randomSpawn.Map;
             this.player.Rotation = randomSpawn.Direction;
+        }
+
+        private void Logout()
+        {
             this.logoutAction.Logout(this.player, LogoutType.BackToCharacterSelection);
         }
     }
