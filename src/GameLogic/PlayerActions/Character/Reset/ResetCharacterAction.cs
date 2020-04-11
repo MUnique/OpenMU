@@ -133,7 +133,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
             {
                 this.player.SelectedCharacter.CharacterClass.StatAttributes
                     .Where(s => s.IncreasableByPlayer)
-                    .ForEach(stat => this.player.Attributes[stat.Attribute] = stat.BaseValue);
+                    .ForEach(s => this.player.Attributes[s.Attribute] = s.BaseValue);
             }
 
             this.player.SelectedCharacter.LevelUpPoints = calculatedPointsPerReset;
