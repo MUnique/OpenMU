@@ -1,12 +1,12 @@
-﻿// <copyright file="ResetCharacterNpcHandler.cs" company="MUnique">
+﻿// <copyright file="ResetCharacterNpcPlugin.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
+namespace MUnique.OpenMU.GameLogic.PlugIns
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.PlugIns;
@@ -15,8 +15,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
     /// Action to reset a character.
     /// </summary>
     [Guid("08953BE6-DABF-49CC-A500-FDB9DC2C4D80")]
-    [PlugIn(nameof(ResetCharacterNpcHandler), "Handle Reset Character NPC Request")]
-    public class ResetCharacterNpcHandler : ICustomNpcTalkHandlerPlugin
+    [PlugIn(nameof(ResetCharacterNpcPlugin), "Handle Reset Character NPC Request")]
+    public class ResetCharacterNpcPlugin : ICustomNpcTalkHandlerPlugin
     {
         /// <summary>
         /// Gets Reset Npc Number.
@@ -26,13 +26,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         /// <inheritdoc />
         public void HandleNpcTalk(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
         {
+            if (!ResetCharacterAction.IsEnabled)
+            {
+                return;
+            }
+
             eventArgs.HasBeenHandled = true;
             var resetAction = new ResetCharacterAction(player);
             try
             {
                 resetAction.ResetCharacter();
             }
-            catch (ResetCharacterActionException e)
+            catch (ResetCharacterException e)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(e.Message, MessageType.BlueNormal);
             }

@@ -1,4 +1,4 @@
-﻿// <copyright file="ResetCharacterActionException.cs" company="MUnique">
+﻿// <copyright file="ResetCharacterException.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,10 +9,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
     /// <summary>
     /// Action to reset a character.
     /// </summary>
-    public class ResetCharacterActionException : Exception
+    public class ResetCharacterException : Exception
     {
         /// <inheritdoc />
-        public ResetCharacterActionException(string message)
+        public ResetCharacterException(string message)
             : base(message)
         {
         }

@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         private readonly LogoutAction logoutAction = new LogoutAction();
 
         // Reset System Configuration
-        private readonly bool IsEnabled = true;
+        public static readonly bool IsEnabled = true;
         private readonly int ResetLimit = -1;
         private readonly int RequiredLevel = 400;
         private readonly int RequiredZen = 1;
@@ -52,9 +52,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 
         private void CheckEnabled()
         {
-            if (!this.IsEnabled)
+            if (!IsEnabled)
             {
-                throw new ResetCharacterActionException("Reset system is disabled");
+                throw new ResetCharacterException("Reset system is disabled");
             }
         }
 
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         {
             if (this.player.Level < this.RequiredLevel)
             {
-                throw new ResetCharacterActionException($"[Reset System] Required level is {this.RequiredLevel}");
+                throw new ResetCharacterException($"[Reset System] Required level is {this.RequiredLevel}");
             }
         }
 
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         {
             if (this.ResetLimit > 0 && (this.GetResetCount() + 1) > this.ResetLimit)
             {
-                throw new ResetCharacterActionException($"[Reset System] Max reset is {this.ResetLimit}");
+                throw new ResetCharacterException($"[Reset System] Max reset is {this.ResetLimit}");
             }
         }
 
@@ -89,7 +89,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 
             if (!this.player.TryRemoveMoney(requiredZen))
             {
-                throw new ResetCharacterActionException($"[Reset System] You don't have enough Money, required zen is {requiredZen}");
+                throw new ResetCharacterException($"[Reset System] You don't have enough Money, required zen is {requiredZen}");
             }
         }
 

@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             {
                 resetAction.ResetCharacter();
             }
-            catch (ResetCharacterActionException e)
+            catch (ResetCharacterException e)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(e.Message, MessageType.BlueNormal);
             }
