@@ -2,14 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 {
-    using System;
     using System.Linq;
     using MUnique.OpenMU.GameLogic.Attributes;
-    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Login;
-    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// Action to reset a character.
@@ -41,30 +38,23 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// <summary>
         /// Reset specific character.
         /// </summary>
-        public void Execute()
+        public void ResetCharacter()
         {
-            try
-            {
-                this.CheckEnabled();
-                this.CheckLevel();
-                this.CheckResetLimit();
-                this.ConsumeZen();
-                this.AddReset();
-                this.ResetLevel();
-                this.UpdateStats();
-                this.UpdatePlayer();
-            }
-            catch (Exception e)
-            {
-                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(e.Message, MessageType.BlueNormal);
-            }
+            this.CheckEnabled();
+            this.CheckLevel();
+            this.CheckResetLimit();
+            this.ConsumeZen();
+            this.AddReset();
+            this.ResetLevel();
+            this.UpdateStats();
+            this.UpdatePlayer();
         }
 
         private void CheckEnabled()
         {
             if (!this.IsEnabled)
             {
-                throw new Exception("Reset system is disabled");
+                throw new ResetCharacterActionException("Reset system is disabled");
             }
         }
 
@@ -72,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         {
             if (this.player.Level < this.RequiredLevel)
             {
-                throw new Exception($"[Reset System] Required level is {this.RequiredLevel}");
+                throw new ResetCharacterActionException($"[Reset System] Required level is {this.RequiredLevel}");
             }
         }
 
@@ -85,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         {
             if (this.ResetLimit > 0 && (this.GetResetCount() + 1) > this.ResetLimit)
             {
-                throw new Exception($"[Reset System] Max reset is {this.ResetLimit}");
+                throw new ResetCharacterActionException($"[Reset System] Max reset is {this.ResetLimit}");
             }
         }
 
@@ -99,7 +89,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
             if (!this.player.TryRemoveMoney(requiredZen))
             {
-                throw new Exception($"[Reset System] You don't have enough Money, required zen is {requiredZen}");
+                throw new ResetCharacterActionException($"[Reset System] You don't have enough Money, required zen is {requiredZen}");
             }
         }
 
