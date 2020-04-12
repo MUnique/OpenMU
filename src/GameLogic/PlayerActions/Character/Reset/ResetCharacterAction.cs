@@ -5,9 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 {
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Login;
+    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// Action to reset a character.
@@ -27,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         private readonly int resetLimit = -1;
         private readonly int requiredLevel = 400;
         private readonly int levelAfterReset = 10;
-        private readonly int requiredZen = 1;
+        private readonly int requiredMoney = 1;
         private readonly bool multiplyZenByResetCount = true;
         private readonly bool resetStats = true;
         private readonly bool multiplyPointsByResetCount = true;
@@ -47,11 +48,35 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
         /// </summary>
         public void ResetCharacter()
         {
-            this.CheckEnabled();
-            this.CheckNpcWindow();
-            this.CheckLevel();
-            this.CheckResetLimit();
-            this.ConsumeZen();
+            if (!IsEnabled)
+            {
+                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Reset is not enabled.", MessageType.BlueNormal);
+                return;
+            }
+
+            if (this.player.PlayerState.CurrentState != PlayerState.EnteredWorld)
+            {
+                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Cannot do reset with any windows opened.", MessageType.BlueNormal);
+                return;
+            }
+
+            if (this.player.Level < this.requiredLevel)
+            {
+                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Required level for reset is {this.requiredLevel}.", MessageType.BlueNormal);
+                return;
+            }
+
+            if (this.resetLimit > 0 && (this.GetResetCount() + 1) > this.resetLimit)
+            {
+                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Maximum resets of {this.resetLimit} reached.", MessageType.BlueNormal);
+                return;
+            }
+
+            if (!this.TryConsumeMoney())
+            {
+                return;
+            }
+
             this.AddReset();
             this.ResetLevel();
             this.UpdateStats();
@@ -59,46 +84,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
             this.Logout();
         }
 
-        private void CheckEnabled()
-        {
-            if (!IsEnabled)
-            {
-                throw new ResetCharacterException("Reset is not disabled");
-            }
-        }
-
-        private void CheckNpcWindow()
-        {
-            if (this.player.OpenedNpc != null && this.player.OpenedNpc.Definition.NpcWindow != NpcWindow.Undefined)
-            {
-                throw new ResetCharacterException("Cannot do reset with npc window opened");
-            }
-        }
-
-        private void CheckLevel()
-        {
-            if (this.player.Level < this.requiredLevel)
-            {
-                throw new ResetCharacterException($"Required level for reset is {this.requiredLevel}");
-            }
-        }
 
         private int GetResetCount()
         {
             return (int)this.player.Attributes[Stats.Resets];
         }
 
-        private void CheckResetLimit()
+        private bool TryConsumeMoney()
         {
-            if (this.resetLimit > 0 && (this.GetResetCount() + 1) > this.resetLimit)
-            {
-                throw new ResetCharacterException($"Max reset is {this.resetLimit}");
-            }
-        }
-
-        private void ConsumeZen()
-        {
-            var calculatedRequiredZen = this.requiredZen;
+            var calculatedRequiredZen = this.requiredMoney;
             if (this.multiplyZenByResetCount)
             {
                 calculatedRequiredZen *= this.GetResetCount() + 1;
@@ -106,8 +100,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset
 
             if (!this.player.TryRemoveMoney(calculatedRequiredZen))
             {
-                throw new ResetCharacterException($"You don't have enough money for reset, required zen is {calculatedRequiredZen}");
+                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"You don't have enough money for reset, required zen is {calculatedRequiredZen}", MessageType.BlueNormal);
+                return false;
             }
+
+            return true;
         }
 
         private void AddReset()

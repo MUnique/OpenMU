@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset;
-    using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -32,14 +31,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
 
             eventArgs.HasBeenHandled = true;
             var resetAction = new ResetCharacterAction(player);
-            try
-            {
-                resetAction.ResetCharacter();
-            }
-            catch (ResetCharacterException e)
-            {
-                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(e.Message, npc);
-            }
+            resetAction.ResetCharacter();
         }
     }
 }
