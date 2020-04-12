@@ -67,6 +67,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             yield return this.CreateMonsterSpawn(npcDictionary[229], 136, 88, Direction.SouthWest);
             yield return this.CreateMonsterSpawn(npcDictionary[375], 132, 161, Direction.SouthEast);
             yield return this.CreateMonsterSpawn(npcDictionary[543], 141, 143, Direction.South);
+            yield return this.CreateMonsterSpawn(npcDictionary[371], 130, 126, Direction.SouthEast);
 
             // Monsters:
             yield return this.CreateMonsterSpawn(npcDictionary[000], 135, 240, 020, 088, 45);
