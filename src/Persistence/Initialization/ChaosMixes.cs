@@ -309,6 +309,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             craftingSettings.Money = 500_000;
             craftingSettings.SuccessPercent = 70;
             craftingSettings.ResultItemExcellentOptionChance = 10;
+            craftingSettings.ResultItemSkillChance = 100;
 
             // Requirements:
             var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
