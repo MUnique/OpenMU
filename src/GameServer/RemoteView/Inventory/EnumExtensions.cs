@@ -30,6 +30,26 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
                 Storages.PersonalStore => ItemStorageKind.PlayerShop,
                 Storages.Trade => ItemStorageKind.Trade,
                 Storages.Vault => ItemStorageKind.Vault,
+                Storages.PetTrainer => ItemStorageKind.PetTrainer,
+                _ => throw new NotImplementedException($"Unhandled case {storage}."),
+            };
+        }
+
+        /// <summary>
+        /// Converts the enum value into the enum type used in the packets.
+        /// </summary>
+        /// <param name="storage">The enum value.</param>
+        /// <returns>The converted value.</returns>
+        public static Storages Convert(this ItemStorageKind storage)
+        {
+            return storage switch
+            {
+                ItemStorageKind.Inventory => Storages.Inventory,
+                ItemStorageKind.ChaosMachine => Storages.ChaosMachine,
+                ItemStorageKind.PlayerShop => Storages.PersonalStore,
+                ItemStorageKind.Trade => Storages.Trade,
+                ItemStorageKind.Vault => Storages.Vault,
+                ItemStorageKind.PetTrainer => Storages.PetTrainer,
                 _ => throw new NotImplementedException($"Unhandled case {storage}."),
             };
         }

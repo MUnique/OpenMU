@@ -17,27 +17,32 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// The inventory storage.
         /// </summary>
-        Inventory = 0,
+        Inventory,
 
         /// <summary>
         /// The trade storage.
         /// </summary>
-        Trade = 1,
+        Trade,
 
         /// <summary>
         /// The vault storage.
         /// </summary>
-        Vault = 2,
+        Vault,
 
         /// <summary>
         /// The chaos machine storage.
         /// </summary>
-        ChaosMachine = 3,
+        ChaosMachine,
 
         /// <summary>
         /// The personal store storage.
         /// </summary>
-        PersonalStore = 4,
+        PersonalStore,
+
+        /// <summary>
+        /// The pet trainer storage.
+        /// </summary>
+        PetTrainer = 5,
     }
 
     /// <summary>

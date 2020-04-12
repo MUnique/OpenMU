@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.GameLogic.Views.NPC;
 
@@ -41,7 +42,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var result = craftingHandler.DoMix(player);
             var itemList = player.TemporaryStorage.Items.ToList();
             player.ViewPlugIns.GetPlugIn<IShowItemCraftingResultPlugIn>()?.ShowResult(result.Item1, itemList.Count > 1 ? null : result.Item2);
-            player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(itemList, StoreKind.ChaosMachine);
+            player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(
+                itemList,
+                npcStats.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine);
         }
 
         private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)

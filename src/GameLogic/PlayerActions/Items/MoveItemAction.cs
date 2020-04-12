@@ -159,6 +159,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     break;
                 case Storages.Trade:
                 case Storages.ChaosMachine:
+                case Storages.PetTrainer:
                     result = new StorageInfo(player.TemporaryStorage, TemporaryStorageRows, 0, TemporaryStorageSize);
                     break;
                 default:

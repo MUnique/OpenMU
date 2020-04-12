@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
             {
                 StoreKind.Normal => StoreItemList.ItemWindow.Normal,
                 StoreKind.ChaosMachine => StoreItemList.ItemWindow.ChaosMachine,
-                StoreKind.Resurrection => StoreItemList.ItemWindow.Resurrection,
+                StoreKind.ResurrectionFailed => StoreItemList.ItemWindow.ResurrectionFailed,
                 _ => throw new ArgumentException($"Unknown value {storeKind}", nameof(storeKind)),
             };
         }

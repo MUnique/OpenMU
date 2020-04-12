@@ -52,6 +52,38 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true, (Stats.MoneyAmountRate, 0.5f), (Stats.DefenseBase, 50f));
             this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true, (Stats.MoneyAmountRate, 0.5f), (Stats.DefenseBase, 50f));
             this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true, (Stats.AttackDamageIncrease, 0.2f), (Stats.AttackSpeed, 10f), (Stats.ExperienceRate, 0.3f));
+
+            this.CreateSpirit();
+        }
+
+        private void CreateSpirit()
+        {
+            // A level 0 spirit is for the Dark Horse; Level 1 is for the Dark Raven.
+            var spirit = this.Context.CreateNew<ItemDefinition>();
+            spirit.Group = 13;
+            spirit.Number = 31;
+            spirit.Name = "Spirit";
+            spirit.Width = 1;
+            spirit.Height = 1;
+            spirit.Durability = 1;
+
+            this.GameConfiguration.Items.Add(spirit);
+
+            var horseDrop = this.Context.CreateNew<DropItemGroup>();
+            horseDrop.ItemLevel = 0;
+            horseDrop.Chance = 0.001;
+            horseDrop.Description = "Dark Horse Spirit";
+            horseDrop.PossibleItems.Add(spirit);
+            horseDrop.MinimumMonsterLevel = 102;
+            this.GameConfiguration.DropItemGroups.Add(horseDrop);
+
+            var ravenDrop = this.Context.CreateNew<DropItemGroup>();
+            ravenDrop.ItemLevel = 1;
+            ravenDrop.Chance = 0.001;
+            ravenDrop.Description = "Dark Raven Spirit";
+            ravenDrop.PossibleItems.Add(spirit);
+            ravenDrop.MinimumMonsterLevel = 96;
+            this.GameConfiguration.DropItemGroups.Add(ravenDrop);
         }
 
         private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, byte width, byte height, string name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, bool addAllCharacterClasses, params (AttributeDefinition, float)[] basePowerUps)

@@ -6471,9 +6471,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             ChaosMachine = 3,
 
             /// <summary>
-            /// A pet resurrection window.
+            /// A failed resurrection (of Dark Horse or Dark Raven) storage dialog.
             /// </summary>
-            Resurrection = 5,
+            ResurrectionFailed = 5,
         }
 
         private readonly Span<byte> data;

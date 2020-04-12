@@ -23,9 +23,9 @@ namespace MUnique.OpenMU.GameLogic.Views.NPC
         ChaosMachine = 3,
 
         /// <summary>
-        /// A crafting dialog (resurrection of pets).
+        /// A failed resurrection (of Dark Horse or Dark Raven) storage dialog.
         /// </summary>
-        Resurrection = 5,
+        ResurrectionFailed = 5,
     }
 
     /// <summary>

@@ -9,29 +9,34 @@
       <Description>Defines from or to which item storage an item is moved.</Description>
       <Values>
         <EnumValue>
-          <Value>0</Value>
           <Name>Inventory</Name>
-          <Description>The inventory storage</Description>
+          <Description>The inventory storage.</Description>
+          <Value>0</Value>
         </EnumValue>
         <EnumValue>
-          <Value>1</Value>
           <Name>Trade</Name>
-          <Description>The trade storage</Description>
+          <Description>The trade storage.</Description>
+          <Value>1</Value>
         </EnumValue>
         <EnumValue>
-          <Value>2</Value>
           <Name>Vault</Name>
-          <Description>The vault storage</Description>
+          <Description>The vault storage.</Description>
+          <Value>2</Value>
         </EnumValue>
         <EnumValue>
-          <Value>3</Value>
           <Name>ChaosMachine</Name>
-          <Description>The chaos machine storage</Description>
+          <Description>The chaos machine storage.</Description>
+          <Value>3</Value>
         </EnumValue>
         <EnumValue>
-          <Value>4</Value>
           <Name>PlayerShop</Name>
-          <Description>The player shop storage</Description>
+          <Description>The player shop storage.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PetTrainer</Name>
+          <Description>The pet trainer dialog storage.</Description>
+          <Value>5</Value>
         </EnumValue>
       </Values>
     </Enum>

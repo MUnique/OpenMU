@@ -2324,8 +2324,8 @@
               <Value>3</Value>
             </EnumValue>
             <EnumValue>
-              <Name>Resurrection</Name>
-              <Description>A pet resurrection window.</Description>
+              <Name>ResurrectionFailed</Name>
+              <Description>A failed resurrection (of Dark Horse or Dark Raven) storage dialog.</Description>
               <Value>5</Value>
             </EnumValue>
           </Values>
