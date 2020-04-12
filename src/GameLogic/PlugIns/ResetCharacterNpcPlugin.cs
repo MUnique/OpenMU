@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Character;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

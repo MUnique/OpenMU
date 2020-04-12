@@ -6,9 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Character.Reset;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Character;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -32,14 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         public void HandleCommand(Player player, string command)
         {
             var resetAction = new ResetCharacterAction(player);
-            try
-            {
-                resetAction.ResetCharacter();
-            }
-            catch (ResetCharacterException e)
-            {
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(e.Message, MessageType.BlueNormal);
-            }
+            resetAction.ResetCharacter();
         }
     }
 }
