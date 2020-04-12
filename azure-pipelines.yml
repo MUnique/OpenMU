@@ -13,6 +13,10 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- script: dotnet restore
+  workingDirectory: src
+  displayName: 'dotnet restore'
+
 - script: dotnet build --configuration $(buildConfiguration) -p:ci=true
   workingDirectory: src
   displayName: 'dotnet build $(buildConfiguration)'
