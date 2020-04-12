@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.NPC;
 
     /// <summary>
     /// The initialization for the Kanturu Relics map.
@@ -149,6 +150,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.MoveRange = 0;
                 monster.AttackRange = 4;
                 monster.ViewRange = 2;
+                monster.ObjectKind = NpcObjectKind.Trap;
+                monster.IntelligenceTypeName = typeof(RandomAttackInRangeTrapIntelligence).FullName;
                 monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
                 monster.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);
                 monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
@@ -175,6 +178,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.MoveRange = 0;
                 monster.AttackRange = 1;
                 monster.ViewRange = 1;
+                monster.ObjectKind = NpcObjectKind.Trap;
+                monster.IntelligenceTypeName = typeof(RandomAttackInRangeTrapIntelligence).FullName;
                 monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
                 monster.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);
                 monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);

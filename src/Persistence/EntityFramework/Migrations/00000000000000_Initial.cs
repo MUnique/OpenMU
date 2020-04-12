@@ -1471,7 +1471,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Skill = table.Column<short>(nullable: false),
                     NumberOfMaximumItemDrops = table.Column<int>(nullable: false),
                     NpcWindow = table.Column<int>(nullable: false),
-                    TrapType = table.Column<int>(nullable: false),
+                    ObjectKind = table.Column<int>(nullable: false),
+                    IntelligenceTypeName = table.Column<string>(nullable: true),
                     AttackSkillId = table.Column<Guid>(nullable: true),
                     MerchantStoreId = table.Column<Guid>(nullable: true),
                     GameConfigurationId = table.Column<Guid>(nullable: true)

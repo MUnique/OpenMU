@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameLogic
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -78,16 +77,17 @@ namespace MUnique.OpenMU.GameLogic
                     var monsterDef = spawn.MonsterDefinition;
                     NonPlayerCharacter npc;
 
-                    // TODO: Check if the condition is correct... NPCs are not attackable, but some might need to be (castle gates etc.). Also some NPCs are attacking, but should not be attackable (Traps).
-                    if (monsterDef.MoveRange == 0)
-                    {
-                        Logger.Debug($"Creating trap {spawn}");
-                        npc = new Trap(spawn, monsterDef, createdMap, new BasicTrapIntelligence(createdMap));
-                    }
-                    else if (monsterDef.AttackDelay > TimeSpan.Zero)
+                    var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, createdMap);
+
+                    if (monsterDef.ObjectKind == NpcObjectKind.Monster)
                     {
                         Logger.Debug($"Creating monster {spawn}");
-                        npc = new Monster(spawn, monsterDef, createdMap, this.defaultDropGenerator, new BasicMonsterIntelligence(createdMap), this.PlugInManager);
+                        npc = new Monster(spawn, monsterDef, createdMap, this.defaultDropGenerator, intelligence ?? new BasicMonsterIntelligence(createdMap), this.PlugInManager);
+                    }
+                    else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
+                    {
+                        Logger.Debug($"Creating trap {spawn}");
+                        npc = new Trap(spawn, monsterDef, createdMap, intelligence ?? new RandomAttackInRangeTrapIntelligence(createdMap));
                     }
                     else
                     {
@@ -123,6 +123,32 @@ namespace MUnique.OpenMU.GameLogic
         protected virtual GameMap InternalCreateGameMap(GameMapDefinition definition)
         {
             return new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
+        }
+
+        private INpcIntelligence TryCreateConfiguredNpcIntelligence(MonsterDefinition monsterDefinition, GameMap createdMap)
+        {
+            if (string.IsNullOrWhiteSpace(monsterDefinition.IntelligenceTypeName))
+            {
+                return null;
+            }
+
+            try
+            {
+                var type = Type.GetType(monsterDefinition.IntelligenceTypeName);
+                if (type == null)
+                {
+                    Logger.Error($"Could not find type {monsterDefinition.IntelligenceTypeName}");
+                    return null;
+                }
+
+                return (INpcIntelligence)Activator.CreateInstance(type, createdMap);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Could not create npc intelligence for monster {monsterDefinition.Designation}, type name {monsterDefinition.IntelligenceTypeName}", ex);
+            }
+
+            return null;
         }
     }
 }

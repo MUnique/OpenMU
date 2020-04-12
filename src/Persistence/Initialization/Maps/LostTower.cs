@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.NPC;
 
     /// <summary>
     /// The initialization for the Lost Tower map.
@@ -901,6 +902,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
                 trap.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);
                 trap.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+                trap.ObjectKind = NpcObjectKind.Trap;
+                trap.IntelligenceTypeName = typeof(AttackAreaWhenPressedTrapIntelligence).FullName;
                 trap.Attribute = 1;
                 trap.NumberOfMaximumItemDrops = 0;
                 var attributes = new Dictionary<AttributeDefinition, float>

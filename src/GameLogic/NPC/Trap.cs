@@ -5,12 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.NPC
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.World;
 
@@ -20,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     public sealed class Trap : NonPlayerCharacter, IAttacker
     {
         private const byte TrapAttackAnimation = 0x78;
-        private readonly ITrapIntelligence intelligence;
+        private readonly INpcIntelligence intelligence;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Trap"/> class.
@@ -29,13 +25,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <param name="stats">The stats.</param>
         /// <param name="map">The map on which this instance will spawn.</param>
         /// <param name="trapIntelligence">The trap intelligence.</param>
-        public Trap(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, ITrapIntelligence trapIntelligence)
+        public Trap(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, INpcIntelligence trapIntelligence)
             : base(spawnInfo, stats, map)
         {
             this.Attributes = new TrapAttributeHolder(this);
-            this.MagicEffectList = new MagicEffectsList(this);
             this.intelligence = trapIntelligence;
-            this.intelligence.Trap = this;
+            this.intelligence.Npc = this;
             this.intelligence.Start();
             this.Initialize();
         }
@@ -49,11 +44,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <param name="player">The player.</param>
         public void Attack(IAttackable player)
         {
-            // TODO: Some traps attacks only when player is on them, example losttower traps or dungeon : Add it to TrapBasicIntelligence
             // need to find specific animation
             // Maybe add SpecificAnimation and AttackWhenPlayerOn properties to MonsterDefinition?? or create new TrapDefinition?
             player.AttackBy(this, null);
-            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, TrapAttackAnimation, player, this.Rotation), true);
+            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, TrapAttackAnimation, player, this.Rotation), false);
         }
 
         /// <inheritdoc/>
@@ -64,27 +58,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
             {
                 (this.intelligence as IDisposable)?.Dispose();
             }
-        }
-
-        /// <summary>
-        /// Respawns this instance on the map.
-        /// </summary>
-        private void Respawn()
-        {
-            this.Initialize();
-            this.CurrentMap.Respawn(this);
-        }
-
-        /// <inheritdoc/>
-        public void AttackBy(IAttackable attacker, SkillEntry skill)
-        {
-            throw new NotSupportedException("Traps can't be attacked");
-        }
-
-        /// <inheritdoc/>
-        public void ReflectDamage(IAttackable reflector, uint damage)
-        {
-            throw new NotSupportedException("Traps can't be attacked");
         }
     }
 }

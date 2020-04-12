@@ -1814,6 +1814,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 b.Property<Guid?>("GameConfigurationId")
                     .HasColumnType("uuid");
 
+                b.Property<string>("IntelligenceTypeName")
+                    .HasColumnType("text");
+
                 b.Property<Guid?>("MerchantStoreId")
                     .HasColumnType("uuid");
 
@@ -1826,13 +1829,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 b.Property<int>("NpcWindow")
                     .HasColumnType("integer");
 
-                b.Property<int>("TrapType")
-                    .HasColumnType("Integer");
-
                 b.Property<short>("Number")
                     .HasColumnType("smallint");
 
                 b.Property<int>("NumberOfMaximumItemDrops")
+                    .HasColumnType("integer");
+
+                b.Property<int>("ObjectKind")
                     .HasColumnType("integer");
 
                 b.Property<TimeSpan>("RespawnDelay")

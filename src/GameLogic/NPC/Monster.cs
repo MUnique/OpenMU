@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private const byte MonsterAttackAnimation = 0x78;
         private readonly IDropGenerator dropGenerator;
         private readonly object moveLock = new object();
-        private readonly IMonsterIntelligence intelligence;
+        private readonly INpcIntelligence intelligence;
         private readonly PlugInManager plugInManager;
         private readonly Walker walker;
 
@@ -41,18 +41,18 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <param name="stats">The stats.</param>
         /// <param name="map">The map on which this instance will spawn.</param>
         /// <param name="dropGenerator">The drop generator.</param>
-        /// <param name="monsterIntelligence">The monster intelligence.</param>
+        /// <param name="npcIntelligence">The monster intelligence.</param>
         /// <param name="plugInManager">The plug in manager.</param>
-        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, IMonsterIntelligence monsterIntelligence, PlugInManager plugInManager)
+        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager)
             : base(spawnInfo, stats, map)
         {
             this.dropGenerator = dropGenerator;
             this.Attributes = new MonsterAttributeHolder(this);
             this.MagicEffectList = new MagicEffectsList(this);
             this.walker = new Walker(this, () => this.StepDelay);
-            this.intelligence = monsterIntelligence;
+            this.intelligence = npcIntelligence;
             this.plugInManager = plugInManager;
-            this.intelligence.Monster = this;
+            this.intelligence.Npc = this;
             this.intelligence.Start();
             this.Initialize();
         }

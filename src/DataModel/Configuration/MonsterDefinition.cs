@@ -167,24 +167,40 @@ namespace MUnique.OpenMU.DataModel.Configuration
     }
 
     /// <summary>
-    /// Type of the trap.
+    /// Type of a non-player-character object.
     /// </summary>
-    public enum TrapType
+    public enum NpcObjectKind
     {
-        /// <summary>
-        /// Attack always
-        /// </summary>
-        Normal,
 
         /// <summary>
-        /// Activeted when pressed
+        /// The npc is a monster.
         /// </summary>
-        WhenPressed,
+        Monster,
 
         /// <summary>
-        /// Activeted when pressed and attacks everyone is near
+        /// The npc is passive, e.g. a merchant.
         /// </summary>
-        WhenPressedAttackArea,
+        PassiveNpc,
+
+        /// <summary>
+        /// The npc is a guard.
+        /// </summary>
+        Guard,
+
+        /// <summary>
+        /// The npc is a trap.
+        /// </summary>
+        Trap,
+
+        /// <summary>
+        /// The npc is a gate
+        /// </summary>
+        Gate,
+
+        /// <summary>
+        /// The npc is a statue.
+        /// </summary>
+        Statue,
     }
 
     /// <summary>
@@ -263,9 +279,14 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public NpcWindow NpcWindow { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of the trap.
+        /// Gets or sets the kind of the object.
         /// </summary>
-        public TrapType TrapType { get; set; }
+        public NpcObjectKind ObjectKind { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the intelligence type, if this npc/monster uses a specific implementation of an INpcIntelligence.
+        /// </summary>
+        public string IntelligenceTypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the skill with which this monster is attacking. Also known as "Attack type".

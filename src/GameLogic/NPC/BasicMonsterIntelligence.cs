@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// <summary>
     /// A basic monster AI which is pretty basic.
     /// </summary>
-    public sealed class BasicMonsterIntelligence : IMonsterIntelligence, IDisposable
+    public sealed class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     {
         private readonly GameMap map;
 
@@ -30,12 +30,21 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc/>
+        public NonPlayerCharacter Npc
+        {
+            get => this.Monster;
+            set => this.Monster = (Monster)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the monster.
+        /// </summary>
         public Monster Monster { get; set; }
 
         /// <inheritdoc/>
         public void Start()
         {
-            this.aiTimer = new Timer(state => this.Tick(), null, this.Monster.Definition.AttackDelay, this.Monster.Definition.AttackDelay);
+            this.aiTimer = new Timer(state => this.Tick(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
         }
 
         /// <inheritdoc/>
@@ -60,14 +69,14 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private IAttackable SearchNextTarget()
         {
             List<IWorldObserver> tempObservers;
-            this.Monster.ObserverLock.EnterReadLock();
+            this.Npc.ObserverLock.EnterReadLock();
             try
             {
-                tempObservers = new List<IWorldObserver>(this.Monster.Observers);
+                tempObservers = new List<IWorldObserver>(this.Npc.Observers);
             }
             finally
             {
-                this.Monster.ObserverLock.ExitReadLock();
+                this.Npc.ObserverLock.ExitReadLock();
             }
 
             double closestdistance = 100;
@@ -80,7 +89,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                     continue;
                 }
 
-                double d = attackable.GetDistanceTo(this.Monster);
+                double d = attackable.GetDistanceTo(this.Npc);
                 if (closestdistance > d)
                 {
                     closest = attackable;
@@ -95,14 +104,14 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private bool IsTargetInObservers()
         {
-            this.Monster.ObserverLock.EnterReadLock();
+            this.Npc.ObserverLock.EnterReadLock();
             try
             {
-                return this.Monster.Observers.Contains(this.currentTarget as IWorldObserver);
+                return this.Npc.Observers.Contains(this.currentTarget as IWorldObserver);
             }
             finally
             {
-                this.Monster.ObserverLock.ExitReadLock();
+                this.Npc.ObserverLock.ExitReadLock();
             }
         }
 
@@ -140,14 +149,14 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
 
             // Target in Attack Range?
-            ushort dist = (ushort)this.currentTarget.GetDistanceTo(this.Monster);
+            ushort dist = (ushort)this.currentTarget.GetDistanceTo(this.Npc);
             if (this.Monster.Definition.AttackRange + 1 >= dist)
             {
                 this.Monster.Attack(this.currentTarget);  // yes, attack
             }
 
             // Target in View Range?
-            else if (this.Monster.Definition.ViewRange + 1 >= dist)
+            else if (this.Npc.Definition.ViewRange + 1 >= dist)
             {
                 this.Monster.WalkTo(this.currentTarget);  // no, walk to the target
             }
