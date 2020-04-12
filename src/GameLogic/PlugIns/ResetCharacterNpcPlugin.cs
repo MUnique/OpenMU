@@ -14,17 +14,22 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
     /// </summary>
     [Guid("08953BE6-DABF-49CC-A500-FDB9DC2C4D80")]
     [PlugIn(nameof(ResetCharacterNpcPlugin), "Handle Reset Character NPC Request")]
-    public class ResetCharacterNpcPlugin : ICustomNpcTalkHandlerPlugin
+    public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn
     {
         /// <summary>
-        /// Gets Reset Npc Number.
+        /// Gets the reset NPC number of 'Leo the Helper'.
         /// </summary>
-        public string Key => "371";
+        public static short ResetNpcNumber => 371;
 
         /// <inheritdoc />
-        public void HandleNpcTalk(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+        public void PlayerTalksToNpc(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
         {
             if (!ResetCharacterAction.IsEnabled)
+            {
+                return;
+            }
+
+            if (npc.Definition.Number != ResetNpcNumber)
             {
                 return;
             }

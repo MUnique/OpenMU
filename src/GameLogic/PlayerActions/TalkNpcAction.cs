@@ -62,13 +62,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>()?.PlayerTalksToNpc(player, player.OpenedNpc, eventArgs);
                     if (!eventArgs.HasBeenHandled)
                     {
-                        player.GameContext.PlugInManager
-                            .GetStrategy<ICustomNpcTalkHandlerPlugin>(npcStats.Number.ToString())
-                            ?.HandleNpcTalk(player, player.OpenedNpc, eventArgs);
-                    }
-
-                    if (!eventArgs.HasBeenHandled)
-                    {
                         player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
                         player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
                     }
