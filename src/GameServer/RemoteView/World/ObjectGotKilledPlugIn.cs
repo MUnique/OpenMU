@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public ObjectGotKilledPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void ObjectGotKilled(IAttackable killed, IAttackable killer)
+        public void ObjectGotKilled(IAttackable killed, IAttacker killer)
         {
             var killedId = killed.GetId(this.player);
             var killerId = killer.GetId(this.player);

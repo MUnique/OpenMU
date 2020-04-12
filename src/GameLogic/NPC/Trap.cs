@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// <summary>
     /// The implementation of a monster, which can attack players.
     /// </summary>
-    public sealed class Trap : NonPlayerCharacter, IAttackable
+    public sealed class Trap : NonPlayerCharacter, IAttacker
     {
         private const byte TrapAttackAnimation = 0x78;
         private readonly ITrapIntelligence intelligence;
@@ -41,23 +41,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc/>
-        public MagicEffectsList MagicEffectList { get; }
-
-        /// <inheritdoc/>
-        public bool Alive { get; set; }
-
-        /// <inheritdoc/>
-        public uint LastReceivedDamage { get; private set; }
-
-        /// <inheritdoc/>
         public IAttributeSystem Attributes { get; }
-
-        /// <inheritdoc/>
-        public override void Initialize()
-        {
-            base.Initialize();
-            this.Alive = true;
-        }
 
         /// <summary>
         /// Attacks the specified player.

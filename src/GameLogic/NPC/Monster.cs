@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// <summary>
     /// The implementation of a monster, which can attack players.
     /// </summary>
-    public sealed class Monster : NonPlayerCharacter, IAttackable, ISupportWalk, IMovable
+    public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISupportWalk, IMovable
     {
         private const byte MonsterAttackAnimation = 0x78;
         private readonly IDropGenerator dropGenerator;
@@ -97,7 +97,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public uint LastReceivedDamage { get; private set; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IAttackable" />
         public IAttributeSystem Attributes { get; }
 
         /// <inheritdoc/>
@@ -193,7 +193,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public int GetSteps(Span<WalkingStep> steps) => this.walker.GetSteps(steps);
 
         /// <inheritdoc />
-        public void AttackBy(IAttackable attacker, SkillEntry skill)
+        public void AttackBy(IAttacker attacker, SkillEntry skill)
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
             this.Hit(hitInfo, attacker);
@@ -205,7 +205,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc />
-        public void ReflectDamage(IAttackable reflector, uint damage)
+        public void ReflectDamage(IAttacker reflector, uint damage)
         {
             this.Hit(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector);
         }
@@ -299,7 +299,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
         }
 
-        private void OnDeath(IAttackable attacker)
+        private void OnDeath(IAttacker attacker)
         {
             this.walker.Stop();
             if (this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic)
@@ -344,7 +344,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.CurrentMap.Respawn(this);
         }
 
-        private void Hit(HitInfo hitInfo, IAttackable attacker)
+        private void Hit(HitInfo hitInfo, IAttacker attacker)
         {
             if (!this.Alive)
             {
@@ -364,7 +364,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
         }
 
-        private bool TryHit(uint damage, IAttackable attacker)
+        private bool TryHit(uint damage, IAttacker attacker)
         {
             if (damage > 0)
             {

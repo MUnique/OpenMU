@@ -119,11 +119,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void Tick()
         {
-            if (!this.Trap.Alive)
-            {
-                return;
-            }
-
             // When trap is defined as 'WhenPressed' target player should stand on them for activation
             if (this.Trap.Definition.TrapType == DataModel.Configuration.TrapType.WhenPressedAttackArea)
             {

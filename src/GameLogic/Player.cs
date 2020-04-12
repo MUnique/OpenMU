@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The base implementation of a player.
     /// </summary>
-    public class Player : IBucketMapObserver, IAttackable, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable
+    public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Player));
 
@@ -315,6 +315,9 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         IAttributeSystem IAttackable.Attributes => this.Attributes;
 
+        /// <inheritdoc/>
+        IAttributeSystem IAttacker.Attributes => this.Attributes;
+
         /// <summary>
         /// Gets the attribute system.
         /// </summary>
@@ -327,7 +330,7 @@ namespace MUnique.OpenMU.GameLogic
         public Bucket<ILocateable> OldBucket { get; set; }
 
         /// <inheritdoc/>
-        public void AttackBy(IAttackable attacker, SkillEntry skill)
+        public void AttackBy(IAttacker attacker, SkillEntry skill)
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
 
@@ -366,7 +369,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public void ReflectDamage(IAttackable reflector, uint damage)
+        public void ReflectDamage(IAttacker reflector, uint damage)
         {
             this.Hit(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector);
         }
@@ -928,7 +931,7 @@ namespace MUnique.OpenMU.GameLogic
             return spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
         }
 
-        private void Hit(HitInfo hitInfo, IAttackable attacker)
+        private void Hit(HitInfo hitInfo, IAttacker attacker)
         {
             int oversd = (int)(this.Attributes[Stats.CurrentShield] - hitInfo.ShieldDamage);
             if (oversd < 0)
@@ -953,20 +956,20 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var reflectPercentage = this.Attributes[Stats.DamageReflection];
-            if (reflectPercentage > 0)
+            if (reflectPercentage > 0 && attacker is IAttackable attackableAttacker)
             {
                 var reflectedDamage = (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
                 Task.Delay(500).ContinueWith(task =>
                 {
-                    if (attacker.Alive)
+                    if (attackableAttacker.Alive)
                     {
-                        attacker.ReflectDamage(this, (uint)reflectedDamage);
+                        attackableAttacker.ReflectDamage(this, (uint)reflectedDamage);
                     }
                 });
             }
         }
 
-        private void OnDeath(IAttackable killer)
+        private void OnDeath(IAttacker killer)
         {
             if (!this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.Dead))
             {

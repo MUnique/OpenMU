@@ -19,6 +19,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// </summary>
         /// <param name="killed">The killed <see cref="IAttackable"/>.</param>
         /// <param name="killer">The killer.</param>
-        void AttackableGotKilled(IAttackable killed, IAttackable killer);
+        void AttackableGotKilled(IAttackable killed, IAttacker killer);
     }
 }

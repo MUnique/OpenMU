@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
         public short Key => 76;
 
         /// <inheritdoc />
-        public void AfterTargetGotAttacked(IAttackable attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
+        public void AfterTargetGotAttacked(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
         {
             if (target is Player targetPlayer
                 && Rand.NextRandomBool(25)

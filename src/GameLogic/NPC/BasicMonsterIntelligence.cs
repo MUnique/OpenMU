@@ -49,11 +49,11 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc/>
-        public void RegisterHit(IAttackable attacker)
+        public void RegisterHit(IAttacker attacker)
         {
-            if (this.currentTarget == null)
+            if (this.currentTarget == null && attacker is IAttackable attackable)
             {
-                this.currentTarget = attacker;
+                this.currentTarget = attackable;
             }
         }
 
