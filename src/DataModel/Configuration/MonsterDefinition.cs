@@ -262,12 +262,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public byte Attribute { get; set; }
 
         /// <summary>
-        /// Gets or sets the skill which is performed as attack animation.
-        /// </summary>
-        /// <remarks>The additional damage of the skill is usually NOT applied; However, magic effects are.</remarks>
-        public Skill Skill { get; set; }
-
-        /// <summary>
         /// Gets or sets the number of maximum item drops after an instance of this monster died.
         /// </summary>
         public int NumberOfMaximumItemDrops { get; set; }
@@ -290,6 +284,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the skill with which this monster is attacking. Also known as "Attack type".
         /// </summary>
+        /// <remarks>The additional damage of the skill is usually NOT applied; However, magic effects are.</remarks>
         public virtual Skill AttackSkill { get; set; }
 
         /// <summary>

@@ -240,7 +240,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 lich.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 lich.Attribute = 2;
                 lich.NumberOfMaximumItemDrops = 1;
-                lich.Skill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.Meteorite);
+                lich.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.Meteorite);
             }
 
             {

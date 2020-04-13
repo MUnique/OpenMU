@@ -553,7 +553,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 288;
                 def.Designation = "Canon Tower";
                 def.ObjectKind = NpcObjectKind.Trap;
-                def.Skill = this.gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
+                def.AttackSkill = this.gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
                 this.gameConfiguration.Monsters.Add(def);
             }
 
