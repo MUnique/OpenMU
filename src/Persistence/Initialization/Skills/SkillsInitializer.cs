@@ -189,6 +189,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.Charge, "Charge", 0, 90, 20, 15, 4, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
             this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", 0, 0, 30, 0, 4, 0, 0, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
+            // Generic monster skills:
+            this.CreateSkill(SkillNumber.MonsterSkill, "Generic Monster Skill", 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, SkillType.Other);
+
             // Master skills:
             // Common:
             this.CreateSkill(SkillNumber.DurabilityReduction1, "Durability Reduction (1)", 0, 17, 0, 0, 0, 0, 0, -1, -1, 3, 0, 3, 3, 3, 3, 3, 3, 0);

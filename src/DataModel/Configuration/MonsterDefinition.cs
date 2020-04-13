@@ -262,11 +262,10 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public byte Attribute { get; set; }
 
         /// <summary>
-        /// Gets or sets the skill.
-        /// TODO Not sure what this means yet.
-        /// I guess it is the magic effect, like stunning (skill 23 @ Dark Elf).
+        /// Gets or sets the skill which is performed as attack animation.
         /// </summary>
-        public short Skill { get; set; }
+        /// <remarks>The additional damage of the skill is usually NOT applied; However, magic effects are.</remarks>
+        public Skill Skill { get; set; }
 
         /// <summary>
         /// Gets or sets the number of maximum item drops after an instance of this monster died.

@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.Persistence.Initialization.Skills;
 
     /// <summary>
     /// The initialization for the Lorencia map.
@@ -239,6 +240,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 lich.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 lich.Attribute = 2;
                 lich.NumberOfMaximumItemDrops = 1;
+                lich.Skill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.Meteorite);
             }
 
             {

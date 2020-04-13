@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization
 {
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence.Initialization.Items;
+    using MUnique.OpenMU.Persistence.Initialization.Skills;
 
     /// <summary>
     /// The initialization of all NPCs, which are no monsters.
@@ -551,6 +553,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 def.Number = 288;
                 def.Designation = "Canon Tower";
                 def.ObjectKind = NpcObjectKind.Trap;
+                def.Skill = this.gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
                 this.gameConfiguration.Monsters.Add(def);
             }
 
