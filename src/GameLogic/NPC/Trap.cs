@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             // need to find specific animation
             // Maybe add SpecificAnimation and AttackWhenPlayerOn properties to MonsterDefinition?? or create new TrapDefinition?
             player.AttackBy(this, null);
-            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, TrapAttackAnimation, player, this.Rotation), false);
+            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, TrapAttackAnimation, player, this.Rotation), true);
         }
 
         /// <inheritdoc/>

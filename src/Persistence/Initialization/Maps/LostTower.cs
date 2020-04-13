@@ -903,7 +903,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.Number = 103;
                 trap.Designation = "Meteorite Trap";
                 trap.MoveRange = 0;
-                trap.AttackRange = 0;
+                trap.AttackRange = 3;
                 trap.ViewRange = 1;
                 trap.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
                 trap.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);

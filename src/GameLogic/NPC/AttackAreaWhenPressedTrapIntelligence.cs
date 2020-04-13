@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC
 {
-    using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.GameLogic.Views.World;
 
     /// <summary>
     /// An AI which attacks all targets in an area, when it's triggered by one target.
@@ -29,18 +29,23 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 return;
             }
 
-            IEnumerable<IAttackable> targetsInRange = this.GetAllTargets()
-                .Where(player => player.Position == this.Trap.Position);
-
-            foreach (var target in targetsInRange)
+            var isTrapActivated = this.GetAllTargets()
+                .Any(player => player.Position == this.Trap.Position);
+            if (!isTrapActivated)
             {
-                if (this.Map.Terrain.SafezoneMap[target.Position.X, target.Position.Y])
-                {
-                    continue;
-                }
-
-                this.Trap.Attack(target);
+                return;
             }
+
+            var targetsInRange = this.GetAllTargets()
+                .Where(target => this.Trap.IsInRange(target.Position, this.Trap.Definition.AttackRange))
+                .Where(target => this.Map.Terrain.SafezoneMap[target.Position.X, target.Position.Y]);
+
+            if (this.Trap.Definition.AttackSkill is { } attackSkill)
+            {
+                this.Trap.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this.Trap, null, attackSkill), true);
+            }
+
+            targetsInRange.ForEach(this.Trap.Attack);
         }
     }
 }

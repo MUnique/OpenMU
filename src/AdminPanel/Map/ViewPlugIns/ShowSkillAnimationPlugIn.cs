@@ -31,9 +31,9 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         }
 
         /// <inheritdoc />
-        public async void ShowSkillAnimation(Player attackingPlayer, IAttackable target, Skill skill)
+        public async void ShowSkillAnimation(IAttacker attacker, IAttackable target, Skill skill)
         {
-            await this.InvokeAsync(attackingPlayer.Id, target?.Id, skill.Number);
+            await this.InvokeAsync(attacker.Id, target?.Id, skill.Number);
         }
     }
 }
