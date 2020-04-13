@@ -6471,9 +6471,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             ChaosMachine = 3,
 
             /// <summary>
-            /// A pet resurrection window.
+            /// A failed resurrection (of Dark Horse or Dark Raven) storage dialog.
             /// </summary>
-            Resurrection = 5,
+            ResurrectionFailed = 5,
         }
 
         private readonly Span<byte> data;
@@ -11078,9 +11078,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public enum GuildKickSuccess
         {
             /// <summary>
-            /// The kick request failed.
+            /// The kick request failed because of an incorrect password.
             /// </summary>
-            Failed = 0,
+            FailedPasswordIncorrect = 0,
 
             /// <summary>
             /// The kick request was successful.
@@ -11088,9 +11088,24 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             KickSucceeded = 1,
 
             /// <summary>
+            /// The kick failed because player is not guild master.
+            /// </summary>
+            KickFailedBecausePlayerIsNotGuildMaster = 2,
+
+            /// <summary>
+            /// The kick request failed.
+            /// </summary>
+            Failed = 3,
+
+            /// <summary>
             /// The guild has been disbanded.
             /// </summary>
-            GuildDisband = 2,
+            GuildDisband = 4,
+
+            /// <summary>
+            /// The guild member has been withdrawn.
+            /// </summary>
+            GuildMemberWithdrawn = 5,
         }
 
         private readonly Span<byte> data;

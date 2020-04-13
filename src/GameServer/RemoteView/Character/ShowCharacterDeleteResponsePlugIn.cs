@@ -29,13 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void ShowCharacterDeleteResponse(CharacterDeleteResult result)
         {
-            var writer = this.player.Connection.StartSafeWrite(CharacterDeleteResponse.HeaderType, CharacterDeleteResponse.Length);
-            _ = new CharacterDeleteResponse(writer.Span)
-            {
-                Result = ConvertResult(result),
-            };
-
-            writer.Commit();
+            this.player.Connection.SendCharacterDeleteResponse(ConvertResult(result));
         }
 
         private static CharacterDeleteResponse.CharacterDeleteResult ConvertResult(CharacterDeleteResult result)

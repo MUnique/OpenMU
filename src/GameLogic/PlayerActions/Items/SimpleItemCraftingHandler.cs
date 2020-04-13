@@ -9,14 +9,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.PlugIns;
-    using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.NPC;
 
     /// <summary>
     /// The simple item crafting handler which can be configured to handle the most crafting requirements.
     /// </summary>
-    public class SimpleItemCraftingHandler : IItemCraftingHandler
+    public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(SimpleItemCraftingHandler));
 
@@ -33,38 +31,48 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             this.settings = settings;
         }
 
-        /// <inheritdoc/>
-        public (CraftingResult, Item) DoMix(Player player)
+        /// <inheritdoc />
+        protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
         {
-            var successRate = this.settings.SuccessPercent;
+            return this.settings.Money + (this.settings.MoneyPerFinalSuccessPercentage * successRate);
+        }
 
-            // Find all Required Items first
-            var items = new List<CraftingRequiredItemLink>(this.settings.RequiredItems.Count);
+        /// <inheritdoc />
+        protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+        {
+            successRate = this.settings.SuccessPercent;
+            items = new List<CraftingRequiredItemLink>(this.settings.RequiredItems.Count);
             var storage = player.TemporaryStorage.Items.ToList();
             foreach (var requiredItem in this.settings.RequiredItems)
             {
                 var foundItems = storage
                     .Where(item => requiredItem.ItemDefinition == null || item.Definition == requiredItem.ItemDefinition)
-                    .Where(item => requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r)))
+                    .Where(item =>
+                        requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r)))
                     .Where(item => item.Level >= requiredItem.MinimumItemLevel
                                    && item.Level <= requiredItem.MaximumItemLevel).ToList();
 
                 if (foundItems.Count < requiredItem.MinimumAmount)
                 {
                     Log.WarnFormat("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
-                    return (CraftingResult.LackingMixItems, null);
+                    {
+                        return CraftingResult.LackingMixItems;
+                    }
                 }
 
                 if (foundItems.Count > requiredItem.MaximumAmount && requiredItem.MaximumAmount > 0)
                 {
                     Log.WarnFormat("TooManyItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
-                    return (CraftingResult.TooManyItems, null);
+                    {
+                        return CraftingResult.TooManyItems;
+                    }
                 }
 
-                successRate += (byte)(requiredItem.AddPercentage * (foundItems.Count - requiredItem.MinimumAmount));
+                successRate += (byte) (requiredItem.AddPercentage * (foundItems.Count - requiredItem.MinimumAmount));
                 if (requiredItem.NpcPriceDivisor > 0)
                 {
-                    successRate += (byte)(foundItems.Sum(this.priceCalculator.CalculateBuyingPrice) / requiredItem.NpcPriceDivisor);
+                    successRate += (byte)(foundItems.Sum(this.priceCalculator.CalculateBuyingPrice) /
+                                                  requiredItem.NpcPriceDivisor);
                 }
 
                 foreach (var item in foundItems)
@@ -100,56 +108,27 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             // The list of unprocessed items must be empty now; otherwise, something is wrong.
             if (storage.Any())
             {
-                return (CraftingResult.IncorrectMixItems, null);
+                return CraftingResult.IncorrectMixItems;
             }
 
-            var price = this.settings.Money + (this.settings.MoneyPerFinalSuccessPercentage * successRate);
-            if (!player.TryRemoveMoney(price))
-            {
-                return (CraftingResult.NotEnoughMoney, null);
-            }
-
-            player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
-
-            var success = Rand.NextRandomBool(successRate);
-            if (success)
-            {
-                var item = this.DoTheMix(items, player);
-                return (CraftingResult.Success, item);
-            }
-
-            items.ForEach(i => this.RequiredItemChange(player, i, false));
-            return (CraftingResult.Failed, null);
+            return default;
         }
 
-        private Item DoTheMix(IList<CraftingRequiredItemLink> items, Player player)
+        /// <inheritdoc />
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> referencedItems, Player player)
         {
-            var referencedItems = new List<CraftingRequiredItemLink>();
-
-            foreach (var requiredItemLink in items)
-            {
-                if (requiredItemLink.ItemRequirement.Reference != 0)
-                {
-                    referencedItems.Add(requiredItemLink);
-                }
-
-                this.RequiredItemChange(player, requiredItemLink, true);
-            }
-
             var resultItems = this.settings.ResultItemSelect == ResultItemSelection.All
                 ? this.settings.ResultItems
                 : this.settings.ResultItems.SelectRandom().GetAsEnumerable();
 
-            Item affectedItem = null;
             foreach (var craftingResultItem in resultItems)
             {
                 if (craftingResultItem.Reference > 0
                     && referencedItems.FirstOrDefault(i => i.ItemRequirement.Reference == craftingResultItem.Reference) is { } referencedItem)
                 {
-                    foreach (var item in referencedItem.StoredItem)
+                    foreach (var item in referencedItem.Items)
                     {
                         item.Level += craftingResultItem.AddLevel;
-                        affectedItem = item;
                     }
 
                     continue;
@@ -162,16 +141,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     continue;
                 }
 
-                affectedItem = this.CreateResultItems(player, referencedItems, craftingResultItem);
+                foreach (var resultItem in this.CreateResultItems(player, referencedItems, craftingResultItem))
+                {
+                    yield return resultItem;
+                }
             }
-
-            return affectedItem;
         }
 
-        private Item CreateResultItems(Player player, List<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem)
+        private IEnumerable<Item> CreateResultItems(Player player, IList<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem)
         {
-            Item affectedItem = null;
-            int resultItemCount = referencedItems.FirstOrDefault()?.StoredItem.Count() ?? 1;
+            int resultItemCount = referencedItems.FirstOrDefault()?.Items.Count() ?? 1;
             for (int i = 0; i < resultItemCount; i++)
             {
                 // Create new Item
@@ -194,10 +173,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 }
 
                 player.TemporaryStorage.AddItem(resultItem);
-                affectedItem = resultItem;
+                yield return resultItem;
             }
-
-            return affectedItem;
         }
 
         private void AddRandomLuckOption(Item resultItem, Player player)
@@ -235,51 +212,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                         .Except(resultItem.ItemOptions.Select(io => io.ItemOption)).SelectRandom();
                     resultItem.ItemOptions.Add(link);
                 }
-            }
-        }
-
-        private void RequiredItemChange(Player player, CraftingRequiredItemLink itemLink, bool success)
-        {
-            var mixResult = success ? itemLink.ItemRequirement.SuccessResult : itemLink.ItemRequirement.FailResult;
-
-            switch (mixResult)
-            {
-                case MixResult.Disappear:
-                    var point = player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>();
-                    foreach (var item in itemLink.StoredItem)
-                    {
-                        Log.DebugFormat("Item {0} is getting destroyed.", item);
-                        player.TemporaryStorage.RemoveItem(item);
-                        player.PersistenceContext.Delete(item);
-                        point?.ItemDestroyed(item);
-                    }
-
-                    break;
-                case MixResult.DowngradedRandom:
-                    itemLink.StoredItem.ForEach(item =>
-                    {
-                        var previousLevel = item.Level;
-                        item.Level = (byte) Rand.NextInt(0, item.Level);
-                        Log.DebugFormat("Item {0} was downgraded from {1} to {2}.", item, previousLevel, item.Level);
-                    });
-
-                    break;
-                case MixResult.DowngradedTo0:
-                    itemLink.StoredItem.ForEach(item =>
-                    {
-                        Log.DebugFormat("Item {0} is getting downgraded to level 0.", item);
-                        item.Level = 0;
-                    });
-
-                    break;
-                default:
-                    if (Log.IsDebugEnabled)
-                    {
-                        itemLink.StoredItem.ForEach(item => Log.DebugFormat("Item {0} stays as-is.", item));
-                    }
-
-                    // The item stays as is.
-                    break;
             }
         }
     }

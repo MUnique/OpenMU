@@ -16,18 +16,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <summary>
         /// Initializes a new instance of the <see cref="CraftingRequiredItemLink"/> class.
         /// </summary>
-        /// <param name="storedItem">The stored item.</param>
+        /// <param name="items">The items which are linked to the <see cref="ItemCraftingRequiredItem"/>.</param>
         /// <param name="requiredItem">The required item.</param>
-        public CraftingRequiredItemLink(IEnumerable<Item> storedItem, ItemCraftingRequiredItem requiredItem)
+        public CraftingRequiredItemLink(IEnumerable<Item> items, ItemCraftingRequiredItem requiredItem)
         {
-            this.StoredItem = storedItem;
+            this.Items = items;
             this.ItemRequirement = requiredItem;
         }
 
         /// <summary>
-        /// Gets or sets the stored items of the <see cref="Player.TemporaryStorage"/>.
+        /// Gets or sets the he items which are linked to the <see cref="ItemCraftingRequiredItem"/>.
         /// </summary>
-        public IEnumerable<Item> StoredItem { get; set; }
+        public IEnumerable<Item> Items { get; set; }
 
         /// <summary>
         /// Gets or sets the item requirement.

@@ -39,6 +39,7 @@
     /// <inheritdoc />
     public void Dispose()
     {
+        this.tokenRegistration.Unregister();
         this.tokenRegistration.Dispose();
     }
 }

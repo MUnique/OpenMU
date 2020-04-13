@@ -19,29 +19,34 @@ namespace MUnique.OpenMU.Network.Packets
         public enum ItemStorageKind
         {
             /// <summary>
-            /// The inventory storage
+            /// The inventory storage.
             /// </summary>
             Inventory = 0,
 
             /// <summary>
-            /// The trade storage
+            /// The trade storage.
             /// </summary>
             Trade = 1,
 
             /// <summary>
-            /// The vault storage
+            /// The vault storage.
             /// </summary>
             Vault = 2,
 
             /// <summary>
-            /// The chaos machine storage
+            /// The chaos machine storage.
             /// </summary>
             ChaosMachine = 3,
 
             /// <summary>
-            /// The player shop storage
+            /// The player shop storage.
             /// </summary>
             PlayerShop = 4,
+
+            /// <summary>
+            /// The pet trainer dialog storage.
+            /// </summary>
+            PetTrainer = 5,
         }
 
         /// <summary>

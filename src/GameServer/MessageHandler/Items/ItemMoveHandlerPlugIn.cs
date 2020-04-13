@@ -9,6 +9,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
     using MUnique.OpenMU.GameServer.RemoteView;
+    using MUnique.OpenMU.GameServer.RemoteView.Inventory;
+    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
 
@@ -39,10 +41,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
                 itemSize = remotePlayer.ItemSerializer.NeededSpace;
             }
 
-            byte toStorage = packet[5 + itemSize];
+            var toStorage = (ItemStorageKind)packet[5 + itemSize];
             byte toSlot = packet[6 + itemSize];
 
-            this.moveAction.MoveItem(player, message.FromSlot, (Storages)message.FromStorage, toSlot, (Storages)toStorage);
+            this.moveAction.MoveItem(player, message.FromSlot, message.FromStorage.Convert(), toSlot, toStorage.Convert());
         }
     }
 }

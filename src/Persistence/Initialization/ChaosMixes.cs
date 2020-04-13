@@ -36,6 +36,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var chaosGoblin = this.GameConfiguration.Monsters.First(m => m.NpcWindow == NpcWindow.ChaosMachine);
             chaosGoblin.ItemCraftings.Add(this.ChaosWeaponCrafting());
             chaosGoblin.ItemCraftings.Add(this.FruitCrafting());
+            chaosGoblin.ItemCraftings.Add(this.DinorantCrafting());
             chaosGoblin.ItemCraftings.Add(this.PotionOfBlessCrafting());
             chaosGoblin.ItemCraftings.Add(this.PotionOfSoulCrafting());
             chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(3, 10, 1_000_000));
@@ -44,9 +45,16 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(23, 13, 8_000_000));
             chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(49, 14, 10_000_000));
             chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(50, 15, 12_000_000));
+            chaosGoblin.ItemCraftings.Add(this.BloodCastleTicketCrafting());
+            chaosGoblin.ItemCraftings.Add(this.DevilSquareTicketCrafting());
+            chaosGoblin.ItemCraftings.Add(this.IllusionTempleTicketCrafting());
 
             var elphis = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ElphisRefinery);
             elphis.ItemCraftings.Add(this.GemstoneRefinery());
+
+            var petTrainer = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.PetTrainer);
+            petTrainer.ItemCraftings.Add(this.DarkHorseCrafting());
+            petTrainer.ItemCraftings.Add(this.DarkRavenCrafting());
         }
 
         private ItemCrafting ItemLevelUpgradeCrafting(byte craftingNumber, byte targetLevel, int money)
@@ -290,6 +298,171 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var harmony = this.Context.CreateNew<ItemCraftingResultItem>();
             harmony.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony");
             crafting.SimpleCraftingSettings.ResultItems.Add(harmony);
+
+            return crafting;
+        }
+
+        private ItemCrafting DinorantCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Dinorant";
+            crafting.Number = 5;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+
+            crafting.SimpleCraftingSettings = craftingSettings;
+            craftingSettings.Money = 500_000;
+            craftingSettings.SuccessPercent = 70;
+            craftingSettings.ResultItemExcellentOptionChance = 10;
+            craftingSettings.ResultItemSkillChance = 100;
+
+            // Requirements:
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            chaos.SuccessResult = MixResult.Disappear;
+            chaos.FailResult = MixResult.Disappear;
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var horn = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            horn.MinimumAmount = 10;
+            horn.MaximumAmount = 10;
+            horn.SuccessResult = MixResult.Disappear;
+            horn.FailResult = MixResult.Disappear;
+            horn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Uniria");
+            craftingSettings.RequiredItems.Add(horn);
+
+            // Result:
+            var dinorant = this.Context.CreateNew<ItemCraftingResultItem>();
+            dinorant.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Dinorant");
+            craftingSettings.ResultItems.Add(dinorant);
+
+            return crafting;
+        }
+
+        private ItemCrafting BloodCastleTicketCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Blood Castle Ticket";
+            crafting.Number = 8;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.BloodCastleTicketCrafting).FullName;
+            return crafting;
+        }
+
+        private ItemCrafting DevilSquareTicketCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Devil's Square Ticket";
+            crafting.Number = 2;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.DevilSquareTicketCrafting).FullName;
+            return crafting;
+        }
+
+        private ItemCrafting IllusionTempleTicketCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Illusion Temple Ticket";
+            crafting.Number = 37;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.IllusionTempleTicketCrafting).FullName;
+            return crafting;
+        }
+
+        private ItemCrafting DarkHorseCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Dark Horse";
+            crafting.Number = 13;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 5_000_000;
+            craftingSettings.SuccessPercent = 60;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var spirit = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            spirit.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Spirit");
+            spirit.MinimumAmount = 1;
+            spirit.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(spirit);
+
+            var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.MinimumAmount = 5;
+            bless.MaximumAmount = 5;
+            craftingSettings.RequiredItems.Add(bless);
+
+            var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.MinimumAmount = 5;
+            soul.MaximumAmount = 5;
+            craftingSettings.RequiredItems.Add(soul);
+
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            creation.MinimumAmount = 1;
+            creation.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(creation);
+
+            var darkHorse = this.Context.CreateNew<ItemCraftingResultItem>();
+            darkHorse.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Dark Horse");
+            darkHorse.Durability = 255;
+            craftingSettings.ResultItems.Add(darkHorse);
+            craftingSettings.ResultItemSkillChance = 100;
+
+            return crafting;
+        }
+
+        private ItemCrafting DarkRavenCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Dark Raven";
+            crafting.Number = 14;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 1_000_000;
+            craftingSettings.SuccessPercent = 60;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var spirit = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            spirit.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Spirit");
+            spirit.MinimumAmount = 1;
+            spirit.MaximumAmount = 1;
+            spirit.MinimumItemLevel = 1;
+            spirit.MaximumItemLevel = 1;
+            craftingSettings.RequiredItems.Add(spirit);
+
+            var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.MinimumAmount = 2;
+            bless.MaximumAmount = 2;
+            craftingSettings.RequiredItems.Add(bless);
+
+            var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.MinimumAmount = 2;
+            soul.MaximumAmount = 2;
+            craftingSettings.RequiredItems.Add(soul);
+
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            creation.MinimumAmount = 1;
+            creation.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(creation);
+
+            var darkRaven = this.Context.CreateNew<ItemCraftingResultItem>();
+            darkRaven.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Dark Raven");
+            darkRaven.Durability = 255;
+            craftingSettings.ResultItems.Add(darkRaven);
+            craftingSettings.ResultItemSkillChance = 100;
 
             return crafting;
         }

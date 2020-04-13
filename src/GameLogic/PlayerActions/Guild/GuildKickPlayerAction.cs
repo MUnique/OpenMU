@@ -43,17 +43,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             if (!isKickingHimself && player.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
                 Log.WarnFormat("Suspicious kick request for player with name: {0} (player is not a guild master) to kick {1}, could be hack attempt.", player.Name, nickname);
-                player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.Failed);
+                player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.FailedBecausePlayerIsNotGuildMaster);
                 return;
             }
 
             if (isKickingHimself && player.GuildStatus?.Position == GuildPosition.GuildMaster)
             {
                 var guildId = player.GuildStatus.GuildId;
-                guildServer.KickMember(guildId, nickname);
-
-                player.GuildStatus = null;
                 player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.GuildDisband);
+                guildServer.KickMember(guildId, nickname);
                 return;
             }
 
