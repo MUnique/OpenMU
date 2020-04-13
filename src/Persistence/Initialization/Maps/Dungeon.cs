@@ -997,7 +997,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.MoveRange = 0;
                 trap.AttackRange = 2;
                 trap.ObjectKind = NpcObjectKind.Trap;
-                trap.IntelligenceTypeName = typeof(AttackAreaWhenPressedTrapIntelligence).FullName;
+                trap.IntelligenceTypeName = typeof(AttackAreaTargetInDirectionTrapIntelligence).FullName;
                 trap.ViewRange = 1;
                 trap.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);
                 trap.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);

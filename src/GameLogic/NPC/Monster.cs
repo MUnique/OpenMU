@@ -123,6 +123,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
         {
             player.AttackBy(this, null);
             this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, MonsterAttackAnimation, player, this.GetDirectionTo(player)), true);
+            if (this.Definition.AttackSkill is { } attackSkill)
+            {
+                this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, player, attackSkill), true);
+            }
         }
 
         /// <summary>
