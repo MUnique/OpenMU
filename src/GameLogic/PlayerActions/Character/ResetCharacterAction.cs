@@ -6,8 +6,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
     using System.Linq;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Login;
+    using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -20,6 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// </summary>
         public static readonly bool IsEnabled = false;
         private readonly Player player;
+        private readonly NonPlayerCharacter npc;
         private readonly LogoutAction logoutAction = new LogoutAction();
 
         /// <summary>
@@ -38,9 +41,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// Initializes a new instance of the <see cref="ResetCharacterAction"/> class.
         /// </summary>
         /// <param name="player">Player to reset.</param>
-        public ResetCharacterAction(Player player)
+        /// <param name="npc">Npc thats call the reset action.</param>
+        public ResetCharacterAction(Player player, NonPlayerCharacter npc = null)
         {
             this.player = player;
+            this.npc = npc;
         }
 
         /// <summary>
@@ -50,25 +55,25 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         {
             if (!IsEnabled)
             {
-                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Reset is not enabled.", MessageType.BlueNormal);
+                this.ShowMessage("Reset is not enabled.");
                 return;
             }
 
             if (this.player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
-                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Cannot do reset with any windows opened.", MessageType.BlueNormal);
+                this.ShowMessage("Cannot do reset with any windows opened.");
                 return;
             }
 
             if (this.player.Level < this.requiredLevel)
             {
-                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Required level for reset is {this.requiredLevel}.", MessageType.BlueNormal);
+                this.ShowMessage($"Required level for reset is {this.requiredLevel}.");
                 return;
             }
 
             if (this.resetLimit > 0 && (this.GetResetCount() + 1) > this.resetLimit)
             {
-                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Maximum resets of {this.resetLimit} reached.", MessageType.BlueNormal);
+                this.ShowMessage($"Maximum resets of {this.resetLimit} reached.");
                 return;
             }
 
@@ -84,6 +89,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             this.Logout();
         }
 
+        private void ShowMessage(string message)
+        {
+            if (this.npc is null)
+            {
+                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
+            }
+            else
+            {
+                this.player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(message, this.npc);
+            }
+        }
 
         private int GetResetCount()
         {
@@ -100,7 +116,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
             if (!this.player.TryRemoveMoney(calculatedRequiredZen))
             {
-                this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"You don't have enough money for reset, required zen is {calculatedRequiredZen}", MessageType.BlueNormal);
+                this.ShowMessage($"You don't have enough money for reset, required zen is {calculatedRequiredZen}");
                 return false;
             }
 

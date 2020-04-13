@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
             }
 
             eventArgs.HasBeenHandled = true;
-            var resetAction = new ResetCharacterAction(player);
+            var resetAction = new ResetCharacterAction(player, npc);
             resetAction.ResetCharacter();
         }
     }
