@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             var legacyQuestState = player.GetQuestState(QuestConstants.LegacyQuestGroup);
             return player.GetAvailableQuestsOfOpenedNpc()?
                 .OrderBy(quest => quest.Number)
-                .FirstOrDefault(quest => quest.Number > (legacyQuestState?.LastFinishedQuest?.Number ?? 0));
+                .FirstOrDefault(quest => quest.Number > (legacyQuestState?.LastFinishedQuest?.Number ?? -1));
         }
     }
 }
