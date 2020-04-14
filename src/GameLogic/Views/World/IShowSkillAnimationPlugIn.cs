@@ -14,9 +14,9 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// <summary>
         /// Shows the skill animation.
         /// </summary>
-        /// <param name="attackingPlayer">The attacking player.</param>
+        /// <param name="attacker">The attacking object.</param>
         /// <param name="target">The target.</param>
         /// <param name="skill">The skill.</param>
-        void ShowSkillAnimation(Player attackingPlayer, IAttackable target, Skill skill);
+        void ShowSkillAnimation(IAttacker attacker, IAttackable target, Skill skill);
     }
 }

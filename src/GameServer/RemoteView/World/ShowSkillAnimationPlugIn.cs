@@ -29,9 +29,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public ShowSkillAnimationPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void ShowSkillAnimation(Player attackingPlayer, IAttackable target, Skill skill)
+        public void ShowSkillAnimation(IAttacker attacker, IAttackable target, Skill skill)
         {
-            var playerId = attackingPlayer.GetId(this.player);
+            var playerId = attacker.GetId(this.player);
             var targetId = target.GetId(this.player);
             var skillId = NumberConversionExtensions.ToUnsigned(skill.Number);
             using var writer = this.player.Connection.StartSafeWrite(

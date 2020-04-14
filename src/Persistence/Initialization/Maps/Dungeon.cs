@@ -10,6 +10,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.Persistence.Initialization.Skills;
 
     /// <summary>
     /// The initialization for the Dungeon map.
@@ -656,6 +658,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
+                monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.Poison);
                 var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 46 },
@@ -684,6 +687,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
+                monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.Lightning);
                 var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 44 },
@@ -774,6 +778,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
+                monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.Poison);
                 var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 25 },
@@ -801,6 +806,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
+                monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.PowerWave);
                 var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 40 },
@@ -936,8 +942,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.Designation = "Lance Trap";
                 trap.MoveRange = 0;
                 trap.AttackRange = 4;
-                trap.ViewRange = 1;
-                trap.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
+                trap.ViewRange = 4;
+                trap.ObjectKind = NpcObjectKind.Trap;
+                trap.IntelligenceTypeName = typeof(AttackSingleWhenPressedTrapIntelligence).FullName;
                 trap.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);
                 trap.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
                 trap.Attribute = 1;
@@ -962,8 +969,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.Designation = "Iron Stick Trap";
                 trap.MoveRange = 0;
                 trap.AttackRange = 0;
+                trap.ObjectKind = NpcObjectKind.Trap;
+                trap.IntelligenceTypeName = typeof(AttackSingleWhenPressedTrapIntelligence).FullName;
                 trap.ViewRange = 1;
-                trap.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
                 trap.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);
                 trap.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
                 trap.Attribute = 1;
@@ -988,8 +996,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 trap.Designation = "Fire Trap";
                 trap.MoveRange = 0;
                 trap.AttackRange = 2;
+                trap.ObjectKind = NpcObjectKind.Trap;
+                trap.IntelligenceTypeName = typeof(AttackAreaTargetInDirectionTrapIntelligence).FullName;
                 trap.ViewRange = 1;
-                trap.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
                 trap.AttackDelay = new TimeSpan(1000 * TimeSpan.TicksPerMillisecond);
                 trap.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
                 trap.Attribute = 1;

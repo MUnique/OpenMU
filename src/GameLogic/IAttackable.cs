@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
-    /// Interface for an attackable object. An attackable object can also attack other attackable objects.
+    /// Interface for an object which is attackable.
     /// </summary>
     public interface IAttackable : IIdentifiable, ILocateable
     {
@@ -40,13 +40,13 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="attacker">The attacker.</param>
         /// <param name="skill">The skill.</param>
-        void AttackBy(IAttackable attacker, SkillEntry skill);
+        void AttackBy(IAttacker attacker, SkillEntry skill);
 
         /// <summary>
         /// Reflects the damage which was done previously with <see cref="AttackBy" /> or even <see cref="ReflectDamage" /> to the <paramref name="reflector" />.
         /// </summary>
         /// <param name="reflector">The reflector.</param>
         /// <param name="damage">The damage.</param>
-        void ReflectDamage(IAttackable reflector, uint damage);
+        void ReflectDamage(IAttacker reflector, uint damage);
     }
 }

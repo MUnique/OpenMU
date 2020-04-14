@@ -167,6 +167,43 @@ namespace MUnique.OpenMU.DataModel.Configuration
     }
 
     /// <summary>
+    /// Type of a non-player-character object.
+    /// </summary>
+    public enum NpcObjectKind
+    {
+
+        /// <summary>
+        /// The npc is a monster.
+        /// </summary>
+        Monster,
+
+        /// <summary>
+        /// The npc is passive, e.g. a merchant.
+        /// </summary>
+        PassiveNpc,
+
+        /// <summary>
+        /// The npc is a guard.
+        /// </summary>
+        Guard,
+
+        /// <summary>
+        /// The npc is a trap.
+        /// </summary>
+        Trap,
+
+        /// <summary>
+        /// The npc is a gate
+        /// </summary>
+        Gate,
+
+        /// <summary>
+        /// The npc is a statue.
+        /// </summary>
+        Statue,
+    }
+
+    /// <summary>
     /// A definition for a monster (or NPC in general).
     /// </summary>
     public class MonsterDefinition
@@ -225,13 +262,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public byte Attribute { get; set; }
 
         /// <summary>
-        /// Gets or sets the skill.
-        /// TODO Not sure what this means yet.
-        /// I guess it is the magic effect, like stunning (skill 23 @ Dark Elf).
-        /// </summary>
-        public short Skill { get; set; }
-
-        /// <summary>
         /// Gets or sets the number of maximum item drops after an instance of this monster died.
         /// </summary>
         public int NumberOfMaximumItemDrops { get; set; }
@@ -242,8 +272,19 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public NpcWindow NpcWindow { get; set; }
 
         /// <summary>
+        /// Gets or sets the kind of the object.
+        /// </summary>
+        public NpcObjectKind ObjectKind { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the intelligence type, if this npc/monster uses a specific implementation of an INpcIntelligence.
+        /// </summary>
+        public string IntelligenceTypeName { get; set; }
+
+        /// <summary>
         /// Gets or sets the skill with which this monster is attacking. Also known as "Attack type".
         /// </summary>
+        /// <remarks>The additional damage of the skill is usually NOT applied; However, magic effects are.</remarks>
         public virtual Skill AttackSkill { get; set; }
 
         /// <summary>

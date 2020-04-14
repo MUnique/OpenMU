@@ -20,12 +20,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// <summary>
     /// The implementation of a monster, which can attack players.
     /// </summary>
-    public sealed class Monster : NonPlayerCharacter, IAttackable, ISupportWalk, IMovable
+    public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISupportWalk, IMovable
     {
         private const byte MonsterAttackAnimation = 0x78;
         private readonly IDropGenerator dropGenerator;
         private readonly object moveLock = new object();
-        private readonly IMonsterIntelligence intelligence;
+        private readonly INpcIntelligence intelligence;
         private readonly PlugInManager plugInManager;
         private readonly Walker walker;
 
@@ -41,18 +41,18 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <param name="stats">The stats.</param>
         /// <param name="map">The map on which this instance will spawn.</param>
         /// <param name="dropGenerator">The drop generator.</param>
-        /// <param name="monsterIntelligence">The monster intelligence.</param>
+        /// <param name="npcIntelligence">The monster intelligence.</param>
         /// <param name="plugInManager">The plug in manager.</param>
-        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, IMonsterIntelligence monsterIntelligence, PlugInManager plugInManager)
+        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager)
             : base(spawnInfo, stats, map)
         {
             this.dropGenerator = dropGenerator;
             this.Attributes = new MonsterAttributeHolder(this);
             this.MagicEffectList = new MagicEffectsList(this);
             this.walker = new Walker(this, () => this.StepDelay);
-            this.intelligence = monsterIntelligence;
+            this.intelligence = npcIntelligence;
             this.plugInManager = plugInManager;
-            this.intelligence.Monster = this;
+            this.intelligence.Npc = this;
             this.intelligence.Start();
             this.Initialize();
         }
@@ -97,7 +97,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public uint LastReceivedDamage { get; private set; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IAttackable" />
         public IAttributeSystem Attributes { get; }
 
         /// <inheritdoc/>
@@ -123,6 +123,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
         {
             player.AttackBy(this, null);
             this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, MonsterAttackAnimation, player, this.GetDirectionTo(player)), true);
+            if (this.Definition.AttackSkill is { } attackSkill)
+            {
+                this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, player, attackSkill), true);
+            }
         }
 
         /// <summary>
@@ -193,7 +197,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public int GetSteps(Span<WalkingStep> steps) => this.walker.GetSteps(steps);
 
         /// <inheritdoc />
-        public void AttackBy(IAttackable attacker, SkillEntry skill)
+        public void AttackBy(IAttacker attacker, SkillEntry skill)
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
             this.Hit(hitInfo, attacker);
@@ -205,7 +209,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc />
-        public void ReflectDamage(IAttackable reflector, uint damage)
+        public void ReflectDamage(IAttacker reflector, uint damage)
         {
             this.Hit(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector);
         }
@@ -299,7 +303,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
         }
 
-        private void OnDeath(IAttackable attacker)
+        private void OnDeath(IAttacker attacker)
         {
             this.walker.Stop();
             if (this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic)
@@ -344,7 +348,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.CurrentMap.Respawn(this);
         }
 
-        private void Hit(HitInfo hitInfo, IAttackable attacker)
+        private void Hit(HitInfo hitInfo, IAttacker attacker)
         {
             if (!this.Alive)
             {
@@ -364,7 +368,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
         }
 
-        private bool TryHit(uint damage, IAttackable attacker)
+        private bool TryHit(uint damage, IAttacker attacker)
         {
             if (damage > 0)
             {

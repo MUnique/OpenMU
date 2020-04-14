@@ -20,6 +20,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// <param name="attackable">The attackable.</param>
         /// <param name="attacker">The attacker.</param>
         /// <param name="hitInfo">The hit information.</param>
-        void AttackableGotHit(IAttackable attackable, IAttackable attacker, HitInfo hitInfo);
+        void AttackableGotHit(IAttackable attackable, IAttacker attacker, HitInfo hitInfo);
     }
 }

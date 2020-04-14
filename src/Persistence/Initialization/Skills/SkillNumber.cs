@@ -84,6 +84,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         InfinityArrow = 77,
         FireScream = 78,
         Explosion79 = 79,
+        MonsterSkill = 150,
         SummonMonster = 200,
         MagicAttackImmunity = 201,
         PhysicalAttackImmunity = 202,

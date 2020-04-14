@@ -10,6 +10,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.Persistence.Initialization.Skills;
 
     /// <summary>
     /// Map initialization for the Empire fortress 1 event map.
@@ -43,6 +45,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.MoveRange = 0;
                 monster.AttackRange = 1;
                 monster.ViewRange = 2;
+                monster.ObjectKind = NpcObjectKind.Trap;
+                monster.IntelligenceTypeName = typeof(RandomAttackInRangeTrapIntelligence).FullName;
                 monster.MoveDelay = new TimeSpan(0 * TimeSpan.TicksPerMillisecond);
                 monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
@@ -509,6 +513,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                 monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
+                monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
                 var attributes = new Dictionary<AttributeDefinition, float>
                 {
                     { Stats.Level, 138 },

@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         }
 
         /// <inheritdoc />
-        public async void ObjectGotKilled(IAttackable killedObject, IAttackable killerObject)
+        public async void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject)
         {
             await this.InvokeAsync(killedObject.Id, killerObject.Id);
         }
