@@ -44,9 +44,13 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 player.CurrentMap.Add(droppedItem);
                 player.ShowMessage($"[GM][/item] {item} created");
             }
-            catch (ArgumentException e)
+            catch (ArgumentException ex)
             {
-                player.ShowMessage(e.Message);
+                player.ShowMessage(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                log4net.LogManager.GetLogger(this.GetType()).Error(ex);
             }
         }
 
