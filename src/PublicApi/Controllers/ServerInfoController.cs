@@ -40,5 +40,33 @@ namespace MUnique.OpenMU.PublicApi.Controllers
         {
             return this.connectServers.Select(cs => ConnectServerDto.Create(cs, this.gameServers)).ToList();
         }
+
+        /// <summary>
+        /// Gets the total player count of all game servers.
+        /// </summary>
+        /// <returns>
+        /// The total player count.
+        /// </returns>
+        [HttpGet("playerCount")]
+        public int PlayerCount()
+        {
+            return this.gameServers.Sum(gs => gs.CurrentConnections);
+        }
+
+        /// <summary>
+        /// Gets the total player count of the specific realm.
+        /// </summary>
+        /// <param name="realmIndex">Index of the realm.</param>
+        /// <returns>
+        /// The total player count.
+        /// </returns>
+        [HttpGet("{realmIndex:int}/playerCount")]
+        public int PlayerCount(int realmIndex)
+        {
+            const int realmOffset = 20;
+            return this.gameServers
+                .Where(gs => gs.Id >= realmIndex * realmOffset && gs.Id < (realmIndex + 1) * realmOffset)
+                .Sum(gs => gs.CurrentConnections);
+        }
     }
 }
