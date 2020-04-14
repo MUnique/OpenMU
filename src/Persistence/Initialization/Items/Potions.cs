@@ -37,6 +37,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(this.CreateSmallShieldPotion());
             this.GameConfiguration.Items.Add(this.CreateMediumShieldPotion());
             this.GameConfiguration.Items.Add(this.CreateLargeShieldPotion());
+            this.GameConfiguration.Items.Add(this.CreateSmallComplexPotion());
+            this.GameConfiguration.Items.Add(this.CreateMediumComplexPotion());
+            this.GameConfiguration.Items.Add(this.CreateLargeComplexPotion());
             this.GameConfiguration.Items.Add(this.CreateAlcohol());
             this.GameConfiguration.Items.Add(this.CreateAntidotePotion());
             this.GameConfiguration.Items.Add(this.CreateTownPortalScroll());
@@ -257,6 +260,66 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Group = 14;
             definition.DropsFromMonsters = false;
             definition.DropLevel = 100;
+            definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.BigShieldPotionConsumeHandler).FullName;
+            definition.Durability = 3;
+            definition.Width = 1;
+            definition.Height = 1;
+            return definition;
+        }
+
+        /// <summary>
+        /// Gets the small complex potion definition.
+        /// </summary>
+        /// <returns>The created small complex potion definition.</returns>
+        private ItemDefinition CreateSmallComplexPotion()
+        {
+            var potion = this.Context.CreateNew<ItemDefinition>();
+            potion.Name = "Small Complex Potion";
+            potion.Number = 38;
+            potion.Group = 14;
+            potion.DropsFromMonsters = true;
+            potion.DropLevel = 68;
+            potion.Value = 20;
+            potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SmallShieldPotionConsumeHandler).FullName;
+            potion.Durability = 3;
+            potion.Width = 1;
+            potion.Height = 1;
+            return potion;
+        }
+
+        /// <summary>
+        /// Gets the medium complex potion definition.
+        /// </summary>
+        /// <returns>The created medium complex potion definition.</returns>
+        private ItemDefinition CreateMediumComplexPotion()
+        {
+            var potion = this.Context.CreateNew<ItemDefinition>();
+            potion.Name = "Medium Complex Potion";
+            potion.Number = 39;
+            potion.Group = 14;
+            potion.DropsFromMonsters = true;
+            potion.DropLevel = 96;
+            potion.Value = 40;
+            potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.MiddleShieldPotionConsumeHandler).FullName;
+            potion.Durability = 3;
+            potion.Width = 1;
+            potion.Height = 1;
+            return potion;
+        }
+
+        /// <summary>
+        /// Gets the large complex potion definition.
+        /// </summary>
+        /// <returns>The created large complex definition.</returns>
+        private ItemDefinition CreateLargeComplexPotion()
+        {
+            var definition = this.Context.CreateNew<ItemDefinition>();
+            definition.Name = "Large Complex Potion";
+            definition.Number = 40;
+            definition.Group = 14;
+            definition.DropsFromMonsters = true;
+            definition.DropLevel = 118;
+            definition.Value = 60;
             definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.BigShieldPotionConsumeHandler).FullName;
             definition.Durability = 3;
             definition.Width = 1;

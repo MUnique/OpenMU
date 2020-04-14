@@ -52,7 +52,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     .Where(item => item.Level >= requiredItem.MinimumItemLevel
                                    && item.Level <= requiredItem.MaximumItemLevel).ToList();
 
-                if (foundItems.Count < requiredItem.MinimumAmount)
+                var itemCount = foundItems.Sum(i => i.IsStackable() ? i.Durability : 1);
+                if (itemCount < requiredItem.MinimumAmount)
                 {
                     Log.WarnFormat("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
                     {
@@ -60,7 +61,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     }
                 }
 
-                if (foundItems.Count > requiredItem.MaximumAmount && requiredItem.MaximumAmount > 0)
+                if (itemCount > requiredItem.MaximumAmount && requiredItem.MaximumAmount > 0)
                 {
                     Log.WarnFormat("TooManyItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
                     {
@@ -68,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     }
                 }
 
-                successRate += (byte) (requiredItem.AddPercentage * (foundItems.Count - requiredItem.MinimumAmount));
+                successRate += (byte)(requiredItem.AddPercentage * (itemCount - requiredItem.MinimumAmount));
                 if (requiredItem.NpcPriceDivisor > 0)
                 {
                     successRate += (byte)(foundItems.Sum(this.priceCalculator.CalculateBuyingPrice) /

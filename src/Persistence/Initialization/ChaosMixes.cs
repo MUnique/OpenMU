@@ -48,6 +48,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaosGoblin.ItemCraftings.Add(this.BloodCastleTicketCrafting());
             chaosGoblin.ItemCraftings.Add(this.DevilSquareTicketCrafting());
             chaosGoblin.ItemCraftings.Add(this.IllusionTempleTicketCrafting());
+            chaosGoblin.ItemCraftings.Add(this.LifeStoneCrafting());
+            chaosGoblin.ItemCraftings.Add(this.SmallShieldPotionCrafting());
+            chaosGoblin.ItemCraftings.Add(this.MediumShieldPotionCrafting());
+            chaosGoblin.ItemCraftings.Add(this.LargeShieldPotionCrafting());
 
             var elphis = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ElphisRefinery);
             elphis.ItemCraftings.Add(this.GemstoneRefinery());
@@ -463,6 +467,123 @@ namespace MUnique.OpenMU.Persistence.Initialization
             darkRaven.Durability = 255;
             craftingSettings.ResultItems.Add(darkRaven);
             craftingSettings.ResultItemSkillChance = 100;
+
+            return crafting;
+        }
+
+        private ItemCrafting SmallShieldPotionCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Small Shield Potion";
+            crafting.Number = 30;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 100_000;
+            craftingSettings.SuccessPercent = 50;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var healthPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            healthPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Large Healing Potion");
+            healthPotion.MinimumAmount = 3;
+            healthPotion.MaximumAmount = 3;
+            healthPotion.MaximumItemLevel = 15;
+            craftingSettings.RequiredItems.Add(healthPotion);
+
+            var shieldPotion = this.Context.CreateNew<ItemCraftingResultItem>();
+            shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Small Shield Potion");
+            shieldPotion.Durability = 3;
+            craftingSettings.ResultItems.Add(shieldPotion);
+
+            return crafting;
+        }
+
+        private ItemCrafting MediumShieldPotionCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Medium Shield Potion";
+            crafting.Number = 31;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 500_000;
+            craftingSettings.SuccessPercent = 30;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var complexPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            complexPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Small Complex Potion");
+            complexPotion.MinimumAmount = 3;
+            complexPotion.MaximumAmount = 3;
+            complexPotion.MaximumItemLevel = 1;
+            craftingSettings.RequiredItems.Add(complexPotion);
+
+            var shieldPotion = this.Context.CreateNew<ItemCraftingResultItem>();
+            shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Medium Shield Potion");
+            shieldPotion.Durability = 3;
+            craftingSettings.ResultItems.Add(shieldPotion);
+
+            return crafting;
+        }
+
+        private ItemCrafting LargeShieldPotionCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Large Shield Potion";
+            crafting.Number = 32;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 1_000_000;
+            craftingSettings.SuccessPercent = 30;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var complexPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            complexPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Medium Complex Potion");
+            complexPotion.MinimumAmount = 3;
+            complexPotion.MaximumAmount = 3;
+            complexPotion.MaximumItemLevel = 1;
+            craftingSettings.RequiredItems.Add(complexPotion);
+
+            var shieldPotion = this.Context.CreateNew<ItemCraftingResultItem>();
+            shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Large Shield Potion");
+            shieldPotion.Durability = 3;
+            craftingSettings.ResultItems.Add(shieldPotion);
+
+            return crafting;
+        }
+
+        private ItemCrafting LifeStoneCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Life Stone";
+            crafting.Number = 17;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 5_000_000;
+            craftingSettings.SuccessPercent = 100;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            guardian.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Guardian");
+            guardian.MinimumAmount = 1;
+            guardian.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(guardian);
+
+            var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.MinimumAmount = 5;
+            bless.MaximumAmount = 5;
+            craftingSettings.RequiredItems.Add(bless);
+
+            var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.MinimumAmount = 5;
+            soul.MaximumAmount = 5;
+            craftingSettings.RequiredItems.Add(soul);
+
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var lifeStone = this.Context.CreateNew<ItemCraftingResultItem>();
+            lifeStone.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Life Stone");
+            lifeStone.Durability = 1;
+            craftingSettings.ResultItems.Add(lifeStone);
 
             return crafting;
         }
