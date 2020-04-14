@@ -24,6 +24,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// <param name="target">The target.</param>
         /// <param name="skillEntry">The skill entry.</param>
         /// <param name="targetAreaCenter">The target area center.</param>
-        void AfterTargetGotAttacked(IAttackable attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter);
+        void AfterTargetGotAttacked(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter);
     }
 }

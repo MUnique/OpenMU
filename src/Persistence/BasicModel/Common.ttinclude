@@ -34,7 +34,7 @@
 
             if (args.Name.StartsWith("netstandard"))
             {
-                return Assembly.ReflectionOnlyLoadFrom(@"C:\Program Files\dotnet\sdk\3.1.200\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll");
+                return Assembly.ReflectionOnlyLoadFrom(@"C:\Program Files\dotnet\sdk\3.1.201\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\netstandard.dll");
             }
 
             var fileName = args.Name.Split(',')[0] + ".dll";

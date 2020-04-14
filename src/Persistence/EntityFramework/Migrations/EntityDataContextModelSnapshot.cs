@@ -1821,6 +1821,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("IntelligenceTypeName")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("MerchantStoreId")
                         .HasColumnType("uuid");
 
@@ -1839,11 +1842,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("NumberOfMaximumItemDrops")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ObjectKind")
+                        .HasColumnType("integer");
+
                     b.Property<TimeSpan>("RespawnDelay")
                         .HasColumnType("interval");
-
-                    b.Property<short>("Skill")
-                        .HasColumnType("smallint");
 
                     b.Property<short>("ViewRange")
                         .HasColumnType("smallint");

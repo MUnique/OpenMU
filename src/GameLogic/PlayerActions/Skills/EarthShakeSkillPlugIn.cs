@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
         public short Key => 62;
 
         /// <inheritdoc />
-        public void AfterTargetGotAttacked(IAttackable attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
+        public void AfterTargetGotAttacked(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
         {
             if (!target.Alive || !(target is IMovable movableTarget))
             {

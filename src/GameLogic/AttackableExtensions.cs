@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="defender">The object which is defending.</param>
         /// <param name="skill">The skill which is used.</param>
         /// <returns>The hit information.</returns>
-        public static HitInfo CalculateDamage(this IAttackable attacker, IAttackable defender, SkillEntry skill)
+        public static HitInfo CalculateDamage(this IAttacker attacker, IAttackable defender, SkillEntry skill)
         {
             if (!attacker.IsAttackSuccessfulTo(defender))
             {
@@ -118,7 +118,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="attributes">The attributes.</param>
         /// <param name="attacker">The attacker.</param>
         /// <returns>The calculated hit info.</returns>
-        public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes,  IAttackable attacker)
+        public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes,  IAttacker attacker)
         {
             var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
             if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
@@ -217,7 +217,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="attacker">The attacker.</param>
         /// <param name="hitInfo">The hit information.</param>
-        public static void ApplyAmmunitionConsumption(this IAttackable attacker, HitInfo hitInfo)
+        public static void ApplyAmmunitionConsumption(this IAttacker attacker, HitInfo hitInfo)
         {
             if (!hitInfo.Attributes.HasFlag(DamageAttributes.Reflected) && attacker.Attributes[Stats.AmmunitionConsumptionRate] > 0.0)
             {
@@ -282,13 +282,13 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private static bool IsAttackSuccessfulTo(this IAttackable attacker, IAttackable defender)
+        private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
         {
             var hitChance = attacker.GetHitChanceTo(defender);
             return Rand.NextRandomBool(hitChance);
         }
 
-        private static float GetHitChanceTo(this IAttackable attacker, IAttackable defender)
+        private static float GetHitChanceTo(this IAttacker attacker, IAttackable defender)
         {
             float defenseRate;
             float attackRate;
@@ -312,7 +312,7 @@ namespace MUnique.OpenMU.GameLogic
             return hitChance;
         }
 
-        private static AttributeDefinition GetDefenseAttribute(this IAttackable defender, IAttackable attacker)
+        private static AttributeDefinition GetDefenseAttribute(this IAttackable defender, IAttacker attacker)
         {
             if (attacker is Player && defender is Player)
             {
@@ -340,7 +340,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="skill">Skill which is used.</param>
         /// <param name="minimumBaseDamage">Minimum base damage.</param>
         /// <param name="maximumBaseDamage">Maximum base damage.</param>
-        private static void GetBaseDmg(this IAttackable attacker, SkillEntry skill, out int minimumBaseDamage, out int maximumBaseDamage)
+        private static void GetBaseDmg(this IAttacker attacker, SkillEntry skill, out int minimumBaseDamage, out int maximumBaseDamage)
         {
             var attackerStats = attacker.Attributes;
             minimumBaseDamage = (int)attackerStats[Stats.BaseDamageBonus];
