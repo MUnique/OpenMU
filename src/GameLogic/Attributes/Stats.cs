@@ -290,7 +290,6 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         /// <summary>
         /// Gets the combo bonus attribute definition.
-        /// TODO.
         /// </summary>
         public static AttributeDefinition ComboBonus { get; } = new AttributeDefinition(new Guid("53A479FE-8A73-4A45-AACA-5B1AA4362CF9"), "comboBonus", string.Empty);
 
