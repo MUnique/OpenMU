@@ -38,11 +38,11 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             var targetsInRange = this.GetAllTargets()
                 .Where(target => this.Trap.IsInRange(target.Position, this.Trap.Definition.AttackRange))
-                .Where(target => this.Map.Terrain.SafezoneMap[target.Position.X, target.Position.Y]);
+                .Where(target => !this.Map.Terrain.SafezoneMap[target.Position.X, target.Position.Y]);
 
             if (this.Trap.Definition.AttackSkill is { } attackSkill)
             {
-                this.Trap.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this.Trap, null, attackSkill), true);
+                this.Trap.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this.Trap, targetsInRange.FirstOrDefault(), attackSkill), true);
             }
 
             targetsInRange.ForEach(this.Trap.Attack);
