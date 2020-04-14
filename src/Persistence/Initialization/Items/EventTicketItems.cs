@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.Persistence.Initialization.Maps;
 
     /// <summary>
     /// Initializer for event related items.
@@ -72,6 +73,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 dropItemGroup.PossibleItems.Add(item);
                 dropItemGroup.MinimumMonsterLevel = dropLevel;
                 this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
+                BaseMapInitializer.RegisterDefaultDropItemGroup(dropItemGroup);
 
                 previousGroup = dropItemGroup;
                 itemLevel++;

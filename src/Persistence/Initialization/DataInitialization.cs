@@ -48,6 +48,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// </summary>
         public void CreateInitialData()
         {
+            BaseMapInitializer.ClearDefaultDropItemGroups();
             using (var temporaryContext = this.persistenceContextProvider.CreateNewContext())
             {
                 this.gameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
@@ -1384,18 +1385,21 @@ namespace MUnique.OpenMU.Persistence.Initialization
             moneyDropItemGroup.ItemType = SpecialItemType.Money;
             moneyDropItemGroup.Description = "The common money drop item group (50 % drop chance)";
             this.gameConfiguration.DropItemGroups.Add(moneyDropItemGroup);
+            BaseMapInitializer.RegisterDefaultDropItemGroup(moneyDropItemGroup);
 
             var randomItemDropItemGroup = this.context.CreateNew<DropItemGroup>();
             randomItemDropItemGroup.Chance = 0.3;
             randomItemDropItemGroup.ItemType = SpecialItemType.RandomItem;
             randomItemDropItemGroup.Description = "The common drop item group for random items (30 % drop chance)";
             this.gameConfiguration.DropItemGroups.Add(randomItemDropItemGroup);
+            BaseMapInitializer.RegisterDefaultDropItemGroup(randomItemDropItemGroup);
 
             var excellentItemDropItemGroup = this.context.CreateNew<DropItemGroup>();
             excellentItemDropItemGroup.Chance = 0.0001;
             excellentItemDropItemGroup.ItemType = SpecialItemType.Excellent;
             excellentItemDropItemGroup.Description = "The common drop item group for random excellent items (0.01 % drop chance)";
             this.gameConfiguration.DropItemGroups.Add(excellentItemDropItemGroup);
+            BaseMapInitializer.RegisterDefaultDropItemGroup(excellentItemDropItemGroup);
 
             this.CreateStatAttributes();
 
@@ -1420,6 +1424,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Weapons(this.context, this.gameConfiguration).Initialize();
             new Potions(this.context, this.gameConfiguration).Initialize();
             new Jewels(this.context, this.gameConfiguration).Initialize();
+            new Misc(this.context, this.gameConfiguration).Initialize();
             new PackedJewels(this.context, this.gameConfiguration).Initialize();
             new Jewellery(this.context, this.gameConfiguration).Initialize();
             new AncientSets(this.context, this.gameConfiguration).Initialize();

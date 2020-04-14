@@ -11,12 +11,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.GameLogic;
 
     /// <summary>
     /// Base class for a map initializer which provides some common basic functionality.
     /// </summary>
     internal abstract class BaseMapInitializer : IMapInitializer
     {
+        private static readonly IList<DropItemGroup> DefaultDropItemGroups = new List<DropItemGroup>();
+
         private GameMapDefinition mapDefinition;
 
         /// <summary>
@@ -103,14 +106,26 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         }
 
         /// <summary>
+        /// Registers the default drop item group.
+        /// </summary>
+        /// <param name="dropItemGroup">The drop item group.</param>
+        internal static void RegisterDefaultDropItemGroup(DropItemGroup dropItemGroup)
+        {
+            DefaultDropItemGroups.Add(dropItemGroup);
+        }
+
+        /// <summary>
+        /// Clears the default drop item groups.
+        /// </summary>
+        internal static void ClearDefaultDropItemGroups() => DefaultDropItemGroups.Clear();
+
+        /// <summary>
         /// Initializes the drop item groups for this map.
         /// By default, we add money and random items. On event or special maps, this can be overwritten.
         /// </summary>
         protected virtual void InitializeDropItemGroups()
         {
-            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.First(g => g.ItemType == SpecialItemType.Money));
-            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.First(g => g.ItemType == SpecialItemType.RandomItem));
-            this.mapDefinition.DropItemGroups.Add(this.GameConfiguration.DropItemGroups.First(g => g.ItemType == SpecialItemType.Excellent));
+            DefaultDropItemGroups.ForEach(this.mapDefinition.DropItemGroups.Add);
         }
 
         /// <summary>

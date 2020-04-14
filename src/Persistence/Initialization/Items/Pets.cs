@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+    using MUnique.OpenMU.Persistence.Initialization.Maps;
     using MUnique.OpenMU.Persistence.Initialization.Skills;
 
     /// <summary>
@@ -76,6 +77,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             horseDrop.PossibleItems.Add(spirit);
             horseDrop.MinimumMonsterLevel = 102;
             this.GameConfiguration.DropItemGroups.Add(horseDrop);
+            BaseMapInitializer.RegisterDefaultDropItemGroup(horseDrop);
 
             var ravenDrop = this.Context.CreateNew<DropItemGroup>();
             ravenDrop.ItemLevel = 1;
@@ -84,6 +86,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             ravenDrop.PossibleItems.Add(spirit);
             ravenDrop.MinimumMonsterLevel = 96;
             this.GameConfiguration.DropItemGroups.Add(ravenDrop);
+            BaseMapInitializer.RegisterDefaultDropItemGroup(ravenDrop);
         }
 
         private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, byte width, byte height, string name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, bool addAllCharacterClasses, params (AttributeDefinition, float)[] basePowerUps)
