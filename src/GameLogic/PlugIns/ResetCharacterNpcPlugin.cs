@@ -24,11 +24,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// <inheritdoc />
         public void PlayerTalksToNpc(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
         {
-            if (!ResetCharacterAction.IsEnabled)
-            {
-                return;
-            }
-
             if (npc.Definition.Number != ResetNpcNumber)
             {
                 return;
