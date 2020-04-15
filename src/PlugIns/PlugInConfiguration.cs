@@ -16,6 +16,7 @@ namespace MUnique.OpenMU.PlugIns
     public class PlugInConfiguration : INotifyPropertyChanged
     {
         private bool isActive;
+        private string customConfiguration;
 
         /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
@@ -52,6 +53,24 @@ namespace MUnique.OpenMU.PlugIns
         /// Gets or sets the name of the external assembly which will be loaded at run-time.
         /// </summary>
         public string ExternalAssemblyName { get; set; }
+
+        /// <summary>
+        /// Gets or sets a custom configuration.
+        /// </summary>
+        public string CustomConfiguration
+        {
+            get => this.customConfiguration;
+            set
+            {
+                if (value == this.customConfiguration)
+                {
+                    return;
+                }
+
+                this.customConfiguration = value;
+                this.OnPropertyChanged();
+            }
+        }
 
         /// <inheritdoc/>
         public override string ToString()

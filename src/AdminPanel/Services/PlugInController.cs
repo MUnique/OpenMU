@@ -9,6 +9,9 @@ namespace MUnique.OpenMU.AdminPanel.Services
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using Blazored.Modal;
+    using Blazored.Modal.Services;
+    using MUnique.OpenMU.AdminPanel.Components.Form;
     using MUnique.OpenMU.AdminPanel.Models;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence;
@@ -20,6 +23,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
     public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupportDataChangedNotification
     {
         private readonly IPersistenceContextProvider persistenceContextProvider;
+        private readonly IModalService modalService;
         private string nameFilter;
         private Guid pointFilter;
         private string typeFilter;
@@ -28,9 +32,10 @@ namespace MUnique.OpenMU.AdminPanel.Services
         /// Initializes a new instance of the <see cref="PlugInController"/> class.
         /// </summary>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public PlugInController(IPersistenceContextProvider persistenceContextProvider)
+        public PlugInController(IPersistenceContextProvider persistenceContextProvider, IModalService modalService)
         {
             this.persistenceContextProvider = persistenceContextProvider;
+            this.modalService = modalService;
         }
 
         /// <inheritdoc />
@@ -166,6 +171,42 @@ namespace MUnique.OpenMU.AdminPanel.Services
             this.ChangeActiveFlag(item, false);
         }
 
+        /// <summary>
+        /// Shows the custom plug in configuration in a modal dialog.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        public async Task ShowPlugInConfig(PlugInConfigurationViewItem item)
+        {
+            if (item.ConfigurationType is null)
+            {
+                throw new ArgumentException($"{nameof(item.ConfigurationType)} must not be null.", nameof(item));
+            }
+
+            var configuration = item.Configuration.GetConfiguration(item.ConfigurationType)
+                                ?? Activator.CreateInstance(item.ConfigurationType);
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ModalCreateNew<object>.Item), configuration);
+            var options = new ModalOptions()
+            {
+                DisableBackgroundCancel = true,
+            };
+
+            var modal = this.modalService.Show(
+                typeof(ModalCreateNew<>).MakeGenericType(item.ConfigurationType),
+                item.PlugInName,
+                parameters,
+                options);
+            var result = await modal.Result;
+            if (!result.Cancelled)
+            {
+                using var context = this.persistenceContextProvider.CreateNewContext();
+                context.Attach(item.Configuration);
+                item.Configuration.SetConfiguration(configuration);
+                context.SaveChanges();
+                this.DataChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
         private static IEnumerable<Type> GetPluginTypes() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
 
         private static string GetPlugInName(Type plugInType)
@@ -193,6 +234,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
                 CustomPlugInSource = plugInConfiguration.CustomPlugInSource,
                 ExternalAssemblyName = plugInConfiguration.ExternalAssemblyName,
                 IsActive = plugInConfiguration.IsActive,
+                ConfigurationType = plugInType.GetCustomConfigurationType(),
                 TypeId = plugInConfiguration.TypeId,
                 TypeName = plugInType.FullName,
                 PlugInName = plugInAttribute?.Name,
@@ -270,4 +312,6 @@ namespace MUnique.OpenMU.AdminPanel.Services
             return this.PointFilter == Guid.Empty || this.PointFilter == GetPlugInExtensionPointType(plugInType)?.GUID;
         }
     }
+
+    
 }

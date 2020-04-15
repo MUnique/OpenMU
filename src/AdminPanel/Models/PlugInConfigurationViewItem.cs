@@ -62,6 +62,11 @@ namespace MUnique.OpenMU.AdminPanel.Models
         public bool IsActive { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of the custom configuration, if available.
+        /// </summary>
+        public Type ConfigurationType { get; set; }
+
+        /// <summary>
         /// Gets or sets the custom plug in source which will be compiled at run-time.
         /// </summary>
         public string CustomPlugInSource { get; set; }

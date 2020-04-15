@@ -47,6 +47,11 @@ namespace MUnique.OpenMU.GameLogic
         PlugInManager PlugInManager { get; }
 
         /// <summary>
+        /// Gets the feature plug ins.
+        /// </summary>
+        FeaturePlugInContainer FeaturePlugIns { get; }
+
+        /// <summary>
         /// Gets the players of the game in a list.
         /// </summary>
         IList<Player> PlayerList { get; }

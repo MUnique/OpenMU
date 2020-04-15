@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
+namespace MUnique.OpenMU.GameLogic.Resets
 {
     using System.Linq;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Login;
     using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -17,31 +18,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     /// </summary>
     public class ResetCharacterAction
     {
-        /// <summary>
-        /// Is reset system enabled.
-        /// </summary>
-        public static readonly bool IsEnabled = false;
         private readonly Player player;
         private readonly NonPlayerCharacter npc;
         private readonly LogoutAction logoutAction = new LogoutAction();
 
         /// <summary>
-        /// Reset System Configuration.
-        /// </summary>
-        private readonly int resetLimit = -1;
-        private readonly int requiredLevel = 400;
-        private readonly int levelAfterReset = 10;
-        private readonly int requiredMoney = 1;
-        private readonly bool multiplyZenByResetCount = true;
-        private readonly bool resetStats = true;
-        private readonly bool multiplyPointsByResetCount = true;
-        private readonly int pointsPerReset = 1500;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ResetCharacterAction"/> class.
         /// </summary>
         /// <param name="player">Player to reset.</param>
-        /// <param name="npc">Npc thats call the reset action.</param>
+        /// <param name="npc">NPC which the player talks to to initiate the reset action.</param>
         public ResetCharacterAction(Player player, NonPlayerCharacter npc = null)
         {
             this.player = player;
@@ -53,38 +38,47 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// </summary>
         public void ResetCharacter()
         {
-            if (!IsEnabled)
+            var resetFeature = this.player.GameContext.FeaturePlugIns.GetPlugIn<ResetFeaturePlugIn>();
+            if (resetFeature is null)
             {
                 this.ShowMessage("Reset is not enabled.");
                 return;
             }
 
-            if (this.player.PlayerState.CurrentState != PlayerState.EnteredWorld)
+            if (this.player.PlayerState.CurrentState != PlayerState.EnteredWorld && this.npc == null)
             {
                 this.ShowMessage("Cannot do reset with any windows opened.");
                 return;
             }
 
-            if (this.player.Level < this.requiredLevel)
+            var configuration = resetFeature.Configuration;
+            if (configuration is null)
             {
-                this.ShowMessage($"Required level for reset is {this.requiredLevel}.");
+                this.ShowMessage("Reset is not configured.");
                 return;
             }
 
-            if (this.resetLimit > 0 && (this.GetResetCount() + 1) > this.resetLimit)
+            if (this.player.Level < configuration.RequiredLevel)
             {
-                this.ShowMessage($"Maximum resets of {this.resetLimit} reached.");
+                this.ShowMessage($"Required level for reset is {configuration.RequiredLevel}.");
                 return;
             }
 
-            if (!this.TryConsumeMoney())
+            if (configuration.ResetLimit > 0 && (this.GetResetCount() + 1) > configuration.ResetLimit)
+            {
+                this.ShowMessage($"Maximum resets of {configuration.ResetLimit} reached.");
+                return;
+            }
+
+            if (!this.TryConsumeMoney(configuration))
             {
                 return;
             }
 
-            this.AddReset();
-            this.ResetLevel();
-            this.UpdateStats();
+            this.player.Attributes[Stats.Resets]++;
+            this.player.Attributes[Stats.Level] = configuration.LevelAfterReset;
+            this.player.SelectedCharacter.Experience = 0;
+            this.UpdateStats(configuration);
             this.MoveHome();
             this.Logout();
         }
@@ -106,10 +100,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             return (int)this.player.Attributes[Stats.Resets];
         }
 
-        private bool TryConsumeMoney()
+        private bool TryConsumeMoney(ResetConfiguration configuration)
         {
-            var calculatedRequiredZen = this.requiredMoney;
-            if (this.multiplyZenByResetCount)
+            var calculatedRequiredZen = configuration.RequiredMoney;
+            if (configuration.MultiplyRequiredMoneyByResetCount)
             {
                 calculatedRequiredZen *= this.GetResetCount() + 1;
             }
@@ -123,26 +117,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             return true;
         }
 
-        private void AddReset()
+        private void UpdateStats(ResetConfiguration configuration)
         {
-            this.player.Attributes[Stats.Resets]++;
-        }
-
-        private void ResetLevel()
-        {
-            this.player.Attributes[Stats.Level] = this.levelAfterReset;
-            this.player.SelectedCharacter.Experience = 0;
-        }
-
-        private void UpdateStats()
-        {
-            var calculatedPointsPerReset = this.pointsPerReset;
-            if (this.multiplyPointsByResetCount)
+            var calculatedPointsPerReset = configuration.PointsPerReset;
+            if (configuration.MultiplyPointsByResetCount)
             {
                 calculatedPointsPerReset *= this.GetResetCount();
             }
 
-            if (this.resetStats)
+            if (configuration.ResetStats)
             {
                 this.player.SelectedCharacter.CharacterClass.StatAttributes
                     .Where(s => s.IncreasableByPlayer)

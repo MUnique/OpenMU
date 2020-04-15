@@ -445,6 +445,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     TypeId = table.Column<Guid>(nullable: false),
                     IsActive = table.Column<bool>(nullable: false),
+                    CustomConfiguration = table.Column<string>(nullable: true),
                     CustomPlugInSource = table.Column<string>(nullable: true),
                     ExternalAssemblyName = table.Column<string>(nullable: true),
                     GameConfigurationId = table.Column<Guid>(nullable: true)

@@ -16,6 +16,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.Resets;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -89,6 +90,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     plugInConfiguration.TypeId = plugInType.GUID;
                     plugInConfiguration.IsActive = true;
                     this.gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
+
+                    // Resets are disabled by default.
+                    if (plugInType == typeof(ResetFeaturePlugIn))
+                    {
+                        plugInConfiguration.IsActive = false;
+                        plugInConfiguration.SetConfiguration(new ResetConfiguration());
+                    }
                 });
 
                 this.context.SaveChanges();

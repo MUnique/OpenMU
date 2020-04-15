@@ -48,6 +48,8 @@ namespace MUnique.OpenMU.GameLogic
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
 
                 this.tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
+                this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
+
             }
             catch (Exception ex)
             {
@@ -82,6 +84,9 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <inheritdoc/>
         public PlugInManager PlugInManager { get; }
+
+        /// <inheritdoc />
+        public FeaturePlugInContainer FeaturePlugIns { get; }
 
         /// <inheritdoc/>
         public IItemPowerUpFactory ItemPowerUpFactory { get; } = new ItemPowerUpFactory();

@@ -1927,6 +1927,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CustomConfiguration")
+                        .HasColumnType("text");
+
                     b.Property<string>("CustomPlugInSource")
                         .HasColumnType("text");
 

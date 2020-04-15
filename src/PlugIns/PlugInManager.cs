@@ -56,6 +56,11 @@ namespace MUnique.OpenMU.PlugIns
         public event EventHandler<PlugInEventArgs> PlugInActivated;
 
         /// <summary>
+        /// Occurs when the <see cref="PlugInConfiguration.CustomConfiguration"/> has been changed.
+        /// </summary>
+        public event EventHandler<PlugInConfigurationChangedEventArgs> PlugInConfigurationChanged;
+
+        /// <summary>
         /// Gets the known plug in types.
         /// </summary>
         /// <value>
@@ -241,7 +246,7 @@ namespace MUnique.OpenMU.PlugIns
             {
                 this.RegisterPlugInAtPlugInPoint<TPlugInInterface>(Activator.CreateInstance<TPlugInClass>());
             }
-            else if (this.GetCustomPlugInPointType(typeof(TPlugInInterface)) is Type customPlugInPointType)
+            else if (this.GetCustomPlugInPointType(typeof(TPlugInInterface)) is { } customPlugInPointType)
             {
                 if (!this.knownPlugInsPerInterfaceType.TryGetValue(customPlugInPointType, out var plugInList))
                 {
@@ -369,9 +374,11 @@ namespace MUnique.OpenMU.PlugIns
                     this.DeactivatePlugIn(plugInType);
                 }
 
+                this.ConfigurePlugIn(plugInType, configuration);
+
                 // When the IsActive property changed, we activate/deactivate accordingly.
                 // Currently, property changes are only fired for IsActive, so we don't need to check it.
-                configuration.PropertyChanged += (sender, args) => this.OnConfigurationChanged(configuration, plugInType);
+                configuration.PropertyChanged += (sender, args) => this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
             }
             else
             {
@@ -379,16 +386,30 @@ namespace MUnique.OpenMU.PlugIns
             }
         }
 
-        private void OnConfigurationChanged(PlugInConfiguration configuration, Type plugInType)
+        private void OnConfigurationChanged(PlugInConfiguration configuration, Type plugInType, string propertyName)
         {
-            if (configuration.IsActive)
+            if (propertyName == nameof(PlugInConfiguration.IsActive))
             {
-                this.ActivatePlugIn(plugInType);
+                if (configuration.IsActive)
+                {
+                    this.ActivatePlugIn(plugInType);
+                    this.ConfigurePlugIn(plugInType, configuration);
+                }
+                else
+                {
+                    this.DeactivatePlugIn(plugInType);
+                }
             }
-            else
+
+            if (propertyName == nameof(PlugInConfiguration.CustomConfiguration))
             {
-                this.DeactivatePlugIn(plugInType);
+                this.ConfigurePlugIn(plugInType, configuration);
             }
+        }
+
+        private void ConfigurePlugIn(Type plugInType, PlugInConfiguration configuration)
+        {
+            this.PlugInConfigurationChanged?.Invoke(this, new PlugInConfigurationChangedEventArgs(plugInType, configuration));
         }
 
         private Assembly CompileCustomPlugInAssembly(PlugInConfiguration configuration)

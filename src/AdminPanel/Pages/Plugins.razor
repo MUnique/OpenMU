@@ -37,6 +37,11 @@
                 {
                     <Button class="btn-success" @onclick="() => this.plugInController.Activate(item)">Activate</Button>
                 }
+
+                @if (item.ConfigurationType is { })
+                {
+                    <Button class="btn-secondary" @onclick="() => this.plugInController.ShowPlugInConfig(item)"><span class="oi oi-cog" aria-hidden="true"></span></Button>
+                }
             </td>
         </ItemTemplate>
         <TableFooter>

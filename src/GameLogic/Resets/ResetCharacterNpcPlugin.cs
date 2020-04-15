@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns
+namespace MUnique.OpenMU.GameLogic.Resets
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+    using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

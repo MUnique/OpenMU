@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
+namespace MUnique.OpenMU.GameLogic.Resets
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+    using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

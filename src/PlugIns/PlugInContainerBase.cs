@@ -33,6 +33,7 @@ namespace MUnique.OpenMU.PlugIns
             {
                 this.Manager.PlugInActivated += this.OnPlugInActivated;
                 this.Manager.PlugInDeactivated += this.OnPlugInDeactivated;
+                this.Manager.PlugInConfigurationChanged += this.OnPlugInConfigurationChanged;
             }
         }
 
@@ -223,6 +224,31 @@ namespace MUnique.OpenMU.PlugIns
             finally
             {
                 this.LockSlim.ExitWriteLock();
+            }
+        }
+
+        private void OnPlugInConfigurationChanged(object sender, PlugInConfigurationChangedEventArgs e)
+        {
+            if (!this.IsEventRelevant(e))
+            {
+                return;
+            }
+
+            var plugIn = this.FindActivePlugin(e.PlugInType) ?? this.FindKnownPlugin(e.PlugInType);
+            if (plugIn == null)
+            {
+                return;
+            }
+
+            if (e.PlugInType.GetCustomConfigurationSupportInterfaceType()
+                is { } configSupportInterface)
+            {
+                var configType = configSupportInterface.GenericTypeArguments[0];
+                var typedCustomConfiguration = e.Configuration.GetConfiguration(configType);
+                configSupportInterface
+                    .GetProperty(nameof(ISupportCustomConfiguration<object>.Configuration))
+                    ?.SetMethod
+                    ?.Invoke(plugIn, new[] { typedCustomConfiguration });
             }
         }
     }

@@ -39,6 +39,7 @@
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
