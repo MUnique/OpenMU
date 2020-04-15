@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Network.Packets.ServerToClient
 {
     /// <summary>
-    /// Extends the <see cref="MoneyDropped"/>
+    /// Extends the <see cref="MoneyDropped"/>.
     /// </summary>
     public readonly ref partial struct MoneyDropped
     {
