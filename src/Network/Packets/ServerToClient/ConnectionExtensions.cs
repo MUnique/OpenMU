@@ -324,6 +324,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="MoneyDropped" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: Money dropped on the ground.
+        /// Causes reaction on client side: The client adds the money to the ground.
+        /// </remarks>
+        public static MoneyDroppedThreadSafeWriter StartWriteMoneyDropped(this IConnection connection)
+        {
+          return new MoneyDroppedThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="ItemDropResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1745,6 +1758,37 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             using var writer = connection.StartSafeWrite(ApplyKeyConfiguration.HeaderType, ApplyKeyConfiguration.GetRequiredSize(configuration.Length));
             var packet = new ApplyKeyConfiguration(writer.Span);
             @configuration.CopyTo(packet.Configuration);
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="MoneyDropped" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="id">The id.</param>
+        /// <param name="isFreshDrop">If this flag is set, the money is added to the map with an animation and sound. Otherwise it's just added like it was already on the ground before.</param>
+        /// <param name="positionX">The position x.</param>
+        /// <param name="positionY">The position y.</param>
+        /// <param name="amount">The amount.</param>
+        /// <param name="itemCount">The item count.</param>
+        /// <param name="moneyGroup">The money group.</param>
+        /// <param name="moneyNumber">The money number.</param>
+        /// <remarks>
+        /// Is sent by the server when: Money dropped on the ground.
+        /// Causes reaction on client side: The client adds the money to the ground.
+        /// </remarks>
+        public static void SendMoneyDropped(this IConnection connection, ushort @id, bool @isFreshDrop, byte @positionX, byte @positionY, uint @amount, byte @itemCount = 1, byte @moneyGroup = 14, byte @moneyNumber = 15)
+        {
+            using var writer = connection.StartWriteMoneyDropped();
+            var packet = writer.Packet;
+            packet.ItemCount = @itemCount;
+            packet.Id = @id;
+            packet.IsFreshDrop = @isFreshDrop;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.MoneyNumber = @moneyNumber;
+            packet.Amount = @amount;
+            packet.MoneyGroup = @moneyGroup;
             writer.Commit();
         }
 
@@ -4398,6 +4442,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(MapChanged.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="MoneyDropped"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct MoneyDroppedThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoneyDroppedThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public MoneyDroppedThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new MoneyDropped(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(MoneyDropped.Length).Slice(0, MoneyDropped.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public MoneyDropped Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="MoneyDropped" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(MoneyDropped.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

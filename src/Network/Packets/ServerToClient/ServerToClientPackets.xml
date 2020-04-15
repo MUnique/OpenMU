@@ -1635,6 +1635,64 @@
     </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>
+      <Code>20</Code>
+      <Name>MoneyDropped</Name>
+      <Length>21</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Money dropped on the ground.</SentWhen>
+      <CausedReaction>The client adds the money to the ground.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Id</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <LeftShifted>7</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsFreshDrop</Name>
+          <Description>If this flag is set, the money is added to the map with an animation and sound. Otherwise it's just added like it was already on the ground before.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>PositionX</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>PositionY</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>MoneyNumber</Name>
+          <DefaultValue>15</DefaultValue>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Amount</Name>
+          <UseCustomIndexer>true</UseCustomIndexer><!-- Trick to get a partial struct -->
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>MoneyGroup</Name>
+          <DefaultValue>14</DefaultValue>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
       <Code>21</Code>
       <Name>ItemDropRemoved</Name>
       <Direction>ServerToClient</Direction>

@@ -4624,6 +4624,142 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: Money dropped on the ground.
+    /// Causes reaction on client side: The client adds the money to the ground.
+    /// </summary>
+    public readonly ref partial struct MoneyDropped
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoneyDropped"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MoneyDropped(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoneyDropped"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MoneyDropped(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)Math.Min(data.Length, Length);
+                this.ItemCount = 1;
+                this.MoneyNumber = 15;
+                this.MoneyGroup = 14;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x20;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 21;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the item count.
+        /// </summary>
+        public byte ItemCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(5));
+            set => WriteUInt16BigEndian(this.data.Slice(5), value);
+        }
+
+        /// <summary>
+        /// Gets or sets if this flag is set, the money is added to the map with an animation and sound. Otherwise it's just added like it was already on the ground before.
+        /// </summary>
+        public bool IsFreshDrop
+        {
+            get => this.data.Slice(5).GetBoolean(7);
+            set => this.data.Slice(5).SetBoolean(value, 7);
+        }
+
+        /// <summary>
+        /// Gets or sets the position x.
+        /// </summary>
+        public byte PositionX
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position y.
+        /// </summary>
+        public byte PositionY
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the money number.
+        /// </summary>
+        public byte MoneyNumber
+        {
+            get => this.data[9];
+            set => this.data[9] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the money group.
+        /// </summary>
+        public byte MoneyGroup
+        {
+            get => this.data.Slice(14).GetByteValue(8, 4);
+            set => this.data.Slice(14).SetByteValue((byte)value, 8, 4);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MoneyDropped"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MoneyDropped(Span<byte> packet) => new MoneyDropped(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MoneyDropped"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MoneyDropped packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: A dropped item was removed from the ground of the map, e.g. when it timed out or was picked up.
     /// Causes reaction on client side: The client removes the item from the ground of the map.
     /// </summary>
