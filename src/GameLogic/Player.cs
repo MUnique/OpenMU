@@ -928,7 +928,10 @@ namespace MUnique.OpenMU.GameLogic
         private ExitGate GetSpawnGateOfCurrentMap()
         {
             var spawnTargetMap = this.CurrentMap.Definition.SafezoneMap ?? this.CurrentMap.Definition;
-            return spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
+            var terrain = this.CurrentMap.Definition == spawnTargetMap ? this.CurrentMap.Terrain : new GameMapTerrain(spawnTargetMap);
+            var safeSpawn = spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate && terrain.SafezoneMap[g.X1, g.Y1]).SelectRandom()
+                                ?? spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
+            return safeSpawn;
         }
 
         private void Hit(HitInfo hitInfo, IAttacker attacker)
