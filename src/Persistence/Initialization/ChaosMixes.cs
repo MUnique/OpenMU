@@ -52,6 +52,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaosGoblin.ItemCraftings.Add(this.SmallShieldPotionCrafting());
             chaosGoblin.ItemCraftings.Add(this.MediumShieldPotionCrafting());
             chaosGoblin.ItemCraftings.Add(this.LargeShieldPotionCrafting());
+            chaosGoblin.ItemCraftings.Add(this.FenrirStage1Crafting());
+            chaosGoblin.ItemCraftings.Add(this.FenrirStage2Crafting());
+            chaosGoblin.ItemCraftings.Add(this.FenrirStage3Crafting());
+            chaosGoblin.ItemCraftings.Add(this.FenrirUpgradeCrafting());
 
             var elphis = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ElphisRefinery);
             elphis.ItemCraftings.Add(this.GemstoneRefinery());
@@ -585,6 +589,124 @@ namespace MUnique.OpenMU.Persistence.Initialization
             lifeStone.Durability = 1;
             craftingSettings.ResultItems.Add(lifeStone);
 
+            return crafting;
+        }
+
+        private ItemCrafting FenrirStage1Crafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Fenrir Stage 1";
+            crafting.Number = 25;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 0;
+            craftingSettings.SuccessPercent = 70;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            guardian.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Bless of Guardian");
+            guardian.MinimumAmount = 20;
+            guardian.MaximumAmount = 20;
+            craftingSettings.RequiredItems.Add(guardian);
+
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var splinter = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            splinter.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Splinter of Armor");
+            splinter.MinimumAmount = 20;
+            splinter.MaximumAmount = 20;
+            craftingSettings.RequiredItems.Add(splinter);
+
+            var fragmentOfHorn = this.Context.CreateNew<ItemCraftingResultItem>();
+            fragmentOfHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Fragment of Horn");
+            fragmentOfHorn.Durability = 1;
+            craftingSettings.ResultItems.Add(fragmentOfHorn);
+
+            return crafting;
+        }
+
+        private ItemCrafting FenrirStage2Crafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Fenrir Stage 2";
+            crafting.Number = 26;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 0;
+            craftingSettings.SuccessPercent = 50;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var fragmentOfHorn = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            fragmentOfHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Fragment of Horn");
+            fragmentOfHorn.MinimumAmount = 5;
+            fragmentOfHorn.MaximumAmount = 5;
+            craftingSettings.RequiredItems.Add(fragmentOfHorn);
+
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var clawOfBeast = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            clawOfBeast.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Claw of Beast");
+            clawOfBeast.MinimumAmount = 10;
+            clawOfBeast.MaximumAmount = 10;
+            craftingSettings.RequiredItems.Add(clawOfBeast);
+
+            var brokenHorn = this.Context.CreateNew<ItemCraftingResultItem>();
+            brokenHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Broken Horn");
+            brokenHorn.Durability = 1;
+            craftingSettings.ResultItems.Add(brokenHorn);
+
+            return crafting;
+        }
+
+        private ItemCrafting FenrirStage3Crafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Fenrir Stage 3";
+            crafting.Number = 27;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            craftingSettings.Money = 10_000_000;
+            craftingSettings.SuccessPercent = 30;
+            crafting.SimpleCraftingSettings = craftingSettings;
+
+            var brokenHorn = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            brokenHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Broken Horn");
+            brokenHorn.MinimumAmount = 1;
+            brokenHorn.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(brokenHorn);
+
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var life = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            life.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Life");
+            life.MinimumAmount = 3;
+            life.MaximumAmount = 3;
+            craftingSettings.RequiredItems.Add(life);
+
+            var fenrir = this.Context.CreateNew<ItemCraftingResultItem>();
+            fenrir.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Fenrir");
+            fenrir.Durability = 255;
+            craftingSettings.ResultItemSkillChance = 100;
+            craftingSettings.ResultItems.Add(fenrir);
+
+            return crafting;
+        }
+
+        private ItemCrafting FenrirUpgradeCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Fenrir Upgrade (Stage 4)";
+            crafting.Number = 28;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.FenrirUpgradeCrafting).FullName;
             return crafting;
         }
     }

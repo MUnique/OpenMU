@@ -151,7 +151,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private IEnumerable<Item> CreateResultItems(Player player, IList<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem)
         {
-            int resultItemCount = referencedItems.FirstOrDefault()?.Items.Count() ?? 1;
+            int resultItemCount = this.settings.MultipleAllowed
+                ? referencedItems.FirstOrDefault(r => r.ItemRequirement.Reference > 0)?.Items.Count() ?? 1
+                : 1;
             for (int i = 0; i < resultItemCount; i++)
             {
                 // Create new Item
