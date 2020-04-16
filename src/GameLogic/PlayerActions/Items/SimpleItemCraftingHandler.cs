@@ -57,9 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 if (itemCount < requiredItem.MinimumAmount)
                 {
                     Log.WarnFormat("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
-                    {
-                        return CraftingResult.LackingMixItems;
-                    }
+                    return CraftingResult.LackingMixItems;
                 }
 
                 if (itemCount > requiredItem.MaximumAmount && requiredItem.MaximumAmount > 0)
