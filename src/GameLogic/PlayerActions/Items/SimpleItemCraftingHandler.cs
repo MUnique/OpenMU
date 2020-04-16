@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
@@ -28,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="settings">The settings.</param>
         public SimpleItemCraftingHandler(SimpleCraftingSettings settings)
         {
-            this.settings = settings;
+            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         /// <inheritdoc />
