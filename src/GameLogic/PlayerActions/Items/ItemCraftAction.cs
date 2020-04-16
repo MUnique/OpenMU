@@ -49,20 +49,25 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)
         {
-            if (crafting.SimpleCraftingSettings != null)
-            {
-                return new SimpleItemCraftingHandler(crafting.SimpleCraftingSettings);
-            }
-
             if (crafting.ItemCraftingHandlerClassName != null)
             {
                 var type = Type.GetType(crafting.ItemCraftingHandlerClassName);
                 if (type != null)
                 {
-                    return Activator.CreateInstance(type) as IItemCraftingHandler;
+                    if (type.BaseType == typeof(SimpleItemCraftingHandler))
+                    {
+                        return (IItemCraftingHandler)Activator.CreateInstance(type, crafting.SimpleCraftingSettings);
+                    }
+
+                    return (IItemCraftingHandler)Activator.CreateInstance(type);
                 }
 
                 throw new ArgumentException($"Item crafting handler '{crafting.ItemCraftingHandlerClassName}' not found.", nameof(crafting));
+            }
+
+            if (crafting.SimpleCraftingSettings != null)
+            {
+                return new SimpleItemCraftingHandler(crafting.SimpleCraftingSettings);
             }
 
             throw new ArgumentException("No simple crafting settings or item crafting handler name specified.", nameof(crafting));

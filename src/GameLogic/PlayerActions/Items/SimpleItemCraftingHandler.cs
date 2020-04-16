@@ -38,6 +38,20 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             return this.settings.Money + (this.settings.MoneyPerFinalSuccessPercentage * successRate);
         }
 
+        /// <summary>
+        /// Determines whether the actual item matches with the required item definition.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="requiredItem">The required item.</param>
+        /// <returns><c>true</c>, if the actual item matches with the required item definition.</returns>
+        protected virtual bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
+        {
+            return (requiredItem.ItemDefinition == null || item.Definition == requiredItem.ItemDefinition)
+                       && item.Level >= requiredItem.MinimumItemLevel
+                       && item.Level <= requiredItem.MaximumItemLevel
+                       && requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r));
+        }
+
         /// <inheritdoc />
         protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
         {
@@ -46,13 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var storage = player.TemporaryStorage.Items.ToList();
             foreach (var requiredItem in this.settings.RequiredItems)
             {
-                var foundItems = storage
-                    .Where(item => requiredItem.ItemDefinition == null || item.Definition == requiredItem.ItemDefinition)
-                    .Where(item =>
-                        requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r)))
-                    .Where(item => item.Level >= requiredItem.MinimumItemLevel
-                                   && item.Level <= requiredItem.MaximumItemLevel).ToList();
-
+                var foundItems = storage.Where(item => this.RequiredItemMatches(item, requiredItem)).ToList();
                 var itemCount = foundItems.Sum(i => i.IsStackable() ? i.Durability : 1);
                 if (itemCount < requiredItem.MinimumAmount)
                 {
@@ -197,7 +205,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             if (this.settings.ResultItemExcellentOptionChance > 0
                 && resultItem.Definition.PossibleItemOptions.FirstOrDefault(o =>
-                        o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent))
+                        o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent || p.OptionType == ItemOptionTypes.Wing))
                     is { } optionDefinition)
             {
                 for (int j = 0;
