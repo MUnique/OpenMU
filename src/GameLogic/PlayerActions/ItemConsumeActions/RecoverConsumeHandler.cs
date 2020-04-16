@@ -34,12 +34,21 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         {
             if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
-                var recabs = (player.Attributes[this.MaximumAttribute] * this.RecoverPercent / 100) + this.GetAdditionalRecover(player);
-                player.Attributes[this.CurrentAttribute] = (uint)Math.Min(player.Attributes[this.MaximumAttribute], player.Attributes[this.CurrentAttribute] + recabs);
+                this.Recover(player);
                 return true;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Recovers the attributes of the specified player.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        internal void Recover(Player player)
+        {
+            var recoverAmount = (player.Attributes[this.MaximumAttribute] * this.RecoverPercent / 100) + this.GetAdditionalRecover(player);
+            player.Attributes[this.CurrentAttribute] = (uint)Math.Min(player.Attributes[this.MaximumAttribute], player.Attributes[this.CurrentAttribute] + recoverAmount);
         }
 
         /// <summary>
