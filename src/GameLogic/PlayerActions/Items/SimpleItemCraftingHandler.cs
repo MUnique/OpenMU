@@ -190,11 +190,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 var luckOption = player.PersistenceContext.CreateNew<ItemOptionLink>();
                 luckOption.ItemOption = luck.PossibleOptions.First();
                 resultItem.ItemOptions.Add(luckOption);
-                if (resultItem.Definition.Skill != null)
-                {
-                    // Excellent items always have skill.
-                    resultItem.HasSkill = true;
-                }
             }
         }
 
@@ -213,6 +208,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     link.ItemOption = optionDefinition.PossibleOptions
                         .Except(resultItem.ItemOptions.Select(io => io.ItemOption)).SelectRandom();
                     resultItem.ItemOptions.Add(link);
+                    if (resultItem.Definition.Skill != null)
+                    {
+                        // Excellent items always have skill.
+                        resultItem.HasSkill = true;
+                    }
                 }
             }
         }
