@@ -142,7 +142,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 (Stats.TotalEnergy, 15.0f),
                 (Stats.MaximumHealth, 50.0f),
                 (Stats.SkillDamageBonus, 25.0f),
-                (Stats.WizardryAttackDamageIncrease, 15.0f));
+                (Stats.WizardryAttackDamageIncrease, 0.15f));
             this.AddItems(
                 garuda,
                 (8, ItemGroups.Pants, Stats.TotalVitality),
@@ -166,7 +166,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 1,
                 (Stats.TotalEnergy, 15.0f),
                 (Stats.TotalVitality, 30.0f),
-                (Stats.WizardryAttackDamageIncrease, 10.0f),
+                (Stats.WizardryAttackDamageIncrease, 0.10f),
                 (Stats.TotalStrength, 15.0f),
                 (Stats.SkillDamageBonus, 25.0f),
                 (Stats.ExcellentDamageChance, 10.0f),
