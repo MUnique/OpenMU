@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
     /// <summary>
     /// Initializer for chaos mixes.
@@ -59,6 +60,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaosGoblin.ItemCraftings.Add(this.FirstWingsCrafting());
             chaosGoblin.ItemCraftings.Add(this.CapeCrafting());
             chaosGoblin.ItemCraftings.Add(this.SecondWingsCrafting());
+            chaosGoblin.ItemCraftings.Add(this.Level380OptionCrafting());
 
             var elphis = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ElphisRefinery);
             elphis.ItemCraftings.Add(this.GemstoneRefinery());
@@ -940,6 +942,75 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.Name = "Fenrir Upgrade (Stage 4)";
             crafting.Number = 28;
             crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.FenrirUpgradeCrafting).FullName;
+            return crafting;
+        }
+
+        private ItemCrafting Level380OptionCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Guardian Option (Level 380)";
+            crafting.Number = 36;
+            crafting.ItemCraftingHandlerClassName = typeof(GuardianOptionCrafting).FullName;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            crafting.SimpleCraftingSettings = craftingSettings;
+            craftingSettings.Money = 10_000_000;
+
+            var randomItem4To6 = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomItem4To6.MaximumAmount = 1;
+            randomItem4To6.MinimumItemLevel = 4;
+            randomItem4To6.MaximumItemLevel = 6;
+            randomItem4To6.AddPercentage = 50;
+            randomItem4To6.FailResult = MixResult.StaysAsIs;
+            randomItem4To6.SuccessResult = MixResult.StaysAsIs;
+            randomItem4To6.Reference = GuardianOptionCrafting.ItemReference;
+            randomItem4To6.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
+            craftingSettings.RequiredItems.Add(randomItem4To6);
+
+            var randomItem7To9 = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomItem7To9.MaximumAmount = 1;
+            randomItem7To9.MinimumItemLevel = 7;
+            randomItem7To9.MaximumItemLevel = 9;
+            randomItem7To9.AddPercentage = 60;
+            randomItem7To9.FailResult = MixResult.StaysAsIs;
+            randomItem7To9.SuccessResult = MixResult.StaysAsIs;
+            randomItem7To9.Reference = GuardianOptionCrafting.ItemReference;
+            randomItem7To9.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
+            craftingSettings.RequiredItems.Add(randomItem7To9);
+
+            var randomItem10To13 = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomItem10To13.MaximumAmount = 1;
+            randomItem10To13.MinimumItemLevel = 10;
+            randomItem10To13.MaximumItemLevel = 13;
+            randomItem10To13.AddPercentage = 70;
+            randomItem10To13.FailResult = MixResult.StaysAsIs;
+            randomItem10To13.SuccessResult = MixResult.StaysAsIs;
+            randomItem10To13.Reference = GuardianOptionCrafting.ItemReference;
+            randomItem10To13.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
+            craftingSettings.RequiredItems.Add(randomItem10To13);
+
+            var randomItem14To15 = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomItem14To15.MaximumAmount = 1;
+            randomItem14To15.MinimumItemLevel = 14;
+            randomItem14To15.MaximumItemLevel = 15;
+            randomItem14To15.AddPercentage = 80;
+            randomItem14To15.FailResult = MixResult.StaysAsIs;
+            randomItem14To15.SuccessResult = MixResult.StaysAsIs;
+            randomItem14To15.Reference = GuardianOptionCrafting.ItemReference;
+            randomItem14To15.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
+            craftingSettings.RequiredItems.Add(randomItem14To15);
+
+            var harmony = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            harmony.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony");
+            harmony.MinimumAmount = 1;
+            harmony.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(harmony);
+
+            var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            guardian.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Guardian");
+            guardian.MinimumAmount = 1;
+            guardian.MaximumAmount = 1;
+            craftingSettings.RequiredItems.Add(guardian);
+
             return crafting;
         }
     }
