@@ -68,6 +68,12 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var petTrainer = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.PetTrainer);
             petTrainer.ItemCraftings.Add(this.DarkHorseCrafting());
             petTrainer.ItemCraftings.Add(this.DarkRavenCrafting());
+
+            var osbourne = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.RefineStoneMaking);
+            osbourne.ItemCraftings.Add(this.RefineStoneCrafting());
+
+            var jerridon = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.RemoveJohOption);
+            jerridon.ItemCraftings.Add(this.RestoreItemCrafting());
         }
 
         private ItemCrafting ItemLevelUpgradeCrafting(byte craftingNumber, byte targetLevel, int money)
@@ -942,6 +948,55 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.Name = "Fenrir Upgrade (Stage 4)";
             crafting.Number = 28;
             crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.FenrirUpgradeCrafting).FullName;
+            return crafting;
+        }
+
+        private ItemCrafting RefineStoneCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Refine Stone";
+            crafting.Number = 34;
+            crafting.ItemCraftingHandlerClassName = typeof(RefineStoneCrafting).FullName;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            crafting.SimpleCraftingSettings = craftingSettings;
+            craftingSettings.SuccessPercent = 100; // It will be handled when creating the stones.
+
+            var randomExcItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomExcItem.MinimumAmount = 0;
+            randomExcItem.MaximumAmount = 32;
+            randomExcItem.MaximumItemLevel = 15;
+            randomExcItem.Reference = GameLogic.PlayerActions.Craftings.RefineStoneCrafting.HigherRefineStoneReference;
+            randomExcItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Excellent));
+            craftingSettings.RequiredItems.Add(randomExcItem);
+
+            var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomItem.MinimumAmount = 0;
+            randomItem.MaximumAmount = 32;
+            randomItem.MaximumItemLevel = 15;
+            randomItem.Reference = GameLogic.PlayerActions.Craftings.RefineStoneCrafting.LowerRefineStoneReference;
+            craftingSettings.RequiredItems.Add(randomItem);
+
+            return crafting;
+        }
+
+        private ItemCrafting RestoreItemCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Restore Item (Remove JOH Option)";
+            crafting.Number = 35;
+            crafting.ItemCraftingHandlerClassName = typeof(RestoreItemCrafting).FullName;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            crafting.SimpleCraftingSettings = craftingSettings;
+            craftingSettings.SuccessPercent = 100;
+
+            var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomItem.MinimumAmount = 1;
+            randomItem.MinimumAmount = 1;
+            randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.HarmonyOption));
+            randomItem.FailResult = MixResult.StaysAsIs; // It's never failing, but we set it just in case.
+            randomItem.SuccessResult = MixResult.StaysAsIs;
+            craftingSettings.RequiredItems.Add(randomItem);
+
             return crafting;
         }
 
