@@ -42,7 +42,32 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// The pet trainer storage.
         /// </summary>
-        PetTrainer = 5,
+        PetTrainer,
+
+        /// <summary>
+        /// The storage of the refinery of the elphis npc.
+        /// </summary>
+        Refinery,
+
+        /// <summary>
+        /// The storage of the smelting dialog of the osbourne npc.
+        /// </summary>
+        Smelting,
+
+        /// <summary>
+        /// The storage of the item restore dialog of the jerridon npc.
+        /// </summary>
+        ItemRestore,
+
+        /// <summary>
+        /// The storage of the chaos card master dialog.
+        /// </summary>
+        ChaosCardMaster,
+
+        /// <summary>
+        /// The storage of the cherry blossom spirit dialog.
+        /// </summary>
+        CherryBlossomSpirit,
     }
 
     /// <summary>

@@ -31,6 +31,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
                 Storages.Trade => ItemStorageKind.Trade,
                 Storages.Vault => ItemStorageKind.Vault,
                 Storages.PetTrainer => ItemStorageKind.PetTrainer,
+                Storages.Refinery => ItemStorageKind.Refinery,
+                Storages.Smelting => ItemStorageKind.Smelting,
+                Storages.ItemRestore => ItemStorageKind.ItemRestore,
+                Storages.ChaosCardMaster => ItemStorageKind.ChaosCardMaster,
+                Storages.CherryBlossomSpirit => ItemStorageKind.CherryBlossomSpirit,
                 _ => throw new NotImplementedException($"Unhandled case {storage}."),
             };
         }
@@ -50,6 +55,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
                 ItemStorageKind.Trade => Storages.Trade,
                 ItemStorageKind.Vault => Storages.Vault,
                 ItemStorageKind.PetTrainer => Storages.PetTrainer,
+                ItemStorageKind.Refinery => Storages.Refinery,
+                ItemStorageKind.Smelting => Storages.Smelting,
+                ItemStorageKind.ItemRestore => Storages.ItemRestore,
+                ItemStorageKind.ChaosCardMaster => Storages.ChaosCardMaster,
+                ItemStorageKind.CherryBlossomSpirit => Storages.CherryBlossomSpirit,
                 _ => throw new NotImplementedException($"Unhandled case {storage}."),
             };
         }
