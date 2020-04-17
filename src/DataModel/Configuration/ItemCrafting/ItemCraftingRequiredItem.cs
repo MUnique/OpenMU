@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public byte MinimumAmount { get; set; }
 
         /// <summary>
-        /// Gets or sets the minimum amount.
+        /// Gets or sets the maximum amount.
         /// </summary>
         public byte MaximumAmount { get; set; }
 
@@ -59,11 +59,8 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public int NpcPriceDivisor { get; set; }
 
         /// <summary>
-        /// Gets or sets the add percentage per division.
+        /// Gets or sets the add percentage per item.
         /// </summary>
-        /// <value>
-        /// The add percentage.
-        /// </value>
         public byte AddPercentage { get; set; }
 
         /// <summary>
