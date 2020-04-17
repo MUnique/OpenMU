@@ -123,7 +123,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> referencedItems, Player player)
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player)
         {
             var resultItems = this.settings.ResultItemSelect == ResultItemSelection.All
                 ? this.settings.ResultItems
@@ -132,11 +132,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             foreach (var craftingResultItem in resultItems)
             {
                 if (craftingResultItem.Reference > 0
-                    && referencedItems.FirstOrDefault(i => i.ItemRequirement.Reference == craftingResultItem.Reference) is { } referencedItem)
+                    && requiredItems.FirstOrDefault(i => i.ItemRequirement.Reference == craftingResultItem.Reference) is { } referencedItem)
                 {
                     foreach (var item in referencedItem.Items)
                     {
                         item.Level += craftingResultItem.AddLevel;
+                        yield return item;
                     }
 
                     continue;
@@ -149,7 +150,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     continue;
                 }
 
-                foreach (var resultItem in this.CreateResultItems(player, referencedItems, craftingResultItem))
+                foreach (var resultItem in this.CreateResultItems(player, requiredItems, craftingResultItem))
                 {
                     yield return resultItem;
                 }
