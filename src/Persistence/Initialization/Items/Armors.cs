@@ -521,8 +521,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             armor.PossibleItemOptions.Add(this.GameConfiguration.GetLuck());
             armor.PossibleItemOptions.Add(this.GameConfiguration.GetDefenseOption());
             armor.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.DefenseOptionsName));
-            //// TODO: HarmonyOptions for level 380 items
-            //// TODO: JoH Options
+            armor.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.DefenseOptionsName));
 
             return armor;
         }

@@ -29,6 +29,15 @@ namespace MUnique.OpenMU.GameLogic
             { Stats.TotalLeadershipRequirementValue, Stats.TotalLeadership },
         };
 
+        private static readonly IDictionary<AttributeDefinition, AttributeDefinition> RequirementReductionAttributeMapping = new Dictionary<AttributeDefinition, AttributeDefinition>
+        {
+            { Stats.TotalStrengthRequirementValue, Stats.RequiredStrengthReduction },
+            { Stats.TotalAgilityRequirementValue, Stats.RequiredAgilityReduction },
+            { Stats.TotalEnergyRequirementValue, Stats.RequiredEnergyReduction },
+            { Stats.TotalVitalityRequirementValue, Stats.RequiredVitalityReduction },
+            { Stats.TotalLeadershipRequirementValue, Stats.RequiredLeadershipReduction },
+        };
+
         /// <summary>
         /// Determines whether the item level can be upgraded by using jewels of bless or soul.
         /// </summary>
@@ -162,6 +171,19 @@ namespace MUnique.OpenMU.GameLogic
                     if (itemOption != null)
                     {
                         value += itemOption.Level * 4;
+                    }
+                }
+
+                if (RequirementReductionAttributeMapping.TryGetValue(requirement.Attribute, out var reductionAttribute)
+                    && item.ItemOptions.FirstOrDefault(o =>
+                        o.ItemOption.PowerUpDefinition.TargetAttribute == reductionAttribute) is { } reductionOption)
+                {
+                    var optionOfLevelPowerUp = reductionOption.ItemOption.LevelDependentOptions
+                                                   .FirstOrDefault(o => o.Level == reductionOption.Level)?.PowerUpDefinition
+                                               ?? reductionOption.ItemOption.PowerUpDefinition;
+                    if (optionOfLevelPowerUp?.Boost?.ConstantValue is { } reduction)
+                    {
+                        value -= (int)reduction.Value;
                     }
                 }
 

@@ -346,19 +346,22 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 item.PossibleItemOptions.Add(this.PhysicalDamageOption);
                 item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
+                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName));
             }
             else
             {
                 if (summonerClass > 0)
                 {
                     item.PossibleItemOptions.Add(this.CurseDamageOption);
-                    item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
+                    item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.CurseAttackOptionsName));
+                    item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.CurseAttackOptionsName));
                     //// TODO: Is there something similar as the staff rise?
                 }
                 else
                 {
                     item.PossibleItemOptions.Add(this.WizardryDamageOption);
-                    item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.CurseAttackOptionsName));
+                    item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
+                    item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
 
                     var staffRisePowerUpMinDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                     staffRisePowerUpMinDmg.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(this.GameConfiguration);

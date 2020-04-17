@@ -1427,6 +1427,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             new Wings(this.context, this.gameConfiguration).Initialize();
             new Pets(this.context, this.gameConfiguration).Initialize();
             new ExcellentOptions(this.context, this.gameConfiguration).Initialize();
+            new HarmonyOptions(this.context, this.gameConfiguration).Initialize();
             new GuardianOptions(this.context, this.gameConfiguration).Initialize();
             new Armors(this.context, this.gameConfiguration).Initialize();
             new Weapons(this.context, this.gameConfiguration).Initialize();
