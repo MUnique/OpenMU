@@ -48,8 +48,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             var remainingShieldDamage = hitInfo.ShieldDamage;
             while (remainingHealthDamage > 0 || remainingShieldDamage > 0)
             {
-                var healthDamage = (ushort)(remainingHealthDamage & 0xFFFF);
-                var shieldDamage = (ushort)(remainingShieldDamage & 0xFFFF);
+                var healthDamage = (ushort)System.Math.Min(0xFFFF, remainingHealthDamage);
+                var shieldDamage = (ushort)System.Math.Min(0xFFFF, remainingShieldDamage);
                 using var writer = this.player.Connection.StartSafeWrite(ObjectHit.HeaderType, ObjectHit.Length);
                 _ = new ObjectHit(writer.Span)
                 {
