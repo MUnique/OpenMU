@@ -203,7 +203,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "1st Level Wings";
             crafting.Number = 11;
-            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.FirstWingCrafting).FullName;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
 
             crafting.SimpleCraftingSettings = craftingSettings;
@@ -212,7 +211,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             // Requirements:
             var chaosWeapon = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            chaosWeapon.Reference = GameLogic.PlayerActions.Craftings.FirstWingCrafting.ChaosWeaponReference;
+            chaosWeapon.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 4 && item.Number == 6));
+            chaosWeapon.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 2 && item.Number == 6));
+            chaosWeapon.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 5 && item.Number == 7));
             chaosWeapon.MinimumAmount = 1;
             chaosWeapon.MaximumAmount = 1;
             chaosWeapon.MinimumItemLevel = 4;
@@ -285,7 +286,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "2nd Level Wings";
             crafting.Number = 7;
-            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.SecondWingCrafting).FullName;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
 
             crafting.SimpleCraftingSettings = craftingSettings;
@@ -296,7 +296,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             // Requirements:
             var firstWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            firstWing.Reference = GameLogic.PlayerActions.Craftings.SecondWingCrafting.FirstWingReference;
+            firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 0));
+            firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 1));
+            firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 2));
+            firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 41));
             firstWing.MinimumAmount = 1;
             firstWing.MaximumAmount = 1;
             firstWing.MinimumItemLevel = 4;
@@ -365,7 +368,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "3rd Level Wings, Stage 1";
             crafting.Number = 38;
-            crafting.ItemCraftingHandlerClassName = typeof(ThirdWingCrafting).FullName;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
 
             crafting.SimpleCraftingSettings = craftingSettings;
@@ -375,7 +377,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             // Requirements:
             var secondWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            secondWing.Reference = ThirdWingCrafting.SecondWingReference;
+            secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 3));
+            secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 4));
+            secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 5));
+            secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 6));
+            secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 42));
             secondWing.MinimumAmount = 1;
             secondWing.MaximumAmount = 1;
             secondWing.MinimumItemLevel = 9;
@@ -433,7 +439,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private ItemCrafting ThirdWingsStage2Crafting()
         {
             var crafting = this.Context.CreateNew<ItemCrafting>();
-            crafting.Name = "3rd Level Wings, Stage 1";
+            crafting.Name = "3rd Level Wings, Stage 2";
             crafting.Number = 39;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
 
@@ -543,7 +549,6 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Cape of Lord/Fighter";
             crafting.Number = 24;
-            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.SecondWingCrafting).FullName;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
 
             crafting.SimpleCraftingSettings = craftingSettings;
@@ -554,7 +559,10 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             // Requirements:
             var firstWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            firstWing.Reference = GameLogic.PlayerActions.Craftings.SecondWingCrafting.FirstWingReference;
+            firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 0));
+            firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 1));
+            firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 2));
+            firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 41));
             firstWing.MinimumAmount = 1;
             firstWing.MaximumAmount = 1;
             firstWing.MinimumItemLevel = 4;
