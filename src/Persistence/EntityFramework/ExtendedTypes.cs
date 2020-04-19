@@ -4489,25 +4489,25 @@ public ICollection<IncreasableItemOption> RawOptions { get; } = new List<Increas
         /// </summary>
         public Guid Id { get; set; }
 
-public IList<ItemCraftingRequiredItem> RawRequiredItems { get; } = new List<ItemCraftingRequiredItem>();        
+public ICollection<ItemCraftingRequiredItem> RawRequiredItems { get; } = new List<ItemCraftingRequiredItem>();        
         /// <inheritdoc/>
         [NotMapped]
-        public override IList<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem> RequiredItems
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem> RequiredItems
         {
             get
             {
-                return base.RequiredItems ?? (base.RequiredItems = new ListAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem, ItemCraftingRequiredItem>(this.RawRequiredItems)); 
+                return base.RequiredItems ?? (base.RequiredItems = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem, ItemCraftingRequiredItem>(this.RawRequiredItems)); 
             }
         }
 
-        public IList<ItemCraftingResultItem> RawResultItems { get; } = new List<ItemCraftingResultItem>();        
+        public ICollection<ItemCraftingResultItem> RawResultItems { get; } = new List<ItemCraftingResultItem>();        
         /// <inheritdoc/>
         [NotMapped]
-        public override IList<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem> ResultItems
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem> ResultItems
         {
             get
             {
-                return base.ResultItems ?? (base.ResultItems = new ListAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem, ItemCraftingResultItem>(this.RawResultItems)); 
+                return base.ResultItems ?? (base.ResultItems = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem, ItemCraftingResultItem>(this.RawResultItems)); 
             }
         }
 

@@ -41,13 +41,13 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// Gets or sets the required items.
         /// </summary>
         [MemberOfAggregate]
-        public virtual IList<ItemCraftingRequiredItem> RequiredItems { get; protected set; }
+        public virtual ICollection<ItemCraftingRequiredItem> RequiredItems { get; protected set; }
 
         /// <summary>
         /// Gets or sets the result items, which are generated when the crafting succeeded.
         /// </summary>
         [MemberOfAggregate]
-        public virtual IList<ItemCraftingResultItem> ResultItems { get; protected set; }
+        public virtual ICollection<ItemCraftingResultItem> ResultItems { get; protected set; }
 
         /// <summary>
         /// Gets or sets the result item selection.
