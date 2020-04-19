@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 {
     using System.Collections.Generic;
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -67,5 +68,55 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// If <c>0</c>, no reference exists.
         /// </summary>
         public byte Reference { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            string itemName;
+            if (!this.PossibleItems.Any())
+            {
+                itemName = "Random Item";
+            }
+            else
+            {
+                itemName = string.Join(", ", this.PossibleItems.Select(p => p.Name));
+            }
+
+            string amount;
+            if (this.MinimumAmount == this.MaximumAmount)
+            {
+                amount = this.MinimumAmount.ToString();
+            }
+            else
+            {
+                amount = $"{this.MinimumAmount}~{this.MaximumAmount}";
+            }
+
+            string level;
+            if (this.MinimumItemLevel == this.MaximumItemLevel && this.MinimumItemLevel == 0)
+            {
+                level = string.Empty;
+            }
+            else if (this.MinimumItemLevel == this.MaximumItemLevel)
+            {
+                level = $"+{this.MinimumItemLevel}";
+            }
+            else
+            {
+                level = $"+{this.MinimumItemLevel}~{this.MaximumItemLevel}";
+            }
+
+            string options;
+            if (this.RequiredItemOptions.Any())
+            {
+                options = "+" + string.Join("+", this.RequiredItemOptions.Select(o => o.Name));
+            }
+            else
+            {
+                options = string.Empty;
+            }
+
+            return $"{amount} x {itemName}{level}{options}";
+        }
     }
 }

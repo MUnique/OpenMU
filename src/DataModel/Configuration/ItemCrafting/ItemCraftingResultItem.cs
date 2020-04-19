@@ -47,5 +47,35 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// For Item Upping.
         /// </remarks>
         public byte AddLevel { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            string itemName;
+            if (this.ItemDefinition == null)
+            {
+                itemName = $"Referenced item {this.Reference} will be modified.";
+            }
+            else
+            {
+                itemName = this.ItemDefinition.Name;
+            }
+
+            string level;
+            if (this.RandomMinimumLevel == this.RandomMaximumLevel && this.RandomMinimumLevel == 0)
+            {
+                level = string.Empty;
+            }
+            else if (this.RandomMinimumLevel == this.RandomMaximumLevel)
+            {
+                level = $"+{this.RandomMinimumLevel}";
+            }
+            else
+            {
+                level = $"+{this.RandomMinimumLevel}~{this.RandomMaximumLevel}";
+            }
+
+            return $"{itemName}{level}";
+        }
     }
 }
