@@ -5,18 +5,18 @@
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 {
     using System.Collections.Generic;
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
     /// Describes an required item for a crafting.
-    /// TODO: Some properties are not used yet.
     /// </summary>
     public class ItemCraftingRequiredItem
     {
         /// <summary>
-        /// Gets or sets the item definition.
+        /// Gets the collection of possible items which are valid for this requirement.
         /// </summary>
-        public virtual ItemDefinition ItemDefinition { get; set; }
+        public virtual ICollection<ItemDefinition> PossibleItems { get; protected set; }
 
         /// <summary>
         /// Gets or sets the minimum item level.
@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public byte MinimumAmount { get; set; }
 
         /// <summary>
-        /// Gets or sets the minimum amount.
+        /// Gets or sets the maximum amount.
         /// </summary>
         public byte MaximumAmount { get; set; }
 
@@ -59,11 +59,8 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public int NpcPriceDivisor { get; set; }
 
         /// <summary>
-        /// Gets or sets the add percentage per division.
+        /// Gets or sets the add percentage per item.
         /// </summary>
-        /// <value>
-        /// The add percentage.
-        /// </value>
         public byte AddPercentage { get; set; }
 
         /// <summary>
@@ -71,5 +68,55 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// If <c>0</c>, no reference exists.
         /// </summary>
         public byte Reference { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            string itemName;
+            if (!this.PossibleItems.Any())
+            {
+                itemName = "Random Item";
+            }
+            else
+            {
+                itemName = string.Join(", ", this.PossibleItems.Select(p => p.Name));
+            }
+
+            string amount;
+            if (this.MinimumAmount == this.MaximumAmount)
+            {
+                amount = this.MinimumAmount.ToString();
+            }
+            else
+            {
+                amount = $"{this.MinimumAmount}~{this.MaximumAmount}";
+            }
+
+            string level;
+            if (this.MinimumItemLevel == this.MaximumItemLevel && this.MinimumItemLevel == 0)
+            {
+                level = string.Empty;
+            }
+            else if (this.MinimumItemLevel == this.MaximumItemLevel)
+            {
+                level = $"+{this.MinimumItemLevel}";
+            }
+            else
+            {
+                level = $"+{this.MinimumItemLevel}~{this.MaximumItemLevel}";
+            }
+
+            string options;
+            if (this.RequiredItemOptions.Any())
+            {
+                options = "+" + string.Join("+", this.RequiredItemOptions.Select(o => o.Name));
+            }
+            else
+            {
+                options = string.Empty;
+            }
+
+            return $"{amount} x {itemName}{level}{options}";
+        }
     }
 }

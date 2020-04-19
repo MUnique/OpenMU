@@ -209,6 +209,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public ICollection<ItemDefinitionItemOptionDefinition> JoinedPossibleItemOptions { get; } = new List<ItemDefinitionItemOptionDefinition>();
     }
 
+    [Table("ItemCraftingRequiredItemItemDefinition", Schema = "config")]
+    internal partial class ItemCraftingRequiredItemItemDefinition 
+    {
+        public Guid ItemCraftingRequiredItemId { get; set; }
+        public ItemCraftingRequiredItem ItemCraftingRequiredItem { get; set; }
+
+        public Guid ItemDefinitionId { get; set; }
+        public ItemDefinition ItemDefinition { get; set; }
+    }
+
+    internal partial class ItemCraftingRequiredItem
+    {
+        public ICollection<ItemCraftingRequiredItemItemDefinition> JoinedPossibleItems { get; } = new List<ItemCraftingRequiredItemItemDefinition>();
+    }
+
     [Table("ItemCraftingRequiredItemItemOptionType", Schema = "config")]
     internal partial class ItemCraftingRequiredItemItemOptionType 
     {

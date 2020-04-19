@@ -39,6 +39,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             this.CreateRequirement(Stats.CanFly, 1);
         }
 
+        /// <inheritdoc />
+        protected override void InitializeDropItemGroups()
+        {
+            base.InitializeDropItemGroups();
+            var feather = this.Context.CreateNew<DropItemGroup>();
+            feather.Chance = 0.001;
+            feather.Description = "Loch's Feather";
+            feather.MinimumMonsterLevel = 82;
+            feather.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 13 && item.Number == 14));
+            this.MapDefinition.DropItemGroups.Add(feather);
+            this.GameConfiguration.DropItemGroups.Add(feather);
+        }
+
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {

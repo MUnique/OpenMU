@@ -108,6 +108,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 target[3] |= 0x80;
             }
 
+            target[3] |= GetFenrirByte(item);
+
             if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck))
             {
                 target[1] |= LuckFlag;
@@ -137,7 +139,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 target[5] |= GuardianOptionFlag;
             }
 
-            target[6] = (byte)(GetHarmonyByte(item) | GetFenrirByte(item));
+            target[6] = GetHarmonyByte(item);
             SetSocketBytes(target.Slice(7), item);
         }
 
@@ -174,13 +176,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             ReadNormalOption(array, persistenceContext, item);
             ReadAncientOption(array[4], persistenceContext, item);
             ReadLevel380Option(array[5], persistenceContext, item);
+            ReadHarmonyOption(array[6], persistenceContext, item);
             if (item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.BlackFenrir)))
             {
-                ReadFenrirOptions(array[6], persistenceContext, item);
-            }
-            else
-            {
-                ReadHarmonyOption(array[6], persistenceContext, item);
+                ReadFenrirOptions(array[3], persistenceContext, item);
             }
 
             ReadSockets(array.Slice(7), persistenceContext, item);

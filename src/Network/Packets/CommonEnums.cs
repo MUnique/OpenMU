@@ -47,6 +47,31 @@ namespace MUnique.OpenMU.Network.Packets
             /// The pet trainer dialog storage.
             /// </summary>
             PetTrainer = 5,
+
+            /// <summary>
+            /// The storage of the refinery of the elphis npc.
+            /// </summary>
+            Refinery = 6,
+
+            /// <summary>
+            /// The storage of the smelting dialog of the osbourne npc.
+            /// </summary>
+            Smelting = 7,
+
+            /// <summary>
+            /// The storage of the item restore dialog of the jerridon npc.
+            /// </summary>
+            ItemRestore = 8,
+
+            /// <summary>
+            /// The storage of the chaos card master dialog.
+            /// </summary>
+            ChaosCardMaster = 9,
+
+            /// <summary>
+            /// The storage of the cherry blossom spirit dialog.
+            /// </summary>
+            CherryBlossomSpirit = 10,
         }
 
         /// <summary>

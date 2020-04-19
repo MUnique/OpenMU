@@ -369,6 +369,10 @@ namespace MUnique.OpenMU.GameLogic
                 case DamageType.Curse:
                     minimumBaseDamage += (int)attackerStats[Stats.MinimumCurseBaseDmg];
                     maximumBaseDamage += (int)(attackerStats[Stats.MaximumCurseBaseDmg] + (attackerStats[Stats.MaximumCurseBaseDmgPer20LevelItemCount] * attackerStats[Stats.Level] / 20));
+
+                    minimumBaseDamage += (int)(minimumBaseDamage * attackerStats[Stats.CurseAttackDamageIncrease]);
+                    maximumBaseDamage += (int)(maximumBaseDamage * attackerStats[Stats.CurseAttackDamageIncrease]);
+
                     break;
                 case DamageType.Physical:
                     minimumBaseDamage += (int)attackerStats[Stats.MinimumPhysBaseDmg];

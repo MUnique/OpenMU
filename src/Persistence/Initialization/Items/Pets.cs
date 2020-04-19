@@ -54,7 +54,79 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true, (Stats.MoneyAmountRate, 0.5f), (Stats.DefenseBase, 50f));
             this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true, (Stats.AttackDamageIncrease, 0.2f), (Stats.AttackSpeed, 10f), (Stats.ExperienceRate, 0.3f));
 
+            // Items which are required for crafting:
             this.CreateSpirit();
+            this.SplinterOfArmor();
+            this.BlessOfGuardian();
+            this.ClawOfBeast();
+            this.FragmentOfHorn();
+            this.BrokenHorn();
+        }
+
+        private void SplinterOfArmor()
+        {
+            var item = this.Context.CreateNew<ItemDefinition>();
+            item.Group = 13;
+            item.Number = 32;
+            item.Name = "Splinter of Armor";
+            item.Width = 1;
+            item.Height = 1;
+            item.Durability = 20;
+
+            this.GameConfiguration.Items.Add(item);
+        }
+
+        private void BlessOfGuardian()
+        {
+            var item = this.Context.CreateNew<ItemDefinition>();
+            item.Group = 13;
+            item.Number = 33;
+            item.Name = "Bless of Guardian";
+            item.Width = 1;
+            item.Height = 1;
+            item.Durability = 1;
+            item.Durability = 20;
+
+            this.GameConfiguration.Items.Add(item);
+        }
+
+        private void ClawOfBeast()
+        {
+            var item = this.Context.CreateNew<ItemDefinition>();
+            item.Group = 13;
+            item.Number = 34;
+            item.Name = "Claw of Beast";
+            item.Width = 1;
+            item.Height = 1;
+            item.Durability = 10;
+
+            this.GameConfiguration.Items.Add(item);
+        }
+
+        private void FragmentOfHorn()
+        {
+            var item = this.Context.CreateNew<ItemDefinition>();
+            item.Group = 13;
+            item.Number = 35;
+            item.Name = "Fragment of Horn";
+            item.Width = 1;
+            item.Height = 1;
+            item.Durability = 1;
+
+            this.GameConfiguration.Items.Add(item);
+        }
+
+        private void BrokenHorn()
+        {
+            var item = this.Context.CreateNew<ItemDefinition>();
+            item.Group = 13;
+            item.Number = 36;
+            item.Name = "Broken Horn";
+            item.Width = 2;
+            item.Height = 2;
+            item.Durability = 1;
+
+            this.GameConfiguration.Items.Add(item);
         }
 
         private void CreateSpirit()

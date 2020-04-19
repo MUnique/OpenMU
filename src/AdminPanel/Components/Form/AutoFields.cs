@@ -78,6 +78,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
                 .Where(p => p.GetCustomAttribute<TransientAttribute>() is null)
                 .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true)
                 .Where(p => !p.Name.StartsWith("Raw") && !p.Name.StartsWith("Joined"))
+                .Where(p => !p.GetIndexParameters().Any())
                 .OrderByDescending(p => p.PropertyType == typeof(string))
                 .ThenByDescending(p => p.PropertyType.IsValueType)
                 .ThenByDescending(p => !p.PropertyType.IsGenericType);

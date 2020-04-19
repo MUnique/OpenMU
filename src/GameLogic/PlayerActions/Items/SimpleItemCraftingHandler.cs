@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
@@ -28,13 +29,27 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="settings">The settings.</param>
         public SimpleItemCraftingHandler(SimpleCraftingSettings settings)
         {
-            this.settings = settings;
+            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         /// <inheritdoc />
         protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
         {
             return this.settings.Money + (this.settings.MoneyPerFinalSuccessPercentage * successRate);
+        }
+
+        /// <summary>
+        /// Determines whether the actual item matches with the required item definition.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="requiredItem">The required item.</param>
+        /// <returns><c>true</c>, if the actual item matches with the required item definition.</returns>
+        protected virtual bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
+        {
+            return (!requiredItem.PossibleItems.Any() || requiredItem.PossibleItems.Contains(item.Definition))
+                       && item.Level >= requiredItem.MinimumItemLevel
+                       && item.Level <= requiredItem.MaximumItemLevel
+                       && requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r));
         }
 
         /// <inheritdoc />
@@ -45,20 +60,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var storage = player.TemporaryStorage.Items.ToList();
             foreach (var requiredItem in this.settings.RequiredItems)
             {
-                var foundItems = storage
-                    .Where(item => requiredItem.ItemDefinition == null || item.Definition == requiredItem.ItemDefinition)
-                    .Where(item =>
-                        requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r)))
-                    .Where(item => item.Level >= requiredItem.MinimumItemLevel
-                                   && item.Level <= requiredItem.MaximumItemLevel).ToList();
-
+                var foundItems = storage.Where(item => this.RequiredItemMatches(item, requiredItem)).ToList();
                 var itemCount = foundItems.Sum(i => i.IsStackable() ? i.Durability : 1);
                 if (itemCount < requiredItem.MinimumAmount)
                 {
                     Log.WarnFormat("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
-                    {
-                        return CraftingResult.LackingMixItems;
-                    }
+                    return CraftingResult.LackingMixItems;
                 }
 
                 if (itemCount > requiredItem.MaximumAmount && requiredItem.MaximumAmount > 0)
@@ -112,11 +119,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return CraftingResult.IncorrectMixItems;
             }
 
+            if (this.settings.MaximumSuccessPercent > 0)
+            {
+                successRate = Math.Min(this.settings.MaximumSuccessPercent, successRate);
+            }
+
             return default;
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> referencedItems, Player player)
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player)
         {
             var resultItems = this.settings.ResultItemSelect == ResultItemSelection.All
                 ? this.settings.ResultItems
@@ -125,11 +137,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             foreach (var craftingResultItem in resultItems)
             {
                 if (craftingResultItem.Reference > 0
-                    && referencedItems.FirstOrDefault(i => i.ItemRequirement.Reference == craftingResultItem.Reference) is { } referencedItem)
+                    && requiredItems.FirstOrDefault(i => i.ItemRequirement.Reference == craftingResultItem.Reference) is { } referencedItem)
                 {
                     foreach (var item in referencedItem.Items)
                     {
                         item.Level += craftingResultItem.AddLevel;
+                        yield return item;
                     }
 
                     continue;
@@ -142,7 +155,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     continue;
                 }
 
-                foreach (var resultItem in this.CreateResultItems(player, referencedItems, craftingResultItem))
+                foreach (var resultItem in this.CreateResultItems(player, requiredItems, craftingResultItem))
                 {
                     yield return resultItem;
                 }
@@ -151,7 +164,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private IEnumerable<Item> CreateResultItems(Player player, IList<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem)
         {
-            int resultItemCount = referencedItems.FirstOrDefault()?.Items.Count() ?? 1;
+            int resultItemCount = this.settings.MultipleAllowed
+                ? referencedItems.FirstOrDefault(r => r.ItemRequirement.Reference > 0)?.Items.Count() ?? 1
+                : 1;
             for (int i = 0; i < resultItemCount; i++)
             {
                 // Create new Item
@@ -189,11 +204,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 var luckOption = player.PersistenceContext.CreateNew<ItemOptionLink>();
                 luckOption.ItemOption = luck.PossibleOptions.First();
                 resultItem.ItemOptions.Add(luckOption);
-                if (resultItem.Definition.Skill != null)
-                {
-                    // Excellent items always have skill.
-                    resultItem.HasSkill = true;
-                }
             }
         }
 
@@ -201,7 +211,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             if (this.settings.ResultItemExcellentOptionChance > 0
                 && resultItem.Definition.PossibleItemOptions.FirstOrDefault(o =>
-                        o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent))
+                        o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent || p.OptionType == ItemOptionTypes.Wing))
                     is { } optionDefinition)
             {
                 for (int j = 0;
@@ -212,6 +222,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     link.ItemOption = optionDefinition.PossibleOptions
                         .Except(resultItem.ItemOptions.Select(io => io.ItemOption)).SelectRandom();
                     resultItem.ItemOptions.Add(link);
+                    if (resultItem.Definition.Skill != null)
+                    {
+                        // Excellent items always have skill.
+                        resultItem.HasSkill = true;
+                    }
                 }
             }
         }

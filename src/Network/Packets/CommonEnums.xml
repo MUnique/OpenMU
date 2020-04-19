@@ -38,6 +38,31 @@
           <Description>The pet trainer dialog storage.</Description>
           <Value>5</Value>
         </EnumValue>
+        <EnumValue>
+          <Name>Refinery</Name>
+          <Description>The storage of the refinery of the elphis npc.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Smelting</Name>
+          <Description>The storage of the smelting dialog of the osbourne npc.</Description>
+          <Value>7</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ItemRestore</Name>
+          <Description>The storage of the item restore dialog of the jerridon npc.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ChaosCardMaster</Name>
+          <Description>The storage of the chaos card master dialog.</Description>
+          <Value>9</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>CherryBlossomSpirit</Name>
+          <Description>The storage of the cherry blossom spirit dialog.</Description>
+          <Value>10</Value>
+        </EnumValue>
       </Values>
     </Enum>
     <Enum>

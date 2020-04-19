@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Entities
 {
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -46,7 +47,9 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{this.ItemOption?.PowerUpDefinition}";
+            var powerUpDefinition = this.ItemOption?.LevelDependentOptions?.FirstOrDefault(ldo => ldo.Level == this.Level)?.PowerUpDefinition
+                                    ?? this.ItemOption?.PowerUpDefinition;
+            return powerUpDefinition?.ToString() ?? "empty";
         }
     }
 }

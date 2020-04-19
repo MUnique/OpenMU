@@ -39,8 +39,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var success = Rand.NextRandomBool(successRate);
             if (success)
             {
-                var item = this.DoTheMix(items, player);
-                return (CraftingResult.Success, item);
+                if (this.DoTheMix(items, player) is { } item)
+                {
+                    return (CraftingResult.Success, item);
+                }
+
+                return (CraftingResult.Failed, null);
             }
 
             items.ForEach(i => this.RequiredItemChange(player, i, false));

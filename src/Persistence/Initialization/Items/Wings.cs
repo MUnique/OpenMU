@@ -101,6 +101,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWing(49, 2, 3, "Cape of Fighter", 180, 15, 200, 180, 0, 0, 0, 0, 0, 0, 1, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 20, 10, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, secondWingOptions);
             this.CreateWing(30, 2, 3, "Cape of Lord", 180, 15, 200, 180, 0, 0, 0, 0, 1, 0, 0, this.BuildOptions((0b00, OptionType.PhysDamage)), 20, 10, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, this.CreateCapeOptions()).Group = 13;
 
+            this.CreateFeather();
+            this.CreateFeatherOfCondor();
+            this.CreateFlameOfCondor();
+
             // Third class wings:
             var thirdWingOptions = this.CreateThirdClassWingOptions();
             this.CreateWing(36, 4, 3, "Wing of Storm", 150, 60, 220, 300, 0, 3, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this.damageIncreasePerLevelThirdWings, this.defenseBonusPerLevelThridWings, thirdWingOptions);
@@ -150,6 +154,48 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
         }
 
+        private void CreateFeather()
+        {
+            var feather = this.Context.CreateNew<ItemDefinition>();
+            feather.Name = "Loch's Feather";
+            feather.MaximumItemLevel = 1;
+            feather.Number = 14;
+            feather.Group = 13;
+            feather.DropLevel = 78;
+            feather.Width = 1;
+            feather.Height = 2;
+            feather.Durability = 1;
+            this.GameConfiguration.Items.Add(feather);
+        }
+
+        private void CreateFeatherOfCondor()
+        {
+            var feather = this.Context.CreateNew<ItemDefinition>();
+            feather.Name = "Feather of Condor";
+            feather.MaximumItemLevel = 1;
+            feather.Number = 53;
+            feather.Group = 13;
+            feather.DropLevel = 120;
+            feather.Width = 1;
+            feather.Height = 2;
+            feather.Durability = 1;
+            this.GameConfiguration.Items.Add(feather);
+        }
+
+        private void CreateFlameOfCondor()
+        {
+            var feather = this.Context.CreateNew<ItemDefinition>();
+            feather.Name = "Flame of Condor";
+            feather.MaximumItemLevel = 1;
+            feather.Number = 52;
+            feather.Group = 13;
+            feather.DropLevel = 120;
+            feather.Width = 1;
+            feather.Height = 2;
+            feather.Durability = 1;
+            this.GameConfiguration.Items.Add(feather);
+        }
+
         private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, List<LevelBonus> damageIncreasePerLevel, List<LevelBonus> defenseIncreasePerLevel, ItemOptionDefinition wingOptionDefinition)
         {
             var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
@@ -185,11 +231,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             optionDefinition.AddChance = 0.25f;
             optionDefinition.AddsRandomly = true;
             optionDefinition.MaximumOptionsPerItem = 1;
+            wing.PossibleItemOptions.Add(optionDefinition);
             foreach (var option in possibleOptions)
             {
                 optionDefinition.PossibleOptions.Add(option);
             }
 
+            wing.PossibleItemOptions.Add(
+                this.GameConfiguration.ItemOptions
+                    .FirstOrDefault(iod => iod.PossibleOptions
+                        .Any(o => o.OptionType == ItemOptionTypes.Luck)));
             return wing;
         }
 

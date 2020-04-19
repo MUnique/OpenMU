@@ -279,6 +279,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition WizardryAttackDamageIncrease { get; } = new AttributeDefinition(new Guid("8F1CD5A5-3792-42FC-89B8-E6D50F997F4B"), "WizardryAttackDamageIncrease", "The wizardry damage increase which is multiplied with the min/max wiz base damage and added to it.");
 
         /// <summary>
+        /// Gets the curse attack damage increase attribute definition.
+        /// </summary>
+        public static AttributeDefinition CurseAttackDamageIncrease { get; } = new AttributeDefinition(new Guid("2B8904D5-9901-40C0-BFDE-66675672D9DC"), "Curse Attack Damage Increase", "The cursed damage increase which is multiplied with the min/max curse base damage and added to it.");
+
+        /// <summary>
         /// Gets the two handed weapon damage increase attribute definition.
         /// </summary>
         public static AttributeDefinition TwoHandedWeaponDamageIncrease { get; } = new AttributeDefinition(new Guid("BA3D57E9-68A5-47AC-A6E9-43793F4DDE2A"), "TwoHandedWeaponDamageIncrease", "The damage increase which is multiplied with the min/max base damage and added to it when using a two-handed weapon.");
@@ -544,6 +549,46 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// Gets the <see cref="IsInSafezone"/> attribute which defines if the character is located in a safezone of a game map.
         /// </summary>
         public static AttributeDefinition IsInSafezone { get; } = new AttributeDefinition(new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover additional health and shield.");
+
+        /// <summary>
+        /// Gets the attribute for a strength requirement reduction. Items with this option require less strength, according to the option's value.
+        /// </summary>
+        /// <remarks>
+        /// This has no effect on the player itself, just on the requirement of an item.
+        /// </remarks>
+        public static AttributeDefinition RequiredStrengthReduction { get; } = new AttributeDefinition(new Guid("60A6B398-24BC-4C2A-8A0B-695D6FA11349"), "Strength Requirement reduction", "Items with this option require less strength, according to the option's value.");
+
+        /// <summary>
+        /// Gets the attribute for a agility requirement reduction. Items with this option require less agility, according to the option's value.
+        /// </summary>
+        /// <remarks>
+        /// This has no effect on the player itself, just on the requirement of an item.
+        /// </remarks>
+        public static AttributeDefinition RequiredAgilityReduction { get; } = new AttributeDefinition(new Guid("2FE2CC3B-07E4-4D5F-BD89-C1928D4DE5C3"), "Agility Requirement reduction", "Items with this option require less agility, according to the option's value.");
+
+        /// <summary>
+        /// Gets the attribute for a energy requirement reduction. Items with this option require less energy, according to the option's value.
+        /// </summary>
+        /// <remarks>
+        /// This has no effect on the player itself, just on the requirement of an item.
+        /// </remarks>
+        public static AttributeDefinition RequiredEnergyReduction { get; } = new AttributeDefinition(new Guid("F0CB6861-DFDA-43CC-AB4F-677636C83A77"), "Energy Requirement reduction", "Items with this option require less energy, according to the option's value.");
+
+        /// <summary>
+        /// Gets the attribute for a vitality requirement reduction. Items with this option require less vitality, according to the option's value.
+        /// </summary>
+        /// <remarks>
+        /// This has no effect on the player itself, just on the requirement of an item.
+        /// </remarks>
+        public static AttributeDefinition RequiredVitalityReduction { get; } = new AttributeDefinition(new Guid("72D13C56-8CE7-45CA-A78A-3B5995E724C7"), "Vitality Requirement reduction", "Items with this option require less vitality, according to the option's value.");
+
+        /// <summary>
+        /// Gets the attribute for a leadership requirement reduction. Items with this option require less leadership, according to the option's value.
+        /// </summary>
+        /// <remarks>
+        /// This has no effect on the player itself, just on the requirement of an item.
+        /// </remarks>
+        public static AttributeDefinition RequiredLeadershipReduction { get; } = new AttributeDefinition(new Guid("8E6244B8-8E88-4413-B18E-0D2812830DFE"), "Leadership Requirement reduction", "Items with this option require less leadership, according to the option's value.");
 
         /// <summary>
         /// Gets the attributes which are regenerated in an interval.

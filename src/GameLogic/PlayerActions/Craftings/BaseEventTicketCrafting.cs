@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 item1.GetAsEnumerable(),
                 new ItemCraftingRequiredItem
                 {
-                    ItemDefinition = item1.Definition,
+                    PossibleItems = { item1.Definition },
                     MaximumAmount = 1,
                     MinimumAmount = 1,
                 }));
@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 item2.GetAsEnumerable(),
                 new ItemCraftingRequiredItem
                 {
-                    ItemDefinition = item2.Definition,
+                    PossibleItems = { item2.Definition },
                     MaximumAmount = 1,
                     MinimumAmount = 1,
                 }));
@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 chaos.GetAsEnumerable(),
                 new ItemCraftingRequiredItem
                 {
-                    ItemDefinition = chaos.Definition,
+                    PossibleItems = { chaos.Definition },
                     MaximumAmount = 1,
                     MinimumAmount = 1,
                 }));

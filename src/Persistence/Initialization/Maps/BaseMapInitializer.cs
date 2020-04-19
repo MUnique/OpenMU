@@ -50,6 +50,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         protected GameConfiguration GameConfiguration { get; }
 
         /// <summary>
+        /// Gets the map definition.
+        /// </summary>
+        protected GameMapDefinition MapDefinition => this.mapDefinition;
+
+        /// <summary>
         /// Gets the map number which will be set as <see cref="GameMapDefinition.Number"/>.
         /// </summary>
         protected abstract byte MapNumber { get; }

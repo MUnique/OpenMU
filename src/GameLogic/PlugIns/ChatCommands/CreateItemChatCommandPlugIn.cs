@@ -113,6 +113,19 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 }
             }
 
+            if (arguments.Ancient > 0
+                && item.Definition.PossibleItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator == arguments.Ancient) is { } ancientSet
+                && ancientSet.Items.FirstOrDefault(i => i.ItemDefinition == item.Definition) is { } itemOfItemSet)
+            {
+                var optionLink = new ItemOptionLink
+                {
+                    ItemOption = itemOfItemSet.BonusOption,
+                    Level = arguments.AncientBonusLevel,
+                };
+                item.ItemOptions.Add(optionLink);
+                item.ItemSetGroups.Add(ancientSet);
+            }
+
             return item;
         }
 
@@ -138,6 +151,23 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
             [Argument("o", false)]
             public byte Opt { get; set; }
+
+            /// <summary>
+            /// Gets or sets the ancient set discriminator.
+            /// When 0, it's not an ancient.
+            /// When 1, the first ancient type of an item is applied; When 2, the second, if available.
+            /// Example for a Dragon Set item: 1 will be Hyon, 2 will be Vicious..
+            /// </summary>
+            [Argument("a", false)]
+            [ValidValues("0", "1", "2")]
+            public byte Ancient { get; set; }
+
+            /// <summary>
+            /// Gets or sets the ancient bonus option; Should be 1 or 2. Only applies, when <see cref="Ancient"/> is bigger than 0.
+            /// </summary>
+            [Argument("abl", false)]
+            [ValidValues("1", "2")]
+            public byte AncientBonusLevel { get; set; } = 1;
         }
     }
 }
