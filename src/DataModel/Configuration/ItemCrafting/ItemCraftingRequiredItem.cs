@@ -9,14 +9,13 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 
     /// <summary>
     /// Describes an required item for a crafting.
-    /// TODO: Some properties are not used yet.
     /// </summary>
     public class ItemCraftingRequiredItem
     {
         /// <summary>
-        /// Gets or sets the item definition.
+        /// Gets the collection of possible items which are valid for this requirement.
         /// </summary>
-        public virtual ItemDefinition ItemDefinition { get; set; }
+        public virtual ICollection<ItemDefinition> PossibleItems { get; protected set; }
 
         /// <summary>
         /// Gets or sets the minimum item level.

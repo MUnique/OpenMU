@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <returns><c>true</c>, if the actual item matches with the required item definition.</returns>
         protected virtual bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
         {
-            return (requiredItem.ItemDefinition == null || item.Definition == requiredItem.ItemDefinition)
+            return (!requiredItem.PossibleItems.Any() || requiredItem.PossibleItems.Contains(item.Definition))
                        && item.Level >= requiredItem.MinimumItemLevel
                        && item.Level <= requiredItem.MaximumItemLevel
                        && requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r));

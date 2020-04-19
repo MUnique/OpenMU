@@ -82,9 +82,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 return CraftingResult.TooManyItems;
             }
 
-            items.Add(new CraftingRequiredItemLink(hornOfFenrir.GetAsEnumerable(), new ItemCraftingRequiredItem { ItemDefinition = hornOfFenrir.Definition, MinimumAmount = 1, MaximumAmount = 1, Reference = 1, SuccessResult = MixResult.StaysAsIs }));
-            items.Add(new CraftingRequiredItemLink(chaos.GetAsEnumerable(), new ItemCraftingRequiredItem { ItemDefinition = chaos.Definition, MinimumAmount = 1, MaximumAmount = 1 }));
-            items.Add(new CraftingRequiredItemLink(jewelsOfLife, new ItemCraftingRequiredItem { ItemDefinition = jewelsOfLife.First().Definition, MinimumAmount = 5, MaximumAmount = 5 }));
+            items.Add(new CraftingRequiredItemLink(hornOfFenrir.GetAsEnumerable(), new ItemCraftingRequiredItem { PossibleItems = { hornOfFenrir.Definition }, MinimumAmount = 1, MaximumAmount = 1, Reference = 1, SuccessResult = MixResult.StaysAsIs }));
+            items.Add(new CraftingRequiredItemLink(chaos.GetAsEnumerable(), new ItemCraftingRequiredItem { PossibleItems = { chaos.Definition }, MinimumAmount = 1, MaximumAmount = 1 }));
+            items.Add(new CraftingRequiredItemLink(jewelsOfLife, new ItemCraftingRequiredItem { PossibleItems = { jewelsOfLife.First().Definition }, MinimumAmount = 5, MaximumAmount = 5 }));
             if (randomWeapons.Any())
             {
                 items.Add(new CraftingRequiredItemLink(randomWeapons, new ItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 2 }));

@@ -446,9 +446,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     TypeId = table.Column<Guid>(nullable: false),
                     IsActive = table.Column<bool>(nullable: false),
-                    CustomConfiguration = table.Column<string>(nullable: true),
                     CustomPlugInSource = table.Column<string>(nullable: true),
                     ExternalAssemblyName = table.Column<string>(nullable: true),
+                    CustomConfiguration = table.Column<string>(nullable: true),
                     GameConfigurationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -489,6 +489,35 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.ServerConfigurationId,
                         principalSchema: "config",
                         principalTable: "GameServerConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemCraftingRequiredItem",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    MinimumItemLevel = table.Column<byte>(nullable: false),
+                    MaximumItemLevel = table.Column<byte>(nullable: false),
+                    MinimumAmount = table.Column<byte>(nullable: false),
+                    MaximumAmount = table.Column<byte>(nullable: false),
+                    SuccessResult = table.Column<int>(nullable: false),
+                    FailResult = table.Column<int>(nullable: false),
+                    NpcPriceDivisor = table.Column<int>(nullable: false),
+                    AddPercentage = table.Column<byte>(nullable: false),
+                    Reference = table.Column<byte>(nullable: false),
+                    SimpleCraftingSettingsId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemCraftingRequiredItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemCraftingRequiredItem_SimpleCraftingSettings_SimpleCraft~",
+                        column: x => x.SimpleCraftingSettingsId,
+                        principalSchema: "config",
+                        principalTable: "SimpleCraftingSettings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -710,6 +739,33 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "GameServerDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemCraftingRequiredItemItemOptionType",
+                schema: "config",
+                columns: table => new
+                {
+                    ItemCraftingRequiredItemId = table.Column<Guid>(nullable: false),
+                    ItemOptionTypeId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemCraftingRequiredItemItemOptionType", x => new { x.ItemCraftingRequiredItemId, x.ItemOptionTypeId });
+                    table.ForeignKey(
+                        name: "FK_ItemCraftingRequiredItemItemOptionType_ItemCraftingRequired~",
+                        column: x => x.ItemCraftingRequiredItemId,
+                        principalSchema: "config",
+                        principalTable: "ItemCraftingRequiredItem",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemCraftingRequiredItemItemOptionType_ItemOptionType_ItemO~",
+                        column: x => x.ItemOptionTypeId,
+                        principalSchema: "config",
+                        principalTable: "ItemOptionType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1566,40 +1622,30 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemCraftingRequiredItem",
+                name: "ItemCraftingRequiredItemItemDefinition",
                 schema: "config",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    MinimumItemLevel = table.Column<byte>(nullable: false),
-                    MaximumItemLevel = table.Column<byte>(nullable: false),
-                    MinimumAmount = table.Column<byte>(nullable: false),
-                    MaximumAmount = table.Column<byte>(nullable: false),
-                    SuccessResult = table.Column<int>(nullable: false),
-                    FailResult = table.Column<int>(nullable: false),
-                    NpcPriceDivisor = table.Column<int>(nullable: false),
-                    AddPercentage = table.Column<byte>(nullable: false),
-                    Reference = table.Column<byte>(nullable: false),
-                    ItemDefinitionId = table.Column<Guid>(nullable: true),
-                    SimpleCraftingSettingsId = table.Column<Guid>(nullable: true)
+                    ItemCraftingRequiredItemId = table.Column<Guid>(nullable: false),
+                    ItemDefinitionId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemCraftingRequiredItem", x => x.Id);
+                    table.PrimaryKey("PK_ItemCraftingRequiredItemItemDefinition", x => new { x.ItemCraftingRequiredItemId, x.ItemDefinitionId });
                     table.ForeignKey(
-                        name: "FK_ItemCraftingRequiredItem_ItemDefinition_ItemDefinitionId",
+                        name: "FK_ItemCraftingRequiredItemItemDefinition_ItemCraftingRequired~",
+                        column: x => x.ItemCraftingRequiredItemId,
+                        principalSchema: "config",
+                        principalTable: "ItemCraftingRequiredItem",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemCraftingRequiredItemItemDefinition_ItemDefinition_ItemD~",
                         column: x => x.ItemDefinitionId,
                         principalSchema: "config",
                         principalTable: "ItemDefinition",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ItemCraftingRequiredItem_SimpleCraftingSettings_SimpleCraft~",
-                        column: x => x.SimpleCraftingSettingsId,
-                        principalSchema: "config",
-                        principalTable: "SimpleCraftingSettings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2024,33 +2070,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "MonsterDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ItemCraftingRequiredItemItemOptionType",
-                schema: "config",
-                columns: table => new
-                {
-                    ItemCraftingRequiredItemId = table.Column<Guid>(nullable: false),
-                    ItemOptionTypeId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemCraftingRequiredItemItemOptionType", x => new { x.ItemCraftingRequiredItemId, x.ItemOptionTypeId });
-                    table.ForeignKey(
-                        name: "FK_ItemCraftingRequiredItemItemOptionType_ItemCraftingRequired~",
-                        column: x => x.ItemCraftingRequiredItemId,
-                        principalSchema: "config",
-                        principalTable: "ItemCraftingRequiredItem",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ItemCraftingRequiredItemItemOptionType_ItemOptionType_ItemO~",
-                        column: x => x.ItemOptionTypeId,
-                        principalSchema: "config",
-                        principalTable: "ItemOptionType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2656,16 +2675,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "SimpleCraftingSettingsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemCraftingRequiredItem_ItemDefinitionId",
-                schema: "config",
-                table: "ItemCraftingRequiredItem",
-                column: "ItemDefinitionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ItemCraftingRequiredItem_SimpleCraftingSettingsId",
                 schema: "config",
                 table: "ItemCraftingRequiredItem",
                 column: "SimpleCraftingSettingsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemCraftingRequiredItemItemDefinition_ItemDefinitionId",
+                schema: "config",
+                table: "ItemCraftingRequiredItemItemDefinition",
+                column: "ItemDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemCraftingRequiredItemItemOptionType_ItemOptionTypeId",
@@ -3399,6 +3418,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemCrafting",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ItemCraftingRequiredItemItemDefinition",
                 schema: "config");
 
             migrationBuilder.DropTable(

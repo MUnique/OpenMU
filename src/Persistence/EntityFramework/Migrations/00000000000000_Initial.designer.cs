@@ -1133,9 +1133,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("FailResult")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("ItemDefinitionId")
-                        .HasColumnType("uuid");
-
                     b.Property<byte>("MaximumAmount")
                         .HasColumnType("smallint");
 
@@ -1162,11 +1159,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemDefinitionId");
-
                     b.HasIndex("SimpleCraftingSettingsId");
 
                     b.ToTable("ItemCraftingRequiredItem","config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemDefinition", b =>
+                {
+                    b.Property<Guid>("ItemCraftingRequiredItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ItemCraftingRequiredItemId", "ItemDefinitionId");
+
+                    b.HasIndex("ItemDefinitionId");
+
+                    b.ToTable("ItemCraftingRequiredItemItemDefinition","config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemOptionType", b =>
@@ -2812,13 +2822,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
-                        .WithMany()
-                        .HasForeignKey("ItemDefinitionId");
-
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", null)
                         .WithMany("RawRequiredItems")
                         .HasForeignKey("SimpleCraftingSettingsId");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemDefinition", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", "ItemCraftingRequiredItem")
+                        .WithMany("JoinedPossibleItems")
+                        .HasForeignKey("ItemCraftingRequiredItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                        .WithMany()
+                        .HasForeignKey("ItemDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemOptionType", b =>

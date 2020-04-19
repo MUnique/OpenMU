@@ -107,21 +107,21 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.MinimumAmount = 1;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             craftingSettings.RequiredItems.Add(chaos);
 
             var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
             bless.MinimumAmount = (byte)(targetLevel - 9);
             bless.SuccessResult = MixResult.Disappear;
             bless.FailResult = MixResult.Disappear;
-            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
             craftingSettings.RequiredItems.Add(bless);
 
             var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
             soul.MinimumAmount = (byte)(targetLevel - 9);
             soul.SuccessResult = MixResult.Disappear;
             soul.FailResult = MixResult.Disappear;
-            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
             craftingSettings.RequiredItems.Add(soul);
 
             // Result:
@@ -159,7 +159,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.AddPercentage = 2;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add( this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             chaosWeaponSettings.RequiredItems.Add(chaos);
 
             var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -167,7 +167,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             bless.AddPercentage = 5;
             bless.SuccessResult = MixResult.Disappear;
             bless.FailResult = MixResult.Disappear;
-            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
             chaosWeaponSettings.RequiredItems.Add(bless);
 
             var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -175,7 +175,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             soul.AddPercentage = 4;
             soul.SuccessResult = MixResult.Disappear;
             soul.FailResult = MixResult.Disappear;
-            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
             chaosWeaponSettings.RequiredItems.Add(soul);
 
             // Result:
@@ -238,7 +238,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.AddPercentage = 2;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             craftingSettings.RequiredItems.Add(chaos);
 
             var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -246,7 +246,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             bless.AddPercentage = 5;
             bless.SuccessResult = MixResult.Disappear;
             bless.FailResult = MixResult.Disappear;
-            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
             craftingSettings.RequiredItems.Add(bless);
 
             var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -254,7 +254,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             soul.AddPercentage = 4;
             soul.SuccessResult = MixResult.Disappear;
             soul.FailResult = MixResult.Disappear;
-            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
             craftingSettings.RequiredItems.Add(soul);
 
             // Result:
@@ -321,14 +321,14 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.AddPercentage = 2;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             craftingSettings.RequiredItems.Add(chaos);
 
             var feather = this.Context.CreateNew<ItemCraftingRequiredItem>();
             feather.MinimumAmount = 1;
             feather.SuccessResult = MixResult.Disappear;
             feather.FailResult = MixResult.Disappear;
-            feather.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Loch's Feather");
+            feather.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Loch's Feather"));
             craftingSettings.RequiredItems.Add(feather);
 
             // Result:
@@ -402,7 +402,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.MaximumAmount = 1;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             craftingSettings.RequiredItems.Add(chaos);
 
             var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -410,7 +410,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             creation.MaximumAmount = 1;
             creation.SuccessResult = MixResult.Disappear;
             creation.FailResult = MixResult.Disappear;
-            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
             craftingSettings.RequiredItems.Add(creation);
 
             var stackOf10Soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -418,7 +418,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             stackOf10Soul.MaximumAmount = 1;
             stackOf10Soul.SuccessResult = MixResult.Disappear;
             stackOf10Soul.FailResult = MixResult.Disappear;
-            stackOf10Soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Soul");
+            stackOf10Soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Soul"));
             craftingSettings.RequiredItems.Add(stackOf10Soul);
 
             // Result:
@@ -460,7 +460,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.MaximumAmount = 1;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             craftingSettings.RequiredItems.Add(chaos);
 
             var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -468,7 +468,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             creation.MaximumAmount = 1;
             creation.SuccessResult = MixResult.Disappear;
             creation.FailResult = MixResult.Disappear;
-            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
             craftingSettings.RequiredItems.Add(creation);
 
             var stackOf10Soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -476,7 +476,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             stackOf10Soul.MaximumAmount = 1;
             stackOf10Soul.SuccessResult = MixResult.Disappear;
             stackOf10Soul.FailResult = MixResult.Disappear;
-            stackOf10Soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Soul");
+            stackOf10Soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Soul"));
             craftingSettings.RequiredItems.Add(stackOf10Soul);
 
             var stackOf10Bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -484,21 +484,21 @@ namespace MUnique.OpenMU.Persistence.Initialization
             stackOf10Bless.MaximumAmount = 1;
             stackOf10Bless.SuccessResult = MixResult.Disappear;
             stackOf10Bless.FailResult = MixResult.Disappear;
-            stackOf10Bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Bless");
+            stackOf10Bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Bless"));
             craftingSettings.RequiredItems.Add(stackOf10Bless);
 
             var feather = this.Context.CreateNew<ItemCraftingRequiredItem>();
             feather.MinimumAmount = 1;
             feather.SuccessResult = MixResult.Disappear;
             feather.FailResult = MixResult.Disappear;
-            feather.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Feather of Condor");
+            feather.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Feather of Condor"));
             craftingSettings.RequiredItems.Add(feather);
 
             var flame = this.Context.CreateNew<ItemCraftingRequiredItem>();
             flame.MinimumAmount = 1;
             flame.SuccessResult = MixResult.Disappear;
             flame.FailResult = MixResult.Disappear;
-            flame.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Flame of Condor");
+            flame.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Flame of Condor"));
             craftingSettings.RequiredItems.Add(flame);
 
             // Result:
@@ -579,7 +579,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.AddPercentage = 2;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             craftingSettings.RequiredItems.Add(chaos);
 
             var crest = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -588,7 +588,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crest.FailResult = MixResult.Disappear;
 
             // A monarch's crest is a Loch's Feather+1
-            crest.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Loch's Feather");
+            crest.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Loch's Feather"));
             crest.MinimumItemLevel = 1;
             crest.MaximumItemLevel = 1;
             craftingSettings.RequiredItems.Add(crest);
@@ -625,7 +625,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.MaximumAmount = 1;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             craftingSettings.RequiredItems.Add(chaos);
 
             var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -633,7 +633,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             creation.MaximumAmount = 1;
             creation.SuccessResult = MixResult.Disappear;
             creation.FailResult = MixResult.Disappear;
-            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
             craftingSettings.RequiredItems.Add(creation);
 
             // Result:
@@ -664,7 +664,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             bless.Reference = 1;
             bless.SuccessResult = MixResult.Disappear;
             bless.FailResult = MixResult.Disappear;
-            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
             craftingSettings.RequiredItems.Add(bless);
 
             // Result:
@@ -694,7 +694,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             soul.Reference = 1;
             soul.SuccessResult = MixResult.Disappear;
             soul.FailResult = MixResult.Disappear;
-            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
             craftingSettings.RequiredItems.Add(soul);
 
             // Result:
@@ -722,7 +722,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             gemstone.MaximumAmount = 1;
             gemstone.SuccessResult = MixResult.Disappear;
             gemstone.FailResult = MixResult.Disappear;
-            gemstone.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Gemstone");
+            gemstone.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Gemstone"));
             crafting.SimpleCraftingSettings.RequiredItems.Add(gemstone);
 
             // Result:
@@ -752,7 +752,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.MaximumAmount = 1;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             craftingSettings.RequiredItems.Add(chaos);
 
             var horn = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -760,7 +760,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             horn.MaximumAmount = 10;
             horn.SuccessResult = MixResult.Disappear;
             horn.FailResult = MixResult.Disappear;
-            horn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Uniria");
+            horn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Horn of Uniria"));
             craftingSettings.RequiredItems.Add(horn);
 
             // Result:
@@ -809,31 +809,31 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var spirit = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            spirit.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Spirit");
+            spirit.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Spirit"));
             spirit.MinimumAmount = 1;
             spirit.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(spirit);
 
             var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
             bless.MinimumAmount = 5;
             bless.MaximumAmount = 5;
             craftingSettings.RequiredItems.Add(bless);
 
             var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
             soul.MinimumAmount = 5;
             soul.MaximumAmount = 5;
             craftingSettings.RequiredItems.Add(soul);
 
             var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             chaos.MinimumAmount = 1;
             chaos.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(chaos);
 
             var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
             creation.MinimumAmount = 1;
             creation.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(creation);
@@ -858,7 +858,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var spirit = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            spirit.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Spirit");
+            spirit.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Spirit"));
             spirit.MinimumAmount = 1;
             spirit.MaximumAmount = 1;
             spirit.MinimumItemLevel = 1;
@@ -866,25 +866,25 @@ namespace MUnique.OpenMU.Persistence.Initialization
             craftingSettings.RequiredItems.Add(spirit);
 
             var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
             bless.MinimumAmount = 2;
             bless.MaximumAmount = 2;
             craftingSettings.RequiredItems.Add(bless);
 
             var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
             soul.MinimumAmount = 2;
             soul.MaximumAmount = 2;
             craftingSettings.RequiredItems.Add(soul);
 
             var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             chaos.MinimumAmount = 1;
             chaos.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(chaos);
 
             var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
             creation.MinimumAmount = 1;
             creation.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(creation);
@@ -909,7 +909,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var healthPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            healthPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Large Healing Potion");
+            healthPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Large Healing Potion"));
             healthPotion.MinimumAmount = 3;
             healthPotion.MaximumAmount = 3;
             healthPotion.MaximumItemLevel = 15;
@@ -934,7 +934,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var complexPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            complexPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Small Complex Potion");
+            complexPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Small Complex Potion"));
             complexPotion.MinimumAmount = 3;
             complexPotion.MaximumAmount = 3;
             complexPotion.MaximumItemLevel = 1;
@@ -959,7 +959,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var complexPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            complexPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Medium Complex Potion");
+            complexPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Medium Complex Potion"));
             complexPotion.MinimumAmount = 3;
             complexPotion.MaximumAmount = 3;
             complexPotion.MaximumItemLevel = 1;
@@ -984,25 +984,25 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            guardian.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Guardian");
+            guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Guardian"));
             guardian.MinimumAmount = 1;
             guardian.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(guardian);
 
             var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless");
+            bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
             bless.MinimumAmount = 5;
             bless.MaximumAmount = 5;
             craftingSettings.RequiredItems.Add(bless);
 
             var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul");
+            soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
             soul.MinimumAmount = 5;
             soul.MaximumAmount = 5;
             craftingSettings.RequiredItems.Add(soul);
 
             var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             chaos.MinimumAmount = 1;
             chaos.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(chaos);
@@ -1026,19 +1026,19 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            guardian.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Bless of Guardian");
+            guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Bless of Guardian"));
             guardian.MinimumAmount = 20;
             guardian.MaximumAmount = 20;
             craftingSettings.RequiredItems.Add(guardian);
 
             var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             chaos.MinimumAmount = 1;
             chaos.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(chaos);
 
             var splinter = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            splinter.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Splinter of Armor");
+            splinter.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Splinter of Armor"));
             splinter.MinimumAmount = 20;
             splinter.MaximumAmount = 20;
             craftingSettings.RequiredItems.Add(splinter);
@@ -1062,19 +1062,19 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var fragmentOfHorn = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            fragmentOfHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Fragment of Horn");
+            fragmentOfHorn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Fragment of Horn"));
             fragmentOfHorn.MinimumAmount = 5;
             fragmentOfHorn.MaximumAmount = 5;
             craftingSettings.RequiredItems.Add(fragmentOfHorn);
 
             var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             chaos.MinimumAmount = 1;
             chaos.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(chaos);
 
             var clawOfBeast = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            clawOfBeast.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Claw of Beast");
+            clawOfBeast.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Claw of Beast"));
             clawOfBeast.MinimumAmount = 10;
             clawOfBeast.MaximumAmount = 10;
             craftingSettings.RequiredItems.Add(clawOfBeast);
@@ -1098,19 +1098,19 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
 
             var brokenHorn = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            brokenHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Broken Horn");
+            brokenHorn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Broken Horn"));
             brokenHorn.MinimumAmount = 1;
             brokenHorn.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(brokenHorn);
 
             var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             chaos.MinimumAmount = 1;
             chaos.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(chaos);
 
             var life = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            life.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Life");
+            life.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Life"));
             life.MinimumAmount = 3;
             life.MaximumAmount = 3;
             craftingSettings.RequiredItems.Add(life);
@@ -1237,13 +1237,13 @@ namespace MUnique.OpenMU.Persistence.Initialization
             craftingSettings.RequiredItems.Add(randomItem14To15);
 
             var harmony = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            harmony.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony");
+            harmony.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony"));
             harmony.MinimumAmount = 1;
             harmony.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(harmony);
 
             var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
-            guardian.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Guardian");
+            guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Guardian"));
             guardian.MinimumAmount = 1;
             guardian.MaximumAmount = 1;
             craftingSettings.RequiredItems.Add(guardian);

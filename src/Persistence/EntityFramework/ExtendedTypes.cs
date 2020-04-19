@@ -4379,6 +4379,8 @@ public ICollection<IncreasableItemOption> RawOptions { get; } = new List<Increas
         protected void InitJoinCollections()
         {
           
+            this.PossibleItems = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, ItemCraftingRequiredItemItemDefinition>(this.JoinedPossibleItems, joinEntity => joinEntity.ItemDefinition, entity => new ItemCraftingRequiredItemItemDefinition { ItemCraftingRequiredItem = this, ItemCraftingRequiredItemId = this.Id, ItemDefinition = (ItemDefinition)entity, ItemDefinitionId = ((ItemDefinition)entity).Id});
+          
             this.RequiredItemOptions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, ItemCraftingRequiredItemItemOptionType>(this.JoinedRequiredItemOptions, joinEntity => joinEntity.ItemOptionType, entity => new ItemCraftingRequiredItemItemOptionType { ItemCraftingRequiredItem = this, ItemCraftingRequiredItemId = this.Id, ItemOptionType = (ItemOptionType)entity, ItemOptionTypeId = ((ItemOptionType)entity).Id});
         }
 
@@ -4387,35 +4389,7 @@ public ICollection<IncreasableItemOption> RawOptions { get; } = new List<Increas
         /// </summary>
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="ItemDefinition"/>.
-        /// </summary>
-        public Guid? ItemDefinitionId { get; set; }
         
-        [ForeignKey("ItemDefinitionId")]
-        public ItemDefinition RawItemDefinition
-        { 
-            get { return base.ItemDefinition as ItemDefinition; }
-            set { base.ItemDefinition = value; } 
-        }
-                
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
-        {
-            get
-            {
-                return base.ItemDefinition;
-            }
-            
-            set
-            {
-                base.ItemDefinition = value;
-                this.ItemDefinitionId = this.RawItemDefinition?.Id;
-            }
-        }
-
-                
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
@@ -5314,6 +5288,8 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Entity<ItemDefinitionItemSetGroup>().HasKey(join => new { join.ItemDefinitionId, join.ItemSetGroupId });
             modelBuilder.Entity<ItemDefinition>().HasMany(entity => entity.JoinedPossibleItemOptions).WithOne(join => join.ItemDefinition);
             modelBuilder.Entity<ItemDefinitionItemOptionDefinition>().HasKey(join => new { join.ItemDefinitionId, join.ItemOptionDefinitionId });
+            modelBuilder.Entity<ItemCraftingRequiredItem>().HasMany(entity => entity.JoinedPossibleItems).WithOne(join => join.ItemCraftingRequiredItem);
+            modelBuilder.Entity<ItemCraftingRequiredItemItemDefinition>().HasKey(join => new { join.ItemCraftingRequiredItemId, join.ItemDefinitionId });
             modelBuilder.Entity<ItemCraftingRequiredItem>().HasMany(entity => entity.JoinedRequiredItemOptions).WithOne(join => join.ItemCraftingRequiredItem);
             modelBuilder.Entity<ItemCraftingRequiredItemItemOptionType>().HasKey(join => new { join.ItemCraftingRequiredItemId, join.ItemOptionTypeId });
         }

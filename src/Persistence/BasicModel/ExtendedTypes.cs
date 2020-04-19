@@ -5099,6 +5099,32 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Gets the raw collection of <see cref="PossibleItems" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("possibleItems")]
+        [System.Text.Json.Serialization.JsonPropertyName("possibleItems")]
+        public ICollection<ItemDefinition> RawPossibleItems { get; } = new List<ItemDefinition>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition> PossibleItems
+        {
+            get
+            {
+                return base.PossibleItems ?? (base.PossibleItems = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, ItemDefinition>(this.RawPossibleItems)); 
+            }
+            protected set
+            {
+                this.PossibleItems.Clear();
+                foreach (var item in value)
+                {
+                    this.PossibleItems.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the raw collection of <see cref="RequiredItemOptions" />.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("requiredItemOptions")]
@@ -5121,33 +5147,6 @@ namespace MUnique.OpenMU.Persistence.BasicModel
                 {
                     this.RequiredItemOptions.Add(item);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="ItemDefinition" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("itemDefinition")]
-        [System.Text.Json.Serialization.JsonPropertyName("itemDefinition")]
-        public ItemDefinition RawItemDefinition
-        { 
-            get { return base.ItemDefinition as ItemDefinition; }
-            set { base.ItemDefinition = value; } 
-        }
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
-        {
-            get
-            {
-                return base.ItemDefinition;
-            }
-            
-            set
-            {
-                base.ItemDefinition = value;
             }
         }
         
