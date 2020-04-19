@@ -201,11 +201,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             optionDefinition.AddChance = 0.25f;
             optionDefinition.AddsRandomly = true;
             optionDefinition.MaximumOptionsPerItem = 1;
+            wing.PossibleItemOptions.Add(optionDefinition);
             foreach (var option in possibleOptions)
             {
                 optionDefinition.PossibleOptions.Add(option);
             }
 
+            wing.PossibleItemOptions.Add(
+                this.GameConfiguration.ItemOptions
+                    .FirstOrDefault(iod => iod.PossibleOptions
+                        .Any(o => o.OptionType == ItemOptionTypes.Luck)));
             return wing;
         }
 
