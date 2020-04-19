@@ -2740,8 +2740,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public TradeButtonStateChanged.TradeButtonState State
         {
-            get => (TradeButtonState)this.data.Slice(4)[0];
-            set => this.data.Slice(4)[0] = (byte)value;
+            get => (TradeButtonState)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>

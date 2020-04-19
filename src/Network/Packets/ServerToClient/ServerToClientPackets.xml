@@ -960,7 +960,7 @@
       <CausedReaction>The game client updates the trade button state accordingly.</CausedReaction>
       <Fields>
         <Field>
-          <Index>4</Index>
+          <Index>3</Index>
           <Type>Enum</Type>
           <TypeName>TradeButtonState</TypeName>
           <Name>State</Name>
