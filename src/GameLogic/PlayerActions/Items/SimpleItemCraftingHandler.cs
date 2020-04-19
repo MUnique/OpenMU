@@ -119,6 +119,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return CraftingResult.IncorrectMixItems;
             }
 
+            if (this.settings.MaximumSuccessPercent > 0)
+            {
+                successRate = Math.Min(this.settings.MaximumSuccessPercent, successRate);
+            }
+
             return default;
         }
 

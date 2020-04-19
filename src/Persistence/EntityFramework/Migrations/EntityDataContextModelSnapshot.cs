@@ -2187,6 +2187,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<byte>("MaximumSuccessPercent")
+                        .HasColumnType("smallint");
+
                     b.Property<int>("Money")
                         .HasColumnType("integer");
 

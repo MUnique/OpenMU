@@ -125,6 +125,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Money = table.Column<int>(nullable: false),
                     MoneyPerFinalSuccessPercentage = table.Column<int>(nullable: false),
                     SuccessPercent = table.Column<byte>(nullable: false),
+                    MaximumSuccessPercent = table.Column<byte>(nullable: false),
                     MultipleAllowed = table.Column<bool>(nullable: false),
                     ResultItemSelect = table.Column<int>(nullable: false),
                     SuccessPercentageAdditionForLuck = table.Column<int>(nullable: false),

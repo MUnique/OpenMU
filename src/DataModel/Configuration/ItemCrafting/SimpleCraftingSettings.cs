@@ -28,6 +28,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public byte SuccessPercent { get; set; }
 
         /// <summary>
+        /// Gets or sets the maximum success percent.
+        /// </summary>
+        public byte MaximumSuccessPercent { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether multiple crafting at the same time are allowed for this crafting.
         /// </summary>
         public bool MultipleAllowed { get; set; }

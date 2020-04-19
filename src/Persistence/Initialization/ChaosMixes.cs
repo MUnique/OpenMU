@@ -292,6 +292,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             craftingSettings.Money = 5_000_000;
             craftingSettings.MoneyPerFinalSuccessPercentage = 10000;
             craftingSettings.SuccessPercent = 0;
+            craftingSettings.MaximumSuccessPercent = 90;
 
             // Requirements:
             var firstWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -369,7 +370,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
             crafting.SimpleCraftingSettings = craftingSettings;
             craftingSettings.MoneyPerFinalSuccessPercentage = 200000;
-            craftingSettings.SuccessPercent = 0;  // todo maximum success 60 %
+            craftingSettings.SuccessPercent = 0;
+            craftingSettings.MaximumSuccessPercent = 60;
 
             // Requirements:
             var secondWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -438,7 +440,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             crafting.SimpleCraftingSettings = craftingSettings;
             craftingSettings.Money = 5_000_000;
             craftingSettings.MoneyPerFinalSuccessPercentage = 10000;
-            craftingSettings.SuccessPercent = 0; // todo maximum success 40 %
+            craftingSettings.SuccessPercent = 0;
+            craftingSettings.MaximumSuccessPercent = 40;
 
             // Requirements:
             var randomExcItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -547,6 +550,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             craftingSettings.Money = 5_000_000;
             craftingSettings.MoneyPerFinalSuccessPercentage = 10000;
             craftingSettings.SuccessPercent = 0;
+            craftingSettings.MaximumSuccessPercent = 90;
 
             // Requirements:
             var firstWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
