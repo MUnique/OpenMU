@@ -40,13 +40,20 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 return instance;
             }
 
-            // [Normal argument parsing]
-            if (arguments.Count != properties.Count)
+            var attributedArguments = properties
+                .Select(p => p.GetCustomAttribute<ArgumentAttribute>())
+                .Where(a => a is { })
+                .ToList();
+            var requiredArgumentCount = attributedArguments.Any()
+                ? attributedArguments.Count(a => a.IsRequired)
+                : arguments.Count;
+
+            if (arguments.Count < requiredArgumentCount)
             {
-                throw new ArgumentException($"The command needs {properties.Count} arguments and was given {arguments.Count}.");
+                throw new ArgumentException($"The command needs {requiredArgumentCount} arguments and was given {arguments.Count}.");
             }
 
-            for (var i = 0; i < properties.Count; i++)
+            for (var i = 0; i < Math.Min(arguments.Count, properties.Count); i++)
             {
                 var property = properties[i];
                 var argument = arguments[i];
@@ -139,11 +146,17 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             throw new ArgumentException(stringBuilder.ToString());
         }
 
-        private static void SetPropertyValue(object instance, PropertyInfo propertyInfo, string value)
+        private static void SetPropertyValue(object instance, PropertyInfo propertyInfo, string stringValue)
         {
             try
             {
-                propertyInfo.SetValue(instance, Convert.ChangeType(value, propertyInfo.PropertyType));
+                // Special handling of booleans; we want to allow 0 and 1 as valid values.
+                if (propertyInfo.PropertyType == typeof(bool) && int.TryParse(stringValue, out var intBool))
+                {
+                    stringValue = intBool == 1 ? bool.TrueString : bool.FalseString;
+                }
+
+                propertyInfo.SetValue(instance, Convert.ChangeType(stringValue, propertyInfo.PropertyType));
             }
             catch
             {
