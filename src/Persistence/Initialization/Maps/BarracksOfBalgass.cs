@@ -32,6 +32,18 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <inheritdoc/>
         protected override string MapName => "Barracks of Balgass";
 
+        /// <inheritdoc />
+        protected override void InitializeDropItemGroups()
+        {
+            base.InitializeDropItemGroups();
+            var flameOfCondor = this.Context.CreateNew<DropItemGroup>();
+            flameOfCondor.Chance = 0.001;
+            flameOfCondor.Description = "Flame of Condor";
+            flameOfCondor.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 13 && item.Number == 52));
+            this.MapDefinition.DropItemGroups.Add(flameOfCondor);
+            this.GameConfiguration.DropItemGroups.Add(flameOfCondor);
+        }
+
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateSpawns()
         {

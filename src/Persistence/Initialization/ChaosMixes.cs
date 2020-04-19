@@ -60,6 +60,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaosGoblin.ItemCraftings.Add(this.FirstWingsCrafting());
             chaosGoblin.ItemCraftings.Add(this.CapeCrafting());
             chaosGoblin.ItemCraftings.Add(this.SecondWingsCrafting());
+            chaosGoblin.ItemCraftings.Add(this.ThirdWingsStage1Crafting());
+            chaosGoblin.ItemCraftings.Add(this.ThirdWingsStage2Crafting());
             chaosGoblin.ItemCraftings.Add(this.Level380OptionCrafting());
 
             var elphis = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ElphisRefinery);
@@ -353,6 +355,182 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var wingsOfDespair = this.Context.CreateNew<ItemCraftingResultItem>();
             wingsOfDespair.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 42);
             craftingSettings.ResultItems.Add(wingsOfDespair);
+
+            return crafting;
+        }
+
+        private ItemCrafting ThirdWingsStage1Crafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "3rd Level Wings, Stage 1";
+            crafting.Number = 38;
+            crafting.ItemCraftingHandlerClassName = typeof(ThirdWingCrafting).FullName;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+
+            crafting.SimpleCraftingSettings = craftingSettings;
+            craftingSettings.MoneyPerFinalSuccessPercentage = 200000;
+            craftingSettings.SuccessPercent = 0;  // todo maximum success 60 %
+
+            // Requirements:
+            var secondWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            secondWing.Reference = ThirdWingCrafting.SecondWingReference;
+            secondWing.MinimumAmount = 1;
+            secondWing.MaximumAmount = 1;
+            secondWing.MinimumItemLevel = 9;
+            secondWing.MaximumItemLevel = 15;
+            secondWing.NpcPriceDivisor = 4_000_000;
+            secondWing.FailResult = MixResult.DowngradedRandom;
+            secondWing.SuccessResult = MixResult.Disappear;
+            secondWing.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
+            craftingSettings.RequiredItems.Add(secondWing);
+
+            var randomAncientItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomAncientItem.MinimumAmount = 1;
+            randomAncientItem.MinimumItemLevel = 7;
+            randomAncientItem.MaximumItemLevel = 15;
+            randomAncientItem.NpcPriceDivisor = 300_000;
+            randomAncientItem.FailResult = MixResult.DowngradedRandom;
+            randomAncientItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.AncientBonus));
+            randomAncientItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
+            randomAncientItem.SuccessResult = MixResult.Disappear;
+            craftingSettings.RequiredItems.Add(randomAncientItem);
+
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            chaos.SuccessResult = MixResult.Disappear;
+            chaos.FailResult = MixResult.Disappear;
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            creation.MinimumAmount = 1;
+            creation.MaximumAmount = 1;
+            creation.SuccessResult = MixResult.Disappear;
+            creation.FailResult = MixResult.Disappear;
+            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            craftingSettings.RequiredItems.Add(creation);
+
+            var stackOf10Soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            stackOf10Soul.MinimumAmount = 1;
+            stackOf10Soul.MaximumAmount = 1;
+            stackOf10Soul.SuccessResult = MixResult.Disappear;
+            stackOf10Soul.FailResult = MixResult.Disappear;
+            stackOf10Soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Soul");
+            craftingSettings.RequiredItems.Add(stackOf10Soul);
+
+            // Result:
+            craftingSettings.ResultItemSelect = ResultItemSelection.Any;
+            var featherOfCondor = this.Context.CreateNew<ItemCraftingResultItem>();
+            featherOfCondor.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 13 && i.Number == 53);
+            craftingSettings.ResultItems.Add(featherOfCondor);
+
+            return crafting;
+        }
+
+        private ItemCrafting ThirdWingsStage2Crafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "3rd Level Wings, Stage 1";
+            crafting.Number = 39;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+
+            crafting.SimpleCraftingSettings = craftingSettings;
+            craftingSettings.Money = 5_000_000;
+            craftingSettings.MoneyPerFinalSuccessPercentage = 10000;
+            craftingSettings.SuccessPercent = 0; // todo maximum success 40 %
+
+            // Requirements:
+            var randomExcItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            randomExcItem.MinimumAmount = 0;
+            randomExcItem.MinimumItemLevel = 9;
+            randomExcItem.MaximumItemLevel = 15;
+            randomExcItem.NpcPriceDivisor = 3_000_000;
+            randomExcItem.FailResult = MixResult.DowngradedRandom;
+            randomExcItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Excellent));
+            randomExcItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
+            randomExcItem.SuccessResult = MixResult.Disappear;
+            craftingSettings.RequiredItems.Add(randomExcItem);
+
+            var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            chaos.MinimumAmount = 1;
+            chaos.MaximumAmount = 1;
+            chaos.SuccessResult = MixResult.Disappear;
+            chaos.FailResult = MixResult.Disappear;
+            chaos.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos");
+            craftingSettings.RequiredItems.Add(chaos);
+
+            var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            creation.MinimumAmount = 1;
+            creation.MaximumAmount = 1;
+            creation.SuccessResult = MixResult.Disappear;
+            creation.FailResult = MixResult.Disappear;
+            creation.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation");
+            craftingSettings.RequiredItems.Add(creation);
+
+            var stackOf10Soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            stackOf10Soul.MinimumAmount = 1;
+            stackOf10Soul.MaximumAmount = 1;
+            stackOf10Soul.SuccessResult = MixResult.Disappear;
+            stackOf10Soul.FailResult = MixResult.Disappear;
+            stackOf10Soul.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Soul");
+            craftingSettings.RequiredItems.Add(stackOf10Soul);
+
+            var stackOf10Bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            stackOf10Bless.MinimumAmount = 1;
+            stackOf10Bless.MaximumAmount = 1;
+            stackOf10Bless.SuccessResult = MixResult.Disappear;
+            stackOf10Bless.FailResult = MixResult.Disappear;
+            stackOf10Bless.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Bless");
+            craftingSettings.RequiredItems.Add(stackOf10Bless);
+
+            var feather = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            feather.MinimumAmount = 1;
+            feather.SuccessResult = MixResult.Disappear;
+            feather.FailResult = MixResult.Disappear;
+            feather.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Feather of Condor");
+            craftingSettings.RequiredItems.Add(feather);
+
+            var flame = this.Context.CreateNew<ItemCraftingRequiredItem>();
+            flame.MinimumAmount = 1;
+            flame.SuccessResult = MixResult.Disappear;
+            flame.FailResult = MixResult.Disappear;
+            flame.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Flame of Condor");
+            craftingSettings.RequiredItems.Add(flame);
+
+            // Result:
+            craftingSettings.ResultItemSelect = ResultItemSelection.Any;
+            craftingSettings.ResultItemLuckOptionChance = 10;
+            craftingSettings.ResultItemExcellentOptionChance = 20;
+            craftingSettings.ResultItemMaxExcOptionCount = 1;
+
+            var wingsOfStorm = this.Context.CreateNew<ItemCraftingResultItem>();
+            wingsOfStorm.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 36);
+            craftingSettings.ResultItems.Add(wingsOfStorm);
+
+            var wingsOfEternal = this.Context.CreateNew<ItemCraftingResultItem>();
+            wingsOfEternal.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 37);
+            craftingSettings.ResultItems.Add(wingsOfEternal);
+
+            var wingsOfIllusion = this.Context.CreateNew<ItemCraftingResultItem>();
+            wingsOfIllusion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 38);
+            craftingSettings.ResultItems.Add(wingsOfIllusion);
+
+            var wingsOfRuin = this.Context.CreateNew<ItemCraftingResultItem>();
+            wingsOfRuin.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 39);
+            craftingSettings.ResultItems.Add(wingsOfRuin);
+
+            var capeOfEmperor = this.Context.CreateNew<ItemCraftingResultItem>();
+            capeOfEmperor.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 40);
+            craftingSettings.ResultItems.Add(capeOfEmperor);
+
+            var wingsOfDimension = this.Context.CreateNew<ItemCraftingResultItem>();
+            wingsOfDimension.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 43);
+            craftingSettings.ResultItems.Add(wingsOfDimension);
+
+            var capeOfOverrule = this.Context.CreateNew<ItemCraftingResultItem>();
+            capeOfOverrule.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 50);
+            craftingSettings.ResultItems.Add(capeOfOverrule);
 
             return crafting;
         }

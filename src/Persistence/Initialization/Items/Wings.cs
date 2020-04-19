@@ -102,6 +102,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWing(30, 2, 3, "Cape of Lord", 180, 15, 200, 180, 0, 0, 0, 0, 1, 0, 0, this.BuildOptions((0b00, OptionType.PhysDamage)), 20, 10, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, this.CreateCapeOptions()).Group = 13;
 
             this.CreateFeather();
+            this.CreateFeatherOfCondor();
+            this.CreateFlameOfCondor();
 
             // Third class wings:
             var thirdWingOptions = this.CreateThirdClassWingOptions();
@@ -160,6 +162,34 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             feather.Number = 14;
             feather.Group = 13;
             feather.DropLevel = 78;
+            feather.Width = 1;
+            feather.Height = 2;
+            feather.Durability = 1;
+            this.GameConfiguration.Items.Add(feather);
+        }
+
+        private void CreateFeatherOfCondor()
+        {
+            var feather = this.Context.CreateNew<ItemDefinition>();
+            feather.Name = "Feather of Condor";
+            feather.MaximumItemLevel = 1;
+            feather.Number = 53;
+            feather.Group = 13;
+            feather.DropLevel = 120;
+            feather.Width = 1;
+            feather.Height = 2;
+            feather.Durability = 1;
+            this.GameConfiguration.Items.Add(feather);
+        }
+
+        private void CreateFlameOfCondor()
+        {
+            var feather = this.Context.CreateNew<ItemDefinition>();
+            feather.Name = "Flame of Condor";
+            feather.MaximumItemLevel = 1;
+            feather.Number = 52;
+            feather.Group = 13;
+            feather.DropLevel = 120;
             feather.Width = 1;
             feather.Height = 2;
             feather.Durability = 1;
