@@ -73,6 +73,10 @@ namespace MUnique.OpenMU.GameLogic
             {
                 this.adaptee.ViewPlugIns.GetPlugIn<IShowDroppedItemsPlugIn>()?.ShowDroppedItems(droppedItem.GetAsEnumerable(), sender != this);
             }
+            else if (item is DroppedMoney droppedMoney)
+            {
+                this.adaptee.ViewPlugIns.GetPlugIn<IShowMoneyDropPlugIn>()?.ShowMoney(droppedMoney.Id, droppedMoney.Quantity, droppedMoney.Position);
+            }
             else
             {
                 // no action required.
@@ -137,6 +141,10 @@ namespace MUnique.OpenMU.GameLogic
             if (item is DroppedItem)
             {
                 this.adaptee.ViewPlugIns.GetPlugIn<IDroppedItemsDisappearedPlugIn>()?.DroppedItemsDisappeared(item.GetAsEnumerable().Select(i => i.Id));
+            }
+            else if (item is DroppedMoney)
+            {
+                this.adaptee.ViewPlugIns.GetPlugIn<IDroppedItemsDisappearedPlugIn>()?.DroppedItemsDisappeared(new List<ushort>() { item.Id });
             }
             else
             {

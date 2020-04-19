@@ -109,10 +109,10 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="dropId">The drop identifier.</param>
         /// <returns>The dropped item.</returns>
-        public DroppedItem GetDrop(ushort dropId)
+        public ILocateable GetDrop(ushort dropId)
         {
             this.objectsInMap.TryGetValue(dropId, out ILocateable item);
-            return item as DroppedItem;
+            return item;
         }
 
         /// <summary>
@@ -154,6 +154,10 @@ namespace MUnique.OpenMU.GameLogic
                 case DroppedItem droppedItem:
                     droppedItem.Id = (ushort)this.dropIdGenerator.GetId();
                     Log.DebugFormat("{0}: Added drop {1}, {2}", this.Definition, droppedItem.Id, droppedItem.Item);
+                    break;
+                case DroppedMoney droppedMoney:
+                    droppedMoney.Id = (ushort)this.dropIdGenerator.GetId();
+                    Log.DebugFormat("{0}: Added money {1}, {2}", this.Definition, droppedMoney.Id, droppedMoney);
                     break;
                 case Player player:
                     player.Id = (ushort)this.objectIdGenerator.GetId();

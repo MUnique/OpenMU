@@ -19,52 +19,81 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="dropId">The drop identifier.</param>
         public void PickupItem(Player player, ushort dropId)
         {
-            var droppedItem = player.CurrentMap.GetDrop(dropId);
-            if (droppedItem == null)
-            {
-                player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.General);
-                return;
-            }
+            var droppedLocateable = player.CurrentMap.GetDrop(dropId);
 
-            if (this.TryPickupItem(player, droppedItem, out var stackTarget))
+            switch (droppedLocateable)
             {
-                if (stackTarget != null)
+                case DroppedMoney droppedMoney:
+                    if (!this.TryPickupMoney(player, droppedMoney))
+                    {
+                        player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.General);
+                    }
+
+                    break;
+                case DroppedItem droppedItem:
                 {
-                    player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.ItemStacked);
-                    player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(stackTarget, false);
+                    if (this.TryPickupItem(player, droppedItem, out var stackTarget))
+                    {
+                        if (stackTarget != null)
+                        {
+                            player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.ItemStacked);
+                            player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(stackTarget, false);
+                        }
+                        else
+                        {
+                            player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(droppedItem.Item);
+                        }
+                    }
+                    else
+                    {
+                        player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.General);
+                    }
+
+                    break;
                 }
-                else
-                {
-                    player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(droppedItem.Item);
-                }
-            }
-            else
-            {
-                player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.General);
+
+                default:
+                    player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.General);
+                    break;
             }
         }
 
-        private bool TryPickupItem(Player player, DroppedItem droppedItem, out Item stackTarget)
+        private bool CanPickup(Player player, ILocateable droppedLocateable)
         {
-            stackTarget = null;
             if (!player.Alive)
             {
                 return false;
             }
 
-            var dist = (int)player.GetDistanceTo(droppedItem);
+            var dist = (int)player.GetDistanceTo(droppedLocateable);
             if (dist > 3)
             {
                 return false;
             }
 
-            int slot = player.Inventory.CheckInvSpace(droppedItem.Item);
+            return true;
+        }
+
+        private bool TryPickupItem(Player player, DroppedItem droppedItem, out Item stackTarget)
+        {
+            stackTarget = null;
+            if (!this.CanPickup(player, droppedItem))
+            {
+                return false;
+            }
+
+            var slot = player.Inventory.CheckInvSpace(droppedItem.Item);
             if (slot < InventoryConstants.EquippableSlotsCount)
             {
                 return false;
             }
 
             return droppedItem.TryPickUpBy(player, out stackTarget);
+        }
+
+        private bool TryPickupMoney(Player player, DroppedMoney droppedMoney)
+        {
+            return this.CanPickup(player, droppedMoney) && droppedMoney.TryPickUpBy(player);
         }
     }
 }
