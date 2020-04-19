@@ -32,27 +32,6 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if the drop of money succeeds.
-        /// </summary>
-        [Test]
-        public void TestItemDropMoney()
-        {
-            const int startMoney = 10000;
-            var experience = 1;
-            var moneyDrop = experience + DefaultDropGenerator.BaseMoneyDrop;
-
-            var player = TestHelper.GetPlayer().WithBasicDropItemGroups();
-            player.GameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
-            player.Money = startMoney;
-            var config = this.GetGameConfig();
-            var generator = new DefaultDropGenerator(config, this.GetRandomizer(4000));
-            var item = generator.GetItemDrops(this.GetMonster(1), experience, player).FirstOrDefault();
-
-            Assert.That(player.Money, Is.EqualTo(startMoney + moneyDrop));
-            Assert.That(item, Is.Null);
-        }
-
-        /// <summary>
         /// Tests the drops defined by a monster are getting considered.
         /// </summary>
         [Test]
