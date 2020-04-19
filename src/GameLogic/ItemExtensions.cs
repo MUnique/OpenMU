@@ -70,7 +70,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var result = item.Definition.Durability + AdditionalDurabilityPerLevel[item.Level];
-            if (item.ItemOptions.Any(link => link.ItemOption.OptionType == ItemOptionTypes.AncientOption))
+            if (item.ItemOptions.Any(link => link.ItemOption.OptionType == ItemOptionTypes.AncientBonus))
             {
                 result += 20;
             }
