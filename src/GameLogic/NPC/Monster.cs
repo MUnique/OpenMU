@@ -277,7 +277,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void DropItem(int exp, Player killer)
         {
-            var generatedItems = this.dropGenerator.GetItemDropsOrAddMoney(this.Definition, exp, killer);
+            var generatedItems = this.dropGenerator.GetItemDrops(this.Definition, exp, killer);
             if (generatedItems == null)
             {
                 return;
@@ -298,7 +298,34 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
 
                 var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
-                var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, killer, owners);
+                ILocateable droppedItem;
+                switch (item)
+                {
+                    case MoneyItem moneyItem:
+                        if (!killer.GameContext.Configuration.ShouldDropMoney)
+                        {
+                            var party = killer.Party;
+                            if (party == null)
+                            {
+                                killer.TryAddMoney((int)moneyItem.Amount);
+                            }
+                            else
+                            {
+                                var players = party.PartyList.OfType<Player>().Where(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone()).ToList();
+                                var moneyPart = moneyItem.Amount / players.Count;
+                                players.ForEach(p => p.TryAddMoney((int)(moneyPart * p.Attributes[Stats.MoneyAmountRate])));
+                            }
+
+                            return;
+                        }
+
+                        droppedItem = new DroppedMoney(moneyItem, dropCoordinates, this.CurrentMap, killer, owners);
+                        break;
+                    default:
+                        droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, killer, owners);
+                        break;
+                }
+
                 this.CurrentMap.Add(droppedItem);
             }
         }

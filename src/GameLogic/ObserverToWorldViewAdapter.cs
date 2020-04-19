@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             else if (item is DroppedMoney droppedMoney)
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IShowMoneyDropPlugIn>()?.ShowMoney(droppedMoney.Id, droppedMoney.Amount, droppedMoney.Position);
+                this.adaptee.ViewPlugIns.GetPlugIn<IShowMoneyDropPlugIn>()?.ShowMoney(droppedMoney.Id, droppedMoney.Item.Amount, droppedMoney.Position);
             }
             else
             {

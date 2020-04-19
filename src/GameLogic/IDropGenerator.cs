@@ -20,14 +20,12 @@ namespace MUnique.OpenMU.GameLogic
     {
         /// <summary>
         /// Gets the item drops which are generated when a monster got killed by a player.
-        /// If money is dropped, it is added to the players inventory automatically. If the
-        /// player is in a party, the money is split between all players.
         /// </summary>
         /// <param name="monster">The monster which got killed.</param>
         /// <param name="gainedExperience">The experience which the player gained form the kill (relevant for the money drop).</param>
         /// <param name="player">The player who killed the monster.</param>
         /// <returns>The item drops which are generated when a monster got killed by a player.</returns>
-        IEnumerable<Item> GetItemDropsOrAddMoney(MonsterDefinition monster, int gainedExperience, Player player);
+        IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player);
     }
 
     /// <summary>
@@ -61,7 +59,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Item> GetItemDropsOrAddMoney(MonsterDefinition monster, int gainedExperience, Player player)
+        public IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player)
         {
             var character = player.SelectedCharacter;
             var map = player.CurrentMap.Definition;
@@ -85,29 +83,10 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                if (group.ItemType == SpecialItemType.Money)
+                var item = this.GetItemDrop(monster, group, player, gainedExperience);
+                if (item != null)
                 {
-                    // Apply zen value: exp + 7
-                    var money = gainedExperience + BaseMoneyDrop;
-                    var party = player.Party;
-                    if (party == null)
-                    {
-                        player.TryAddMoney((int)(money * player.Attributes[Stats.MoneyAmountRate]));
-                    }
-                    else
-                    {
-                        var players = party.PartyList.OfType<Player>().Where(p => p.CurrentMap == player.CurrentMap && !p.IsAtSafezone()).ToList();
-                        var moneyPart = money / players.Count;
-                        players.ForEach(p => p.TryAddMoney((int)(moneyPart * p.Attributes[Stats.MoneyAmountRate])));
-                    }
-                }
-                else
-                {
-                    var item = this.GetItemDrop(monster, group);
-                    if (item != null)
-                    {
-                        yield return item;
-                    }
+                    yield return item;
                 }
             }
         }
@@ -220,6 +199,21 @@ namespace MUnique.OpenMU.GameLogic
             return item;
         }
 
+        /// <summary>
+        /// Get a fake money item.
+        /// </summary>
+        /// <param name="player">the player.</param>
+        /// <param name="gainedExperience">amount of gained experience</param>
+        /// <returns>a fake money item.</returns>
+        protected Item GetMoneyItem(Player player, int gainedExperience)
+        {
+            // Apply zen value: exp + 7
+            var item = new MoneyItem();
+            var money = gainedExperience + BaseMoneyDrop;
+            item.Amount = (uint)Math.Round(money * player.Attributes[Stats.MoneyAmountRate]);
+            return item;
+        }
+
         private static IEnumerable<DropItemGroup> CombineDropGroups(
             IEnumerable<DropItemGroup> monsterGroup,
             IEnumerable<DropItemGroup> characterGroup,
@@ -309,7 +303,7 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private Item GetItemDrop(MonsterDefinition monster, DropItemGroup selectedGroup)
+        private Item GetItemDrop(MonsterDefinition monster, DropItemGroup selectedGroup, Player player, int gainedExperience)
         {
             if (selectedGroup != null)
             {
@@ -336,6 +330,8 @@ namespace MUnique.OpenMU.GameLogic
                         return this.GetRandomItem((int)monster[Stats.Level], false);
                     case SpecialItemType.SocketItem:
                         return this.GetRandomItem((int)monster[Stats.Level], true);
+                    case SpecialItemType.Money:
+                        return this.GetMoneyItem(player, gainedExperience);
                     default:
                         // none
                         return null;

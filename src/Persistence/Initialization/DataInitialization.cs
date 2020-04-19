@@ -1382,6 +1382,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.gameConfiguration.CharacterNameRegex = "^[a-zA-Z0-9]{3,10}$";
             this.gameConfiguration.MaximumPasswordLength = 20;
             this.gameConfiguration.MaximumPartySize = 5;
+            this.gameConfiguration.ShouldDropMoney = true;
             this.gameConfiguration.ExperienceTable =
                 Enumerable.Range(0, this.gameConfiguration.MaximumLevel + 2)
                     .Select(level => this.CalculateNeededExperience(level))

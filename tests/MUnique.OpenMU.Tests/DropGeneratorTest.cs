@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.Tests
         {
             var config = this.GetGameConfig();
             var generator = new DefaultDropGenerator(config, this.GetRandomizer(9999));
-            var item = generator.GetItemDropsOrAddMoney(this.GetMonster(1), 0, TestHelper.GetPlayer()).FirstOrDefault();
+            var item = generator.GetItemDrops(this.GetMonster(1), 0, TestHelper.GetPlayer()).FirstOrDefault();
             Assert.That(item, Is.Null);
         }
 
@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.Tests
             player.Money = startMoney;
             var config = this.GetGameConfig();
             var generator = new DefaultDropGenerator(config, this.GetRandomizer(4000));
-            var item = generator.GetItemDropsOrAddMoney(this.GetMonster(1), experience, player).FirstOrDefault();
+            var item = generator.GetItemDrops(this.GetMonster(1), experience, player).FirstOrDefault();
 
             Assert.That(player.Money, Is.EqualTo(startMoney + moneyDrop));
             Assert.That(item, Is.Null);
@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.Tests
             monster.DropItemGroups.Add(3000, SpecialItemType.Ancient, true);
 
             var generator = new DefaultDropGenerator(config, this.GetRandomizer2(0, 0.5));
-            var item = generator.GetItemDropsOrAddMoney(monster, 1, TestHelper.GetPlayer()).FirstOrDefault();
+            var item = generator.GetItemDrops(monster, 1, TestHelper.GetPlayer()).FirstOrDefault();
 
             Assert.That(item, Is.Not.Null);
 

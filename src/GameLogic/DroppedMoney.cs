@@ -38,26 +38,26 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Initializes a new instance of the <see cref="DroppedMoney" /> class.
         /// </summary>
-        /// <param name="amount">The quantity.</param>
+        /// <param name="item">The money item.</param>
         /// <param name="position">The position where the item was dropped on the map.</param>
         /// <param name="map">The map.</param>
         /// <param name="dropper">The dropper.</param>
-        public DroppedMoney(uint amount, Point position, GameMap map, Player dropper)
-            : this(amount, position, map, dropper, null)
+        public DroppedMoney(MoneyItem item, Point position, GameMap map, Player dropper)
+            : this(item, position, map, dropper, null)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DroppedMoney" /> class.
         /// </summary>
-        /// <param name="amount">The quantity.</param>
+        /// <param name="item">The money item.</param>
         /// <param name="position">The position where the item was dropped on the map.</param>
         /// <param name="map">The map.</param>
         /// <param name="dropper">The dropper.</param>
         /// <param name="owners">The owners.</param>
-        public DroppedMoney(uint amount, Point position, GameMap map, Player dropper, IEnumerable<object> owners)
+        public DroppedMoney(MoneyItem item, Point position, GameMap map, Player dropper, IEnumerable<object> owners)
         {
-            this.Amount = amount;
+            this.Item = item;
             this.pickupLock = new object();
             this.Position = position;
             this.CurrentMap = map;
@@ -67,9 +67,9 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
-        /// Gets the item.
+        /// Gets the money item.
         /// </summary>
-        public uint Amount { get; }
+        public MoneyItem Item { get; }
 
         /// <inheritdoc />
         public Point Position { get; set; }
@@ -106,7 +106,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"money: {this.Amount} at {this.CurrentMap.Definition.Name} ({this.Position})";
+            return $"money: {this.Item.Amount} at {this.CurrentMap.Definition.Name} ({this.Position})";
         }
 
 
@@ -140,7 +140,7 @@ namespace MUnique.OpenMU.GameLogic
                     return false;
                 }
 
-                if (!player.TryAddMoney((int)this.Amount))
+                if (!player.TryAddMoney((int)this.Item.Amount))
                 {
                     Log.DebugFormat("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
                     return false;
