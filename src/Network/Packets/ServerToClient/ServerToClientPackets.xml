@@ -1076,7 +1076,7 @@
       <CausedReaction>The trade dialog is closed. Depending on the result, a message is shown.</CausedReaction>
       <Fields>
         <Field>
-          <Index>4</Index>
+          <Index>3</Index>
           <Type>Enum</Type>
           <TypeName>TradeResult</TypeName>
           <Name>Result</Name>

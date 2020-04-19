@@ -3191,8 +3191,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public TradeFinished.TradeResult Result
         {
-            get => (TradeResult)this.data.Slice(4)[0];
-            set => this.data.Slice(4)[0] = (byte)value;
+            get => (TradeResult)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>
