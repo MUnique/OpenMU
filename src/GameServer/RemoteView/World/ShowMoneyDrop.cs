@@ -26,9 +26,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public ShowMoneyDrop(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void ShowMoney(ushort itemId, uint quantity, Point point)
+        public void ShowMoney(ushort itemId, bool isFreshDrop, uint amount, Point point)
         {
-            this.player.Connection.SendMoneyDropped(itemId, false, point.X, point.Y, quantity);
+            this.player.Connection.SendMoneyDropped(itemId, isFreshDrop, point.X, point.Y, amount);
         }
     }
 }

@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             else if (item is DroppedMoney droppedMoney)
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<IShowMoneyDropPlugIn>()?.ShowMoney(droppedMoney.Id, droppedMoney.Amount, droppedMoney.Position);
+                this.adaptee.ViewPlugIns.GetPlugIn<IShowMoneyDropPlugIn>()?.ShowMoney(droppedMoney.Id, sender != this, droppedMoney.Amount, droppedMoney.Position);
             }
             else
             {
@@ -232,7 +232,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var droppedMoney = newObjects.OfType<DroppedMoney>();
-            droppedMoney.ForEach(money => this.adaptee.ViewPlugIns.GetPlugIn<IShowMoneyDropPlugIn>()?.ShowMoney(money.Id, money.Amount, money.Position));
+            droppedMoney.ForEach(money => this.adaptee.ViewPlugIns.GetPlugIn<IShowMoneyDropPlugIn>()?.ShowMoney(money.Id, false, money.Amount, money.Position));
 
             newItems.ForEach(item => item.AddObserver(this.adaptee));
         }

@@ -14,9 +14,10 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// <summary>
         /// Show money on the ground.
         /// </summary>
-        /// <param name="itemId">the id of item(money) in map.</param>
-        /// <param name="quantity">the quantity to drop.</param>
-        /// <param name="point">the ground position.</param>
-        void ShowMoney(ushort itemId, uint quantity, Point point);
+        /// <param name="itemId">The id of the drop in the map.</param>
+        /// <param name="isFreshDrop">If set to <c>true</c>, it's a fresh drop.</param>
+        /// <param name="amount">The amount of money which was dropped.</param>
+        /// <param name="point">The position of the money on the map.</param>
+        void ShowMoney(ushort itemId, bool isFreshDrop, uint amount, Point point);
     }
 }
