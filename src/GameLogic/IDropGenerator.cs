@@ -24,8 +24,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="monster">The monster which got killed.</param>
         /// <param name="gainedExperience">The experience which the player gained form the kill (relevant for the money drop).</param>
         /// <param name="player">The player who killed the monster.</param>
-        /// <returns>The item drops which are generated when a monster got killed by a player.</returns>
-        IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player);
+        /// <param name="droppedMoney">The dropped money, if available.</param>
+        /// <returns>
+        /// The item drops which are generated when a monster got killed by a player.
+        /// </returns>
+        IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney);
     }
 
     /// <summary>
@@ -59,8 +62,9 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player)
+        public IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney)
         {
+            droppedMoney = null;
             var character = player.SelectedCharacter;
             var map = player.CurrentMap.Definition;
             var dropGroups =
@@ -75,6 +79,7 @@ namespace MUnique.OpenMU.GameLogic
                     .Where(group => IsGroupRelevant(monster, group))
                     .OrderBy(group => group.Chance);
 
+            IList<Item> droppedItems = null;
             for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
             {
                 var group = this.SelectRandomGroup(dropGroups);
@@ -83,12 +88,15 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                var item = this.GetItemDrop(monster, group, player, gainedExperience);
+                var item = this.GetItemDropOrMoney(monster, group, player, gainedExperience, out droppedMoney);
                 if (item != null)
                 {
-                    yield return item;
+                    droppedItems ??= new List<Item>(1);
+                    droppedItems.Add(item);
                 }
             }
+
+            return droppedItems ?? Enumerable.Empty<Item>();
         }
 
         /// <summary>
@@ -199,21 +207,6 @@ namespace MUnique.OpenMU.GameLogic
             return item;
         }
 
-        /// <summary>
-        /// Get a fake money item.
-        /// </summary>
-        /// <param name="player">the player.</param>
-        /// <param name="gainedExperience">amount of gained experience</param>
-        /// <returns>a fake money item.</returns>
-        protected Item GetMoneyItem(Player player, int gainedExperience)
-        {
-            // Apply zen value: exp + 7
-            var item = new MoneyItem();
-            var money = gainedExperience + BaseMoneyDrop;
-            item.Amount = (uint)Math.Round(money * player.Attributes[Stats.MoneyAmountRate]);
-            return item;
-        }
-
         private static IEnumerable<DropItemGroup> CombineDropGroups(
             IEnumerable<DropItemGroup> monsterGroup,
             IEnumerable<DropItemGroup> characterGroup,
@@ -303,8 +296,9 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private Item GetItemDrop(MonsterDefinition monster, DropItemGroup selectedGroup, Player player, int gainedExperience)
+        private Item GetItemDropOrMoney(MonsterDefinition monster, DropItemGroup selectedGroup, Player player, int gainedExperience, out uint? droppedMoney)
         {
+            droppedMoney = null;
             if (selectedGroup != null)
             {
                 if (selectedGroup.PossibleItems?.Count > 0)
@@ -331,7 +325,8 @@ namespace MUnique.OpenMU.GameLogic
                     case SpecialItemType.SocketItem:
                         return this.GetRandomItem((int)monster[Stats.Level], true);
                     case SpecialItemType.Money:
-                        return this.GetMoneyItem(player, gainedExperience);
+                        droppedMoney = (uint)(gainedExperience + BaseMoneyDrop);
+                        return null;
                     default:
                         // none
                         return null;
