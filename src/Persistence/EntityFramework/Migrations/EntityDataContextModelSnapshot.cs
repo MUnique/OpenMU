@@ -757,6 +757,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("RecoveryInterval")
                         .HasColumnType("integer");
+                    
+                    b.Property<bool>("ShouldDropMoney")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 

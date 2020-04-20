@@ -27,28 +27,7 @@ namespace MUnique.OpenMU.Tests
         {
             var config = this.GetGameConfig();
             var generator = new DefaultDropGenerator(config, this.GetRandomizer(9999));
-            var item = generator.GetItemDropsOrAddMoney(this.GetMonster(1), 0, TestHelper.GetPlayer()).FirstOrDefault();
-            Assert.That(item, Is.Null);
-        }
-
-        /// <summary>
-        /// Tests if the drop of money succeeds.
-        /// </summary>
-        [Test]
-        public void TestItemDropMoney()
-        {
-            const int startMoney = 10000;
-            var experience = 1;
-            var moneyDrop = experience + DefaultDropGenerator.BaseMoneyDrop;
-
-            var player = TestHelper.GetPlayer().WithBasicDropItemGroups();
-            player.GameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
-            player.Money = startMoney;
-            var config = this.GetGameConfig();
-            var generator = new DefaultDropGenerator(config, this.GetRandomizer(4000));
-            var item = generator.GetItemDropsOrAddMoney(this.GetMonster(1), experience, player).FirstOrDefault();
-
-            Assert.That(player.Money, Is.EqualTo(startMoney + moneyDrop));
+            var item = generator.GetItemDrops(this.GetMonster(1), 0, TestHelper.GetPlayer(), out _).FirstOrDefault();
             Assert.That(item, Is.Null);
         }
 
@@ -64,7 +43,7 @@ namespace MUnique.OpenMU.Tests
             monster.DropItemGroups.Add(3000, SpecialItemType.Ancient, true);
 
             var generator = new DefaultDropGenerator(config, this.GetRandomizer2(0, 0.5));
-            var item = generator.GetItemDropsOrAddMoney(monster, 1, TestHelper.GetPlayer()).FirstOrDefault();
+            var item = generator.GetItemDrops(monster, 1, TestHelper.GetPlayer(), out _).FirstOrDefault();
 
             Assert.That(item, Is.Not.Null);
 

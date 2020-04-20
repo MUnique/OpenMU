@@ -94,6 +94,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public byte MaximumPartySize { get; set; }
 
         /// <summary>
+        /// Gets or sets if a monster should drop or adds money to the character directly.
+        /// </summary>
+        public bool ShouldDropMoney { get; set; }
+
+        /// <summary>
         /// Gets or sets the possible jewel mixes.
         /// </summary>
         [MemberOfAggregate]

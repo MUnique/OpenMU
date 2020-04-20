@@ -76,16 +76,6 @@ With some points we make our life easier in this project, with other points we t
 ### Calculations ###
 The calculations of attribute values (like character damage decrement etc.) is done with 32 bit float numbers and without rounding off, like the original server does at some places.
 
-### Money drops ###
-The original server drops money (zen) on the ground when a player kills a monster.
-The serialization of it is a bit strange, because it's sent as 'item drop' and misuses item fields to represent the money value.
-We make our life here easier, because we don't drop money. Instead, we directly add it to the inventory of the
-player(s).
-Benefits:
-  * More performance, as we don't create a ton of new "Item" objects which are actually no items. Money drops really often on the original server.
-  * Cleaner code as we don't misuse "Item" objects and don't need to invent something like a "MoneyItem".
-  * This also slightly improves gameplay - picking up all the money on the ground is a bit annoying.
-
 ### Countdown when changing character or sub-server ###
 The original server uses a five second countdown when a player wants to change his character or the sub-server.
 Maybe this was done for some performance reasons, as the original server would then save the character/account data.

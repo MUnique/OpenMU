@@ -80,6 +80,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MaximumCharactersPerAccount = table.Column<byte>(nullable: false),
                     CharacterNameRegex = table.Column<string>(nullable: true),
                     MaximumPasswordLength = table.Column<int>(nullable: false),
+                    ShouldDropMoney = table.Column<bool>(nullable: false),
                     MaximumPartySize = table.Column<byte>(nullable: false)
                 },
                 constraints: table =>
