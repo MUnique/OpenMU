@@ -138,13 +138,9 @@ namespace MUnique.OpenMU.GameLogic
                 observable.RemoveObserver(this.adaptee);
             }
 
-            if (item is DroppedItem)
+            if (item is DroppedItem || item is DroppedMoney)
             {
                 this.adaptee.ViewPlugIns.GetPlugIn<IDroppedItemsDisappearedPlugIn>()?.DroppedItemsDisappeared(item.GetAsEnumerable().Select(i => i.Id));
-            }
-            else if (item is DroppedMoney)
-            {
-                this.adaptee.ViewPlugIns.GetPlugIn<IDroppedItemsDisappearedPlugIn>()?.DroppedItemsDisappeared(new List<ushort>() { item.Id });
             }
             else
             {
