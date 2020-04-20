@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                var item = this.GetItemDropOrMoney(monster, group, player, gainedExperience, out droppedMoney);
+                var item = this.GetItemDropOrMoney(monster, group, gainedExperience, out droppedMoney);
                 if (item != null)
                 {
                     droppedItems ??= new List<Item>(1);
@@ -296,7 +296,7 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private Item GetItemDropOrMoney(MonsterDefinition monster, DropItemGroup selectedGroup, Player player, int gainedExperience, out uint? droppedMoney)
+        private Item GetItemDropOrMoney(MonsterDefinition monster, DropItemGroup selectedGroup, int gainedExperience, out uint? droppedMoney)
         {
             droppedMoney = null;
             if (selectedGroup != null)
