@@ -179,13 +179,13 @@ namespace MUnique.OpenMU.GameLogic
             }
             else
             {
-                var nonItems = oldItems.OfType<ILocateable>().Where(item => !(item is DroppedItem)).WhereActive();
+                var droppedItems = oldItems.OfType<ILocateable>().Where(item => item is DroppedItem || item is DroppedMoney);
+                var nonItems = oldItems.OfType<ILocateable>().Except(droppedItems).WhereActive();
                 if (nonItems.Any())
                 {
                     this.adaptee.ViewPlugIns.GetPlugIn<IObjectsOutOfScopePlugIn>()?.ObjectsOutOfScope(nonItems);
                 }
 
-                var droppedItems = oldItems.OfType<DroppedItem>();
                 if (droppedItems.Any())
                 {
                     this.adaptee.ViewPlugIns.GetPlugIn<IDroppedItemsDisappearedPlugIn>()?.DroppedItemsDisappeared(droppedItems.Select(item => item.Id));
@@ -230,6 +230,9 @@ namespace MUnique.OpenMU.GameLogic
             {
                 this.adaptee.ViewPlugIns.GetPlugIn<IShowDroppedItemsPlugIn>()?.ShowDroppedItems(droppedItems, false);
             }
+
+            var droppedMoney = newObjects.OfType<DroppedMoney>();
+            droppedMoney.ForEach(money => this.adaptee.ViewPlugIns.GetPlugIn<IShowMoneyDropPlugIn>()?.ShowMoney(money.Id, money.Amount, money.Position));
 
             newItems.ForEach(item => item.AddObserver(this.adaptee));
         }
