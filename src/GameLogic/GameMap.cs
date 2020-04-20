@@ -124,7 +124,8 @@ namespace MUnique.OpenMU.GameLogic
             this.areaOfInterestManager.RemoveObject(locateable);
             if (this.objectsInMap.Remove(locateable.Id) && locateable.Id != 0)
             {
-                if (locateable is DroppedItem)
+                if (locateable is DroppedItem
+                    || locateable is DroppedMoney)
                 {
                     this.dropIdGenerator.GiveBack(locateable.Id);
                 }
