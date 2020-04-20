@@ -319,7 +319,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                             return;
                         }
 
-                        droppedItem = new DroppedMoney(moneyItem, dropCoordinates, this.CurrentMap, killer, owners);
+                        droppedItem = new DroppedMoney(moneyItem.Amount, dropCoordinates, this.CurrentMap);
                         break;
                     default:
                         droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, killer, owners);

@@ -5,8 +5,6 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using log4net;
     using MUnique.OpenMU.Pathfinding;
@@ -18,18 +16,10 @@ namespace MUnique.OpenMU.GameLogic
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(DroppedMoney));
 
-        private static readonly TimeSpan TimeUntilDropIsFree = TimeSpan.FromSeconds(10);
-
         /// <summary>
         /// Gets the pickup lock. Used to synchronize pick up requests from the players.
         /// </summary>
         private readonly object pickupLock;
-
-        private readonly DateTime dropTimestamp = DateTime.UtcNow;
-
-        private Player dropper;
-
-        private IEnumerable<object> owners;
 
         private Timer removeTimer;
 
@@ -38,38 +28,22 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Initializes a new instance of the <see cref="DroppedMoney" /> class.
         /// </summary>
-        /// <param name="item">The money item.</param>
+        /// <param name="amount">The amount.</param>
         /// <param name="position">The position where the item was dropped on the map.</param>
         /// <param name="map">The map.</param>
-        /// <param name="dropper">The dropper.</param>
-        public DroppedMoney(MoneyItem item, Point position, GameMap map, Player dropper)
-            : this(item, position, map, dropper, null)
+        public DroppedMoney(uint amount, Point position, GameMap map)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DroppedMoney" /> class.
-        /// </summary>
-        /// <param name="item">The money item.</param>
-        /// <param name="position">The position where the item was dropped on the map.</param>
-        /// <param name="map">The map.</param>
-        /// <param name="dropper">The dropper.</param>
-        /// <param name="owners">The owners.</param>
-        public DroppedMoney(MoneyItem item, Point position, GameMap map, Player dropper, IEnumerable<object> owners)
-        {
-            this.Item = item;
+            this.Amount = amount;
             this.pickupLock = new object();
             this.Position = position;
             this.CurrentMap = map;
-            this.dropper = dropper;
-            this.owners = owners;
             this.removeTimer = new Timer((d) => this.Dispose(), null, map.ItemDropDuration * 1000, Timeout.Infinite);
         }
 
         /// <summary>
         /// Gets the money item.
         /// </summary>
-        public MoneyItem Item { get; }
+        public uint Amount { get; }
 
         /// <inheritdoc />
         public Point Position { get; set; }
@@ -94,43 +68,6 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public bool TryPickUpBy(Player player)
         {
-            if (!this.IsPlayerAnOwner(player)
-                && DateTime.UtcNow < this.dropTimestamp.Add(TimeUntilDropIsFree))
-            {
-                return false;
-            }
-
-            return this.TryPickUp(player);
-        }
-
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            return $"money: {this.Item.Amount} at {this.CurrentMap.Definition.Name} ({this.Position})";
-        }
-
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            var timer = this.removeTimer;
-            if (timer != null)
-            {
-                this.removeTimer = null;
-                timer.Dispose();
-                this.CurrentMap.Remove(this);
-                this.dropper = null;
-                this.owners = null;
-            }
-        }
-
-        private bool IsPlayerAnOwner(Player player)
-        {
-            return this.owners?.Contains(player) ?? true;
-        }
-
-        private bool TryPickUp(Player player)
-        {
             Log.DebugFormat("Player {0} tries to pick up {1}", player, this);
             lock (this.pickupLock)
             {
@@ -140,7 +77,7 @@ namespace MUnique.OpenMU.GameLogic
                     return false;
                 }
 
-                if (!player.TryAddMoney((int)this.Item.Amount))
+                if (!player.TryAddMoney((int)this.Amount))
                 {
                     Log.DebugFormat("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
                     return false;
@@ -151,12 +88,26 @@ namespace MUnique.OpenMU.GameLogic
 
             Log.InfoFormat("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
             this.Dispose();
-            if (this.dropper != null && !this.dropper.PlayerState.Finished)
-            {
-                this.dropper.PersistenceContext.SaveChanges();
-            }
 
             return true;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"Money: {this.Amount} at {this.CurrentMap.Definition.Name} ({this.Position})";
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            var timer = this.removeTimer;
+            if (timer != null)
+            {
+                this.removeTimer = null;
+                timer.Dispose();
+                this.CurrentMap.Remove(this);
+            }
         }
     }
 }
