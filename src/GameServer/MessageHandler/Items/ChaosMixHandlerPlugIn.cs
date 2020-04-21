@@ -30,7 +30,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         public void HandlePacket(Player player, Span<byte> packet)
         {
             ChaosMachineMixRequest message = packet;
-            this.mixAction.MixItems(player, (byte)message.MixType);
+            var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
+
+            this.mixAction.MixItems(player, (byte)message.MixType, socketSlot);
         }
     }
 }

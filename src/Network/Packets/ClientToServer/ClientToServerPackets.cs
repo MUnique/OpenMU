@@ -5893,7 +5893,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 4;
+        public static int Length => 5;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -5907,6 +5907,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         {
             get => (ChaosMachineMixType)this.data.Slice(3)[0];
             set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the 0-based slot index of the socket at which a seed sphere should be mounted or removed. May only be available for the corresponding mixes, so access with care.
+        /// </summary>
+        public byte SocketSlot
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
         }
 
         /// <summary>

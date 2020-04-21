@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player)
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
         {
             var item = requiredItems.First().Items.First();
             var johOptionLink = item.ItemOptions.First(link => link.ItemOption.OptionType == ItemOptionTypes.HarmonyOption);

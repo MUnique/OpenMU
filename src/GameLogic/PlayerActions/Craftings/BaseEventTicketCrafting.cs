@@ -103,7 +103,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         protected abstract byte GetSuccessRate(int eventLevel);
 
         /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player)
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex)
         {
             var item = player.PersistenceContext.CreateNew<Item>();
             item.Definition = player.GameContext.Configuration.Items.First(i => i.Name == this.resultItemName);

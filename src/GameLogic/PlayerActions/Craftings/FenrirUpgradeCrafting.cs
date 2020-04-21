@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         }
 
         /// <inheritdoc/>
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player)
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex)
         {
             var fenrir = requiredItems.First(i => i.ItemRequirement.Reference == 1).Items.First();
 

@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <inheritdoc/>
-        public (CraftingResult, Item) DoMix(Player player)
+        public (CraftingResult, Item) DoMix(Player player, byte socketSlot)
         {
             if (this.TryGetRequiredItems(player, out var items, out var successRate) is { } error)
             {
@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var success = Rand.NextRandomBool(successRate);
             if (success)
             {
-                if (this.DoTheMix(items, player) is { } item)
+                if (this.DoTheMix(items, player, socketSlot) is { } item)
                 {
                     return (CraftingResult.Success, item);
                 }
@@ -75,23 +75,27 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// </summary>
         /// <param name="requiredItems">The required items.</param>
         /// <param name="player">The player.</param>
+        /// <param name="socketSlot">The slot of the socket.</param>
         /// <returns>The created or modified items.</returns>
-        protected abstract IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player);
+        protected abstract IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot);
 
         /// <summary>
         /// Performs the crafting with the specified items.
         /// </summary>
         /// <param name="requiredItems">The required items.</param>
         /// <param name="player">The player.</param>
-        /// <returns>The created or modified item. If there are multiple, only the last one is returned.</returns>
-        private Item DoTheMix(IList<CraftingRequiredItemLink> requiredItems, Player player)
+        /// <param name="socketSlot">The slot of the socket.</param>
+        /// <returns>
+        /// The created or modified item. If there are multiple, only the last one is returned.
+        /// </returns>
+        private Item DoTheMix(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
         {
             foreach (var requiredItemLink in requiredItems)
             {
                 this.RequiredItemChange(player, requiredItemLink, true);
             }
 
-            var resultItems = this.CreateOrModifyResultItems(requiredItems, player);
+            var resultItems = this.CreateOrModifyResultItems(requiredItems, player, socketSlot);
             return resultItems.LastOrDefault();
         }
 
