@@ -139,7 +139,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 target[5] |= GuardianOptionFlag;
             }
 
-            target[6] = GetHarmonyByte(item);
+            target[6] = (byte)(GetHarmonyByte(item) | GetSocketBonusByte(item));
             SetSocketBytes(target.Slice(7), item);
         }
 
@@ -176,10 +176,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             ReadNormalOption(array, persistenceContext, item);
             ReadAncientOption(array[4], persistenceContext, item);
             ReadLevel380Option(array[5], persistenceContext, item);
-            ReadHarmonyOption(array[6], persistenceContext, item);
             if (item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.BlackFenrir)))
             {
                 ReadFenrirOptions(array[3], persistenceContext, item);
+            }
+
+            if (item.Definition.MaximumSockets == 0)
+            {
+                ReadHarmonyOption(array[6], persistenceContext, item);
+            }
+            else
+            {
+                ReadSocketBonus(array[6], persistenceContext, item);
             }
 
             ReadSockets(array.Slice(7), persistenceContext, item);
@@ -349,10 +357,27 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                                    ?? throw new ArgumentException($"The socket option {socketByte} was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
                 var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
                 optionLink.ItemOption = socketOption;
+                optionLink.Index = i;
                 item.ItemOptions.Add(optionLink);
             }
 
             item.SocketCount = numberOfSockets;
+        }
+
+        private static void ReadSocketBonus(byte socketBonusByte, IContext persistenceContext, Item item)
+        {
+            if (socketBonusByte == 0 || socketBonusByte == 0xFF)
+            {
+                return;
+            }
+
+            var bonusOption = item.Definition.PossibleItemOptions
+                .SelectMany(o => o.PossibleOptions
+                    .Where(p => p.OptionType == ItemOptionTypes.SocketBonusOption && p.Number == socketBonusByte))
+                .FirstOrDefault();
+            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = bonusOption;
+            item.ItemOptions.Add(optionLink);
         }
 
         private static void ReadHarmonyOption(byte harmonyByte, IContext persistenceContext, Item item)
@@ -426,17 +451,33 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private static void SetSocketBytes(Span<byte> target, Item item)
         {
-            for (int i = 0; i < MaximumSockets; i++)
+            byte GetSocketByte(int socketSlot)
             {
-                target[i] = i < item.SocketCount ? EmptySocket : NoSocket;
+                var optionLink = item.ItemOptions.FirstOrDefault(o =>
+                    o.ItemOption.OptionType == ItemOptionTypes.SocketOption && o.Index == socketSlot);
+                return (byte)(optionLink?.ItemOption.Number ?? EmptySocket);
             }
 
-            var socketOptions = item.ItemOptions.Where(o => o.ItemOption.OptionType == ItemOptionTypes.SocketOption).Select(o => o.ItemOption.Number);
-            int j = 0;
-            foreach (int number in socketOptions)
+            for (int i = 0; i < MaximumSockets; i++)
             {
-                target[j++] = (byte)number;
+                target[i] = i < item.SocketCount ? GetSocketByte(i) : NoSocket;
             }
+        }
+
+        private static byte GetSocketBonusByte(Item item)
+        {
+            if (item.SocketCount == 0)
+            {
+                return 0;
+            }
+
+            var bonusOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.SocketBonusOption);
+            if (bonusOption != null)
+            {
+                return (byte)bonusOption.ItemOption.Number;
+            }
+
+            return 0xFF;
         }
 
         private static byte GetHarmonyByte(Item item)
