@@ -68,6 +68,26 @@ namespace MUnique.OpenMU.GameLogic
         /// The storage of the cherry blossom spirit dialog.
         /// </summary>
         CherryBlossomSpirit,
+
+        /// <summary>
+        /// The storage of the seed crafting dialog.
+        /// </summary>
+        SeedCrafting,
+
+        /// <summary>
+        /// The storage of the seed sphere crafting dialog.
+        /// </summary>
+        SeedSphereCrafting,
+
+        /// <summary>
+        /// The storage of the seed mount crafting dialog.
+        /// </summary>
+        SeedMountCrafting,
+
+        /// <summary>
+        /// The storage of the seed unmount crafting dialog.
+        /// </summary>
+        SeedUnmountCrafting,
     }
 
     /// <summary>

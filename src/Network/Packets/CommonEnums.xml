@@ -63,6 +63,26 @@
           <Description>The storage of the cherry blossom spirit dialog.</Description>
           <Value>10</Value>
         </EnumValue>
+        <EnumValue>
+          <Name>SeedCrafting</Name>
+          <Description>The storage of the seed crafting dialog.</Description>
+          <Value>11</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>SeedSphereCrafting</Name>
+          <Description>The storage of the seed sphere crafting dialog.</Description>
+          <Value>12</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>SeedMountCrafting</Name>
+          <Description>The storage of the seed sphere mount dialog.</Description>
+          <Value>13</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>SeedUnmountCrafting</Name>
+          <Description>The storage of the seed sphere unmount dialog.</Description>
+          <Value>14</Value>
+        </EnumValue>
       </Values>
     </Enum>
     <Enum>

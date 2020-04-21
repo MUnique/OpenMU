@@ -36,6 +36,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
                 Storages.ItemRestore => ItemStorageKind.ItemRestore,
                 Storages.ChaosCardMaster => ItemStorageKind.ChaosCardMaster,
                 Storages.CherryBlossomSpirit => ItemStorageKind.CherryBlossomSpirit,
+                Storages.SeedCrafting => ItemStorageKind.SeedCrafting,
+                Storages.SeedSphereCrafting => ItemStorageKind.SeedSphereCrafting,
+                Storages.SeedMountCrafting => ItemStorageKind.SeedMountCrafting,
+                Storages.SeedUnmountCrafting => ItemStorageKind.SeedUnmountCrafting,
                 _ => throw new NotImplementedException($"Unhandled case {storage}."),
             };
         }
@@ -60,6 +64,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
                 ItemStorageKind.ItemRestore => Storages.ItemRestore,
                 ItemStorageKind.ChaosCardMaster => Storages.ChaosCardMaster,
                 ItemStorageKind.CherryBlossomSpirit => Storages.CherryBlossomSpirit,
+                ItemStorageKind.SeedCrafting => Storages.SeedCrafting,
+                ItemStorageKind.SeedSphereCrafting => Storages.SeedSphereCrafting,
+                ItemStorageKind.SeedMountCrafting => Storages.SeedMountCrafting,
+                ItemStorageKind.SeedUnmountCrafting => Storages.SeedUnmountCrafting,
                 _ => throw new NotImplementedException($"Unhandled case {storage}."),
             };
         }
