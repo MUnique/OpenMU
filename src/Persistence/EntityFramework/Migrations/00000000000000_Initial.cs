@@ -2107,6 +2107,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Level = table.Column<int>(nullable: false),
+                    Index = table.Column<int>(nullable: false),
                     ItemOptionId = table.Column<Guid>(nullable: true),
                     ItemId = table.Column<Guid>(nullable: true)
                 },

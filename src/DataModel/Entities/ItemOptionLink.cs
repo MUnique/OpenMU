@@ -24,6 +24,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         public int Level { get; set; } = 1;
 
         /// <summary>
+        /// Gets or sets the index of the option. This is required when the options are sorted, e.g. for socket options.
+        /// </summary>
+        public int Index { get; set; }
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <returns>The cloned instance.</returns>
@@ -42,6 +47,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         {
             this.ItemOption = otherLink.ItemOption;
             this.Level = otherLink.Level;
+            this.Index = otherLink.Index;
         }
 
         /// <inheritdoc />
