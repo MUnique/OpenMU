@@ -72,10 +72,11 @@ namespace MUnique.OpenMU.GameLogic
                         monster.DropItemGroups,
                         character.DropItemGroups,
                         map.DropItemGroups,
-                        character.QuestStates.SelectMany(q => q.ActiveQuest?.RequiredItems
+                        character.QuestStates?.SelectMany(q => q.ActiveQuest?.RequiredItems
                             .Where(i => i.DropItemGroup is { })
                             .Select(i => i.DropItemGroup)
-                            ?? Enumerable.Empty<DropItemGroup>()))
+                                ?? Enumerable.Empty<DropItemGroup>())
+                            ?? Enumerable.Empty<DropItemGroup>())
                     .Where(group => IsGroupRelevant(monster, group))
                     .OrderBy(group => group.Chance);
 

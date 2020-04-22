@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.Tests
         public void SetCompleteGivesPowerUp()
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetDefenseBonusSet(true, 10, 11, 11, 11, 11);
+            var items = this.GetDefenseBonusSet(10, 11, 11, 11, 11);
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.Tests
         public void SetCompleteGivesPowerUpWhenItemIsHigherLevel()
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetDefenseBonusSet(true, 10, 11, 12, 11, 11);
+            var items = this.GetDefenseBonusSet(10, 11, 12, 11, 11);
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
@@ -139,7 +139,7 @@ namespace MUnique.OpenMU.Tests
         public void SetIncompleteDueLowerLevelItemsGivesNoPowerUp()
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetDefenseBonusSet(true, 10, 11, 11, 15, 9);
+            var items = this.GetDefenseBonusSet(10, 11, 11, 15, 9);
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
             Assert.That(result.Count(), Is.EqualTo(0));
         }
@@ -163,8 +163,8 @@ namespace MUnique.OpenMU.Tests
         public void SetIncompleteGivesNoPowerUp()
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetDefenseBonusSet(false, 30, 15, 15, 15);
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            var items = this.GetDefenseBonusSet(30, 15, 15, 15);
+            var result = factory.GetSetPowerUps(items.Skip(1), this.GetAttributeSystem());
             Assert.That(result.Count(), Is.EqualTo(0));
         }
 
@@ -175,7 +175,7 @@ namespace MUnique.OpenMU.Tests
         public void SetBonusDefSetValueCorrect()
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetDefenseBonusSet(true, 5, 10, 10, 15, 10);
+            var items = this.GetDefenseBonusSet(5, 10, 10, 15, 10);
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem()).ToList();
             Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result.First().Value, Is.EqualTo(5.0));
@@ -189,7 +189,7 @@ namespace MUnique.OpenMU.Tests
         public void SetBonusNotAppliedWhenFullSetOfHigherLevel()
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetDefenseBonusSet(true, 5, 10, 15, 15, 15);
+            var items = this.GetDefenseBonusSet(5, 10, 15, 15, 15);
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
             Assert.That(result.Count(), Is.EqualTo(0));
         }
@@ -201,29 +201,33 @@ namespace MUnique.OpenMU.Tests
         public void OneAncientItemGivesJustBonusOption()
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetAncientSet(5, 1);
-            var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
+            var items = this.GetAncientSet(5, 4).ToList();
+
+            var bonusOptions = factory.GetPowerUps(items.First(), this.GetAttributeSystem());
             Assert.That(bonusOptions.Count(), Is.EqualTo(1));
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+
+            var result = factory.GetSetPowerUps(items.Take(1), this.GetAttributeSystem());
             Assert.That(result, Is.Empty);
         }
 
         /// <summary>
         /// Tests if a partially complete ancient set gives just the bonus option plus the number of unlocked options (item count - 1).
         /// </summary>
-        /// <param name="itemCount">The item count.</param>
+        /// <param name="setSize">The item count.</param>
         [TestCase(2)]
         [TestCase(3)]
         [TestCase(4)]
-        public void AncientSetPartiallyComplete(int itemCount)
+        public void AncientSetPartiallyComplete(int setSize)
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetAncientSet(5, itemCount);
+            var setItems = this.GetAncientSet(5, setSize).ToList();
+            var items = setItems.SkipLast(1).ToList();
+
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
-            Assert.That(result.Count(), Is.EqualTo(itemCount - 1));
+            Assert.That(result.Count(), Is.EqualTo(items.Count - 1));
 
             var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
-            Assert.That(bonusOptions.Count(), Is.EqualTo(itemCount));
+            Assert.That(bonusOptions.Count(), Is.EqualTo(items.Count));
         }
 
         /// <summary>
@@ -234,9 +238,9 @@ namespace MUnique.OpenMU.Tests
         public void AncientSetComplete()
         {
             var factory = this.GetPowerUpFactory();
-            var items = this.GetAncientSet(5, 5);
+            var items = this.GetAncientSet(6, 5);
             var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
-            Assert.That(result.Count(), Is.EqualTo(4));
+            Assert.That(result.Count(), Is.EqualTo(6));
             var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
             Assert.That(bonusOptions.Count(), Is.EqualTo(5));
         }
@@ -310,12 +314,12 @@ namespace MUnique.OpenMU.Tests
             return new ItemOptionLink { ItemOption = option, Level = 1 };
         }
 
-        private IEnumerable<Item> GetDefenseBonusSet(bool complete, float setBonusDefense, byte minimumLevel, params byte[] levels)
+        private IEnumerable<Item> GetDefenseBonusSet(float setBonusDefense, byte minimumLevel, params byte[] levels)
         {
             var armorSet = new Mock<ItemSetGroup>();
             armorSet.Setup(a => a.Items).Returns(new List<ItemOfItemSet>());
             armorSet.Setup(a => a.Options).Returns(new List<IncreasableItemOption>());
-            armorSet.Object.MinimumItemCount = complete ? levels.Length : levels.Length + 1;
+            armorSet.Object.MinimumItemCount = levels.Length;
             armorSet.Object.SetLevel = minimumLevel;
             armorSet.Object.Options.Add(this.GetOption(Stats.DefenseBase, setBonusDefense).ItemOption);
             foreach (var level in levels)
@@ -329,13 +333,13 @@ namespace MUnique.OpenMU.Tests
             }
         }
 
-        private IEnumerable<Item> GetAncientSet(int setItemCount, int itemCount)
+        private IEnumerable<Item> GetAncientSet(int ancientOptionCount, int itemCount)
         {
             var ancientSet = new Mock<ItemSetGroup>();
             ancientSet.Setup(a => a.Items).Returns(new List<ItemOfItemSet>());
             ancientSet.Setup(a => a.Options).Returns(new List<IncreasableItemOption>());
             ancientSet.Object.MinimumItemCount = 2;
-            for (int i = 0; i < setItemCount; i++)
+            for (int i = 0; i < ancientOptionCount; i++)
             {
                 var setOption = this.GetOption(Stats.DefenseBase, i + 10).ItemOption;
                 setOption.Number = i + 1;
