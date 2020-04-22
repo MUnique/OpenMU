@@ -71,6 +71,7 @@ namespace MUnique.OpenMU.DataModel.Entities
             this.Durability = otherItem.Durability;
             this.Level = otherItem.Level;
             this.HasSkill = otherItem.HasSkill;
+            this.SocketCount = otherItem.SocketCount;
             if (otherItem.ItemOptions != null && otherItem.ItemOptions.Any())
             {
                 this.ItemOptions.Clear();
