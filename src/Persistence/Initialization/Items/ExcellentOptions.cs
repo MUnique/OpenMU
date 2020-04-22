@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.MoneyAmountRate, 1.4f, AggregateType.Multiplicate));
             definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.DefenseRatePvm, 1.1f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.DamageReflection, 0.4f, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.DamageReflection, 0.04f, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.DamageReceiveDecrement, 0.96f, AggregateType.Multiplicate));
             definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumMana, 1.04f, AggregateType.Multiplicate));
             definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.MaximumHealth, 1.04f, AggregateType.Multiplicate));
