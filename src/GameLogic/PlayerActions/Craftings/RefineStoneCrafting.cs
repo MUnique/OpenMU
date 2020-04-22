@@ -121,7 +121,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> referencedItems, Player player)
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> referencedItems, Player player, byte socketSlot)
         {
             var higherRefineStoneItems = referencedItems
                 .FirstOrDefault(r => r.ItemRequirement.Reference == HigherRefineStoneReference)?.Items;

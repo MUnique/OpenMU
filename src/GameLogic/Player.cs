@@ -779,14 +779,14 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-            if (skill.ConsumeRequirements.Any(r => r.MinimumValue > this.Attributes[r.Attribute]))
+            if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r) > this.Attributes[r.Attribute]))
             {
                 return false;
             }
 
             foreach (var requirement in skill.ConsumeRequirements)
             {
-                this.Attributes[requirement.Attribute] -= requirement.MinimumValue;
+                this.Attributes[requirement.Attribute] -= this.GetRequiredValue(requirement);
             }
 
             this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
@@ -961,7 +961,12 @@ namespace MUnique.OpenMU.GameLogic
             var reflectPercentage = this.Attributes[Stats.DamageReflection];
             if (reflectPercentage > 0 && attacker is IAttackable attackableAttacker)
             {
-                var reflectedDamage = (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
+                var reflectedDamage = (int)((hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage);
+                if (reflectedDamage == 0)
+                {
+                    return;
+                }
+
                 Task.Delay(500).ContinueWith(task =>
                 {
                     if (attackableAttacker.Alive)

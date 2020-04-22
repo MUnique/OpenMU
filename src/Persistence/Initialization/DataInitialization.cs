@@ -1442,6 +1442,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.CreateNpcs();
             this.CreateGameMapDefinitions();
             this.AssignCharacterClassHomeMaps();
+            new SocketSystem(this.context, this.gameConfiguration).Initialize();
             new ChaosMixes(this.context, this.gameConfiguration).Initialize();
             new Gates().Initialize(this.context, this.gameConfiguration);
             new Items.Quest(this.context, this.gameConfiguration).Initialize();

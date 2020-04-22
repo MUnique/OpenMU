@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player)
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
         {
             var resultItems = this.settings.ResultItemSelect == ResultItemSelection.All
                 ? this.settings.ResultItems

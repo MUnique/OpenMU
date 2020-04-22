@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.NPC;
 
     /// <summary>
@@ -23,7 +24,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="mixTypeId">The mix type identifier.</param>
-        public void MixItems(Player player, byte mixTypeId)
+        /// <param name="socketSlot">The socket slot.</param>
+        public void MixItems(Player player, byte mixTypeId, byte socketSlot)
         {
             var npcStats = player.OpenedNpc.Definition;
 
@@ -39,7 +41,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 this.craftingHandlerCache.Add(crafting, craftingHandler);
             }
 
-            var result = craftingHandler.DoMix(player);
+            (CraftingResult, Item) result;
+            try
+            {
+                result = craftingHandler.DoMix(player, socketSlot);
+            }
+            catch
+            {
+                result = (CraftingResult.LackingMixItems, null);
+            }
+
             var itemList = player.TemporaryStorage.Items.ToList();
             player.ViewPlugIns.GetPlugIn<IShowItemCraftingResultPlugIn>()?.ShowResult(result.Item1, itemList.Count > 1 ? null : result.Item2);
             player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(

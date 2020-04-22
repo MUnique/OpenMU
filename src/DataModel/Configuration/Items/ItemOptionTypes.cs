@@ -57,6 +57,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         public static ItemOptionType SocketOption { get; } = new ItemOptionType { Name = "Socket Option", Id = new Guid("{AAB309D3-CD97-4F77-AE1B-E9F904102502}") };
 
         /// <summary>
+        /// Gets the socket bonus option type.
+        /// </summary>
+        public static ItemOptionType SocketBonusOption { get; } = new ItemOptionType { Name = "Socket Bonus Option", Id = new Guid("{43DA2C68-D6E1-4B94-ADB1-8864D92F8FB9}") };
+
+        /// <summary>
         /// Gets the blue fenrir option type.
         /// </summary>
         /// <remarks>Applies only to the fenrir pet.</remarks>

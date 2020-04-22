@@ -72,6 +72,26 @@ namespace MUnique.OpenMU.Network.Packets
             /// The storage of the cherry blossom spirit dialog.
             /// </summary>
             CherryBlossomSpirit = 10,
+
+            /// <summary>
+            /// The storage of the seed crafting dialog.
+            /// </summary>
+            SeedCrafting = 11,
+
+            /// <summary>
+            /// The storage of the seed sphere crafting dialog.
+            /// </summary>
+            SeedSphereCrafting = 12,
+
+            /// <summary>
+            /// The storage of the seed sphere mount dialog.
+            /// </summary>
+            SeedMountCrafting = 13,
+
+            /// <summary>
+            /// The storage of the seed sphere unmount dialog.
+            /// </summary>
+            SeedUnmountCrafting = 14,
         }
 
         /// <summary>

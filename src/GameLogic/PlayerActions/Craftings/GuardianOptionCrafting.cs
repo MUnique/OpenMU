@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         public static byte ItemReference { get; } = 0x88;
 
         /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player)
+        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
         {
             var item = requiredItems.First(i => i.ItemRequirement.Reference == ItemReference && i.Items.Any()).Items.First();
             foreach (var optionDefinition in item.Definition.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption)).PossibleOptions)

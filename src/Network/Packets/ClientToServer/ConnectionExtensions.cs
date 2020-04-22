@@ -2223,15 +2223,17 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="mixType">The identifier which tells the server which kind of mix should be executed.</param>
+        /// <param name="socketSlot">The 0-based slot index of the socket at which a seed sphere should be mounted or removed. May only be available for the corresponding mixes, so access with care.</param>
         /// <remarks>
         /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
         /// Causes reaction on server side: Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
         /// </remarks>
-        public static void SendChaosMachineMixRequest(this IConnection connection, ChaosMachineMixRequest.ChaosMachineMixType @mixType)
+        public static void SendChaosMachineMixRequest(this IConnection connection, ChaosMachineMixRequest.ChaosMachineMixType @mixType, byte @socketSlot)
         {
             using var writer = connection.StartWriteChaosMachineMixRequest();
             var packet = writer.Packet;
             packet.MixType = @mixType;
+            packet.SocketSlot = @socketSlot;
             writer.Commit();
         }
 

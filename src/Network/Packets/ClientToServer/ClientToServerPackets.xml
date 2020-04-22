@@ -1500,7 +1500,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>86</Code>
       <Name>ChaosMachineMixRequest</Name>
-      <Length>4</Length>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.</SentWhen>
       <CausedReaction>Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.</CausedReaction>
@@ -1511,6 +1511,12 @@
           <TypeName>ChaosMachineMixType</TypeName>
           <Name>MixType</Name>
           <Description>The identifier which tells the server which kind of mix should be executed.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>SocketSlot</Name>
+          <Description>The 0-based slot index of the socket at which a seed sphere should be mounted or removed. May only be available for the corresponding mixes, so access with care.</Description>
         </Field>
       </Fields>
       <Enums>

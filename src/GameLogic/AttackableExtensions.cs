@@ -5,10 +5,12 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using log4net;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.Pathfinding;
@@ -22,6 +24,13 @@ namespace MUnique.OpenMU.GameLogic
         /// The logger of this class.
         /// </summary>
         private static readonly ILog Log = LogManager.GetLogger(typeof(AttackableExtensions));
+
+        private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
+            new Dictionary<AttributeDefinition, AttributeDefinition>
+            {
+                { Stats.CurrentMana, Stats.ManaUsageReduction },
+                { Stats.CurrentAbility, Stats.AbilityUsageReduction },
+            };
 
         /// <summary>
         /// Calculates the damage, using a skill.
@@ -282,6 +291,23 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
+        /// <summary>
+        /// Gets the required value of the <see cref="AttributeRequirement"/>.
+        /// </summary>
+        /// <param name="attacker">The attacker.</param>
+        /// <param name="attributeRequirement">The attribute requirement, e.g. of a skill.</param>
+        /// <returns>The required value.</returns>
+        public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement)
+        {
+            var modifier = 1.0f;
+            if (ReductionModifiers.TryGetValue(attributeRequirement.Attribute, out var reductionAttribute))
+            {
+                modifier -= attacker.Attributes[reductionAttribute];
+            }
+
+            return (int)(attributeRequirement.MinimumValue * modifier);
+        }
+
         private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
         {
             var hitChance = attacker.GetHitChanceTo(defender);
@@ -343,8 +369,8 @@ namespace MUnique.OpenMU.GameLogic
         private static void GetBaseDmg(this IAttacker attacker, SkillEntry skill, out int minimumBaseDamage, out int maximumBaseDamage)
         {
             var attackerStats = attacker.Attributes;
-            minimumBaseDamage = (int)attackerStats[Stats.BaseDamageBonus];
-            maximumBaseDamage = (int)attackerStats[Stats.BaseDamageBonus];
+            minimumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMinDamageBonus]);
+            maximumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMaxDamageBonus]);
 
             DamageType damageType = DamageType.Physical;
             if (skill != null)

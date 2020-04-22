@@ -244,6 +244,16 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition BaseDamageBonus { get; } = new AttributeDefinition(new Guid("BB6F0151-EAB2-4A9D-BFE3-51E145F36C52"), "Base Damage Bonus", "A bonus value which gets added to all min/max damage values during the damage calculation");
 
         /// <summary>
+        /// Gets the base min damage bonus attribute definition.
+        /// </summary>
+        public static AttributeDefinition BaseMinDamageBonus { get; } = new AttributeDefinition(new Guid("ACE8CC0A-3288-491C-A49F-4B754A18BA1F"), "Base Min Damage Bonus", "A bonus value which gets added to all min damage values during the damage calculation");
+
+        /// <summary>
+        /// Gets the base max damage bonus attribute definition.
+        /// </summary>
+        public static AttributeDefinition BaseMaxDamageBonus { get; } = new AttributeDefinition(new Guid("7C9E419B-63B0-4237-B799-B80418693A61"), "Base Max Damage Bonus", "A bonus value which gets added to all max damage values during the damage calculation");
+
+        /// <summary>
         /// Gets the skill multiplier attribute definition.
         /// </summary>
         public static AttributeDefinition SkillMultiplier { get; } = new AttributeDefinition(new Guid("D9FB3323-6DF5-48F7-8253-FDBB5EF82114"), "skillMultiplier", string.Empty);
@@ -439,6 +449,16 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.
         /// </summary>
         public static AttributeDefinition ShieldRecoveryEverywhere { get; } = new AttributeDefinition(new Guid("3D0A78FF-CCD4-442E-8B4E-64E5082ABD78"), "shieldRecovery", string.Empty);
+
+        /// <summary>
+        /// Gets the ability usage reduction attribute definition.
+        /// </summary>
+        public static AttributeDefinition AbilityUsageReduction { get; } = new AttributeDefinition(new Guid("5A712BEF-EA3C-404A-90DB-0FC37CDC65D4"), nameof(AbilityUsageReduction), "Factor (0~1) which describes how much of required ability of a skill is not consumed.");
+
+        /// <summary>
+        /// Gets the ability usage reduction attribute definition.
+        /// </summary>
+        public static AttributeDefinition ManaUsageReduction { get; } = new AttributeDefinition(new Guid("95548E17-F00E-4B22-A1AE-4CBB0C84C7D1"), nameof(ManaUsageReduction), "Factor (0~1) which describes how much of required mana of a skill is not consumed.");
 
         /// <summary>
         /// Gets the critical damage chance attribute definition.

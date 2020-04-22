@@ -165,6 +165,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 case Storages.ItemRestore:
                 case Storages.ChaosCardMaster:
                 case Storages.CherryBlossomSpirit:
+                case Storages.SeedCrafting:
+                case Storages.SeedSphereCrafting:
+                case Storages.SeedMountCrafting:
+                case Storages.SeedUnmountCrafting:
                     result = new StorageInfo(player.TemporaryStorage, TemporaryStorageRows, 0, TemporaryStorageSize);
                     break;
                 default:

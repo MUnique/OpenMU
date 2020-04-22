@@ -126,6 +126,8 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 item.ItemSetGroups.Add(ancientSet);
             }
 
+            item.SocketCount = item.Definition.MaximumSockets;
+
             return item;
         }
 
