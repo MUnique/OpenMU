@@ -974,6 +974,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("PowerUpDefinitionId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("SubOptionType")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ItemOptionDefinitionId");

@@ -21,6 +21,15 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         public int Number { get; set; }
 
         /// <summary>
+        /// Gets or sets a type of the sub option.
+        /// </summary>
+        /// <remarks>
+        /// This is required for socket options, for example.
+        /// There, it defines the element (fire, water, etc.) of the socket option.
+        /// </remarks>
+        public int SubOptionType { get; set; }
+
+        /// <summary>
         /// Gets or sets the type of the option.
         /// </summary>
         public virtual ItemOptionType OptionType { get; set; }

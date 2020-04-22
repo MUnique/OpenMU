@@ -777,6 +777,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Number = table.Column<int>(nullable: false),
                     LevelType = table.Column<int>(nullable: false),
+                    SubOptionType = table.Column<int>(nullable: true),
                     OptionTypeId = table.Column<Guid>(nullable: true),
                     PowerUpDefinitionId = table.Column<Guid>(nullable: true),
                     ItemOptionDefinitionId = table.Column<Guid>(nullable: true),
