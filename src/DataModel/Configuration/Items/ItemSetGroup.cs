@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
     using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
-    /// Defines an item set group. With (partial) completion of the set, addional options are getting applied.
+    /// Defines an item set group. With (partial) completion of the set, additional options are getting applied.
     /// </summary>
     /// <remarks>
     /// With this we can define a lot of things, for example:
