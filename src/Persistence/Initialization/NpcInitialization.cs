@@ -667,6 +667,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var def = this.context.CreateNew<MonsterDefinition>();
                 def.Number = 450;
                 def.Designation = "Cherry Blossom Spirit";
+                def.NpcWindow = NpcWindow.CherryBlossomBranchesAssembly;
                 def.ObjectKind = NpcObjectKind.PassiveNpc;
                 this.gameConfiguration.Monsters.Add(def);
             }

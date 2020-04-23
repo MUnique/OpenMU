@@ -26,6 +26,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         public override void Initialize()
         {
             this.CreateLifeStone();
+            this.CreateGoldenCherryBlossomBranch();
         }
 
         private void CreateLifeStone()
@@ -38,6 +39,18 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             itemDefinition.Durability = 1;
             itemDefinition.Width = 1;
             itemDefinition.Height = 1;
+            this.GameConfiguration.Items.Add(itemDefinition);
+        }
+
+        private void CreateGoldenCherryBlossomBranch()
+        {
+            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+            itemDefinition.Name = "Golden Cherry Blossom Branch";
+            itemDefinition.Number = 90;
+            itemDefinition.Group = 14;
+            itemDefinition.Durability = 255;
+            itemDefinition.Width = 1;
+            itemDefinition.Height = 2;
             this.GameConfiguration.Items.Add(itemDefinition);
         }
     }
