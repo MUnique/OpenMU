@@ -164,7 +164,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var factory = this.gameContext.ItemPowerUpFactory;
-            this.player.Attributes.ItemSetPowerUps = factory.GetSetPowerUps(this.EquippedItems, this.player.Attributes).ToList();
+            this.player.Attributes.ItemSetPowerUps = factory.GetSetPowerUps(this.EquippedItems, this.player.Attributes, this.player.GameContext.Configuration).ToList();
         }
     }
 }

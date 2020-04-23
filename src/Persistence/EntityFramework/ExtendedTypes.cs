@@ -1714,6 +1714,17 @@ public ICollection<JewelMix> RawJewelMixes { get; } = new List<JewelMix>();
             }
         }
 
+        public ICollection<ItemOptionCombinationBonus> RawItemOptionCombinationBonuses { get; } = new List<ItemOptionCombinationBonus>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus> ItemOptionCombinationBonuses
+        {
+            get
+            {
+                return base.ItemOptionCombinationBonuses ?? (base.ItemOptionCombinationBonuses = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus, ItemOptionCombinationBonus>(this.RawItemOptionCombinationBonuses)); 
+            }
+        }
+
         public ICollection<GameMapDefinition> RawMaps { get; } = new List<GameMapDefinition>();        
         /// <inheritdoc/>
         [NotMapped]
@@ -3518,6 +3529,70 @@ public ICollection<AttributeRequirement> RawRequirements { get; } = new List<Att
     }
 
     /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement"/>.
+    /// </summary>
+    [Table("CombinationBonusRequirement", Schema = "config")]
+    internal partial class CombinationBonusRequirement : MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="OptionType"/>.
+        /// </summary>
+        public Guid? OptionTypeId { get; set; }
+        
+        [ForeignKey("OptionTypeId")]
+        public ItemOptionType RawOptionType
+        { 
+            get { return base.OptionType as ItemOptionType; }
+            set { base.OptionType = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
+        {
+            get
+            {
+                return base.OptionType;
+            }
+            
+            set
+            {
+                base.OptionType = value;
+                this.OptionTypeId = this.RawOptionType?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption"/>.
     /// </summary>
     [Table("IncreasableItemOption", Schema = "config")]
@@ -3980,6 +4055,81 @@ public ICollection<ItemOptionOfLevel> RawLevelDependentOptions { get; } = new Li
             {
                 base.PowerUpDefinition = value;
                 this.PowerUpDefinitionId = this.RawPowerUpDefinition?.Id;
+            }
+        }
+
+                
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus"/>.
+    /// </summary>
+    [Table("ItemOptionCombinationBonus", Schema = "config")]
+    internal partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus, IIdentifiable
+    {        
+
+        protected void InitJoinCollections()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+public ICollection<CombinationBonusRequirement> RawRequirements { get; } = new List<CombinationBonusRequirement>();        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement> Requirements
+        {
+            get
+            {
+                return base.Requirements ?? (base.Requirements = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, CombinationBonusRequirement>(this.RawRequirements)); 
+            }
+        }
+
+                /// <summary>
+        /// Gets or sets the identifier of <see cref="Bonus"/>.
+        /// </summary>
+        public Guid? BonusId { get; set; }
+        
+        [ForeignKey("BonusId")]
+        public PowerUpDefinition RawBonus
+        { 
+            get { return base.Bonus as PowerUpDefinition; }
+            set { base.Bonus = value; } 
+        }
+                
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition Bonus
+        {
+            get
+            {
+                return base.Bonus;
+            }
+            
+            set
+            {
+                base.Bonus = value;
+                this.BonusId = this.RawBonus?.Id;
             }
         }
 
@@ -5229,11 +5379,13 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType>();
@@ -5443,6 +5595,9 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement>()
                             .Include<AttributeRequirement, BasicModel.AttributeRequirement>();
 
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement>()
+                            .Include<CombinationBonusRequirement, BasicModel.CombinationBonusRequirement>();
+
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption>()
                             .Include<IncreasableItemOption, BasicModel.IncreasableItemOption>();
 
@@ -5457,6 +5612,9 @@ public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<A
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption, MUnique.OpenMU.DataModel.Configuration.Items.ItemOption>()
                             .Include<ItemOption, BasicModel.ItemOption>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus, MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus>()
+                            .Include<ItemOptionCombinationBonus, BasicModel.ItemOptionCombinationBonus>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition, MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition>()
                             .Include<ItemOptionDefinition, BasicModel.ItemOptionDefinition>();

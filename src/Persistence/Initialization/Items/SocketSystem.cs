@@ -99,6 +99,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             this.AddSocketsToItems();
+            this.AddSocketPackageOptions();
 
             var seedMaster = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.SeedMaster);
             seedMaster.ItemCraftings.Add(this.SeedCrafting());
@@ -107,6 +108,54 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var seedResearcher = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.SeedResearcher);
             seedResearcher.ItemCraftings.Add(this.MountSeedSphereCrafting());
             seedResearcher.ItemCraftings.Add(this.RemoveSeedSphereCrafting());
+        }
+
+        private void AddSocketPackageOptions()
+        {
+            var doubleDamageChance = this.Context.CreateNew<ItemOptionCombinationBonus>();
+            doubleDamageChance.Number = 1;
+            doubleDamageChance.Description = "Socket package option: Double Damage Chance 3%";
+            doubleDamageChance.AppliesMultipleTimes = false;
+            doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Fire, 1));
+            doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Lightning, 1));
+            doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Ice, 1));
+            doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Water, 1));
+            doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Wind, 1));
+            doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Earth, 1));
+            var doubleDamageBonus = this.Context.CreateNew<PowerUpDefinition>();
+            doubleDamageBonus.TargetAttribute = Stats.DoubleDamageChance.GetPersistent(this.GameConfiguration);
+            doubleDamageBonus.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            doubleDamageBonus.Boost.ConstantValue.Value = 0.03f;
+            doubleDamageBonus.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
+            doubleDamageChance.Bonus = doubleDamageBonus;
+            this.GameConfiguration.ItemOptionCombinationBonuses.Add(doubleDamageChance);
+
+            var ignoreDamageChance = this.Context.CreateNew<ItemOptionCombinationBonus>();
+            ignoreDamageChance.Number = 2;
+            ignoreDamageChance.Description = "Socket package option: Ignore Defense Chance 1%";
+            ignoreDamageChance.AppliesMultipleTimes = false;
+            ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Fire, 1));
+            ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Lightning, 1));
+            ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Ice, 1));
+            ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Water, 3));
+            ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Wind, 3));
+            ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Earth, 2));
+            var ignoreDamageBonus = this.Context.CreateNew<PowerUpDefinition>();
+            ignoreDamageBonus.TargetAttribute = Stats.DefenseIgnoreChance.GetPersistent(this.GameConfiguration);
+            ignoreDamageBonus.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            ignoreDamageBonus.Boost.ConstantValue.Value = 0.01f;
+            ignoreDamageBonus.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
+            ignoreDamageChance.Bonus = ignoreDamageBonus;
+            this.GameConfiguration.ItemOptionCombinationBonuses.Add(ignoreDamageChance);
+        }
+
+        private CombinationBonusRequirement CreateBonusRequirement(SocketSubOptionType element, int amount)
+        {
+            var requirement = this.Context.CreateNew<CombinationBonusRequirement>();
+            requirement.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.SocketOption);
+            requirement.SubOptionType = (int)element;
+            requirement.MinimumCount = amount;
+            return requirement;
         }
 
         private void AddSocketsToItems()

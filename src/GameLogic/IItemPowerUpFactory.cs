@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -21,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="attributeSystem">The attribute system of the player who equipped the item.</param>
-        /// <returns>The created powerups.</returns>
+        /// <returns>The created power ups.</returns>
         IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem);
 
         /// <summary>
@@ -29,7 +30,8 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="equippedItems">The equipped items.</param>
         /// <param name="attributeSystem">The attribute system of the player who equipped the items.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
         /// <returns>The created set power ups.</returns>
-        IEnumerable<PowerUpWrapper> GetSetPowerUps(IEnumerable<Item> equippedItems, AttributeSystem attributeSystem);
+        IEnumerable<PowerUpWrapper> GetSetPowerUps(IEnumerable<Item> equippedItems, AttributeSystem attributeSystem, GameConfiguration gameConfiguration);
     }
 }

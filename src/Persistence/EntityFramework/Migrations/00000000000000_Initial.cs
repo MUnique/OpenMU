@@ -80,8 +80,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MaximumCharactersPerAccount = table.Column<byte>(nullable: false),
                     CharacterNameRegex = table.Column<string>(nullable: true),
                     MaximumPasswordLength = table.Column<int>(nullable: false),
-                    ShouldDropMoney = table.Column<bool>(nullable: false),
-                    MaximumPartySize = table.Column<byte>(nullable: false)
+                    MaximumPartySize = table.Column<byte>(nullable: false),
+                    ShouldDropMoney = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -776,8 +776,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Number = table.Column<int>(nullable: false),
+                    SubOptionType = table.Column<int>(nullable: false),
                     LevelType = table.Column<int>(nullable: false),
-                    SubOptionType = table.Column<int>(nullable: true),
                     OptionTypeId = table.Column<Guid>(nullable: true),
                     PowerUpDefinitionId = table.Column<Guid>(nullable: true),
                     ItemOptionDefinitionId = table.Column<Guid>(nullable: true),
@@ -812,6 +812,37 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.PowerUpDefinitionId,
                         principalSchema: "config",
                         principalTable: "PowerUpDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemOptionCombinationBonus",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    Number = table.Column<int>(nullable: false),
+                    AppliesMultipleTimes = table.Column<bool>(nullable: false),
+                    BonusId = table.Column<Guid>(nullable: true),
+                    GameConfigurationId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemOptionCombinationBonus", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemOptionCombinationBonus_PowerUpDefinition_BonusId",
+                        column: x => x.BonusId,
+                        principalSchema: "config",
+                        principalTable: "PowerUpDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemOptionCombinationBonus_GameConfiguration_GameConfigurat~",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1159,6 +1190,36 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.PowerUpDefinitionId,
                         principalSchema: "config",
                         principalTable: "PowerUpDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CombinationBonusRequirement",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    SubOptionType = table.Column<int>(nullable: false),
+                    MinimumCount = table.Column<int>(nullable: false),
+                    OptionTypeId = table.Column<Guid>(nullable: true),
+                    ItemOptionCombinationBonusId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CombinationBonusRequirement", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CombinationBonusRequirement_ItemOptionCombinationBonus_Item~",
+                        column: x => x.ItemOptionCombinationBonusId,
+                        principalSchema: "config",
+                        principalTable: "ItemOptionCombinationBonus",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CombinationBonusRequirement_ItemOptionType_OptionTypeId",
+                        column: x => x.OptionTypeId,
+                        principalSchema: "config",
+                        principalTable: "ItemOptionType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -2528,6 +2589,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CombinationBonusRequirement_ItemOptionCombinationBonusId",
+                schema: "config",
+                table: "CombinationBonusRequirement",
+                column: "ItemOptionCombinationBonusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CombinationBonusRequirement_OptionTypeId",
+                schema: "config",
+                table: "CombinationBonusRequirement",
+                column: "OptionTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ConnectServerDefinition_ClientId",
                 schema: "config",
                 table: "ConnectServerDefinition",
@@ -2760,6 +2833,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "ItemOfItemSet",
                 column: "ItemSetGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemOptionCombinationBonus_BonusId",
+                schema: "config",
+                table: "ItemOptionCombinationBonus",
+                column: "BonusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemOptionCombinationBonus_GameConfigurationId",
+                schema: "config",
+                table: "ItemOptionCombinationBonus",
+                column: "GameConfigurationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemOptionDefinition_GameConfigurationId",
@@ -3392,6 +3477,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
+                name: "CombinationBonusRequirement",
+                schema: "config");
+
+            migrationBuilder.DropTable(
                 name: "ConnectServerDefinition",
                 schema: "config");
 
@@ -3549,6 +3638,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "ChatServerDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ItemOptionCombinationBonus",
                 schema: "config");
 
             migrationBuilder.DropTable(

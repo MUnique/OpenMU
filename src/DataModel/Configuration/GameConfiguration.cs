@@ -159,6 +159,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public virtual ICollection<ItemSetGroup> ItemSetGroups { get; protected set; }
 
         /// <summary>
+        /// Gets or sets the item option combination bonuses.
+        /// </summary>
+        [MemberOfAggregate]
+        public virtual ICollection<ItemOptionCombinationBonus> ItemOptionCombinationBonuses { get; protected set; }
+
+        /// <summary>
         /// Gets or sets the map definitions.
         /// </summary>
         [MemberOfAggregate]

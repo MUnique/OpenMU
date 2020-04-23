@@ -450,6 +450,33 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("ChatServerEndpoint","config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CombinationBonusRequirement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ItemOptionCombinationBonusId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MinimumCount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("OptionTypeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SubOptionType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemOptionCombinationBonusId");
+
+                    b.HasIndex("OptionTypeId");
+
+                    b.ToTable("CombinationBonusRequirement","config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
                 {
                     b.Property<Guid>("Id")
@@ -757,7 +784,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("RecoveryInterval")
                         .HasColumnType("integer");
-                    
+
                     b.Property<bool>("ShouldDropMoney")
                         .HasColumnType("boolean");
 
@@ -1386,6 +1413,36 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("ItemSetGroupId");
 
                     b.ToTable("ItemOfItemSet","config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionCombinationBonus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("AppliesMultipleTimes")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("BonusId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("GameConfigurationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BonusId");
+
+                    b.HasIndex("GameConfigurationId");
+
+                    b.ToTable("ItemOptionCombinationBonus","config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", b =>
@@ -2596,6 +2653,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("ClientId");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CombinationBonusRequirement", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionCombinationBonus", null)
+                        .WithMany("RawRequirements")
+                        .HasForeignKey("ItemOptionCombinationBonusId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "RawOptionType")
+                        .WithMany()
+                        .HasForeignKey("OptionTypeId");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
@@ -2963,6 +3031,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", null)
                         .WithMany("RawItems")
                         .HasForeignKey("ItemSetGroupId");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionCombinationBonus", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "RawBonus")
+                        .WithMany()
+                        .HasForeignKey("BonusId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                        .WithMany("RawItemOptionCombinationBonuses")
+                        .HasForeignKey("GameConfigurationId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", b =>

@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using log4net;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -54,14 +55,16 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public IEnumerable<PowerUpWrapper> GetSetPowerUps(IEnumerable<Item> equippedItems, AttributeSystem attributeHolder)
+        public IEnumerable<PowerUpWrapper> GetSetPowerUps(
+            IEnumerable<Item> equippedItems,
+            AttributeSystem attributeHolder,
+            GameConfiguration gameConfiguration)
         {
             var activeItems = equippedItems
                 .Where(i => i.Durability > 0)
-                .Where(i => i.ItemSetGroups != null)
                 .ToList();
             var itemGroups = activeItems
-                .SelectMany(i => i.ItemSetGroups)
+                .SelectMany(i => i.ItemSetGroups ?? Enumerable.Empty<ItemSetGroup>())
                 .Distinct();
 
             var result = Enumerable.Empty<PowerUpDefinition>();
@@ -74,7 +77,7 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                var itemsOfGroup = activeItems.Where(i => i.ItemSetGroups.Contains(group)
+                var itemsOfGroup = activeItems.Where(i => (i.ItemSetGroups?.Contains(group) ?? false)
                     && (group.SetLevel == 0 || i.Level >= group.SetLevel));
                 var setMustBeComplete = group.MinimumItemCount == group.Items.Count;
                 if (group.SetLevel > 0 && setMustBeComplete && itemsOfGroup.All(i => i.Level > group.SetLevel))
@@ -102,7 +105,53 @@ namespace MUnique.OpenMU.GameLogic
                 }
             }
 
+            result = result.Concat(this.GetOptionCombinationBonus(activeItems, gameConfiguration));
+
             return result.SelectMany(p => PowerUpWrapper.CreateByPowerUpDefinition(p, attributeHolder));
+        }
+
+        private IEnumerable<PowerUpDefinition> GetOptionCombinationBonus(IEnumerable<Item> activeItems, GameConfiguration gameConfiguration)
+        {
+            if (gameConfiguration?.ItemOptionCombinationBonuses is null
+                 || gameConfiguration.ItemOptionCombinationBonuses.Count == 0)
+            {
+                yield break;
+            }
+
+            var activeItemOptions = activeItems.SelectMany(i => i.ItemOptions.Select(o => o.ItemOption)).ToList();
+            foreach (var combinationBonus in gameConfiguration.ItemOptionCombinationBonuses.Where(c => c.Bonus is { }))
+            {
+                var remainingOptions = activeItemOptions.ToList<ItemOption>();
+                while (this.AreRequiredOptionsFound(combinationBonus, remainingOptions))
+                {
+                    yield return combinationBonus.Bonus;
+                    if (!combinationBonus.AppliesMultipleTimes)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        private bool AreRequiredOptionsFound(ItemOptionCombinationBonus bonus, IList<ItemOption> itemOptions)
+        {
+            var allMatches = new List<ItemOption>();
+            foreach (var requirement in bonus.Requirements)
+            {
+                var matches = itemOptions
+                    .Where(o => o.OptionType == requirement.OptionType && o.SubOptionType == requirement.SubOptionType)
+                    .Take(requirement.MinimumCount)
+                    .ToList();
+                if (matches.Count < requirement.MinimumCount)
+                {
+                    return false;
+                }
+
+                allMatches.AddRange(matches);
+            }
+
+            allMatches.ForEach(o => itemOptions.Remove(o));
+            return true;
         }
 
         private IEnumerable<PowerUpWrapper> GetBasePowerUpWrappers(Item item, AttributeSystem attributeHolder, ItemBasePowerUpDefinition attribute)

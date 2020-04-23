@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = this.GetDefenseBonusSet(10, 11, 11, 11, 11);
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), null);
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
 
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = this.GetDefenseBonusSet(10, 11, 12, 11, 11);
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), null);
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
 
@@ -140,7 +140,7 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = this.GetDefenseBonusSet(10, 11, 11, 15, 9);
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), null);
             Assert.That(result.Count(), Is.EqualTo(0));
         }
 
@@ -152,7 +152,7 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = Enumerable.Empty<Item>();
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), null);
             Assert.That(result.Count(), Is.EqualTo(0));
         }
 
@@ -164,7 +164,7 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = this.GetDefenseBonusSet(30, 15, 15, 15);
-            var result = factory.GetSetPowerUps(items.Skip(1), this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items.Skip(1), this.GetAttributeSystem(), null);
             Assert.That(result.Count(), Is.EqualTo(0));
         }
 
@@ -176,7 +176,7 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = this.GetDefenseBonusSet(5, 10, 10, 15, 10);
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem()).ToList();
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), null).ToList();
             Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result.First().Value, Is.EqualTo(5.0));
         }
@@ -190,7 +190,7 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = this.GetDefenseBonusSet(5, 10, 15, 15, 15);
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), null);
             Assert.That(result.Count(), Is.EqualTo(0));
         }
 
@@ -206,7 +206,7 @@ namespace MUnique.OpenMU.Tests
             var bonusOptions = factory.GetPowerUps(items.First(), this.GetAttributeSystem());
             Assert.That(bonusOptions.Count(), Is.EqualTo(1));
 
-            var result = factory.GetSetPowerUps(items.Take(1), this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items.Take(1), this.GetAttributeSystem(), null);
             Assert.That(result, Is.Empty);
         }
 
@@ -223,7 +223,7 @@ namespace MUnique.OpenMU.Tests
             var setItems = this.GetAncientSet(5, setSize).ToList();
             var items = setItems.SkipLast(1).ToList();
 
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), null);
             Assert.That(result.Count(), Is.EqualTo(items.Count - 1));
 
             var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
@@ -239,7 +239,7 @@ namespace MUnique.OpenMU.Tests
         {
             var factory = this.GetPowerUpFactory();
             var items = this.GetAncientSet(6, 5);
-            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem());
+            var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), null);
             Assert.That(result.Count(), Is.EqualTo(6));
             var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
             Assert.That(bonusOptions.Count(), Is.EqualTo(5));

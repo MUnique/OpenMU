@@ -2064,6 +2064,32 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
+        /// Gets the raw collection of <see cref="ItemOptionCombinationBonuses" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("itemOptionCombinationBonuses")]
+        [System.Text.Json.Serialization.JsonPropertyName("itemOptionCombinationBonuses")]
+        public ICollection<ItemOptionCombinationBonus> RawItemOptionCombinationBonuses { get; } = new List<ItemOptionCombinationBonus>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus> ItemOptionCombinationBonuses
+        {
+            get
+            {
+                return base.ItemOptionCombinationBonuses ?? (base.ItemOptionCombinationBonuses = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus, ItemOptionCombinationBonus>(this.RawItemOptionCombinationBonuses)); 
+            }
+            protected set
+            {
+                this.ItemOptionCombinationBonuses.Clear();
+                foreach (var item in value)
+                {
+                    this.ItemOptionCombinationBonuses.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the raw collection of <see cref="Maps" />.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("maps")]
@@ -4143,6 +4169,65 @@ namespace MUnique.OpenMU.Persistence.BasicModel
     }
 
     /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement"/>.
+    /// </summary>
+    public partial class CombinationBonusRequirement : MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, IIdentifiable, IConvertibleTo<CombinationBonusRequirement>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="OptionType" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("optionType")]
+        [System.Text.Json.Serialization.JsonPropertyName("optionType")]
+        public ItemOptionType RawOptionType
+        { 
+            get { return base.OptionType as ItemOptionType; }
+            set { base.OptionType = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
+        {
+            get
+            {
+                return base.OptionType;
+            }
+            
+            set
+            {
+                base.OptionType = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public CombinationBonusRequirement Convert() => this;
+    }
+
+    /// <summary>
     /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption"/>.
     /// </summary>
     public partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IIdentifiable, IConvertibleTo<IncreasableItemOption>
@@ -4725,6 +4810,91 @@ namespace MUnique.OpenMU.Persistence.BasicModel
 
         /// <inheritdoc/>
         public ItemOption Convert() => this;
+    }
+
+    /// <summary>
+    /// A plain implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus"/>.
+    /// </summary>
+    public partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus, IIdentifiable, IConvertibleTo<ItemOptionCombinationBonus>
+    {
+        /// <summary>
+        /// Gets or sets the identifier of this instance.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the raw collection of <see cref="Requirements" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("requirements")]
+        [System.Text.Json.Serialization.JsonPropertyName("requirements")]
+        public ICollection<CombinationBonusRequirement> RawRequirements { get; } = new List<CombinationBonusRequirement>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement> Requirements
+        {
+            get
+            {
+                return base.Requirements ?? (base.Requirements = new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, CombinationBonusRequirement>(this.RawRequirements)); 
+            }
+            protected set
+            {
+                this.Requirements.Clear();
+                foreach (var item in value)
+                {
+                    this.Requirements.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="Bonus" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("bonus")]
+        [System.Text.Json.Serialization.JsonPropertyName("bonus")]
+        public PowerUpDefinition RawBonus
+        { 
+            get { return base.Bonus as PowerUpDefinition; }
+            set { base.Bonus = value; } 
+        }
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition Bonus
+        {
+            get
+            {
+                return base.Bonus;
+            }
+            
+            set
+            {
+                base.Bonus = value;
+            }
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var baseObject = obj as IIdentifiable;
+            if (baseObject != null)
+            {
+                return baseObject.Id == this.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public ItemOptionCombinationBonus Convert() => this;
     }
 
     /// <summary>
