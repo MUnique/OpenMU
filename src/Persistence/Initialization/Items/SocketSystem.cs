@@ -366,8 +366,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Name = "Socket Bonus Options (Physical)";
             definition.MaximumOptionsPerItem = 1;
             definition.AddChance = 0.30f;
+            definition.PossibleOptions.Add(this.CreateSocketBonusOption(0, Stats.BaseDamageBonus, 11));
             definition.PossibleOptions.Add(this.CreateSocketBonusOption(1, Stats.SkillDamageBonus, 11));
-            definition.PossibleOptions.Add(this.CreateSocketBonusOption(3, Stats.SkillDamageBonus, 11));
             return definition;
         }
 
@@ -378,8 +378,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Name = "Socket Bonus Options (Wizardry)";
             definition.MaximumOptionsPerItem = 1;
             definition.AddChance = 0.30f;
-            definition.PossibleOptions.Add(this.CreateSocketBonusOption(1, Stats.SkillDamageBonus, 11));
             definition.PossibleOptions.Add(this.CreateSocketBonusOption(2, Stats.BaseDamageBonus, 5));
+            definition.PossibleOptions.Add(this.CreateSocketBonusOption(3, Stats.SkillDamageBonus, 11));
             return definition;
         }
 

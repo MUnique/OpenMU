@@ -122,38 +122,39 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             }
 
             /* About the numbers:
+                0   Attack +11
                 1   Skill Attack Increase +11
                 2   Attack/Wiz +5
-                3   Skill Attack Increase +11 (don't ask me what's different to 1)
+                3   Skill Attack Increase +11
                 4   Defense Increase +24
                 5   Max Life +29
              */
-            if (options[0].SubOptionType == (int) SocketSubOptionType.Fire
-                && options[1].SubOptionType == (int) SocketSubOptionType.Lightning
-                && options[2].SubOptionType == (int) SocketSubOptionType.Ice)
+            if (options[0].SubOptionType == (int)SocketSubOptionType.Fire
+                && options[1].SubOptionType == (int)SocketSubOptionType.Lightning
+                && options[2].SubOptionType == (int)SocketSubOptionType.Ice)
             {
-                return possibleBonusOptions.PossibleOptions.FirstOrDefault(p => p.Number > 1);
+                return possibleBonusOptions.PossibleOptions.OrderBy(p => p.Number).FirstOrDefault();
             }
 
             if (options[0].SubOptionType == (int) SocketSubOptionType.Lightning
                 && options[1].SubOptionType == (int) SocketSubOptionType.Ice
                 && options[2].SubOptionType == (int) SocketSubOptionType.Fire)
             {
-                return possibleBonusOptions.PossibleOptions.FirstOrDefault(p => p.Number == 1);
+                return possibleBonusOptions.PossibleOptions.OrderBy(p => p.Number).LastOrDefault();
             }
 
             if (options[0].SubOptionType == (int) SocketSubOptionType.Water
                 && options[1].SubOptionType == (int) SocketSubOptionType.Earth
                 && options[2].SubOptionType == (int) SocketSubOptionType.Wind)
             {
-                return possibleBonusOptions.PossibleOptions.FirstOrDefault(p => p.Number == 4);
+                return possibleBonusOptions.PossibleOptions.OrderBy(p => p.Number).FirstOrDefault();
             }
 
             if (options[0].SubOptionType == (int) SocketSubOptionType.Earth
                 && options[1].SubOptionType == (int) SocketSubOptionType.Wind
                 && options[2].SubOptionType == (int) SocketSubOptionType.Water)
             {
-                return possibleBonusOptions.PossibleOptions.FirstOrDefault(p => p.Number == 5);
+                return possibleBonusOptions.PossibleOptions.OrderBy(p => p.Number).LastOrDefault();
             }
 
             return null;
