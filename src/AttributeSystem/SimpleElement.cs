@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.AttributeSystem
 
             set
             {
-                if (Math.Abs(this.value - value) > 0.01f)
+                if (Math.Abs(this.value - value) > 0.00001f)
                 {
                     this.value = value;
                     this.RaiseValueChanged();
