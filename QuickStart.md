@@ -83,5 +83,6 @@ These are the user names:
   * quest2: Test account for the level 220 quests
   * quest3: Test account for the level 400 quests
   * ancient: Test account with ancient item sets, level 330 characters
+  * socket: Test account with socket item sets, level 380 characters
 
 The passwords of these accounts are the same as the user name.
