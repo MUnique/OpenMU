@@ -74,6 +74,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 this.CreateTestAccount("quest2", 220);
                 this.CreateTestAccount("quest3", 400);
                 this.CreateTestAccount("ancient", 330);
+                this.CreateTestAccount("socket", 380);
                 var testGmAccount = this.CreateTestAccount("testgm", 400);
                 testGmAccount.State = AccountState.GameMaster;
                 testGmAccount.Characters.ForEach(c => c.CharacterStatus = CharacterStatus.GameMaster);
@@ -190,6 +191,26 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.Ring1Slot, ItemGroups.Misc1, 21, 0, "Anubis")); // Anubis Ring of Fire
 
                     break;
+                case 380:
+                    character = this.CreateCharacter(name, CharacterClassNumber.SoulMaster, level, 1);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 324;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+                    character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 1206;
+                    character.LevelUpPoints -= 1630; // for the added strength, agility, energy
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Staff, 31, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.RightHandSlot, ItemGroups.Shields, 20, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.ArmorSlot, ItemGroups.Armor, 52, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1))); // Enis Legendary Armor+13+16+L
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.HelmSlot, ItemGroups.Helm, 52, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1))); // Enis Legendary Helm+13+16+L
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.PantsSlot, ItemGroups.Pants, 52, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1))); // Enis Legendary Pants+13+16+L
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.GlovesSlot, ItemGroups.Gloves, 52, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1))); // Anubis Legendary Gloves+13+16+L
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.BootsSlot, ItemGroups.Boots, 52, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1))); // Enis Legendary Boots+13+16+L
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 4, 13)); // Wings of Soul +13
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.BlackFenrir));
+
+                    break;
                 case 400:
                     character = this.CreateCharacter(name, CharacterClassNumber.GrandMaster, level, 1);
 
@@ -303,6 +324,24 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.GlovesSlot, ItemGroups.Gloves, 14, 13, "Gywen")); // Gywen Gloves+13+16+L
                     character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.BootsSlot, ItemGroups.Boots, 14, 13, "Aruan")); // Aruan Boots+13+16+L
                     character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.PendantSlot, ItemGroups.Misc1, 28, 0, "Gywen")); // Gywen Pendant of Ability
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 3, 13)); // Wings of Spirits +13
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.BlueFenrir));
+                    break;
+                case 380:
+                    character = this.CreateCharacter(name, CharacterClassNumber.MuseElf, level, 2);
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 1080;
+                    character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 200;
+                    character.LevelUpPoints -= 1580; // for the added strength, agility and energy
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+                    character.Inventory.Items.Add(this.CreateArrows(InventoryConstants.LeftHandSlot));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.RightHandSlot, ItemGroups.Bows, 23, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1), (SocketSubOptionType.Lightning, 1), (SocketSubOptionType.Fire, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.ArmorSlot, ItemGroups.Armor, 49, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.HelmSlot, ItemGroups.Helm, 49, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.PantsSlot, ItemGroups.Pants, 49, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.GlovesSlot, ItemGroups.Gloves, 49, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.BootsSlot, ItemGroups.Boots, 49, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
                     character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 3, 13)); // Wings of Spirits +13
                     character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.BlueFenrir));
                     break;
@@ -436,6 +475,25 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
                     this.AddDarkKnightItems(character.Inventory);
                     break;
+                case 380:
+                    character = this.CreateCharacter(name, CharacterClassNumber.BladeKnight, level, 0);
+
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1170;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+                    character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 190;
+                    character.LevelUpPoints -= 1660; // for the added strength, agility and energy
+                    character.LevelUpPoints -= 220; // Before level 220, it's a point less per level
+
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Swords, 26, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.RightHandSlot, ItemGroups.Swords, 26, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.ArmorSlot, ItemGroups.Armor, 45, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.HelmSlot, ItemGroups.Helm, 45, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.PantsSlot, ItemGroups.Pants, 45, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.GlovesSlot, ItemGroups.Gloves, 45, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.BootsSlot, ItemGroups.Boots, 45, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 5, 13)); // Dragon Wings +13
+                    character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot));
+                    break;
                 case 400:
                     character = this.CreateCharacter(name, CharacterClassNumber.BladeMaster, level, 0);
 
@@ -545,6 +603,21 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
 
                     this.AddDarkLordItems(character.Inventory);
+                    break;
+                case 380:
+                    character = this.CreateCharacter(name, CharacterClassNumber.DarkLord, level, 3);
+                    character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 635;
+                    character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
+                    character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 200;
+                    character.LevelUpPoints -= 1135; // for the added strength and agility
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Scepters, 17, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.ArmorSlot, ItemGroups.Armor, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.HelmSlot, ItemGroups.Helm, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.PantsSlot, ItemGroups.Pants, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.GlovesSlot, ItemGroups.Gloves, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.BootsSlot, ItemGroups.Boots, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
+                    character.Inventory.Items.Add(this.CreateTestWing(InventoryConstants.WingsSlot, 30, 13, 13)); // Cape +13
+                    character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
                     break;
                 case 400:
                     character = this.CreateCharacter(name, CharacterClassNumber.LordEmperor, level, 3);
@@ -862,6 +935,40 @@ namespace MUnique.OpenMU.Persistence.Initialization
             }
 
             return weapon;
+        }
+
+        private Item CreateSocketItem(byte itemSlot, ItemGroups group, byte number, params (SocketSubOptionType Element, int Number)[] socketSlots)
+        {
+            var item = this.context.CreateNew<Item>();
+            item.Definition = this.gameConfiguration.Items.First(def => def.Group == (byte)group && def.Number == number);
+            item.Durability = item.Definition.Durability;
+            item.ItemSlot = itemSlot;
+            item.Level = 13;
+            item.HasSkill = item.Definition.Skill != null;
+            item.SocketCount = item.Definition.MaximumSockets;
+            var slot = 0;
+            foreach (var socketOption in socketSlots)
+            {
+                var socketOptionLink = this.context.CreateNew<ItemOptionLink>();
+                socketOptionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .Where(o => o.OptionType == ItemOptionTypes.SocketOption && o.SubOptionType == (int)socketOption.Element)
+                    .First(o => o.Number == socketOption.Number);
+                socketOptionLink.Index = slot++;
+                item.ItemOptions.Add(socketOptionLink);
+            }
+
+            var optionLink = this.context.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                .First(o => o.OptionType == ItemOptionTypes.Option);
+            optionLink.Level = 4;
+            item.ItemOptions.Add(optionLink);
+
+            var luckLink = this.context.CreateNew<ItemOptionLink>();
+            luckLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                .First(o => o.OptionType == ItemOptionTypes.Luck);
+            item.ItemOptions.Add(luckLink);
+
+            return item;
         }
 
         private Item CreateAlcohol(byte itemSlot)
