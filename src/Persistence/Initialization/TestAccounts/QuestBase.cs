@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
     /// <summary>
     /// Base initializer for an account to test quests.
     /// </summary>
-    internal abstract class QuestBase : AccountInitializerBase
+    internal class QuestBase : AccountInitializerBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="QuestBase"/> class.
