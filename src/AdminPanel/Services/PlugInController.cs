@@ -207,7 +207,20 @@ namespace MUnique.OpenMU.AdminPanel.Services
             }
         }
 
-        private static IEnumerable<Type> GetPluginTypes() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
+        private static IEnumerable<Type> GetPluginTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly =>
+            {
+                try
+                {
+                    return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null);
+                }
+                catch (ReflectionTypeLoadException)
+                {
+                    return Enumerable.Empty<Type>();
+                }
+            });
+        }
 
         private static string GetPlugInName(Type plugInType)
         {
