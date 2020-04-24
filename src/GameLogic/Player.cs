@@ -565,12 +565,13 @@ namespace MUnique.OpenMU.GameLogic
         public int AddExpAfterKill(IAttackable killedObject)
         {
             // Calculate the Exp
-            int inexp = (int)killedObject.Attributes[Stats.Level] * 1000 / (int)this.Attributes[Stats.Level];
-            inexp = Rand.NextInt((int)(inexp * 0.8), (int)(inexp * 1.2));
+            var experience = killedObject.Attributes[Stats.Level] * 1000 / this.Attributes[Stats.Level];
+            experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
+            experience *= this.Attributes[Stats.ExperienceRate];
 
             // todo: master exp
-            this.AddExperience(inexp, killedObject);
-            return inexp;
+            this.AddExperience((int)experience, killedObject);
+            return (int)experience;
         }
 
         /// <summary>
