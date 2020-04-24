@@ -16,6 +16,8 @@ namespace MUnique.OpenMU.GameServer
     /// </summary>
     public class GameServerContext : GameContext, IGameServerContext
     {
+        private readonly GameServerDefinition gameServerDefinition;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GameServerContext" /> class.
         /// </summary>
@@ -34,6 +36,7 @@ namespace MUnique.OpenMU.GameServer
             IMapInitializer mapInitializer)
             : base(gameServerDefinition.GameConfiguration, persistenceContextProvider, mapInitializer)
         {
+            this.gameServerDefinition = gameServerDefinition;
             this.Id = gameServerDefinition.ServerID;
             this.GuildServer = guildServer;
             this.LoginServer = loginServer;
@@ -60,6 +63,9 @@ namespace MUnique.OpenMU.GameServer
 
         /// <inheritdoc/>
         public GameServerConfiguration ServerConfiguration { get; }
+
+        /// <inheritdoc />
+        public override float ExperienceRate => base.ExperienceRate * this.gameServerDefinition.ExperienceRate;
 
         /// <inheritdoc/>
         public override void AddPlayer(Player player)

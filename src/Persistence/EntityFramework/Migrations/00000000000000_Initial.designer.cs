@@ -757,6 +757,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("CharacterNameRegex")
                         .HasColumnType("text");
 
+                    b.Property<float>("ExperienceRate")
+                        .HasColumnType("real");
+
                     b.Property<byte>("InfoRange")
                         .HasColumnType("smallint");
 
@@ -880,6 +883,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<float>("ExperienceRate")
+                        .HasColumnType("real");
 
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");

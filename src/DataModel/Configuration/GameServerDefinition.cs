@@ -24,6 +24,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the experience rate for the specific server.
+        /// Be aware that this multiplies with the <see cref="MUnique.OpenMU.DataModel.Configuration.GameConfiguration.ExperienceRate"/>.
+        /// </summary>
+        public float ExperienceRate { get; set; }
+
+        /// <summary>
         /// Gets or sets the server configuration.
         /// </summary>
         public virtual GameServerConfiguration ServerConfiguration { get; set; }

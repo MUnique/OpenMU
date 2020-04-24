@@ -352,6 +352,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var server = this.context.CreateNew<GameServerDefinition>();
                 server.ServerID = (byte)i;
                 server.Description = $"Server {i}";
+                server.ExperienceRate = 1.0f;
                 server.GameConfiguration = this.gameConfiguration;
                 server.ServerConfiguration = gameServerConfiguration;
 
@@ -495,6 +496,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private void InitializeGameConfiguration()
         {
+            this.gameConfiguration.ExperienceRate = 1.0f;
             this.gameConfiguration.MaximumLevel = 400;
             this.gameConfiguration.InfoRange = 12;
             this.gameConfiguration.AreaSkillHitsPlayer = false;

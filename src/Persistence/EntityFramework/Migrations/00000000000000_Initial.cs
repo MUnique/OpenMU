@@ -70,6 +70,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     MaximumLevel = table.Column<short>(nullable: false),
+                    ExperienceRate = table.Column<float>(nullable: false),
                     InfoRange = table.Column<byte>(nullable: false),
                     AreaSkillHitsPlayer = table.Column<bool>(nullable: false),
                     MaximumInventoryMoney = table.Column<int>(nullable: false),
@@ -472,6 +473,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     ServerID = table.Column<byte>(nullable: false),
                     Description = table.Column<string>(nullable: true),
+                    ExperienceRate = table.Column<float>(nullable: false),
                     ServerConfigurationId = table.Column<Guid>(nullable: true),
                     GameConfigurationId = table.Column<Guid>(nullable: true)
                 },

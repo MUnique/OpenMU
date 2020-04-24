@@ -27,6 +27,11 @@ namespace MUnique.OpenMU.GameLogic
         event EventHandler<GameMapEventArgs> GameMapRemoved;
 
         /// <summary>
+        /// Gets the global experience rate.
+        /// </summary>
+        float ExperienceRate { get; }
+
+        /// <summary>
         /// Gets the repository manager. Used to retrieve data, e.g. from a database.
         /// </summary>
         IPersistenceContextProvider PersistenceContextProvider { get; }

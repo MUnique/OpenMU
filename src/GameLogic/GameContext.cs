@@ -74,6 +74,9 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public event EventHandler<GameMapEventArgs> GameMapRemoved;
 
+        /// <inheritdoc />
+        public virtual float ExperienceRate => this.Configuration.ExperienceRate;
+
         /// <summary>
         /// Gets the initialized maps which are hosted on this context.
         /// </summary>

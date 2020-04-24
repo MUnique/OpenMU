@@ -206,7 +206,7 @@ namespace MUnique.OpenMU.GameLogic
             var randomizedTotalExperiencePerLevel = randomizedTotalExperience / (float)totalLevel;
             foreach (var player in this.experienceDistributionList)
             {
-                player.AddExperience((int)(randomizedTotalExperiencePerLevel * player.Attributes[Stats.Level] * player.Attributes[Stats.ExperienceRate]), killedObject);
+                player.AddExperience((int)(randomizedTotalExperiencePerLevel * player.Attributes[Stats.Level] * player.Attributes[Stats.ExperienceRate] * player.GameContext.ExperienceRate), killedObject);
             }
 
             return randomizedTotalExperience;
