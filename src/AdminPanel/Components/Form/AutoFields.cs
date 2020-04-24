@@ -4,10 +4,12 @@
 
 namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
+    using log4net;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
     using Microsoft.AspNetCore.Components.Rendering;
@@ -21,6 +23,8 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     public class AutoFields : ComponentBase
     {
         private static readonly IList<IComponentBuilder> Builders = new List<IComponentBuilder>();
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Initializes static members of the <see cref="AutoFields"/> class.
@@ -59,10 +63,18 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             int i = 0;
             foreach (var propertyInfo in this.GetProperties())
             {
-                var componentBuilder = Builders.FirstOrDefault(b => b.CanBuildComponent(propertyInfo));
-                if (componentBuilder != null)
+                IComponentBuilder componentBuilder = null;
+                try
                 {
-                    i = componentBuilder.BuildComponent(this.Context.Model, propertyInfo, builder, i);
+                    componentBuilder = Builders.FirstOrDefault(b => b.CanBuildComponent(propertyInfo));
+                    if (componentBuilder != null)
+                    {
+                        i = componentBuilder.BuildComponent(this.Context.Model, propertyInfo, builder, i);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Error building component for property {this.Context.Model.GetType().Name}.{propertyInfo.Name} with component builder {componentBuilder}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
                 }
             }
         }
@@ -73,15 +85,31 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         /// <returns>The properties which should be shown in this component.</returns>
         protected virtual IEnumerable<PropertyInfo> GetProperties()
         {
-            return this.Context.Model.GetType()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
-                .Where(p => p.GetCustomAttribute<TransientAttribute>() is null)
-                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true)
-                .Where(p => !p.Name.StartsWith("Raw") && !p.Name.StartsWith("Joined"))
-                .Where(p => !p.GetIndexParameters().Any())
-                .OrderByDescending(p => p.PropertyType == typeof(string))
-                .ThenByDescending(p => p.PropertyType.IsValueType)
-                .ThenByDescending(p => !p.PropertyType.IsGenericType);
+            if (this.Context?.Model is null)
+            {
+                Log.Error(this.Context is null ? "Context is null" : "Model is null");
+                return Enumerable.Empty<PropertyInfo>();
+            }
+
+            try
+            {
+                return this.Context.Model.GetType()
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+                    .Where(p => p.GetCustomAttribute<TransientAttribute>() is null)
+                    .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true)
+                    .Where(p => !p.Name.StartsWith("Raw") && !p.Name.StartsWith("Joined"))
+                    .Where(p => !p.GetIndexParameters().Any())
+                    .OrderByDescending(p => p.PropertyType == typeof(string))
+                    .ThenByDescending(p => p.PropertyType.IsValueType)
+                    .ThenByDescending(p => !p.PropertyType.IsGenericType)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error during determining properties of type {this.Context.Model.GetType()}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
+            }
+
+            return Enumerable.Empty<PropertyInfo>();
         }
     }
 }

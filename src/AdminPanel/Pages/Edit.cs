@@ -23,6 +23,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
     [Route("/edit/{typeString}/{id:guid}")]
     public sealed class Edit : ComponentBase, IDisposable
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private object model;
         private Type type;
         private IContext persistenceContext;
@@ -109,7 +110,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
 
         private string GetDownloadMarkup()
         {
-            if (GenericControllerFeatureProvider.SupportedTypes.Any(t => t.Item1 == type))
+            if (GenericControllerFeatureProvider.SupportedTypes.Any(t => t.Item1 == this.type))
             {
                 var uri = $"/download/{this.type.Name}/{this.type.Name}_{this.Id}.json";
                 return $"<p>Download as json: <a href=\"{uri}\" download><span class=\"oi oi-data-transfer-download\"></span></a></p>";
@@ -137,7 +138,16 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             {
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    this.model = method.Invoke(this.persistenceContext, new object[] { this.Id });
+                    try
+                    {
+                        this.model = method.Invoke(this.persistenceContext, new object[] { this.Id });
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"Could not load {this.type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
+                        await this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details.");
+                    }
+
                     await showModalTask;
                     modal.Dispose();
                     await this.InvokeAsync(this.StateHasChanged);
