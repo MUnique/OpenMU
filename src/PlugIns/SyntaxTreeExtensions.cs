@@ -25,29 +25,29 @@ namespace MUnique.OpenMU.PlugIns
         /// <returns>The compiled assembly.</returns>
         public static Assembly CompileAndLoad(this SyntaxTree syntaxTree, string assemblyName)
         {
-            var trustedAssemblies = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)?.Split(';').Select(path => MetadataReference.CreateFromFile(path)).ToList();
+            var trustedAssemblies = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)
+                ?.Split(';', ':')
+                .Select(path => MetadataReference.CreateFromFile(path)).ToList();
 
             var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
                 .WithOverflowChecks(false)
                 .WithOptimizationLevel(OptimizationLevel.Release)
                 .WithUsings("System", "System.Collections.Generic");
             var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree }, trustedAssemblies, options);
-            using (var stream = new MemoryStream())
+            using var stream = new MemoryStream();
+            var result = compilation.Emit(stream);
+            if (!result.Success)
             {
-                var result = compilation.Emit(stream);
-                if (!result.Success)
-                {
-                    var stringBuilder = new StringBuilder();
-                    result.Diagnostics
-                        .Where(m => m.Severity == DiagnosticSeverity.Error)
-                        .Select(d => $"{d.GetMessage()} @ {d.Location}")
-                        .ToList()
-                        .ForEach(message => stringBuilder.AppendLine(message));
-                    throw new ArgumentException(stringBuilder.ToString());
-                }
-
-                return Assembly.Load(stream.ToArray());
+                var stringBuilder = new StringBuilder();
+                result.Diagnostics
+                    .Where(m => m.Severity == DiagnosticSeverity.Error)
+                    .Select(d => $"{d.GetMessage()} @ {d.Location}")
+                    .ToList()
+                    .ForEach(message => stringBuilder.AppendLine(message));
+                throw new ArgumentException(stringBuilder.ToString());
             }
+
+            return Assembly.Load(stream.ToArray());
         }
     }
 }
