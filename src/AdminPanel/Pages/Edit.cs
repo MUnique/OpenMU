@@ -102,9 +102,10 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         {
             this.disposeCts?.Cancel();
             this.disposeCts?.Dispose();
-            this.disposeCts = new CancellationTokenSource();
+            var cts = new CancellationTokenSource();
+            this.disposeCts = cts;
             this.model = null;
-            Task.Run(() => this.LoadData(this.disposeCts.Token), this.disposeCts.Token);
+            Task.Run(() => this.LoadData(cts.Token), cts.Token);
             return base.OnParametersSetAsync();
         }
 
