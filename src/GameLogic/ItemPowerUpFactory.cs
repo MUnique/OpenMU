@@ -182,7 +182,7 @@ namespace MUnique.OpenMU.GameLogic
                 var option = optionLink.ItemOption;
                 var powerUp = option.PowerUpDefinition;
                 var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
-                if (level > 1)
+                if (level > 0)
                 {
                     var optionOfLevel = option.LevelDependentOptions.FirstOrDefault(l => l.Level == level);
                     if (optionOfLevel == null)
