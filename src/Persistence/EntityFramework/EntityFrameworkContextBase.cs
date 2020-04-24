@@ -5,8 +5,12 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
     using Microsoft.EntityFrameworkCore;
+    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Abstract base class for an <see cref="IContext"/> which uses an <see cref="DbContext"/>.
@@ -63,6 +67,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             var previousState = entry.State;
             entry.State = EntityState.Detached;
+            this.ForEachAggregate(item, obj => this.Detach(obj));
+
             return previousState != EntityState.Added;
         }
 
@@ -96,7 +102,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public bool Delete<T>(T obj)
             where T : class
         {
-            return this.Context.Remove(obj) != null;
+            var result = this.Context.Remove(obj) is { };
+            if (result)
+            {
+                this.ForEachAggregate(obj, a => this.Context.Remove(a));
+            }
+
+            return result;
         }
 
         /// <inheritdoc/>
@@ -135,6 +147,29 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             if (dispose && this.isOwner)
             {
                 this.Context.Dispose();
+            }
+        }
+
+        private void ForEachAggregate(object obj, Action<object> action)
+        {
+            var aggregateProperties = obj.GetType()
+                .GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { }
+                            || p.Name.StartsWith("Joined"));
+            foreach (var propertyInfo in aggregateProperties)
+            {
+                var propertyValue = propertyInfo.GetMethod.Invoke(obj, Array.Empty<object>());
+                if (propertyValue is IEnumerable enumerable)
+                {
+                    foreach (var value in enumerable)
+                    {
+                        action(value);
+                    }
+                }
+                else if (aggregateProperties is { })
+                {
+                    action(propertyValue);
+                }
             }
         }
     }
