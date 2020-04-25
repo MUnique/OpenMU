@@ -6,11 +6,13 @@ RUN apt-get install npm -y
 RUN npm i -g typescript
 
 COPY src/ ./app/src
-COPY tests/ ./app/tests
-COPY docs/ ./app/docs
 
-WORKDIR /app
-RUN dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj -o out -c Release -p:ci=true
+WORKDIR app
+
+RUN dotnet build src/Startup/MUnique.OpenMU.Startup.csproj -c Release -p:ci=true
+
+RUN dotnet publish src/AdminPanel/MUnique.OpenMU.AdminPanel.csproj -o out -c Release --no-build
+RUN dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj -o out -c Release --no-build
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 
