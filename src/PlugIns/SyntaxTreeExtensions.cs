@@ -18,7 +18,34 @@ namespace MUnique.OpenMU.PlugIns
     /// </summary>
     public static class SyntaxTreeExtensions
     {
-        private static IList<PortableExecutableReference> trustedAssemblies;
+        private static IList<PortableExecutableReference> assemblyReferences;
+
+        private static IList<PortableExecutableReference> AssemblyReferences
+        {
+            get
+            {
+                if (assemblyReferences is { })
+                {
+                    return assemblyReferences;
+                }
+
+                var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => !a.IsDynamic)
+                    .Select(a => a.Location)
+                    .ToHashSet();
+                var separator = (Environment.OSVersion.Platform == PlatformID.MacOSX ||
+                                 Environment.OSVersion.Platform == PlatformID.Unix)
+                    ? ':'
+                    : ';';
+
+                assemblyReferences = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)
+                    ?.Split(separator)
+                    .Select(path => MetadataReference.CreateFromFile(path))
+                    .Where(metaData => loadedAssemblies.Contains(metaData.FilePath))
+                    .ToList();
+                return assemblyReferences;
+            }
+        }
 
         /// <summary>
         /// Compiles the <see cref="SyntaxTree"/> and load its assembly into memory.
@@ -28,15 +55,11 @@ namespace MUnique.OpenMU.PlugIns
         /// <returns>The compiled assembly.</returns>
         public static Assembly CompileAndLoad(this SyntaxTree syntaxTree, string assemblyName)
         {
-            trustedAssemblies ??= (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)
-                ?.Split(';', ':')
-                .Select(path => MetadataReference.CreateFromFile(path)).ToList();
-
             var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
                 .WithOverflowChecks(false)
                 .WithOptimizationLevel(OptimizationLevel.Release)
                 .WithUsings("System", "System.Collections.Generic");
-            var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree }, trustedAssemblies, options);
+            var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree }, AssemblyReferences, options);
             using var stream = new MemoryStream();
             var result = compilation.Emit(stream);
             if (!result.Success)
