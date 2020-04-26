@@ -13,25 +13,6 @@ namespace MUnique.OpenMU.PublicApi.Models
     public class GameServerDto
     {
         /// <summary>
-        /// Creates the DTO for specified end point and corresponding <see cref="IGameServer"/>.
-        /// </summary>
-        /// <param name="endPoint">The end point.</param>
-        /// <param name="gameServer">The game server.</param>
-        /// <returns>The created DTO.</returns>
-        public static GameServerDto Create(IPEndPoint endPoint, IGameServer gameServer)
-        {
-            return new GameServerDto
-            {
-                Host = endPoint.Address.ToString(),
-                Port = endPoint.Port,
-                Description = gameServer.Description,
-                MaximumPlayerCount = gameServer.MaximumConnections,
-                PlayerCount = gameServer.CurrentConnections,
-                State = gameServer.ServerState,
-            };
-        }
-
-        /// <summary>
         /// Gets the host.
         /// </summary>
         public string Host { get; private set; } = "127.127.127.127";
@@ -60,5 +41,24 @@ namespace MUnique.OpenMU.PublicApi.Models
         /// Gets the state.
         /// </summary>
         public ServerState State { get; private set; }
+
+        /// <summary>
+        /// Creates the DTO for specified end point and corresponding <see cref="IGameServer"/>.
+        /// </summary>
+        /// <param name="endPoint">The end point.</param>
+        /// <param name="gameServer">The game server.</param>
+        /// <returns>The created DTO.</returns>
+        public static GameServerDto Create(IPEndPoint endPoint, IGameServer gameServer)
+        {
+            return new GameServerDto
+            {
+                Host = endPoint.Address.ToString(),
+                Port = endPoint.Port,
+                Description = gameServer.Description,
+                MaximumPlayerCount = gameServer.MaximumConnections,
+                PlayerCount = gameServer.CurrentConnections,
+                State = gameServer.ServerState,
+            };
+        }
     }
 }

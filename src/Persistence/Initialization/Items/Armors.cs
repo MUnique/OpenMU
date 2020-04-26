@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// </summary>
         /// <remarks>
         /// Regex: (?m)^\s*(\d+)\s+(-*\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+\"(.+?)\"\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+).*$
-        /// Replace by: this.CreateArmor($1, $2, $4, $5, "$9", $10, $11, $13, $14, $15, $16, $17, $18, $19, $21, $22, $23, $24, $25, $26, $27);
+        /// Replace by: this.CreateArmor($1, $2, $4, $5, "$9", $10, $11, $13, $14, $15, $16, $17, $18, $19, $21, $22, $23, $24, $25, $26, $27);.
         /// </remarks>
         public override void Initialize()
         {

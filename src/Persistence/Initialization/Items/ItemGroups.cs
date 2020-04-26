@@ -77,12 +77,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         Orbs = 12,
 
         /// <summary>
-        /// Pets, Rings, Pendants & Misc.
+        /// Pets, Rings, Pendants and Misc.
         /// </summary>
         Misc1 = 13,
 
         /// <summary>
-        /// Pots & Misc.
+        /// Pots and Misc.
         /// </summary>
         Misc2 = 14,
 

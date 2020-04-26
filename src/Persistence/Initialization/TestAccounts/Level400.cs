@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints += 180; // after level 220, one point more
             character.MasterLevelUpPoints = 100; // To test master skill tree
 
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, (int) ItemGroups.Bows, 20, 13, 4, true, true, Stats.ExcellentDamageChance));
+            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, (int)ItemGroups.Bows, 20, 13, 4, true, true, Stats.ExcellentDamageChance));
             character.Inventory.Items.Add(this.CreateArrows(0));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 31, 8, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 31, 7, null, 15, 4, true));

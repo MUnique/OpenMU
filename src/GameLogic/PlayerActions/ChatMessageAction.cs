@@ -10,8 +10,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using System.Linq;
     using log4net;
     using MUnique.OpenMU.GameLogic.PlugIns;
-    using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+    using MUnique.OpenMU.GameLogic.Views;
 
     /// <summary>
     /// Action to send chat messages.

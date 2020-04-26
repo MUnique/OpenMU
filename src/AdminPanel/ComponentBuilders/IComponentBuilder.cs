@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
     using Microsoft.AspNetCore.Components.Rendering;
 
     /// <summary>
-    /// Interface for a component builder for a specific property;
+    /// Interface for a component builder for a specific property.
     /// </summary>
     public interface IComponentBuilder
     {

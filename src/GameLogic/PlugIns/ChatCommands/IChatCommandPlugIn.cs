@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     public interface IChatCommandPlugIn : IStrategyPlugIn<string>
     {
         /// <summary>
-        /// Gets min Status Requirement to run a command
+        /// Gets min Status Requirement to run a command.
         /// </summary>
         public CharacterStatus MinCharacterStatusRequirement { get; }
 

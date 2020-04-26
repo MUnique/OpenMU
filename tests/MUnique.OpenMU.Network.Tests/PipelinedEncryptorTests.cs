@@ -90,13 +90,11 @@ namespace MUnique.OpenMU.Network.Tests
         {
             var pipe = new Pipe();
             var encryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer);
-            var completed = false;
-            pipe.Reader.OnWriterCompleted((e, o) => completed = true, null);
             var reading = pipe.Reader.ReadAsync();
             encryptor.Writer.Complete();
             var result = await reading;
             await Task.Delay(10).ConfigureAwait(false);
-            Assert.That(completed && result.IsCompleted, Is.True);
+            Assert.That(result.IsCompleted, Is.True);
         }
 
         private async Task Encrypt(byte[] decrypted, byte[] encrypted)

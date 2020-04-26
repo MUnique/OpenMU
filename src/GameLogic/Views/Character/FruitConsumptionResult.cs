@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameLogic.Views.Character
+﻿// <copyright file="FruitConsumptionResult.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.Views.Character
 {
     /// <summary>
     /// Defines the result of the fruit consumption request.

@@ -96,7 +96,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the points per level up.
         /// </summary>
-        public static AttributeDefinition PointsPerLevelUp { get; } = new AttributeDefinition(new Guid("48074BC6-DDC9-4264-8F1E-004D46D5B6EC"), "Points per Level up", "Defines the level up points per achieved level." );
+        public static AttributeDefinition PointsPerLevelUp { get; } = new AttributeDefinition(new Guid("48074BC6-DDC9-4264-8F1E-004D46D5B6EC"), "Points per Level up", "Defines the level up points per achieved level.");
 
         /// <summary>
         /// Gets the experience rate attribute definition.

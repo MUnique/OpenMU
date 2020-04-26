@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
     public class ItemCraftingRequiredItem
     {
         /// <summary>
-        /// Gets the collection of possible items which are valid for this requirement.
+        /// Gets or sets the collection of possible items which are valid for this requirement.
         /// </summary>
         public virtual ICollection<ItemDefinition> PossibleItems { get; protected set; }
 

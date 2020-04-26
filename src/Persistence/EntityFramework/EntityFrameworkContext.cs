@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         /// <param name="context">The context.</param>
         public EntityFrameworkContext(DbContext context)
-            : base (context, new RepositoryManager(), true)
+            : base(context, new RepositoryManager(), true)
         {
             this.RepositoryManager.RegisterRepositories();
         }

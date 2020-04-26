@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         /// <inheritdoc/>
         protected override Character CreateElf()
         {
-            var character = this.CreateCharacter(this.AccountName+"Elf", CharacterClassNumber.FairyElf, this.Level, 2);
+            var character = this.CreateCharacter(this.AccountName + "Elf", CharacterClassNumber.FairyElf, this.Level, 2);
             character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 20;
             character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 30;
 
@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         /// <inheritdoc/>
         protected override Character CreateWizard()
         {
-            var character = this.CreateCharacter(this.AccountName+"Dw", CharacterClassNumber.DarkWizard, this.Level, 1);
+            var character = this.CreateCharacter(this.AccountName + "Dw", CharacterClassNumber.DarkWizard, this.Level, 1);
             character.Inventory.Items.Add(this.CreateSkullStaff(0));
             character.Inventory.Items.Add(this.CreateArmorItem(52, 2, 8)); // Pad Armor
             character.Inventory.Items.Add(this.CreateArmorItem(47, 2, 7)); // Pad Helm

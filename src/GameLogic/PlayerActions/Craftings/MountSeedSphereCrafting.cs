@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
 
             if (socketItem.ItemOptions.Any(link => link.Index == socketSlot && link.ItemOption.OptionType == ItemOptionTypes.SocketOption))
             {
-                throw new ArgumentException($"The socket of the item is not free.");
+                throw new ArgumentException("The socket of the item is not free.");
             }
 
             var sphereOption = player.PersistenceContext.CreateNew<ItemOptionLink>();
@@ -135,23 +135,23 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 return possibleBonusOptions.PossibleOptions.OrderBy(p => p.Number).FirstOrDefault();
             }
 
-            if (options[0].SubOptionType == (int) SocketSubOptionType.Lightning
-                && options[1].SubOptionType == (int) SocketSubOptionType.Ice
-                && options[2].SubOptionType == (int) SocketSubOptionType.Fire)
+            if (options[0].SubOptionType == (int)SocketSubOptionType.Lightning
+                && options[1].SubOptionType == (int)SocketSubOptionType.Ice
+                && options[2].SubOptionType == (int)SocketSubOptionType.Fire)
             {
                 return possibleBonusOptions.PossibleOptions.OrderBy(p => p.Number).LastOrDefault();
             }
 
-            if (options[0].SubOptionType == (int) SocketSubOptionType.Water
-                && options[1].SubOptionType == (int) SocketSubOptionType.Earth
-                && options[2].SubOptionType == (int) SocketSubOptionType.Wind)
+            if (options[0].SubOptionType == (int)SocketSubOptionType.Water
+                && options[1].SubOptionType == (int)SocketSubOptionType.Earth
+                && options[2].SubOptionType == (int)SocketSubOptionType.Wind)
             {
                 return possibleBonusOptions.PossibleOptions.OrderBy(p => p.Number).FirstOrDefault();
             }
 
-            if (options[0].SubOptionType == (int) SocketSubOptionType.Earth
-                && options[1].SubOptionType == (int) SocketSubOptionType.Wind
-                && options[2].SubOptionType == (int) SocketSubOptionType.Water)
+            if (options[0].SubOptionType == (int)SocketSubOptionType.Earth
+                && options[1].SubOptionType == (int)SocketSubOptionType.Wind
+                && options[2].SubOptionType == (int)SocketSubOptionType.Water)
             {
                 return possibleBonusOptions.PossibleOptions.OrderBy(p => p.Number).LastOrDefault();
             }

@@ -42,49 +42,6 @@ namespace MUnique.OpenMU.Network.Tests
         }
 
         /// <summary>
-        /// Tests the receiving of data with any <see cref="IConnection"/> implementation.
-        /// </summary>
-        /// <param name="connectionCreator">The connection creator.</param>
-        private void TestReceivePipelined(Func<Socket, IConnection> connectionCreator)
-        {
-            const int maximumPacketCount = 1000;
-
-            IConnection connection = null;
-            var server = new TcpListener(IPAddress.Any, 5000);
-            server.Start();
-            server.BeginAcceptSocket(
-                asyncResult =>
-                {
-                    var clientSocket = server.EndAcceptSocket(asyncResult);
-                    connection = connectionCreator(clientSocket);
-                }, null);
-            using (var client = new TcpClient("127.0.0.1", 5000))
-            {
-                while (connection == null)
-                {
-                    Thread.Sleep(10);
-                }
-
-                int packetCount = 0;
-                connection.PacketReceived += (sender, p) => Interlocked.Increment(ref packetCount);
-                connection.BeginReceive();
-
-                var packet = new byte[] { 0xC1, 10, 0, 0, 0, 0, 0, 0, 0, 0 };
-                for (int i = 0; i < maximumPacketCount; i++)
-                {
-                    client.Client.BeginSend(packet, 0, packet.Length, SocketFlags.None, null, null);
-                }
-
-                while (packetCount < maximumPacketCount)
-                {
-                    Thread.Sleep(1);
-                }
-            }
-
-            server.Stop();
-        }
-
-        /// <summary>
         /// Tests if the connection is disconnected after sending invalid data.
         /// </summary>
         [Test]
@@ -109,7 +66,9 @@ namespace MUnique.OpenMU.Network.Tests
                     Thread.Sleep(10);
                 }
 
+#pragma warning disable 4014
                 connection.BeginReceive();
+#pragma warning restore 4014
 
                 var packet = new byte[22222];
                 packet[0] = 0xDE;
@@ -158,6 +117,49 @@ namespace MUnique.OpenMU.Network.Tests
             {
                 server.Stop();
             }
+        }
+
+        /// <summary>
+        /// Tests the receiving of data with any <see cref="IConnection"/> implementation.
+        /// </summary>
+        /// <param name="connectionCreator">The connection creator.</param>
+        private void TestReceivePipelined(Func<Socket, IConnection> connectionCreator)
+        {
+            const int maximumPacketCount = 1000;
+
+            IConnection connection = null;
+            var server = new TcpListener(IPAddress.Any, 5000);
+            server.Start();
+            server.BeginAcceptSocket(
+                asyncResult =>
+                {
+                    var clientSocket = server.EndAcceptSocket(asyncResult);
+                    connection = connectionCreator(clientSocket);
+                }, null);
+            using (var client = new TcpClient("127.0.0.1", 5000))
+            {
+                while (connection == null)
+                {
+                    Thread.Sleep(10);
+                }
+
+                int packetCount = 0;
+                connection.PacketReceived += (sender, p) => Interlocked.Increment(ref packetCount);
+                connection.BeginReceive();
+
+                var packet = new byte[] { 0xC1, 10, 0, 0, 0, 0, 0, 0, 0, 0 };
+                for (int i = 0; i < maximumPacketCount; i++)
+                {
+                    client.Client.BeginSend(packet, 0, packet.Length, SocketFlags.None, null, null);
+                }
+
+                while (packetCount < maximumPacketCount)
+                {
+                    Thread.Sleep(1);
+                }
+            }
+
+            server.Stop();
         }
     }
 }

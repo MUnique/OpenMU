@@ -3414,6 +3414,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 onDelete: ReferentialAction.Restrict);
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

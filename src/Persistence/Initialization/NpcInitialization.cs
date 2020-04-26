@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// Extracted from Monsters.txt by Regex: (?m)^(\d+)\t1\t"(.*?)".*?$
         /// Replace by: yield return new MonsterDefinition() { Number = $1, Designation="$2" };
         /// yield return new (\w*) { Number = (\d+), Designation = (".*?").*?(, NpcWindow = (.*) ){0,1}};
-        /// Replace by: <![CDATA[ {\n    var def = this.context.CreateNew<$1>();\n    def.Number = $2;\n    def.Designation = $3;\n    def.NpcWindow = $5;\n    this.gameConfiguration.Monsters.Add(def);\n}\n ]]>
+        /// Replace by: <![CDATA[ {\n    var def = this.context.CreateNew<$1>();\n    def.Number = $2;\n    def.Designation = $3;\n    def.NpcWindow = $5;\n    this.gameConfiguration.Monsters.Add(def);\n}\n ]]>.
         /// </remarks>
         internal void CreateNpcs()
         {

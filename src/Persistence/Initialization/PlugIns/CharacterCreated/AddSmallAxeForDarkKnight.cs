@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
         /// <summary>
         /// Initializes a new instance of the <see cref="AddSmallAxeForDarkKnight" /> class.
         /// </summary>
-        public AddSmallAxeForDarkKnight() 
+        public AddSmallAxeForDarkKnight()
             : base((byte)CharacterClassNumber.DarkKnight, (byte)ItemGroups.Axes, 0, 0)
         {
         }

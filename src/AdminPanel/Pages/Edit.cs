@@ -88,8 +88,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                 {
                     builder2.OpenComponent(5, typeof(AutoForm<>).MakeGenericType(this.type));
                     builder2.AddAttribute(6, nameof(AutoForm<object>.Model), this.model);
-                    builder2.AddAttribute(7, nameof(AutoForm<object>.OnValidSubmit),
-                        EventCallback.Factory.Create(this, this.SaveChanges));
+                    builder2.AddAttribute(7, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChanges));
                     builder2.CloseComponent();
                 }));
 

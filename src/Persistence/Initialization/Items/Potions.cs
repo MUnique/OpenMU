@@ -369,6 +369,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Name = "Siege Potion";
             definition.Number = 7;
             definition.Group = 14;
+
             // todo definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SiegePotionConsumeHandler).FullName;
             definition.Durability = 1;
             definition.Value = 30;

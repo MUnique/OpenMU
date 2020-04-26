@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     using MUnique.OpenMU.AdminPanel.Services;
 
     /// <summary>
-    /// A component which allows to select an instance of <see cref="TItem"/> through the <see cref="ILookupController"/>.
+    /// A component which allows to select an instance of <typeparamref name="TItem"/> through the <see cref="ILookupController"/>.
     /// </summary>
     /// <typeparam name="TItem">The type of the item.</typeparam>
     /// <seealso cref="Microsoft.AspNetCore.Components.ComponentBase" />

@@ -30,6 +30,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             };
         }
 
+        /// <summary>
+        /// Converts the <see cref="HeroState"/> of the data model to the <see cref="CharacterHeroState"/> of the defined packets.
+        /// </summary>
+        /// <param name="heroState">The <see cref="HeroState"/> of the data model.</param>
+        /// <returns>The <see cref="CharacterHeroState"/> of the defined packets.</returns>
         public static CharacterHeroState Convert(this HeroState heroState)
         {
             return heroState switch

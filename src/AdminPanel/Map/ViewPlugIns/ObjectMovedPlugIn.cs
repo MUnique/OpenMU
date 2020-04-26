@@ -34,37 +34,6 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         {
         }
 
-        private async Task ObjectMovedAsync(ILocateable movedObject, MoveType moveType)
-        {
-            Point targetPoint = movedObject.Position;
-            object steps = null;
-            int walkDelay = 0;
-            if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
-            {
-                targetPoint = walker.WalkTarget;
-                walkDelay = (int) walker.StepDelay.TotalMilliseconds;
-                var walkingSteps = new WalkingStep[16];
-                var stepCount = walker.GetSteps(walkingSteps);
-                var walkSteps = walkingSteps.AsSpan().Slice(0, stepCount).ToArray()
-                    .Select(step => new {x = step.To.X, y = step.To.Y, direction = step.Direction}).ToList();
-
-                var lastStep = walkSteps.LastOrDefault();
-                if (lastStep != null)
-                {
-                    var lastPoint = new Point(lastStep.x, lastStep.y);
-                    var lastDirection = lastPoint.GetDirectionTo(targetPoint);
-                    if (lastDirection != Direction.Undefined)
-                    {
-                        walkSteps.Add(new {x = targetPoint.X, y = targetPoint.Y, direction = lastDirection});
-                    }
-                }
-
-                steps = walkSteps;
-            }
-
-            await this.InvokeAsync(movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps);
-        }
-
         /// <inheritdoc />
         public async void ObjectMoved(ILocateable movedObject, MoveType moveType)
         {
@@ -80,6 +49,37 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
             {
                 Log.Error($"Error in {nameof(this.ObjectMoved)}; movedObject: {movedObject}, moveType: {moveType}", e);
             }
+        }
+
+        private async Task ObjectMovedAsync(ILocateable movedObject, MoveType moveType)
+        {
+            Point targetPoint = movedObject.Position;
+            object steps = null;
+            int walkDelay = 0;
+            if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
+            {
+                targetPoint = walker.WalkTarget;
+                walkDelay = (int)walker.StepDelay.TotalMilliseconds;
+                var walkingSteps = new WalkingStep[16];
+                var stepCount = walker.GetSteps(walkingSteps);
+                var walkSteps = walkingSteps.AsSpan().Slice(0, stepCount).ToArray()
+                    .Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
+
+                var lastStep = walkSteps.LastOrDefault();
+                if (lastStep != null)
+                {
+                    var lastPoint = new Point(lastStep.x, lastStep.y);
+                    var lastDirection = lastPoint.GetDirectionTo(targetPoint);
+                    if (lastDirection != Direction.Undefined)
+                    {
+                        walkSteps.Add(new { x = targetPoint.X, y = targetPoint.Y, direction = lastDirection });
+                    }
+                }
+
+                steps = walkSteps;
+            }
+
+            await this.InvokeAsync(movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps);
         }
     }
 }

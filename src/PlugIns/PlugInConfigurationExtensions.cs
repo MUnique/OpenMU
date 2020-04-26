@@ -7,6 +7,9 @@ namespace MUnique.OpenMU.PlugIns
     using System;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Extension methods for the plugin configuration.
+    /// </summary>
     public static class PlugInConfigurationExtensions
     {
         /// <summary>
@@ -60,7 +63,6 @@ namespace MUnique.OpenMU.PlugIns
         /// <summary>
         /// Sets the configuration.
         /// </summary>
-        /// <typeparam name="T">The custom configuration type.</typeparam>
         /// <param name="plugInConfiguration">The plug in configuration.</param>
         /// <param name="configuration">The configuration.</param>
         public static void SetConfiguration(this PlugInConfiguration plugInConfiguration, object configuration)

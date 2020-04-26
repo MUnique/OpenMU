@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// Gets the available chat commands of the player.
         /// </summary>
         /// <param name="player">The player.</param>
-        /// <returns>The available chat commands of the player</returns>
+        /// <returns>The available chat commands of the player.</returns>
         public static IEnumerable<ChatCommandHelpAttribute> GetAvailableChatCommands(this Player player)
         {
             return player.GameContext.PlugInManager

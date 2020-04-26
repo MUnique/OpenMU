@@ -67,16 +67,18 @@ namespace MUnique.OpenMU.GameLogic
             droppedMoney = null;
             var character = player.SelectedCharacter;
             var map = player.CurrentMap.Definition;
+            var questGroups = character.QuestStates?
+                .SelectMany(q => q.ActiveQuest?.RequiredItems
+                                     .Where(i => i.DropItemGroup is { })
+                                     .Select(i => i.DropItemGroup)
+                                 ?? Enumerable.Empty<DropItemGroup>())
+                              ?? Enumerable.Empty<DropItemGroup>();
             var dropGroups =
                 CombineDropGroups(
                         monster.DropItemGroups,
                         character.DropItemGroups,
                         map.DropItemGroups,
-                        character.QuestStates?.SelectMany(q => q.ActiveQuest?.RequiredItems
-                            .Where(i => i.DropItemGroup is { })
-                            .Select(i => i.DropItemGroup)
-                                ?? Enumerable.Empty<DropItemGroup>())
-                            ?? Enumerable.Empty<DropItemGroup>())
+                        questGroups)
                     .Where(group => IsGroupRelevant(monster, group))
                     .OrderBy(group => group.Chance);
 

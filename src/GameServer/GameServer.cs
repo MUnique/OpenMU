@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.GameServer
 
             try
             {
-                var mapInitializer = new GameServerMapInitializer(gameServerDefinition, this.Id);
+                var mapInitializer = new GameServerMapInitializer(gameServerDefinition);
                 this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, mapInitializer);
                 this.gameContext.GameMapCreated += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
                 this.gameContext.GameMapRemoved += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
@@ -135,7 +135,6 @@ namespace MUnique.OpenMU.GameServer
                 this.ServerState = ServerState.Starting;
                 try
                 {
-
                     foreach (var listener in this.listeners)
                     {
                         listener.Start();

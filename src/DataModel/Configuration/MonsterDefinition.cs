@@ -8,8 +8,8 @@ namespace MUnique.OpenMU.DataModel.Configuration
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.DataModel.Composition;
+    using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -163,6 +163,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </remarks>
         NpcDialog,
 
+        /// <summary>
+        /// The dialog for the legacy quest system.
+        /// </summary>
         LegacyQuest,
     }
 
@@ -171,7 +174,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// </summary>
     public enum NpcObjectKind
     {
-
         /// <summary>
         /// The npc is a monster.
         /// </summary>

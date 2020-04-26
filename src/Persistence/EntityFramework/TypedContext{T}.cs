@@ -38,7 +38,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
         }
 
-
         private IEnumerable<IMutableEntityType> DetermineEditTypes(IList<IMutableEntityType> types)
         {
             var mainType = types.FirstOrDefault(met => met.ClrType == typeof(T))

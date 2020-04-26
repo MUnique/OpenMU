@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// <remarks>
         /// MoveReq.txt
         /// Search Regex: (?m)^\s*(\d+)\s+\"(\S+)\"\s+\"(\S+)\"\s+(\d+)\s+(\d+)\s+(\d+)\s*?$
-        /// Replace by: gameConfiguration.WarpList.Add(this.CreateWarpInfo($1, "$2", $4, $5, gates[$6]));
+        /// Replace by: gameConfiguration.WarpList.Add(this.CreateWarpInfo($1, "$2", $4, $5, gates[$6]));.
         /// </remarks>
         private void CreateWarpEntries(IDictionary<short, ExitGate> gates, GameConfiguration gameConfiguration)
         {
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// Regex #1: (?m)^(\d+)\s+?(0)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+).*?$
         /// Rplace by #1: targetGates.Add($1, this.CreateExitGate(maps[$3], $4, $5, $6, $7, $9, true));
         /// Regex #2: (?m)^(\d+)\s+?(2)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+).*?$
-        /// Rplace by #2: targetGates.Add($1, this.CreateExitGate(maps[$3], $4, $5, $6, $7, $9, false));
+        /// Rplace by #2: targetGates.Add($1, this.CreateExitGate(maps[$3], $4, $5, $6, $7, $9, false));.
         /// </remarks>
         private IDictionary<short, ExitGate> CreateTargetGates(IDictionary<short, GameMapDefinition> maps)
         {
@@ -382,7 +382,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// <remarks>
         /// Regex: (?m)^(\d+)\s+?(1)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)
         /// Replace by #2: maps[$3].EnterGates.Add(this.CreateEnterGate($1, targetGates[$8], $4, $5, $6, $7, $10));
-        /// Remove other lines with empty replacement and regex: (?m)^\d+\s+.*$
+        /// Remove other lines with empty replacement and regex: (?m)^\d+\s+.*$.
         /// </remarks>
         /// <param name="maps">The maps.</param>
         /// <param name="targetGates">The target gates by number.</param>

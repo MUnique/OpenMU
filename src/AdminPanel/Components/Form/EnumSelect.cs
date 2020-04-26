@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading.Tasks;
-
 namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
     using System;
@@ -15,8 +13,9 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     using Microsoft.AspNetCore.Components.Rendering;
 
     /// <summary>
-    /// A dropdown selection component for enum values of <see cref="TValue"/>.
+    /// A dropdown selection component for enum values of <typeparamref name="TValue" />.
     /// </summary>
+    /// <typeparam name="TValue">The type of the enum.</typeparam>
     public class EnumSelect<TValue> : InputBase<TValue>
     {
         /// <inheritdoc />
@@ -67,15 +66,6 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             result = default;
             validationErrorMessage = $"The {this.FieldIdentifier.FieldName} field is not valid.";
             return false;
-        }
-
-        private void OnValueChanged(string value)
-        {
-            if (this.TryParseValueFromString(value, out var enumValue, out var _))
-            {
-                this.CurrentValueAsString = value;
-                this.ValueChanged.InvokeAsync(enumValue);
-            }
         }
     }
 }

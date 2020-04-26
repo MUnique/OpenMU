@@ -20,11 +20,21 @@ namespace MUnique.OpenMU.Pathfinding
         /// </summary>
         private const byte UnreachableGridNodeValue = 0;
 
-        private static readonly sbyte[,] DirectionOffsets = { { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 }, { 1, -1 }, { 1, 1 }, { -1, 1 }, { -1, -1 } };
+        private static readonly sbyte[,] DirectionOffsets =
+        {
+            { 0, -1 },
+            { 1, 0 },
+            { 0, 1 },
+            { -1, 0 },
+            { 1, -1 },
+            { 1, 1 },
+            { -1, 1 },
+            { -1, -1 },
+        };
 
         /// <summary>
         /// The two-dimensional grid.
-        /// For each coordinate it contains the cost of travelling to it from a neighbore coordinate.
+        /// For each coordinate it contains the cost of traveling to it from a neighbor coordinate.
         /// The value of 0 means, that the coordinate is unreachable.
         /// </summary>
         private readonly byte[,] grid;
@@ -39,7 +49,7 @@ namespace MUnique.OpenMU.Pathfinding
         /// </summary>
         /// <param name="grid">
         ///     The two-dimensional grid.
-        ///     For each coordinate it contains the cost of travelling to it from a neighbore coordinate.
+        ///     For each coordinate it contains the cost of traveling to it from a neighbor coordinate.
         ///     The value of 0 means, that the coordinate is unreachable, <see cref="UnreachableGridNodeValue"/>.
         /// </param>
         /// <param name="allowDiagonals">if set to <c>true</c> [allow diagonals].</param>

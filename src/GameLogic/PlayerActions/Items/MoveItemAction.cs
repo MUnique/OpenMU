@@ -313,14 +313,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private class StorageInfo : IEquatable<StorageInfo>
         {
-            public IStorage Storage { get; }
-
-            public byte Rows { get; }
-
-            public byte StartIndex { get; }
-
-            public byte EndIndex { get; }
-
             public StorageInfo(IStorage storage, byte rows, byte startIndex, byte endIndex)
             {
                 this.Storage = storage;
@@ -328,6 +320,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 this.StartIndex = startIndex;
                 this.EndIndex = endIndex;
             }
+
+            public IStorage Storage { get; }
+
+            public byte Rows { get; }
+
+            public byte StartIndex { get; }
+
+            public byte EndIndex { get; }
 
             public static bool operator ==(StorageInfo left, StorageInfo right)
             {

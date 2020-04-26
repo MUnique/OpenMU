@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public byte MaximumPartySize { get; set; }
 
         /// <summary>
-        /// Gets or sets if a monster should drop or adds money to the character directly.
+        /// Gets or sets a value indicating whether if a monster should drop or adds money to the character directly.
         /// </summary>
         public bool ShouldDropMoney { get; set; }
 

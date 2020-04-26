@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
     /// A query builder which creates a query to return a whole object graph as json by using postgres json functions.
     /// </summary>
     /// <remarks>
-    /// TODO: Make the resulting query more readable by adding identing for subqueries.
+    /// TODO: Make the resulting query more readable by adding indenting for subqueries.
     /// </remarks>
     public class JsonQueryBuilder
     {
@@ -156,6 +156,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             var keyProperty = navigation.ForeignKey.Properties.First();
             var navigationType = keyProperty.DeclaringEntityType;
 
+#pragma warning disable EF1001 // Internal EF Core API usage.
             if (navigationType.FindDeclaredPrimaryKey().Properties.Count > 1)
             {
                 this.AddManyToManyCollection(navigationType, entityType, stringBuilder, parentAlias, keyProperty);
@@ -164,6 +165,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             {
                 this.AddOneToManyCollection(navigation, navigationType, stringBuilder, parentAlias, keyProperty);
             }
+#pragma warning restore EF1001 // Internal EF Core API usage.
 
             stringBuilder.Append(") as \"").Append(navigation.Name.Replace("Joined", string.Empty)).AppendLine("\"");
         }
@@ -171,7 +173,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         private void AddOneToManyCollection(INavigation navigation, IEntityType navigationType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
         {
             var navigationAlias = this.GetNextAlias(parentAlias);
+#pragma warning disable EF1001 // Internal EF Core API usage.
             var primaryKeyName = navigationType.FindDeclaredPrimaryKey().Properties[0].GetColumnName();
+#pragma warning restore EF1001 // Internal EF Core API usage.
             stringBuilder.AppendLine(", (")
                 .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
 

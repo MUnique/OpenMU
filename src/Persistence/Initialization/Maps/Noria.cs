@@ -257,7 +257,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
                     { Stats.AttackRatePvm, 86 },
                     { Stats.DefenseRatePvm, 20 },
                 };
-               monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
 
             {

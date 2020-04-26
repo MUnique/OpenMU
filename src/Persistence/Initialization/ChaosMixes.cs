@@ -162,7 +162,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaos.AddPercentage = 2;
             chaos.SuccessResult = MixResult.Disappear;
             chaos.FailResult = MixResult.Disappear;
-            chaos.PossibleItems.Add( this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+            chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
             chaosWeaponSettings.RequiredItems.Add(chaos);
 
             var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();

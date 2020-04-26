@@ -9,13 +9,14 @@ namespace MUnique.OpenMU.Network.Benchmarks
     using System.IO.Pipelines;
     using System.Threading.Tasks;
     using BenchmarkDotNet.Attributes;
+    using BenchmarkDotNet.Jobs;
     using MUnique.OpenMU.Network.SimpleModulus;
     using MUnique.OpenMU.Network.Xor;
 
     /// <summary>
     /// Benchmarks for the simple modulus encryption.
     /// </summary>
-    [CoreJob]
+    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [MemoryDiagnoser]
     [InvocationCount(100)]
     public class EncryptionBenchmarks

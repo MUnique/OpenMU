@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         public void HandlePacket(Player player, Span<byte> packet)
         {
             GuildMasterAnswer answer = packet;
-            this.answerAction.ProcessAnswer(player, answer.ShowCreationDialog ? GuildMasterAnswerAction.Answer.ShowDialog : GuildMasterAnswerAction.Answer.Cancel );
+            this.answerAction.ProcessAnswer(player, answer.ShowCreationDialog ? GuildMasterAnswerAction.Answer.ShowDialog : GuildMasterAnswerAction.Answer.Cancel);
         }
     }
 }

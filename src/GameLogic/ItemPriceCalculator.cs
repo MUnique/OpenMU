@@ -35,9 +35,8 @@ namespace MUnique.OpenMU.GameLogic
             130, 131, 132, 133, 134, 135, // mini wings? -> All worth 240, remove here!
         };
 
-        private static readonly IDictionary<int, Func<Item, long>> SpecialItemDictionary
-            = new Dictionary<int, Func<Item, long>>
-            {
+        private static readonly IDictionary<int, Func<Item, long>> SpecialItemDictionary = new Dictionary<int, Func<Item, long>>
+        {
             {
                 (int)SpecialItems.Arrow, item =>
                 {

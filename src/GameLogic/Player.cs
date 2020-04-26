@@ -569,6 +569,7 @@ namespace MUnique.OpenMU.GameLogic
             experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
             experience *= this.Attributes[Stats.ExperienceRate];
             experience *= this.GameContext.ExperienceRate;
+
             // todo: master exp
             this.AddExperience((int)experience, killedObject);
             return (int)experience;

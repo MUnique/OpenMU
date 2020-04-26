@@ -17,9 +17,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     /// </summary>
     public class AncientSets : InitializerBase
     {
+        private readonly IDictionary<AttributeDefinition, IncreasableItemOption> bonusOptions = new Dictionary<AttributeDefinition, IncreasableItemOption>();
         private ItemOptionType ancientBonusOptionType;
         private ItemOptionType ancientOptionType;
-        private readonly IDictionary<AttributeDefinition, IncreasableItemOption> bonusOptions = new Dictionary<AttributeDefinition, IncreasableItemOption>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AncientSets"/> class.
@@ -612,7 +612,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 (40, ItemGroups.Gloves, Stats.TotalVitality),
                 (40, ItemGroups.Armor, Stats.TotalVitality),
                 (40, ItemGroups.Helm, Stats.TotalVitality));
-
         }
 
         private void AddItems(ItemSetGroup set, params (short Number, ItemGroups Group, AttributeDefinition BonusOption)[] items)

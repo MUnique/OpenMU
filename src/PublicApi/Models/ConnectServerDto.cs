@@ -57,7 +57,10 @@ namespace MUnique.OpenMU.PublicApi.Models
         /// Creates the DTO for the specified connect server.
         /// </summary>
         /// <param name="connectServer">The connect server.</param>
-        /// <returns>The DTO.</returns>
+        /// <param name="gameServers">The game servers.</param>
+        /// <returns>
+        /// The DTO.
+        /// </returns>
         public static ConnectServerDto Create(IConnectServer connectServer, ICollection<IGameServer> gameServers)
         {
             return new ConnectServerDto

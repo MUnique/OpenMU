@@ -136,30 +136,6 @@ namespace MUnique.OpenMU.Tests
             }
         }
 
-        private Tuple<Item, Item> SerializeAndDeserializeHyonLightingSword()
-        {
-            using var context = this.contextProvider.CreateNewContext(this.gameConfiguration);
-            var item = context.CreateNew<Item>();
-            item.Definition = this.gameConfiguration.Items.First(i => i.Name == "Lighting Sword");
-            item.Level = 15;
-            item.Durability = 100;
-            item.HasSkill = true;
-
-            var ancientSet = this.gameConfiguration.ItemSetGroups.First(i => i.Name == "Hyon");
-            var ancientBonus = context.CreateNew<ItemOptionLink>();
-            ancientBonus.ItemOption = ancientSet.Items.First(i => i.ItemDefinition == item.Definition).BonusOption;
-            ancientBonus.Level = 2; // 10 Str
-            item.ItemOptions.Add(ancientBonus);
-
-            item.ItemSetGroups.Add(ancientSet);
-
-            var array = new byte[this.itemSerializer.NeededSpace];
-            this.itemSerializer.SerializeItem(array, item);
-
-            var deserializedItem = this.itemSerializer.DeserializeItem(array, this.gameConfiguration, context);
-            return new Tuple<Item, Item>(item, deserializedItem);
-        }
-
         /// <summary>
         /// Tests if ancient items without bonus option are correctly (de)serialized.
         /// </summary>
@@ -184,6 +160,30 @@ namespace MUnique.OpenMU.Tests
             {
                 Assert.That(deserializedItem.ItemSetGroups, Contains.Item(setGroup));
             }
+        }
+
+        private Tuple<Item, Item> SerializeAndDeserializeHyonLightingSword()
+        {
+            using var context = this.contextProvider.CreateNewContext(this.gameConfiguration);
+            var item = context.CreateNew<Item>();
+            item.Definition = this.gameConfiguration.Items.First(i => i.Name == "Lighting Sword");
+            item.Level = 15;
+            item.Durability = 100;
+            item.HasSkill = true;
+
+            var ancientSet = this.gameConfiguration.ItemSetGroups.First(i => i.Name == "Hyon");
+            var ancientBonus = context.CreateNew<ItemOptionLink>();
+            ancientBonus.ItemOption = ancientSet.Items.First(i => i.ItemDefinition == item.Definition).BonusOption;
+            ancientBonus.Level = 2; // 10 Str
+            item.ItemOptions.Add(ancientBonus);
+
+            item.ItemSetGroups.Add(ancientSet);
+
+            var array = new byte[this.itemSerializer.NeededSpace];
+            this.itemSerializer.SerializeItem(array, item);
+
+            var deserializedItem = this.itemSerializer.DeserializeItem(array, this.gameConfiguration, context);
+            return new Tuple<Item, Item>(item, deserializedItem);
         }
 
         private Tuple<Item, Item> SerializeAndDeserializeGywenPendant()

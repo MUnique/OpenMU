@@ -29,9 +29,10 @@ namespace MUnique.OpenMU.AdminPanel.Services
         private string typeFilter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlugInController"/> class.
+        /// Initializes a new instance of the <see cref="PlugInController" /> class.
         /// </summary>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
+        /// <param name="modalService">The modal service.</param>
         public PlugInController(IPersistenceContextProvider persistenceContextProvider, IModalService modalService)
         {
             this.persistenceContextProvider = persistenceContextProvider;
@@ -325,6 +326,4 @@ namespace MUnique.OpenMU.AdminPanel.Services
             return this.PointFilter == Guid.Empty || this.PointFilter == GetPlugInExtensionPointType(plugInType)?.GUID;
         }
     }
-
-    
 }

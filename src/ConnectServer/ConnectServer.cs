@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Runtime.CompilerServices;
-
 namespace MUnique.OpenMU.ConnectServer
 {
     using System;
@@ -11,6 +9,7 @@ namespace MUnique.OpenMU.ConnectServer
     using System.ComponentModel;
     using System.Linq;
     using System.Net;
+    using System.Runtime.CompilerServices;
     using log4net;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network.PlugIns;
@@ -81,7 +80,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// <inheritdoc/>
         public ServerList ServerList { get; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IConnectServer"/>
         public IConnectServerSettings Settings { get; }
 
         /// <inheritdoc />

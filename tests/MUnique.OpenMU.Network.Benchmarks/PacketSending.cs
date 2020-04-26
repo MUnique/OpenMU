@@ -6,12 +6,13 @@ namespace MUnique.OpenMU.Network.Benchmarks
 {
     using System;
     using BenchmarkDotNet.Attributes;
+    using BenchmarkDotNet.Jobs;
 
     /// <summary>
     /// A benchmark to compare <see cref="ConnectionExtensions.StartSafeWrite"/> with doing the same manually.
     /// The memory allocation should be the same.
     /// </summary>
-    [CoreJob]
+    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [MemoryDiagnoser]
     [InvocationCount(100)]
     public class PacketSending

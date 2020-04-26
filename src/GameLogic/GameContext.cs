@@ -49,7 +49,6 @@ namespace MUnique.OpenMU.GameLogic
 
                 this.tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
                 this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
-
             }
             catch (Exception ex)
             {

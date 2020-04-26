@@ -232,6 +232,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
                 if (repository != null)
                 {
+#pragma warning disable EF1001 // Internal EF Core API usage.
                     if (navigation is Navigation concreteNavigation
                         && concreteNavigation.Setter != null)
                     {
@@ -241,6 +242,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     {
                         Log.Error($"Could not find setter for navigation {navigation}");
                     }
+#pragma warning restore EF1001 // Internal EF Core API usage.
                 }
                 else
                 {
@@ -253,7 +255,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Loads the dependent data of the objects from the corresponding repositories.
         /// </summary>
         /// <param name="loadedObjects">The loaded objects.</param>
-        /// <param name="currentContext">The current context with which the objects got loaded. It is neccessary to retrieve the foreign key ids.</param>
+        /// <param name="currentContext">The current context with which the objects got loaded. It is necessary to retrieve the foreign key ids.</param>
         protected virtual void LoadDependentData(IEnumerable loadedObjects, DbContext currentContext)
         {
             foreach (var obj in loadedObjects)

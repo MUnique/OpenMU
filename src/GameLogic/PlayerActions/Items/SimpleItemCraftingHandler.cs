@@ -172,7 +172,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 // Create new Item
                 var resultItem = player.PersistenceContext.CreateNew<Item>();
                 resultItem.Definition = craftingResultItem.ItemDefinition;
-                resultItem.Level = (byte) Rand.NextInt(
+                resultItem.Level = (byte)Rand.NextInt(
                     craftingResultItem.RandomMinimumLevel,
                     craftingResultItem.RandomMaximumLevel + 1);
                 resultItem.Durability =

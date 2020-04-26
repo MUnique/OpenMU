@@ -70,7 +70,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             var successPercentage = this.GetSuccessPercentage(player, isAdding);
             if (Rand.NextRandomBool(successPercentage))
             {
-                var randomPoints = (byte) Math.Min(maximumRemainingPoints, this.GetRandomPoints(isAdding));
+                var randomPoints = (byte)Math.Min(maximumRemainingPoints, this.GetRandomPoints(isAdding));
                 if (isAdding)
                 {
                     player.Attributes[statAttribute] += randomPoints;
