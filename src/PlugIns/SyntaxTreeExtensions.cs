@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.PlugIns
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -17,6 +18,8 @@ namespace MUnique.OpenMU.PlugIns
     /// </summary>
     public static class SyntaxTreeExtensions
     {
+        private static IList<PortableExecutableReference> trustedAssemblies;
+
         /// <summary>
         /// Compiles the <see cref="SyntaxTree"/> and load its assembly into memory.
         /// </summary>
@@ -25,7 +28,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <returns>The compiled assembly.</returns>
         public static Assembly CompileAndLoad(this SyntaxTree syntaxTree, string assemblyName)
         {
-            var trustedAssemblies = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)
+            trustedAssemblies ??= (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)
                 ?.Split(';', ':')
                 .Select(path => MetadataReference.CreateFromFile(path)).ToList();
 
