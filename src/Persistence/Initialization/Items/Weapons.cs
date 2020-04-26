@@ -141,7 +141,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateWeapon(0, 24, 0, 22, 1, 2, true, "Daybreak", 115, 182, 218, 40, 90, 0, 0, 192, 30, 0, 0, 0, 2, 0, 0, 0, 0, 0);
             this.CreateWeapon(0, 25, 0, 56, 2, 4, true, "Sword Dancer", 115, 109, 136, 40, 90, 108, 0, 136, 57, 9, 0, 0, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(0, 26, 0, 22, 1, 4, true, "Flamberge", 137, 115, 126, 40, 90, 0, 380, 193, 53, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-            this.CreateWeapon(0, 27, 0, 22, 1, 4, true, "Sword Bracker", 133, 91, 99, 35, 90, 0, 380, 53, 176, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+            this.CreateWeapon(0, 27, 0, 22, 1, 4, true, "Sword Breaker", 133, 91, 99, 35, 90, 0, 380, 53, 176, 0, 0, 0, 2, 0, 0, 0, 0, 0);
             this.CreateWeapon(0, 28, 0, 56, 1, 4, true, "Imperial Sword", 139, 98, 122, 45, 90, 109, 380, 91, 73, 17, 0, 0, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(0, 31, 0, 56, 2, 4, true, "Rune Blade", 100, 104, 130, 35, 93, 104, 0, 135, 62, 9, 0, 0, 0, 0, 1, 0, 0, 0);
             this.CreateWeapon(0, 32, 0, 260, 1, 2, true, "Sacred Glove", 52, 52, 58, 25, 65, 0, 0, 85, 35, 0, 0, 0, 0, 0, 0, 0, 0, 1);
