@@ -64,8 +64,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.AddsRandomly = true;
             definition.MaximumOptionsPerItem = 2;
 
-            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumCurseBaseDmg, 1.02f, AggregateType.Multiplicate));
             definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumCurseBaseDmgPer20LevelItemCount, 1, AggregateType.AddRaw));
@@ -81,8 +81,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.AddsRandomly = true;
             definition.MaximumOptionsPerItem = 2;
 
-            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate));
             definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumWizBaseDmgPer20LevelItemCount, 1, AggregateType.AddRaw));
@@ -98,8 +98,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.AddsRandomly = true;
             definition.MaximumOptionsPerItem = 2;
 
-            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKill, 1f / 8f, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumPhysBaseDmg, 1.02f, AggregateType.Multiplicate));
             definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumPhysBaseDmgPer20LevelItemCount, 1, AggregateType.AddRaw));

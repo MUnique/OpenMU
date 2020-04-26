@@ -488,22 +488,42 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the mana after monster kill attribute definition.
         /// </summary>
-        public static AttributeDefinition ManaAfterMonsterKill { get; } = new AttributeDefinition(new Guid("3DE9DEE5-C717-456B-8E94-6C224553674F"), "manaAfterMonsterKill", string.Empty);
+        public static AttributeDefinition ManaAfterMonsterKillMultiplier { get; } = new AttributeDefinition(new Guid("3DE9DEE5-C717-456B-8E94-6C224553674F"), "Mana recover after Monster kill, multiplier of max mana", string.Empty);
 
         /// <summary>
         /// Gets the health after monster kill attribute definition.
         /// </summary>
-        public static AttributeDefinition HealthAfterMonsterKill { get; } = new AttributeDefinition(new Guid("0498AA9E-A4BB-4DE5-B112-58D921101899"), "healthAfterMonsterKill", string.Empty);
+        public static AttributeDefinition HealthAfterMonsterKillMultiplier { get; } = new AttributeDefinition(new Guid("0498AA9E-A4BB-4DE5-B112-58D921101899"), "Health recover after Monster kill, multiplier of max health", string.Empty);
 
         /// <summary>
         /// Gets the shield after monster kill attribute definition.
         /// </summary>
-        public static AttributeDefinition ShieldAfterMonsterKill { get; } = new AttributeDefinition(new Guid("783F0178-C23C-4F20-BE10-B73D3D31D4F6"), "shieldAfterMonsterKill", string.Empty);
+        public static AttributeDefinition ShieldAfterMonsterKillMultiplier { get; } = new AttributeDefinition(new Guid("783F0178-C23C-4F20-BE10-B73D3D31D4F6"), "Shield recover after Monster kill, multiplier of max shield", string.Empty);
 
         /// <summary>
         /// Gets the ability after monster kill attribute definition.
         /// </summary>
-        public static AttributeDefinition AbilityAfterMonsterKill { get; } = new AttributeDefinition(new Guid("47433CD1-C7D5-4BF5-AC52-E0F33BF90504"), "abilityAfterMonsterKill", string.Empty);
+        public static AttributeDefinition AbilityAfterMonsterKillMultiplier { get; } = new AttributeDefinition(new Guid("47433CD1-C7D5-4BF5-AC52-E0F33BF90504"), "Ability recover after Monster kill, multiplier of max ability", string.Empty);
+
+        /// <summary>
+        /// Gets the mana after monster kill attribute definition.
+        /// </summary>
+        public static AttributeDefinition ManaAfterMonsterKillAbsolute { get; } = new AttributeDefinition(new Guid("C8491372-FF87-41DF-A89E-0B912F0EA8F5"), "Mana recover after Monster kill, absolute", string.Empty);
+
+        /// <summary>
+        /// Gets the health after monster kill attribute definition.
+        /// </summary>
+        public static AttributeDefinition HealthAfterMonsterKillAbsolute { get; } = new AttributeDefinition(new Guid("7F56242C-B060-40EC-B250-85CF933A22ED"), "Health recover after Monster kill, absolute", string.Empty);
+
+        /// <summary>
+        /// Gets the shield after monster kill attribute definition.
+        /// </summary>
+        public static AttributeDefinition ShieldAfterMonsterKillAbsolute { get; } = new AttributeDefinition(new Guid("D2FC4D9C-3C1B-4555-AE5F-8EE90728DBF4"), "Shield recover after Monster kill, absolute", string.Empty);
+
+        /// <summary>
+        /// Gets the ability after monster kill attribute definition.
+        /// </summary>
+        public static AttributeDefinition AbilityAfterMonsterKillAbsolute { get; } = new AttributeDefinition(new Guid("477E1363-3087-4B8E-AAAE-153B2C2746CB"), "Ability recover after Monster kill, absolute", string.Empty);
 
         /// <summary>
         /// Gets the shield decrease rate increase attribute definition.
@@ -646,13 +666,13 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         private static Regeneration ShieldRegeneration { get; } = new Regeneration(ShieldRecoveryMultiplier, MaximumShield, CurrentShield, ShieldRecoveryAbsolute);
 
-        private static Regeneration ManaRegenerationAfterMonsterKill { get; } = new Regeneration(ManaAfterMonsterKill, MaximumMana, CurrentMana, null);
+        private static Regeneration ManaRegenerationAfterMonsterKill { get; } = new Regeneration(ManaAfterMonsterKillMultiplier, MaximumMana, CurrentMana, ManaAfterMonsterKillAbsolute);
 
-        private static Regeneration HealthRegenerationAfterMonsterKill { get; } = new Regeneration(HealthAfterMonsterKill, MaximumHealth, CurrentHealth, null);
+        private static Regeneration HealthRegenerationAfterMonsterKill { get; } = new Regeneration(HealthAfterMonsterKillMultiplier, MaximumHealth, CurrentHealth, HealthAfterMonsterKillAbsolute);
 
-        private static Regeneration AbilityRegenerationAfterMonsterKill { get; } = new Regeneration(AbilityAfterMonsterKill, MaximumAbility, CurrentAbility, null);
+        private static Regeneration AbilityRegenerationAfterMonsterKill { get; } = new Regeneration(AbilityAfterMonsterKillMultiplier, MaximumAbility, CurrentAbility, AbilityAfterMonsterKillAbsolute);
 
-        private static Regeneration ShieldRegenerationAfterMonsterKill { get; } = new Regeneration(ShieldAfterMonsterKill, MaximumShield, CurrentShield, null);
+        private static Regeneration ShieldRegenerationAfterMonsterKill { get; } = new Regeneration(ShieldAfterMonsterKillMultiplier, MaximumShield, CurrentShield, ShieldAfterMonsterKillAbsolute);
 
         /// <summary>
         /// A regeneration definition.

@@ -627,11 +627,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.AddMasterSkillDefinition(SkillNumber.SpearMastery, SkillNumber.SpearStrengthener, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula120);
             this.AddMasterSkillDefinition(SkillNumber.SwellLifeStrengt, SkillNumber.SwellLife, SkillNumber.Undefined, 3, 4, SkillNumber.SwellLife, 20, Formula181);
             this.AddMasterSkillDefinition(SkillNumber.ManaReduction, SkillNumber.Undefined, SkillNumber.Undefined, 3, 4, SkillNumber.Undefined, 20, Formula722);
-            this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackSDInc, Stats.ShieldAfterMonsterKill, AggregateType.AddFinal, Formula914, 4, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
-            this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackLifeInc, Stats.HealthAfterMonsterKill, AggregateType.AddFinal, Formula4319, 4, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
+            this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackSDInc, Stats.ShieldAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula914, 4, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
+            this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackLifeInc, Stats.HealthAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula4319, 4, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
             this.AddMasterSkillDefinition(SkillNumber.SwellLifeProficiency, SkillNumber.SwellLifeStrengt, SkillNumber.Undefined, 3, 5, SkillNumber.SwellLife, 20, Formula181);
             this.AddPassiveMasterSkillDefinition(SkillNumber.MinimumAttackPowerInc, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, Formula502, 5, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
-            this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackManaInc, Stats.ManaAfterMonsterKill, AggregateType.AddFinal, Formula4319, 5, 3, SkillNumber.MonsterAttackLifeInc, SkillNumber.Undefined, 20);
+            this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackManaInc, Stats.ManaAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula4319, 5, 3, SkillNumber.MonsterAttackLifeInc, SkillNumber.Undefined, 20);
 
             // DW
             this.AddMasterSkillDefinition(SkillNumber.FlameStrengthener, SkillNumber.Flame, SkillNumber.Undefined, 2, 2, SkillNumber.Flame, 20, Formula632);
@@ -768,10 +768,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncMastery, SkillNumber.DefSuccessRateIncPowUp, SkillNumber.Undefined, 3, 3, SkillNumber.IncreaseBlock, 20, Formula502);
             this.AddMasterSkillDefinition(SkillNumber.StaminaIncreaseStrengthener, SkillNumber.IncreaseHealth, SkillNumber.Undefined, 3, 4, SkillNumber.IncreaseHealth, 20, Formula1154);
             this.AddMasterSkillDefinition(SkillNumber.DecreaseMana, SkillNumber.Undefined, SkillNumber.Undefined, 3, 4, SkillNumber.Undefined, 20, Formula722);
-            this.AddPassiveMasterSkillDefinition(SkillNumber.RecoverSDfromMonsterKills, Stats.ShieldAfterMonsterKill, AggregateType.AddFinal, Formula914, 4, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
-            this.AddPassiveMasterSkillDefinition(SkillNumber.RecoverHPfromMonsterKills, Stats.HealthAfterMonsterKill, AggregateType.AddFinal, Formula4319, 4, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
+            this.AddPassiveMasterSkillDefinition(SkillNumber.RecoverSDfromMonsterKills, Stats.ShieldAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula914, 4, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
+            this.AddPassiveMasterSkillDefinition(SkillNumber.RecoverHPfromMonsterKills, Stats.HealthAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula4319, 4, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
             this.AddPassiveMasterSkillDefinition(SkillNumber.IncreaseMinimumAttackPower, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, Formula502, 5, 3, SkillNumber.Undefined, SkillNumber.Undefined, 20);
-            this.AddPassiveMasterSkillDefinition(SkillNumber.RecoverManaMonsterKills, Stats.ManaAfterMonsterKill, AggregateType.AddFinal, Formula4319, 5, 3, SkillNumber.RecoverHPfromMonsterKills, SkillNumber.Undefined, 20);
+            this.AddPassiveMasterSkillDefinition(SkillNumber.RecoverManaMonsterKills, Stats.ManaAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula4319, 5, 3, SkillNumber.RecoverHPfromMonsterKills, SkillNumber.Undefined, 20);
         }
 
         private void AddPassiveMasterSkillDefinition(SkillNumber skillNumber, AttributeDefinition targetAttribute, AggregateType aggregateType, string valueFormula, string displayValueFormula, byte rank, byte root, SkillNumber requiredSkill1, SkillNumber requiredSkill2, byte maximumLevel)
