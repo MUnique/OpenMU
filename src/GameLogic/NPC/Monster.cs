@@ -130,10 +130,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <summary>
-        /// Walks to the target object.
+        /// Walks to the target coordinates.
         /// </summary>
         /// <param name="target">The target object.</param>
-        public void WalkTo(ILocateable target)
+        public void WalkTo(Point target)
         {
             if (this.isCalculatingPath || this.IsWalking)
             {
@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                     this.pathFinder.ResetPathFinder();
                 }
 
-                calculatedPath = this.pathFinder.FindPath(this.Position, target.Position);
+                calculatedPath = this.pathFinder.FindPath(this.Position, target);
                 if (calculatedPath == null)
                 {
                     return;
@@ -177,6 +177,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <summary>
+        /// Walks to the target object.
+        /// </summary>
+        /// <param name="target">The target object.</param>
+        public void WalkTo(ILocateable target) => this.WalkTo(target.Position);
+
+        /// <summary>
         /// Walks to the specified target coordinates using the specified steps.
         /// </summary>
         /// <param name="target">The target.</param>
@@ -185,6 +191,14 @@ namespace MUnique.OpenMU.GameLogic.NPC
         {
             this.walker.WalkTo(target, steps);
             this.Move(target, MoveType.Walk);
+        }
+
+        /// <summary>
+        /// Stops the walking.
+        /// </summary>
+        public void StopWalk()
+        {
+            this.walker?.Stop();
         }
 
         /// <inheritdoc/>
@@ -322,7 +336,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
                 else
                 {
-                    dropCoordinates = this.CurrentMap.Terrain.GetRandomDropCoordinate(this.Position, 4);
+                    dropCoordinates = this.CurrentMap.Terrain.GetRandomCoordinate(this.Position, 4);
                 }
 
                 var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();

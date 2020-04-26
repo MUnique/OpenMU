@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="point">The target point.</param>
         /// <param name="maxmimumRadius">The maximum radius around the specified coordinate.</param>
         /// <returns>The random drop coordinate.</returns>
-        public Point GetRandomDropCoordinate(Point point, byte maxmimumRadius)
+        public Point GetRandomCoordinate(Point point, byte maxmimumRadius)
         {
             byte tempx = (byte)Rand.NextInt(Math.Max(0, point.X - maxmimumRadius), Math.Min(255, point.X + maxmimumRadius + 1));
             byte tempy = (byte)Rand.NextInt(Math.Max(0, point.Y - maxmimumRadius), Math.Min(255, point.Y + maxmimumRadius + 1));

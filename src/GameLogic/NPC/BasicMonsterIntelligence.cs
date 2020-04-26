@@ -124,7 +124,17 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             if (this.Monster.IsWalking)
             {
-                return;
+                if (this.currentTarget is { } target &&
+                    (ushort)target.GetDistanceTo(this.Npc) <= this.Monster.Definition.AttackRange + 1
+                    && Rand.NextRandomBool(75))
+                {
+                    // Why walk more than needed?
+                    this.Monster.StopWalk();
+                }
+                else
+                {
+                    return;
+                }
             }
 
             if (this.currentTarget != null)
@@ -158,7 +168,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
             // Target in View Range?
             else if (this.Npc.Definition.ViewRange + 1 >= dist)
             {
-                this.Monster.WalkTo(this.currentTarget);  // no, walk to the target
+                // no, walk to the target
+                var walkTarget = this.currentTarget.CurrentMap.Terrain.GetRandomCoordinate(this.currentTarget.Position, this.Monster.Definition.AttackRange);
+                this.Monster.WalkTo(walkTarget);
             }
             else
             {

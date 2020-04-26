@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
         {
-            var dropCoordinates = player.CurrentMap.Terrain.GetRandomDropCoordinate(player.Position, 1);
+            var dropCoordinates = player.CurrentMap.Terrain.GetRandomCoordinate(player.Position, 1);
             try
             {
                 var arguments = command.ParseArguments<Arguments>();
