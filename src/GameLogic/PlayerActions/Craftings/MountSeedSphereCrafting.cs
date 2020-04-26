@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
