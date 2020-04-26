@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the level.
         /// </summary>
-        public int Level { get; set; } = 1;
+        public int Level { get; set; }
 
         /// <summary>
         /// Gets or sets the index of the option. This is required when the options are sorted, e.g. for socket options.

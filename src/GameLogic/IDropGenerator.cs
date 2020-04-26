@@ -142,7 +142,7 @@ namespace MUnique.OpenMU.GameLogic
                         var newOption = remainingOptions.SelectRandom(this.randomizer);
                         var itemOptionLink = new ItemOptionLink();
                         itemOptionLink.ItemOption = newOption;
-                        itemOptionLink.Level = 1;
+                        itemOptionLink.Level = newOption.LevelDependentOptions.Select(l => l.Level).SelectRandom();
                         item.ItemOptions.Add(itemOptionLink);
                     }
                 }
