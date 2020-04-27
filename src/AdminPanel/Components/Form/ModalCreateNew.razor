@@ -1,11 +1,13 @@
-﻿@typeparam TItem
+﻿@using MUnique.OpenMU.Persistence
+@typeparam TItem
 
 <EditForm Model="@Item">
-    <DataAnnotationsValidator />
-    <CreationAutoFields />
+    <CascadingValue Value="@this.PersistenceContext">
+        <DataAnnotationsValidator />
+        <CreationAutoFields />
 
-    <ValidationSummary />
-
+        <ValidationSummary />
+    </CascadingValue>
     <button type="submit" @onclick="@Submit" class="btn-primary">Submit</button>
     <button @onclick="@Cancel" class="btn-secondary">Cancel</button>
 </EditForm>
@@ -23,6 +25,12 @@
     /// </summary>
     [Parameter]
     public TItem Item { get; set; }
+
+    /// <summary>
+    /// Gets or sets the persistence context which should be used. It's required for lookups.
+    /// </summary>
+    [Parameter]
+    public IContext PersistenceContext { get; set; }
 
     private void Submit()
     {

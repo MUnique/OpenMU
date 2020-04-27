@@ -85,6 +85,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             var item = this.context.CreateNew<TItem>();
             var parameters = new ModalParameters();
             parameters.Add(nameof(ModalCreateNew<TItem>.Item), item);
+            parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.context);
             var options = new ModalOptions
             {
                 DisableBackgroundCancel = true,
