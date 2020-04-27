@@ -166,7 +166,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                         action(value);
                     }
                 }
-                else if (aggregateProperties is { })
+                else if (propertyValue is { })
                 {
                     action(propertyValue);
                 }
