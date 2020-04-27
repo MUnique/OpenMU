@@ -36,6 +36,10 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         [Parameter]
         public string Label { get; set; }
 
+        /// <summary>
+        /// Gets or sets the persistence context.
+        /// </summary>
+        [CascadingParameter]
         /// <inheritdoc />
         protected override void OnInitialized()
         {
@@ -46,22 +50,12 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             this.isCreatingSupported = isMemberOfAggregate;
             this.isStartingCollapsed = this.Value.Count > 10;
             this.isCollapsed = this.isStartingCollapsed;
-
-            this.context = this.ContextProvider.CreateNewTypedContext<TItem>();
         }
 
         /// <inheritdoc />
         protected override bool TryParseValueFromString(string value, out ICollection<TItem> result, out string validationErrorMessage)
         {
             throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            this.context?.Dispose();
-            this.context = null;
         }
 
         private void OnToggleCollapseClick()
@@ -82,10 +76,10 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
 
         private async Task OnCreateClick()
         {
-            var item = this.context.CreateNew<TItem>();
+            var item = this.PersistenceContext.CreateNew<TItem>();
             var parameters = new ModalParameters();
             parameters.Add(nameof(ModalCreateNew<TItem>.Item), item);
-            parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.context);
+            parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
             var options = new ModalOptions
             {
                 DisableBackgroundCancel = true,
@@ -95,12 +89,12 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             var result = await modal.Result;
             if (result.Cancelled)
             {
-                this.context.Delete(item);
+                this.PersistenceContext.Delete(item);
             }
             else
             {
                 this.Value.Add(item);
-                this.context.SaveChanges();
+                this.PersistenceContext.SaveChanges();
                 this.StateHasChanged();
             }
         }
@@ -113,10 +107,10 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             if (!this.ValueExpression.GetAccessedMemberType().IsConfigurationType()
                 && !typeof(TItem).IsConfigurationType())
             {
-                this.context.Delete(item);
+                this.PersistenceContext.Delete(item);
             }
 
-            this.context.SaveChanges();
+            this.PersistenceContext.SaveChanges();
         }
     }
 }

@@ -3,8 +3,6 @@
 @using MUnique.OpenMU.Persistence
 @inherits InputBase<TObject>
 
-@inject IPersistenceContextProvider ContextProvider
-
     <div class="card">
         <h5 class="card-header">
             <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
@@ -32,14 +30,11 @@
     [Parameter]
     public string Label { get; set; }
 
-    private IContext context;
-
-    /// <inheritdoc />
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        this.context = this.ContextProvider.CreateNewTypedContext<TObject>();
-    }
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [CascadingParameter]
+    public IContext PersistentContext { get; set; }
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string value, out TObject result, out string validationErrorMessage)
@@ -49,6 +44,6 @@
 
     private void OnCreateClick()
     {
-        this.Value = this.context.CreateNew<TObject>();
+        this.Value = this.PersistentContext.CreateNew<TObject>();
     }
 }
