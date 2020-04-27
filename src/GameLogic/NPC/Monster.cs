@@ -193,14 +193,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.Move(target, MoveType.Walk);
         }
 
-        /// <summary>
-        /// Stops the walking.
-        /// </summary>
-        public void StopWalk()
-        {
-            this.walker?.Stop();
-        }
-
         /// <inheritdoc/>
         public int GetDirections(Span<Direction> directions)
         {

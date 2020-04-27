@@ -124,17 +124,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             if (this.Monster.IsWalking)
             {
-                if (this.currentTarget is { } target &&
-                    (ushort)target.GetDistanceTo(this.Npc) <= this.Monster.Definition.AttackRange + 1
-                    && Rand.NextRandomBool(75))
-                {
-                    // Why walk more than needed?
-                    this.Monster.StopWalk();
-                }
-                else
-                {
-                    return;
-                }
+                return;
             }
 
             if (this.currentTarget != null)
