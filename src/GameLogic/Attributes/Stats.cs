@@ -31,12 +31,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the base agility attribute definition.
         /// </summary>
-        public static AttributeDefinition BaseAgility { get; } = new AttributeDefinition(new Guid("1AE9C014-E3CD-4703-BD05-1B65F5F94CEB"), "baseAgility", string.Empty);
+        public static AttributeDefinition BaseAgility { get; } = new AttributeDefinition(new Guid("1AE9C014-E3CD-4703-BD05-1B65F5F94CEB"), "Base Agility", "The base agility of the character.");
 
         /// <summary>
         /// Gets the total agility attribute definition.
         /// </summary>
-        public static AttributeDefinition TotalAgility { get; } = new AttributeDefinition(new Guid("364F1207-00F8-485B-9F2C-74E04CB78C73"), "totalAgility", string.Empty);
+        public static AttributeDefinition TotalAgility { get; } = new AttributeDefinition(new Guid("364F1207-00F8-485B-9F2C-74E04CB78C73"), "Total Agility", "The total agility of the character.");
 
         /// <summary>
         /// Gets the total agility requirement value attribute definition.
@@ -46,12 +46,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the base vitality attribute definition.
         /// </summary>
-        public static AttributeDefinition BaseVitality { get; } = new AttributeDefinition(new Guid("6CA5C3A6-B109-45A5-87A7-FDCB107B4982"), "baseVitality", string.Empty);
+        public static AttributeDefinition BaseVitality { get; } = new AttributeDefinition(new Guid("6CA5C3A6-B109-45A5-87A7-FDCB107B4982"), "Base Vitality", string.Empty);
 
         /// <summary>
         /// Gets the total vitality attribute definition.
         /// </summary>
-        public static AttributeDefinition TotalVitality { get; } = new AttributeDefinition(new Guid("6A0076E4-69DC-42E7-A92B-C8711392EF82"), "totalVitality", string.Empty);
+        public static AttributeDefinition TotalVitality { get; } = new AttributeDefinition(new Guid("6A0076E4-69DC-42E7-A92B-C8711392EF82"), "Total Vitality", string.Empty);
 
         /// <summary>
         /// Gets the total vitality requirement value attribute definition.
@@ -61,12 +61,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the base energy attribute definition.
         /// </summary>
-        public static AttributeDefinition BaseEnergy { get; } = new AttributeDefinition(new Guid("01B0EF28-F7A0-46B5-97BA-2B624A54CD75"), "baseEnergy", string.Empty);
+        public static AttributeDefinition BaseEnergy { get; } = new AttributeDefinition(new Guid("01B0EF28-F7A0-46B5-97BA-2B624A54CD75"), "Base Energy", string.Empty);
 
         /// <summary>
         /// Gets the total energy attribute definition.
         /// </summary>
-        public static AttributeDefinition TotalEnergy { get; } = new AttributeDefinition(new Guid("12956B45-007C-453A-AE1F-36475B8CEBBF"), "totalEnergy", string.Empty);
+        public static AttributeDefinition TotalEnergy { get; } = new AttributeDefinition(new Guid("12956B45-007C-453A-AE1F-36475B8CEBBF"), "Total Energy", string.Empty);
 
         /// <summary>
         /// Gets the total energy requirement value attribute definition.
@@ -76,12 +76,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the base leadership attribute definition.
         /// </summary>
-        public static AttributeDefinition BaseLeadership { get; } = new AttributeDefinition(new Guid("6AF2C9DF-3AE4-4721-8462-9A8EC7F56FE4"), "baseLeadership", string.Empty);
+        public static AttributeDefinition BaseLeadership { get; } = new AttributeDefinition(new Guid("6AF2C9DF-3AE4-4721-8462-9A8EC7F56FE4"), "Base Leadership", string.Empty);
 
         /// <summary>
         /// Gets the total leadership attribute definition.
         /// </summary>
-        public static AttributeDefinition TotalLeadership { get; } = new AttributeDefinition(new Guid("35E04272-63F3-4EBB-8FB5-EF2128DDB9F6"), "totalLeadership", string.Empty);
+        public static AttributeDefinition TotalLeadership { get; } = new AttributeDefinition(new Guid("35E04272-63F3-4EBB-8FB5-EF2128DDB9F6"), "Total Leadership", string.Empty);
 
         /// <summary>
         /// Gets the total leadership requirement value attribute definition.
@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the experience rate attribute definition.
         /// </summary>
-        public static AttributeDefinition ExperienceRate { get; } = new AttributeDefinition(new Guid("1AD454D4-BEF9-416E-BC49-82A5B0277FC7"), "experienceRate", string.Empty);
+        public static AttributeDefinition ExperienceRate { get; } = new AttributeDefinition(new Guid("1AD454D4-BEF9-416E-BC49-82A5B0277FC7"), "Experience Rate", "Defines the experience rate multiplier of a character. By default it's 1.0 and may be modified by seals or other stuff.");
 
         /// <summary>
         /// Gets the master level definition.
@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the master experience rate definition.
         /// </summary>
-        public static AttributeDefinition MasterExperienceRate { get; } = new AttributeDefinition(new Guid("E367A231-C8A4-4F92-B553-C665F98DB1FC"), "Master experience rate", string.Empty);
+        public static AttributeDefinition MasterExperienceRate { get; } = new AttributeDefinition(new Guid("E367A231-C8A4-4F92-B553-C665F98DB1FC"), "Master Experience Rate", string.Empty);
 
         /// <summary>
         /// Gets the reset quantity attribute definition.
@@ -121,42 +121,37 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the zen amount rate attribute definition.
         /// </summary>
-        public static AttributeDefinition MoneyAmountRate { get; } = new AttributeDefinition(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "zenAmountRate", string.Empty);
-
-        /// <summary>
-        /// Gets the item drop rate attribute definition.
-        /// </summary>
-        public static AttributeDefinition ItemDropRate { get; } = new AttributeDefinition(new Guid("2EC8394B-E258-4237-86C5-AD6E2DB844AF"), "itemDropRate", string.Empty);
+        public static AttributeDefinition MoneyAmountRate { get; } = new AttributeDefinition(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "Money Drop Amount Rate", "Defines a multiplier for the amount of a money drop.");
 
         /// <summary>
         /// Gets the current health attribute definition.
         /// </summary>
-        public static AttributeDefinition CurrentHealth { get; } = new AttributeDefinition(new Guid("20686FFD-7A96-4BE2-9889-2A4DD9FF5A25"), "currentHealth", string.Empty);
+        public static AttributeDefinition CurrentHealth { get; } = new AttributeDefinition(new Guid("20686FFD-7A96-4BE2-9889-2A4DD9FF5A25"), "Current Health", string.Empty);
 
         /// <summary>
         /// Gets the maximum health attribute definition.
         /// </summary>
-        public static AttributeDefinition MaximumHealth { get; } = new AttributeDefinition(new Guid("A6C39A5C-295F-415E-A314-5E9F9A748D27"), "maximumHealth", string.Empty);
+        public static AttributeDefinition MaximumHealth { get; } = new AttributeDefinition(new Guid("A6C39A5C-295F-415E-A314-5E9F9A748D27"), "Maximum Health", string.Empty);
 
         /// <summary>
         /// Gets the current mana attribute definition.
         /// </summary>
-        public static AttributeDefinition CurrentMana { get; } = new AttributeDefinition(new Guid("B3299EE6-3815-4E48-B620-95DB78F8A142"), "currentMana", string.Empty);
+        public static AttributeDefinition CurrentMana { get; } = new AttributeDefinition(new Guid("B3299EE6-3815-4E48-B620-95DB78F8A142"), "Current Mana", string.Empty);
 
         /// <summary>
         /// Gets the maximum mana attribute definition.
         /// </summary>
-        public static AttributeDefinition MaximumMana { get; } = new AttributeDefinition(new Guid("17CB8826-0677-4C93-A0C9-C0E3D2DA7D73"), "maximumMana", string.Empty);
+        public static AttributeDefinition MaximumMana { get; } = new AttributeDefinition(new Guid("17CB8826-0677-4C93-A0C9-C0E3D2DA7D73"), "Maximum Mana", string.Empty);
 
         /// <summary>
         /// Gets the current shield attribute definition.
         /// </summary>
-        public static AttributeDefinition CurrentShield { get; } = new AttributeDefinition(new Guid("0E255161-8A3D-4367-BFF0-EFCD238C16FD"), "currentShield", string.Empty);
+        public static AttributeDefinition CurrentShield { get; } = new AttributeDefinition(new Guid("0E255161-8A3D-4367-BFF0-EFCD238C16FD"), "Current Shield", string.Empty);
 
         /// <summary>
         /// Gets the maximum shield attribute definition.
         /// </summary>
-        public static AttributeDefinition MaximumShield { get; } = new AttributeDefinition(new Guid("BC745471-6EC6-48BC-8C7A-C8AACA3A92D9"), "maximumShield", string.Empty);
+        public static AttributeDefinition MaximumShield { get; } = new AttributeDefinition(new Guid("BC745471-6EC6-48BC-8C7A-C8AACA3A92D9"), "Maximum Shield", string.Empty);
 
         /// <summary>
         /// Gets the maximum shield intermediate attribute definition, which should contain the Level ^ 2.
@@ -166,22 +161,22 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the current ability attribute definition.
         /// </summary>
-        public static AttributeDefinition CurrentAbility { get; } = new AttributeDefinition(new Guid("39EB6747-0689-4BBF-B832-8936E00C5DF6"), "currentAbility", string.Empty);
+        public static AttributeDefinition CurrentAbility { get; } = new AttributeDefinition(new Guid("39EB6747-0689-4BBF-B832-8936E00C5DF6"), "Current Ability", string.Empty);
 
         /// <summary>
         /// Gets the maximum ability attribute definition.
         /// </summary>
-        public static AttributeDefinition MaximumAbility { get; } = new AttributeDefinition(new Guid("466BBBBA-C1D8-45DC-8832-2EAA1130ACFD"), "maximumAbility", string.Empty);
+        public static AttributeDefinition MaximumAbility { get; } = new AttributeDefinition(new Guid("466BBBBA-C1D8-45DC-8832-2EAA1130ACFD"), "Maximum Ability", string.Empty);
 
         /// <summary>
         /// Gets the attack rate PVM attribute definition.
         /// </summary>
-        public static AttributeDefinition AttackRatePvm { get; } = new AttributeDefinition(new Guid("1129442A-E1C7-4240-8866-B781C2838C25"), "attackRatePvm", string.Empty);
+        public static AttributeDefinition AttackRatePvm { get; } = new AttributeDefinition(new Guid("1129442A-E1C7-4240-8866-B781C2838C25"), "Attack Rate (PvM)", string.Empty);
 
         /// <summary>
         /// Gets the attack rate PVP attribute definition.
         /// </summary>
-        public static AttributeDefinition AttackRatePvp { get; } = new AttributeDefinition(new Guid("C39C1C4B-0F58-49FC-9C71-8A58D570C5D2"), "attackRatePvp", string.Empty);
+        public static AttributeDefinition AttackRatePvp { get; } = new AttributeDefinition(new Guid("C39C1C4B-0F58-49FC-9C71-8A58D570C5D2"), "Attack Rate (PvP)", string.Empty);
 
         /// <summary>
         /// Gets the minimum physical base DMG by weapon attribute definition.
@@ -211,12 +206,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the minimum wiz base DMG attribute definition.
         /// </summary>
-        public static AttributeDefinition MinimumWizBaseDmg { get; } = new AttributeDefinition(new Guid("65583A02-AB94-4A17-9B79-86ECC82DC835"), "minimumWizBaseDmg", string.Empty);
+        public static AttributeDefinition MinimumWizBaseDmg { get; } = new AttributeDefinition(new Guid("65583A02-AB94-4A17-9B79-86ECC82DC835"), "Minimum Wizardry Base Damage", string.Empty);
 
         /// <summary>
         /// Gets the maximum wiz base DMG attribute definition.
         /// </summary>
-        public static AttributeDefinition MaximumWizBaseDmg { get; } = new AttributeDefinition(new Guid("44B8236A-BF5B-4082-BA8B-5DEDA1458D33"), "maximumWizBaseDmg", string.Empty);
+        public static AttributeDefinition MaximumWizBaseDmg { get; } = new AttributeDefinition(new Guid("44B8236A-BF5B-4082-BA8B-5DEDA1458D33"), "Maximum Wizardry Base Damage", string.Empty);
 
         /// <summary>
         /// Gets the item count of maximum wiz base DMG per 20 level option attribute definition.
@@ -226,12 +221,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the minimum curse base DMG attribute definition.
         /// </summary>
-        public static AttributeDefinition MinimumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("B8AE2D6B-05CE-43A9-B2BB-3C32F288A043"), "minimumCurseBaseDmg", string.Empty);
+        public static AttributeDefinition MinimumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("B8AE2D6B-05CE-43A9-B2BB-3C32F288A043"), "Minimum Curse Base Damage", string.Empty);
 
         /// <summary>
         /// Gets the maximum curse base DMG attribute definition.
         /// </summary>
-        public static AttributeDefinition MaximumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "maximumCurseBaseDmg", string.Empty);
+        public static AttributeDefinition MaximumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "Maximum Curse Base Damage", string.Empty);
 
         /// <summary>
         /// Gets the item count of maximum curse base DMG per 20 level option attribute definition.
@@ -256,234 +251,234 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the skill multiplier attribute definition.
         /// </summary>
-        public static AttributeDefinition SkillMultiplier { get; } = new AttributeDefinition(new Guid("D9FB3323-6DF5-48F7-8253-FDBB5EF82114"), "skillMultiplier", string.Empty);
+        public static AttributeDefinition SkillMultiplier { get; } = new AttributeDefinition(new Guid("D9FB3323-6DF5-48F7-8253-FDBB5EF82114"), "Skill Damage Multiplier", string.Empty);
 
         /// <summary>
         /// Gets the skill damage bonus attribute definition.
         /// </summary>
-        public static AttributeDefinition SkillDamageBonus { get; } = new AttributeDefinition(new Guid("B8B214B1-396B-4CA8-9A77-240AA70A989B"), "SkillDamageBonus", "A bonus value which gets added to the damage calculation when the damage is calculated with a skill.");
+        public static AttributeDefinition SkillDamageBonus { get; } = new AttributeDefinition(new Guid("B8B214B1-396B-4CA8-9A77-240AA70A989B"), "Skill Damage Bonus", "A bonus value which gets added to the damage calculation when the damage is calculated with a skill.");
 
         /// <summary>
         /// Gets the critical damage bonus attribute definition.
         /// </summary>
-        public static AttributeDefinition CriticalDamageBonus { get; } = new AttributeDefinition(new Guid("33F53519-16F3-44C2-9D36-432C36329C78"), "CriticalDamageBonus", "A bonus value which gets added to the damage calculation when the damage is calculated and critical damage applies.");
+        public static AttributeDefinition CriticalDamageBonus { get; } = new AttributeDefinition(new Guid("33F53519-16F3-44C2-9D36-432C36329C78"), "Critical Damage Bonus", "A bonus value which gets added to the damage calculation when the damage is calculated and critical damage applies.");
 
         /// <summary>
         /// Gets the excellent damage bonus attribute definition.
         /// </summary>
-        public static AttributeDefinition ExcellentDamageBonus { get; } = new AttributeDefinition(new Guid("9CB8705A-398D-4158-BC60-D6ADBED36A28"), "ExcellentDamageBonus", "A bonus value which gets added to the damage calculation when the damage is calculated and excellent damage applies.");
+        public static AttributeDefinition ExcellentDamageBonus { get; } = new AttributeDefinition(new Guid("9CB8705A-398D-4158-BC60-D6ADBED36A28"), "Excellent Damage Bonus", "A bonus value which gets added to the damage calculation when the damage is calculated and excellent damage applies.");
 
         /// <summary>
         /// Gets the attack speed attribute definition.
         /// </summary>
-        public static AttributeDefinition AttackSpeed { get; } = new AttributeDefinition(new Guid("BACC1115-1E8B-4E62-B952-8F8DDB58A949"), "attackSpeed", string.Empty);
+        public static AttributeDefinition AttackSpeed { get; } = new AttributeDefinition(new Guid("BACC1115-1E8B-4E62-B952-8F8DDB58A949"), "Attack Speed", string.Empty);
 
         /// <summary>
         /// Gets the attack damage increase attribute definition.
         /// </summary>
-        public static AttributeDefinition AttackDamageIncrease { get; } = new AttributeDefinition(new Guid("0765CCD2-C70A-4338-BF49-0D652364C223"), "attackDamageIncrease", string.Empty);
+        public static AttributeDefinition AttackDamageIncrease { get; } = new AttributeDefinition(new Guid("0765CCD2-C70A-4338-BF49-0D652364C223"), "Attack Damage Increase Multiplier", string.Empty);
 
         /// <summary>
         /// Gets the wizardry attack damage increase attribute definition.
         /// </summary>
-        public static AttributeDefinition WizardryAttackDamageIncrease { get; } = new AttributeDefinition(new Guid("8F1CD5A5-3792-42FC-89B8-E6D50F997F4B"), "WizardryAttackDamageIncrease", "The wizardry damage increase which is multiplied with the min/max wiz base damage and added to it.");
+        public static AttributeDefinition WizardryAttackDamageIncrease { get; } = new AttributeDefinition(new Guid("8F1CD5A5-3792-42FC-89B8-E6D50F997F4B"), "Wizardry Attack Damage Increase Multiplier", "The wizardry damage increase which is multiplied with the min/max wiz base damage and added to it.");
 
         /// <summary>
         /// Gets the curse attack damage increase attribute definition.
         /// </summary>
-        public static AttributeDefinition CurseAttackDamageIncrease { get; } = new AttributeDefinition(new Guid("2B8904D5-9901-40C0-BFDE-66675672D9DC"), "Curse Attack Damage Increase", "The cursed damage increase which is multiplied with the min/max curse base damage and added to it.");
+        public static AttributeDefinition CurseAttackDamageIncrease { get; } = new AttributeDefinition(new Guid("2B8904D5-9901-40C0-BFDE-66675672D9DC"), "Curse Attack Damage Increase Multiplier", "The cursed damage increase which is multiplied with the min/max curse base damage and added to it.");
 
         /// <summary>
         /// Gets the two handed weapon damage increase attribute definition.
         /// </summary>
-        public static AttributeDefinition TwoHandedWeaponDamageIncrease { get; } = new AttributeDefinition(new Guid("BA3D57E9-68A5-47AC-A6E9-43793F4DDE2A"), "TwoHandedWeaponDamageIncrease", "The damage increase which is multiplied with the min/max base damage and added to it when using a two-handed weapon.");
+        public static AttributeDefinition TwoHandedWeaponDamageIncrease { get; } = new AttributeDefinition(new Guid("BA3D57E9-68A5-47AC-A6E9-43793F4DDE2A"), "Two-Handed Weapon Damage Increase", "The damage increase which is multiplied with the min/max base damage and added to it when using a two-handed weapon.");
 
         /// <summary>
         /// Gets the is two handed weapon equipped.
         /// </summary>
-        public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new AttributeDefinition(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "IsTwoHandedWeaponEquipped", null);
+        public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new AttributeDefinition(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "Is Two-Handed Weapon Equipped", null);
 
         /// <summary>
         /// Gets the combo bonus attribute definition.
         /// </summary>
-        public static AttributeDefinition ComboBonus { get; } = new AttributeDefinition(new Guid("53A479FE-8A73-4A45-AACA-5B1AA4362CF9"), "comboBonus", string.Empty);
+        public static AttributeDefinition ComboBonus { get; } = new AttributeDefinition(new Guid("53A479FE-8A73-4A45-AACA-5B1AA4362CF9"), "Combo Bonus", string.Empty);
 
         /// <summary>
         /// Gets the attribute if skill combos are available.
         /// </summary>
-        public static AttributeDefinition IsSkillComboAvailable { get; } = new AttributeDefinition(new Guid("{0B648F95-E9C1-4AFD-90A6-3DD954BF6995}"), nameof(IsSkillComboAvailable), string.Empty);
+        public static AttributeDefinition IsSkillComboAvailable { get; } = new AttributeDefinition(new Guid("{0B648F95-E9C1-4AFD-90A6-3DD954BF6995}"), "Is Skill Combo Available", string.Empty);
 
         /// <summary>
         /// Gets the final damage increase PVP attribute definition.
         /// </summary>
-        public static AttributeDefinition FinalDamageIncreasePvp { get; } = new AttributeDefinition(new Guid("20BE9BFA-A2DC-4868-8ABF-B6DE4B51D4D2"), "finalDamageIncreasePvp", string.Empty);
+        public static AttributeDefinition FinalDamageIncreasePvp { get; } = new AttributeDefinition(new Guid("20BE9BFA-A2DC-4868-8ABF-B6DE4B51D4D2"), "Final Damage Increase (PvP)", string.Empty);
 
         /// <summary>
         /// Gets the defense base attribute definition.
         /// </summary>
-        public static AttributeDefinition DefenseBase { get; } = new AttributeDefinition(new Guid("EB098C46-60D4-4CA6-BBD4-5B6270A1407B"), "defenseBase", string.Empty);
+        public static AttributeDefinition DefenseBase { get; } = new AttributeDefinition(new Guid("EB098C46-60D4-4CA6-BBD4-5B6270A1407B"), "Base Defense", string.Empty);
 
         /// <summary>
         /// Gets the defense PVM attribute definition.
         /// </summary>
-        public static AttributeDefinition DefensePvm { get; } = new AttributeDefinition(new Guid("B4201610-2824-4EC1-A145-76B15DB9DEC6"), "defensePvm", string.Empty);
+        public static AttributeDefinition DefensePvm { get; } = new AttributeDefinition(new Guid("B4201610-2824-4EC1-A145-76B15DB9DEC6"), "Defense (PvM)", string.Empty);
 
         /// <summary>
         /// Gets the defense PVP attribute definition.
         /// </summary>
-        public static AttributeDefinition DefensePvp { get; } = new AttributeDefinition(new Guid("28D14EB7-1049-45BE-A7B7-D5E28E63943B"), "defensePvp", string.Empty);
+        public static AttributeDefinition DefensePvp { get; } = new AttributeDefinition(new Guid("28D14EB7-1049-45BE-A7B7-D5E28E63943B"), "Defense (PvP)", string.Empty);
 
         /// <summary>
         /// Gets the defense rate PVM attribute definition.
         /// </summary>
-        public static AttributeDefinition DefenseRatePvm { get; } = new AttributeDefinition(new Guid("C520DD2D-1B06-4392-95EE-3C41F33E68DA"), "defenseRatePvm", string.Empty);
+        public static AttributeDefinition DefenseRatePvm { get; } = new AttributeDefinition(new Guid("C520DD2D-1B06-4392-95EE-3C41F33E68DA"), "Defense Rate (PvM)", string.Empty);
 
         /// <summary>
         /// Gets the defense rate PVP attribute definition.
         /// </summary>
-        public static AttributeDefinition DefenseRatePvp { get; } = new AttributeDefinition(new Guid("B995C627-C17B-4D24-9FA5-3830AACC6912"), "defenseRatePvp", string.Empty);
+        public static AttributeDefinition DefenseRatePvp { get; } = new AttributeDefinition(new Guid("B995C627-C17B-4D24-9FA5-3830AACC6912"), "Defense Rate (PvP)", string.Empty);
 
         /// <summary>
         /// Gets the damage receive decrement attribute definition.
         /// </summary>
-        public static AttributeDefinition DamageReceiveDecrement { get; } = new AttributeDefinition(new Guid("9D9761EF-EF47-4E5C-8106-EBC555786F20"), "damageReceiveDecrement", string.Empty);
+        public static AttributeDefinition DamageReceiveDecrement { get; } = new AttributeDefinition(new Guid("9D9761EF-EF47-4E5C-8106-EBC555786F20"), "Damage Receive Multiplier", string.Empty);
 
         /// <summary>
         /// Gets the shield block damage decrement attribute definition.
         /// TODO: Usage in a shield skill handler.
         /// </summary>
-        public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new AttributeDefinition(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "shieldBlockDamageDecrement", string.Empty);
+        public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new AttributeDefinition(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "Shield Block Damage Multiplier", string.Empty);
 
         /// <summary>
         /// Gets the defense increase with equipped shield attribute definition.
         /// </summary>
-        public static AttributeDefinition DefenseIncreaseWithEquippedShield { get; } = new AttributeDefinition(new Guid("41BCEC8D-A7A8-4930-AB2E-A07D8BF1B86C"), "DefenseIncreaseWithEquippedShield", string.Empty);
+        public static AttributeDefinition DefenseIncreaseWithEquippedShield { get; } = new AttributeDefinition(new Guid("41BCEC8D-A7A8-4930-AB2E-A07D8BF1B86C"), "Defense Increase Multiplier With Equipped Shield", string.Empty);
 
         /// <summary>
         /// Gets the 'is shield equipped' attribute definition.
         /// </summary>
-        public static AttributeDefinition IsShieldEquipped { get; } = new AttributeDefinition(new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "IsShieldEquipped", string.Empty);
+        public static AttributeDefinition IsShieldEquipped { get; } = new AttributeDefinition(new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "Is Shield Equipped", string.Empty);
 
         /// <summary>
         /// Gets the ice resistance attribute definition.
         /// </summary>
-        public static AttributeDefinition IceResistance { get; } = new AttributeDefinition(new Guid("47235C36-41BB-44B4-8823-6FC415709F59"), "iceResistance", string.Empty);
+        public static AttributeDefinition IceResistance { get; } = new AttributeDefinition(new Guid("47235C36-41BB-44B4-8823-6FC415709F59"), "Ice Resistance", string.Empty);
 
         /// <summary>
         /// Gets the fire resistance attribute definition.
         /// </summary>
-        public static AttributeDefinition FireResistance { get; } = new AttributeDefinition(new Guid("9AE4D80D-5706-48B9-AD11-EAC4FE088A81"), "fireResistance", string.Empty);
+        public static AttributeDefinition FireResistance { get; } = new AttributeDefinition(new Guid("9AE4D80D-5706-48B9-AD11-EAC4FE088A81"), "Fire Resistance", string.Empty);
 
         /// <summary>
         /// Gets the water resistance attribute definition.
         /// </summary>
-        public static AttributeDefinition WaterResistance { get; } = new AttributeDefinition(new Guid("3AF88672-D8DB-44E1-937A-7E6484134C39"), "waterResistance", string.Empty);
+        public static AttributeDefinition WaterResistance { get; } = new AttributeDefinition(new Guid("3AF88672-D8DB-44E1-937A-7E6484134C39"), "Water Resistance", string.Empty);
 
         /// <summary>
         /// Gets the earth resistance attribute definition.
         /// </summary>
-        public static AttributeDefinition EarthResistance { get; } = new AttributeDefinition(new Guid("4470890F-00CE-44A6-BADB-203684B6014D"), "earthResistance", string.Empty);
+        public static AttributeDefinition EarthResistance { get; } = new AttributeDefinition(new Guid("4470890F-00CE-44A6-BADB-203684B6014D"), "Earth Resistance", string.Empty);
 
         /// <summary>
         /// Gets the wind resistance attribute definition.
         /// </summary>
-        public static AttributeDefinition WindResistance { get; } = new AttributeDefinition(new Guid("03A29C46-7B7E-424D-8325-8390692570C3"), "windResistance", string.Empty);
+        public static AttributeDefinition WindResistance { get; } = new AttributeDefinition(new Guid("03A29C46-7B7E-424D-8325-8390692570C3"), "Wind Resistance", string.Empty);
 
         /// <summary>
         /// Gets the poison resistance attribute definition.
         /// </summary>
-        public static AttributeDefinition PoisonResistance { get; } = new AttributeDefinition(new Guid("3D50D0B7-63A2-4DA9-8855-12173EAE6B39"), "poisonResistance", string.Empty);
+        public static AttributeDefinition PoisonResistance { get; } = new AttributeDefinition(new Guid("3D50D0B7-63A2-4DA9-8855-12173EAE6B39"), "Poison Resistance", string.Empty);
 
         /// <summary>
         /// Gets the lightning resistance attribute definition.
         /// </summary>
-        public static AttributeDefinition LightningResistance { get; } = new AttributeDefinition(new Guid("3E339393-2D17-452E-81D9-3987947A407F"), "lightningResistance", string.Empty);
+        public static AttributeDefinition LightningResistance { get; } = new AttributeDefinition(new Guid("3E339393-2D17-452E-81D9-3987947A407F"), "Lightning Resistance", string.Empty);
 
         /// <summary>
         /// Gets the damage reflection attribute definition.
         /// </summary>
-        public static AttributeDefinition DamageReflection { get; } = new AttributeDefinition(new Guid("1535A2FB-6094-48B8-8578-086BA166A0F7"), "damageReflection", string.Empty);
+        public static AttributeDefinition DamageReflection { get; } = new AttributeDefinition(new Guid("1535A2FB-6094-48B8-8578-086BA166A0F7"), "Damage Reflection", string.Empty);
 
         /// <summary>
         /// Gets the mana recovery attribute definition.
         /// </summary>
-        public static AttributeDefinition ManaRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("E4EC7913-5004-48FC-ACB1-E1764237A251"), "manaRecovery", string.Empty);
+        public static AttributeDefinition ManaRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("E4EC7913-5004-48FC-ACB1-E1764237A251"), "Mana Recovery Multiplier", string.Empty);
 
         /// <summary>
         /// Gets the health recovery attribute definition.
         /// </summary>
-        public static AttributeDefinition HealthRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("0A427A13-3708-4125-BA83-A2DF7C0753B8"), "healthRecovery", string.Empty);
+        public static AttributeDefinition HealthRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("0A427A13-3708-4125-BA83-A2DF7C0753B8"), "Health Recovery Multiplier", string.Empty);
 
         /// <summary>
         /// Gets the ability recovery attribute definition.
         /// </summary>
-        public static AttributeDefinition AbilityRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("A3E274F5-FA74-4E6A-97EA-D0930AAF0374"), "abilityRecovery", string.Empty);
+        public static AttributeDefinition AbilityRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("A3E274F5-FA74-4E6A-97EA-D0930AAF0374"), "Ability Recovery Multiplier", string.Empty);
 
         /// <summary>
         /// Gets the shield recovery attribute definition.
         /// </summary>
-        public static AttributeDefinition ShieldRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("6B99AA99-C1A3-413B-8C70-602567EB5163"), "shieldRecovery", string.Empty);
+        public static AttributeDefinition ShieldRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("6B99AA99-C1A3-413B-8C70-602567EB5163"), "Shield Recovery Multiplier", string.Empty);
 
         /// <summary>
         /// Gets the mana recovery absolute attribute definition.
         /// </summary>
-        public static AttributeDefinition ManaRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("33DE588D-1FAB-493A-8FB1-837BF9C5131F"), nameof(ManaRecoveryAbsolute), string.Empty);
+        public static AttributeDefinition ManaRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("33DE588D-1FAB-493A-8FB1-837BF9C5131F"), "Mana Recovery Absolute Increase", string.Empty);
 
         /// <summary>
         /// Gets the health recovery absolute attribute definition.
         /// </summary>
-        public static AttributeDefinition HealthRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("CBC4AB00-FD01-44D4-823A-D04B5E208AA0"), nameof(HealthRecoveryAbsolute), string.Empty);
+        public static AttributeDefinition HealthRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("CBC4AB00-FD01-44D4-823A-D04B5E208AA0"), "Health Recovery Absolute Increase", string.Empty);
 
         /// <summary>
         /// Gets the ability recovery absolute attribute definition.
         /// </summary>
-        public static AttributeDefinition AbilityRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("19A76D11-B7AA-4C1E-885C-2B7E29071E3F"), nameof(AbilityRecoveryAbsolute), string.Empty);
+        public static AttributeDefinition AbilityRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("19A76D11-B7AA-4C1E-885C-2B7E29071E3F"), "Ability Recovery Absolute Increase", string.Empty);
 
         /// <summary>
         /// Gets the shield recovery absolute attribute definition.
         /// </summary>
-        public static AttributeDefinition ShieldRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("323F479D-3205-4E24-B9BC-0A3EFC851EDF"), nameof(ShieldRecoveryAbsolute), string.Empty);
+        public static AttributeDefinition ShieldRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("323F479D-3205-4E24-B9BC-0A3EFC851EDF"), "Shield Recovery Absolute", string.Empty);
 
         /// <summary>
         /// Gets the shield recovery everywhere attribute definition.
         /// By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.
         /// </summary>
-        public static AttributeDefinition ShieldRecoveryEverywhere { get; } = new AttributeDefinition(new Guid("3D0A78FF-CCD4-442E-8B4E-64E5082ABD78"), "shieldRecovery", string.Empty);
+        public static AttributeDefinition ShieldRecoveryEverywhere { get; } = new AttributeDefinition(new Guid("3D0A78FF-CCD4-442E-8B4E-64E5082ABD78"), "Is Shield Recovery Active Everwhere", "By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.");
 
         /// <summary>
         /// Gets the ability usage reduction attribute definition.
         /// </summary>
-        public static AttributeDefinition AbilityUsageReduction { get; } = new AttributeDefinition(new Guid("5A712BEF-EA3C-404A-90DB-0FC37CDC65D4"), nameof(AbilityUsageReduction), "Factor (0~1) which describes how much of required ability of a skill is not consumed.");
+        public static AttributeDefinition AbilityUsageReduction { get; } = new AttributeDefinition(new Guid("5A712BEF-EA3C-404A-90DB-0FC37CDC65D4"), "Ability Usage Reduction", "Factor (0~1) which describes how much of required ability of a skill is not consumed.");
 
         /// <summary>
         /// Gets the ability usage reduction attribute definition.
         /// </summary>
-        public static AttributeDefinition ManaUsageReduction { get; } = new AttributeDefinition(new Guid("95548E17-F00E-4B22-A1AE-4CBB0C84C7D1"), nameof(ManaUsageReduction), "Factor (0~1) which describes how much of required mana of a skill is not consumed.");
+        public static AttributeDefinition ManaUsageReduction { get; } = new AttributeDefinition(new Guid("95548E17-F00E-4B22-A1AE-4CBB0C84C7D1"), "Mana Usage Reduction", "Factor (0~1) which describes how much of required mana of a skill is not consumed.");
 
         /// <summary>
         /// Gets the critical damage chance attribute definition.
         /// </summary>
-        public static AttributeDefinition CriticalDamageChance { get; } = new AttributeDefinition(new Guid("ADE8092E-870F-4968-B707-8BFD6CBF8FFC"), "criticalDamageChance", string.Empty);
+        public static AttributeDefinition CriticalDamageChance { get; } = new AttributeDefinition(new Guid("ADE8092E-870F-4968-B707-8BFD6CBF8FFC"), "Critical Damage Chance", string.Empty);
 
         /// <summary>
         /// Gets the excellent damage chance attribute definition.
         /// </summary>
-        public static AttributeDefinition ExcellentDamageChance { get; } = new AttributeDefinition(new Guid("577AE8D4-D9E5-4A1F-9A69-45D1A2519EEE"), "excellentDamageChance", string.Empty);
+        public static AttributeDefinition ExcellentDamageChance { get; } = new AttributeDefinition(new Guid("577AE8D4-D9E5-4A1F-9A69-45D1A2519EEE"), "Excellent Damage Chance", string.Empty);
 
         /// <summary>
         /// Gets the defense ignore chance attribute definition.
         /// </summary>
-        public static AttributeDefinition DefenseIgnoreChance { get; } = new AttributeDefinition(new Guid("56BDC72E-9D37-4EDA-8AC8-9E12473966FC"), "defenseIgnoreChance", string.Empty);
+        public static AttributeDefinition DefenseIgnoreChance { get; } = new AttributeDefinition(new Guid("56BDC72E-9D37-4EDA-8AC8-9E12473966FC"), "Defense Ignore Chance", string.Empty);
 
         /// <summary>
         /// Gets the shield bypass chance attribute definition.
         /// </summary>
-        public static AttributeDefinition ShieldBypassChance { get; } = new AttributeDefinition(new Guid("7F6F1804-271E-40DF-A970-0CE19064A54B"), "shieldBypassChance", string.Empty);
+        public static AttributeDefinition ShieldBypassChance { get; } = new AttributeDefinition(new Guid("7F6F1804-271E-40DF-A970-0CE19064A54B"), "Shield Bypass Chance", string.Empty);
 
         /// <summary>
         /// Gets the double damage chance attribute definition.
         /// </summary>
-        public static AttributeDefinition DoubleDamageChance { get; } = new AttributeDefinition(new Guid("2B8A03E6-1CC2-48A0-8633-3F36E17050F4"), "doubleDamageChance", string.Empty);
+        public static AttributeDefinition DoubleDamageChance { get; } = new AttributeDefinition(new Guid("2B8A03E6-1CC2-48A0-8633-3F36E17050F4"), "Double Damage Chance", string.Empty);
 
         /// <summary>
         /// Gets the mana after monster kill attribute definition.
@@ -533,17 +528,17 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the shield rate increase attribute definition.
         /// </summary>
-        public static AttributeDefinition ShieldRateIncrease { get; } = new AttributeDefinition(new Guid("C2FFBA46-4DC3-4861-84F5-313DED038997"), "SD rate increase", "Increases the shield’s damage absorb rate in PVP according to set value.");
+        public static AttributeDefinition ShieldRateIncrease { get; } = new AttributeDefinition(new Guid("C2FFBA46-4DC3-4861-84F5-313DED038997"), "SD Rate Increase", "Increases the shield’s damage absorb rate in PVP according to set value.");
 
         /// <summary>
         /// Gets the item duration increase attribute definition.
         /// </summary>
-        public static AttributeDefinition ItemDurationIncrease { get; } = new AttributeDefinition(new Guid("03EBE702-90FF-473C-8CBB-E83669FE3C68"), "itemDurationIncrease", string.Empty);
+        public static AttributeDefinition ItemDurationIncrease { get; } = new AttributeDefinition(new Guid("03EBE702-90FF-473C-8CBB-E83669FE3C68"), "Item Duration Increase", string.Empty);
 
         /// <summary>
         /// Gets the pet duration increase attribute definition.
         /// </summary>
-        public static AttributeDefinition PetDurationIncrease { get; } = new AttributeDefinition(new Guid("B4455150-D3A9-4A5F-914B-F41F9387FE9A"), "petDurationIncrease", string.Empty);
+        public static AttributeDefinition PetDurationIncrease { get; } = new AttributeDefinition(new Guid("B4455150-D3A9-4A5F-914B-F41F9387FE9A"), "Pet Duraction Increase", string.Empty);
 
         /// <summary>
         /// Gets the maximum guild size attribute definition.
