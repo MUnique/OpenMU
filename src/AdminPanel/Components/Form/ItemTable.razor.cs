@@ -18,8 +18,6 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     public partial class ItemTable<TItem>
         where TItem : class
     {
-        private IContext context;
-
         private bool isEditable;
 
         private bool isAddingSupported;
@@ -40,6 +38,8 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         /// Gets or sets the persistence context.
         /// </summary>
         [CascadingParameter]
+        public IContext PersistenceContext { get; set; }
+
         /// <inheritdoc />
         protected override void OnInitialized()
         {
