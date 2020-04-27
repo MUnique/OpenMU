@@ -9,11 +9,9 @@
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
     <BlazoredTypeahead TItem="TObject" TValue="TObject"
-                       ValueExpression="@this.ValueExpression"
-                       Value="@this.Value"
+                       @bind-Value="@this.CurrentValue"
                        SearchMethod="@(text => this.lookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
                        EnableDropDown="true"
-                       ValueChanged="@this.ValueChanged"
                        placeholder="Search ..."
                        id="@this.FieldIdentifier.FieldName">
         <SelectedTemplate Context="item">
