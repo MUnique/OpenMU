@@ -199,11 +199,6 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition MaximumPhysBaseDmg { get; } = new AttributeDefinition(new Guid("8A918EA2-893A-48B2-A684-3E71526CA71F"), "Maximum Physical Base Damage", string.Empty);
 
         /// <summary>
-        /// Gets the item count of maximum physical base DMG per 20 level option attribute definition.
-        /// </summary>
-        public static AttributeDefinition MaximumPhysBaseDmgPer20LevelItemCount { get; } = new AttributeDefinition(new Guid("{8788D563-5501-472D-8C48-F9EB5AFB1FD8}"), "Maximum Physical Base Damage per 20 level item count", string.Empty);
-
-        /// <summary>
         /// Gets the minimum wiz base DMG attribute definition.
         /// </summary>
         public static AttributeDefinition MinimumWizBaseDmg { get; } = new AttributeDefinition(new Guid("65583A02-AB94-4A17-9B79-86ECC82DC835"), "Minimum Wizardry Base Damage", string.Empty);
@@ -214,11 +209,6 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition MaximumWizBaseDmg { get; } = new AttributeDefinition(new Guid("44B8236A-BF5B-4082-BA8B-5DEDA1458D33"), "Maximum Wizardry Base Damage", string.Empty);
 
         /// <summary>
-        /// Gets the item count of maximum wiz base DMG per 20 level option attribute definition.
-        /// </summary>
-        public static AttributeDefinition MaximumWizBaseDmgPer20LevelItemCount { get; } = new AttributeDefinition(new Guid("99229ACA-B6F4-40EF-9835-2AB0C53C08CF"), "Maximum Wizardry Base Damage per 20 level item count", string.Empty);
-
-        /// <summary>
         /// Gets the minimum curse base DMG attribute definition.
         /// </summary>
         public static AttributeDefinition MinimumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("B8AE2D6B-05CE-43A9-B2BB-3C32F288A043"), "Minimum Curse Base Damage", string.Empty);
@@ -227,11 +217,6 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// Gets the maximum curse base DMG attribute definition.
         /// </summary>
         public static AttributeDefinition MaximumCurseBaseDmg { get; } = new AttributeDefinition(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "Maximum Curse Base Damage", string.Empty);
-
-        /// <summary>
-        /// Gets the item count of maximum curse base DMG per 20 level option attribute definition.
-        /// </summary>
-        public static AttributeDefinition MaximumCurseBaseDmgPer20LevelItemCount { get; } = new AttributeDefinition(new Guid("5CB9BC7B-96DA-4121-80C1-F842270E07D8"), "Maximum Curse Base Damage per 20 level item count", string.Empty);
 
         /// <summary>
         /// Gets the base damage bonus attribute definition.

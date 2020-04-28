@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumCurseBaseDmg, 1.02f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumCurseBaseDmgPer20LevelItemCount, 1, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumCurseBaseDmg, Stats.Level, 20));
             definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
         }
 
@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumWizBaseDmgPer20LevelItemCount, 1, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumWizBaseDmg, Stats.Level, 20));
             definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
         }
 
@@ -102,7 +102,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumPhysBaseDmg, 1.02f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumPhysBaseDmgPer20LevelItemCount, 1, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumPhysBaseDmg, Stats.Level, 1f / 20f));
             definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
         }
 
@@ -129,10 +129,28 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
             itemOption.Number = number;
             itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-            itemOption.PowerUpDefinition.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
+            itemOption.PowerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
             itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             itemOption.PowerUpDefinition.Boost.ConstantValue.Value = value;
             itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+            return itemOption;
+        }
+
+        private IncreasableItemOption CreateRelatedExcellentOption(int number, AttributeDefinition targetAttribute, AttributeDefinition sourceAttribute, float multiplier)
+        {
+            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+            itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
+            itemOption.Number = number;
+            itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+            itemOption.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+            itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+
+            var attributeRelationship = this.Context.CreateNew<AttributeRelationship>();
+            itemOption.PowerUpDefinition.Boost.RelatedValues.Add(attributeRelationship);
+            attributeRelationship.InputOperator = InputOperator.Multiply;
+            attributeRelationship.InputOperand = multiplier;
+            attributeRelationship.InputAttribute = sourceAttribute.GetPersistent(this.GameConfiguration);
+            attributeRelationship.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
             return itemOption;
         }
     }

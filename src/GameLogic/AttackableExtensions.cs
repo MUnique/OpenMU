@@ -385,24 +385,18 @@ namespace MUnique.OpenMU.GameLogic
             switch (damageType)
             {
                 case DamageType.Wizardry:
-                    minimumBaseDamage += (int)attackerStats[Stats.MinimumWizBaseDmg];
-                    maximumBaseDamage += (int)(attackerStats[Stats.MaximumWizBaseDmg] + (attackerStats[Stats.MaximumWizBaseDmgPer20LevelItemCount] * attackerStats[Stats.Level] / 20));
-
-                    minimumBaseDamage += (int)(minimumBaseDamage * attackerStats[Stats.WizardryAttackDamageIncrease]);
-                    maximumBaseDamage += (int)(maximumBaseDamage * attackerStats[Stats.WizardryAttackDamageIncrease]);
+                    minimumBaseDamage += (int)(attackerStats[Stats.MinimumWizBaseDmg] * attackerStats[Stats.WizardryAttackDamageIncrease]);
+                    maximumBaseDamage += (int)(attackerStats[Stats.MaximumWizBaseDmg] * attackerStats[Stats.WizardryAttackDamageIncrease]);
 
                     break;
                 case DamageType.Curse:
-                    minimumBaseDamage += (int)attackerStats[Stats.MinimumCurseBaseDmg];
-                    maximumBaseDamage += (int)(attackerStats[Stats.MaximumCurseBaseDmg] + (attackerStats[Stats.MaximumCurseBaseDmgPer20LevelItemCount] * attackerStats[Stats.Level] / 20));
-
-                    minimumBaseDamage += (int)(minimumBaseDamage * attackerStats[Stats.CurseAttackDamageIncrease]);
-                    maximumBaseDamage += (int)(maximumBaseDamage * attackerStats[Stats.CurseAttackDamageIncrease]);
+                    minimumBaseDamage += (int)(attackerStats[Stats.MinimumCurseBaseDmg] * attackerStats[Stats.CurseAttackDamageIncrease]);
+                    maximumBaseDamage += (int)(attackerStats[Stats.MaximumCurseBaseDmg] * attackerStats[Stats.CurseAttackDamageIncrease]);
 
                     break;
                 case DamageType.Physical:
                     minimumBaseDamage += (int)attackerStats[Stats.MinimumPhysBaseDmg];
-                    maximumBaseDamage += (int)(attackerStats[Stats.MaximumPhysBaseDmg] + (attackerStats[Stats.MaximumPhysBaseDmgPer20LevelItemCount] * attackerStats[Stats.Level] / 20));
+                    maximumBaseDamage += (int)attackerStats[Stats.MaximumPhysBaseDmg];
                     break;
                 default:
                     // the skill has some other damage type defined which is not applicable to this calculation

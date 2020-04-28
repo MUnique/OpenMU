@@ -279,7 +279,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             definition.Name = "Socket Options (Fire)";
             definition.MaximumOptionsPerItem = 1;
 
-            definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Fire, Stats.MaximumPhysBaseDmgPer20LevelItemCount, AggregateType.AddRaw, 1, 19f / 20f, 18f / 20f, 17 / 20f, 14 / 20f));
+            definition.PossibleOptions.Add(this.CreateRelatedSocketOption(0, SocketSubOptionType.Fire, Stats.MaximumPhysBaseDmg, Stats.Level, 1f / 20f, 1f / 19f, 1f / 18f, 1f / 17f, 1f / 14f));
             definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Fire, Stats.AttackSpeed, AggregateType.AddRaw, 7, 8, 9, 10, 11));
             definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Fire, Stats.BaseMaxDamageBonus, AggregateType.AddRaw, 30, 32, 35, 40, 50));
             definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Fire, Stats.BaseMinDamageBonus, AggregateType.AddRaw, 20, 22, 25, 30, 35));
@@ -426,6 +426,35 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
                 powerUpDefinition.Boost.ConstantValue.Value = value;
                 powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+                optionOfLevel.PowerUpDefinition = powerUpDefinition;
+                itemOption.LevelDependentOptions.Add(optionOfLevel);
+            }
+
+            return itemOption;
+        }
+
+        private IncreasableItemOption CreateRelatedSocketOption(int number, SocketSubOptionType subOptionType, AttributeDefinition targetAttribute, AttributeDefinition sourceAttribute, params float[] multipliers)
+        {
+            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+            itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.SocketOption);
+            itemOption.Number = number;
+            itemOption.SubOptionType = (int)subOptionType;
+            var level = 1;
+            foreach (var multiplier in multipliers)
+            {
+                var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
+                optionOfLevel.Level = level++;
+                var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+                powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+                powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+
+                var relationship = this.Context.CreateNew<AttributeRelationship>();
+                powerUpDefinition.Boost.RelatedValues.Add(relationship);
+                relationship.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+                relationship.InputAttribute = sourceAttribute.GetPersistent(this.GameConfiguration);
+                relationship.InputOperand = multiplier;
+                relationship.InputOperator = InputOperator.Multiply;
+
                 optionOfLevel.PowerUpDefinition = powerUpDefinition;
                 itemOption.LevelDependentOptions.Add(optionOfLevel);
             }
