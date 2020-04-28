@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Items
 {
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.Persistence.Initialization.Maps;
@@ -44,9 +45,21 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", 2, 36, 47, 60, 70, 80, 90);
             this.CreateEventItem(18, 14, 1, 1, "Devil's Key", 2, 36, 47, 60, 70, 80, 90);
             this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation");
+
+            // Imperial Guardian
+            var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, "Suspicious Scrap of Paper", 32);
+            scrapOfPaper.Durability = 5;
+            this.CreateEventItem(102, 14, 1, 1, "Gaion's Order");
+            this.CreateEventItem(103, 14, 1, 1, "First Secromicon Fragment");
+            this.CreateEventItem(104, 14, 1, 1, "Second Secromicon Fragment");
+            this.CreateEventItem(105, 14, 1, 1, "Third Secromicon Fragment");
+            this.CreateEventItem(106, 14, 1, 1, "Fourth Secromicon Fragment");
+            this.CreateEventItem(107, 14, 1, 1, "Fifth Secromicon Fragment");
+            this.CreateEventItem(108, 14, 1, 1, "Sixth Secromicon Fragment");
+            this.CreateEventItem(109, 14, 1, 1, "Complete Secromicon");
         }
 
-        private void CreateEventItem(byte number, byte group, byte width, byte height, string name, params byte[] dropLevels)
+        private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, string name, params byte[] dropLevels)
         {
             var item = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(item);
@@ -56,6 +69,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             item.Width = width;
             item.Height = height;
             item.Durability = 1;
+            if (dropLevels.Length == 1)
+            {
+                item.DropLevel = dropLevels.First();
+                return item;
+            }
 
             byte itemLevel = 1;
             DropItemGroup previousGroup = null;
@@ -78,6 +96,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 previousGroup = dropItemGroup;
                 itemLevel++;
             }
+
+            return item;
         }
     }
 }

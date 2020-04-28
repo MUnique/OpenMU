@@ -63,6 +63,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             chaosGoblin.ItemCraftings.Add(this.ThirdWingsStage1Crafting());
             chaosGoblin.ItemCraftings.Add(this.ThirdWingsStage2Crafting());
             chaosGoblin.ItemCraftings.Add(this.Level380OptionCrafting());
+            chaosGoblin.ItemCraftings.Add(this.SecromiconCrafting());
 
             var elphis = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ElphisRefinery);
             elphis.ItemCraftings.Add(this.GemstoneRefinery());
@@ -1292,6 +1293,31 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     }
                 }
             }
+
+            return crafting;
+        }
+
+        private ItemCrafting SecromiconCrafting()
+        {
+            var crafting = this.Context.CreateNew<ItemCrafting>();
+            crafting.Name = "Complete Secromicon";
+            crafting.Number = 46;
+            var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+            crafting.SimpleCraftingSettings = craftingSettings;
+            craftingSettings.SuccessPercent = 100;
+
+            for (int i = 0; i < 6; i++)
+            {
+                var fragment = this.Context.CreateNew<ItemCraftingRequiredItem>();
+                fragment.MinimumAmount = 1;
+                fragment.MaximumAmount = 1;
+                fragment.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 103 + i));
+                craftingSettings.RequiredItems.Add(fragment);
+            }
+
+            var completeSecromicon = this.Context.CreateNew<ItemCraftingResultItem>();
+            completeSecromicon.ItemDefinition = this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 109);
+            craftingSettings.ResultItems.Add(completeSecromicon);
 
             return crafting;
         }
