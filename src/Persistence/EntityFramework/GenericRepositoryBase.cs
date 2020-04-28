@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Loads the dependent data of the object from the corresponding repositories.
         /// </summary>
         /// <param name="obj">The object.</param>
-        /// <param name="currentContext">The current context with which the object got loaded. It is neccessary to retrieve the foreign key ids.</param>
+        /// <param name="currentContext">The current context with which the object got loaded. It is necessary to retrieve the foreign key ids.</param>
         protected virtual void LoadDependentData(object obj, DbContext currentContext)
         {
             var entityEntry = currentContext.Entry(obj);

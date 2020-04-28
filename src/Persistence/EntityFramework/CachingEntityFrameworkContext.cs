@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Initializes a new instance of the <see cref="CachingEntityFrameworkContext" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <param name="repositoryManager">The repsoitory manager.</param>
+        /// <param name="repositoryManager">The repository manager.</param>
         /// <param name="isOwner">if set to <c>true</c> this instance owns the <paramref name="context" />.</param>
         public CachingEntityFrameworkContext(DbContext context, RepositoryManager repositoryManager, bool isOwner)
             : base(context, repositoryManager, isOwner)
