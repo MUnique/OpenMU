@@ -48,12 +48,12 @@
       <Fields>
         <Field>
           <Index>0</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Number</Name>
         </Field>
         <Field>
           <Index>2</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>Group</Name>
         </Field>
       </Fields>
@@ -5023,12 +5023,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNpcNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestCount</Name>
         </Field>
         <Field>
@@ -5052,12 +5052,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
       </Fields>
@@ -5074,12 +5074,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
         <Field>
@@ -5120,12 +5120,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
         <Field>
@@ -5147,13 +5147,13 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
           <Description>The current quest number. In this message, it's always 0, because the group is relevant for the client.</Description>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
       </Fields>
@@ -5193,12 +5193,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestNumber</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>QuestGroup</Name>
         </Field>
         <Field>
