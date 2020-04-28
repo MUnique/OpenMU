@@ -1,7 +1,9 @@
 ﻿# Project feature progress
 
-Here we track the progress of the project (compared to the features of the original server).
-Each tracked feature is basically a packet handler and the game logic behind it.
+For the progress of the project as a whole, please have a look at the [projects page](https://github.com/MUnique/OpenMU/projects).
+
+In this document we track the progress of the packet handlers.
+Each packet handler requires some game logic behind it.
 
 The complexity is a number between 1 (low complexity and effort) and 10 (high complexity and effort).
 Complexity 0 means we wont implement it.
@@ -49,7 +51,7 @@ Complexity 0 means we wont implement it.
 | *WarehouseMoneyInOut*         | 0x81              | 100%     | 3          |                                               |
 | *WarehouseClose*              | 0x82              | 100%     | 3          |                                               |
 | WarehousePassword           | 0x83              | 0%       | 1          |                                               |
-| ChaosMachineMix             | 0x86              | 40%      | 5          | configurable, configuration needs rework      |
+| ChaosMachineMix             | 0x86              | 100%     | 5          |                                               |
 | *ChaosMachineClose*           | 0x87              | 100%     | 1          |                                               |
 | *WarpCommand*                 | 0x8E              | 100%     | 5          |                                               |
 | DevilSquareEnter            | 0x90              | 0%       | 2          |                                               |
