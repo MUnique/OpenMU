@@ -181,8 +181,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public ushort RequirementId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -190,8 +190,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public uint RequiredCount
         {
-            get => ReadUInt32BigEndian(this.data.Slice(6));
-            set => WriteUInt32BigEndian(this.data.Slice(6), value);
+            get => ReadUInt32LittleEndian(this.data.Slice(6));
+            set => WriteUInt32LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -199,8 +199,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public uint CurrentCount
         {
-            get => ReadUInt32BigEndian(this.data.Slice(10));
-            set => WriteUInt32BigEndian(this.data.Slice(10), value);
+            get => ReadUInt32LittleEndian(this.data.Slice(10));
+            set => WriteUInt32LittleEndian(this.data.Slice(10), value);
         }
 
         /// <summary>
@@ -248,8 +248,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public ushort RewardId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
         }
 
         /// <summary>
@@ -257,8 +257,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public uint RewardCount
         {
-            get => ReadUInt32BigEndian(this.data.Slice(6));
-            set => WriteUInt32BigEndian(this.data.Slice(6), value);
+            get => ReadUInt32LittleEndian(this.data.Slice(6));
+            set => WriteUInt32LittleEndian(this.data.Slice(6), value);
         }
 
         /// <summary>
@@ -14920,6 +14920,15 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         {
             get => this.data[9];
             set => this.data[9] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the random reward count.
+        /// </summary>
+        public byte RandomRewardCount
+        {
+            get => this.data[10];
+            set => this.data[10] = value;
         }
 
         /// <summary>

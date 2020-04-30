@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 {
     using System.Linq;
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
     using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -37,14 +38,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 return;
             }
 
-            var totalQuests = this.player.OpenedNpc.Definition.Quests.Where(q => q.MinimumCharacterLevel <= this.player.Level && q.MaximumCharacterLevel >= this.player.Level).ToList();
+            var totalQuests = this.player.GetAvailableQuestsOfOpenedNpc().ToList();
             var questCount = totalQuests.Count;
 
             using var writer = this.player.Connection.StartSafeWrite(AvailableQuests.HeaderType, AvailableQuests.GetRequiredSize(questCount));
             var message = new AvailableQuests(writer.Span)
             {
                 QuestCount = (ushort)questCount,
-                QuestNpcNumber = (ushort)this.player.OpenedNpc?.Definition.Number,
+                QuestNpcNumber = (ushort)this.player.OpenedNpc.Definition.Number,
             };
 
             for (int i = 0; i < questCount; i++)

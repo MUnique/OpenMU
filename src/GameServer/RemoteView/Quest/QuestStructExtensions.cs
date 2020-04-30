@@ -103,6 +103,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 reward.AssignTo(message.GetQuestReward(r), itemSerializer);
                 r++;
             }
+
+            message.RewardCount = (byte)r;
         }
 
         private static void AssignTo(this QuestItemRequirement itemRequirement, QuestCondition condition, RemotePlayer player)

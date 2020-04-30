@@ -71,18 +71,18 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>RequirementId</Name>
           <Description>Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.</Description>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>RequiredCount</Name>
         </Field>
         <Field>
           <Index>10</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>CurrentCount</Name>
         </Field>
         <Field>
@@ -107,13 +107,13 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>RewardId</Name>
           <Description>Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.</Description>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>RewardCount</Name>
         </Field>
         <Field>
@@ -5210,6 +5210,11 @@
           <Index>9</Index>
           <Type>Byte</Type>
           <Name>RewardCount</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>RandomRewardCount</Name>
         </Field>
         <Field>
           <Index>11</Index>

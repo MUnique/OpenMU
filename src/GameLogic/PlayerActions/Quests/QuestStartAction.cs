@@ -52,6 +52,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             if (questState.ActiveQuest != null)
             {
                 Log.Debug("There is already an active quest of this group.");
+                player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(questState.ActiveQuest, false);
                 return;
             }
 

@@ -1792,10 +1792,34 @@
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>Byte</Type>
-          <Name>NextState</Name>
+          <Type>Enum</Type>
+          <TypeName>QuestProceedAction</TypeName>
+          <Name>ProceedAction</Name>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>QuestProceedAction</Name>
+          <Description>Describes how to proceed with the specified quest.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Undefined</Name>
+              <Description>Undefined action.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AcceptQuest</Name>
+              <Description>The quest is accepted and started.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CancelQuest</Name>
+              <Description>The quest is accepted and started.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>

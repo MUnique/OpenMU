@@ -22,6 +22,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     {
         private readonly QuestStartAction questStartAction = new QuestStartAction();
 
+        private readonly QuestCancelAction questCancelAction = new QuestCancelAction();
+
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;
 
@@ -33,19 +35,28 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
         {
             QuestProceedRequest request = packet;
             var questState = player.GetQuestState((short)request.QuestGroup, (short)request.QuestNumber);
-            if (request.NextState == 1 && questState != null)
-            {
-                player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(questState.ActiveQuest, true);
-            }
 
-            if (questState != null)
+            if (request.ProceedAction == QuestProceedRequest.QuestProceedAction.AcceptQuest)
             {
-                // keep it running and confirm that it started
-                player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(questState.ActiveQuest);
+                if (request.ProceedAction == QuestProceedRequest.QuestProceedAction.AcceptQuest && questState != null)
+                {
+                    player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()
+                        ?.ShowQuestProgress(questState.ActiveQuest, true);
+                }
+
+                if (questState != null)
+                {
+                    // keep it running and confirm that it started
+                    player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(questState.ActiveQuest);
+                }
+                else
+                {
+                    this.questStartAction.StartQuest(player, (short) request.QuestNumber, (short) request.QuestNumber);
+                }
             }
             else
             {
-                this.questStartAction.StartQuest(player, (short)request.QuestNumber, (short)request.QuestNumber);
+                this.questCancelAction.CancelQuest(player, (short)request.QuestGroup, (short)request.QuestNumber);
             }
         }
     }

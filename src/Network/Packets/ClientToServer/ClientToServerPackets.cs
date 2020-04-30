@@ -6773,6 +6773,27 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// </summary>
     public readonly ref struct QuestProceedRequest
     {
+        /// <summary>
+        /// Describes how to proceed with the specified quest.
+        /// </summary>
+        public enum QuestProceedAction
+        {
+            /// <summary>
+            /// Undefined action.
+            /// </summary>
+            Undefined = 0,
+
+            /// <summary>
+            /// The quest is accepted and started.
+            /// </summary>
+            AcceptQuest = 1,
+
+            /// <summary>
+            /// The quest is accepted and started.
+            /// </summary>
+            CancelQuest = 2,
+        }
+
         private readonly Span<byte> data;
 
         /// <summary>
@@ -6847,12 +6868,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Gets or sets the next state.
+        /// Gets or sets the proceed action.
         /// </summary>
-        public byte NextState
+        public QuestProceedRequest.QuestProceedAction ProceedAction
         {
-            get => this.data[8];
-            set => this.data[8] = value;
+            get => (QuestProceedAction)this.data.Slice(8)[0];
+            set => this.data.Slice(8)[0] = (byte)value;
         }
 
         /// <summary>

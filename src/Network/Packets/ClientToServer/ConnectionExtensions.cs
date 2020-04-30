@@ -2419,18 +2419,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="connection">The connection.</param>
         /// <param name="questNumber">The quest number.</param>
         /// <param name="questGroup">The quest group.</param>
-        /// <param name="nextState">The next state.</param>
+        /// <param name="proceedAction">The proceed action.</param>
         /// <remarks>
         /// Is sent by the client when: After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
         /// Causes reaction on server side: The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
         /// </remarks>
-        public static void SendQuestProceedRequest(this IConnection connection, ushort @questNumber, ushort @questGroup, byte @nextState)
+        public static void SendQuestProceedRequest(this IConnection connection, ushort @questNumber, ushort @questGroup, QuestProceedRequest.QuestProceedAction @proceedAction)
         {
             using var writer = connection.StartWriteQuestProceedRequest();
             var packet = writer.Packet;
             packet.QuestNumber = @questNumber;
             packet.QuestGroup = @questGroup;
-            packet.NextState = @nextState;
+            packet.ProceedAction = @proceedAction;
             writer.Commit();
         }
 
