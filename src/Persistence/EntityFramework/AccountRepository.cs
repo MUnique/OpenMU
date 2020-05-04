@@ -65,6 +65,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             var accountInfo = context.Context.Set<Account>()
                 .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
+                .AsNoTracking()
                 .FirstOrDefault(a => a.LoginName == loginName);
 
             if (accountInfo != null && BCrypt.Verify(password, accountInfo.PasswordHash))
