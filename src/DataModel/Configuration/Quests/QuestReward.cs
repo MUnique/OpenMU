@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Quests
 {
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -29,6 +30,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         /// Gets or sets the item reward.
         /// The <see cref="Value"/> contains how often the item is rewarded.
         /// </summary>
+        [MemberOfAggregate]
         public virtual Item ItemReward { get; set; }
 
         /// <summary>

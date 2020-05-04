@@ -132,10 +132,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             rewardStruct.Type = questReward.RewardType.Convert();
             rewardStruct.RewardCount = (uint)questReward.Value;
-            if (questReward.RewardType == QuestRewardType.Item)
+            if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
             {
-                rewardStruct.RewardId = questReward.ItemReward.Definition.GetItemType();
-                itemSerializer.SerializeItem(rewardStruct.RewardedItemData, questReward.ItemReward);
+                rewardStruct.RewardId = itemReward.Definition.GetItemType();
+                itemSerializer.SerializeItem(rewardStruct.RewardedItemData, itemReward);
             }
         }
 
