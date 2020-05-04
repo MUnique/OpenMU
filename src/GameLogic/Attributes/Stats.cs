@@ -291,7 +291,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the attribute if skill combos are available.
         /// </summary>
-        public static AttributeDefinition IsSkillComboAvailable { get; } = new AttributeDefinition(new Guid("{0B648F95-E9C1-4AFD-90A6-3DD954BF6995}"), "Is Skill Combo Available", string.Empty);
+        public static AttributeDefinition IsSkillComboAvailable { get; } = new AttributeDefinition(new Guid("0B648F95-E9C1-4AFD-90A6-3DD954BF6995"), "Is Skill Combo Available", string.Empty);
+
+        /// <summary>
+        /// Gets the attribute if the 'Gain Hero' quest was completed.
+        /// </summary>
+        public static AttributeDefinition GainHeroStatusQuestCompleted { get; } = new AttributeDefinition(new Guid("4A847231-171B-4FE2-A203-009CB4A26227"), "Is 'Gain Hero Status' Quest completed?", string.Empty);
 
         /// <summary>
         /// Gets the final damage increase PVP attribute definition.

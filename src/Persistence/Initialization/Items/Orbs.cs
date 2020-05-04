@@ -47,7 +47,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateOrb(17, SkillNumber.Penetration, 1, "Orb of Penetration", 64, 130, 0, 0, 0, 0, 72000, 0, 0, 1, 0, 0, 0, 0);
             this.CreateOrb(18, SkillNumber.IceArrow, 1, "Orb of Ice Arrow", 81, 0, 0, 0, 258, 0, 195000, 0, 0, 2, 0, 0, 0, 0);
             this.CreateOrb(19, SkillNumber.DeathStab, 1, "Orb of Death Stab", 72, 160, 0, 0, 0, 0, 85000, 0, 2, 0, 0, 0, 0, 0);
-            this.CreateOrb(44, SkillNumber.StrikeofDestruction, 1, "Crystal of Destruction", 100, 220, 0, 0, 0, 0, 380000, 0, 2, 0, 0, 0, 0, 0);
+            var strikeOfDestruction = this.CreateOrb(44, SkillNumber.StrikeofDestruction, 1, "Crystal of Destruction", 100, 220, 0, 0, 0, 0, 380000, 0, 2, 0, 0, 0, 0, 0);
+            this.CreateItemRequirementIfNeeded(strikeOfDestruction, Stats.GainHeroStatusQuestCompleted, 1);
             this.CreateOrb(45, SkillNumber.MultiShot, 1, "Crystal of Multi-Shot", 100, 220, 0, 0, 0, 0, 380000, 0, 0, 2, 0, 0, 0, 0);
             this.CreateOrb(46, SkillNumber.Recovery, 1, "Crystal of Recovery", 100, 220, 37, 0, 0, 0, 250000, 0, 0, 2, 0, 0, 0, 0);
             this.CreateOrb(47, SkillNumber.FlameStrike, 1, "Crystal of Flame Strike", 100, 220, 0, 0, 0, 0, 380000, 0, 0, 0, 1, 0, 0, 0);
@@ -61,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateOrb(48, SkillNumber.ChaoticDiseier, 2, "Scroll of Chaotic Diseier", 100, 220, 16, 0, 0, 0, 380000, 0, 0, 0, 0, 1, 0, 0);
         }
 
-        private void CreateOrb(byte number, SkillNumber skillNumber, byte height, string name, byte dropLevel, int levelRequirement, int energyRequirement, int strengthRequirement, int agilityRequirement, int leadershipRequirement, int money, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+        private ItemDefinition CreateOrb(byte number, SkillNumber skillNumber, byte height, string name, byte dropLevel, int levelRequirement, int energyRequirement, int strengthRequirement, int agilityRequirement, int leadershipRequirement, int money, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
         {
             var orb = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(orb);
@@ -92,6 +93,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 orb.QualifiedCharacters.Add(characterClass);
             }
+
+            return orb;
         }
     }
 }

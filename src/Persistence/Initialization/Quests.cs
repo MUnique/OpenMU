@@ -193,7 +193,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             // Combo Skill
             var comboSkill = this.Context.CreateNew<QuestReward>();
             comboSkill.Value = 1;
-            comboSkill.AttributeReward = Stats.IsSkillComboAvailable;
+            comboSkill.AttributeReward = Stats.IsSkillComboAvailable.GetPersistent(this.GameConfiguration);
             comboSkill.RewardType = QuestRewardType.Attribute;
 
             secretDarkStone.Rewards.Add(comboSkill);
@@ -218,10 +218,16 @@ namespace MUnique.OpenMU.Persistence.Initialization
             // One character level point more, after level 220
             var pointReward = this.Context.CreateNew<QuestReward>();
             pointReward.Value = 1;
-            pointReward.AttributeReward = Stats.PointsPerLevelUp;
+            pointReward.AttributeReward = Stats.PointsPerLevelUp.GetPersistent(this.GameConfiguration);
             pointReward.RewardType = QuestRewardType.Attribute;
 
+            var attributeReward = this.Context.CreateNew<QuestReward>();
+            attributeReward.Value = 1;
+            attributeReward.AttributeReward = Stats.GainHeroStatusQuestCompleted.GetPersistent(this.GameConfiguration);
+            attributeReward.RewardType = QuestRewardType.Attribute;
+
             heroStatus.Rewards.Add(pointReward);
+            heroStatus.Rewards.Add(attributeReward);
         }
 
         // See also http://muonlinefanz.com/guide/quests/treasure/
@@ -310,9 +316,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private void CreateNewQuests()
         {
             this.CreateQuest("Spider Hunt!", 18, 1, 1, 14, 257)
-    .WithMonsterKillRequirement(10, 3, this.Context, this.GameConfiguration)
-    .WithExperienceReward(2000, this.Context)
-    ;
+                .WithMonsterKillRequirement(10, 3, this.Context, this.GameConfiguration)
+                .WithExperienceReward(2000, this.Context)
+                ;
 
             this.CreateQuest("Dispose of the Town Plunderers!", 18, 4, 15, 25, 257, CharacterClassNumber.DarkWizard)
                 .WithMonsterKillRequirement(15, 7, this.Context, this.GameConfiguration)
