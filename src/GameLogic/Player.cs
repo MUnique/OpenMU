@@ -1038,7 +1038,8 @@ namespace MUnique.OpenMU.GameLogic
             this.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.UpdateSkillList();
             this.ViewPlugIns.GetPlugIn<IUpdateCharacterStatsPlugIn>()?.UpdateCharacterStats();
             this.ViewPlugIns.GetPlugIn<IUpdateInventoryListPlugIn>()?.UpdateInventoryList();
-            this.ViewPlugIns.GetPlugIn<IQuestStateResponsePlugIn>()?.ShowQuestState(null);
+            this.ViewPlugIns.GetPlugIn<IQuestStateResponsePlugIn>()?.ShowQuestState(null); // Legacy quest system
+            this.ViewPlugIns.GetPlugIn<ICurrentlyActiveQuestsPlugIn>()?.ShowActiveQuests(); // New quest system
 
             this.Attributes.GetOrCreateAttribute(Stats.MaximumMana).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumAbility).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
