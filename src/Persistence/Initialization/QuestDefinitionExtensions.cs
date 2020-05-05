@@ -28,8 +28,8 @@ namespace MUnique.OpenMU.Persistence.Initialization
         public static QuestDefinition WithMonsterKillRequirement(this QuestDefinition questDefinition, int amount, int monsterNumber, IContext context, GameConfiguration gameConfiguration)
         {
             var spider = context.CreateNew<QuestMonsterKillRequirement>();
-            spider.MinimumNumber = 10;
-            spider.Monster = gameConfiguration.Monsters.First(m => m.Number == 3);
+            spider.MinimumNumber = amount;
+            spider.Monster = gameConfiguration.Monsters.First(m => m.Number == monsterNumber);
             questDefinition.RequiredMonsterKills.Add(spider);
             return questDefinition;
         }
