@@ -34,7 +34,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             {
                 var objectLoader = new AccountJsonObjectLoader();
                 var account = objectLoader.LoadObject<Account>(id, context.Context);
-                context.Context.Attach(account);
+                if (account != null && context.Context.Entry(account) == null)
+                {
+                    context.Context.Attach(account);
+                }
+
                 return account;
             }
             finally
@@ -52,13 +56,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         internal DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
         {
             using var context = this.GetContext();
-            var account = this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
-            if (account != null && context.Context.Entry(account) == null)
-            {
-                context.Context.Attach(account);
-            }
-
-            return account;
+            return this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
         }
 
         private Account LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContextBase context)
