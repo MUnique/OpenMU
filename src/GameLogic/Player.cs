@@ -1052,7 +1052,17 @@ namespace MUnique.OpenMU.GameLogic
             this.ClientReadyAfterMapChange();
 
             this.ViewPlugIns.GetPlugIn<IUpdateRotationPlugIn>()?.UpdateRotation();
-            Task.Delay(1000).ContinueWith(_ => this.ViewPlugIns.GetPlugIn<IInitializeMessengerPlugIn>()?.InitializeMessenger(this.GameContext.Configuration.MaximumLetters)).Wait();
+            Task.Delay(1000).ContinueWith(_ =>
+            {
+                try
+                {
+                    this.ViewPlugIns.GetPlugIn<IInitializeMessengerPlugIn>()?.InitializeMessenger(this.GameContext.Configuration.MaximumLetters);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
         }
 
         /// <summary>
