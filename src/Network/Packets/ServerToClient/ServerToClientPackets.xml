@@ -61,7 +61,7 @@
     <Structure>
       <Name>QuestCondition</Name>
       <Description>Defines a condition which must be fulfilled to complete the quest.</Description>
-      <Length>24</Length>
+      <Length>26</Length>
       <Fields>
         <Field>
           <Index>0</Index>
@@ -90,7 +90,7 @@
           <Type>Binary</Type>
           <Name>RequiredItemData</Name>
           <Description>If the condition type is 'Item', this field contains the item data, excluding the item id. The item id can be found in the RequirementId field.</Description>
-          <Length>10</Length>
+          <Length>12</Length>
         </Field>
       </Fields>
     </Structure>
@@ -5067,7 +5067,7 @@
       <Code>F6</Code>
       <SubCode>0C</SubCode>
       <Name>QuestProgress</Name>
-      <Length>241</Length>
+      <Length>251</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>First, after the game client requested to initialize a quest and the quest is already active. Second, after the game client requested the next quest step.</SentWhen>
       <CausedReaction>The client shows the quest progress accordingly.</CausedReaction>
@@ -5095,12 +5095,12 @@
         <Field>
           <Index>11</Index>
           <Type>Structure[]</Type>
-          <TypeName>QuestCondition</TypeName><!-- Each 24 bytes -->
+          <TypeName>QuestCondition</TypeName><!-- Each 26 bytes -->
           <Name>Conditions</Name>
           <ItemCountField>ConditionCount</ItemCountField>
         </Field>
         <Field>
-          <Index>131</Index>
+          <Index>141</Index>
           <Type>Structure[]</Type>
           <TypeName>QuestReward</TypeName><!-- Each 22 bytes -->
           <Name>Rewards</Name>
@@ -5186,9 +5186,9 @@
       <Code>F6</Code>
       <SubCode>1B</SubCode>
       <Name>QuestState</Name>
-      <Length>241</Length>
+      <Length>251</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>After the game client requested it.</SentWhen>
+      <SentWhen>After the game client requested it, when the player opened the quest menu and clicked on a quest.</SentWhen>
       <CausedReaction>The client shows the quest progress accordingly.</CausedReaction>
       <Fields>
         <Field>
@@ -5224,7 +5224,7 @@
           <ItemCountField>ConditionCount</ItemCountField>
         </Field>
         <Field>
-          <Index>131</Index>
+          <Index>141</Index>
           <Type>Structure[]</Type>
           <TypeName>QuestReward</TypeName>
           <Name>Rewards</Name>

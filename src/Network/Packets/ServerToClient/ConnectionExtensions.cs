@@ -1160,7 +1160,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the server when: After the game client requested it.
+        /// Is sent by the server when: After the game client requested it, when the player opened the quest menu and clicked on a quest.
         /// Causes reaction on client side: The client shows the quest progress accordingly.
         /// </remarks>
         public static QuestStateThreadSafeWriter StartWriteQuestState(this IConnection connection)

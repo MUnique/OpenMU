@@ -113,11 +113,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
             condition.CurrentCount = (uint)player.Inventory.Items.Count(item => item.Definition == itemRequirement.Item);
             condition.RequirementId = itemRequirement.Item.GetItemType();
-
-            // The requirement does not contain an item, but only the ItemDefinition.
-            // We could create and serialize a temporary item and copy just a part of the result.
-            // However, we can also keep it simple and just set the last 5 socket bytes to 0xFF (No Socket).
-            condition.RequiredItemData.Slice(condition.RequiredItemData.Length - 5).Fill(0xFF);
+            var temporaryItem = new TemporaryItem();
+            temporaryItem.Definition = itemRequirement.Item;
+            temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();
+            player.ItemSerializer.SerializeItem(condition.RequiredItemData, temporaryItem);
         }
 
         private static void AssignTo(this QuestMonsterKillRequirement killRequirement, QuestCondition condition, CharacterQuestState questState)

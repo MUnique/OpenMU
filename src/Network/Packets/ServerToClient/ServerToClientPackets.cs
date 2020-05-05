@@ -165,7 +165,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 24;
+        public static int Length => 26;
 
         /// <summary>
         /// Gets or sets the type.
@@ -208,7 +208,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public Span<byte> RequiredItemData
         {
-            get => this.data.Slice(14, 10);
+            get => this.data.Slice(14, 12);
         }
     }
 
@@ -14459,7 +14459,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 241;
+        public static int Length => 251;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -14510,7 +14510,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the <see cref="QuestReward"/> of the specified index.
         /// </summary>
-        public QuestReward GetQuestReward(int index) => new QuestReward(this.data.Slice(131 + (index * QuestReward.Length)));
+        public QuestReward GetQuestReward(int index) => new QuestReward(this.data.Slice(141 + (index * QuestReward.Length)));
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestProgress"/>.
@@ -14826,7 +14826,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: After the game client requested it.
+    /// Is sent by the server when: After the game client requested it, when the player opened the quest menu and clicked on a quest.
     /// Causes reaction on client side: The client shows the quest progress accordingly.
     /// </summary>
     public readonly ref struct QuestState
@@ -14879,7 +14879,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 241;
+        public static int Length => 251;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -14939,7 +14939,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the <see cref="QuestReward"/> of the specified index.
         /// </summary>
-        public QuestReward GetQuestReward(int index) => new QuestReward(this.data.Slice(131 + (index * QuestReward.Length)));
+        public QuestReward GetQuestReward(int index) => new QuestReward(this.data.Slice(141 + (index * QuestReward.Length)));
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestState"/>.
