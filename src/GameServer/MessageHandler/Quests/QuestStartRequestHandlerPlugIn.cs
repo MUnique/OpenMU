@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
         public void HandlePacket(Player player, Span<byte> packet)
         {
             QuestStartRequest request = packet;
-            this.questStartAction.StartQuest(player, (short)request.QuestGroup, (short)request.QuestNumber);
+            this.questStartAction.StartQuest(player, (short)request.QuestGroup, (short)request.QuestNumber, false);
         }
     }
 }

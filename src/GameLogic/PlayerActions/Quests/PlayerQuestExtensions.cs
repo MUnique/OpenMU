@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         /// <returns>The quest state, if found; Otherwise, <c>null</c>.</returns>
         public static CharacterQuestState GetQuestState(this Player player, short group, short number)
         {
-            return player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == group && state.ActiveQuest?.Number == number);
+            return player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == group && (state.ActiveQuest?.Number == number || state.ActiveQuest?.StartingNumber == number));
         }
 
         /// <summary>

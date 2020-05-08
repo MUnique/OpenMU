@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
     using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.GameServer.MessageHandler.Quests;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -38,7 +39,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             }
             else
             {
-                this.player.Connection.SendQuestStarted((ushort)quest.StartingNumber, (ushort)quest.Group);
+                var state = player.GetQuestState(quest.Group);
+                if (state.ActiveQuest == quest)
+                {
+                    this.player.Connection.SendQuestStarted((ushort)quest.Number, (ushort)quest.Group);
+                }
+                else
+                {
+                    this.player.Connection.SendQuestStarted((ushort)quest.StartingNumber, (ushort)quest.Group);
+                }
             }
         }
     }

@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         /// <param name="player">The player.</param>
         /// <param name="group">The group.</param>
         /// <param name="number">The number.</param>
-        public void StartQuest(Player player, short group, short number)
+        public void StartQuest(Player player, short group, short number, bool byProceeding)
         {
             var quest = player.GetQuest(group, number);
             if (quest == null)
@@ -62,6 +62,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                 return;
             }
 
+            if (!byProceeding && quest.StartingNumber == number && quest.Number != number)
+            {
+                // In this case, don't actually start the quest yet.
+                // The player just selected a quest, but not yet started it!
+                // When he finally accepts the quest, this action is called again,
+                // but with byProceeding as true.
+                player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(quest);
+                return;
+            }
+
             if (quest.RequiredStartMoney > 0)
             {
                 if (player.TryRemoveMoney(quest.RequiredStartMoney))
@@ -78,6 +88,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             questState.Clear(player.PersistenceContext);
             questState.ActiveQuest = quest;
             player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(quest);
+            player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(questState.ActiveQuest, false);
         }
     }
 }
