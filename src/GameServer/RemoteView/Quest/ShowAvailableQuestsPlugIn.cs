@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             {
                 var block = message[i];
                 var quest = totalQuests[i];
-                block.Number = (ushort)quest.Number;
+                block.Number = (ushort)quest.StartingNumber;
                 block.Group = (ushort)quest.Group;
             }
 

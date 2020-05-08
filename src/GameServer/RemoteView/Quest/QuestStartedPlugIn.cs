@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             }
             else
             {
-                this.player.Connection.SendQuestStarted((ushort)quest.Number, (ushort)quest.Group);
+                this.player.Connection.SendQuestStarted((ushort)quest.StartingNumber, (ushort)quest.Group);
             }
         }
     }

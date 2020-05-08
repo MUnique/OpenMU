@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         public static QuestDefinition GetQuest(this Player player, short group, short number)
         {
             return player.OpenedNpc?.Definition.Quests
-                .FirstOrDefault(q => q.Group == group && q.Number == number && (q.QualifiedCharacter == null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass));
+                .FirstOrDefault(q => q.Group == group && (q.StartingNumber == number || q.Number == number) && (q.QualifiedCharacter == null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass));
         }
 
         /// <summary>

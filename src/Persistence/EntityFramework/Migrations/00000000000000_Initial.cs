@@ -2102,6 +2102,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Name = table.Column<string>(nullable: true),
                     Group = table.Column<short>(nullable: false),
                     Number = table.Column<short>(nullable: false),
+                    StartingNumber = table.Column<short>(nullable: false),
                     Repeatable = table.Column<bool>(nullable: false),
                     RequiresClientAction = table.Column<bool>(nullable: false),
                     RequiredStartMoney = table.Column<int>(nullable: false),

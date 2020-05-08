@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
                 }
                 else
                 {
-                    this.questStartAction.StartQuest(player, (short) request.QuestNumber, (short) request.QuestNumber);
+                    this.questStartAction.StartQuest(player, (short)request.QuestGroup, (short) request.QuestNumber);
                 }
             }
             else

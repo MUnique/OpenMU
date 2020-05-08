@@ -2145,6 +2145,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("RequiresClientAction")
                         .HasColumnType("boolean");
 
+                    b.Property<short>("StartingNumber")
+                        .HasColumnType("smallint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MonsterDefinitionId");

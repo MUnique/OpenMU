@@ -33,6 +33,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         public short Number { get; set; }
 
         /// <summary>
+        /// Gets or sets the starting number of the quest which should be unique within the group. It's used as an identifier before a quest is started.
+        /// </summary>
+        public short StartingNumber { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="QuestDefinition"/> is repeatable
         /// which means if the character can start this quest multiple times even after it already
         /// completed it once.
