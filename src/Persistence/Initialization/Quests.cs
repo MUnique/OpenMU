@@ -65,6 +65,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             questDefinition.Name = name;
             questDefinition.Group = group;
             questDefinition.Number = number;
+            questDefinition.StartingNumber = startingNumber;
             questDefinition.MinimumCharacterLevel = minimumLevel;
             questDefinition.MaximumCharacterLevel = maximumLevel;
             questDefinition.Repeatable = true;
