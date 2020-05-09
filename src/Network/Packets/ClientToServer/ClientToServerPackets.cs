@@ -6789,9 +6789,9 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             AcceptQuest = 1,
 
             /// <summary>
-            /// The quest is accepted and started.
+            /// The quest is refused and not started.
             /// </summary>
-            CancelQuest = 2,
+            RefuseQuest = 2,
         }
 
         private readonly Span<byte> data;

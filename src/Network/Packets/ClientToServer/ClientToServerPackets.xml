@@ -1813,8 +1813,8 @@
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
-              <Name>CancelQuest</Name>
-              <Description>The quest is accepted and started.</Description>
+              <Name>RefuseQuest</Name>
+              <Description>The quest is refused and not started.</Description>
               <Value>2</Value>
             </EnumValue>
           </Values>

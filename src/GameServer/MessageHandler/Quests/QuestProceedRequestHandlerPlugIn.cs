@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
+    using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
@@ -21,8 +22,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     public class QuestProceedRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     {
         private readonly QuestStartAction questStartAction = new QuestStartAction();
-
-        private readonly QuestCancelAction questCancelAction = new QuestCancelAction();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;
@@ -51,7 +50,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
             }
             else
             {
-                this.questCancelAction.CancelQuest(player, (short)request.QuestGroup, (short)request.QuestNumber);
+                // Refused
+                player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(player.OpenedNpc.Definition.NpcWindow);
             }
         }
     }
