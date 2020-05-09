@@ -38,16 +38,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
 
             if (request.ProceedAction == QuestProceedRequest.QuestProceedAction.AcceptQuest)
             {
-                if (request.ProceedAction == QuestProceedRequest.QuestProceedAction.AcceptQuest && questState != null)
-                {
-                    player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()
-                        ?.ShowQuestProgress(questState.ActiveQuest, true);
-                }
-
                 if (questState != null)
                 {
                     // keep it running and confirm that it started
                     player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(questState.ActiveQuest);
+                    player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(questState.ActiveQuest, true);
                 }
                 else
                 {
