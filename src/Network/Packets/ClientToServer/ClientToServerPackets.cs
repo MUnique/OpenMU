@@ -6664,28 +6664,28 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: The client opened an quest NPC dialog and decided to start an available quests.
-    /// Causes reaction on server side: The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.
+    /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
+    /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
     /// </summary>
-    public readonly ref struct QuestStartRequest
+    public readonly ref struct QuestSelectRequest
     {
         private readonly Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuestStartRequest"/> struct.
+        /// Initializes a new instance of the <see cref="QuestSelectRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public QuestStartRequest(Span<byte> data)
+        public QuestSelectRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuestStartRequest"/> struct.
+        /// Initializes a new instance of the <see cref="QuestSelectRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private QuestStartRequest(Span<byte> data, bool initialize)
+        private QuestSelectRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -6752,18 +6752,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestStartRequest"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestSelectRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator QuestStartRequest(Span<byte> packet) => new QuestStartRequest(packet, false);
+        public static implicit operator QuestSelectRequest(Span<byte> packet) => new QuestSelectRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="QuestStartRequest"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="QuestSelectRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(QuestStartRequest packet) => packet.data; 
+        public static implicit operator Span<byte>(QuestSelectRequest packet) => packet.data; 
     }
 
 

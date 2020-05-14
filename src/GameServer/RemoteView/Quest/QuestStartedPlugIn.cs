@@ -39,14 +39,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             }
             else
             {
-                var state = player.GetQuestState(quest.Group);
+                var state = this.player.GetQuestState(quest.Group);
                 if (state.ActiveQuest == quest)
                 {
-                    this.player.Connection.SendQuestStarted((ushort)quest.Number, (ushort)quest.Group);
-                }
-                else
-                {
-                    this.player.Connection.SendQuestStarted((ushort)quest.StartingNumber, (ushort)quest.Group);
+                    this.player.Connection.SendQuestStepInfo((ushort)quest.Number, (ushort)quest.Group);
+                    this.player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(quest, true);
                 }
             }
         }

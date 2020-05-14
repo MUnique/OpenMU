@@ -1746,11 +1746,11 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F6</Code>
       <SubCode>0A</SubCode>
-      <Name>QuestStartRequest</Name>
+      <Name>QuestSelectRequest</Name>
       <Length>9</Length>
       <Direction>ClientToServer</Direction>
-      <SentWhen>The client opened an quest NPC dialog and decided to start an available quests.</SentWhen>
-      <CausedReaction>The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.</CausedReaction>
+      <SentWhen>The client opened an quest NPC dialog and selected an available quests.</SentWhen>
+      <CausedReaction>If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>

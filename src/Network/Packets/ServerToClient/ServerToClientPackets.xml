@@ -5044,16 +5044,17 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F6</Code>
       <SubCode>0B</SubCode>
-      <Name>QuestStarted</Name>
+      <Name>QuestStepInfo</Name>
       <Length>11</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>After the game client requested to initialize a quest and it was successful.</SentWhen>
-      <CausedReaction>The client shows the quest data and state accordingly. I guess this only shows the description of the quest in the dialog.</CausedReaction>
+      <SentWhen>After the game client clicked on a quest in the quest list, proceeded with a quest or refused to start a quest.</SentWhen>
+      <CausedReaction>The client shows the corresponding description about the current quest step.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
-          <Name>QuestNumber</Name>
+          <Name>QuestStepNumber</Name>
+          <Description>A number specifying the description: A) when selecting a quest in the quest list, it's the "StartingNumber"; B) when a quest has been started it's the quest number; C) when the starting number has been sent previously and the player refused to start the quest, it sends a "RefuseNumber".</Description>
         </Field>
         <Field>
           <Index>6</Index>

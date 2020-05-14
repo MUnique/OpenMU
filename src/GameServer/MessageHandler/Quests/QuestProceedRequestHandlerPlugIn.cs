@@ -5,10 +5,10 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
 {
     using System;
+    using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
-    using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.PlugIns;
@@ -33,7 +33,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
         public void HandlePacket(Player player, Span<byte> packet)
         {
             QuestProceedRequest request = packet;
-            var questState = player.GetQuestState((short)request.QuestGroup, (short)request.QuestNumber);
+            var questGroup = (short)request.QuestGroup;
+            var questNumber = (short)request.QuestNumber;
+            var questState = player.GetQuestState(questGroup, questNumber);
 
             if (request.ProceedAction == QuestProceedRequest.QuestProceedAction.AcceptQuest)
             {
@@ -41,17 +43,21 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
                 {
                     // keep it running and confirm that it started
                     player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(questState.ActiveQuest);
-                    player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(questState.ActiveQuest, true);
                 }
                 else
                 {
-                    this.questStartAction.StartQuest(player, (short)request.QuestGroup, (short)request.QuestNumber, true);
+                    this.questStartAction.StartQuest(player, (short)request.QuestGroup, (short)request.QuestNumber);
                 }
             }
             else
             {
                 // Refused
-                player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(player.OpenedNpc.Definition.NpcWindow);
+                if (player.OpenedNpc?.Definition.Quests
+                        .FirstOrDefault(q => q.Group == questGroup && q.StartingNumber == questNumber)
+                    is { } quest)
+                {
+                    player.ViewPlugIns.GetPlugIn<IQuestStepInfoPlugIn>()?.ShowQuestStepInfo(quest.Group, quest.RefuseNumber);
+                }
             }
         }
     }

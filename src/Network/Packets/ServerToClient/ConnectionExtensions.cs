@@ -1104,16 +1104,16 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Starts a safe write of a <see cref="QuestStarted" /> to this connection.
+        /// Starts a safe write of a <see cref="QuestStepInfo" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the server when: After the game client requested to initialize a quest and it was successful.
-        /// Causes reaction on client side: The client shows the quest data and state accordingly. I guess this only shows the description of the quest in the dialog.
+        /// Is sent by the server when: After the game client clicked on a quest in the quest list, proceeded with a quest or refused to start a quest.
+        /// Causes reaction on client side: The client shows the corresponding description about the current quest step.
         /// </remarks>
-        public static QuestStartedThreadSafeWriter StartWriteQuestStarted(this IConnection connection)
+        public static QuestStepInfoThreadSafeWriter StartWriteQuestStepInfo(this IConnection connection)
         {
-          return new QuestStartedThreadSafeWriter(connection);
+          return new QuestStepInfoThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -3161,20 +3161,20 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Sends a <see cref="QuestStarted" /> to this connection.
+        /// Sends a <see cref="QuestStepInfo" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        /// <param name="questNumber">The quest number.</param>
+        /// <param name="questStepNumber">A number specifying the description: A) when selecting a quest in the quest list, it's the "StartingNumber"; B) when a quest has been started it's the quest number; C) when the starting number has been sent previously and the player refused to start the quest, it sends a "RefuseNumber".</param>
         /// <param name="questGroup">The quest group.</param>
         /// <remarks>
-        /// Is sent by the server when: After the game client requested to initialize a quest and it was successful.
-        /// Causes reaction on client side: The client shows the quest data and state accordingly. I guess this only shows the description of the quest in the dialog.
+        /// Is sent by the server when: After the game client clicked on a quest in the quest list, proceeded with a quest or refused to start a quest.
+        /// Causes reaction on client side: The client shows the corresponding description about the current quest step.
         /// </remarks>
-        public static void SendQuestStarted(this IConnection connection, ushort @questNumber, ushort @questGroup)
+        public static void SendQuestStepInfo(this IConnection connection, ushort @questStepNumber, ushort @questGroup)
         {
-            using var writer = connection.StartWriteQuestStarted();
+            using var writer = connection.StartWriteQuestStepInfo();
             var packet = writer.Packet;
-            packet.QuestNumber = @questNumber;
+            packet.QuestStepNumber = @questStepNumber;
             packet.QuestGroup = @questGroup;
             writer.Commit();
         }
@@ -7635,17 +7635,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
-    /// A helper struct to write a <see cref="QuestStarted"/> safely to a <see cref="IConnection.Output" />.
+    /// A helper struct to write a <see cref="QuestStepInfo"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
-    public readonly ref struct QuestStartedThreadSafeWriter
+    public readonly ref struct QuestStepInfoThreadSafeWriter
     {
         private readonly IConnection connection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuestStartedThreadSafeWriter" /> struct.
+        /// Initializes a new instance of the <see cref="QuestStepInfoThreadSafeWriter" /> struct.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        public QuestStartedThreadSafeWriter(IConnection connection)
+        public QuestStepInfoThreadSafeWriter(IConnection connection)
         {
             this.connection = connection;
             Monitor.Enter(this.connection);
@@ -7654,7 +7654,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 // Initialize header and default values
                 var span = this.Span;
                 span.Clear();
-                _ = new QuestStarted(span);
+                _ = new QuestStepInfo(span);
             }
             catch (InvalidOperationException)
             {
@@ -7664,17 +7664,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestStarted.Length).Slice(0, QuestStarted.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestStepInfo.Length).Slice(0, QuestStepInfo.Length);
 
         /// <summary>Gets the packet to write at.</summary>
-        public QuestStarted Packet => this.Span;
+        public QuestStepInfo Packet => this.Span;
 
         /// <summary>
-        /// Commits the data of the <see cref="QuestStarted" />.
+        /// Commits the data of the <see cref="QuestStepInfo" />.
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(QuestStarted.Length);
+            this.connection.Output.Advance(QuestStepInfo.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

@@ -34,8 +34,15 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
 
         /// <summary>
         /// Gets or sets the starting number of the quest which should be unique within the group. It's used as an identifier before a quest is started.
+        /// It's an identifier which is required on the client side to show the correct starting text.
         /// </summary>
         public short StartingNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the refuse number of the quest which should be unique within the group. It's used as an identifier after a quest has been refused by the player.
+        /// It's an identifier which is required on the client side to show the correct follow-up text.
+        /// </summary>
+        public short RefuseNumber { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="QuestDefinition"/> is repeatable

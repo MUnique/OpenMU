@@ -2145,6 +2145,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("RequiresClientAction")
                         .HasColumnType("boolean");
 
+                    b.Property<short>("RefuseNumber")
+                        .HasColumnType("smallint");
+
                     b.Property<short>("StartingNumber")
                         .HasColumnType("smallint");
 

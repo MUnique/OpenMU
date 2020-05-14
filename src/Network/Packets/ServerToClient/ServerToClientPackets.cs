@@ -14311,28 +14311,28 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: After the game client requested to initialize a quest and it was successful.
-    /// Causes reaction on client side: The client shows the quest data and state accordingly. I guess this only shows the description of the quest in the dialog.
+    /// Is sent by the server when: After the game client clicked on a quest in the quest list, proceeded with a quest or refused to start a quest.
+    /// Causes reaction on client side: The client shows the corresponding description about the current quest step.
     /// </summary>
-    public readonly ref struct QuestStarted
+    public readonly ref struct QuestStepInfo
     {
         private readonly Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuestStarted"/> struct.
+        /// Initializes a new instance of the <see cref="QuestStepInfo"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public QuestStarted(Span<byte> data)
+        public QuestStepInfo(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuestStarted"/> struct.
+        /// Initializes a new instance of the <see cref="QuestStepInfo"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private QuestStarted(Span<byte> data, bool initialize)
+        private QuestStepInfo(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -14372,9 +14372,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
 
         /// <summary>
-        /// Gets or sets the quest number.
+        /// Gets or sets a number specifying the description: A) when selecting a quest in the quest list, it's the "StartingNumber"; B) when a quest has been started it's the quest number; C) when the starting number has been sent previously and the player refused to start the quest, it sends a "RefuseNumber".
         /// </summary>
-        public ushort QuestNumber
+        public ushort QuestStepNumber
         {
             get => ReadUInt16LittleEndian(this.data.Slice(4));
             set => WriteUInt16LittleEndian(this.data.Slice(4), value);
@@ -14390,18 +14390,18 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestStarted"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestStepInfo"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator QuestStarted(Span<byte> packet) => new QuestStarted(packet, false);
+        public static implicit operator QuestStepInfo(Span<byte> packet) => new QuestStepInfo(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="QuestStarted"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="QuestStepInfo"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(QuestStarted packet) => packet.data; 
+        public static implicit operator Span<byte>(QuestStepInfo packet) => packet.data; 
     }
 
 

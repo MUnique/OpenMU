@@ -909,16 +909,16 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Starts a safe write of a <see cref="QuestStartRequest" /> to this connection.
+        /// Starts a safe write of a <see cref="QuestSelectRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the client when: The client opened an quest NPC dialog and decided to start an available quests.
-        /// Causes reaction on server side: The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.
+        /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
+        /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
         /// </remarks>
-        public static QuestStartRequestThreadSafeWriter StartWriteQuestStartRequest(this IConnection connection)
+        public static QuestSelectRequestThreadSafeWriter StartWriteQuestSelectRequest(this IConnection connection)
         {
-          return new QuestStartRequestThreadSafeWriter(connection);
+          return new QuestSelectRequestThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -2393,19 +2393,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Sends a <see cref="QuestStartRequest" /> to this connection.
+        /// Sends a <see cref="QuestSelectRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="questNumber">The quest number.</param>
         /// <param name="questGroup">The quest group.</param>
         /// <param name="unknownField">A value between 1 and 3, probably depending on how many quests are already running. Should not be trusted or considered.</param>
         /// <remarks>
-        /// Is sent by the client when: The client opened an quest NPC dialog and decided to start an available quests.
-        /// Causes reaction on server side: The server decides if the character can start the quest. A character can run up to 3 concurrent quests at a time.
+        /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
+        /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
         /// </remarks>
-        public static void SendQuestStartRequest(this IConnection connection, ushort @questNumber, ushort @questGroup, byte @unknownField)
+        public static void SendQuestSelectRequest(this IConnection connection, ushort @questNumber, ushort @questGroup, byte @unknownField)
         {
-            using var writer = connection.StartWriteQuestStartRequest();
+            using var writer = connection.StartWriteQuestSelectRequest();
             var packet = writer.Packet;
             packet.QuestNumber = @questNumber;
             packet.QuestGroup = @questGroup;
@@ -6170,17 +6170,17 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     }
       
     /// <summary>
-    /// A helper struct to write a <see cref="QuestStartRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// A helper struct to write a <see cref="QuestSelectRequest"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
-    public readonly ref struct QuestStartRequestThreadSafeWriter
+    public readonly ref struct QuestSelectRequestThreadSafeWriter
     {
         private readonly IConnection connection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuestStartRequestThreadSafeWriter" /> struct.
+        /// Initializes a new instance of the <see cref="QuestSelectRequestThreadSafeWriter" /> struct.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        public QuestStartRequestThreadSafeWriter(IConnection connection)
+        public QuestSelectRequestThreadSafeWriter(IConnection connection)
         {
             this.connection = connection;
             Monitor.Enter(this.connection);
@@ -6189,7 +6189,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 // Initialize header and default values
                 var span = this.Span;
                 span.Clear();
-                _ = new QuestStartRequest(span);
+                _ = new QuestSelectRequest(span);
             }
             catch (InvalidOperationException)
             {
@@ -6199,17 +6199,17 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestStartRequest.Length).Slice(0, QuestStartRequest.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestSelectRequest.Length).Slice(0, QuestSelectRequest.Length);
 
         /// <summary>Gets the packet to write at.</summary>
-        public QuestStartRequest Packet => this.Span;
+        public QuestSelectRequest Packet => this.Span;
 
         /// <summary>
-        /// Commits the data of the <see cref="QuestStartRequest" />.
+        /// Commits the data of the <see cref="QuestSelectRequest" />.
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(QuestStartRequest.Length);
+            this.connection.Output.Advance(QuestSelectRequest.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
