@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.AdminPanel.Map
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.Interfaces;
     using SixLabors.ImageSharp;
-    using SixLabors.ImageSharp.PixelFormats;
 
     /// <summary>
     /// Controller for all map related functions.
@@ -65,29 +64,7 @@ namespace MUnique.OpenMU.AdminPanel.Map
         private Stream RenderMap(IGameMapInfo map)
         {
             var terrain = new GameMapTerrain(map.MapName, map.TerrainData);
-            using var bitmap = new Image<Rgba32>(0x100, 0x100);
-            for (int y = 0; y < 0x100; y++)
-            {
-                for (int x = 0; x < 0x100; x++)
-                {
-                    var color = Rgba32.Black;
-                    if (terrain.SafezoneMap[y, x])
-                    {
-                        color = Rgba32.Gray;
-                    }
-                    else if (terrain.WalkMap[y, x])
-                    {
-                        color = Rgba32.SpringGreen;
-                    }
-                    else
-                    {
-                        // we use the default color.
-                    }
-
-                    bitmap[x, y] = color;
-                }
-            }
-
+            using var bitmap = terrain.ToImage();
             var memoryStream = new MemoryStream();
             bitmap.SaveAsPng(memoryStream);
             memoryStream.Position = 0;
