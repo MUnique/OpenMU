@@ -38,6 +38,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             Builders.Add(new NumberFieldBuilder<double>());
             Builders.Add(new NumberFieldBuilder<float>());
             Builders.Add(new ByteFieldBuilder());
+            Builders.Add(new ShortFieldBuilder());
             Builders.Add(new BooleanFieldBuilder());
             Builders.Add(new DateFieldBuilder());
             Builders.Add(new EnumFieldBuilder());
