@@ -52,9 +52,13 @@
                 {
                     <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnSpawnResizing" />
                 }
-                else
+                else if (spawn.Direction != Direction.Undefined)
                 {
                     <div class="arrow @this.GetFocusedRotation()"></div>
+                }
+                else
+                {
+                    // show nothing
                 }
             }
         </div>
