@@ -23,3 +23,7 @@ function DisposeMap(identifier) {
         delete window[identifier];
     }
 };
+
+function GetMapHostBoundingClientRect() {
+    return document.getElementsByClassName('map-host')[0].getBoundingClientRect();
+};

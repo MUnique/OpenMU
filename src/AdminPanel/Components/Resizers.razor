@@ -1,0 +1,62 @@
+﻿<div class='resizers'>
+    <div class='resizer top-left' @onmousemove=this.OnTopLeftResizerMouseMove></div>
+    <div class='resizer top-right'@onmousemove=this.OnTopRightResizerMouseMove></div>
+    <div class='resizer bottom-left'@onmousemove=this.OnBottomLeftResizerMouseMove></div>
+    <div class='resizer bottom-right'@onmousemove=this.OnBottomRightResizerMouseMove></div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets a function which translates the incoming coordinates of the <see cref="MouseEventArgs"/>
+    /// into relative coordinates of the object on its parent.
+    /// </summary>
+    [Parameter]
+    public Func<MouseEventArgs, Task<(byte X, byte Y)?>> CoordinatesGetter { get; set; }
+
+    /// <summary>
+    /// Gets or sets an <see cref="EventCallback"/> which gets called when a resizing operation takes place.
+    /// </summary>
+    [Parameter]
+    public EventCallback<(byte X, byte Y, ResizerPosition Resizer)> Resizing { get; set; }
+
+    private async Task OnTopLeftResizerMouseMove(MouseEventArgs args)
+    {
+        if (await this.CoordinatesGetter(args) is { } coordinates)
+        {
+            await this.Resizing.InvokeAsync((coordinates.X, coordinates.Y, ResizerPosition.TopLeft));
+        }
+    }
+
+    private async Task OnTopRightResizerMouseMove(MouseEventArgs args)
+    {
+        if (await this.CoordinatesGetter(args) is { } coordinates)
+        {
+            await this.Resizing.InvokeAsync((coordinates.X, coordinates.Y, ResizerPosition.TopRight));
+        }
+    }
+
+    private async Task OnBottomLeftResizerMouseMove(MouseEventArgs args)
+    {
+        if (await this.CoordinatesGetter(args) is { } coordinates)
+        {
+            await this.Resizing.InvokeAsync((coordinates.X, coordinates.Y, ResizerPosition.BottomLeft));
+        }
+    }
+
+    private async Task OnBottomRightResizerMouseMove(MouseEventArgs args)
+    {
+        if (await this.CoordinatesGetter(args) is { } coordinates)
+        {
+            await this.Resizing.InvokeAsync((coordinates.X, coordinates.Y, ResizerPosition.BottomRight));
+        }
+    }
+
+    public enum ResizerPosition
+    {
+        TopLeft,
+        TopRight,
+        BottomRight,
+        BottomLeft,
+    }
+}
