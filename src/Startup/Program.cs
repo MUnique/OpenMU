@@ -57,64 +57,8 @@ namespace MUnique.OpenMU.Startup
             Log.Info("Start initializing sub-components");
             var serverConfigListener = new ServerConfigurationChangeListener(this.servers);
             var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
-            var loginServer = new LoginServer();
 
-            var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
-            var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), ipResolver, chatServerDefinition.GetId());
-            this.servers.Add(chatServer);
-            var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
-            var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
-            var connectServers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
-
-            ClientVersionResolver.DefaultVersion = new ClientVersion(6, 3, ClientLanguage.English);
-            foreach (var gameClientDefinition in persistenceContext.Get<GameClientDefinition>())
-            {
-                ClientVersionResolver.Register(gameClientDefinition.Version, new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
-            }
-
-            foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
-            {
-                var clientVersion = new ClientVersion(connectServerDefinition.Client.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
-                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
-                this.servers.Add(connectServer);
-                if (!connectServers.TryGetValue(connectServerDefinition.Client, out var observer))
-                {
-                    connectServers[connectServerDefinition.Client] = connectServer;
-                }
-                else
-                {
-                    Log.WarnFormat($"Multiple connect servers for game client '{connectServerDefinition.Client.Description}' configured. Only one per client makes sense.");
-                    if (!(observer is MulticastConnectionServerStateObserver))
-                    {
-                        var multicastObserver = new MulticastConnectionServerStateObserver();
-                        multicastObserver.AddObserver(observer);
-                        multicastObserver.AddObserver(connectServer);
-                        connectServers[connectServerDefinition.Client] = multicastObserver;
-                    }
-                }
-            }
-
-            Log.Info("Start initializing game servers");
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            foreach (var gameServerDefinition in persistenceContext.Get<DataModel.Configuration.GameServerDefinition>())
-            {
-                using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
-                {
-                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer);
-                    foreach (var endpoint in gameServerDefinition.Endpoints)
-                    {
-                        gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, connectServers[endpoint.Client], ipResolver));
-                    }
-
-                    this.servers.Add(gameServer);
-                    this.gameServers.Add(gameServer.Id, gameServer);
-                    Log.InfoFormat("Game Server {0} - [{1}] initialized", gameServer.Id, gameServer.Description);
-                }
-            }
-
-            stopwatch.Stop();
-            Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
+            LoadGameServers(persistenceContext, ipResolver);
 
             Log.Info("Start API...");
             apiHost = new ApiHost(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
@@ -129,7 +73,11 @@ namespace MUnique.OpenMU.Startup
 
             if (args.Contains("-autostart"))
             {
-                chatServer.Start();
+                foreach (var chatServer in this.servers.OfType<ChatServer>())
+                {
+                    chatServer.Start();
+                }
+
                 foreach (var gameServer in this.gameServers.Values)
                 {
                     gameServer.Start();
@@ -197,6 +145,72 @@ namespace MUnique.OpenMU.Startup
             (this.persistenceContextProvider as IDisposable)?.Dispose();
         }
 
+        private void LoadGameClientDefinitions(IContext persistenceContext)
+        {
+            ClientVersionResolver.DefaultVersion = new ClientVersion(6, 3, ClientLanguage.English);
+            foreach (var gameClientDefinition in persistenceContext.Get<GameClientDefinition>())
+            {
+                ClientVersionResolver.Register(gameClientDefinition.Version,
+                    new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
+            }
+        }
+
+        private void LoadGameServers(IContext persistenceContext, IIpAddressResolver ipResolver)
+        {
+            LoadGameClientDefinitions(persistenceContext);
+            var loginServer = new LoginServer();
+            var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
+            var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), ipResolver, chatServerDefinition.GetId());
+            this.servers.Add(chatServer);
+            var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
+            var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
+            var connectServers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
+
+            Log.Info("Start initializing game servers");
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
+            {
+                var clientVersion = new ClientVersion(connectServerDefinition.Client.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
+                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
+                this.servers.Add(connectServer);
+                if (!connectServers.TryGetValue(connectServerDefinition.Client, out var observer))
+                {
+                    connectServers[connectServerDefinition.Client] = connectServer;
+                }
+                else
+                {
+                    Log.WarnFormat($"Multiple connect servers for game client '{connectServerDefinition.Client.Description}' configured. Only one per client makes sense.");
+                    if (!(observer is MulticastConnectionServerStateObserver))
+                    {
+                        var multicastObserver = new MulticastConnectionServerStateObserver();
+                        multicastObserver.AddObserver(observer);
+                        multicastObserver.AddObserver(connectServer);
+                        connectServers[connectServerDefinition.Client] = multicastObserver;
+                    }
+                }
+            }
+
+            foreach (var gameServerDefinition in persistenceContext.Get<DataModel.Configuration.GameServerDefinition>())
+            {
+                using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
+                {
+                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer);
+                    foreach (var endpoint in gameServerDefinition.Endpoints)
+                    {
+                        gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, connectServers[endpoint.Client], ipResolver));
+                    }
+
+                    this.servers.Add(gameServer);
+                    this.gameServers.Add(gameServer.Id, gameServer);
+                    Log.InfoFormat($"Game Server {gameServer.Id} - [{gameServer.Description}] initialized");
+                }
+            }
+
+            stopwatch.Stop();
+            Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
+        }
         private ushort DetermineAdminPort(string[] args)
         {
             var parameter = args.FirstOrDefault(a => a.StartsWith("-adminport:", StringComparison.InvariantCultureIgnoreCase));
