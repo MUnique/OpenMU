@@ -50,16 +50,7 @@ namespace MUnique.OpenMU.Startup
         /// <param name="args">The command line args.</param>
         public Program(string[] args)
         {
-            if (args.Contains("-demo"))
-            {
-                this.persistenceContextProvider = new InMemoryPersistenceContextProvider();
-                var initialization = new DataInitialization(this.persistenceContextProvider);
-                initialization.CreateInitialData();
-            }
-            else
-            {
-                this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"));
-            }
+            this.persistenceContextProvider = DeterminePersistenceContextProvider(args);
 
             var ipResolver = IpAddressResolverFactory.DetermineIpResolver(args);
 
@@ -218,6 +209,23 @@ namespace MUnique.OpenMU.Startup
             }
 
             return 1234; // Default port
+        }
+
+        private IPersistenceContextProvider DeterminePersistenceContextProvider(string[] args)
+        {
+            IPersistenceContextProvider contextProvider;
+            if (args.Contains("-demo"))
+            {
+                contextProvider = new InMemoryPersistenceContextProvider();
+                var initialization = new DataInitialization(contextProvider);
+                initialization.CreateInitialData();
+            }
+            else
+            {
+                contextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"));
+            }
+
+            return contextProvider;
         }
 
         private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, bool autoupdate)
