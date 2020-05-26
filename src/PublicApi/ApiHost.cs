@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.PublicApi
         /// <summary>
         /// Stop Server
         /// </summary>
-        public void Stop()
+        public void Shutdown()
         {
             host.StopAsync();
         }

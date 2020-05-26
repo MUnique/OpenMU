@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.AdminPanel
         /// <summary>
         /// Stop Server
         /// </summary>
-        public void Stop()
+        public void Shutdown()
         {
             host.StopAsync();
         }

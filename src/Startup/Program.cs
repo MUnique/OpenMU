@@ -139,8 +139,8 @@ namespace MUnique.OpenMU.Startup
                 (server as IDisposable)?.Dispose();
             }
 
-            this.apiHost.Stop();
-            this.adminPanel.Stop();
+            this.apiHost.Shutdown();
+            this.adminPanel.Shutdown();
 
             (this.persistenceContextProvider as IDisposable)?.Dispose();
         }
