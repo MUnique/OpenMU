@@ -38,6 +38,7 @@ namespace MUnique.OpenMU.Startup
         private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + typeof(Program).GetTypeInfo().Namespace + ".exe.log4net.xml";
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
         private readonly AdminPanel adminPanel;
+        private readonly ApiHost apiHost;
         private readonly IDictionary<int, IGameServer> gameServers = new Dictionary<int, IGameServer>();
         private readonly IList<IManageableServer> servers = new List<IManageableServer>();
         private readonly IPersistenceContextProvider persistenceContextProvider;
@@ -125,12 +126,14 @@ namespace MUnique.OpenMU.Startup
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
 
             Log.Info("Start API...");
-            ApiHost.RunAsync(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
+            apiHost = new ApiHost(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
+            apiHost.Start();
             Log.Info("Started API");
 
             var adminPort = this.DetermineAdminPort(args);
             Log.Info($"Start initializing admin panel for port {adminPort}.");
             this.adminPanel = new AdminPanel(adminPort, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
+            this.adminPanel.Start();
             Log.Info($"Admin panel initialized, port {adminPort}.");
 
             if (args.Contains("-autostart"))
@@ -190,6 +193,9 @@ namespace MUnique.OpenMU.Startup
                 server.Shutdown();
                 (server as IDisposable)?.Dispose();
             }
+
+            this.apiHost.Stop();
+            this.adminPanel.Stop();
 
             (this.persistenceContextProvider as IDisposable)?.Dispose();
         }

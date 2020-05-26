@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.AdminPanel
     /// </summary>
     public sealed class AdminPanel
     {
+        private IHost host;
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminPanel" /> class.
         /// </summary>
@@ -34,7 +35,7 @@ namespace MUnique.OpenMU.AdminPanel
 
             // you might need to allow it first with netsh:
             // netsh http add urlacl http://+:1234/ user=[Username]
-            var host = Host.CreateDefaultBuilder()
+            host = Host.CreateDefaultBuilder()
                 .ConfigureLogging(configureLogging =>
                 {
                     configureLogging.ClearProviders();
@@ -58,7 +59,22 @@ namespace MUnique.OpenMU.AdminPanel
                     webBuilder.UseUrls($"http://*:{port}");
                 })
                 .Build();
-            host.Start();
+        }
+
+        /// <summary>
+        /// Start Server
+        /// </summary>
+        public void Start()
+        {
+            host.StartAsync();
+        }
+
+        /// <summary>
+        /// Stop Server
+        /// </summary>
+        public void Stop()
+        {
+            host.StopAsync();
         }
     }
 }

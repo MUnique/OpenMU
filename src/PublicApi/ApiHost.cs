@@ -16,8 +16,9 @@ namespace MUnique.OpenMU.PublicApi
     /// <summary>
     /// Hosts the public API server.
     /// </summary>
-    public static class ApiHost
+    public class ApiHost
     {
+        private IHost host;
         /// <summary>
         /// Runs the host.
         /// </summary>
@@ -25,7 +26,36 @@ namespace MUnique.OpenMU.PublicApi
         /// <param name="connectServers">The connect servers.</param>
         /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
         /// <returns>The async task.</returns>
-        public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+
+        public ApiHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+        {
+            host = buildHost(gameServers, connectServers, loggingConfigurationPath);
+        }
+
+        /// <summary>
+        /// Start Server
+        /// </summary>
+        public void Start()
+        {
+            host.StartAsync();
+        }
+
+        /// <summary>
+        /// Stop Server
+        /// </summary>
+        public void Stop()
+        {
+            host.StopAsync();
+        }
+
+        /// <summary>
+        /// Create the Host instance
+        /// </summary>
+        /// <param name="gameServers">The game servers.</param>
+        /// <param name="connectServers">The connect servers.</param>
+        /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
+        /// <returns></returns>
+        public static IHost buildHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
         {
             var builder = Host.CreateDefaultBuilder();
             if (!string.IsNullOrEmpty(loggingConfigurationPath))
@@ -51,7 +81,12 @@ namespace MUnique.OpenMU.PublicApi
                         .UseStartup<Startup>()
                         .UseUrls("http://*:80", "https://*:443");
                 })
-                .Build()
+                .Build();
+        }
+
+        public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+        {
+            return buildHost(gameServers, connectServers, loggingConfigurationPath)
                 .RunAsync();
         }
     }
