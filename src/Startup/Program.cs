@@ -163,6 +163,11 @@ namespace MUnique.OpenMU.Startup
             using (new Program(args))
             {
                 bool exit = false;
+
+                Console.CancelKeyPress += delegate(object sender, ConsoleCancelEventArgs e) {
+                    exit = true;
+                };
+
                 while (!exit)
                 {
                     switch (Console.ReadLine()?.ToLower())
@@ -174,7 +179,8 @@ namespace MUnique.OpenMU.Startup
                             GC.Collect();
                             break;
                         case null:
-                            Thread.Sleep(1000);
+                        case "":
+                            Thread.Sleep(100);
                             break;
                         default:
                             Console.WriteLine("Unknown command");
