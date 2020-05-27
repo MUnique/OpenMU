@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.Startup
         /// <param name="args">The command line args.</param>
         public Program(string[] args)
         {
-            this.persistenceContextProvider = DeterminePersistenceContextProvider(args);
+            this.persistenceContextProvider = this.DeterminePersistenceContextProvider(args);
 
             var ipResolver = IpAddressResolverFactory.DetermineIpResolver(args);
 
@@ -58,11 +58,11 @@ namespace MUnique.OpenMU.Startup
             var serverConfigListener = new ServerConfigurationChangeListener(this.servers);
             var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
 
-            LoadGameServers(persistenceContext, ipResolver);
+            this.InitializeGameServers(persistenceContext, ipResolver);
 
             Log.Info("Start API...");
-            apiHost = new ApiHost(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
-            apiHost.Start();
+            this.apiHost = new ApiHost(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
+            this.apiHost.Start();
             Log.Info("Started API");
 
             var adminPort = this.DetermineAdminPort(args);
@@ -101,11 +101,9 @@ namespace MUnique.OpenMU.Startup
 
             using (new Program(args))
             {
-                bool exit = false;
+                var exit = false;
 
-                Console.CancelKeyPress += delegate(object sender, ConsoleCancelEventArgs e) {
-                    exit = true;
-                };
+                Console.CancelKeyPress += (sender, e) => exit = true;
 
                 while (!exit)
                 {
@@ -150,14 +148,15 @@ namespace MUnique.OpenMU.Startup
             ClientVersionResolver.DefaultVersion = new ClientVersion(6, 3, ClientLanguage.English);
             foreach (var gameClientDefinition in persistenceContext.Get<GameClientDefinition>())
             {
-                ClientVersionResolver.Register(gameClientDefinition.Version,
+                ClientVersionResolver.Register(
+                    gameClientDefinition.Version,
                     new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
             }
         }
 
-        private void LoadGameServers(IContext persistenceContext, IIpAddressResolver ipResolver)
+        private void InitializeGameServers(IContext persistenceContext, IIpAddressResolver ipResolver)
         {
-            LoadGameClientDefinitions(persistenceContext);
+            this.LoadGameClientDefinitions(persistenceContext);
             var loginServer = new LoginServer();
             var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
             var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), ipResolver, chatServerDefinition.GetId());
@@ -211,6 +210,7 @@ namespace MUnique.OpenMU.Startup
             stopwatch.Stop();
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
         }
+
         private ushort DetermineAdminPort(string[] args)
         {
             var parameter = args.FirstOrDefault(a => a.StartsWith("-adminport:", StringComparison.InvariantCultureIgnoreCase));
