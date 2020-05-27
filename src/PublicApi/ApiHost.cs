@@ -12,50 +12,35 @@ namespace MUnique.OpenMU.PublicApi
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
+    using Nito.AsyncEx.Synchronous;
 
     /// <summary>
     /// Hosts the public API server.
     /// </summary>
     public class ApiHost
     {
-        private IHost host;
+        private readonly IHost host;
+
         /// <summary>
-        /// Runs the host.
+        /// Initializes a new instance of the <see cref="ApiHost"/> class.
         /// </summary>
         /// <param name="gameServers">The game servers.</param>
         /// <param name="connectServers">The connect servers.</param>
         /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
         /// <returns>The async task.</returns>
-
         public ApiHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
         {
-            host = buildHost(gameServers, connectServers, loggingConfigurationPath);
+            this.host = BuildHost(gameServers, connectServers, loggingConfigurationPath);
         }
 
         /// <summary>
-        /// Start Server
-        /// </summary>
-        public void Start()
-        {
-            host.StartAsync();
-        }
-
-        /// <summary>
-        /// Stop Server
-        /// </summary>
-        public void Shutdown()
-        {
-            host.StopAsync();
-        }
-
-        /// <summary>
-        /// Create the Host instance
+        /// Creates the Host instance.
         /// </summary>
         /// <param name="gameServers">The game servers.</param>
         /// <param name="connectServers">The connect servers.</param>
         /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
-        /// <returns></returns>
-        public static IHost buildHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+        /// <returns>The created host.</returns>
+        public static IHost BuildHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
         {
             var builder = Host.CreateDefaultBuilder();
             if (!string.IsNullOrEmpty(loggingConfigurationPath))
@@ -84,10 +69,31 @@ namespace MUnique.OpenMU.PublicApi
                 .Build();
         }
 
+        /// <summary>
+        /// Creates and runs a host instance.
+        /// </summary>
+        /// <param name="gameServers">The game servers.</param>
+        /// <param name="connectServers">The connect servers.</param>
+        /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
         public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
         {
-            return buildHost(gameServers, connectServers, loggingConfigurationPath)
-                .RunAsync();
+            return BuildHost(gameServers, connectServers, loggingConfigurationPath).StartAsync();
+        }
+
+        /// <summary>
+        /// Start the host.
+        /// </summary>
+        public void Start()
+        {
+            this.host.Start();
+        }
+
+        /// <summary>
+        /// Stops the host.
+        /// </summary>
+        public void Shutdown()
+        {
+            this.host.StopAsync().WaitAndUnwrapException();
         }
     }
 }

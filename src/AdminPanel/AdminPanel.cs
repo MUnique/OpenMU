@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.AdminPanel
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using Nito.AsyncEx.Synchronous;
     using SixLabors.ImageSharp;
     using SixLabors.Memory;
 
@@ -20,7 +21,8 @@ namespace MUnique.OpenMU.AdminPanel
     /// </summary>
     public sealed class AdminPanel
     {
-        private IHost host;
+        private readonly IHost host;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminPanel" /> class.
         /// </summary>
@@ -35,7 +37,7 @@ namespace MUnique.OpenMU.AdminPanel
 
             // you might need to allow it first with netsh:
             // netsh http add urlacl http://+:1234/ user=[Username]
-            host = Host.CreateDefaultBuilder()
+            this.host = Host.CreateDefaultBuilder()
                 .ConfigureLogging(configureLogging =>
                 {
                     configureLogging.ClearProviders();
@@ -62,19 +64,19 @@ namespace MUnique.OpenMU.AdminPanel
         }
 
         /// <summary>
-        /// Start Server
+        /// Starts the Server.
         /// </summary>
         public void Start()
         {
-            host.StartAsync();
+            this.host.Start();
         }
 
         /// <summary>
-        /// Stop Server
+        /// Stops the Server.
         /// </summary>
         public void Shutdown()
         {
-            host.StopAsync();
+            this.host.StopAsync().WaitAndUnwrapException();
         }
     }
 }
