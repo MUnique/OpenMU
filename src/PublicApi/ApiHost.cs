@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.PublicApi
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using apache.log4net.Extensions.Logging;
@@ -94,6 +95,7 @@ namespace MUnique.OpenMU.PublicApi
         public void Shutdown()
         {
             this.host.StopAsync().WaitAndUnwrapException();
+            (this.host as IDisposable).Dispose();
         }
     }
 }

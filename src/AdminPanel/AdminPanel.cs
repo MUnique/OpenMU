@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.AdminPanel
 {
+    using System;
     using System.Collections.Generic;
     using apache.log4net.Extensions.Logging;
     using Microsoft.AspNetCore.Hosting;
@@ -77,6 +78,7 @@ namespace MUnique.OpenMU.AdminPanel
         public void Shutdown()
         {
             this.host.StopAsync().WaitAndUnwrapException();
+            (this.host as IDisposable).Dispose();
         }
     }
 }
