@@ -102,6 +102,7 @@ namespace MUnique.OpenMU.Startup
 
             var exit = false;
             var confirmExit = false;
+            var isDaemonMode = args.Contains("-daemon");
 
             AppDomain.CurrentDomain.ProcessExit += delegate {
                 exit = true;
@@ -125,7 +126,10 @@ namespace MUnique.OpenMU.Startup
                 while (!exit && !program.tokenSource.Token.IsCancellationRequested)
                 {
                     Thread.Sleep(100);
-                    var input = Console.ReadLine()?.ToLower();
+                    var input = "";
+
+                    if (!isDaemonMode)
+                        input = Console.ReadLine()?.ToLower();
 
                     if (input == null || input == "")
                         continue;
