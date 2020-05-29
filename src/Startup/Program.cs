@@ -102,18 +102,39 @@ namespace MUnique.OpenMU.Startup
             using (new Program(args))
             {
                 var exit = false;
+                var confirmExit = false;
 
-                Console.CancelKeyPress += (sender, e) => exit = true;
+                Console.CancelKeyPress += delegate {
+                    if (confirmExit) {
+                        exit = true;
+                        Console.WriteLine("\nBye! Press enter to finish");
+                    }
+                    else {
+                        confirmExit = true;
+                        Console.Write("\nConfirm shutdown? (y/N) ");
+                    }
+                };
 
                 while (!exit)
                 {
-                    switch (Console.ReadLine()?.ToLower())
+                    var input = Console.ReadLine()?.ToLower();
+
+                    if (confirmExit && input == "y")
+                        input = "exit";
+                    else if (confirmExit)
+                    {
+                        confirmExit = false;
+                        input = null;
+                    }
+
+                    switch (input)
                     {
                         case "exit":
                             exit = true;
                             break;
                         case "gc":
                             GC.Collect();
+                            Console.WriteLine("Garbage Collected!");
                             break;
                         case null:
                         case "":
