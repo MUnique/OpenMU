@@ -153,9 +153,14 @@ namespace MUnique.OpenMU.Startup
                             GC.Collect();
                             Console.WriteLine("Garbage Collected!");
                             break;
+                        case "pid":
+                            var process = Process.GetCurrentProcess();
+                            var pid = process.Id.ToString();
+                            Console.WriteLine($"PID: {pid}");
+                            break;
                         case "?":
                         case "help":
-                            var commandList = "exit, gc";
+                            var commandList = "exit, gc, pid";
                             Console.WriteLine($"Commands available: {commandList}");
                             break;
                         default:
