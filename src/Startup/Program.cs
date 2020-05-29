@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.Startup
 
             while (!exitToken.IsCancellationRequested)
             {
-                switch ((await Console.In.ReadLineAsync(exitToken))?.ToLower())
+                switch ((await Console.In.ReadLineAsync(exitToken).ConfigureAwait(false))?.ToLower())
                 {
                     case "exit":
                         exitCts.Cancel();
@@ -123,7 +123,7 @@ namespace MUnique.OpenMU.Startup
                         break;
                     case null:
                     case "":
-                        await Task.Delay(500);
+                        await Task.Delay(500).ConfigureAwait(false);
                         break;
                     default:
                         Console.WriteLine("Unknown command");
