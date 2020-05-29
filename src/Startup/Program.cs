@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Startup
     using System.Linq;
     using System.Reflection;
     using System.Threading;
+    using System.Threading.Tasks;
     using log4net;
     using log4net.Config;
     using MUnique.OpenMU.AdminPanel;
@@ -94,35 +95,39 @@ namespace MUnique.OpenMU.Startup
         /// The main method.
         /// </summary>
         /// <param name="args">The command line args.</param>
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
 
-            using (new Program(args))
+            using var program = new Program(args);
+            using var exitCts = new CancellationTokenSource();
+            var exitToken = exitCts.Token;
+            void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
             {
-                var exit = false;
+                exitCts.Cancel();
+                Console.CancelKeyPress -= OnCancelKeyPress;
+            }
 
-                Console.CancelKeyPress += (sender, e) => exit = true;
+            Console.CancelKeyPress += OnCancelKeyPress;
 
-                while (!exit)
+            while (!exitToken.IsCancellationRequested)
+            {
+                switch ((await Console.In.ReadLineAsync(exitToken))?.ToLower())
                 {
-                    switch (Console.ReadLine()?.ToLower())
-                    {
-                        case "exit":
-                            exit = true;
-                            break;
-                        case "gc":
-                            GC.Collect();
-                            break;
-                        case null:
-                        case "":
-                            Thread.Sleep(100);
-                            break;
-                        default:
-                            Console.WriteLine("Unknown command");
-                            break;
-                    }
+                    case "exit":
+                        exitCts.Cancel();
+                        break;
+                    case "gc":
+                        GC.Collect();
+                        break;
+                    case null:
+                    case "":
+                        await Task.Delay(500);
+                        break;
+                    default:
+                        Console.WriteLine("Unknown command");
+                        break;
                 }
             }
         }
