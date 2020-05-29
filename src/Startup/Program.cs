@@ -35,6 +35,7 @@ namespace MUnique.OpenMU.Startup
     /// </summary>
     internal sealed class Program : IDisposable
     {
+        readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
         private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + typeof(Program).GetTypeInfo().Namespace + ".exe.log4net.xml";
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
         private readonly AdminPanel adminPanel;
@@ -99,32 +100,44 @@ namespace MUnique.OpenMU.Startup
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
 
-            using (new Program(args))
+            var exit = false;
+            var confirmExit = false;
+
+            AppDomain.CurrentDomain.ProcessExit += delegate {
+                exit = true;
+                Console.WriteLine("[KILL]");
+            };
+
+            Console.CancelKeyPress += delegate {
+                if (confirmExit) {
+                    exit = true;
+                    Console.WriteLine("\nBye! Press enter to finish");
+                }
+                else {
+                    confirmExit = true;
+                    Console.Write("\nConfirm shutdown? (y/N) ");
+                }
+            };
+
+
+            using (var program = new Program(args))
             {
-                var exit = false;
-                var confirmExit = false;
-
-                Console.CancelKeyPress += delegate {
-                    if (confirmExit) {
-                        exit = true;
-                        Console.WriteLine("\nBye! Press enter to finish");
-                    }
-                    else {
-                        confirmExit = true;
-                        Console.Write("\nConfirm shutdown? (y/N) ");
-                    }
-                };
-
-                while (!exit)
+                while (!exit && !program.tokenSource.Token.IsCancellationRequested)
                 {
+                    Thread.Sleep(100);
                     var input = Console.ReadLine()?.ToLower();
 
-                    if (confirmExit && input == "y")
-                        input = "exit";
+                    if (input == null || input == "")
+                        continue;
+
+                    if (confirmExit && input == "y") {
+                        exit = true;
+                        continue;
+                    }
                     else if (confirmExit)
                     {
                         confirmExit = false;
-                        input = null;
+                        continue;
                     }
 
                     switch (input)
@@ -140,10 +153,6 @@ namespace MUnique.OpenMU.Startup
                         case "help":
                             var commandList = "exit, gc";
                             Console.WriteLine($"Commands available: {commandList}");
-                            break;
-                        case null:
-                        case "":
-                            Thread.Sleep(100);
                             break;
                         default:
                             Console.WriteLine("Unknown command");
