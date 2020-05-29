@@ -136,6 +136,11 @@ namespace MUnique.OpenMU.Startup
                             GC.Collect();
                             Console.WriteLine("Garbage Collected!");
                             break;
+                        case "?":
+                        case "help":
+                            var commandList = "exit, gc";
+                            Console.WriteLine($"Commands available: {commandList}");
+                            break;
                         case null:
                         case "":
                             Thread.Sleep(100);
