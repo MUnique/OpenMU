@@ -140,7 +140,7 @@ namespace MUnique.OpenMU.Startup
                     continue;
                 }
 
-                await HandleConsoleInputAsync(exitCts, exitToken);
+                await HandleConsoleInputAsync(exitCts, exitToken).ConfigureAwait(false);
             }
         }
 
