@@ -101,7 +101,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Pack
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AdminPanel", "AdminPanel\MUnique.OpenMU.AdminPanel.csproj", "{401B1520-00B9-468D-9107-EEEF33C0084F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.PublicApi", "PublicApi\MUnique.OpenMU.PublicApi.csproj", "{956BE8E9-2889-472B-9567-8577A34ECE63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.PublicApi", "PublicApi\MUnique.OpenMU.PublicApi.csproj", "{956BE8E9-2889-472B-9567-8577A34ECE63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
