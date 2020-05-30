@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.PublicApi
         public void Shutdown()
         {
             this.host.StopAsync().WaitAndUnwrapException();
-            (this.host as IDisposable).Dispose();
+            this.host.Dispose();
         }
     }
 }

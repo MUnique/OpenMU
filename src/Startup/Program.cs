@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Startup
     using System.Linq;
     using System.Reflection;
     using System.Threading;
+    using System.Threading.Tasks;
     using log4net;
     using log4net.Config;
     using MUnique.OpenMU.AdminPanel;
@@ -35,7 +36,6 @@ namespace MUnique.OpenMU.Startup
     /// </summary>
     internal sealed class Program : IDisposable
     {
-        readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
         private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + typeof(Program).GetTypeInfo().Namespace + ".exe.log4net.xml";
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
         private readonly AdminPanel adminPanel;
@@ -95,23 +95,25 @@ namespace MUnique.OpenMU.Startup
         /// The main method.
         /// </summary>
         /// <param name="args">The command line args.</param>
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
-
-            var exit = false;
+            using var exitCts = new CancellationTokenSource();
+            var exitToken = exitCts.Token;
             var confirmExit = false;
             var isDaemonMode = args.Contains("-daemon");
 
             AppDomain.CurrentDomain.ProcessExit += delegate {
-                exit = true;
-                Console.WriteLine("[KILL]");
+                if (!exitToken.IsCancellationRequested) {
+                    exitCts.Cancel();
+                    Log.Warn("KILL");
+                }
             };
 
             Console.CancelKeyPress += delegate {
                 if (confirmExit) {
-                    exit = true;
+                    exitCts.Cancel();
                     Console.WriteLine("\nBye! Press enter to finish");
                 }
                 else {
@@ -120,53 +122,50 @@ namespace MUnique.OpenMU.Startup
                 }
             };
 
-
-            using (var program = new Program(args))
+            using var program = new Program(args);
+            while (!exitToken.IsCancellationRequested)
             {
-                while (!exit && !program.tokenSource.Token.IsCancellationRequested)
+                await Task.Delay(100).ConfigureAwait(false);
+
+                if (isDaemonMode)
+                    continue;
+
+                var input = (await Console.In.ReadLineAsync(exitToken).ConfigureAwait(false))?.ToLower();
+
+                if (confirmExit)
                 {
-                    Thread.Sleep(100);
-                    var input = "";
-
-                    if (!isDaemonMode)
-                        input = Console.ReadLine()?.ToLower();
-
-                    if (input == null || input == "")
-                        continue;
-
-                    if (confirmExit && input == "y") {
-                        exit = true;
-                        continue;
-                    }
-                    else if (confirmExit)
-                    {
+                    if (input == "y")
+                        exitCts.Cancel();
+                    else
                         confirmExit = false;
-                        continue;
-                    }
+                    continue;
+                }
 
-                    switch (input)
-                    {
-                        case "exit":
-                            exit = true;
-                            break;
-                        case "gc":
-                            GC.Collect();
-                            Console.WriteLine("Garbage Collected!");
-                            break;
-                        case "pid":
-                            var process = Process.GetCurrentProcess();
-                            var pid = process.Id.ToString();
-                            Console.WriteLine($"PID: {pid}");
-                            break;
-                        case "?":
-                        case "help":
-                            var commandList = "exit, gc, pid";
-                            Console.WriteLine($"Commands available: {commandList}");
-                            break;
-                        default:
-                            Console.WriteLine("Unknown command");
-                            break;
-                    }
+                switch (input)
+                {
+                    case "exit":
+                        exitCts.Cancel();
+                        break;
+                    case "gc":
+                        GC.Collect();
+                        Console.WriteLine("Garbage Collected!");
+                        break;
+                    case "pid":
+                        var process = Process.GetCurrentProcess();
+                        var pid = process.Id.ToString();
+                        Console.WriteLine($"PID: {pid}");
+                        break;
+                    case "?":
+                    case "help":
+                        var commandList = "exit, gc, pid";
+                        Console.WriteLine($"Commands available: {commandList}");
+                        break;
+                    case "":
+                    case null:
+                        break;
+                    default:
+                        Console.WriteLine("Unknown command");
+                        break;
                 }
             }
         }
