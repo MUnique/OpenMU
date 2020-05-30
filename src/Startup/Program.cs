@@ -106,12 +106,14 @@ namespace MUnique.OpenMU.Startup
 
             void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
             {
-                if (confirmExit) {
+                if (confirmExit)
+                {
                     exitCts.Cancel();
                     Console.CancelKeyPress -= OnCancelKeyPress;
                     Console.WriteLine("\nBye! Press enter to finish");
                 }
-                else {
+                else
+                {
                     confirmExit = true;
                     Console.Write("\nConfirm shutdown? (y/N) ");
                 }
