@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.AdminPanel
 {
+    using System;
     using System.Collections.Generic;
     using apache.log4net.Extensions.Logging;
     using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ namespace MUnique.OpenMU.AdminPanel
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using Nito.AsyncEx.Synchronous;
     using SixLabors.ImageSharp;
     using SixLabors.Memory;
 
@@ -20,6 +22,8 @@ namespace MUnique.OpenMU.AdminPanel
     /// </summary>
     public sealed class AdminPanel
     {
+        private readonly IHost host;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminPanel" /> class.
         /// </summary>
@@ -34,7 +38,7 @@ namespace MUnique.OpenMU.AdminPanel
 
             // you might need to allow it first with netsh:
             // netsh http add urlacl http://+:1234/ user=[Username]
-            var host = Host.CreateDefaultBuilder()
+            this.host = Host.CreateDefaultBuilder()
                 .ConfigureLogging(configureLogging =>
                 {
                     configureLogging.ClearProviders();
@@ -58,7 +62,23 @@ namespace MUnique.OpenMU.AdminPanel
                     webBuilder.UseUrls($"http://*:{port}");
                 })
                 .Build();
-            host.Start();
+        }
+
+        /// <summary>
+        /// Starts the Server.
+        /// </summary>
+        public void Start()
+        {
+            this.host.Start();
+        }
+
+        /// <summary>
+        /// Stops the Server.
+        /// </summary>
+        public void Shutdown()
+        {
+            this.host.StopAsync().WaitAndUnwrapException();
+            this.host.Dispose();
         }
     }
 }

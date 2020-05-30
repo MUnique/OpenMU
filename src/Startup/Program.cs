@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Startup
     using System.Linq;
     using System.Reflection;
     using System.Threading;
+    using System.Threading.Tasks;
     using log4net;
     using log4net.Config;
     using MUnique.OpenMU.AdminPanel;
@@ -37,7 +38,9 @@ namespace MUnique.OpenMU.Startup
     {
         private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + typeof(Program).GetTypeInfo().Namespace + ".exe.log4net.xml";
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
+        private static bool confirmExit;
         private readonly AdminPanel adminPanel;
+        private readonly ApiHost apiHost;
         private readonly IDictionary<int, IGameServer> gameServers = new Dictionary<int, IGameServer>();
         private readonly IList<IManageableServer> servers = new List<IManageableServer>();
         private readonly IPersistenceContextProvider persistenceContextProvider;
@@ -49,24 +52,168 @@ namespace MUnique.OpenMU.Startup
         /// <param name="args">The command line args.</param>
         public Program(string[] args)
         {
-            if (args.Contains("-demo"))
-            {
-                this.persistenceContextProvider = new InMemoryPersistenceContextProvider();
-                var initialization = new DataInitialization(this.persistenceContextProvider);
-                initialization.CreateInitialData();
-            }
-            else
-            {
-                this.persistenceContextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"));
-            }
+            this.persistenceContextProvider = this.DeterminePersistenceContextProvider(args);
 
             var ipResolver = IpAddressResolverFactory.DetermineIpResolver(args);
 
             Log.Info("Start initializing sub-components");
             var serverConfigListener = new ServerConfigurationChangeListener(this.servers);
             var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
-            var loginServer = new LoginServer();
 
+            this.InitializeGameServers(persistenceContext, ipResolver);
+
+            Log.Info("Start API...");
+            this.apiHost = new ApiHost(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
+            this.apiHost.Start();
+            Log.Info("Started API");
+
+            var adminPort = this.DetermineAdminPort(args);
+            Log.Info($"Start initializing admin panel for port {adminPort}.");
+            this.adminPanel = new AdminPanel(adminPort, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
+            this.adminPanel.Start();
+            Log.Info($"Admin panel initialized, port {adminPort}.");
+
+            if (args.Contains("-autostart"))
+            {
+                foreach (var chatServer in this.servers.OfType<ChatServer>())
+                {
+                    chatServer.Start();
+                }
+
+                foreach (var gameServer in this.gameServers.Values)
+                {
+                    gameServer.Start();
+                }
+
+                foreach (var connectServer in this.servers.OfType<IConnectServer>())
+                {
+                    connectServer.Start();
+                }
+            }
+        }
+
+        /// <summary>
+        /// The main method.
+        /// </summary>
+        /// <param name="args">The command line args.</param>
+        public static async Task Main(string[] args)
+        {
+            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
+            using var exitCts = new CancellationTokenSource();
+            var exitToken = exitCts.Token;
+            var isDaemonMode = args.Contains("-daemon");
+
+            void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+            {
+                if (confirmExit)
+                {
+                    exitCts.Cancel();
+                    Console.CancelKeyPress -= OnCancelKeyPress;
+                    Console.WriteLine("\nBye! Press enter to finish");
+                }
+                else
+                {
+                    confirmExit = true;
+                    Console.Write("\nConfirm shutdown? (y/N) ");
+                }
+            }
+
+            Console.CancelKeyPress += OnCancelKeyPress;
+
+            AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
+            {
+                if (!exitToken.IsCancellationRequested)
+                {
+                    exitCts.Cancel();
+                    Log.Warn("KILL");
+                }
+            };
+
+            using var program = new Program(args);
+            while (!exitToken.IsCancellationRequested)
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+
+                if (isDaemonMode)
+                {
+                    continue;
+                }
+
+                await HandleConsoleInputAsync(exitCts, exitToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            foreach (var server in this.servers)
+            {
+                Log.InfoFormat("Shutting down server {0}", server.Id);
+                server.Shutdown();
+                (server as IDisposable)?.Dispose();
+            }
+
+            this.apiHost.Shutdown();
+            this.adminPanel.Shutdown();
+
+            (this.persistenceContextProvider as IDisposable)?.Dispose();
+        }
+
+        private static async Task HandleConsoleInputAsync(CancellationTokenSource exitCts, CancellationToken exitToken)
+        {
+            Console.Write("> ");
+            var input = (await Console.In.ReadLineAsync(exitToken).ConfigureAwait(false))?.ToLower();
+
+            switch (input)
+            {
+                case "y" when confirmExit:
+                case "exit":
+                    exitCts.Cancel();
+                    break;
+                case "gc":
+                    GC.Collect();
+                    Console.WriteLine("Garbage Collected!");
+                    break;
+                case "pid":
+                    var process = Process.GetCurrentProcess();
+                    var pid = process.Id.ToString();
+                    Console.WriteLine($"PID: {pid}");
+                    break;
+                case "?":
+                case "help":
+                    var commandList = "exit, gc, pid";
+                    Console.WriteLine($"Commands available: {commandList}");
+                    break;
+                case "":
+                case null:
+                    break;
+                default:
+                    Console.WriteLine("Unknown command");
+                    break;
+            }
+
+            if (confirmExit && !string.IsNullOrWhiteSpace(input))
+            {
+                confirmExit = false;
+            }
+        }
+
+        private void LoadGameClientDefinitions(IContext persistenceContext)
+        {
+            ClientVersionResolver.DefaultVersion = new ClientVersion(6, 3, ClientLanguage.English);
+            foreach (var gameClientDefinition in persistenceContext.Get<GameClientDefinition>())
+            {
+                ClientVersionResolver.Register(
+                    gameClientDefinition.Version,
+                    new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
+            }
+        }
+
+        private void InitializeGameServers(IContext persistenceContext, IIpAddressResolver ipResolver)
+        {
+            this.LoadGameClientDefinitions(persistenceContext);
+            var loginServer = new LoginServer();
             var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
             var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), ipResolver, chatServerDefinition.GetId());
             this.servers.Add(chatServer);
@@ -74,11 +221,9 @@ namespace MUnique.OpenMU.Startup
             var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
             var connectServers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
 
-            ClientVersionResolver.DefaultVersion = new ClientVersion(6, 3, ClientLanguage.English);
-            foreach (var gameClientDefinition in persistenceContext.Get<GameClientDefinition>())
-            {
-                ClientVersionResolver.Register(gameClientDefinition.Version, new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
-            }
+            Log.Info("Start initializing game servers");
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
             {
@@ -102,9 +247,6 @@ namespace MUnique.OpenMU.Startup
                 }
             }
 
-            Log.Info("Start initializing game servers");
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
             foreach (var gameServerDefinition in persistenceContext.Get<DataModel.Configuration.GameServerDefinition>())
             {
                 using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
@@ -117,81 +259,12 @@ namespace MUnique.OpenMU.Startup
 
                     this.servers.Add(gameServer);
                     this.gameServers.Add(gameServer.Id, gameServer);
-                    Log.InfoFormat("Game Server {0} - [{1}] initialized", gameServer.Id, gameServer.Description);
+                    Log.InfoFormat($"Game Server {gameServer.Id} - [{gameServer.Description}] initialized");
                 }
             }
 
             stopwatch.Stop();
             Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
-
-            Log.Info("Start API...");
-            ApiHost.RunAsync(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
-            Log.Info("Started API");
-
-            var adminPort = this.DetermineAdminPort(args);
-            Log.Info($"Start initializing admin panel for port {adminPort}.");
-            this.adminPanel = new AdminPanel(adminPort, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
-            Log.Info($"Admin panel initialized, port {adminPort}.");
-
-            if (args.Contains("-autostart"))
-            {
-                chatServer.Start();
-                foreach (var gameServer in this.gameServers.Values)
-                {
-                    gameServer.Start();
-                }
-
-                foreach (var connectServer in this.servers.OfType<IConnectServer>())
-                {
-                    connectServer.Start();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The main method.
-        /// </summary>
-        /// <param name="args">The command line args.</param>
-        public static void Main(string[] args)
-        {
-            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
-
-            using (new Program(args))
-            {
-                bool exit = false;
-                while (!exit)
-                {
-                    switch (Console.ReadLine()?.ToLower())
-                    {
-                        case "exit":
-                            exit = true;
-                            break;
-                        case "gc":
-                            GC.Collect();
-                            break;
-                        case null:
-                            Thread.Sleep(1000);
-                            break;
-                        default:
-                            Console.WriteLine("Unknown command");
-                            break;
-                    }
-                }
-            }
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            foreach (var server in this.servers)
-            {
-                Log.InfoFormat("Shutting down server {0}", server.Id);
-                server.Shutdown();
-                (server as IDisposable)?.Dispose();
-            }
-
-            (this.persistenceContextProvider as IDisposable)?.Dispose();
         }
 
         private ushort DetermineAdminPort(string[] args)
@@ -206,6 +279,23 @@ namespace MUnique.OpenMU.Startup
             }
 
             return 1234; // Default port
+        }
+
+        private IPersistenceContextProvider DeterminePersistenceContextProvider(string[] args)
+        {
+            IPersistenceContextProvider contextProvider;
+            if (args.Contains("-demo"))
+            {
+                contextProvider = new InMemoryPersistenceContextProvider();
+                var initialization = new DataInitialization(contextProvider);
+                initialization.CreateInitialData();
+            }
+            else
+            {
+                contextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"));
+            }
+
+            return contextProvider;
         }
 
         private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, bool autoupdate)

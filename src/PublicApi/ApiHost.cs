@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.PublicApi
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using apache.log4net.Extensions.Logging;
@@ -12,20 +13,35 @@ namespace MUnique.OpenMU.PublicApi
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
+    using Nito.AsyncEx.Synchronous;
 
     /// <summary>
     /// Hosts the public API server.
     /// </summary>
-    public static class ApiHost
+    public class ApiHost
     {
+        private readonly IHost host;
+
         /// <summary>
-        /// Runs the host.
+        /// Initializes a new instance of the <see cref="ApiHost"/> class.
         /// </summary>
         /// <param name="gameServers">The game servers.</param>
         /// <param name="connectServers">The connect servers.</param>
         /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
         /// <returns>The async task.</returns>
-        public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+        public ApiHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+        {
+            this.host = BuildHost(gameServers, connectServers, loggingConfigurationPath);
+        }
+
+        /// <summary>
+        /// Creates the Host instance.
+        /// </summary>
+        /// <param name="gameServers">The game servers.</param>
+        /// <param name="connectServers">The connect servers.</param>
+        /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
+        /// <returns>The created host.</returns>
+        public static IHost BuildHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
         {
             var builder = Host.CreateDefaultBuilder();
             if (!string.IsNullOrEmpty(loggingConfigurationPath))
@@ -51,8 +67,35 @@ namespace MUnique.OpenMU.PublicApi
                         .UseStartup<Startup>()
                         .UseUrls("http://*:80", "https://*:443");
                 })
-                .Build()
-                .RunAsync();
+                .Build();
+        }
+
+        /// <summary>
+        /// Creates and runs a host instance.
+        /// </summary>
+        /// <param name="gameServers">The game servers.</param>
+        /// <param name="connectServers">The connect servers.</param>
+        /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
+        public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+        {
+            return BuildHost(gameServers, connectServers, loggingConfigurationPath).StartAsync();
+        }
+
+        /// <summary>
+        /// Start the host.
+        /// </summary>
+        public void Start()
+        {
+            this.host.Start();
+        }
+
+        /// <summary>
+        /// Stops the host.
+        /// </summary>
+        public void Shutdown()
+        {
+            this.host.StopAsync().WaitAndUnwrapException();
+            this.host.Dispose();
         }
     }
 }
