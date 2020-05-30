@@ -38,6 +38,7 @@ namespace MUnique.OpenMU.Startup
     {
         private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + typeof(Program).GetTypeInfo().Namespace + ".exe.log4net.xml";
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
+        private static bool confirmExit;
         private readonly AdminPanel adminPanel;
         private readonly ApiHost apiHost;
         private readonly IDictionary<int, IGameServer> gameServers = new Dictionary<int, IGameServer>();
@@ -101,7 +102,6 @@ namespace MUnique.OpenMU.Startup
             XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
             using var exitCts = new CancellationTokenSource();
             var exitToken = exitCts.Token;
-            var confirmExit = false;
             var isDaemonMode = args.Contains("-daemon");
 
             void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
@@ -140,49 +140,7 @@ namespace MUnique.OpenMU.Startup
                     continue;
                 }
 
-                Console.Write("> ");
-                var input = (await Console.In.ReadLineAsync(exitToken).ConfigureAwait(false))?.ToLower();
-
-                if (confirmExit)
-                {
-                    if (input == "y")
-                    {
-                        exitCts.Cancel();
-                    }
-                    else
-                    {
-                        confirmExit = false;
-                    }
-
-                    continue;
-                }
-
-                switch (input)
-                {
-                    case "exit":
-                        exitCts.Cancel();
-                        break;
-                    case "gc":
-                        GC.Collect();
-                        Console.WriteLine("Garbage Collected!");
-                        break;
-                    case "pid":
-                        var process = Process.GetCurrentProcess();
-                        var pid = process.Id.ToString();
-                        Console.WriteLine($"PID: {pid}");
-                        break;
-                    case "?":
-                    case "help":
-                        var commandList = "exit, gc, pid";
-                        Console.WriteLine($"Commands available: {commandList}");
-                        break;
-                    case "":
-                    case null:
-                        break;
-                    default:
-                        Console.WriteLine("Unknown command");
-                        break;
-                }
+                await HandleConsoleInputAsync(exitCts, exitToken);
             }
         }
 
@@ -200,6 +158,45 @@ namespace MUnique.OpenMU.Startup
             this.adminPanel.Shutdown();
 
             (this.persistenceContextProvider as IDisposable)?.Dispose();
+        }
+
+        private static async Task HandleConsoleInputAsync(CancellationTokenSource exitCts, CancellationToken exitToken)
+        {
+            Console.Write("> ");
+            var input = (await Console.In.ReadLineAsync(exitToken).ConfigureAwait(false))?.ToLower();
+
+            switch (input)
+            {
+                case "y" when confirmExit:
+                case "exit":
+                    exitCts.Cancel();
+                    break;
+                case "gc":
+                    GC.Collect();
+                    Console.WriteLine("Garbage Collected!");
+                    break;
+                case "pid":
+                    var process = Process.GetCurrentProcess();
+                    var pid = process.Id.ToString();
+                    Console.WriteLine($"PID: {pid}");
+                    break;
+                case "?":
+                case "help":
+                    var commandList = "exit, gc, pid";
+                    Console.WriteLine($"Commands available: {commandList}");
+                    break;
+                case "":
+                case null:
+                    break;
+                default:
+                    Console.WriteLine("Unknown command");
+                    break;
+            }
+
+            if (confirmExit && !string.IsNullOrWhiteSpace(input))
+            {
+                confirmExit = false;
+            }
         }
 
         private void LoadGameClientDefinitions(IContext persistenceContext)
