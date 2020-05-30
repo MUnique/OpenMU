@@ -12,11 +12,14 @@ namespace MUnique.OpenMU.Startup
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using apache.log4net.Extensions.Logging;
     using log4net;
     using log4net.Config;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AdminPanel;
     using MUnique.OpenMU.ChatServer;
-    using MUnique.OpenMU.ConnectServer;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.FriendServer;
     using MUnique.OpenMU.GameServer;
@@ -30,6 +33,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Persistence.Initialization;
     using MUnique.OpenMU.Persistence.InMemory;
     using MUnique.OpenMU.PublicApi;
+    using Nito.AsyncEx.Synchronous;
 
     /// <summary>
     /// The startup class for an all-in-one game server.
@@ -39,39 +43,19 @@ namespace MUnique.OpenMU.Startup
         private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + typeof(Program).GetTypeInfo().Namespace + ".exe.log4net.xml";
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
         private static bool confirmExit;
-        private readonly AdminPanel adminPanel;
-        private readonly ApiHost apiHost;
         private readonly IDictionary<int, IGameServer> gameServers = new Dictionary<int, IGameServer>();
         private readonly IList<IManageableServer> servers = new List<IManageableServer>();
-        private readonly IPersistenceContextProvider persistenceContextProvider;
+
+        private IHost serverHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Program"/> class.
-        /// Constructor for the main entry program.
         /// </summary>
         /// <param name="args">The command line args.</param>
-        public Program(string[] args)
+        public async Task Initialize(string[] args)
         {
-            this.persistenceContextProvider = this.DeterminePersistenceContextProvider(args);
-
-            var ipResolver = IpAddressResolverFactory.DetermineIpResolver(args);
-
-            Log.Info("Start initializing sub-components");
-            var serverConfigListener = new ServerConfigurationChangeListener(this.servers);
-            var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
-
-            this.InitializeGameServers(persistenceContext, ipResolver);
-
-            Log.Info("Start API...");
-            this.apiHost = new ApiHost(this.gameServers.Values, this.servers.OfType<IConnectServer>(), Log4NetConfigFilePath);
-            this.apiHost.Start();
-            Log.Info("Started API");
-
-            var adminPort = this.DetermineAdminPort(args);
-            Log.Info($"Start initializing admin panel for port {adminPort}.");
-            this.adminPanel = new AdminPanel(adminPort, this.servers, this.persistenceContextProvider, serverConfigListener, Log4NetConfigFilePath);
-            this.adminPanel.Start();
-            Log.Info($"Admin panel initialized, port {adminPort}.");
+            Log.Info("Creating host...");
+            this.serverHost = await this.CreateHost(args);
 
             if (args.Contains("-autostart"))
             {
@@ -130,7 +114,8 @@ namespace MUnique.OpenMU.Startup
                 }
             };
 
-            using var program = new Program(args);
+            using var program = new Program();
+            await program.Initialize(args);
             while (!exitToken.IsCancellationRequested)
             {
                 await Task.Delay(100).ConfigureAwait(false);
@@ -147,17 +132,8 @@ namespace MUnique.OpenMU.Startup
         /// <inheritdoc/>
         public void Dispose()
         {
-            foreach (var server in this.servers)
-            {
-                Log.InfoFormat("Shutting down server {0}", server.Id);
-                server.Shutdown();
-                (server as IDisposable)?.Dispose();
-            }
-
-            this.apiHost.Shutdown();
-            this.adminPanel.Shutdown();
-
-            (this.persistenceContextProvider as IDisposable)?.Dispose();
+            this.serverHost.StopAsync().WaitAndUnwrapException();
+            this.serverHost.Dispose();
         }
 
         private static async Task HandleConsoleInputAsync(CancellationTokenSource exitCts, CancellationToken exitToken)
@@ -210,61 +186,52 @@ namespace MUnique.OpenMU.Startup
             }
         }
 
-        private void InitializeGameServers(IContext persistenceContext, IIpAddressResolver ipResolver)
+        private async Task<IHost> CreateHost(string[] args)
         {
+            var persistenceContextProvider = this.DeterminePersistenceContextProvider(args);
+            var persistenceContext = persistenceContextProvider.CreateNewConfigurationContext();
             this.LoadGameClientDefinitions(persistenceContext);
-            var loginServer = new LoginServer();
             var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
-            var chatServer = new ChatServer(chatServerDefinition.ConvertToSettings(), ipResolver, chatServerDefinition.GetId());
-            this.servers.Add(chatServer);
-            var guildServer = new GuildServer(this.gameServers, this.persistenceContextProvider);
-            var friendServer = new FriendServer(this.gameServers, chatServer, this.persistenceContextProvider);
-            var connectServers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
 
-            Log.Info("Start initializing game servers");
-            Stopwatch stopwatch = new Stopwatch();
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureLogging(configureLogging =>
+                {
+                    configureLogging.ClearProviders();
+                    var settings = new Log4NetSettings { ConfigFile = Log4NetConfigFilePath, Watch = true };
+                    configureLogging.AddLog4Net(settings);
+                })
+                .ConfigureServices(c =>
+                    c.AddSingleton(this.servers)
+                    .AddSingleton(chatServerDefinition)
+                    .AddSingleton(chatServerDefinition.ConvertToSettings())
+                    .AddSingleton(IpAddressResolverFactory.DetermineIpResolver(args))
+                    .AddSingleton(this.gameServers)
+                    .AddSingleton(this.gameServers.Values)
+                    .AddSingleton(persistenceContextProvider)
+                    .AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
+                    .AddSingleton<ILoginServer, LoginServer>()
+                    .AddSingleton<IGuildServer, GuildServer>()
+                    .AddSingleton<IFriendServer, FriendServer>()
+                    .AddSingleton<IChatServer, ChatServer>()
+                    .AddSingleton<ConnectServerContainer>()
+                    .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>())
+                    .AddSingleton<GameServerContainer>()
+                    .AddHostedService(provider => provider.GetService<IChatServer>())
+                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>())
+                    .AddHostedService(provider => provider.GetService<GameServerContainer>())
+                    .AddHostedService<AdminPanel>()
+                        .AddSingleton(new AdminPanelSettings(this.DetermineAdminPort(args)))
+                    .AddHostedService<ApiHost>())
+                .Build();
+            Log.Info("Host created");
+            this.servers.Add(host.Services.GetService<IChatServer>());
+            Log.Info("Starting host...");
+            var stopwatch = new Stopwatch();
             stopwatch.Start();
-
-            foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
-            {
-                var clientVersion = new ClientVersion(connectServerDefinition.Client.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
-                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
-                this.servers.Add(connectServer);
-                if (!connectServers.TryGetValue(connectServerDefinition.Client, out var observer))
-                {
-                    connectServers[connectServerDefinition.Client] = connectServer;
-                }
-                else
-                {
-                    Log.WarnFormat($"Multiple connect servers for game client '{connectServerDefinition.Client.Description}' configured. Only one per client makes sense.");
-                    if (!(observer is MulticastConnectionServerStateObserver))
-                    {
-                        var multicastObserver = new MulticastConnectionServerStateObserver();
-                        multicastObserver.AddObserver(observer);
-                        multicastObserver.AddObserver(connectServer);
-                        connectServers[connectServerDefinition.Client] = multicastObserver;
-                    }
-                }
-            }
-
-            foreach (var gameServerDefinition in persistenceContext.Get<DataModel.Configuration.GameServerDefinition>())
-            {
-                using (ThreadContext.Stacks["gameserver"].Push(gameServerDefinition.ServerID.ToString()))
-                {
-                    var gameServer = new GameServer(gameServerDefinition, guildServer, loginServer, this.persistenceContextProvider, friendServer);
-                    foreach (var endpoint in gameServerDefinition.Endpoints)
-                    {
-                        gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, connectServers[endpoint.Client], ipResolver));
-                    }
-
-                    this.servers.Add(gameServer);
-                    this.gameServers.Add(gameServer.Id, gameServer);
-                    Log.InfoFormat($"Game Server {gameServer.Id} - [{gameServer.Description}] initialized");
-                }
-            }
-
+            await host.StartAsync(default);
             stopwatch.Stop();
-            Log.Info($"All game servers initialized, elapsed time: {stopwatch.Elapsed}");
+            Log.Info($"Host started, elapsed time: {stopwatch.Elapsed}");
+            return host;
         }
 
         private ushort DetermineAdminPort(string[] args)

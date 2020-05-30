@@ -6,11 +6,12 @@ namespace MUnique.OpenMU.Interfaces
 {
     using System;
     using System.ComponentModel;
+    using Microsoft.Extensions.Hosting;
 
     /// <summary>
     /// General interface for a server which provides some information and functions to manage it from outside.
     /// </summary>
-    public interface IManageableServer : INotifyPropertyChanged
+    public interface IManageableServer : INotifyPropertyChanged, IHostedService
     {
         /// <summary>
         /// Gets the identifier of the server.

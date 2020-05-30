@@ -10,12 +10,15 @@ namespace MUnique.OpenMU.ChatServer
     using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Security.Cryptography;
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Timers;
     using log4net;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
+    using Timer = System.Timers.Timer;
 
     /// <summary>
     /// Chat Server Listener, accepts incoming connections.
@@ -49,12 +52,10 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
-        /// <param name="configurationId">The configuration identifier.</param>
-        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver, Guid configurationId)
+        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver)
         {
             this.settings = settings;
             this.addressResolver = addressResolver;
-            this.ConfigurationId = configurationId;
             this.manager = new ChatRoomManager();
             this.randomNumberGenerator = RandomNumberGenerator.Create();
             this.clientCleanupTimer = new Timer(this.settings.ClientCleanUpInterval.TotalMilliseconds);
@@ -84,7 +85,7 @@ namespace MUnique.OpenMU.ChatServer
         public int Id => this.settings.ServerId;
 
         /// <inheritdoc />
-        public Guid ConfigurationId { get; }
+        public Guid ConfigurationId => this.settings.Id;
 
         /// <inheritdoc />
         public ServerType Type => ServerType.ChatServer;
@@ -132,11 +133,30 @@ namespace MUnique.OpenMU.ChatServer
             return this.manager.CreateChatRoom();
         }
 
+        /// <inheritdoc />
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            // this.Start();
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            this.Shutdown();
+            return Task.CompletedTask;
+        }
+
         /// <summary>
         /// Starts the listener of this chat server instance.
         /// </summary>
         public void Start()
         {
+            if (this.ServerState != ServerState.Stopped)
+            {
+                return;
+            }
+
             Log.Info("Begin starting");
             var oldState = this.ServerState;
             this.ServerState = OpenMU.Interfaces.ServerState.Starting;
@@ -163,6 +183,11 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public void Shutdown()
         {
+            if (this.ServerState != ServerState.Started)
+            {
+                return;
+            }
+
             Log.Info("Begin shutdown");
             this.ServerState = OpenMU.Interfaces.ServerState.Stopping;
             this.clientCleanupTimer.Stop();

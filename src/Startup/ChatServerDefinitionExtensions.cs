@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network.PlugIns;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Extensions for <see cref="ChatServerDefinition"/>.
@@ -22,6 +23,7 @@ namespace MUnique.OpenMU.Startup
         public static ChatServerSettings ConvertToSettings(this ChatServerDefinition definition)
         {
             var result = new ChatServerSettings();
+            result.Id = definition.GetId();
             result.MaximumConnections = definition.MaximumConnections;
             result.ClientTimeout = definition.ClientTimeout;
             result.ClientCleanUpInterval = definition.ClientCleanUpInterval;

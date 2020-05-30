@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.PublicApi
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using apache.log4net.Extensions.Logging;
     using Microsoft.AspNetCore.Hosting;
@@ -13,25 +14,31 @@ namespace MUnique.OpenMU.PublicApi
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
-    using Nito.AsyncEx.Synchronous;
 
     /// <summary>
     /// Hosts the public API server.
     /// </summary>
-    public class ApiHost
+    public class ApiHost : IHostedService, IDisposable
     {
-        private readonly IHost host;
+        private readonly ICollection<IGameServer> gameServers;
+        private readonly IEnumerable<IConnectServer> connectServers;
+        private readonly ILoggerFactory loggerFactory;
+        private readonly ILogger<ApiHost> logger;
+        private IHost? host;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiHost"/> class.
+        /// Initializes a new instance of the <see cref="ApiHost" /> class.
         /// </summary>
         /// <param name="gameServers">The game servers.</param>
         /// <param name="connectServers">The connect servers.</param>
-        /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         /// <returns>The async task.</returns>
-        public ApiHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+        public ApiHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, ILoggerFactory loggerFactory)
         {
-            this.host = BuildHost(gameServers, connectServers, loggingConfigurationPath);
+            this.gameServers = gameServers;
+            this.connectServers = connectServers;
+            this.loggerFactory = loggerFactory;
+            this.logger = this.loggerFactory.CreateLogger<ApiHost>();
         }
 
         /// <summary>
@@ -39,14 +46,17 @@ namespace MUnique.OpenMU.PublicApi
         /// </summary>
         /// <param name="gameServers">The game servers.</param>
         /// <param name="connectServers">The connect servers.</param>
-        /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
-        /// <returns>The created host.</returns>
-        public static IHost BuildHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="loggingConfigurationPath">The logging configuration path.</param>
+        /// <returns>
+        /// The created host.
+        /// </returns>
+        public static IHost BuildHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, ILoggerFactory loggerFactory, string? loggingConfigurationPath)
         {
             var builder = Host.CreateDefaultBuilder();
             if (!string.IsNullOrEmpty(loggingConfigurationPath))
             {
-                builder = builder.ConfigureLogging(configureLogging =>
+                builder.ConfigureLogging(configureLogging =>
                 {
                     configureLogging.ClearProviders();
                     var settings = new Log4NetSettings { ConfigFile = loggingConfigurationPath, Watch = true };
@@ -58,8 +68,13 @@ namespace MUnique.OpenMU.PublicApi
             return builder
                 .ConfigureServices(s =>
                 {
-                    s.Add(new ServiceDescriptor(typeof(ICollection<IGameServer>), gameServers));
-                    s.Add(new ServiceDescriptor(typeof(IEnumerable<IConnectServer>), connectServers));
+                    if (loggerFactory != null)
+                    {
+                        s.AddSingleton(loggerFactory);
+                    }
+
+                    s.AddSingleton(gameServers);
+                    s.AddSingleton(connectServers);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -78,24 +93,29 @@ namespace MUnique.OpenMU.PublicApi
         /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
         public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
         {
-            return BuildHost(gameServers, connectServers, loggingConfigurationPath).StartAsync();
+            return BuildHost(gameServers, connectServers, null, loggingConfigurationPath).StartAsync();
         }
 
-        /// <summary>
-        /// Start the host.
-        /// </summary>
-        public void Start()
+        /// <inheritdoc />
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            this.host.Start();
+            this.host = BuildHost(this.gameServers, this.connectServers, this.loggerFactory, null);
+            this.logger.LogInformation("Starting API...");
+            await this.host.StartAsync(cancellationToken);
+            this.logger.LogInformation("Started API");
         }
 
-        /// <summary>
-        /// Stops the host.
-        /// </summary>
-        public void Shutdown()
+        /// <inheritdoc />
+        public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.host.StopAsync().WaitAndUnwrapException();
-            this.host.Dispose();
+            this.logger.LogInformation("Stopping API...");
+            return this.host?.StopAsync(cancellationToken) ?? Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this.host?.Dispose();
         }
     }
 }

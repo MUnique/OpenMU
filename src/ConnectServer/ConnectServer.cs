@@ -10,6 +10,8 @@ namespace MUnique.OpenMU.ConnectServer
     using System.Linq;
     using System.Net;
     using System.Runtime.CompilerServices;
+    using System.Threading;
+    using System.Threading.Tasks;
     using log4net;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network.PlugIns;
@@ -103,6 +105,20 @@ namespace MUnique.OpenMU.ConnectServer
 
         /// <inheritdoc />
         public ICollection<(ushort, IPEndPoint)> GameServerEndPoints => this.ServerList.Servers.Select(s => (s.ServerId, s.EndPoint)).ToList();
+
+        /// <inheritdoc />
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            // this.Start();
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            this.Shutdown();
+            return Task.CompletedTask;
+        }
 
         /// <inheritdoc/>
         public void Start()

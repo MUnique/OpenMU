@@ -14,6 +14,11 @@ namespace MUnique.OpenMU.ChatServer
     public class ChatServerSettings
     {
         /// <summary>
+        /// Gets or sets the identifier for this configuration.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
         /// Gets or sets the server identifier.
         /// </summary>
         public int ServerId { get; set; } = SpecialServerIds.ChatServer;

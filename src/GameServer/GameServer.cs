@@ -9,6 +9,8 @@ namespace MUnique.OpenMU.GameServer
     using System.ComponentModel;
     using System.Linq;
     using System.Runtime.CompilerServices;
+    using System.Threading;
+    using System.Threading.Tasks;
     using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
@@ -125,6 +127,20 @@ namespace MUnique.OpenMU.GameServer
         {
             this.listeners.Add(listener);
             listener.PlayerConnected += this.OnPlayerConnected;
+        }
+
+        /// <inheritdoc />
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            // this.Start();
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            this.Shutdown();
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
