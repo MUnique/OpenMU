@@ -119,8 +119,10 @@ namespace MUnique.OpenMU.Startup
 
             Console.CancelKeyPress += OnCancelKeyPress;
 
-            AppDomain.CurrentDomain.ProcessExit += delegate {
-                if (!exitToken.IsCancellationRequested) {
+            AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
+            {
+                if (!exitToken.IsCancellationRequested)
+                {
                     exitCts.Cancel();
                     Log.Warn("KILL");
                 }
@@ -132,7 +134,9 @@ namespace MUnique.OpenMU.Startup
                 await Task.Delay(100).ConfigureAwait(false);
 
                 if (isDaemonMode)
+                {
                     continue;
+                }
 
                 Console.Write("> ");
                 var input = (await Console.In.ReadLineAsync(exitToken).ConfigureAwait(false))?.ToLower();
@@ -140,9 +144,14 @@ namespace MUnique.OpenMU.Startup
                 if (confirmExit)
                 {
                     if (input == "y")
+                    {
                         exitCts.Cancel();
+                    }
                     else
+                    {
                         confirmExit = false;
+                    }
+
                     continue;
                 }
 
