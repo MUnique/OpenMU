@@ -9,14 +9,13 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     using System.Globalization;
     using System.Reflection;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Forms;
     using Microsoft.AspNetCore.Components.Rendering;
 
     /// <summary>
     /// A dropdown selection component for enum values of <typeparamref name="TValue" />.
     /// </summary>
     /// <typeparam name="TValue">The type of the enum.</typeparam>
-    public class EnumSelect<TValue> : InputBase<TValue>
+    public class EnumSelect<TValue> : NotifyableInputBase<TValue>
     {
         /// <inheritdoc />
         protected override void BuildRenderTree(RenderTreeBuilder builder)

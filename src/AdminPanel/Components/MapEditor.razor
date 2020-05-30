@@ -1,12 +1,16 @@
 ﻿@using System.Text
 @using System.Globalization
 @using MUnique.OpenMU.AdminPanel.Interop
+@using MUnique.OpenMU.AdminPanel.Services
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.GameLogic
 @using MUnique.OpenMU.Persistence
 @using SixLabors.ImageSharp
 @using SixLabors.ImageSharp.Formats.Png
 @using SixLabors.ImageSharp.PixelFormats
+@using System.ComponentModel
+
+@implements IDisposable
 
 <h3>@this.Map.Name</h3>
 
@@ -133,11 +137,38 @@
     [Inject]
     public IJSRuntime JsRuntime { get; set; }
 
+    /// <summary>
+    /// Gets or sets the change notification service.
+    /// </summary>
+    [Inject]
+    public IChangeNotificationService NotificationService { get; set; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.NotificationService.PropertyChanged -= this.OnPropertyChanged;
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.NotificationService.PropertyChanged += this.OnPropertyChanged;
+    }
+
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
         this.terrainImage = new GameMapTerrain(this.Map).ToImage();
+    }
+
+    private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+    {
+        if (sender == this.focusedObject)
+        {
+            this.StateHasChanged();
+        }
     }
 
     private string GetSpawnClass(MonsterSpawnArea spawn)
@@ -235,6 +266,8 @@
                 focusedSpawnArea.Y1 = args.Y;
                 break;
         }
+
+        this.NotificationService.NotifyChange(focusedSpawnArea, null);
     }
 
     private void OnGateResizing((byte X, byte Y, Resizers.ResizerPosition resizerPosition) args)
@@ -259,6 +292,8 @@
                 focusedGate.Y1 = args.Y;
                 break;
         }
+
+        this.NotificationService.NotifyChange(focusedGate, null);
     }
 
     private string GetFocusedRotation()

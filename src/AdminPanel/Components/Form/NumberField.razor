@@ -1,5 +1,5 @@
 ﻿@typeparam TNumber
-@inherits InputNumber<TNumber>
+@inherits NotifyableInputBase<TNumber>
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
@@ -13,4 +13,10 @@
     /// </summary>
     [Parameter]
     public string Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string value, out TNumber result, out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
 }

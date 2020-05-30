@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
 {
     using System.Reflection;
     using Microsoft.AspNetCore.Components.Rendering;
+    using MUnique.OpenMU.AdminPanel.Services;
 
     /// <summary>
     /// Interface for a component builder for a specific property.
@@ -29,6 +30,6 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
         /// <param name="treeBuilder">The tree builder.</param>
         /// <param name="currentIndex">The current index in the render tree.</param>
         /// <returns>The updated index in the render tree.</returns>
-        int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex);
+        int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService);
     }
 }

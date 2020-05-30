@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
     using System.Reflection;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Rendering;
+    using MUnique.OpenMU.AdminPanel.Services;
 
     /// <summary>
     /// Base class for component builders which offers some generic functions to create generic components.
@@ -30,15 +31,16 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
         /// <param name="builder">The builder.</param>
         /// <param name="propertyInfo">The property information.</param>
         /// <param name="currentIndex">The current index in the render tree.</param>
+        /// <param name="notificationService">The notification service.</param>
         /// <returns>The updated index in the render tree.</returns>
-        protected int BuildGenericField(object model, Type genericBaseComponentType, RenderTreeBuilder builder, PropertyInfo propertyInfo, int currentIndex)
+        protected int BuildGenericField(object model, Type genericBaseComponentType, RenderTreeBuilder builder, PropertyInfo propertyInfo, int currentIndex, IChangeNotificationService notificationService)
         {
             var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(m => m.Name == nameof(this.BuildField))
                 .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 1)
                 .MakeGenericMethod(propertyInfo.PropertyType);
             var componentType = genericBaseComponentType.MakeGenericType(propertyInfo.PropertyType);
-            var parameters = new[] { model, componentType, propertyInfo, builder, currentIndex };
+            var parameters = new[] { model, componentType, propertyInfo, builder, currentIndex, notificationService };
             return (int)method.Invoke(this, parameters);
         }
 
@@ -51,10 +53,11 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
         /// <param name="propertyInfo">The property information.</param>
         /// <param name="builder">The builder.</param>
         /// <param name="currentIndex">The current index in the render tree.</param>
+        /// <param name="notificationService">The notification service.</param>
         /// <returns>The updated index in the render tree.</returns>
-        protected int BuildField<TValue, TComponent>(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex)
+        protected int BuildField<TValue, TComponent>(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
         {
-            return this.BuildField<TValue>(model, typeof(TComponent), propertyInfo, builder, currentIndex);
+            return this.BuildField<TValue>(model, typeof(TComponent), propertyInfo, builder, currentIndex, notificationService);
         }
 
         /// <summary>
@@ -66,8 +69,9 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
         /// <param name="propertyInfo">The property information.</param>
         /// <param name="builder">The builder.</param>
         /// <param name="currentIndex">The current index in the render tree.</param>
+        /// <param name="notificationService">The notification service.</param>
         /// <returns>The updated index in the render tree.</returns>
-        protected int BuildField<TValue>(object model, Type componentType, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex)
+        protected int BuildField<TValue>(object model, Type componentType, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
         {
             builder.OpenComponent(currentIndex++, componentType);
             try
@@ -81,6 +85,7 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
                         if (propertyInfo.SetMethod is { })
                         {
                             propertyInfo.SetValue(model, value);
+                            notificationService.NotifyChange(model, propertyInfo.Name);
                         }
                     })));
             }

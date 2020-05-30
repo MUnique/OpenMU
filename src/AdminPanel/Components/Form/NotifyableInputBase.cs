@@ -1,0 +1,62 @@
+﻿// <copyright file="NotifyableInputBase.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.AdminPanel.Components.Form
+{
+    using System;
+    using System.ComponentModel;
+    using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Forms;
+    using MUnique.OpenMU.AdminPanel.Services;
+
+    /// <summary>
+    /// An abstract base class which updates it's current value when
+    /// <see cref="IChangeNotificationService.PropertyChanged"/> is fired for the bound property.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    public abstract class NotifyableInputBase<TValue> : InputBase<TValue>
+    {
+        private Func<TValue> getter;
+
+        /// <summary>
+        /// Gets or sets the notification service.
+        /// </summary>
+        /// <value>
+        /// The notification service.
+        /// </value>
+        [Inject]
+        public IChangeNotificationService NotificationService { get; set; }
+
+        /// <inheritdoc />
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            this.NotificationService.PropertyChanged += this.OnPropertyChanged;
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            this.NotificationService.PropertyChanged -= this.OnPropertyChanged;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (sender != this.EditContext.Model)
+            {
+                return;
+            }
+
+            if (args.PropertyName != null && args.PropertyName != this.FieldIdentifier.FieldName)
+            {
+                return;
+            }
+
+            this.getter ??= this.ValueExpression.Compile();
+            this.CurrentValue = this.getter();
+            this.StateHasChanged();
+        }
+    }
+}

@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     using Microsoft.AspNetCore.Components.Forms;
     using Microsoft.AspNetCore.Components.Rendering;
     using MUnique.OpenMU.AdminPanel.ComponentBuilders;
+    using MUnique.OpenMU.AdminPanel.Services;
     using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
@@ -58,6 +59,15 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         [CascadingParameter]
         public EditContext Context { get; set; }
 
+        /// <summary>
+        /// Gets or sets the notification service.
+        /// </summary>
+        /// <value>
+        /// The notification service.
+        /// </value>
+        [Inject]
+        public IChangeNotificationService NotificationService { get; set; }
+
         /// <inheritdoc />
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
@@ -70,7 +80,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
                     componentBuilder = Builders.FirstOrDefault(b => b.CanBuildComponent(propertyInfo));
                     if (componentBuilder != null)
                     {
-                        i = componentBuilder.BuildComponent(this.Context.Model, propertyInfo, builder, i);
+                        i = componentBuilder.BuildComponent(this.Context.Model, propertyInfo, builder, i, this.NotificationService);
                     }
                 }
                 catch (Exception ex)

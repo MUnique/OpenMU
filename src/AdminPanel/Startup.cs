@@ -72,6 +72,8 @@ namespace MUnique.OpenMU.AdminPanel
             services.AddScoped<IMapFactory, JavascriptMapFactory>();
             services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
 
+            services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
+
             services.AddScoped(provider =>
             {
                 var contextProvider = provider.GetService<IPersistenceContextProvider>();
