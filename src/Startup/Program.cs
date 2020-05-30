@@ -134,6 +134,7 @@ namespace MUnique.OpenMU.Startup
                 if (isDaemonMode)
                     continue;
 
+                Console.Write("> ");
                 var input = (await Console.In.ReadLineAsync(exitToken).ConfigureAwait(false))?.ToLower();
 
                 if (confirmExit)
