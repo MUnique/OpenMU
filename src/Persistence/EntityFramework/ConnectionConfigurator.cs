@@ -137,29 +137,27 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             var result = new Dictionary<Type, ConnectionSetting>();
 
             var configurationFilePath = Path.Combine(Path.GetDirectoryName(new Uri(typeof(ConnectionConfigurator).Assembly.CodeBase).LocalPath), "ConnectionSettings.xml");
-            using (var xmlReader = XmlReader.Create(File.OpenRead(configurationFilePath), settings))
+            using var xmlReader = XmlReader.Create(File.OpenRead(configurationFilePath), settings);
+            var serializer = new XmlSerializer(typeof(ConnectionSettings));
+            if (serializer.CanDeserialize(xmlReader))
             {
-                var serializer = new XmlSerializer(typeof(ConnectionSettings));
-                if (serializer.CanDeserialize(xmlReader))
+                if (serializer.Deserialize(xmlReader) is ConnectionSettings xmlSettings)
                 {
-                    if (serializer.Deserialize(xmlReader) is ConnectionSettings xmlSettings)
+                    foreach (var setting in xmlSettings.Connections)
                     {
-                        foreach (var setting in xmlSettings.Connections)
+                        if (Type.GetType(setting.ContextTypeName, false, true) is { } contextType)
                         {
-                            if (Type.GetType(setting.ContextTypeName, false, true) is { } contextType)
-                            {
-                                ApplyEnvironmentVariables(setting);
-                                result.Add(contextType, setting);
-                            }
-                            else if (setting.ContextTypeName.EndsWith($".{nameof(TypedContext<object>)}"))
-                            {
-                                ApplyEnvironmentVariables(setting);
-                                result.Add(typeof(TypedContext<>), setting);
-                            }
-                            else
-                            {
-                                log4net.LogManager.GetLogger(typeof(ConnectionConfigurator)).Error($"Unknown context type: {setting.ContextTypeName}");
-                            }
+                            ApplyEnvironmentVariables(setting);
+                            result.Add(contextType, setting);
+                        }
+                        else if (setting.ContextTypeName.EndsWith($".{nameof(TypedContext<object>)}"))
+                        {
+                            ApplyEnvironmentVariables(setting);
+                            result.Add(typeof(TypedContext<>), setting);
+                        }
+                        else
+                        {
+                            log4net.LogManager.GetLogger(typeof(ConnectionConfigurator)).Error($"Unknown context type: {setting.ContextTypeName}");
                         }
                     }
                 }
