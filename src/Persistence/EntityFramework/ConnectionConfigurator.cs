@@ -146,10 +146,20 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     {
                         foreach (var setting in xmlSettings.Connections)
                         {
-                            Type contextType = Type.GetType(setting.ContextTypeName, true, true);
-                            ApplyEnvironmentVariables(setting);
-
-                            result.Add(contextType, setting);
+                            if (Type.GetType(setting.ContextTypeName, false, true) is { } contextType)
+                            {
+                                ApplyEnvironmentVariables(setting);
+                                result.Add(contextType, setting);
+                            }
+                            else if (setting.ContextTypeName.EndsWith($".{nameof(TypedContext<object>)}"))
+                            {
+                                ApplyEnvironmentVariables(setting);
+                                result.Add(typeof(TypedContext<>), setting);
+                            }
+                            else
+                            {
+                                log4net.LogManager.GetLogger(typeof(ConnectionConfigurator)).Error($"Unknown context type: {setting.ContextTypeName}");
+                            }
                         }
                     }
                 }
