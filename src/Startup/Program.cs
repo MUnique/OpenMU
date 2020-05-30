@@ -104,21 +104,25 @@ namespace MUnique.OpenMU.Startup
             var confirmExit = false;
             var isDaemonMode = args.Contains("-daemon");
 
-            AppDomain.CurrentDomain.ProcessExit += delegate {
-                if (!exitToken.IsCancellationRequested) {
-                    exitCts.Cancel();
-                    Log.Warn("KILL");
-                }
-            };
-
-            Console.CancelKeyPress += delegate {
+            void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+            {
                 if (confirmExit) {
                     exitCts.Cancel();
+                    Console.CancelKeyPress -= OnCancelKeyPress;
                     Console.WriteLine("\nBye! Press enter to finish");
                 }
                 else {
                     confirmExit = true;
                     Console.Write("\nConfirm shutdown? (y/N) ");
+                }
+            }
+
+            Console.CancelKeyPress += OnCancelKeyPress;
+
+            AppDomain.CurrentDomain.ProcessExit += delegate {
+                if (!exitToken.IsCancellationRequested) {
+                    exitCts.Cancel();
+                    Log.Warn("KILL");
                 }
             };
 
