@@ -1,9 +1,9 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 # Requirements for the typescript compiler
-RUN apt-get update
-RUN apt-get install npm -y
-RUN npm i -g typescript
+RUN apt-get update && \
+  apt-get install npm -y && \
+  npm i -g typescript
 
 COPY src/ ./app/src
 
