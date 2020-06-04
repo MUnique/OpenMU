@@ -14,16 +14,29 @@ This guide describes two ways of starting the server. Use Docker, if you just wa
 
 This guide assumes you know how to use docker in general and have docker installed (e.g. by using Docker Desktop on Windows).
 
-### Generates certificate (Linux)
+### Generates certificate
+The project needs a certificate to run the public API.
+  * How to create one depends on your host OS, see below.
+  * `{ password here }` must be replaced with your certificate password.
+  * It needs to be run once on the host. If you forgot your password, you can run it again.
+
+#### Linux
 
 Build shell commands and run:
 
 ```bash
 source dev.sh
-generate_certificate <your_password>
+generate_certificate { password here }
 ```
 
-`<your_password>` must be replaced by your certificate password. After generate certificate, is needed export `CERTIFICATE_PASSWORD` variable for docker-compose to use.
+The script generates the certificate on a dedicated docker container and exports the environment variable `CERTIFICATE_PASSWORD` which can be used at docker-compose.
+
+#### Windows
+```cmd
+dotnet dev-certs https -ep %USERPROFILE%\.aspnet\https\aspnetapp.pfx -p { password here }
+dotnet dev-certs https --trust
+setx CERTIFICATE_PASSWORD "{ password here }"
+```
 
 ### Demo Mode
 If you just want to play around with the server, you can find the newest docker image on the Docker Hub:
@@ -52,7 +65,7 @@ It's possible to define additional environment variables to influence the postgr
 | DB_HOST | The hostname of the database. If the local configuration file is still configured to use 'localhost', the value of this variable replaces it |
 | DB_ADMIN_USER | The user name of the postgres admin account. If the local configuration file is still configured to use 'postgres' for the user name of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
 | DB_ADMIN_PW | The user name of the postgres admin account. If the local configuration file is still configured to use 'admin' for the user password of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
-| ASPNETCORE_Kestrel__Certificates__Default__Password | The ASP NET application certificate password. The CERTIFICATE_PASSWORD must be exported |
+| ASPNETCORE_Kestrel__Certificates__Default__Password | The ASP NET application certificate password. When docker-compose-dev is used, the environment variable CERTIFICATE_PASSWORD must be exported/set on the host system instead. |
 
 ## Manually
 
