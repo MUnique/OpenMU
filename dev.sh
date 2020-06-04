@@ -5,8 +5,7 @@ function generate_certificates {
     sh -c "dotnet dev-certs https --clean && dotnet dev-certs https -ep /certificates/aspnetapp.pfx -p ${1}"
 
   if [ $? == 0 ]; then
-    echo ""
-    echo "Run:"
-    echo "  export CERTIFICATE_PASSWORD=${1}"
+    export CERTIFICATE_PASSWORD=${1}
+    echo "success"
   fi
 }
