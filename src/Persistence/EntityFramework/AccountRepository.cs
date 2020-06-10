@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             {
                 var objectLoader = new AccountJsonObjectLoader();
                 var account = objectLoader.LoadObject<Account>(id, context.Context);
-                if (account != null && context.Context.Entry(account) == null)
+                if (account != null && !(context.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))
                 {
                     context.Context.Attach(account);
                 }
