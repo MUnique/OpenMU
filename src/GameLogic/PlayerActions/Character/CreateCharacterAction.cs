@@ -93,6 +93,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             character.Inventory = player.PersistenceContext.CreateNew<ItemStorage>();
             account.Characters.Add(character);
             player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(player, character);
+            player.PersistenceContext.SaveChanges();
             Log.Debug("Creating Character Complete.");
             return character;
         }
