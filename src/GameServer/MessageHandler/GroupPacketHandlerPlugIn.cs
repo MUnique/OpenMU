@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
     using System.Reflection;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.PlugIns;
 
@@ -16,12 +17,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     internal abstract class GroupPacketHandlerPlugIn : PacketHandlerPlugInContainer<ISubPacketHandlerPlugIn>, IPacketHandlerPlugIn
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GroupPacketHandlerPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="GroupPacketHandlerPlugIn" /> class.
         /// </summary>
         /// <param name="clientVersionProvider">The client version provider.</param>
         /// <param name="manager">The manager.</param>
-        protected GroupPacketHandlerPlugIn(IClientVersionProvider clientVersionProvider, PlugInManager manager)
-            : base(clientVersionProvider, manager)
+        /// <param name="loggerFactory">The logger factory.</param>
+        protected GroupPacketHandlerPlugIn(IClientVersionProvider clientVersionProvider, PlugInManager manager, ILoggerFactory loggerFactory)
+            : base(clientVersionProvider, manager, loggerFactory)
         {
         }
 

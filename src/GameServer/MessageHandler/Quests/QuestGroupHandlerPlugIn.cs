@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
 {
     using System.Runtime.InteropServices;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -20,12 +21,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
         internal const byte GroupKey = 0xF6;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuestGroupHandlerPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="QuestGroupHandlerPlugIn" /> class.
         /// </summary>
         /// <param name="clientVersionProvider">The client version provider.</param>
         /// <param name="manager">The manager.</param>
-        public QuestGroupHandlerPlugIn(IClientVersionProvider clientVersionProvider, PlugInManager manager)
-            : base(clientVersionProvider, manager)
+        /// <param name="loggerFactory">The logger.</param>
+        public QuestGroupHandlerPlugIn(IClientVersionProvider clientVersionProvider, PlugInManager manager, ILoggerFactory loggerFactory)
+            : base(clientVersionProvider, manager, loggerFactory)
         {
         }
 

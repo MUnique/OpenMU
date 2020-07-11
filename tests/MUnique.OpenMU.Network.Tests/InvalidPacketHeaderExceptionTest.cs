@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network.Tests
 {
     using System;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging.Abstractions;
     using NUnit.Framework;
 
     /// <summary>
@@ -60,7 +61,7 @@ namespace MUnique.OpenMU.Network.Tests
         {
             bool thrown = false;
             var duplexPipe = new DuplexPipe();
-            using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output));
+            using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output), new NullLogger<Connection>());
             _ = connection.BeginReceive();
             try
             {

@@ -5,10 +5,9 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.Login
 {
     using System;
-    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameServer.RemoteView;
@@ -26,8 +25,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
     [BelongsToGroup(LogInOutGroup.GroupKey)]
     public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly ISpanDecryptor decryptor = new Xor3Decryptor(0);
 
         private readonly LoginAction loginAction = new LoginAction();
@@ -68,9 +65,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
             this.decryptor.Decrypt(passwordSpan);
             var username = userNameSpan.ExtractString(0, 10, Encoding.UTF8);
             var password = passwordSpan.ExtractString(0, 20, Encoding.UTF8);
-            if (Log.IsDebugEnabled)
+            if (player.Logger.IsEnabled(LogLevel.Debug))
             {
-                Log.Debug($"User tries to log in. username:{username}, version:{version.AsString()}, tickCount:{tickCount} ");
+                player.Logger.LogDebug($"User tries to log in. username:{username}, version:{version.AsString()}, tickCount:{tickCount} ");
             }
 
             this.loginAction.Login(player, username, password);

@@ -5,8 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 {
     using System.Linq;
-    using System.Reflection;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -18,8 +17,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
     /// </summary>
     public class QuestStartAction
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <summary>
         /// Tries to start the quest of the given group and number for the specified player.
         /// </summary>
@@ -28,16 +25,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         /// <param name="number">The number.</param>
         public void StartQuest(Player player, short group, short number)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             var quest = player.GetQuest(group, number);
             if (quest == null)
             {
-                Log.Debug("Failed, quest not found");
+                player.Logger.LogWarning("Failed, quest not found");
                 return;
             }
 
             if (quest.MinimumCharacterLevel > player.Level || (quest.MaximumCharacterLevel > 0 && quest.MaximumCharacterLevel < player.Level))
             {
-                Log.DebugFormat("Failed, character level {0} not in allowed range {1} to {2}.", player.Level, quest.MinimumCharacterLevel, quest.MaximumCharacterLevel);
+                player.Logger.LogDebug("Failed, character level {0} not in allowed range {1} to {2}.", player.Level, quest.MinimumCharacterLevel, quest.MaximumCharacterLevel);
                 return;
             }
 
@@ -51,14 +49,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 
             if (questState.ActiveQuest != null)
             {
-                Log.Debug("There is already an active quest of this group.");
+                player.Logger.LogDebug("There is already an active quest of this group.");
                 player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(questState.ActiveQuest, false);
                 return;
             }
 
             if (questState.LastFinishedQuest == quest && !quest.Repeatable)
             {
-                Log.Debug("The quest is not repeatable.");
+                player.Logger.LogDebug("The quest is not repeatable.");
                 return;
             }
 

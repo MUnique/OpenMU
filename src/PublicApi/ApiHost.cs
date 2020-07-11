@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Microsoft.Extensions.Logging.Abstractions;
+
 namespace MUnique.OpenMU.PublicApi
 {
     using System;
@@ -93,7 +95,7 @@ namespace MUnique.OpenMU.PublicApi
         /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
         public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
         {
-            return BuildHost(gameServers, connectServers, null, loggingConfigurationPath).StartAsync();
+            return BuildHost(gameServers, connectServers, new NullLoggerFactory(), loggingConfigurationPath).StartAsync();
         }
 
         /// <inheritdoc />

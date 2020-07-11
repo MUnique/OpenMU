@@ -7,8 +7,12 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.ComponentModel.Design;
     using System.Windows.Forms;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using MUnique.OpenMU.Network.PlugIns;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The main form of the analyzer.
@@ -26,6 +30,8 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private readonly PacketAnalyzer analyzer;
 
+        private readonly PlugInManager plugInManager;
+
         private LiveConnectionListener clientListener;
 
         /// <summary>
@@ -34,6 +40,10 @@ namespace MUnique.OpenMU.Network.Analyzer
         public MainForm()
         {
             this.InitializeComponent();
+            var serviceContainer = new ServiceContainer();
+            serviceContainer.AddService(typeof(ILoggerFactory), new NullLoggerFactory());
+            this.plugInManager = new PlugInManager(null, new NullLogger<PlugInManager>(), serviceContainer);
+            this.plugInManager.DiscoverAndRegisterPlugIns();
             this.clientBindingSource.DataSource = this.proxiedConnections;
             this.connectedClientsListBox.DisplayMember = nameof(ICapturedConnection.Name);
             this.connectedClientsListBox.Update();
@@ -106,7 +116,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                 return;
             }
 
-            this.clientListener = new LiveConnectionListener((int)this.listenerPortNumericUpDown.Value, this.targetHostTextBox.Text, (int)this.targetPortNumericUpDown.Value, this.InvokeByProxy);
+            this.clientListener = new LiveConnectionListener((int)this.listenerPortNumericUpDown.Value, this.targetHostTextBox.Text, (int)this.targetPortNumericUpDown.Value, this.plugInManager, new NullLoggerFactory(), this.InvokeByProxy);
             this.clientListener.ClientVersion = this.SelectedClientVersion;
             this.clientListener.ClientConnected += this.ClientListenerOnClientConnected;
             this.clientListener.Start();

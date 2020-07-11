@@ -6,29 +6,24 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 {
     using System;
     using System.Collections.Concurrent;
+    using System.ComponentModel.Design;
     using System.Linq;
     using System.Reflection;
-    using log4net;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.PlugIns;
-    using Unity;
-    using Unity.Lifetime;
 
     /// <summary>
     /// A plugin container which provides the effective packet handler plugins for the specified version.
     /// Base class for different kind of packet handler interfaces.
     /// </summary>
     /// <typeparam name="THandler">The type of the handler interface.</typeparam>
-    public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byte, THandler>
+    public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byte, THandler>, IDisposable
         where THandler : class, IPacketHandlerPlugInBase
     {
-        /// <summary>
-        /// The logger of this class.
-        /// </summary>
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <summary>
         /// Since packet handler plugins are not holding any player state, they can be kept as singleton instances to save some memory.
         /// </summary>
@@ -36,16 +31,25 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
         private readonly IClientVersionProvider clientVersionProvider;
 
+        private readonly ServiceContainer serviceContainer;
+        private bool disposedValue;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PacketHandlerPlugInContainer{THandler}"/> class.
+        /// Initializes a new instance of the <see cref="PacketHandlerPlugInContainer{THandler}" /> class.
         /// </summary>
         /// <param name="clientVersionProvider">The client version provider.</param>
         /// <param name="manager">The manager.</param>
-        public PacketHandlerPlugInContainer(IClientVersionProvider clientVersionProvider, PlugInManager manager)
-            : base(manager)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public PacketHandlerPlugInContainer(IClientVersionProvider clientVersionProvider, PlugInManager manager, ILoggerFactory loggerFactory)
+            : base(manager, loggerFactory)
         {
             this.clientVersionProvider = clientVersionProvider;
             this.clientVersionProvider.ClientVersionChanged += this.OnClientVersionChanged;
+            this.serviceContainer = new ServiceContainer();
+            this.serviceContainer.AddService(typeof(IClientVersionProvider), clientVersionProvider);
+            this.serviceContainer.AddService(typeof(PlugInManager), manager);
+            this.serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
+
         }
 
         /// <summary>
@@ -72,6 +76,31 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             this.HandlePacket(player, packet, handler);
         }
 
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposedValue)
+            {
+                if (disposing)
+                {
+                    this.serviceContainer.Dispose();
+                }
+
+                this.disposedValue = true;
+            }
+        }
+
         /// <summary>
         /// Handles the incoming data packet by using the specified handler plugin.
         /// </summary>
@@ -88,7 +117,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
             if (handler.IsEncryptionExpected && (packet[0] < 0xC3))
             {
-                Log.Warn($"Packet was not encrypted and will not be handled: {packet.AsString()}");
+                this.Logger.LogWarning($"Packet was not encrypted and will not be handled: {packet.AsString()}");
                 return;
             }
 
@@ -160,23 +189,15 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         {
             if (!HandlerCache.TryGetValue(plugInType, out var plugIn))
             {
-                if (plugInType.GetConstructors().Any(c => !c.GetParameters().Any()))
+                plugIn = (THandler)ActivatorUtilities.CreateInstance(this.serviceContainer, plugInType);
+                if (plugInType.GetConstructors().Any(c => c.GetParameters().All(p => p.ParameterType != typeof(IClientVersionProvider))))
                 {
-                    plugIn = Activator.CreateInstance(plugInType) as THandler;
                     HandlerCache.TryAdd(plugInType, plugIn);
                 }
-                else
+
+                if (plugIn is GroupPacketHandlerPlugIn groupPacketHandler)
                 {
-                    using (var unityContainer = new UnityContainer())
-                    {
-                        unityContainer.RegisterInstance(typeof(PlugInManager), this.Manager, new ExternallyControlledLifetimeManager());
-                        unityContainer.RegisterInstance(typeof(IClientVersionProvider), this.clientVersionProvider, new ExternallyControlledLifetimeManager());
-                        plugIn = unityContainer.Resolve(plugInType) as THandler;
-                        if (plugIn is GroupPacketHandlerPlugIn groupPacketHandler)
-                        {
-                            groupPacketHandler.Initialize();
-                        }
-                    }
+                    groupPacketHandler.Initialize();
                 }
             }
 
@@ -185,7 +206,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
         private void OnClientVersionChanged(object sender, EventArgs e)
         {
-            Log.Warn("Client version changed");
+            this.Logger.LogWarning("Client version changed");
 
             foreach (var knownPlugIn in this.KnownPlugIns)
             {

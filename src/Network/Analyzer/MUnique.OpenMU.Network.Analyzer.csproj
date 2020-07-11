@@ -45,12 +45,8 @@
     <ProjectReference Include="..\Packets\MUnique.OpenMU.Network.Packets.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="PacketSenderForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="MainForm.cs" />
+    <Compile Update="PacketSenderForm.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Readme.md">

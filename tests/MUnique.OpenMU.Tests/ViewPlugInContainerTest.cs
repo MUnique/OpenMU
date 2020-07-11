@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Runtime.InteropServices;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
@@ -40,7 +41,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectVersionWhenExactVersionIsAvailable()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season9PlugIn>();
@@ -54,7 +55,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectVersionWhenLowerVersionsAreAvailable()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
@@ -68,7 +69,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectLanguage()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInOfSomeOtherLanguage>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
@@ -81,7 +82,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectInvariantPlugIn()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
             Assert.That(containerForSeason6English.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(InvariantSeasonPlugIn)));
@@ -93,7 +94,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInAfterDeactivation()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
@@ -109,7 +110,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectLanguageSpecificOverInvariant()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInInvariant>();
             var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);
@@ -123,7 +124,8 @@ namespace MUnique.OpenMU.Tests
             gameContext.Setup(c => c.PersistenceContextProvider).Returns(new Mock<IPersistenceContextProvider>().Object);
             gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
             gameContext.Setup(c => c.PlugInManager).Returns(plugInManager);
-            return new RemotePlayer(gameContext.Object, new Mock<IConnection>().Object, default(ClientVersion));
+            gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());
+            return new RemotePlayer(gameContext.Object, new Mock<IConnection>().Object, default);
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
-
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
 
     /// <summary>
@@ -24,8 +24,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Initializes a new instance of the <see cref="CachingGameConfigurationRepository" /> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
-        public CachingGameConfigurationRepository(RepositoryManager repositoryManager)
-            : base(repositoryManager)
+        public CachingGameConfigurationRepository(RepositoryManager repositoryManager, ILogger<CachingGameConfigurationRepository> logger)
+            : base(repositoryManager, logger)
         {
             this.objectLoader = new GameConfigurationJsonObjectLoader();
         }

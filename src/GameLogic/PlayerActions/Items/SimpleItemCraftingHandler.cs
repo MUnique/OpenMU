@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -17,8 +18,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(SimpleItemCraftingHandler));
-
         private readonly ItemPriceCalculator priceCalculator = new ItemPriceCalculator();
 
         private readonly SimpleCraftingSettings settings;
@@ -64,16 +63,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 var itemCount = foundItems.Sum(i => i.IsStackable() ? i.Durability : 1);
                 if (itemCount < requiredItem.MinimumAmount)
                 {
-                    Log.WarnFormat("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
+                    player.Logger.LogWarning("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
                     return CraftingResult.LackingMixItems;
                 }
 
                 if (itemCount > requiredItem.MaximumAmount && requiredItem.MaximumAmount > 0)
                 {
-                    Log.WarnFormat("TooManyItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
-                    {
-                        return CraftingResult.TooManyItems;
-                    }
+                    player.Logger.LogWarning("TooManyItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
+                    return CraftingResult.TooManyItems;
                 }
 
                 successRate += (byte)(requiredItem.AddPercentage * (itemCount - requiredItem.MinimumAmount));
@@ -151,7 +148,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 if (craftingResultItem.ItemDefinition == null)
                 {
                     // Should never happen
-                    Log.Warn($"CraftingResultItem has no {nameof(ItemCraftingResultItem.Reference)} and no {nameof(ItemCraftingResultItem.ItemDefinition)}. It's ignored.");
+                    player.Logger.LogWarning($"CraftingResultItem has no {nameof(ItemCraftingResultItem.Reference)} and no {nameof(ItemCraftingResultItem.ItemDefinition)}. It's ignored.");
                     continue;
                 }
 

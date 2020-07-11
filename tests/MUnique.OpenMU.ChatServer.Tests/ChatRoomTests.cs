@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.ChatServer.Tests
 {
     using System;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.Interfaces;
@@ -23,7 +24,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void RoomId()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             Assert.That(room.RoomId, Is.EqualTo(roomId));
         }
 
@@ -34,7 +35,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void RegisterClientWithDifferentRoomId()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId - 1, "Bob", "123456789");
             Assert.Throws<ArgumentException>(() => room.RegisterClient(authenticationInfo));
@@ -47,7 +48,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void RegisterClientWithCorrectRoomId()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             Assert.DoesNotThrow(() => room.RegisterClient(authenticationInfo));
@@ -60,7 +61,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void TryJoinNullClient()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
@@ -74,7 +75,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void TryJoinWithUnauthenticatedClient()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
@@ -89,7 +90,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void TryJoinWithAuthenticatedClientButWrongToken()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
@@ -105,7 +106,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void TryJoinWithAuthenticatedClient()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
@@ -121,7 +122,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void ChatRoomClientListSent()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
@@ -138,7 +139,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void ConnectedClients()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
@@ -156,7 +157,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void SendJoinedMessage()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId0 = room.GetNextClientIndex();
             var clientId1 = room.GetNextClientIndex();
             var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", "99999");
@@ -184,7 +185,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void SendLeftMessage()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId0 = room.GetNextClientIndex();
             var clientId1 = room.GetNextClientIndex();
             var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", "99999");
@@ -215,7 +216,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         {
             const ushort roomId = 4711;
             const string chatMessage = "foobar1234567890";
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId0 = room.GetNextClientIndex();
             var clientId1 = room.GetNextClientIndex();
             var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", "99999");
@@ -244,7 +245,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         public void RoomClosedEvent()
         {
             const ushort roomId = 4711;
-            var room = new ChatRoom(roomId);
+            var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
             var clientId0 = room.GetNextClientIndex();
             var clientId1 = room.GetNextClientIndex();
             var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", "99999");

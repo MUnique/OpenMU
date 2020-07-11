@@ -6,12 +6,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// A repository manager which does not use caching.
     /// </summary>
     public class RepositoryManager : BaseRepositoryManager
     {
+        private readonly ILoggerFactory loggerFactory;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RepositoryManager"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">The logger factory.</param>
+        public RepositoryManager(ILoggerFactory loggerFactory)
+        {
+            this.loggerFactory = loggerFactory;
+        }
+
         /// <summary>
         /// Gets the context stack. When loading an object, the current context should be pushed onto the stack.
         /// </summary>
@@ -22,7 +34,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         public virtual void RegisterRepositories()
         {
-            this.RegisterRepository(new GameConfigurationRepository(this));
+            this.RegisterRepository(new GameConfigurationRepository(this, this.loggerFactory.CreateLogger<GameConfigurationRepository>()));
             this.RegisterMissingRepositoriesAsGeneric();
         }
 
@@ -50,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         protected virtual IRepository CreateGenericRepository(Type entityType)
         {
             var repositoryType = typeof(GenericRepository<>).MakeGenericType(entityType);
-            return (IRepository)Activator.CreateInstance(repositoryType, this);
+            return (IRepository)Activator.CreateInstance(repositoryType, this, this.loggerFactory.CreateLogger(repositoryType));
         }
 
         /// <summary>

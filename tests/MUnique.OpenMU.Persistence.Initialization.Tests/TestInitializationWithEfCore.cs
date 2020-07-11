@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Tests
 {
-    using System;
     using System.Linq;
+    using Microsoft.Extensions.Logging.Abstractions;
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
@@ -23,9 +23,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
         [Ignore("This is not a real test which should run automatically.")]
         public void SetupDatabaseAndTestLoadingData()
         {
-            var manager = new PersistenceContextProvider();
+            var manager = new PersistenceContextProvider(new NullLoggerFactory());
             manager.ReCreateDatabase();
-            this.TestDataInitialization(new PersistenceContextProvider());
+            this.TestDataInitialization(new PersistenceContextProvider(new NullLoggerFactory()));
         }
 
         /// <summary>
@@ -39,23 +39,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
 
         private void TestDataInitialization(IPersistenceContextProvider contextProvider)
         {
-            var initialization = new DataInitialization(contextProvider);
+            var initialization = new DataInitialization(contextProvider, new NullLoggerFactory());
             initialization.CreateInitialData();
 
             // Loading game configuration
-            using (var context = contextProvider.CreateNewConfigurationContext())
-            {
-                var gameConfiguraton = context.Get<DataModel.Configuration.GameConfiguration>().FirstOrDefault();
-                Assert.That(gameConfiguraton, Is.Not.Null);
+            using var context = contextProvider.CreateNewConfigurationContext();
+            var gameConfiguraton = context.Get<DataModel.Configuration.GameConfiguration>().FirstOrDefault();
+            Assert.That(gameConfiguraton, Is.Not.Null);
 
-                // Testing loading of an account
-                using (var accountContext = contextProvider.CreateNewPlayerContext(gameConfiguraton))
-                {
-                    var account1 = accountContext.GetAccountByLoginName("test1", "test1");
-                    Assert.That(account1, Is.Not.Null);
-                    Assert.That(account1.LoginName, Is.EqualTo("test1"));
-                }
-            }
+            // Testing loading of an account
+            using var accountContext = contextProvider.CreateNewPlayerContext(gameConfiguraton);
+            var account1 = accountContext.GetAccountByLoginName("test1", "test1");
+            Assert.That(account1, Is.Not.Null);
+            Assert.That(account1.LoginName, Is.EqualTo("test1"));
         }
     }
 }

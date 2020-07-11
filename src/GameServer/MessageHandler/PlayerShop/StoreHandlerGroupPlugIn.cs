@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
 {
     using System.Runtime.InteropServices;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -20,12 +21,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         internal const byte GroupKey = (byte)PacketType.PersonalShopGroup;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StoreHandlerGroupPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="StoreHandlerGroupPlugIn" /> class.
         /// </summary>
         /// <param name="clientVersionProvider">The client version provider.</param>
         /// <param name="manager">The manager.</param>
-        public StoreHandlerGroupPlugIn(IClientVersionProvider clientVersionProvider, PlugInManager manager)
-            : base(clientVersionProvider, manager)
+        /// <param name="loggerFactory">The logger.</param>
+        public StoreHandlerGroupPlugIn(IClientVersionProvider clientVersionProvider, PlugInManager manager, ILoggerFactory loggerFactory)
+            : base(clientVersionProvider, manager, loggerFactory)
         {
         }
 

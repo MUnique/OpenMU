@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
 
@@ -12,8 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     /// </summary>
     public class GuildRequestAnswerAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(GuildRequestAnswerAction));
-
         /// <summary>
         /// Answers the request.
         /// </summary>
@@ -21,6 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="accept">If set to <c>true</c>, the membership has been accepted. Otherwise, not.</param>
         public void AnswerRequest(Player player, bool accept)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
             if (guildServer == null)
             {
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (player.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                Log.WarnFormat("Suspicious request for player with name: {0} (player is not a guild master), could be hack attempt.", player.Name);
+                player.Logger.LogWarning("Suspicious request for player with name: {0} (player is not a guild master), could be hack attempt.", player.Name);
                 lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
                 return;
             }

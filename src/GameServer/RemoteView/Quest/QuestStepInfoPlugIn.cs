@@ -1,10 +1,10 @@
-﻿using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.Views.Quest;
-using MUnique.OpenMU.Network.Packets.ServerToClient;
-using MUnique.OpenMU.PlugIns;
-
-namespace MUnique.OpenMU.GameServer.RemoteView.Quest
+﻿namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 {
+    using System.Runtime.InteropServices;
+    using MUnique.OpenMU.GameLogic.Views.Quest;
+    using MUnique.OpenMU.Network.Packets.ServerToClient;
+    using MUnique.OpenMU.PlugIns;
+
     /// <summary>
     /// The default implementation of the <see cref="IQuestStepInfoPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>

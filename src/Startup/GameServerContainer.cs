@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A container which keeps all <see cref="IGameServer"/>s in one <see cref="IHostedService"/>.
@@ -22,6 +23,7 @@ namespace MUnique.OpenMU.Startup
     public sealed class GameServerContainer : IHostedService, IDisposable
     {
         private readonly ILogger<GameServerContainer> logger;
+        private readonly ILoggerFactory loggerFactory;
         private readonly IList<IManageableServer> servers;
         private readonly IPersistenceContextProvider persistenceContextProvider;
         private readonly ConnectServerContainer connectServerContainer;
@@ -29,12 +31,13 @@ namespace MUnique.OpenMU.Startup
         private readonly ILoginServer loginServer;
         private readonly IFriendServer friendServer;
         private readonly IIpAddressResolver ipResolver;
+        private readonly PlugInManager plugInManager;
         private readonly IDictionary<int, IGameServer> gameServers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameServerContainer" /> class.
         /// </summary>
-        /// <param name="logger">The logger.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="servers">The servers.</param>
         /// <param name="gameServers">The game servers.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
@@ -43,8 +46,9 @@ namespace MUnique.OpenMU.Startup
         /// <param name="loginServer">The login server.</param>
         /// <param name="friendServer">The friend server.</param>
         /// <param name="ipResolver">The ip resolver.</param>
+        /// <param name="plugInManager">The plug in manager.</param>
         public GameServerContainer(
-            ILogger<GameServerContainer> logger,
+            ILoggerFactory loggerFactory,
             IList<IManageableServer> servers,
             IDictionary<int, IGameServer> gameServers,
             IPersistenceContextProvider persistenceContextProvider,
@@ -52,9 +56,10 @@ namespace MUnique.OpenMU.Startup
             IGuildServer guildServer,
             ILoginServer loginServer,
             IFriendServer friendServer,
-            IIpAddressResolver ipResolver)
+            IIpAddressResolver ipResolver,
+            PlugInManager plugInManager)
         {
-            this.logger = logger;
+            this.loggerFactory = loggerFactory;
             this.servers = servers;
             this.gameServers = gameServers;
             this.persistenceContextProvider = persistenceContextProvider;
@@ -63,6 +68,9 @@ namespace MUnique.OpenMU.Startup
             this.loginServer = loginServer;
             this.friendServer = friendServer;
             this.ipResolver = ipResolver;
+            this.plugInManager = plugInManager;
+
+            this.logger = this.loggerFactory.CreateLogger<GameServerContainer>();
         }
 
         /// <inheritdoc />
@@ -72,10 +80,10 @@ namespace MUnique.OpenMU.Startup
             foreach (var gameServerDefinition in persistenceContext.Get<GameServerDefinition>())
             {
                 using var loggerScope = this.logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
-                var gameServer = new GameServer(gameServerDefinition, this.guildServer, this.loginServer, this.persistenceContextProvider, this.friendServer);
+                var gameServer = new GameServer(gameServerDefinition, this.guildServer, this.loginServer, this.persistenceContextProvider, this.friendServer, this.loggerFactory, this.plugInManager);
                 foreach (var endpoint in gameServerDefinition.Endpoints)
                 {
-                    gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, this.connectServerContainer.GetObserver(endpoint.Client), this.ipResolver));
+                    gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, this.connectServerContainer.GetObserver(endpoint.Client), this.ipResolver, this.loggerFactory));
                 }
 
                 this.servers.Add(gameServer);

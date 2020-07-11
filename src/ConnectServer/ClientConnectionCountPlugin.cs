@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.ConnectServer
 {
     using System.Net;
     using System.Net.Sockets;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -14,17 +14,19 @@ namespace MUnique.OpenMU.ConnectServer
     /// </summary>
     internal class ClientConnectionCountPlugin : IAfterSocketAcceptPlugin, IAfterDisconnectPlugin
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ClientConnectionCountPlugin));
+        private readonly ILogger<ClientConnectionCountPlugin> logger;
         private readonly ClientConnectionCounter clientCounter;
         private readonly IConnectServerSettings connectServerSettings;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientConnectionCountPlugin"/> class.
+        /// Initializes a new instance of the <see cref="ClientConnectionCountPlugin" /> class.
         /// </summary>
         /// <param name="connectServerSettings">The settings.</param>
-        public ClientConnectionCountPlugin(IConnectServerSettings connectServerSettings)
+        /// <param name="logger">The logger.</param>
+        public ClientConnectionCountPlugin(IConnectServerSettings connectServerSettings, ILogger<ClientConnectionCountPlugin> logger)
         {
             this.connectServerSettings = connectServerSettings;
+            this.logger = logger;
             this.clientCounter = new ClientConnectionCounter();
         }
 
@@ -35,7 +37,7 @@ namespace MUnique.OpenMU.ConnectServer
             if (this.connectServerSettings.CheckMaxConnectionsPerAddress
                 && this.clientCounter.GetConnectionCount(ipAddress) >= this.connectServerSettings.MaxConnectionsPerAddress)
             {
-                Logger.WarnFormat("Maximum Connections per IP reached: {0}, Connection refused.", ipAddress);
+                this.logger.LogWarning("Maximum Connections per IP reached: {0}, Connection refused.", ipAddress);
                 return false;
             }
 

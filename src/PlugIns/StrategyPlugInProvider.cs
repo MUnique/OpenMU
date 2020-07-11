@@ -5,8 +5,7 @@
 namespace MUnique.OpenMU.PlugIns
 {
     using System.Collections.Generic;
-    using System.Reflection;
-    using log4net;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The implementation for the <see cref="IStrategyPlugInProvider{TKey,TPlugIn}"/> which provides plugins by their key.
@@ -18,17 +17,26 @@ namespace MUnique.OpenMU.PlugIns
     public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInContainerBase<TPlugIn>, IStrategyPlugInProvider<TKey, TPlugIn>
         where TPlugIn : class, IStrategyPlugIn<TKey>
     {
-        private readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IDictionary<TKey, TPlugIn> effectiveStrategies = new Dictionary<TKey, TPlugIn>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StrategyPlugInProvider{TKey, TPlugIn}"/> class.
+        /// Initializes a new instance of the <see cref="StrategyPlugInProvider{TKey, TPlugIn}" /> class.
         /// </summary>
         /// <param name="manager">The plugin manager which manages this instance.</param>
-        public StrategyPlugInProvider(PlugInManager manager)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public StrategyPlugInProvider(PlugInManager manager, ILoggerFactory loggerFactory)
             : base(manager)
         {
+            this.Logger = loggerFactory.CreateLogger(this.GetType());
         }
+
+        /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        /// <value>
+        /// The logger.
+        /// </value>
+        protected ILogger Logger { get; }
 
         /// <inheritdoc />
         public TPlugIn this[TKey key]
@@ -66,7 +74,7 @@ namespace MUnique.OpenMU.PlugIns
             base.ActivatePlugIn(plugIn);
             if (this.effectiveStrategies.TryGetValue(plugIn.Key, out var registeredPlugIn))
             {
-                this.log.Warn($"Plugin {registeredPlugIn} with key {plugIn.Key} was already registered and is active. Plugin {plugIn} will not be effective.");
+                this.Logger.LogWarning($"Plugin {registeredPlugIn} with key {plugIn.Key} was already registered and is active. Plugin {plugIn} will not be effective.");
             }
             else
             {

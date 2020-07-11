@@ -20,14 +20,17 @@ namespace MUnique.OpenMU.Startup
     internal class ServerConfigurationChangeListener : IServerConfigurationChangeListener
     {
         private readonly IList<IManageableServer> servers;
+        private readonly ConnectServerFactory connectServerFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerConfigurationChangeListener"/> class.
+        /// Initializes a new instance of the <see cref="ServerConfigurationChangeListener" /> class.
         /// </summary>
         /// <param name="servers">The servers.</param>
-        public ServerConfigurationChangeListener(IList<IManageableServer> servers)
+        /// <param name="connectServerFactory">The connect server factory.</param>
+        public ServerConfigurationChangeListener(IList<IManageableServer> servers, ConnectServerFactory connectServerFactory)
         {
             this.servers = servers;
+            this.connectServerFactory = connectServerFactory;
         }
 
         /// <summary>
@@ -36,7 +39,7 @@ namespace MUnique.OpenMU.Startup
         /// <param name="configuration">The configuration.</param>
         public void ConnectionServerAdded(ConnectServerDefinition configuration)
         {
-            var connectServer = ConnectServerFactory.CreateConnectServer(configuration, new ClientVersion(configuration.Client.Season, configuration.Client.Episode, configuration.Client.Language), configuration.GetId());
+            var connectServer = this.connectServerFactory.CreateConnectServer(configuration, new ClientVersion(configuration.Client.Season, configuration.Client.Episode, configuration.Client.Language), configuration.GetId());
             this.servers.Add(connectServer);
         }
 

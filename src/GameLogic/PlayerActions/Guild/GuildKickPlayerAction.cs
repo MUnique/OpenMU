@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
@@ -13,8 +14,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     /// </summary>
     public class GuildKickPlayerAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(GuildKickPlayerAction));
-
         /// <summary>
         /// Kicks the player out of the guild.
         /// </summary>
@@ -23,17 +22,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="securityCode">The security code.</param>
         public void KickPlayer(Player player, string nickname, string securityCode)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
             if (guildServer == null)
             {
-                Log.Warn("No guild server available");
+                player.Logger.LogWarning("No guild server available");
                 return;
             }
 
             if (player.Account.SecurityCode != null && player.Account.SecurityCode != securityCode)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
-                Log.DebugFormat("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, player.Account.SecurityCode, player.SelectedCharacter.Name);
+                player.Logger.LogDebug("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, player.Account.SecurityCode, player.SelectedCharacter.Name);
 
                 player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.Failed);
                 return;
@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             var isKickingHimself = player.SelectedCharacter.Name == nickname;
             if (!isKickingHimself && player.GuildStatus?.Position != GuildPosition.GuildMaster)
             {
-                Log.WarnFormat("Suspicious kick request for player with name: {0} (player is not a guild master) to kick {1}, could be hack attempt.", player.Name, nickname);
+                player.Logger.LogWarning("Suspicious kick request for player with name: {0} (player is not a guild master) to kick {1}, could be hack attempt.", player.Name, nickname);
                 player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.FailedBecausePlayerIsNotGuildMaster);
                 return;
             }

@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.Network.SimpleModulus
 {
     using System;
     using System.Buffers;
+    using System.Diagnostics;
     using System.IO.Pipelines;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
-    using log4net;
     using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
@@ -27,7 +27,6 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// </summary>
         public static readonly SimpleModulusKeys DefaultClientKey = SimpleModulusKeys.CreateDecryptionKeys(new uint[] { 73326, 109989, 98843, 171058, 18035, 30340, 24701, 11141, 62004, 64409, 35374, 64599 });
 
-        private static readonly ILog Log = LogManager.GetLogger(typeof(PipelinedSimpleModulusDecryptor));
         private readonly SimpleModulusKeys decryptionKeys;
         private readonly byte[] inputBuffer;
 
@@ -244,11 +243,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
                     throw new InvalidBlockChecksumException(blockSuffix[1], checksum);
                 }
 
-                if (Log.IsDebugEnabled)
-                {
-                    var message = $"Block checksum invalid. Expected: {checksum}. Actual: {blockSuffix[1]}.";
-                    Log.Debug(message);
-                }
+                Debug.WriteLine($"Block checksum invalid. Expected: {checksum}. Actual: {blockSuffix[1]}.");
             }
 
             return blockSize;

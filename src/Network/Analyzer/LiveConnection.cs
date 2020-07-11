@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System.Buffers;
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
-    using log4net;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// A proxy which is a man-in-the-middle between a client and server connection.
@@ -34,31 +34,32 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// The logger for this proxied connection.
         /// </summary>
-        private readonly ILog log;
+        private readonly ILogger logger;
 
         private readonly string clientName;
 
         private string name;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LiveConnection"/> class.
+        /// Initializes a new instance of the <see cref="LiveConnection" /> class.
         /// </summary>
         /// <param name="clientConnection">The client connection.</param>
         /// <param name="serverConnection">The server connection.</param>
         /// <param name="invokeAction">The invoke action to run an action on the UI thread.</param>
-        public LiveConnection(IConnection clientConnection, IConnection serverConnection, Action<Delegate> invokeAction)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public LiveConnection(IConnection clientConnection, IConnection serverConnection, Action<Delegate> invokeAction, ILoggerFactory loggerFactory)
         {
             this.clientConnection = clientConnection;
             this.serverConnection = serverConnection;
             this.invokeAction = invokeAction;
-            this.log = LogManager.GetLogger(this.GetType().Assembly, "Proxy_" + this.clientConnection);
+            this.logger = loggerFactory.CreateLogger("Proxy_" + this.clientConnection);
             this.clientName = this.clientConnection.ToString();
             this.Name = this.clientName;
             this.clientConnection.PacketReceived += this.ClientPacketReceived;
             this.serverConnection.PacketReceived += this.ServerPacketReceived;
             this.clientConnection.Disconnected += this.ClientDisconnected;
             this.serverConnection.Disconnected += this.ServerDisconnected;
-            this.log.Info("LiveConnection initialized.");
+            this.logger.LogInformation("LiveConnection initialized.");
             this.clientConnection.BeginReceive();
             this.serverConnection.BeginReceive();
         }
@@ -113,7 +114,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         public void SendToServer(byte[] data)
         {
             var packet = new Packet(data, true);
-            this.log.Info(packet.ToString());
+            this.logger.LogInformation(packet.ToString());
             this.serverConnection.Output.Write(data);
             this.serverConnection.Output.FlushAsync();
             this.invokeAction((Action)(() => this.PacketList.Add(packet)));
@@ -128,7 +129,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.clientConnection.Output.Write(data);
             this.clientConnection.Output.FlushAsync();
             var packet = new Packet(data, false);
-            this.log.Info(packet.ToString());
+            this.logger.LogInformation(packet.ToString());
             this.invokeAction((Action)(() => this.PacketList.Add(packet)));
         }
 
@@ -143,14 +144,14 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private void ServerDisconnected(object sender, EventArgs e)
         {
-            this.log.Info("The server connection closed.");
+            this.logger.LogInformation("The server connection closed.");
             this.clientConnection.Disconnect();
             this.Name = this.clientName + " [Disconnected]";
         }
 
         private void ClientDisconnected(object sender, EventArgs e)
         {
-            this.log.Info("The client connected closed");
+            this.logger.LogInformation("The client connected closed");
             this.serverConnection.Disconnect();
             this.Name = this.clientName + " [Disconnected]";
         }

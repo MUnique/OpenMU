@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// A implementation of <see cref="EntityFrameworkContextBase"/> which doesn't cache and always asks the database for objects.
@@ -12,11 +13,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     public class EntityFrameworkContext : EntityFrameworkContextBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityFrameworkContext"/> class.
+        /// Initializes a new instance of the <see cref="EntityFrameworkContext" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public EntityFrameworkContext(DbContext context)
-            : base(context, new RepositoryManager(), true)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public EntityFrameworkContext(DbContext context, ILoggerFactory loggerFactory)
+            : base(context, new RepositoryManager(loggerFactory), true)
         {
             this.RepositoryManager.RegisterRepositories();
         }

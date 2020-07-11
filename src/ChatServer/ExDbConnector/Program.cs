@@ -5,24 +5,28 @@
 namespace MUnique.OpenMU.ChatServer.ExDbConnector
 {
     using System;
+    using System.ComponentModel.Design;
     using System.IO;
-    using System.Reflection;
     using log4net;
-    using log4net.Config;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.Network;
+    using MUnique.OpenMU.Network.PlugIns;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The main entry class of the application.
     /// </summary>
-    internal static class Program
+    internal class Program
     {
         private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() +
                                                                Path.DirectorySeparatorChar +
                                                                typeof(Program).Assembly.GetName().Name +
                                                                ".exe.log4net.xml";
 
-        private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
+        private static ILogger<Program> logger;
 
         /// <summary>
         /// The main entry point for the application.
@@ -30,10 +34,13 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// <param name="args">The arguments. </param>
         internal static void Main(string[] args)
         {
-            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
-            var addressResolver = IpAddressResolverFactory.DetermineIpResolver(args);
+            // todo: create with HostBuilder
+            var loggerFactory = new NullLoggerFactory().AddLog4Net(Log4NetConfigFilePath, true);
+            logger = loggerFactory.CreateLogger<Program>();
+            var addressResolver = IpAddressResolverFactory.DetermineIpResolver(args, loggerFactory);
             var settings = new Settings("ChatServer.cfg");
+            var serviceContainer = new ServiceContainer();
+            serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
 
             int chatServerListenerPort = settings.ChatServerListenerPort ?? 55980;
             int exDbPort = settings.ExDbPort ?? 55906;
@@ -44,11 +51,13 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                 // To make the chat server use our configured encryption key, we need to trick a bit. We add an endpoint with a special client version which is defined in the plugin.
                 var configuration = new ChatServerSettings();
                 configuration.Endpoints.Add(new ChatServerEndpoint { ClientVersion = ConfigurableNetworkEncryptionPlugIn.Version, NetworkPort = chatServerListenerPort });
-                var chatServer = new ChatServer(configuration, addressResolver);
+                var pluginManager = new PlugInManager(null, loggerFactory.CreateLogger<PlugInManager>(), serviceContainer);
+                pluginManager.DiscoverAndRegisterPlugInsOf<INetworkEncryptionFactoryPlugIn>();
+                var chatServer = new ChatServer(configuration, addressResolver, loggerFactory, pluginManager);
 
                 chatServer.Start();
-                var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort);
-                Log.Info("ChatServer started and ready");
+                var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort, loggerFactory);
+                logger.LogInformation("ChatServer started and ready");
                 while (Console.ReadLine() != "exit")
                 {
                     // keep application running
@@ -59,7 +68,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             }
             catch (Exception ex)
             {
-                Log.Fatal("Unexpected error occured", ex);
+                logger.LogCritical(ex, "Unexpected error occured");
             }
         }
     }

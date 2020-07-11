@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler
 {
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -12,12 +13,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     public class MainPacketHandlerPlugInContainer : PacketHandlerPlugInContainer<IPacketHandlerPlugIn>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainPacketHandlerPlugInContainer"/> class.
+        /// Initializes a new instance of the <see cref="MainPacketHandlerPlugInContainer" /> class.
         /// </summary>
         /// <param name="clientVersionProvider">The client version.</param>
         /// <param name="manager">The manager.</param>
-        public MainPacketHandlerPlugInContainer(IClientVersionProvider clientVersionProvider, PlugInManager manager)
-            : base(clientVersionProvider, manager)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public MainPacketHandlerPlugInContainer(IClientVersionProvider clientVersionProvider, PlugInManager manager, ILoggerFactory loggerFactory)
+            : base(clientVersionProvider, manager, loggerFactory)
         {
         }
     }

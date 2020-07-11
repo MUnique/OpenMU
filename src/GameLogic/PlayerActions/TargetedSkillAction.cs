@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System.Collections.Generic;
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.NPC;
@@ -18,11 +18,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     public class TargetedSkillAction
     {
         /// <summary>
-        /// The logger of this class.
-        /// </summary>
-        private static readonly ILog Log = LogManager.GetLogger(typeof(TargetedSkillAction));
-
-        /// <summary>
         /// Performs the skill.
         /// </summary>
         /// <param name="player">The player.</param>
@@ -30,6 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="skillId">The skill identifier.</param>
         public void PerformSkill(Player player, IAttackable target, ushort skillId)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             SkillEntry skillEntry = player.SkillList.GetSkill(skillId);
             var skill = skillEntry.Skill;
             if (skill.SkillType == SkillType.PassiveBoost)
@@ -106,12 +102,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     }
                     else
                     {
-                        Log.Warn($"Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                        player.Logger.LogWarning($"Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
                     }
                 }
                 else
                 {
-                    Log.Warn($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                    player.Logger.LogWarning($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
                 }
             }
         }

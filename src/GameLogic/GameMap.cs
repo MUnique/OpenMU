@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
@@ -22,8 +21,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class GameMap
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(GameMap));
-
         private readonly IDictionary<ushort, ILocateable> objectsInMap = new ConcurrentDictionary<ushort, ILocateable>();
 
         private readonly IAreaOfInterestManager areaOfInterestManager;
@@ -44,7 +41,6 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.Definition = mapDefinition;
             this.ItemDropDuration = itemDropDuration;
-            Log.DebugFormat("Creating GameMap {0}", this.Definition);
             this.Terrain = new GameMapTerrain(this.Definition);
 
             this.areaOfInterestManager = new BucketAreaOfInterestManager(chunkSize);
@@ -154,24 +150,19 @@ namespace MUnique.OpenMU.GameLogic
             {
                 case DroppedItem droppedItem:
                     droppedItem.Id = (ushort)this.dropIdGenerator.GetId();
-                    Log.DebugFormat("{0}: Added drop {1}, {2}", this.Definition, droppedItem.Id, droppedItem.Item);
                     break;
                 case DroppedMoney droppedMoney:
                     droppedMoney.Id = (ushort)this.dropIdGenerator.GetId();
-                    Log.DebugFormat("{0}: Added money {1}, {2}", this.Definition, droppedMoney.Id, droppedMoney);
                     break;
                 case Player player:
                     player.Id = (ushort)this.objectIdGenerator.GetId();
-                    Log.DebugFormat("{0}: Added player {1}, {2}, ", this.Definition, player.Id, player);
                     Interlocked.Increment(ref this.playerCount);
                     break;
                 case NonPlayerCharacter npc:
                     npc.Id = (ushort)this.objectIdGenerator.GetId();
-                    Log.DebugFormat("{0}: Added npc {1}, {2}", this.Definition, npc.Id, npc.Definition.Designation);
                     break;
                 case ISupportIdUpdate idUpdate:
                     idUpdate.Id = (ushort)this.objectIdGenerator.GetId();
-                    Log.DebugFormat("{0}: Added {1}", this.Definition, locateable);
                     break;
                 default:
                     throw new ArgumentException($"Adding an object of type {locateable.GetType()} is not supported.");

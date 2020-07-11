@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
     using System;
     using System.Text;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
 
@@ -16,23 +16,24 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
     /// </summary>
     internal class FtpRequestHandler : IPacketHandler<Client>
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(FtpRequestHandler));
-
         private static readonly byte[] PatchOk = { 0xC1, 4, 2, 0 };
 
         private static readonly byte[] Xor3Keys = { 0xFC, 0xCF, 0xAB };
 
         private readonly IConnectServerSettings connectServerSettings;
+        private readonly ILogger<FtpRequestHandler> logger;
 
         private byte[] patchPacket;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FtpRequestHandler"/> class.
+        /// Initializes a new instance of the <see cref="FtpRequestHandler" /> class.
         /// </summary>
         /// <param name="connectServerSettings">The settings.</param>
-        public FtpRequestHandler(IConnectServerSettings connectServerSettings)
+        /// <param name="logger">The logger.</param>
+        public FtpRequestHandler(IConnectServerSettings connectServerSettings, ILogger<FtpRequestHandler> logger)
         {
             this.connectServerSettings = connectServerSettings;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -53,10 +54,10 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
                 return;
             }
 
-            Log.DebugFormat("Client {0}:{1} version: {2}.{3}.{4}", client.Address, client.Port, packet[3], packet[4], packet[5]);
+            this.logger.LogDebug("Client {0}:{1} version: {2}.{3}.{4}", client.Address, client.Port, packet[3], packet[4], packet[5]);
             if (client.FtpRequestCount >= this.connectServerSettings.MaxFtpRequests)
             {
-                Log.DebugFormat("Client {0}:{1} reached maxFtpRequests", client.Address, client.Port);
+                this.logger.LogDebug("Client {0}:{1} reached maxFtpRequests", client.Address, client.Port);
                 client.Connection.Disconnect();
                 return;
             }

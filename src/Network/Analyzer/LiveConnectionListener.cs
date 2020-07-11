@@ -7,8 +7,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System;
     using System.IO.Pipelines;
     using System.Net.Sockets;
-    using System.Reflection;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
     using Pipelines.Sockets.Unofficial;
@@ -19,10 +18,9 @@ namespace MUnique.OpenMU.Network.Analyzer
     /// <seealso cref="MUnique.OpenMU.Network.Listener" />
     public class LiveConnectionListener : Listener
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        private static readonly PlugInManager PlugInManager = CreatePlugInManager();
-
+        private readonly PlugInManager plugInManager;
+        private readonly ILoggerFactory loggerFactory;
+        private readonly ILogger<LiveConnectionListener> logger;
         private readonly Action<Delegate> invokeAction;
 
         /// <summary>
@@ -31,12 +29,17 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <param name="port">The port.</param>
         /// <param name="targetHost">The target server host.</param>
         /// <param name="targetPort">The target server port.</param>
+        /// <param name="plugInManager">The plug in manager.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="invokeAction">The invoke action to run an action on the UI thread.</param>
-        public LiveConnectionListener(int port, string targetHost, int targetPort, Action<Delegate> invokeAction)
-            : base(port, null, null)
+        public LiveConnectionListener(int port, string targetHost, int targetPort, PlugInManager plugInManager, ILoggerFactory loggerFactory, Action<Delegate> invokeAction)
+            : base(port, null, null, loggerFactory)
         {
             this.TargetHost = targetHost;
             this.TargetPort = targetPort;
+            this.plugInManager = plugInManager;
+            this.loggerFactory = loggerFactory;
+            this.logger = loggerFactory.CreateLogger<LiveConnectionListener>();
             this.invokeAction = invokeAction;
 
             this.ClientAccepted += this.OnClientAccepted;
@@ -63,8 +66,8 @@ namespace MUnique.OpenMU.Network.Analyzer
         public int TargetPort { get; set; }
 
         private INetworkEncryptionFactoryPlugIn NetworkEncryptionPlugIn =>
-            PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(this.ClientVersion)
-            ?? PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
+            this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(this.ClientVersion)
+            ?? this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
 
         /// <inheritdoc />
         protected override IPipelinedDecryptor CreateDecryptor(PipeReader reader)
@@ -76,13 +79,6 @@ namespace MUnique.OpenMU.Network.Analyzer
         protected override IPipelinedEncryptor CreateEncryptor(PipeWriter writer)
         {
             return this.GetEncryptor(writer, DataDirection.ServerToClient);
-        }
-
-        private static PlugInManager CreatePlugInManager()
-        {
-            var plugInManager = new PlugInManager();
-            plugInManager.DiscoverAndRegisterPlugIns();
-            return plugInManager;
         }
 
         private IPipelinedEncryptor GetEncryptor(PipeWriter pipeWriter, DataDirection direction) => this.NetworkEncryptionPlugIn.CreateEncryptor(pipeWriter, direction);
@@ -100,14 +96,14 @@ namespace MUnique.OpenMU.Network.Analyzer
 
                 var decryptor = this.GetDecryptor(socketConnection.Input, DataDirection.ServerToClient);
                 var encryptor = this.GetEncryptor(socketConnection.Output, DataDirection.ClientToServer);
-                var serverConnection = new Connection(socketConnection, decryptor, encryptor);
-                var proxy = new LiveConnection(clientConnection, serverConnection, this.invokeAction);
+                var serverConnection = new Connection(socketConnection, decryptor, encryptor, this.loggerFactory.CreateLogger<Connection>());
+                var proxy = new LiveConnection(clientConnection, serverConnection, this.invokeAction, loggerFactory);
 
                 this.ClientConnected?.Invoke(this, new ClientConnectedEventArgs(proxy));
             }
             catch (Exception exception)
             {
-                Log.Error("Error while connecting to the server. Disconnecting the client.", exception);
+                this.logger.LogError("Error while connecting to the server. Disconnecting the client.", exception);
                 clientConnection.Disconnect();
             }
         }

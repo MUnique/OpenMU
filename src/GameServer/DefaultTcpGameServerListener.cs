@@ -8,13 +8,14 @@ namespace MUnique.OpenMU.GameServer
     using System.Net;
     using System.Net.Sockets;
     using System.Threading.Tasks;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.PlugIns;
+    using MUnique.OpenMU.Network.SimpleModulus;
     using Pipelines.Sockets.Unofficial;
 
     /// <summary>
@@ -24,7 +25,7 @@ namespace MUnique.OpenMU.GameServer
     /// <seealso cref="MUnique.OpenMU.GameServer.IGameServerListener" />
     public class DefaultTcpGameServerListener : IGameServerListener
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(GameServer));
+        private readonly ILogger<DefaultTcpGameServerListener> logger;
 
         private readonly GameServerEndpoint endPoint;
         private readonly IGameServerInfo gameServerInfo;
@@ -33,6 +34,7 @@ namespace MUnique.OpenMU.GameServer
 
         private readonly IGameServerStateObserver stateObserver;
         private readonly IIpAddressResolver addressResolver;
+        private readonly ILoggerFactory loggerFactory;
         private TcpListener listener;
 
         /// <summary>
@@ -43,13 +45,16 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="gameContext">The game context.</param>
         /// <param name="stateObserver">The connect server.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
-        public DefaultTcpGameServerListener(GameServerEndpoint endPoint, IGameServerInfo gameServerInfo, GameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public DefaultTcpGameServerListener(GameServerEndpoint endPoint, IGameServerInfo gameServerInfo, GameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory)
         {
             this.endPoint = endPoint;
             this.gameServerInfo = gameServerInfo;
             this.gameContext = gameContext;
             this.stateObserver = stateObserver;
             this.addressResolver = addressResolver;
+            this.loggerFactory = loggerFactory;
+            this.logger = this.loggerFactory.CreateLogger<DefaultTcpGameServerListener>();
         }
 
         /// <inheritdoc/>
@@ -60,17 +65,17 @@ namespace MUnique.OpenMU.GameServer
         {
             if (this.listener != null && this.listener.Server.IsBound)
             {
-                Logger.Debug("listener is already running.");
+                this.logger.LogDebug("listener is already running.");
                 return;
             }
 
             var port = this.endPoint.NetworkPort;
-            Logger.InfoFormat("Starting Server Listener, port {0}", port);
+            this.logger.LogInformation("Starting Server Listener, port {port}", port);
             this.listener = new TcpListener(IPAddress.Any, port);
             this.listener.Start();
             this.stateObserver.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), port));
             Task.Run(this.BeginAccept);
-            Logger.Info("Server listener started.");
+            this.logger.LogInformation("Server listener started.");
         }
 
         /// <inheritdoc/>
@@ -78,21 +83,21 @@ namespace MUnique.OpenMU.GameServer
         {
             var port = this.endPoint.NetworkPort;
             this.stateObserver.UnregisterGameServer(this.gameServerInfo);
-            Logger.Info($"Stopping listener on port {port}.");
+            this.logger.LogInformation($"Stopping listener on port {port}.");
             if (this.listener == null || !this.listener.Server.IsBound)
             {
-                Logger.Debug("listener not running, nothing to shut down.");
+                this.logger.LogDebug("listener not running, nothing to shut down.");
                 return;
             }
 
             this.listener.Stop();
 
-            Logger.Info($"Stopped listener on port {port}.");
+            this.logger.LogInformation($"Stopped listener on port {port}.");
         }
 
         private async Task BeginAccept()
         {
-            this.Log(l => l.Debug("Begin accepting new clients."));
+            this.Log(l => l.LogDebug("Begin accepting new clients."));
             Socket newClient;
             try
             {
@@ -100,12 +105,12 @@ namespace MUnique.OpenMU.GameServer
             }
             catch (ObjectDisposedException ex)
             {
-                this.Log(l => l.Debug("listener has been disposed", ex));
+                this.Log(l => l.LogDebug(ex, "listener has been disposed"));
                 return;
             }
             catch (Exception ex)
             {
-                this.Log(l => l.Error("An unexpected error occured when awaiting the next client socket.", ex));
+                this.Log(l => l.LogError(ex, "An unexpected error occured when awaiting the next client socket."));
                 return;
             }
 
@@ -126,10 +131,10 @@ namespace MUnique.OpenMU.GameServer
             }
 
             var remoteEndPoint = socket.RemoteEndPoint;
-            this.Log(l => l.DebugFormat($"Game Client connected, Address {remoteEndPoint}"));
+            this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
             if (this.gameContext.PlayerList.Count >= this.gameContext.ServerConfiguration.MaximumPlayers)
             {
-                this.Log(l => l.DebugFormat($"The server is full... disconnecting the game client {remoteEndPoint}"));
+                this.Log(l => l.LogDebug($"The server is full... disconnecting the game client {remoteEndPoint}"));
 
                 // MAYBE TODO: wait until another player disconnects?
                 socket.Dispose();
@@ -144,12 +149,12 @@ namespace MUnique.OpenMU.GameServer
                 IConnection connection;
                 if (encryptionFactoryPlugIn == null)
                 {
-                    this.Log(l => l.WarnFormat("No network encryption plugin for version {0} available. It falls back to default encryption.", clientVersion));
-                    connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
+                    this.Log(l => l.LogWarning("No network encryption plugin for version {clientVersion} available. It falls back to default encryption.", clientVersion));
+                    connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output), this.loggerFactory.CreateLogger<Connection>());
                 }
                 else
                 {
-                    connection = new Connection(socketConnection, encryptionFactoryPlugIn.CreateDecryptor(socketConnection.Input, DataDirection.ClientToServer), encryptionFactoryPlugIn.CreateEncryptor(socketConnection.Output, DataDirection.ServerToClient));
+                    connection = new Connection(socketConnection, encryptionFactoryPlugIn.CreateDecryptor(socketConnection.Input, DataDirection.ClientToServer), encryptionFactoryPlugIn.CreateEncryptor(socketConnection.Output, DataDirection.ServerToClient), this.loggerFactory.CreateLogger<Connection>());
                 }
 
                 var remotePlayer = new RemotePlayer(this.gameContext, connection, clientVersion);
@@ -170,37 +175,14 @@ namespace MUnique.OpenMU.GameServer
             }
             else
             {
-                this.Log(l => l.Error($"Event {nameof(this.PlayerConnected)} was not handled."));
+                this.Log(l => l.LogError($"Event {nameof(this.PlayerConnected)} was not handled."));
             }
         }
 
-        private IDisposable PushServerLogContext()
+        private void Log(Action<ILogger<DefaultTcpGameServerListener>> logAction)
         {
-            if (log4net.ThreadContext.Stacks["gameserver"].Count > 0)
-            {
-                return null;
-            }
-
-            return log4net.ThreadContext.Stacks["gameserver"].Push(this.gameContext.Id.ToString());
-        }
-
-        private IDisposable PushEndpointContext()
-        {
-            if (log4net.ThreadContext.Stacks["endpoint"].Count > 0)
-            {
-                return null;
-            }
-
-            return log4net.ThreadContext.Stacks["endpoint"].Push(this.endPoint.ToString());
-        }
-
-        private void Log(Action<ILog> logAction)
-        {
-            using (this.PushServerLogContext())
-            using (this.PushEndpointContext())
-            {
-                logAction(Logger);
-            }
+            using var contextScope = this.logger.BeginScope(("GameServer", this.gameContext.Id), ("EndPoint", this.endPoint));
+            logAction(this.logger);
         }
     }
 }

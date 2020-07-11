@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.Startup
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AdminPanel;
     using MUnique.OpenMU.ChatServer;
+    using MUnique.OpenMU.ConnectServer;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.FriendServer;
     using MUnique.OpenMU.GameServer;
@@ -32,6 +33,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.Initialization;
     using MUnique.OpenMU.Persistence.InMemory;
+    using MUnique.OpenMU.PlugIns;
     using MUnique.OpenMU.PublicApi;
     using Nito.AsyncEx.Synchronous;
 
@@ -188,10 +190,10 @@ namespace MUnique.OpenMU.Startup
 
         private async Task<IHost> CreateHost(string[] args)
         {
-            var persistenceContextProvider = this.DeterminePersistenceContextProvider(args);
-            var persistenceContext = persistenceContextProvider.CreateNewConfigurationContext();
-            this.LoadGameClientDefinitions(persistenceContext);
-            var chatServerDefinition = persistenceContext.Get<ChatServerDefinition>().First();
+            
+            // Ensure GameLogic and GameServer Assemblies are loaded
+            _ = GameLogic.Rand.NextInt(1, 2);
+            _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
             var host = Host.CreateDefaultBuilder()
                 .ConfigureLogging(configureLogging =>
@@ -202,20 +204,23 @@ namespace MUnique.OpenMU.Startup
                 })
                 .ConfigureServices(c =>
                     c.AddSingleton(this.servers)
-                    .AddSingleton(chatServerDefinition)
-                    .AddSingleton(chatServerDefinition.ConvertToSettings())
-                    .AddSingleton(IpAddressResolverFactory.DetermineIpResolver(args))
+                    .AddSingleton(s => s.GetService<IPersistenceContextProvider>().CreateNewConfigurationContext().Get<ChatServerDefinition>().First())
+                    .AddSingleton(s => s.GetService<ChatServerDefinition>().ConvertToSettings())
+                    .AddIpResolver(args)
                     .AddSingleton(this.gameServers)
                     .AddSingleton(this.gameServers.Values)
-                    .AddSingleton(persistenceContextProvider)
+                    .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>()))
                     .AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
                     .AddSingleton<ILoginServer, LoginServer>()
                     .AddSingleton<IGuildServer, GuildServer>()
                     .AddSingleton<IFriendServer, FriendServer>()
                     .AddSingleton<IChatServer, ChatServer>()
+                    .AddSingleton<ConnectServerFactory>()
                     .AddSingleton<ConnectServerContainer>()
                     .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>())
                     .AddSingleton<GameServerContainer>()
+                    .AddSingleton<PlugInManager>()
+                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>().CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList())
                     .AddHostedService(provider => provider.GetService<IChatServer>())
                     .AddHostedService(provider => provider.GetService<ConnectServerContainer>())
                     .AddHostedService(provider => provider.GetService<GameServerContainer>())
@@ -224,7 +229,9 @@ namespace MUnique.OpenMU.Startup
                     .AddHostedService<ApiHost>())
                 .Build();
             Log.Info("Host created");
+            NpgsqlLoggingProvider.Initialize(host.Services.GetService<ILoggerFactory>());
             this.servers.Add(host.Services.GetService<IChatServer>());
+            this.LoadGameClientDefinitions(host.Services.GetService<IPersistenceContextProvider>().CreateNewConfigurationContext());
             Log.Info("Starting host...");
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -248,32 +255,31 @@ namespace MUnique.OpenMU.Startup
             return 1234; // Default port
         }
 
-        private IPersistenceContextProvider DeterminePersistenceContextProvider(string[] args)
+        private IPersistenceContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
         {
             IPersistenceContextProvider contextProvider;
             if (args.Contains("-demo"))
             {
                 contextProvider = new InMemoryPersistenceContextProvider();
-                var initialization = new DataInitialization(contextProvider);
+                var initialization = new DataInitialization(contextProvider, loggerFactory);
                 initialization.CreateInitialData();
             }
             else
             {
-                contextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"));
+                contextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"), loggerFactory);
             }
 
             return contextProvider;
         }
 
-        private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, bool autoupdate)
+        private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, bool autoupdate, ILoggerFactory loggerFactory)
         {
-            PersistenceContextProvider.InitializeSqlLogging();
-            var manager = new PersistenceContextProvider();
+            var manager = new PersistenceContextProvider(loggerFactory);
             if (reinit || !manager.DatabaseExists())
             {
                 Log.Info("The database is getting (re-)initialized...");
                 manager.ReCreateDatabase();
-                var initialization = new DataInitialization(manager);
+                var initialization = new DataInitialization(manager, loggerFactory);
                 initialization.CreateInitialData();
                 Log.Info("...initialization finished.");
             }

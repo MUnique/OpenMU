@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -90,7 +91,7 @@ namespace MUnique.OpenMU.Tests
             trader2.TradingPartner = trader1;
 
             var gameContext = new Mock<IGameContext>();
-            gameContext.Setup(c => c.PlugInManager).Returns(new PlugInManager());
+            gameContext.Setup(c => c.PlugInManager).Returns(new PlugInManager(null, new NullLogger<PlugInManager>(), null));
             gameContext.Setup(c => c.PersistenceContextProvider).Returns(new InMemoryPersistenceContextProvider());
 
             Mock.Get(trader1).Setup(m => m.GameContext).Returns(gameContext.Object);

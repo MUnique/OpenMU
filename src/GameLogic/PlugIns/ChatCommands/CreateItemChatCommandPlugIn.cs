@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     using System;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.PlugIns;
@@ -35,6 +36,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <inheritdoc />
         public void HandleCommand(Player player, string command)
         {
+            using var logScope = player.Logger.BeginScope(this.GetType());
             var dropCoordinates = player.CurrentMap.Terrain.GetRandomCoordinate(player.Position, 1);
             try
             {
@@ -50,7 +52,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             }
             catch (Exception ex)
             {
-                log4net.LogManager.GetLogger(this.GetType()).Error(ex);
+                player.Logger.LogError(ex, "Unexpected error handling the chat command '{command}'.", command);
             }
         }
 

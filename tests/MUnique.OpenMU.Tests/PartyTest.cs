@@ -2,8 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Collections.Generic;
+using MUnique.OpenMU.PlugIns;
+
 namespace MUnique.OpenMU.Tests
 {
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
@@ -18,6 +23,8 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class PartyTest
     {
+        PartyKickAction kickAction = new PartyKickAction();
+
         /// <summary>
         /// Tests if an added party member gets added to the party list.
         /// </summary>
@@ -37,9 +44,10 @@ namespace MUnique.OpenMU.Tests
         public void PartyMemberKickFailByNonMaster()
         {
             var party = this.CreatePartyWithMembers(3);
-            var partyMember2 = party.PartyList[1];
+            var partyMember2 = (Player)party.PartyList[1];
             var partyMember3 = party.PartyList[2];
-            party.KickPlayer(partyMember2, (byte)party.PartyList.IndexOf(partyMember3));
+
+            this.kickAction.KickPlayer(partyMember2, (byte)party.PartyList.IndexOf(partyMember3));
             Assert.That(party.PartyList, Contains.Item(partyMember3));
         }
 
@@ -52,7 +60,7 @@ namespace MUnique.OpenMU.Tests
             var party = this.CreatePartyWithMembers(3);
             var partyMember2 = party.PartyList[1];
 
-            party.KickPlayer(partyMember2, (byte)party.PartyList.IndexOf(partyMember2));
+            this.kickAction.KickPlayer((Player)partyMember2, (byte)party.PartyList.IndexOf(partyMember2));
             Assert.That(party.PartyList, Is.Not.Contains(partyMember2));
             Assert.That(party.PartyList, Has.Count.EqualTo(2));
         }
@@ -67,7 +75,7 @@ namespace MUnique.OpenMU.Tests
             var partyMaster = party.PartyList[0] as Player;
             var partyMember = party.PartyList[1] as Player;
 
-            party.KickPlayer(partyMaster, (byte)party.PartyList.IndexOf(partyMember));
+            this.kickAction.KickPlayer(partyMaster, (byte)party.PartyList.IndexOf(partyMember));
             Assert.That(party.PartyList, Is.Not.Contains(partyMember));
             Assert.That(party.PartyList, Has.Count.EqualTo(2));
         }
@@ -82,7 +90,7 @@ namespace MUnique.OpenMU.Tests
             var partyMaster = party.PartyList[0];
             var partyMember = party.PartyList[1];
 
-            party.KickPlayer(partyMaster, (byte)party.PartyList.IndexOf(partyMaster));
+            this.kickAction.KickPlayer((Player)partyMaster, (byte)party.PartyList.IndexOf(partyMaster));
             Assert.That(partyMember.Party, Is.Null);
             Assert.That(party.PartyList, Is.Null.Or.Empty);
         }
@@ -101,7 +109,7 @@ namespace MUnique.OpenMU.Tests
             party.Add(partyMember2);
             var partyMember2Index = (byte)(party.PartyList.Count - 1);
 
-            party.KickPlayer(partyMember1, partyMember2Index);
+            this.kickAction.KickPlayer(partyMember1, partyMember2Index);
             Assert.That(partyMember1.Party, Is.Null);
             Assert.That(partyMember2.Party, Is.Null);
             Assert.That(party.PartyList, Is.Null.Or.Empty);
@@ -198,8 +206,8 @@ namespace MUnique.OpenMU.Tests
             var gameConfig = contextProvider.CreateNewContext().CreateNew<GameConfiguration>();
             gameConfig.Maps.Add(contextProvider.CreateNewContext().CreateNew<GameMapDefinition>());
 
-            var mapInitializer = new MapInitializer(gameConfig);
-            var gameServer = new GameContext(gameConfig, contextProvider, mapInitializer);
+            var mapInitializer = new MapInitializer(gameConfig, new NullLogger<MapInitializer>());
+            var gameServer = new GameContext(gameConfig, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(new List<PlugInConfiguration>(), new NullLogger<PlugInManager>(), null));
             gameServer.Configuration.MaximumPartySize = 5;
 
             return gameServer;

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -37,11 +38,12 @@ namespace MUnique.OpenMU.Tests
             map.SetupAllProperties();
             map.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
             map.Setup(m => m.MonsterSpawns).Returns(new List<MonsterSpawnArea>());
+            map.Object.TerrainData = new byte[ushort.MaxValue + 3];
             gameConfig.Object.RecoveryInterval = int.MaxValue;
             gameConfig.Object.Maps.Add(map.Object);
 
-            var mapInitializer = new MapInitializer(gameConfig.Object);
-            var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer);
+            var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>());
+            var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLogger<PlugInManager>(), null));
             return GetPlayer(gameContext);
         }
 

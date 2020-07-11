@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Network.Benchmarks
     using System;
     using BenchmarkDotNet.Attributes;
     using BenchmarkDotNet.Jobs;
+    using Microsoft.Extensions.Logging.Abstractions;
 
     /// <summary>
     /// A benchmark to compare <see cref="ConnectionExtensions.StartSafeWrite"/> with doing the same manually.
@@ -32,7 +33,7 @@ namespace MUnique.OpenMU.Network.Benchmarks
         public void Manually()
         {
             var duplexPipe = new DuplexPipe();
-            var connection = new Connection(duplexPipe, null, null);
+            var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
             for (int i = 0; i < this.PacketCount; i++)
             {
                 lock (connection)
@@ -53,7 +54,7 @@ namespace MUnique.OpenMU.Network.Benchmarks
         public void SafeWrite()
         {
             var duplexPipe = new DuplexPipe();
-            var connection = new Connection(duplexPipe, null, null);
+            var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
             for (int i = 0; i < this.PacketCount; i++)
             {
                 using (var output = connection.StartSafeWrite(0xC1, this.c1Packet.Length))

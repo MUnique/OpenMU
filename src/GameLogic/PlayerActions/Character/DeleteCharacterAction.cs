@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
     using System;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Character;
@@ -16,8 +17,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     /// </summary>
     public class DeleteCharacterAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(DeleteCharacterAction));
-
         /// <summary>
         /// Tries to delete the character.
         /// </summary>
@@ -26,6 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// <param name="securityCode">The security code.</param>
         public void DeleteCharacter(Player player, string characterName, string securityCode)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             var result = this.DeleteCharacterRequest(player, characterName, securityCode);
             player.ViewPlugIns.GetPlugIn<IShowCharacterDeleteResponsePlugIn>()?.ShowCharacterDeleteResponse(result);
         }
@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         {
             if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
             {
-                Log.Error($"Account {player.Account.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
+                player.Logger.LogError($"Account {player.Account.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
                 return CharacterDeleteResult.Unsuccessful;
             }
 
@@ -42,9 +42,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
             if (character == null)
             {
-                Log.Error("Character not found. Hacker maybe tried to delete other players character!" +
-                    Environment.NewLine + "\tAccName: " + player.Account.LoginName +
-                    Environment.NewLine + "\tTried to delete Character: " + characterName);
+                player.Logger.LogError("Character not found. Hacker maybe tried to delete other players character!" +
+                                       Environment.NewLine + "\tAccName: " + player.Account.LoginName +
+                                       Environment.NewLine + "\tTried to delete Character: " + characterName);
 
                 return CharacterDeleteResult.Unsuccessful;
             }

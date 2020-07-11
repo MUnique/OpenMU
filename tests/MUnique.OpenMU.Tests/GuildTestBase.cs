@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.Interfaces;
@@ -59,7 +60,7 @@ namespace MUnique.OpenMU.Tests
 
             this.GuildMaster = this.GetGuildMaster();
             this.GameServers = new Dictionary<int, IGameServer> { { 0, this.GameServer0.Object }, { 1, this.GameServer1.Object } };
-            this.GuildServer = new OpenMU.GuildServer.GuildServer(this.GameServers, this.PersistenceContextProvider);
+            this.GuildServer = new OpenMU.GuildServer.GuildServer(this.GameServers, this.PersistenceContextProvider, new NullLogger<GuildServer.GuildServer>());
             var guildStatus = this.GuildServer.CreateGuild("Foobar", this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
             this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, this.GuildMaster.Id, 0);
         }

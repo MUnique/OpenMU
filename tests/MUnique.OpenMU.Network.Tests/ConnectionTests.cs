@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network.Tests
 {
     using System.IO.Pipelines;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging.Abstractions;
     using NUnit.Framework;
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace MUnique.OpenMU.Network.Tests
         {
             var malformedData = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
             var duplexPipe = new DuplexPipe();
-            using (var connection = new Connection(duplexPipe, null, null))
+            using (var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>()))
             {
                 var disconnected = false;
                 connection.Disconnected += (sender, args) => disconnected = true;
@@ -56,7 +57,7 @@ namespace MUnique.OpenMU.Network.Tests
         {
             var malformedData = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
             var duplexPipe = new DuplexPipe();
-            using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output));
+            using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output), new NullLogger<Connection>());
 
             _ = connection.BeginReceive();
             await connection.Output.WriteAsync(malformedData).ConfigureAwait(false);
@@ -71,7 +72,7 @@ namespace MUnique.OpenMU.Network.Tests
         public void InitiallyConnected()
         {
             var duplexPipe = new DuplexPipe();
-            using var connection = new Connection(duplexPipe, null, null);
+            using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
             Assert.That(connection.Connected, Is.True);
         }
     }

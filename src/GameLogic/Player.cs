@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
@@ -32,8 +32,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(Player));
-
         private readonly object moveLock = new object();
 
         private readonly Walker walker;
@@ -52,6 +50,11 @@ namespace MUnique.OpenMU.GameLogic
 
         private GameMap currentMap;
 
+        private IDisposable characterLoggingScope;
+
+        private IDisposable accountLoggingScope;
+        private Account account;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Player" /> class.
         /// </summary>di
@@ -59,6 +62,7 @@ namespace MUnique.OpenMU.GameLogic
         public Player(IGameContext gameContext)
         {
             this.GameContext = gameContext;
+            this.Logger = gameContext.LoggerFactory.CreateLogger<Player>();
             this.PersistenceContext = this.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameContext.Configuration);
             this.walker = new Walker(this, this.GetStepDelay);
 
@@ -84,6 +88,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Occurs when the player left the world with his selected character.
         /// </summary>
         public event EventHandler PlayerLeftWorld;
+
+        /// <summary>
+        /// Gets the logger of this player.
+        /// </summary>
+        public ILogger<Player> Logger { get; }
 
         /// <inheritdoc />
         public bool IsWalking => this.walker.CurrentTarget != default;
@@ -142,10 +151,13 @@ namespace MUnique.OpenMU.GameLogic
                     this.appearanceData.RaiseAppearanceChanged();
                     this.PlayerLeftWorld?.Invoke(this, null);
                     this.selectedCharacter = null;
+                    this.characterLoggingScope?.Dispose();
+                    this.characterLoggingScope = null;
                 }
                 else
                 {
                     this.selectedCharacter = value;
+                    this.characterLoggingScope = this.Logger.BeginScope("Character: {Name}", this.selectedCharacter.Name);
                     this.PlayerEnteredWorld?.Invoke(this, null);
                     this.appearanceData.RaiseAppearanceChanged();
                 }
@@ -175,7 +187,19 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the account.
         /// </summary>
-        public Account Account { get; set; }
+        public Account Account
+        {
+            get => this.account;
+            set
+            {
+                if (this.account != value)
+                {
+                    this.account = value;
+                    this.accountLoggingScope?.Dispose();
+                    this.accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this.account.LoginName);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the magic effect list.
@@ -606,7 +630,7 @@ namespace MUnique.OpenMU.GameLogic
                     this.Attributes[Stats.Level]++;
                     this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
                     this.SetReclaimableAttributesToMaximum();
-                    Logger.DebugFormat("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
+                    this.Logger.LogDebug("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
                     this.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()?.UpdateLevel();
                 }
             }
@@ -622,10 +646,10 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="target">The target.</param>
         public void Move(Point target)
         {
-            Logger.DebugFormat("Move: Player is moving to {0}", target);
+            this.Logger.LogDebug("Move: Player is moving to {0}", target);
             this.walker.Stop();
             this.CurrentMap.Move(this, target, this.moveLock, MoveType.Instant);
-            Logger.DebugFormat("Move: Observer Count: {0}", this.Observers.Count);
+            this.Logger.LogDebug("Move: Observer Count: {0}", this.Observers.Count);
         }
 
         /// <summary>
@@ -638,10 +662,10 @@ namespace MUnique.OpenMU.GameLogic
             var currentMap = this.CurrentMap;
             if (currentMap != null)
             {
-                Logger.DebugFormat("WalkTo: Player is walking to {0}", target);
+                this.Logger.LogDebug("WalkTo: Player is walking to {0}", target);
                 this.walker.WalkTo(target, steps);
                 currentMap.Move(this, target, this.moveLock, MoveType.Walk);
-                Logger.DebugFormat("WalkTo: Observer Count: {0}", this.Observers.Count);
+                this.Logger.LogDebug("WalkTo: Observer Count: {0}", this.Observers.Count);
             }
         }
 
@@ -1060,7 +1084,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex);
+                    this.Logger.LogError(ex, "Error occured when initializing the messenger.");
                 }
             });
         }

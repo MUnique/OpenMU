@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests
 {
     using System;
     using System.Linq;
+    using Microsoft.Extensions.Logging.Abstractions;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -32,7 +33,7 @@ namespace MUnique.OpenMU.Tests
         public void Setup()
         {
             this.contextProvider = new InMemoryPersistenceContextProvider();
-            new MUnique.OpenMU.Persistence.Initialization.DataInitialization(this.contextProvider).CreateInitialData();
+            new MUnique.OpenMU.Persistence.Initialization.DataInitialization(this.contextProvider, new NullLoggerFactory()).CreateInitialData();
             this.gameConfiguration = this.contextProvider.CreateNewConfigurationContext().Get<GameConfiguration>().First();
             this.itemSerializer = new ItemSerializer();
         }

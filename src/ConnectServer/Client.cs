@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.ConnectServer
     using System.Buffers;
     using System.Net;
     using System.Threading;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.ConnectServer.PacketHandler;
     using MUnique.OpenMU.Network;
 
@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.ConnectServer
     {
         private static readonly byte[] HelloPacket = { 0xC1, 4, 0, 1 };
 
-        private static readonly ILog Log = LogManager.GetLogger(typeof(Client));
+        private readonly ILogger<Client> logger;
 
         private readonly object disposeLock = new object();
         private readonly byte[] receiveBuffer;
@@ -37,12 +37,14 @@ namespace MUnique.OpenMU.ConnectServer
         /// <param name="timeout">The timeout.</param>
         /// <param name="packetHandler">The packet handler.</param>
         /// <param name="maxPacketSize">Maximum size of the packet. This value is also used to initialize the receive buffer.</param>
-        public Client(IConnection connection, TimeSpan timeout, IPacketHandler<Client> packetHandler, byte maxPacketSize)
+        /// <param name="logger">The logger.</param>
+        public Client(IConnection connection, TimeSpan timeout, IPacketHandler<Client> packetHandler, byte maxPacketSize, ILogger<Client> logger)
         {
             this.Connection = connection;
             this.Connection.PacketReceived += this.OnPacketReceived;
             this.Timeout = timeout;
             this.packetHandler = packetHandler;
+            this.logger = logger;
             this.lastReceive = DateTime.Now;
             var checkInterval = new TimeSpan(0, 0, 20);
             this.onlineTimer = new Timer(this.OnlineTimer_Elapsed, null, checkInterval, checkInterval);
@@ -120,7 +122,7 @@ namespace MUnique.OpenMU.ConnectServer
         {
             if (this.Connection.Connected && DateTime.Now.Subtract(this.lastReceive) > this.Timeout)
             {
-                Log.DebugFormat("Connection Timeout ({0}): Address {1}:{2} will be disconnected.", this.Timeout, this.Address, this.Port);
+                this.logger.LogDebug("Connection Timeout ({0}): Address {1}:{2} will be disconnected.", this.Timeout, this.Address, this.Port);
                 this.Connection.Disconnect();
             }
         }
@@ -130,7 +132,7 @@ namespace MUnique.OpenMU.ConnectServer
             this.lastReceive = DateTime.Now;
             if (sequence.Length > this.receiveBuffer.Length)
             {
-                Log.InfoFormat($"Client {this.Address}:{this.Port} will be disconnected because it sent a packet which was too big (size of {sequence.Length}");
+                this.logger.LogInformation($"Client {this.Address}:{this.Port} will be disconnected because it sent a packet which was too big (size of {sequence.Length}");
                 this.Connection.Disconnect();
             }
 

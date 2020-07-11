@@ -4,9 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -19,11 +20,25 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class ItemPowerUpFactory : IItemPowerUpFactory
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ItemPowerUpFactory));
+        private readonly ILogger<ItemPowerUpFactory> logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemPowerUpFactory"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        public ItemPowerUpFactory(ILogger<ItemPowerUpFactory> logger)
+        {
+            this.logger = logger;
+        }
 
         /// <inheritdoc/>
         public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeHolder)
         {
+            if (item.Definition == null)
+            {
+                throw new ArgumentException($"Item of slot {item.ItemSlot} got no Definition.", nameof(item));
+            }
+
             if (item.Durability <= 0)
             {
                 yield break;
@@ -31,12 +46,6 @@ namespace MUnique.OpenMU.GameLogic
 
             if (item.ItemSlot < InventoryConstants.FirstEquippableItemSlotIndex || item.ItemSlot > InventoryConstants.LastEquippableItemSlotIndex)
             {
-                yield break;
-            }
-
-            if (item.Definition == null)
-            {
-                Log.Warn($"Item of slot {item.ItemSlot} got no Definition.");
                 yield break;
             }
 
@@ -187,7 +196,7 @@ namespace MUnique.OpenMU.GameLogic
                     var optionOfLevel = option.LevelDependentOptions.FirstOrDefault(l => l.Level == level);
                     if (optionOfLevel == null)
                     {
-                        Log.Warn($"Item has {nameof(IncreasableItemOption)} with level > 0, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");
+                        this.logger.LogWarning($"Item has {nameof(IncreasableItemOption)} with level > 0, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");
                         continue;
                     }
 

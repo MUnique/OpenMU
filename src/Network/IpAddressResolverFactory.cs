@@ -7,34 +7,65 @@ namespace MUnique.OpenMU.Network
     using System;
     using System.Linq;
     using System.Net;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Factory which creates an <see cref="IIpAddressResolver"/> depending on command line arguments.
     /// </summary>
     public static class IpAddressResolverFactory
     {
+        private const string ResolveParameterPrefix = "-resolveIP:";
+        private const string PublicIpResolve = "-resolveIP:public";
+        private const string LocalIpResolve = "-resolveIP:local";
+
         /// <summary>
         /// Determines the ip resolver based on command line arguments.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        /// <returns>The determined resolver.</returns>
-        public static IIpAddressResolver DetermineIpResolver(string[] args)
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <returns>
+        /// The determined resolver.
+        /// </returns>
+        public static IIpAddressResolver DetermineIpResolver(string[] args, ILoggerFactory loggerFactory)
         {
-            const string resolveParameterPrefix = "-resolveIP:";
-            const string publicIpResolve = "-resolveIP:public";
-            const string localIpResolve = "-resolveIP:local";
-            var parameter = args.FirstOrDefault(a => a.StartsWith(resolveParameterPrefix, StringComparison.InvariantCultureIgnoreCase));
+            var parameter = GetParameter(args);
 
             switch (parameter)
             {
                 case null:
-                case string p when p.StartsWith(publicIpResolve, StringComparison.InvariantCultureIgnoreCase):
-                    return new PublicIpResolver();
-                case string p when p.StartsWith(localIpResolve, StringComparison.InvariantCultureIgnoreCase):
+                case { } p when p.StartsWith(PublicIpResolve, StringComparison.InvariantCultureIgnoreCase):
+                    return new PublicIpResolver(loggerFactory.CreateLogger<PublicIpResolver>());
+                case { } p when p.StartsWith(LocalIpResolve, StringComparison.InvariantCultureIgnoreCase):
                     return new LocalIpResolver();
                 default:
                     IPAddress.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out var ip);
                     return new CustomIpResolver(ip);
+            }
+        }
+
+        private static string GetParameter(string[] args) => args.FirstOrDefault(a => a.StartsWith(ResolveParameterPrefix, StringComparison.InvariantCultureIgnoreCase));
+
+        /// <summary>
+        /// Adds the ip resolver to the collection, depending on the command line arguments.
+        /// </summary>
+        /// <param name="serviceCollection">The service collection.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>The <paramref name="serviceCollection"/>.</returns>
+        public static IServiceCollection AddIpResolver(this IServiceCollection serviceCollection, params string[] args)
+        {
+            var parameter = GetParameter(args);
+
+            switch (parameter)
+            {
+                case null:
+                case { } p when p.StartsWith(PublicIpResolve, StringComparison.InvariantCultureIgnoreCase):
+                    return serviceCollection.AddSingleton<IIpAddressResolver, PublicIpResolver>();
+                case { } p when p.StartsWith(LocalIpResolve, StringComparison.InvariantCultureIgnoreCase):
+                    return serviceCollection.AddSingleton<IIpAddressResolver, LocalIpResolver>();
+                default:
+                    IPAddress.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out var ip);
+                    return serviceCollection.AddSingleton<IIpAddressResolver>(new CustomIpResolver(ip));
             }
         }
     }

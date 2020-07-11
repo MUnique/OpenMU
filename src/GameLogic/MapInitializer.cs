@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.PlugIns;
@@ -17,18 +17,20 @@ namespace MUnique.OpenMU.GameLogic
     /// <seealso cref="MUnique.OpenMU.GameLogic.IMapInitializer" />
     public class MapInitializer : IMapInitializer
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(MapInitializer));
         private readonly IDropGenerator defaultDropGenerator;
         private readonly GameConfiguration configuration;
+        private readonly ILogger<MapInitializer> logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MapInitializer"/> class.
+        /// Initializes a new instance of the <see cref="MapInitializer" /> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
-        public MapInitializer(GameConfiguration configuration)
+        /// <param name="logger">The logger.</param>
+        public MapInitializer(GameConfiguration configuration, ILogger<MapInitializer> logger)
         {
             this.defaultDropGenerator = new DefaultDropGenerator(configuration, Rand.GetRandomizer());
             this.configuration = configuration;
+            this.logger = logger;
             this.ItemDropDuration = 60;
             this.ChunkSize = 8;
         }
@@ -69,7 +71,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc />
         public void InitializeState(GameMap createdMap)
         {
-            Logger.Debug($"Start creating monster instances for map {createdMap}");
+            this.logger.LogDebug("Start creating monster instances for map {createdMap}", createdMap);
             foreach (var spawn in createdMap.Definition.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Automatic))
             {
                 for (int i = 0; i < spawn.Quantity; i++)
@@ -81,17 +83,17 @@ namespace MUnique.OpenMU.GameLogic
 
                     if (monsterDef.ObjectKind == NpcObjectKind.Monster)
                     {
-                        Logger.Debug($"Creating monster {spawn}");
+                        this.logger.LogDebug("Creating monster {spawn}", spawn);
                         npc = new Monster(spawn, monsterDef, createdMap, this.defaultDropGenerator, intelligence ?? new BasicMonsterIntelligence(createdMap), this.PlugInManager);
                     }
                     else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
                     {
-                        Logger.Debug($"Creating trap {spawn}");
+                        this.logger.LogDebug("Creating trap {spawn}", spawn);
                         npc = new Trap(spawn, monsterDef, createdMap, intelligence ?? new RandomAttackInRangeTrapIntelligence(createdMap));
                     }
                     else
                     {
-                        Logger.Debug($"Creating npc {spawn}");
+                        this.logger.LogDebug("Creating npc {spawn}", spawn);
                         npc = new NonPlayerCharacter(spawn, monsterDef, createdMap);
                     }
 
@@ -100,7 +102,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
             }
 
-            Logger.Debug($"Finished creating monster instances for map {createdMap}");
+            this.logger.LogDebug("Finished creating monster instances for map {createdMap}", createdMap);
         }
 
         /// <summary>
@@ -122,6 +124,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </returns>
         protected virtual GameMap InternalCreateGameMap(GameMapDefinition definition)
         {
+            this.logger.LogDebug("Creating GameMap {0}", definition);
             return new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
         }
 
@@ -137,7 +140,7 @@ namespace MUnique.OpenMU.GameLogic
                 var type = Type.GetType(monsterDefinition.IntelligenceTypeName);
                 if (type == null)
                 {
-                    Logger.Error($"Could not find type {monsterDefinition.IntelligenceTypeName}");
+                    this.logger.LogError($"Could not find type {monsterDefinition.IntelligenceTypeName}");
                     return null;
                 }
 
@@ -145,7 +148,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             catch (Exception ex)
             {
-                Logger.Error($"Could not create npc intelligence for monster {monsterDefinition.Designation}, type name {monsterDefinition.IntelligenceTypeName}", ex);
+                this.logger.LogError(ex, $"Could not create npc intelligence for monster {monsterDefinition.Designation}, type name {monsterDefinition.IntelligenceTypeName}");
             }
 
             return null;

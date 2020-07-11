@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.ConnectServer
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network.PlugIns;
 
@@ -21,7 +21,8 @@ namespace MUnique.OpenMU.ConnectServer
     /// </summary>
     internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectServer));
+        private readonly ILoggerFactory loggerFactory;
+        private readonly ILogger logger;
         private ServerState serverState;
 
         /// <summary>
@@ -30,16 +31,20 @@ namespace MUnique.OpenMU.ConnectServer
         /// <param name="connectServerSettings">The settings.</param>
         /// <param name="clientVersion">The client version.</param>
         /// <param name="configurationId">The configuration identifier.</param>
-        public ConnectServer(IConnectServerSettings connectServerSettings, ClientVersion clientVersion, Guid configurationId)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public ConnectServer(IConnectServerSettings connectServerSettings, ClientVersion clientVersion, Guid configurationId, ILoggerFactory loggerFactory)
         {
+            this.loggerFactory = loggerFactory;
             this.ClientVersion = clientVersion;
             this.ConfigurationId = configurationId;
             this.Settings = connectServerSettings;
 
+            this.logger = this.loggerFactory.CreateLogger<ConnectServer>();
+
             this.ConnectInfos = new Dictionary<ushort, byte[]>();
             this.ServerList = new ServerList(this.ClientVersion);
 
-            this.ClientListener = new ClientListener(this);
+            this.ClientListener = new ClientListener(this, loggerFactory);
             this.ClientListener.ConnectedClientsChanged += (sender, args) =>
             {
                 this.RaisePropertyChanged(nameof(this.CurrentConnections));
@@ -123,7 +128,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// <inheritdoc/>
         public void Start()
         {
-            Logger.Info("Begin starting");
+            this.logger.LogInformation("Begin starting");
             var oldState = this.ServerState;
             this.ServerState = OpenMU.Interfaces.ServerState.Starting;
             try
@@ -133,27 +138,27 @@ namespace MUnique.OpenMU.ConnectServer
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message, ex);
+                this.logger.LogError(ex, ex.Message);
                 this.ServerState = oldState;
             }
 
-            Logger.Info("Finished starting");
+            this.logger.LogInformation("Finished starting");
         }
 
         /// <inheritdoc/>
         public void Shutdown()
         {
-            Logger.Info("Begin stopping");
+            this.logger.LogInformation("Begin stopping");
             this.ServerState = OpenMU.Interfaces.ServerState.Stopping;
             this.ClientListener.StopListener();
             this.ServerState = OpenMU.Interfaces.ServerState.Stopped;
-            Logger.Info("Finished stopping");
+            this.logger.LogInformation("Finished stopping");
         }
 
         /// <inheritdoc/>
         public void RegisterGameServer(IGameServerInfo gameServer, IPEndPoint publicEndPoint)
         {
-            Logger.InfoFormat("GameServer {0} is registering with endpoint {1}", gameServer, publicEndPoint);
+            this.logger.LogInformation("GameServer {0} is registering with endpoint {1}", gameServer, publicEndPoint);
             try
             {
                 var serverListItem = new ServerListItem(this.ServerList)
@@ -173,17 +178,17 @@ namespace MUnique.OpenMU.ConnectServer
             }
             catch (Exception ex)
             {
-                Logger.Error("Error during registration process", ex);
+                this.logger.LogError("Error during registration process", ex);
                 throw;
             }
 
-            Logger.InfoFormat("GameServer {0} has registered with endpoint {1}", gameServer, publicEndPoint);
+            this.logger.LogInformation("GameServer {0} has registered with endpoint {1}", gameServer, publicEndPoint);
         }
 
         /// <inheritdoc/>
         public void UnregisterGameServer(IGameServerInfo gameServer)
         {
-            Logger.InfoFormat("GameServer {0} is unregistering", gameServer);
+            this.logger.LogInformation("GameServer {0} is unregistering", gameServer);
             var serverListItem = this.ServerList.Servers.FirstOrDefault(s => s.ServerId == gameServer.Id);
             if (serverListItem != null)
             {
@@ -197,17 +202,17 @@ namespace MUnique.OpenMU.ConnectServer
                 notifier.PropertyChanged -= this.HandleServerPropertyChanged;
             }
 
-            Logger.InfoFormat("GameServer {0} has unregistered", gameServer);
+            this.logger.LogInformation("GameServer {0} has unregistered", gameServer);
         }
 
         private void CreatePlugins()
         {
-            Logger.Debug("Begin creating plugins");
-            this.ClientListener.ClientSocketAcceptPlugins.Add(new CheckMaximumConnectionsPlugin(this));
-            var clientCountPlugin = new ClientConnectionCountPlugin(this.Settings);
+            this.logger.LogDebug("Begin creating plugins");
+            this.ClientListener.ClientSocketAcceptPlugins.Add(new CheckMaximumConnectionsPlugin(this, this.loggerFactory.CreateLogger<CheckMaximumConnectionsPlugin>()));
+            var clientCountPlugin = new ClientConnectionCountPlugin(this.Settings, this.loggerFactory.CreateLogger<ClientConnectionCountPlugin>());
             this.ClientListener.ClientSocketAcceptPlugins.Add(clientCountPlugin);
             this.ClientListener.ClientSocketDisconnectPlugins.Add(clientCountPlugin);
-            Logger.Debug("Finished creating plugins");
+            this.logger.LogDebug("Finished creating plugins");
         }
 
         private void HandleServerPropertyChanged(object sender, PropertyChangedEventArgs args)

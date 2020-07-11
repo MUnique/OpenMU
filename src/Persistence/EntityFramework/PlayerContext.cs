@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using log4net;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -15,11 +14,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </summary>
     internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     {
-        /// <summary>
-        /// The logger of this class.
-        /// </summary>
-        private static readonly ILog Log = LogManager.GetLogger(typeof(PlayerContext));
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerContext" /> class.
         /// </summary>
@@ -45,7 +39,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             if (!(letterHeader is LetterHeader persistentHeader))
             {
-                Log.Error($"Letter header is not of persistent type {typeof(LetterHeader)}.");
                 return false;
             }
 

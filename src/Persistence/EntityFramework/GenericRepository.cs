@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
+    using Microsoft.Extensions.Logging;
+
     /// <summary>
     /// A generic repository which wraps the access to the DBSet of the <see cref="EntityDataContext"/>.
     /// Entities are getting eagerly (=completely) loaded automatically.
@@ -13,11 +15,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         where T : class
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenericRepository{T}"/> class.
+        /// Initializes a new instance of the <see cref="GenericRepository{T}" /> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
-        public GenericRepository(RepositoryManager repositoryManager)
-            : base(repositoryManager)
+        /// <param name="logger">The logger.</param>
+        public GenericRepository(RepositoryManager repositoryManager, ILogger logger)
+            : base(repositoryManager, logger)
         {
         }
 

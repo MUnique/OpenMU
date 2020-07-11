@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Text;
-    using log4net;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata;
     using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -20,11 +20,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
     /// </remarks>
     public class JsonQueryBuilder
     {
-        /// <summary>
-        /// The logger of this class.
-        /// </summary>
-        private static readonly ILog Log = LogManager.GetLogger(typeof(JsonQueryBuilder));
-
         /// <summary>
         /// Builds the json query for the given entity type.
         /// </summary>
@@ -42,18 +37,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <returns>The query which returns the objects of the given type as json string.</returns>
         public string BuildJsonQueryForEntity(IEntityType entityType)
         {
-            Log.Debug($"Building the json query for {entityType.Name}.");
+            Debug.WriteLine($"Building the json query for {entityType.Name}.");
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("select result.\"Id\" \"$id\", result.\"Id\" id, row_to_json(result) as ").AppendLine(entityType.GetTableName())
                 .AppendLine("from (");
             this.AddTypeToQuery(entityType, stringBuilder, "a");
             stringBuilder.AppendLine(") result");
             var result = stringBuilder.ToString();
-
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug($"Finished building the json query for {entityType.Name}. Result: {result}");
-            }
+            Debug.WriteLine("Finished building the json query for {0}. Result: {1}", entityType.Name, result);
 
             return result;
         }
@@ -85,7 +76,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             if (navigationAlias == "i")
             {
                 // stopping circular reference
-                Log.DebugFormat("Stopping circular reference at entity type {0}", entityType.Name);
+                Debug.Fail($"Stopping circular reference at entity type {entityType.Name}");
                 return;
             }
 
@@ -114,7 +105,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             if (navigation.ForeignKey.DeclaringEntityType != navigation.DeclaringEntityType)
             {
                 // inverse property, no data required
-                Log.DebugFormat("Inverse property {0}", navigation.Name);
+                Debug.WriteLine("Inverse property {0}", navigation.Name);
                 return;
             }
 
@@ -124,7 +115,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             if (foreignKey.IsShadowProperty())
             {
                 // We assume that every important foreign key is mapped to a "real" property
-                Log.DebugFormat("Shadow property {0}", navigation.Name);
+                Debug.WriteLine("Shadow property {0}", navigation.Name);
                 return;
             }
 
@@ -132,7 +123,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             if (isBackReference)
             {
                 // It's a back reference of a collection - we just have to create a reference json object
-                Log.DebugFormat("Back Reference property {0}", navigation.Name);
+                Debug.WriteLine("Back Reference property {0}", navigation.Name);
             }
 
             stringBuilder.Append(", (");

@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using System.Linq;
     using System.Reflection;
     using System.Text;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -30,17 +31,20 @@ namespace MUnique.OpenMU.Persistence.Initialization
     public class DataInitialization
     {
         private readonly IPersistenceContextProvider persistenceContextProvider;
+        private readonly ILoggerFactory loggerFactory;
         private GameConfiguration gameConfiguration;
         private IContext context;
         private IList<Maps.IMapInitializer> mapInitializers;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataInitialization"/> class.
+        /// Initializes a new instance of the <see cref="DataInitialization" /> class.
         /// </summary>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public DataInitialization(IPersistenceContextProvider persistenceContextProvider)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public DataInitialization(IPersistenceContextProvider persistenceContextProvider, ILoggerFactory loggerFactory)
         {
             this.persistenceContextProvider = persistenceContextProvider;
+            this.loggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -73,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
                 }
 
-                var plugInManager = new PlugInManager();
+                var plugInManager = new PlugInManager(null, this.loggerFactory.CreateLogger<PlugInManager>(), null);
                 plugInManager.DiscoverAndRegisterPlugIns();
                 plugInManager.KnownPlugInTypes.ForEach(plugInType =>
                 {

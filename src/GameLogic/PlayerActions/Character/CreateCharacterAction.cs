@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     using System;
     using System.Linq;
     using System.Text.RegularExpressions;
-
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
@@ -19,8 +19,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
     /// </summary>
     public class CreateCharacterAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(CreateCharacterAction));
-
         /// <summary>
         /// Tries to create a new character.
         /// </summary>
@@ -29,9 +27,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// <param name="characterClassId">The character class identifier.</param>
         public void CreateCharacter(Player player, string characterName, int characterClassId)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
             {
-                Log.Error($"Account {player.Account.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
+                player.Logger.LogError($"Account {player.Account.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
                 return;
             }
 
@@ -55,13 +54,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             var account = player.Account;
             if (account == null)
             {
-                Log.Warn("Account Object is null.");
+                player.Logger.LogWarning("Account Object is null.");
                 throw new ArgumentNullException(nameof(player), "Account Object is null.");
             }
 
-            Log.DebugFormat("Enter CreateCharacter: {0} {1} {2}", account.LoginName, name, charclass);
+            player.Logger.LogDebug("Enter CreateCharacter: {0} {1} {2}", account.LoginName, name, charclass);
             var isValidName = Regex.IsMatch(name, player.GameContext.Configuration.CharacterNameRegex);
-            Log.DebugFormat("CreateCharacter: Character Name matches = {0}", isValidName);
+            player.Logger.LogDebug("CreateCharacter: Character Name matches = {0}", isValidName);
             if (!isValidName)
             {
                 return null;
@@ -94,7 +93,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             account.Characters.Add(character);
             player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(player, character);
             player.PersistenceContext.SaveChanges();
-            Log.Debug("Creating Character Complete.");
+            player.Logger.LogDebug("Creating Character Complete.");
             return character;
         }
 

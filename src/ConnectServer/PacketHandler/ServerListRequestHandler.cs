@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
     using System;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Network;
 
     /// <summary>
@@ -13,36 +13,35 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
     /// </summary>
     internal class ServerListRequestHandler : IPacketHandler<Client>
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ServerListRequestHandler));
         private readonly IConnectServer connectServer;
+        private readonly ILogger<ServerListRequestHandler> logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerListRequestHandler"/> class.
+        /// Initializes a new instance of the <see cref="ServerListRequestHandler" /> class.
         /// </summary>
         /// <param name="connectServer">The connect server.</param>
-        public ServerListRequestHandler(IConnectServer connectServer)
+        /// <param name="logger">The logger.</param>
+        public ServerListRequestHandler(IConnectServer connectServer, ILogger<ServerListRequestHandler> logger)
         {
             this.connectServer = connectServer;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
         public void HandlePacket(Client client, Span<byte> packet)
         {
-            Log.DebugFormat("Client {0}:{1} requested Server List", client.Address, client.Port);
+            this.logger.LogDebug("Client {0}:{1} requested Server List", client.Address, client.Port);
             if (client.ServerListRequestCount >= this.connectServer.Settings.MaxServerListRequests)
             {
-                Log.DebugFormat("Client {0}:{1} reached maxListRequests", client.Address, client.Port);
+                this.logger.LogDebug("Client {0}:{1} reached maxListRequests", client.Address, client.Port);
                 client.Connection.Disconnect();
             }
 
-            var serverList = this.connectServer.ServerList.Serialize();
-            using (var writer = client.Connection.StartSafeWrite(serverList[0], serverList.Length))
-            {
-                serverList.CopyTo(writer.Span);
-                writer.Commit();
-            }
-
             client.ServerListRequestCount++;
+            var serverList = this.connectServer.ServerList.Serialize();
+            using var writer = client.Connection.StartSafeWrite(serverList[0], serverList.Length);
+            serverList.CopyTo(writer.Span);
+            writer.Commit();
         }
     }
 }

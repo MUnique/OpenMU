@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.ChatServer
     using System;
     using System.ComponentModel;
     using System.IO.Pipelines;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
@@ -18,17 +19,20 @@ namespace MUnique.OpenMU.ChatServer
     {
         private readonly ChatServerEndpoint endpoint;
         private readonly PlugInManager plugInManager;
+        private readonly ILoggerFactory loggerFactory;
         private Listener chatClientListener;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatServerListener"/> class.
+        /// Initializes a new instance of the <see cref="ChatServerListener" /> class.
         /// </summary>
         /// <param name="endpoint">The endpoint.</param>
         /// <param name="plugInManager">The plug in manager.</param>
-        public ChatServerListener(ChatServerEndpoint endpoint, PlugInManager plugInManager)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public ChatServerListener(ChatServerEndpoint endpoint, PlugInManager plugInManager, ILoggerFactory loggerFactory)
         {
             this.endpoint = endpoint;
             this.plugInManager = plugInManager;
+            this.loggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         public void Start()
         {
-            this.chatClientListener = new Listener(this.endpoint.NetworkPort, this.CreateDecryptor, writer => null);
+            this.chatClientListener = new Listener(this.endpoint.NetworkPort, this.CreateDecryptor, writer => null, this.loggerFactory);
             this.chatClientListener.ClientAccepted += (sender, args) => this.ClientAccepted?.Invoke(sender, args);
             this.chatClientListener.ClientAccepting += (sender, args) => this.ClientAccepting?.Invoke(sender, args);
             this.chatClientListener.Start();

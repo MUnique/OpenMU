@@ -8,11 +8,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using log4net;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.EntityFrameworkCore.Metadata;
     using Microsoft.EntityFrameworkCore.Metadata.Internal;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Base class for a generic repository which wraps the access to the DBSet of the <see cref="EntityDataContext"/>.
@@ -22,12 +22,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProperty
         where T : class
     {
+        private readonly ILogger logger;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenericRepositoryBase{T}"/> class.
+        /// Initializes a new instance of the <see cref="GenericRepositoryBase{T}" /> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
-        protected GenericRepositoryBase(RepositoryManager repositoryManager)
+        /// <param name="logger">The logger.</param>
+        protected GenericRepositoryBase(RepositoryManager repositoryManager, ILogger logger)
         {
+            this.logger = logger;
             this.RepositoryManager = repositoryManager;
             using var completeContext = new EntityDataContext();
             this.FullEntityType = completeContext.Model.FindEntityType(typeof(T));
@@ -42,8 +46,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Gets the complete meta model of the entity type in <see cref="EntityDataContext"/>.
         /// </summary>
         protected IEntityType FullEntityType { get; }
-
-        private static ILog Log { get; } = LogManager.GetLogger(typeof(CachingGenericRepository<>).MakeGenericType(typeof(T)));
 
         /// <inheritdoc/>
         public bool Delete(Guid id)
@@ -75,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             var result = context.Context.Set<T>().Find(id);
             if (result == null)
             {
-                Log.Debug($"Object with id {id} could not be found.");
+                this.logger.LogDebug($"Object with id {id} could not be found.");
             }
             else
             {
@@ -188,7 +190,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
             else
             {
-                Log.Warn($"No repository found which supports loading by foreign key for type ${foreignKeyProperty.DeclaringEntityType.ClrType}.");
+                this.logger.LogWarning($"No repository found which supports loading by foreign key for type ${foreignKeyProperty.DeclaringEntityType.ClrType}.");
                 loadStatusAware.LoadingStatus = LoadingStatus.Failed;
             }
         }
@@ -227,7 +229,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 }
                 catch (RepositoryNotFoundException ex)
                 {
-                    Log.Error($"Repository not found: {ex.Message}");
+                    this.logger.LogError(ex, $"Repository not found: {ex.Message}");
                 }
 
                 if (repository != null)
@@ -240,13 +242,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     }
                     else
                     {
-                        Log.Error($"Could not find setter for navigation {navigation}");
+                        this.logger.LogError($"Could not find setter for navigation {navigation}");
                     }
 #pragma warning restore EF1001 // Internal EF Core API usage.
                 }
                 else
                 {
-                    Log.Error($"Repository not found for navigation target type {navigation.GetTargetType()}.");
+                    this.logger.LogError($"Repository not found for navigation target type {navigation.GetTargetType()}.");
                 }
             }
         }

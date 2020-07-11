@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
 
     /// <summary>
@@ -18,21 +19,33 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </remarks>
     public class CachingRepositoryManager : RepositoryManager
     {
+        private readonly ILoggerFactory loggerFactory;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachingRepositoryManager"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">The logger factory.</param>
+        public CachingRepositoryManager(ILoggerFactory loggerFactory)
+            : base(loggerFactory)
+        {
+            this.loggerFactory = loggerFactory;
+        }
+
         /// <summary>
         /// Registers the repositories.
         /// </summary>
         public override void RegisterRepositories()
         {
-            this.RegisterRepository(new AccountRepository(this));
-            this.RegisterRepository(new LetterBodyRepository(this));
-            this.RegisterRepository(new CachedRepository<GameConfiguration>(new CachingGameConfigurationRepository(this)));
-            this.RegisterRepository(new CachingGenericRepository<GameServerConfiguration>(this));
-            this.RegisterRepository(new CachingGenericRepository<GameClientDefinition>(this));
-            this.RegisterRepository(new CachingGenericRepository<ConnectServerDefinition>(this));
-            this.RegisterRepository(new CachingGenericRepository<ChatServerDefinition>(this));
-            this.RegisterRepository(new CachingGenericRepository<ChatServerEndpoint>(this));
-            this.RegisterRepository(new CachingGenericRepository<GameServerEndpoint>(this));
-            this.RegisterRepository(new GameServerDefinitionRepository(this));
+            this.RegisterRepository(new AccountRepository(this, this.loggerFactory.CreateLogger<AccountRepository>()));
+            this.RegisterRepository(new LetterBodyRepository(this, this.loggerFactory.CreateLogger<LetterBodyRepository>()));
+            this.RegisterRepository(new CachedRepository<GameConfiguration>(new CachingGameConfigurationRepository(this, this.loggerFactory.CreateLogger<CachingGameConfigurationRepository>())));
+            this.RegisterRepository(new CachingGenericRepository<GameServerConfiguration>(this, this.loggerFactory.CreateLogger<CachingGenericRepository<GameServerConfiguration>>()));
+            this.RegisterRepository(new CachingGenericRepository<GameClientDefinition>(this, this.loggerFactory.CreateLogger<CachingGenericRepository<GameClientDefinition>>()));
+            this.RegisterRepository(new CachingGenericRepository<ConnectServerDefinition>(this, this.loggerFactory.CreateLogger<CachingGenericRepository<ConnectServerDefinition>>()));
+            this.RegisterRepository(new CachingGenericRepository<ChatServerDefinition>(this, this.loggerFactory.CreateLogger<CachingGenericRepository<ChatServerDefinition>>()));
+            this.RegisterRepository(new CachingGenericRepository<ChatServerEndpoint>(this, this.loggerFactory.CreateLogger<CachingGenericRepository<ChatServerEndpoint>>()));
+            this.RegisterRepository(new CachingGenericRepository<GameServerEndpoint>(this, this.loggerFactory.CreateLogger<CachingGenericRepository<GameServerEndpoint>>()));
+            this.RegisterRepository(new GameServerDefinitionRepository(this, this.loggerFactory.CreateLogger<GameServerDefinitionRepository>()));
 
             this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this, config => config.RawItemOptions));
             this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(
@@ -72,7 +85,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         protected override IRepository CreateGenericRepository(Type entityType)
         {
             var repositoryType = typeof(CachingGenericRepository<>).MakeGenericType(entityType);
-            return (IRepository)Activator.CreateInstance(repositoryType, this);
+            return (IRepository)Activator.CreateInstance(repositoryType, this, this.loggerFactory.CreateLogger(repositoryType));
         }
     }
 }
