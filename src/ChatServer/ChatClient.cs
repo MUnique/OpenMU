@@ -232,11 +232,11 @@ namespace MUnique.OpenMU.ChatServer
 
         private void Authenticate(Span<byte> packet)
         {
-            var roomid = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
-            var requestedRoom = this.manager.GetChatRoom(roomid);
+            var roomId = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
+            var requestedRoom = this.manager.GetChatRoom(roomId);
             if (requestedRoom == null)
             {
-                Log.Error($"Requested room {roomid} has not been registered before.");
+                Log.Error($"Requested room {roomId} has not been registered before.");
                 this.LogOff();
                 return;
             }
