@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The array.</param>
         /// <param name="startIndex">The start index.</param>
         /// <returns>An unsigned short.</returns>
-        public static ushort MakeWordBigEndian(this byte[] array, int startIndex)
+        public static ushort MakeWordBigEndian(this Span<byte> array, int startIndex)
         {
             return (ushort)((array[startIndex + 1] << 8) | array[startIndex]);
         }
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="array">The array.</param>
         /// <param name="startIndex">The start index.</param>
         /// <returns>An unsigned short.</returns>
-        public static ushort TryMakeWordBigEndian(this byte[] array, int startIndex)
+        public static ushort TryMakeWordBigEndian(this Span<byte> array, int startIndex)
         {
             return array.Length > startIndex + 1 ? array.MakeWordBigEndian(startIndex) : default;
         }
