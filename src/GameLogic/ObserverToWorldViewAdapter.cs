@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
-    using log4net;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views.World;
 
@@ -17,7 +17,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class ObserverToWorldViewAdapter : IBucketMapObserver, IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ObserverToWorldViewAdapter));
         private readonly ReaderWriterLockSlim observingLock = new ReaderWriterLockSlim();
         private readonly ISet<IObservable> observingObjects = new HashSet<IObservable>();
         private readonly IWorldObserver adaptee;
@@ -247,7 +246,7 @@ namespace MUnique.OpenMU.GameLogic
 
             if (this.ObservingBuckets.Count > 0)
             {
-                Log.Warn($"ObservingBuckets not empty when this instance is disposed. Count: {this.ObservingBuckets.Count}. Maybe observer wasn't correctly removed from the game map.");
+                Debug.Fail($"ObservingBuckets not empty when this instance is disposed. Count: {this.ObservingBuckets.Count}. Maybe observer wasn't correctly removed from the game map.");
                 this.ObservingBuckets.Clear();
             }
 

@@ -17,8 +17,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class Party : IDisposable
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(Party));
-
         private readonly Timer healthUpdate;
 
         private readonly byte maxPartySize;
@@ -85,19 +83,10 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <summary>
         /// Kicks the player from the party.
-        /// Only the party master is allowed to kick other players. However, players can kick themself out of the party.
         /// </summary>
-        /// <param name="sender">The sender.</param>
         /// <param name="index">The party list index of the member to kick.</param>
-        public void KickPlayer(IPartyMember sender, byte index)
+        public void KickPlayer(byte index)
         {
-            if (!Equals(sender, this.PartyList[0]) &&
-                !Equals(sender, this.PartyList[index]))
-            {
-                Log.WarnFormat("Suspicious request for sender with name: {0}, could be hack attempt.", sender.Name);
-                return;
-            }
-
             var toKick = this.PartyList[index];
             this.ExitParty(toKick, index);
         }

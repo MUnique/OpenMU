@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Collections.Generic;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
@@ -60,6 +61,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the players of the game in a list.
         /// </summary>
         IList<Player> PlayerList { get; }
+
+        /// <summary>
+        /// Gets the logger factory.
+        /// </summary>
+        ILoggerFactory LoggerFactory { get; }
 
         /// <summary>
         /// Gets the maps which is meant to be hosted by the game.

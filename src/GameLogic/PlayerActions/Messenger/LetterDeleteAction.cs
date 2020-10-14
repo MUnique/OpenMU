@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
 
@@ -13,8 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     /// </summary>
     public class LetterDeleteAction
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(LetterDeleteAction));
-
         /// <summary>
         /// Deletes the letter.
         /// </summary>
@@ -22,9 +20,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="letter">The letter.</param>
         public void DeleteLetter(Player player, LetterHeader letter)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (letter == null)
             {
-                Log.WarnFormat("letter is null, player {0}", player.SelectedCharacter.Name);
+                player.Logger.LogWarning("letter is null, player {0}", player.SelectedCharacter.Name);
             }
 
             var letterIndex = player.SelectedCharacter.Letters.IndexOf(letter);

@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.Pathfinding;
@@ -18,8 +18,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class DroppedItem : IDisposable, ILocateable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(DroppedItem));
-
         private static readonly TimeSpan TimeUntilDropIsFree = TimeSpan.FromSeconds(10);
 
         /// <summary>
@@ -160,9 +158,9 @@ namespace MUnique.OpenMU.GameLogic
 
         private void DisposeAndDelete(object state)
         {
+            var player = this.dropper;
             try
             {
-                var player = this.dropper;
                 this.Dispose();
                 if (player != null)
                 {
@@ -172,7 +170,7 @@ namespace MUnique.OpenMU.GameLogic
             catch (Exception ex)
             {
                 // we have to catch all errors, because it runs under a pooled thread without an additional safety net ;-)
-                Log.Error("Error during DroppedItem.DisposeAndDelete", ex);
+                player?.Logger.LogError(ex, "Error during DroppedItem.DisposeAndDelete");
             }
         }
 
@@ -183,11 +181,11 @@ namespace MUnique.OpenMU.GameLogic
 
         private bool TryPickUp(Player player)
         {
-            Log.DebugFormat("Player {0} tries to pick up {1}", player, this);
+            player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
             int slot = player.Inventory.CheckInvSpace(this.Item);
             if (slot < InventoryConstants.LastEquippableItemSlotIndex)
             {
-                Log.DebugFormat("Inventory full, Player {0}, Item {1}", player, this);
+                player.Logger.LogDebug("Inventory full, Player {0}, Item {1}", player, this);
                 return false;
             }
 
@@ -196,13 +194,13 @@ namespace MUnique.OpenMU.GameLogic
             {
                 if (!this.availableToPick)
                 {
-                    Log.DebugFormat("Picked up by another player in the mean time, Player {0}, Item {1}", player, this);
+                    player.Logger.LogDebug("Picked up by another player in the mean time, Player {0}, Item {1}", player, this);
                     return false;
                 }
 
                 if (!player.Inventory.AddItem((byte)slot, this.Item))
                 {
-                    Log.DebugFormat("Item could not be added to the inventory, Player {0}, Item {1}", player, this);
+                    player.Logger.LogDebug("Item could not be added to the inventory, Player {0}, Item {1}", player, this);
                     return false;
                 }
 
@@ -217,7 +215,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.availableToPick = false;
             }
 
-            Log.InfoFormat("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+            player.Logger.LogInformation("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
             this.Dispose();
             if (this.dropper != null && !this.dropper.PlayerState.Finished)
             {
@@ -235,12 +233,12 @@ namespace MUnique.OpenMU.GameLogic
 
         private bool TryStackOnItem(Player player, Item stackTarget)
         {
-            Log.DebugFormat("Player {0} tries to pick up {1}, trying to add to an existing item at slot {2}", player, this, stackTarget.ItemSlot);
+            player.Logger.LogDebug("Player {0} tries to pick up {1}, trying to add to an existing item at slot {2}", player, this, stackTarget.ItemSlot);
             lock (this.pickupLock)
             {
                 if (!this.availableToPick)
                 {
-                    Log.DebugFormat("Picked up by another player in the mean time, Player {0}, Item {1}", player, this);
+                    player.Logger.LogDebug("Picked up by another player in the mean time, Player {0}, Item {1}", player, this);
                     return false;
                 }
 
@@ -248,14 +246,14 @@ namespace MUnique.OpenMU.GameLogic
                 this.availableToPick = false;
             }
 
-            Log.InfoFormat("Item '{0}' got picked up by player '{1}'. Durability of available stack {2} increased to {3}", this, player, stackTarget, stackTarget.Durability);
+            player.Logger.LogInformation("Item '{0}' got picked up by player '{1}'. Durability of available stack {2} increased to {3}", this, player, stackTarget, stackTarget.Durability);
             this.DisposeAndDelete(null);
             return true;
         }
 
         private void DeleteItem(Player player)
         {
-            Log.InfoFormat("Item '{0}' which was dropped by player '{1}' is getting deleted.", this, player);
+            player.Logger.LogInformation("Item '{0}' which was dropped by player '{1}' is getting deleted.", this, player);
             if (!player.PlayerState.Finished && !(this.Item is TemporaryItem))
             {
                 this.itemIsPersistent = player.PersistenceContext.Detach(this.Item);
@@ -279,7 +277,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             catch (Exception e)
             {
-                Log.WarnFormat("Exception during deleting of the item {0}: {1}\n{2}", this, e.Message, e.StackTrace);
+                player.Logger.LogWarning("Exception during deleting of the item {0}: {1}\n{2}", this, e.Message, e.StackTrace);
             }
 
             player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(this.Item);

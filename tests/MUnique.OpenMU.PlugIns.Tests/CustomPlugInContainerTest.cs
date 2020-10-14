@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
 {
     using System;
     using System.Reflection;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using NUnit.Framework;
 
@@ -21,7 +22,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void CreatingContainerWithNonMarkedTypeThrowsException()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null); ;
             var mock = new Mock<CustomPlugInContainerBase<ITestCustomPlugIn>>(manager);
             var exception = Assert.Throws<TargetInvocationException>(() =>
             {
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void GetPlugInFromCustomContainerWithRegisteredPlugInAfterRegistration()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null); ;
             var container = new CustomTestPlugInContainer(manager);
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
 
@@ -51,7 +52,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void GetPlugInFromCustomContainerWithInitiallyRegisteredPlugIn()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null); ;
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
             var container = new CustomTestPlugInContainer(manager);
             var plugIn = container.GetPlugIn<ITestCustomPlugIn>();
@@ -64,7 +65,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void DontGetPlugInFromCustomContainerAfterDeactivation()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null); ;
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
             var container = new CustomTestPlugInContainer(manager);
             manager.DeactivatePlugIn<TestCustomPlugIn>();
@@ -78,7 +79,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void DontGetPlugInFromCustomContainerIfItDoesntSuit()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null); ;
             var container = new CustomTestPlugInContainer(manager);
             container.CreateNewPlugIns = false;
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
@@ -92,7 +93,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void ReplacePlugInAtCustomContainer()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null); ;
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
             var container = new CustomTestPlugInContainer(manager);
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn2>();
@@ -106,7 +107,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void ReactivatePlugInAtCustomContainer()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null); ;
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
             var container = new CustomTestPlugInContainer(manager);
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn2>();
@@ -121,7 +122,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void GetPlugInFromCustomContainerWithAllImplementedInterfaces()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null); ;
             var container = new CustomTestPlugInContainer(manager);
             container.AddPlugIn(new TestCustomPlugIn2(), true);
             Assert.That(container.GetPlugIn<ITestCustomPlugIn>(), Is.Not.Null);

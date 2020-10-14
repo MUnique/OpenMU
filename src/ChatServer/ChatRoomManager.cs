@@ -7,12 +7,15 @@ namespace MUnique.OpenMU.ChatServer
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Chat Room Manager manages the creation and destruction of chat rooms.
     /// </summary>
     internal class ChatRoomManager
     {
+        private readonly ILoggerFactory loggerFactory;
+
         /// <summary>
         /// All currently used chat rooms.
         /// </summary>
@@ -21,10 +24,12 @@ namespace MUnique.OpenMU.ChatServer
         private readonly ConcurrentBag<ushort> freeRoomIds = new ConcurrentBag<ushort>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomManager"/> class.
+        /// Initializes a new instance of the <see cref="ChatRoomManager" /> class.
         /// </summary>
-        public ChatRoomManager()
+        /// <param name="loggerFactory">The logger factory.</param>
+        public ChatRoomManager(ILoggerFactory loggerFactory)
         {
+            this.loggerFactory = loggerFactory;
             for (ushort i = 0; i < ushort.MaxValue; ++i)
             {
                 this.freeRoomIds.Add(i);
@@ -44,7 +49,7 @@ namespace MUnique.OpenMU.ChatServer
         {
             if (this.freeRoomIds.TryTake(out ushort roomId))
             {
-                var room = new ChatRoom(roomId);
+                var room = new ChatRoom(roomId, this.loggerFactory.CreateLogger<ChatRoom>());
                 room.RoomClosed += this.OnChatRoomClosed;
                 this.rooms.Add(roomId, room);
                 return roomId;

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
 {
     using System;
     using System.ComponentModel;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.Tests;
     using NUnit.Framework;
@@ -36,7 +37,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void ProxyIsCreated()
         {
             var generator = new PlugInProxyTypeGenerator();
-            var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager());
+            var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, new NullLogger<PlugInManager>(), null));
 
             Assert.That(proxy, Is.Not.Null);
         }
@@ -126,7 +127,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void ErrorForClasses()
         {
             var generator = new PlugInProxyTypeGenerator();
-            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ExamplePlugIn>(new PlugInManager()));
+            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ExamplePlugIn>(new PlugInManager(null, new NullLogger<PlugInManager>(), null)));
         }
 
         /// <summary>
@@ -136,7 +137,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void ErrorForInterfaceWithoutAttribute()
         {
             var generator = new PlugInProxyTypeGenerator();
-            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ICloneable>(new PlugInManager()));
+            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ICloneable>(new PlugInManager(null, new NullLogger<PlugInManager>(), null)));
         }
 
         /// <summary>
@@ -146,7 +147,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void ErrorForInterfaceWithUnsupportedMethodSignature()
         {
             var generator = new PlugInProxyTypeGenerator();
-            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<IUnsupportedPlugIn>(new PlugInManager()));
+            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<IUnsupportedPlugIn>(new PlugInManager(null, new NullLogger<PlugInManager>(), null)));
         }
     }
 }

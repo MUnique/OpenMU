@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
 {
     using System;
     using System.Runtime.InteropServices;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
     using MUnique.OpenMU.Network.Packets;
@@ -19,8 +20,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
     [Guid("3334483b-2de2-47ff-8d74-7407d3ddf15f")]
     internal class LetterDeleteHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(LetterDeleteHandlerPlugIn));
-
         private readonly LetterDeleteAction deleteAction = new LetterDeleteAction();
 
         /// <inheritdoc/>
@@ -34,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
         {
             if (packet[3] != 0)
             {
-                Log.WarnFormat("Player {0} Unknown Letter Delete Request: {1}", player.SelectedCharacter.Name, packet.AsString());
+                player.Logger.LogWarning("Player {0} Unknown Letter Delete Request: {1}", player.SelectedCharacter.Name, packet.AsString());
                 return;
             }
 

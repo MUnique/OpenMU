@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
 
@@ -16,11 +17,12 @@ namespace MUnique.OpenMU.GameServer
         private readonly GameServerDefinition serverDefinition;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameServerMapInitializer"/> class.
+        /// Initializes a new instance of the <see cref="GameServerMapInitializer" /> class.
         /// </summary>
         /// <param name="serverDefinition">The server definition.</param>
-        public GameServerMapInitializer(GameServerDefinition serverDefinition)
-            : base(serverDefinition.GameConfiguration)
+        /// <param name="logger">The logger.</param>
+        public GameServerMapInitializer(GameServerDefinition serverDefinition, ILogger<GameServerMapInitializer> logger)
+            : base(serverDefinition.GameConfiguration, logger)
         {
             this.serverDefinition = serverDefinition;
         }

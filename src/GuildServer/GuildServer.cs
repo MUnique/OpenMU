@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GuildServer
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using Guild = MUnique.OpenMU.DataModel.Entities.Guild;
@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.GuildServer
         /// </summary>
         public static readonly byte OfflineServerId = 0xFF;
 
-        private static readonly ILog Log = LogManager.GetLogger(typeof(GuildServer));
+        private readonly ILogger<GuildServer> logger;
 
         private readonly IDictionary<int, IGameServer> gameServers;
         private readonly IDictionary<uint, GuildContainer> guildDictionary;
@@ -35,14 +35,16 @@ namespace MUnique.OpenMU.GuildServer
         private readonly IPersistenceContextProvider persistenceContextProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuildServer"/> class.
+        /// Initializes a new instance of the <see cref="GuildServer" /> class.
         /// </summary>
         /// <param name="gameServers">The game servers.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public GuildServer(IDictionary<int, IGameServer> gameServers, IPersistenceContextProvider persistenceContextProvider)
+        /// <param name="logger">The logger.</param>
+        public GuildServer(IDictionary<int, IGameServer> gameServers, IPersistenceContextProvider persistenceContextProvider, ILogger<GuildServer> logger)
         {
             this.gameServers = gameServers;
             this.persistenceContextProvider = persistenceContextProvider;
+            this.logger = logger;
             this.guildDictionary = new ConcurrentDictionary<uint, GuildContainer>();
             this.idGenerator = new IdGenerator(1, int.MaxValue);
             this.guildIdMapping = new ConcurrentDictionary<Guid, uint>();
@@ -123,7 +125,7 @@ namespace MUnique.OpenMU.GuildServer
                 {
                     if (guild.Members.ContainsKey(characterId))
                     {
-                        Log.WarnFormat("Guildmember already exists: {0}", characterName);
+                        this.logger.LogWarning("Guildmember already exists: {0}", characterName);
                         return null;
                     }
 
@@ -141,7 +143,7 @@ namespace MUnique.OpenMU.GuildServer
             catch (Exception ex)
             {
                 // Rollback?
-                Log.Error(ex);
+                this.logger.LogError(ex, "Error when creating a guild member.");
             }
 
             return null;
@@ -166,7 +168,7 @@ namespace MUnique.OpenMU.GuildServer
             }
             catch (Exception ex)
             {
-                Log.Error(ex);
+                this.logger.LogError(ex, "Error when saving a changed guild member.");
             }
         }
 
@@ -215,14 +217,14 @@ namespace MUnique.OpenMU.GuildServer
         {
             if (!this.guildDictionary.TryGetValue(guildId, out GuildContainer guildContainer))
             {
-                Log.Warn($"Guild {guildId} not found, so Player {playerName} can't be kicked.");
+                this.logger.LogWarning($"Guild {guildId} not found, so Player {playerName} can't be kicked.");
                 return;
             }
 
             var kvp = guildContainer.Members.FirstOrDefault(m => m.Value.PlayerName == playerName);
             if (default(KeyValuePair<Guid, GuildListEntry>).Equals(kvp))
             {
-                Log.Warn($"Guild {guildId} and Player {playerName} not found, so it can't be kicked.");
+                this.logger.LogWarning($"Guild {guildId} and Player {playerName} not found, so it can't be kicked.");
                 return;
             }
 
@@ -301,7 +303,7 @@ namespace MUnique.OpenMU.GuildServer
                 var guildinfo = context.GetById<Guild>(guildId);
                 if (guildinfo == null)
                 {
-                    Log.WarnFormat("GuildMemberEnter: Guild {0} not found", guildId);
+                    this.logger.LogWarning("GuildMemberEnter: Guild {0} not found", guildId);
                     context.Dispose();
                     return null;
                 }

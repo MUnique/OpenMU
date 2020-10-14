@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     using System.Text;
     using System.Threading.Tasks;
     using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets;
@@ -22,11 +23,12 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     /// </summary>
     public class ExDbClient
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ExDbClient));
+        private readonly ILogger<ExDbClient> logger;
 
         private readonly string host;
         private readonly int port;
         private readonly IChatServer chatServer;
+        private readonly ILoggerFactory loggerFactory;
         private readonly ushort chatServerPort;
         private readonly byte[] packetBuffer = new byte[0xFF];
 
@@ -39,12 +41,15 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// <param name="port">The host port of the exDB server.</param>
         /// <param name="chatServer">The chat server.</param>
         /// <param name="chatServerPort">The chat server port.</param>
-        public ExDbClient(string host, int port, IChatServer chatServer, int chatServerPort)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public ExDbClient(string host, int port, IChatServer chatServer, int chatServerPort, ILoggerFactory loggerFactory)
         {
             this.host = host;
             this.port = port;
             this.chatServer = chatServer;
+            this.loggerFactory = loggerFactory;
             this.chatServerPort = (ushort)chatServerPort;
+            this.logger = this.loggerFactory.CreateLogger<ExDbClient>();
             Task.Run(async () => await this.Connect().ConfigureAwait(false));
         }
 
@@ -68,14 +73,14 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                 }
                 catch
                 {
-                    Log.Warn($"Connection to ExDB-Server ({this.host}:{this.port}) failed, trying again in 10 Seconds...");
+                    this.logger.LogWarning($"Connection to ExDB-Server ({this.host}:{this.port}) failed, trying again in 10 Seconds...");
                     await Task.Delay(10000).ConfigureAwait(false);
                 }
             }
 
-            Log.Info("Connection to ExDB-Server established");
+            this.logger.LogInformation("Connection to ExDB-Server established");
 
-            this.connection = new Connection(SocketConnection.Create(socket), null, null);
+            this.connection = new Connection(SocketConnection.Create(socket), null, null, this.loggerFactory.CreateLogger<Connection>());
             this.connection.PacketReceived += this.ExDbPacketReceived;
             this.connection.Disconnected += (sender, e) => Task.Run(async () => await this.Connect().ConfigureAwait(false));
             this.SendHello();
@@ -95,7 +100,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                 writer.Commit();
             }
 
-            Log.Info("Sent registration packet to ExDB-Server");
+            this.logger.LogInformation("Sent registration packet to ExDB-Server");
         }
 
         /// <summary>
@@ -111,7 +116,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                 var packet = this.packetBuffer.AsSpan(0, (int)sequence.Length);
                 if (packet[0] != 0xC1)
                 {
-                    Log.Warn($"Unknown packet received from ExDB-Server, type: {packet[0]}");
+                    this.logger.LogWarning($"Unknown packet received from ExDB-Server, type: {packet[0]}");
                     return;
                 }
 
@@ -124,13 +129,13 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                         this.ReadChatRoomInvitation(packet);
                         break;
                     default:
-                        Log.Warn($"Unknown packet received from ExDB-Server, code: {packet[2]}");
+                        this.logger.LogWarning($"Unknown packet received from ExDB-Server, code: {packet[2]}");
                         break;
                 }
             }
             catch (Exception exception)
             {
-                Log.Error($"An error occured while processing an incoming packet from ExDB: {this.packetBuffer.AsString()}", exception);
+                this.logger.LogError(exception, $"An error occured while processing an incoming packet from ExDB: {this.packetBuffer.AsString()}");
             }
         }
 
@@ -151,7 +156,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             var clientPlayerId = packet.TryMakeWordBigEndian(16);
             var clientServerId = packet.TryMakeWordBigEndian(18);
             var type = packet.Length > 20 ? packet[20] : (byte)0x57;
-            Log.Debug($"Received request to invite {clientName} to chat room {roomId}, Client-ID: {clientPlayerId}, Server-ID: {clientServerId}");
+            this.logger.LogDebug($"Received request to invite {clientName} to chat room {roomId}, Client-ID: {clientPlayerId}, Server-ID: {clientServerId}");
             var authentication = this.chatServer.RegisterClient(roomId, clientName);
             this.SendAuthentication(authentication, null, clientPlayerId, clientServerId, type);
         }
@@ -178,7 +183,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             var friendPlayerId = packet.TryMakeWordBigEndian(28);
             var friendServerId = packet.TryMakeWordBigEndian(30);
             var roomId = this.chatServer.CreateChatRoom();
-            Log.Debug($"Received request to create chat room for {clientName} and {friendName}; Room-ID: {roomId}; Client-ID: {clientPlayerId}; Server-ID: {clientServerId}; Friend-ID: {friendPlayerId}; Friend-Server: {friendServerId}");
+            this.logger.LogDebug($"Received request to create chat room for {clientName} and {friendName}; Room-ID: {roomId}; Client-ID: {clientPlayerId}; Server-ID: {clientServerId}; Friend-ID: {friendPlayerId}; Friend-Server: {friendServerId}");
             var requesterAuthentication = this.chatServer.RegisterClient(roomId, clientName);
             var friendAuthentication = this.chatServer.RegisterClient(roomId, friendName);
             this.SendAuthentication(requesterAuthentication, friendAuthentication, clientPlayerId, clientServerId, requesterAuthentication.Index);
@@ -195,7 +200,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// <param name="type">The type. Usually 0 for the player who requested the chat and 1 for the other player.</param>
         private void SendAuthentication(ChatServerAuthenticationInfo authenticationInfo, ChatServerAuthenticationInfo friendAuthenticationInfo, ushort clientId, ushort serverId, byte type)
         {
-            Log.Debug($"Registered client {authenticationInfo.ClientName} with index {authenticationInfo.Index} and token {authenticationInfo.AuthenticationToken}");
+            this.logger.LogDebug($"Registered client {authenticationInfo.ClientName} with index {authenticationInfo.Index} and token {authenticationInfo.AuthenticationToken}");
             var token = uint.Parse(authenticationInfo.AuthenticationToken);
             uint friendToken = 0;
             if (friendAuthenticationInfo != null)

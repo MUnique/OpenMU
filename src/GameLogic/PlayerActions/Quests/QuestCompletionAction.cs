@@ -5,8 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 {
     using System.Linq;
-    using System.Reflection;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.DataModel.Entities;
@@ -19,8 +18,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
     /// </summary>
     public class QuestCompletionAction
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <summary>
         /// Tries to completes the quest of the given group and number for the specified player.
         /// </summary>
@@ -29,11 +26,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         /// <param name="number">The number.</param>
         public void CompleteQuest(Player player, short group, short number)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             var questState = player.GetQuestState(group, number);
             var activeQuest = questState?.ActiveQuest;
             if (activeQuest == null)
             {
-                Log.Debug("Failed, no active quest");
+                player.Logger.LogDebug("Failed, no active quest");
                 return;
             }
 
@@ -41,7 +39,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             {
                 if (requiredItem.MinimumNumber > player.Inventory.Items.Count(i => i.Definition == requiredItem.Item))
                 {
-                    Log.DebugFormat("Failed, required item not found: {0}", requiredItem.Item.Name);
+                    player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item.Name);
                     return;
                 }
             }
@@ -51,14 +49,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                 var currentKillCount = questState.RequirementStates.FirstOrDefault(r => r.Requirement == requiredKills)?.KillCount ?? 0;
                 if (currentKillCount < requiredKills.MinimumNumber)
                 {
-                    Log.DebugFormat("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster.Designation, currentKillCount, requiredKills.MinimumNumber);
+                    player.Logger.LogDebug("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster.Designation, currentKillCount, requiredKills.MinimumNumber);
                     return;
                 }
             }
 
             if (activeQuest.RequiresClientAction && !questState.ClientActionPerformed)
             {
-                Log.Debug("Failed, client action not performed.");
+                player.Logger.LogDebug("Failed, client action not performed.");
                 return;
             }
 
@@ -152,7 +150,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                     // not yet implemented.
                     break;
                 default:
-                    Log.WarnFormat("Unknown reward type: {0}", reward.RewardType);
+                    player.Logger.LogWarning("Unknown reward type: {0}", reward.RewardType);
                     break;
             }
         }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.Character
 {
     using System.Runtime.InteropServices;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -20,12 +21,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
         internal const byte GroupKey = (byte)PacketType.CharacterGroup;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterGroupHandlerPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="CharacterGroupHandlerPlugIn" /> class.
         /// </summary>
         /// <param name="clientVersionProvider">The client version provider.</param>
         /// <param name="manager">The manager.</param>
-        public CharacterGroupHandlerPlugIn(IClientVersionProvider clientVersionProvider, PlugInManager manager)
-            : base(clientVersionProvider, manager)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public CharacterGroupHandlerPlugIn(IClientVersionProvider clientVersionProvider, PlugInManager manager, ILoggerFactory loggerFactory)
+            : base(clientVersionProvider, manager, loggerFactory)
         {
         }
 

@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
     using MUnique.OpenMU.GameLogic.Views;
@@ -18,8 +18,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// </summary>
     public class ChatMessageAction
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ChatMessageAction));
-
         private readonly IDictionary<string, ChatMessageType> messagePrefixes;
 
         /// <summary>
@@ -46,10 +44,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="whisper">If set to <c>true</c> the message is whispered to the player with the <paramref name="playerName"/>; Otherwise, it's not a whisper.</param>
         public void ChatMessage(Player sender, string playerName, string message, bool whisper)
         {
+            using var loggerScope = sender.Logger.BeginScope(this.GetType());
             ChatMessageType messageType = this.GetMessageType(message, whisper);
             if (messageType != ChatMessageType.Whisper && playerName != sender.SelectedCharacter.Name)
             {
-                Log.WarnFormat("Maybe Hacker, Charname in chat packet != charname\t [{0}] <> [{1}]", sender.SelectedCharacter.Name, playerName);
+                sender.Logger.LogWarning("Maybe Hacker, Charname in chat packet != charname\t [{0}] <> [{1}]", sender.SelectedCharacter.Name, playerName);
             }
 
             switch (messageType)
@@ -68,7 +67,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     }
                     else
                     {
-                        Log.WarnFormat($"{sender.Name} is trying to execute {commandKey} command without meet the requirements");
+                        sender.Logger.LogWarning($"{sender.Name} is trying to execute {commandKey} command without meeting the requirements");
                     }
 
                     break;
@@ -93,7 +92,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private void HandleChatMessage(Player sender, string message, ChatMessageType messageType)
         {
-            Log.DebugFormat("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter.Name, message);
+            sender.Logger.LogDebug("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter.Name, message);
             var eventArgs = new CancelEventArgs();
             sender.GameContext.PlugInManager.GetPlugInPoint<IChatMessageReceivedPlugIn>()?.ChatMessageReceived(sender, message, eventArgs);
             if (eventArgs.Cancel)
@@ -129,7 +128,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 }
 
                 default:
-                    Log.DebugFormat("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
+                    sender.Logger.LogWarning("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
                     sender.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true);
                     break;
             }

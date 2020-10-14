@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.World;
@@ -18,8 +18,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class InventoryStorage : Storage, IInventoryStorage
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(InventoryStorage));
-
         private readonly IGameContext gameContext;
 
         private readonly Player player;
@@ -149,7 +147,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             else
             {
-                Log.Error("item power up factory not available.");
+                this.player.Logger.LogError("item power up factory not available during initialization of the inventory.");
             }
         }
 

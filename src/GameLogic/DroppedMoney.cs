@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Threading;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
@@ -14,8 +14,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class DroppedMoney : IDisposable, ILocateable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(DroppedMoney));
-
         /// <summary>
         /// Gets the pickup lock. Used to synchronize pick up requests from the players.
         /// </summary>
@@ -68,25 +66,25 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public bool TryPickUpBy(Player player)
         {
-            Log.DebugFormat("Player {0} tries to pick up {1}", player, this);
+            player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
             lock (this.pickupLock)
             {
                 if (!this.availableToPick)
                 {
-                    Log.DebugFormat("Picked up by another player in the mean time, Player {0}, Money {1}", player, this);
+                    player.Logger.LogDebug("Picked up by another player in the mean time, Player {0}, Money {1}", player, this);
                     return false;
                 }
 
                 if (!player.TryAddMoney((int)this.Amount))
                 {
-                    Log.DebugFormat("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
+                    player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
                     return false;
                 }
 
                 this.availableToPick = false;
             }
 
-            Log.InfoFormat("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+            player.Logger.LogInformation("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
             this.Dispose();
 
             return true;

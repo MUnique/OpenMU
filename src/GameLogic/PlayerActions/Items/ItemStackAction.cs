@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
@@ -17,22 +17,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class ItemStackAction
     {
-            // Configuration; JewelMix consisting of a pair of BaseItems
-            /*
-            new JewelMix(){SingleJewelID=13, SingleJewelGroup=0xE, MixedJewelID=30, MixedJewelGroup=0xC0}, //Bless
-            new JewelMix(){SingleJewelID=14, SingleJewelGroup=0xE, MixedJewelID=31, MixedJewelGroup=0xC0}, //Soul
-            new JewelMix(){SingleJewelID=16, SingleJewelGroup=0xE, MixedJewelID=136, MixedJewelGroup=0xC0}, //Jol
-            new JewelMix(){SingleJewelID=22, SingleJewelGroup=0xE, MixedJewelID=137, MixedJewelGroup=0xC0}, //JoC
-            new JewelMix(){SingleJewelID=31, SingleJewelGroup=0xE, MixedJewelID=138, MixedJewelGroup=0xC0}, //Jewel of Guardian
-            new JewelMix(){SingleJewelID=41, SingleJewelGroup=0xE, MixedJewelID=139, MixedJewelGroup=0xC0}, //gemstones 139
-            new JewelMix(){SingleJewelID=42, SingleJewelGroup=0xE, MixedJewelID=140, MixedJewelGroup=0xC0}, //Joh 140
-            new JewelMix(){SingleJewelID=15, SingleJewelGroup=0xC, MixedJewelID=141, MixedJewelGroup=0xC0}, //Chaos
-            new JewelMix(){SingleJewelID=43, SingleJewelGroup=0xE, MixedJewelID=142, MixedJewelGroup=0xC0}, //Lower Refine Stone
-            new JewelMix(){SingleJewelID=44, SingleJewelGroup=0xE, MixedJewelID=143, MixedJewelGroup=0xC0}, //Higher Refine Stone
-            */
-
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ItemStackAction));
-
         /// <summary>
         /// Stacks several items to one stacked item.
         /// </summary>
@@ -41,6 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="stackSize">The size of the requested stack.</param>
         public void StackItems(Player player, byte stackId, byte stackSize)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (!this.IsCorrectNpcOpened(player))
             {
                 return;
@@ -132,7 +117,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             if (player.OpenedNpc == null || player.OpenedNpc.Definition.NpcWindow != NpcWindow.Lahap)
             {
-                Log.WarnFormat("Probably Hacker tried to Mix/Unmix Jewels without talking to Monster. Dupe Method. Acc: [{0}] Character: [{1}]", player.Account.LoginName, player.SelectedCharacter.Name);
+                player.Logger.LogWarning("Probably Hacker tried to Mix/Unmix Jewels without talking to Lahap. Dupe Method. Acc: [{0}] Character: [{1}]", player.Account.LoginName, player.SelectedCharacter.Name);
                 player.Disconnect();
                 return false;
             }
@@ -145,7 +130,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             JewelMix mix = player.GameContext.Configuration.JewelMixes.FirstOrDefault(m => m.Number == mixId);
             if (mix == null)
             {
-                Log.WarnFormat($"Unkown mix type [{mixId}], Player Name: [{player.SelectedCharacter?.Name}], Account Name: [{player.Account?.LoginName}]");
+                player.Logger.LogWarning($"Unkown mix type [{mixId}], Player Name: [{player.SelectedCharacter?.Name}], Account Name: [{player.Account?.LoginName}]");
             }
 
             return mix;

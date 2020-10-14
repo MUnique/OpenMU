@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
 {
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -16,7 +16,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
     /// </summary>
     public class BuyRequestAction
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(BuyRequestAction));
         private readonly CloseStoreAction closeStoreAction = new CloseStoreAction();
 
         /// <summary>
@@ -27,23 +26,24 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         /// <param name="slot">The slot.</param>
         public void BuyItem(Player player, Player requestedPlayer, byte slot)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (!requestedPlayer.ShopStorage.StoreOpen)
             {
-                Log.DebugFormat("Store not open, Character {0}", requestedPlayer.SelectedCharacter.Name);
+                player.Logger.LogDebug("Store not open, Character {0}", requestedPlayer.SelectedCharacter.Name);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player's Store not open.", MessageType.BlueNormal); // Code: 3
                 return;
             }
 
             if (slot < InventoryConstants.FirstStoreItemSlotIndex)
             {
-                Log.WarnFormat("Store Slot too low: {0}, possible hacker", slot);
+                player.Logger.LogWarning("Store Slot too low: {0}, possible hacker", slot);
                 return;
             }
 
             var item = requestedPlayer.ShopStorage.GetItem(slot);
             if (item?.StorePrice == null)
             {
-                Log.DebugFormat("Item unavailable, Slot {0}", slot);
+                player.Logger.LogDebug("Item unavailable, Slot {0}", slot);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Item unavailable.", MessageType.BlueNormal); // Code 5?
                 return;
             }
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             {
                 if (!requestedPlayer.ShopStorage.StoreOpen)
                 {
-                    Log.DebugFormat("Store not open anymore, Character {0}", requestedPlayer.SelectedCharacter.Name);
+                    player.Logger.LogDebug("Store not open anymore, Character {0}", requestedPlayer.SelectedCharacter.Name);
                     player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player's Store not open anymore.", MessageType.BlueNormal);
                     return;
                 }
@@ -81,30 +81,28 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                     return;
                 }
 
-                Log.DebugFormat("BuyRequest, Item Price: {0}", itemPrice);
+                player.Logger.LogDebug("BuyRequest, Item Price: {0}", itemPrice);
                 if (player.TryRemoveMoney(itemPrice))
                 {
                     if (requestedPlayer.TryAddMoney(itemPrice))
                     {
-                        using (var itemContext = requestedPlayer.GameContext.PersistenceContextProvider.CreateNewTradeContext())
-                        {
-                            itemContext.Attach(item);
-                            requestedPlayer.ShopStorage.RemoveItem(item);
-                            requestedPlayer.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
-                            requestedPlayer.ViewPlugIns.GetPlugIn<IItemSoldByPlayerShopPlugIn>()?.ItemSoldByPlayerShop(slot, player);
-                            requestedPlayer.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(slot);
-                            item.ItemSlot = (byte)freeslot;
-                            item.StorePrice = null;
-                            player.Inventory.AddItem(item);
-                            requestedPlayer.PersistenceContext.Detach(item);
-                            itemContext.SaveChanges();
-                            player.PersistenceContext.Attach(item);
-                            player.ViewPlugIns.GetPlugIn<IItemBoughtFromPlayerShopPlugIn>()?.ItemBoughtFromPlayerShop(item);
-                            player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
-                            itemSold = true;
+                        using var itemContext = requestedPlayer.GameContext.PersistenceContextProvider.CreateNewTradeContext();
+                        itemContext.Attach(item);
+                        requestedPlayer.ShopStorage.RemoveItem(item);
+                        requestedPlayer.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+                        requestedPlayer.ViewPlugIns.GetPlugIn<IItemSoldByPlayerShopPlugIn>()?.ItemSoldByPlayerShop(slot, player);
+                        requestedPlayer.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(slot);
+                        item.ItemSlot = (byte)freeslot;
+                        item.StorePrice = null;
+                        player.Inventory.AddItem(item);
+                        requestedPlayer.PersistenceContext.Detach(item);
+                        itemContext.SaveChanges();
+                        player.PersistenceContext.Attach(item);
+                        player.ViewPlugIns.GetPlugIn<IItemBoughtFromPlayerShopPlugIn>()?.ItemBoughtFromPlayerShop(item);
+                        player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+                        itemSold = true;
 
-                            player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToOtherPlayerPlugIn>()?.ItemSold(requestedPlayer, item, player);
-                        }
+                        player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToOtherPlayerPlugIn>()?.ItemSold(requestedPlayer, item, player);
                     }
                     else
                     {

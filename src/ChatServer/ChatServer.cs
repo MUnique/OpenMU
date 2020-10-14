@@ -13,10 +13,9 @@ namespace MUnique.OpenMU.ChatServer
     using System.Threading;
     using System.Threading.Tasks;
     using System.Timers;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
     using Timer = System.Timers.Timer;
 
@@ -25,10 +24,9 @@ namespace MUnique.OpenMU.ChatServer
     /// </summary>
     public sealed class ChatServer : IChatServer, IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ChatServer));
-
         private readonly ChatRoomManager manager;
-
+        private readonly ILogger<ChatServer> logger;
+        private readonly ILoggerFactory loggerFactory;
         private readonly ChatServerSettings settings;
 
         private readonly RandomNumberGenerator randomNumberGenerator;
@@ -52,11 +50,15 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
-        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver)
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="plugInManager">The plug in manager.</param>
+        public ChatServer(ChatServerSettings settings, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory, PlugInManager plugInManager)
         {
+            this.loggerFactory = loggerFactory;
+            this.logger = loggerFactory.CreateLogger<ChatServer>();
             this.settings = settings;
             this.addressResolver = addressResolver;
-            this.manager = new ChatRoomManager();
+            this.manager = new ChatRoomManager(loggerFactory);
             this.randomNumberGenerator = RandomNumberGenerator.Create();
             this.clientCleanupTimer = new Timer(this.settings.ClientCleanUpInterval.TotalMilliseconds);
             this.clientCleanupTimer.Elapsed += this.ClientCleanupInactiveClients;
@@ -64,11 +66,9 @@ namespace MUnique.OpenMU.ChatServer
             this.roomCleanupTimer = new Timer(this.settings.RoomCleanUpInterval.TotalMilliseconds);
             this.roomCleanupTimer.Elapsed += this.ClientCleanupUnusedRooms;
             this.roomCleanupTimer.Start();
-            var plugInManager = new PlugInManager();
-            plugInManager.DiscoverAndRegisterPlugInsOf<INetworkEncryptionFactoryPlugIn>();
             foreach (var endpoint in this.settings.Endpoints)
             {
-                var listener = new ChatServerListener(endpoint, plugInManager);
+                var listener = new ChatServerListener(endpoint, plugInManager, loggerFactory);
                 listener.ClientAccepted += this.ChatClientAccepted;
                 listener.ClientAccepting += this.ChatClientAccepting;
                 this.listeners.Add(listener);
@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.ChatServer
             if (room == null)
             {
                 var errorMessage = $"RegisterClient: Could not find chat room with id {roomId} for '{clientName}'.";
-                Log.Error(errorMessage);
+                this.logger.LogError(errorMessage);
                 throw new ArgumentException(errorMessage, nameof(roomId));
             }
 
@@ -157,7 +157,7 @@ namespace MUnique.OpenMU.ChatServer
                 return;
             }
 
-            Log.Info("Begin starting");
+            this.logger.LogInformation("Begin starting");
             var oldState = this.ServerState;
             this.ServerState = OpenMU.Interfaces.ServerState.Starting;
             try
@@ -173,11 +173,11 @@ namespace MUnique.OpenMU.ChatServer
             }
             catch (Exception ex)
             {
-                Log.Error("Error while starting", ex);
+                this.logger.LogError("Error while starting", ex);
                 this.ServerState = oldState;
             }
 
-            Log.Info("Finished starting");
+            this.logger.LogInformation("Finished starting");
         }
 
         /// <inheritdoc/>
@@ -188,7 +188,7 @@ namespace MUnique.OpenMU.ChatServer
                 return;
             }
 
-            Log.Info("Begin shutdown");
+            this.logger.LogInformation("Begin shutdown");
             this.ServerState = OpenMU.Interfaces.ServerState.Stopping;
             this.clientCleanupTimer.Stop();
             this.roomCleanupTimer.Stop();
@@ -197,7 +197,7 @@ namespace MUnique.OpenMU.ChatServer
                 listener.Stop();
             }
 
-            Log.Debug("Disconnecting all clients");
+            this.logger.LogDebug("Disconnecting all clients");
             var clients = this.connectedClients.ToList();
             foreach (var client in clients)
             {
@@ -205,7 +205,7 @@ namespace MUnique.OpenMU.ChatServer
             }
 
             this.ServerState = OpenMU.Interfaces.ServerState.Stopped;
-            Log.Info("Finished shutdown");
+            this.logger.LogInformation("Finished shutdown");
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace MUnique.OpenMU.ChatServer
 
         private void ChatClientAccepted(object sender, ClientAcceptEventArgs e)
         {
-            var chatClient = new ChatClient(e.AcceptedConnection, this.manager);
+            var chatClient = new ChatClient(e.AcceptedConnection, this.manager, this.loggerFactory.CreateLogger<ChatClient>());
             this.connectedClients.Add(chatClient);
             this.RaisePropertyChanged(nameof(this.CurrentConnections));
             chatClient.Disconnected += this.ChatClient_Disconnected;
@@ -280,14 +280,14 @@ namespace MUnique.OpenMU.ChatServer
                     var client = this.connectedClients[i];
                     if (client.LastActivity < bottomDateTimeMargin)
                     {
-                        Log.Debug($"Disconnecting client {client}, because of activity timeout. LastActivity: {client.LastActivity}");
+                        this.logger.LogDebug($"Disconnecting client {client}, because of activity timeout. LastActivity: {client.LastActivity}");
                         client.LogOff();
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log.Error("Error during checking for inactive clients", ex);
+                this.logger.LogError(ex, "Error during checking for inactive clients");
             }
         }
 
@@ -298,13 +298,13 @@ namespace MUnique.OpenMU.ChatServer
                 var rooms = this.manager.OpenedRooms.Where(room => room.AuthenticationRequiredUntil < DateTime.Now && room.ConnectedClients.Count < 2).ToList();
                 foreach (var room in rooms)
                 {
-                    Log.Info($"Cleaning up room {room.RoomId}");
+                    this.logger.LogInformation($"Cleaning up room {room.RoomId}");
                     room.Close();
                 }
             }
             catch (Exception ex)
             {
-                Log.Error("Error during cleanup of unused rooms", ex);
+                this.logger.LogError(ex, "Error during cleanup of unused rooms");
             }
         }
 

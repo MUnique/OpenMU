@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
 {
     using System;
     using System.Collections.Generic;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using IConnectServer = MUnique.OpenMU.ConnectServer.IConnectServer;
 
@@ -15,22 +15,24 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
     /// </summary>
     internal class ServerListHandler : IPacketHandler<Client>
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ServerListHandler));
+        private readonly ILogger<ServerListHandler> logger;
         private readonly IConnectServerSettings connectServerSettings;
         private readonly IDictionary<byte, IPacketHandler<Client>> packetHandlers = new Dictionary<byte, IPacketHandler<Client>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerListHandler"/> class.
+        /// Initializes a new instance of the <see cref="ServerListHandler" /> class.
         /// </summary>
         /// <param name="connectServer">The connect server.</param>
-        public ServerListHandler(IConnectServer connectServer)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public ServerListHandler(IConnectServer connectServer, ILoggerFactory loggerFactory)
         {
+            this.logger = loggerFactory.CreateLogger<ServerListHandler>();
             this.connectServerSettings = connectServer.Settings;
-            this.packetHandlers.Add(0x03, new ServerInfoRequestHandler(connectServer));
-            this.packetHandlers.Add(0x06, new ServerListRequestHandler(connectServer));
+            this.packetHandlers.Add(0x03, new ServerInfoRequestHandler(connectServer, loggerFactory.CreateLogger<ServerInfoRequestHandler>()));
+            this.packetHandlers.Add(0x06, new ServerListRequestHandler(connectServer, loggerFactory.CreateLogger<ServerListRequestHandler>()));
 
             // old protocol:
-            this.packetHandlers.Add(0x02, new ServerListRequestHandler(connectServer));
+            this.packetHandlers.Add(0x02, new ServerListRequestHandler(connectServer, loggerFactory.CreateLogger<ServerListRequestHandler>()));
         }
 
         /// <inheritdoc/>
@@ -43,7 +45,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
             }
             else if (this.connectServerSettings.DisconnectOnUnknownPacket)
             {
-                Log.InfoFormat("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
+                this.logger.LogInformation("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
                 client.Connection.Disconnect();
             }
             else

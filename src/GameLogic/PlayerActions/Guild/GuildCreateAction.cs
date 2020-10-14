@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 {
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Views.Guild;
 
     /// <summary>
@@ -11,8 +12,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
     /// </summary>
     public class GuildCreateAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(GuildCreateAction));
-
         /// <summary>
         /// Creates the guild.
         /// </summary>
@@ -21,16 +20,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="guildEmblem">The guild emblem.</param>
         public void CreateGuild(Player creator, string guildName, byte[] guildEmblem)
         {
+            using var loggerScope = creator.Logger.BeginScope(this.GetType());
             if (creator.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
-                Log.Error($"Account {creator.Account.LoginName} not in the right state, but {creator.PlayerState.CurrentState}.");
+                creator.Logger.LogError($"Account {creator.Account.LoginName} not in the right state, but {creator.PlayerState.CurrentState}.");
                 return;
             }
 
             var guildServer = (creator.GameContext as IGameServerContext)?.GuildServer;
             if (guildServer == null)
             {
-                Log.Error($"No guild server available");
+                creator.Logger.LogError($"No guild server available");
                 return;
             }
 
@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.None);
             creator.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(creator, false), true);
 
-            Log.InfoFormat("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);
+            creator.Logger.LogInformation("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);
         }
     }
 }

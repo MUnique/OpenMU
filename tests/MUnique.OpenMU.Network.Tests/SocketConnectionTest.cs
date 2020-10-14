@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Network.Tests
     using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging.Abstractions;
     using NUnit.Framework;
     using Pipelines.Sockets.Unofficial;
 
@@ -25,7 +26,7 @@ namespace MUnique.OpenMU.Network.Tests
         [Test]
         public void TestReceivePipelined()
         {
-            this.TestReceivePipelined(socket => new Connection(SocketConnection.Create(socket), null, null));
+            this.TestReceivePipelined(socket => new Connection(SocketConnection.Create(socket), null, null, new NullLogger<Connection>()));
         }
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.Network.Tests
             this.TestReceivePipelined(socket =>
             {
                 var socketConnection = SocketConnection.Create(socket);
-                return new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
+                return new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output), new NullLogger<Connection>());
             });
         }
 
@@ -57,7 +58,7 @@ namespace MUnique.OpenMU.Network.Tests
                     {
                         var clientSocket = server.EndAcceptSocket(asyncResult);
                         var socketConnection = SocketConnection.Create(clientSocket);
-                        connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
+                        connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output), new NullLogger<Connection>());
                     }, null);
 
                 using var client = new TcpClient("127.0.0.1", 5000);
@@ -106,7 +107,7 @@ namespace MUnique.OpenMU.Network.Tests
 
                 using var client = new TcpClient("127.0.0.1", 5000);
                 var socketConnection = SocketConnection.Create(client.Client);
-                var connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output));
+                var connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output), new NullLogger<Connection>());
 
                 connection.BeginReceive();
 

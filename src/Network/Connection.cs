@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.Network
     using System.IO.Pipelines;
     using System.Net;
     using System.Threading.Tasks;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using Pipelines.Sockets.Unofficial;
 
     /// <summary>
@@ -18,23 +18,25 @@ namespace MUnique.OpenMU.Network
     /// <seealso cref="MUnique.OpenMU.Network.PacketPipeReaderBase" />
     public sealed class Connection : PacketPipeReaderBase, IConnection
     {
-        private readonly ILog log = LogManager.GetLogger(typeof(Connection));
         private readonly IPipelinedEncryptor encryptionPipe;
+        private readonly ILogger<Connection> logger;
         private readonly EndPoint remoteEndPoint;
         private IDuplexPipe duplexPipe;
         private bool disconnected;
         private PipeWriter outputWriter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Connection"/> class.
+        /// Initializes a new instance of the <see cref="Connection" /> class.
         /// </summary>
         /// <param name="duplexPipe">The duplex pipe of the (socket) connection.</param>
         /// <param name="decryptionPipe">The decryption pipe.</param>
         /// <param name="encryptionPipe">The encryption pipe.</param>
-        public Connection(IDuplexPipe duplexPipe, IPipelinedDecryptor decryptionPipe, IPipelinedEncryptor encryptionPipe)
+        /// <param name="logger">The logger.</param>
+        public Connection(IDuplexPipe duplexPipe, IPipelinedDecryptor decryptionPipe, IPipelinedEncryptor encryptionPipe, ILogger<Connection> logger)
         {
             this.duplexPipe = duplexPipe;
             this.encryptionPipe = encryptionPipe;
+            this.logger = logger;
             this.Source = decryptionPipe?.Reader ?? this.duplexPipe.Input;
             this.remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
         }
@@ -78,28 +80,26 @@ namespace MUnique.OpenMU.Network
         /// <inheritdoc />
         public void Disconnect()
         {
-            using (ThreadContext.Stacks["Connection"].Push(this.ToString()))
+            using var scope = this.logger.BeginScope(this.remoteEndPoint);
+            if (this.disconnected)
             {
-                if (this.disconnected)
-                {
-                    this.log.Debug("Connection already disconnected.");
-                    return;
-                }
-
-                this.log.Debug("Disconnecting...");
-                if (this.duplexPipe != null)
-                {
-                    this.Source.Complete();
-                    this.Output.Complete();
-                    (this.duplexPipe as IDisposable)?.Dispose();
-                    this.duplexPipe = null;
-                }
-
-                this.log.Debug("Disconnected");
-                this.disconnected = true;
-
-                this.Disconnected?.Invoke(this, System.EventArgs.Empty);
+                this.logger.LogDebug("Connection already disconnected.");
+                return;
             }
+
+            this.logger.LogDebug("Disconnecting...");
+            if (this.duplexPipe != null)
+            {
+                this.Source.Complete();
+                this.Output.Complete();
+                (this.duplexPipe as IDisposable)?.Dispose();
+                this.duplexPipe = null;
+            }
+
+            this.logger.LogDebug("Disconnected");
+            this.disconnected = true;
+
+            this.Disconnected?.Invoke(this, System.EventArgs.Empty);
         }
 
         /// <inheritdoc/>
@@ -113,10 +113,10 @@ namespace MUnique.OpenMU.Network
         /// <inheritdoc />
         protected override void OnComplete(Exception exception)
         {
-            using var push = ThreadContext.Stacks["Connection"].Push(this.ToString());
+            using var scope = this.logger.BeginScope(this.remoteEndPoint);
             if (exception != null)
             {
-                this.log.Error("Connection will be disconnected, because of an exception", exception);
+                this.logger.LogError(exception, "Connection will be disconnected, because of an exception");
             }
 
             this.Output.Complete(exception);

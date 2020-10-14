@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     using System;
     using System.Reflection;
     using System.Runtime.InteropServices;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
     using MUnique.OpenMU.Network.Packets;
@@ -21,7 +21,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     [Guid("3D8D1510-E92C-4D0E-9282-1A932B1B8195")]
     public class QuestStateSetLegacyRequestHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly QuestStartAction questStartAction = new QuestStartAction();
         private readonly QuestCompletionAction questCompletionAction = new QuestCompletionAction();
         private readonly QuestCancelAction questCancelAction = new QuestCancelAction();
@@ -57,7 +56,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
                     this.questCancelAction.CancelQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
                     break;
                 default:
-                    Log.Error($"Invalid state value {request.NewState}, quest number {request.QuestNumber}, player {player}.");
+                    player.Logger.LogError($"Invalid state value {request.NewState}, quest number {request.QuestNumber}, player {player}.");
                     break;
             }
         }

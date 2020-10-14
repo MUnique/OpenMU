@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.ConnectServer
 {
     using System.Net.Sockets;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -13,16 +13,18 @@ namespace MUnique.OpenMU.ConnectServer
     /// </summary>
     internal class CheckMaximumConnectionsPlugin : IAfterSocketAcceptPlugin
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(CheckMaximumConnectionsPlugin));
+        private readonly ILogger<CheckMaximumConnectionsPlugin> logger;
         private readonly ClientListener clientListener;
         private readonly IConnectServerSettings connectServerSettings;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CheckMaximumConnectionsPlugin"/> class.
+        /// Initializes a new instance of the <see cref="CheckMaximumConnectionsPlugin" /> class.
         /// </summary>
         /// <param name="server">The server.</param>
-        public CheckMaximumConnectionsPlugin(ConnectServer server)
+        /// <param name="logger">The logger.</param>
+        public CheckMaximumConnectionsPlugin(ConnectServer server, ILogger<CheckMaximumConnectionsPlugin> logger)
         {
+            this.logger = logger;
             this.clientListener = server.ClientListener;
             this.connectServerSettings = server.Settings;
         }
@@ -33,7 +35,7 @@ namespace MUnique.OpenMU.ConnectServer
             var maxConnections = this.connectServerSettings.MaxConnections;
             if (maxConnections <= this.clientListener.Clients.Count)
             {
-                Logger.WarnFormat("Connection refused from {0}: maximum connections ({1}) reached.", socket.RemoteEndPoint, maxConnections);
+                this.logger.LogWarning("Connection refused from {0}: maximum connections ({1}) reached.", socket.RemoteEndPoint, maxConnections);
                 return false;
             }
 

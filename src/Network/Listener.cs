@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.Network
     using System.IO.Pipelines;
     using System.Net;
     using System.Net.Sockets;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using Pipelines.Sockets.Unofficial;
 
     /// <summary>
@@ -17,10 +17,11 @@ namespace MUnique.OpenMU.Network
     /// </summary>
     public class Listener
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(Listener));
+        private readonly ILogger logger;
         private readonly int port;
         private readonly Func<PipeReader, IPipelinedDecryptor> decryptorCreator;
         private readonly Func<PipeWriter, IPipelinedEncryptor> encryptorCreator;
+        private readonly ILoggerFactory loggerFactory;
         private TcpListener clientListener;
 
         /// <summary>
@@ -29,11 +30,15 @@ namespace MUnique.OpenMU.Network
         /// <param name="port">The port on which the tcp listener should listen to.</param>
         /// <param name="decryptorCreator">The decryptor creator function.</param>
         /// <param name="encryptorCreator">The encryptor creator function.</param>
-        public Listener(int port, Func<PipeReader, IPipelinedDecryptor> decryptorCreator, Func<PipeWriter, IPipelinedEncryptor> encryptorCreator)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public Listener(int port, Func<PipeReader, IPipelinedDecryptor> decryptorCreator, Func<PipeWriter, IPipelinedEncryptor> encryptorCreator, ILoggerFactory loggerFactory)
         {
             this.port = port;
             this.decryptorCreator = decryptorCreator;
             this.encryptorCreator = encryptorCreator;
+            this.loggerFactory = loggerFactory;
+
+            this.logger = this.loggerFactory.CreateLogger<Listener>();
         }
 
         /// <summary>
@@ -87,7 +92,7 @@ namespace MUnique.OpenMU.Network
         private IConnection CreateConnection(Socket clientSocket)
         {
             var socketConnection = SocketConnection.Create(clientSocket);
-            return new Connection(socketConnection, this.CreateDecryptor(socketConnection.Input), this.CreateEncryptor(socketConnection.Output));
+            return new Connection(socketConnection, this.CreateDecryptor(socketConnection.Input), this.CreateEncryptor(socketConnection.Output), this.loggerFactory.CreateLogger<Connection>());
         }
 
         private void OnAccept(IAsyncResult result)
@@ -104,7 +109,7 @@ namespace MUnique.OpenMU.Network
             }
             catch (Exception ex)
             {
-                Log.Error("Error accepting the client socket", ex);
+                this.logger.LogError(ex, "Error accepting the client socket");
                 return;
             }
 

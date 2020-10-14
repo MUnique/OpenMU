@@ -5,11 +5,13 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Guild;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The context of a game server which contains all important configurations and services used by one game server instance.
@@ -27,14 +29,18 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="friendServer">The friend server.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="mapInitializer">The map initializer.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="plugInManager">The plug in manager.</param>
         public GameServerContext(
             GameServerDefinition gameServerDefinition,
             IGuildServer guildServer,
             ILoginServer loginServer,
             IFriendServer friendServer,
             IPersistenceContextProvider persistenceContextProvider,
-            IMapInitializer mapInitializer)
-            : base(gameServerDefinition.GameConfiguration, persistenceContextProvider, mapInitializer)
+            IMapInitializer mapInitializer,
+            ILoggerFactory loggerFactory,
+            PlugInManager plugInManager)
+            : base(gameServerDefinition.GameConfiguration, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager)
         {
             this.gameServerDefinition = gameServerDefinition;
             this.Id = gameServerDefinition.ServerID;

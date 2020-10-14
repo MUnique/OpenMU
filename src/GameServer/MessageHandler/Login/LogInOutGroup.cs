@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.Login
 {
     using System.Runtime.InteropServices;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -20,12 +21,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
         internal const byte GroupKey = 0xF1;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LogInOutGroup"/> class.
+        /// Initializes a new instance of the <see cref="LogInOutGroup" /> class.
         /// </summary>
         /// <param name="clientVersionProvider">The client version provider.</param>
         /// <param name="manager">The manager.</param>
-        public LogInOutGroup(IClientVersionProvider clientVersionProvider, PlugInManager manager)
-            : base(clientVersionProvider, manager)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public LogInOutGroup(IClientVersionProvider clientVersionProvider, PlugInManager manager, ILoggerFactory loggerFactory)
+            : base(clientVersionProvider, manager, loggerFactory)
         {
         }
 

@@ -5,8 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
 {
     using System.Linq;
-    using System.Reflection;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlugIns;
@@ -16,7 +15,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
     /// </summary>
     public class AddInitialSkillPlugInBase : ICharacterCreatedPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly byte characterClassNumber;
         private readonly ushort skillNumber;
 
@@ -34,9 +32,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
         /// <inheritdoc />
         public void CharacterCreated(Player player, Character createdCharacter)
         {
+            using var logScope = player.Logger.BeginScope(this.GetType());
             if (this.characterClassNumber != createdCharacter.CharacterClass.Number)
             {
-                Log.DebugFormat("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass.Number, this.characterClassNumber);
+                player.Logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass.Number, this.characterClassNumber);
                 return;
             }
 
@@ -44,13 +43,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
                 player.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == this.skillNumber);
             if (skillDefinition == null)
             {
-                Log.Error($"Skill not found: {this.skillNumber}");
+                player.Logger.LogError($"Skill not found: {this.skillNumber}");
                 return;
             }
 
             if (!skillDefinition.QualifiedCharacters.Contains(createdCharacter.CharacterClass))
             {
-                Log.Error($"Skill {skillDefinition.Name} is not available for character class {createdCharacter.CharacterClass.Name}.");
+                player.Logger.LogError($"Skill {skillDefinition.Name} is not available for character class {createdCharacter.CharacterClass.Name}.");
                 return;
             }
 

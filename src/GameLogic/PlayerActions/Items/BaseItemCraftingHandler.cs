@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
@@ -18,11 +18,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <inheritdoc/>
         public (CraftingResult, Item) DoMix(Player player, byte socketSlot)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (this.TryGetRequiredItems(player, out var items, out var successRate) is { } error)
             {
                 return (error, null);
@@ -115,7 +114,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     var point = player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>();
                     foreach (var item in itemLink.Items)
                     {
-                        Log.DebugFormat("Item {0} is getting destroyed.", item);
+                        player.Logger.LogDebug("Item {0} is getting destroyed.", item);
                         player.TemporaryStorage.RemoveItem(item);
                         player.PersistenceContext.Delete(item);
                         point?.ItemDestroyed(item);
@@ -127,22 +126,22 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     {
                         var previousLevel = item.Level;
                         item.Level = (byte)Rand.NextInt(0, item.Level);
-                        Log.DebugFormat("Item {0} was downgraded from {1} to {2}.", item, previousLevel, item.Level);
+                        player.Logger.LogDebug("Item {0} was downgraded from {1} to {2}.", item, previousLevel, item.Level);
                     });
 
                     break;
                 case MixResult.DowngradedTo0:
                     itemLink.Items.ForEach(item =>
                     {
-                        Log.DebugFormat("Item {0} is getting downgraded to level 0.", item);
+                        player.Logger.LogDebug("Item {0} is getting downgraded to level 0.", item);
                         item.Level = 0;
                     });
 
                     break;
                 default:
-                    if (Log.IsDebugEnabled)
+                    if (player.Logger.IsEnabled(LogLevel.Debug))
                     {
-                        itemLink.Items.ForEach(item => Log.DebugFormat("Item {0} stays as-is.", item));
+                        itemLink.Items.ForEach(item => player.Logger.LogDebug("Item {0} stays as-is.", item));
                     }
 
                     // The item stays as is.

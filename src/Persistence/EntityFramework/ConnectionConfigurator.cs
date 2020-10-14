@@ -157,7 +157,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                         }
                         else
                         {
-                            log4net.LogManager.GetLogger(typeof(ConnectionConfigurator)).Error($"Unknown context type: {setting.ContextTypeName}");
+                            throw new InvalidDataException($"Unknown context type: {setting.ContextTypeName}");
                         }
                     }
                 }

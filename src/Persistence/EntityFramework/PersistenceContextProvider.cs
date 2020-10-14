@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Npgsql.Logging;
 
     /// <summary>
@@ -13,12 +14,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// </summary>
     public class PersistenceContextProvider : IPersistenceContextProvider
     {
+        private readonly ILoggerFactory loggerFactory;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PersistenceContextProvider"/> class.
+        /// Initializes a new instance of the <see cref="PersistenceContextProvider" /> class.
         /// </summary>
-        public PersistenceContextProvider()
+        /// <param name="loggerFactory">The logger factory.</param>
+        public PersistenceContextProvider(ILoggerFactory loggerFactory)
         {
-            this.CachingRepositoryManager = new CachingRepositoryManager();
+            this.loggerFactory = loggerFactory;
+            this.CachingRepositoryManager = new CachingRepositoryManager(loggerFactory);
             this.CachingRepositoryManager.RegisterRepositories();
         }
 
@@ -29,14 +34,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// The repository manager.
         /// </value>
         internal CachingRepositoryManager CachingRepositoryManager { get; }
-
-        /// <summary>
-        /// Initializes the logging of sql statements.
-        /// </summary>
-        public static void InitializeSqlLogging()
-        {
-            NpgsqlLogManager.Provider = new NpgsqlLog4NetLoggingProvider();
-        }
 
         /// <summary>
         /// Determines whether the database schema is up to date.
@@ -124,7 +121,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public IContext CreateNewTypedContext<T>()
         {
-            return new EntityFrameworkContext(new TypedContext<T>());
+            return new EntityFrameworkContext(new TypedContext<T>(), loggerFactory);
         }
     }
 }

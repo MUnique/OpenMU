@@ -5,13 +5,13 @@
 namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
+    using System.ComponentModel.Design;
     using System.Linq;
     using System.Reflection;
+    using Microsoft.Extensions.DependencyInjection;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
-    using Unity;
-    using Unity.Lifetime;
 
     /// <summary>
     /// A plugin container which selects plugin based on the provided version/season metadata.
@@ -25,9 +25,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// Now, if we remove the plugin for season 6, so that 1, 2 and 7 are available?
     ///   In this case, we assume that the last available season before the target season is the correct one, season 2.
     /// </remarks>
-    internal class ViewPlugInContainer : CustomPlugInContainerBase<IViewPlugIn>
+    internal sealed class ViewPlugInContainer : CustomPlugInContainerBase<IViewPlugIn>, IDisposable
     {
         private readonly RemotePlayer player;
+
+        private readonly ServiceContainer serviceContainer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewPlugInContainer"/> class.
@@ -41,6 +43,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.player = player;
             this.Client = clientVersion;
             this.player.ClientVersionChanged += this.OnClientVersionChanged;
+            this.serviceContainer = new ServiceContainer();
+            this.serviceContainer.AddService(typeof(RemotePlayer), this.player);
             this.Initialize();
         }
 
@@ -51,6 +55,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// The client.
         /// </value>
         public ClientVersion Client { get; private set; }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this.serviceContainer.Dispose();
+        }
 
         /// <inheritdoc/>
         /// <remarks>We look if the activated plugin is rated at a higher client version than the current one.</remarks>
@@ -74,12 +84,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             if (this.Client.IsPlugInSuitable(plugInType))
             {
-                using (var container = new UnityContainer())
-                {
-                    container.RegisterInstance(typeof(RemotePlayer), this.player, new ExternallyControlledLifetimeManager());
-                    var plugIn = container.Resolve(plugInType) as IViewPlugIn;
-                    this.AddPlugIn(plugIn, true);
-                }
+                var plugIn = ActivatorUtilities.CreateInstance(this.serviceContainer, plugInType) as IViewPlugIn;
+                this.AddPlugIn(plugIn, true);
             }
         }
 

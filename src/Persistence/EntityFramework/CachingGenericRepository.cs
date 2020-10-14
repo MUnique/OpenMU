@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.EntityFrameworkCore.Metadata;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// A generic repository which wraps the access to the dbset of the <see cref="EntityDataContext"/>.
@@ -18,11 +19,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         where T : class
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachingGenericRepository{T}"/> class.
+        /// Initializes a new instance of the <see cref="CachingGenericRepository{T}" /> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
-        public CachingGenericRepository(RepositoryManager repositoryManager)
-            : base(repositoryManager)
+        /// <param name="logger">The logger.</param>
+        public CachingGenericRepository(RepositoryManager repositoryManager, ILogger logger)
+            : base(repositoryManager, logger)
         {
         }
 

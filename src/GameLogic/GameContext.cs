@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
@@ -21,8 +21,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class GameContext : OpenMU.GameLogic.IGameContext, IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(GameContext));
-
         private readonly IDictionary<ushort, GameMap> mapList;
 
         private readonly Timer recoverTimer;
@@ -37,13 +35,18 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="configuration">The configuration.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="mapInitializer">The map initializer.</param>
-        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer)
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="plugInManager">The plug in manager.</param>
+        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer, ILoggerFactory loggerFactory, PlugInManager plugInManager)
         {
             try
             {
                 this.Configuration = configuration;
                 this.PersistenceContextProvider = persistenceContextProvider;
-                this.PlugInManager = new PlugInManager(configuration.PlugInConfigurations);
+                this.PlugInManager = plugInManager;
+                this.mapInitializer = mapInitializer;
+                this.LoggerFactory = loggerFactory;
+                this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>());
                 this.mapList = new Dictionary<ushort, GameMap>();
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
 
@@ -52,11 +55,9 @@ namespace MUnique.OpenMU.GameLogic
             }
             catch (Exception ex)
             {
-                Log.Error(ex);
+                loggerFactory.CreateLogger<GameContext>().LogError(ex, "Unexpected error in constructor of GameContext.");
                 throw;
             }
-
-            this.mapInitializer = mapInitializer;
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace MUnique.OpenMU.GameLogic
         public FeaturePlugInContainer FeaturePlugIns { get; }
 
         /// <inheritdoc/>
-        public IItemPowerUpFactory ItemPowerUpFactory { get; } = new ItemPowerUpFactory();
+        public IItemPowerUpFactory ItemPowerUpFactory { get; }
 
         /// <inheritdoc/>
         public IPersistenceContextProvider PersistenceContextProvider { get; }
@@ -105,6 +106,9 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the players by character name dictionary.
         /// </summary>
         public IDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>();
+
+        /// <inheritdoc />
+        public ILoggerFactory LoggerFactory { get; }
 
         /// <inheritdoc/>
         public GameMap GetMap(ushort mapId)

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -14,8 +15,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class ItemRepairAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(ItemRepairAction));
-
         /// <summary>
         /// Repairs the item of the specified inventory slot.
         /// </summary>
@@ -23,9 +22,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="slot">The inventory slot.</param>
         public void RepairItem(Player player, byte slot)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (slot == InventoryConstants.PetSlot && player.OpenedNpc == null)
             {
-                Log.WarnFormat("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
+                player.Logger.LogWarning("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
                 return;
             }
 
@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             if (item == null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("No Item there to repair.", MessageType.BlueNormal);
-                Log.WarnFormat("RepairItem: Player {0}, Itemslot {1} not filled", player.SelectedCharacter.Name, slot);
+                player.Logger.LogWarning("RepairItem: Player {0}, Itemslot {1} not filled", player.SelectedCharacter.Name, slot);
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             if (player.OpenedNpc == null)
             {
                 // probably cheater
-                Log.WarnFormat("Cheater Warning: Player tried to repair all items, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
+                player.Logger.LogWarning("Cheater Warning: Player tried to repair all items, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
             }
 
             // TODO: Check if NPC is able to repair all items. Maybe specified by npc dialog type

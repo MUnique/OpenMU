@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     using System;
     using System.Reflection;
     using System.Runtime.InteropServices;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
     using MUnique.OpenMU.GameLogic.Views.Quest;
@@ -22,8 +22,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
     internal class QuestStateRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;
 
@@ -37,7 +35,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
             var questState = player.GetQuestState((short)request.QuestGroup, (short)request.QuestNumber);
             if (questState == null)
             {
-                Log.Error($"Quest state not found. Group {request.QuestGroup}, Number {request.QuestNumber}, Player {player}");
+                player.Logger.LogError($"Quest state not found. Group {request.QuestGroup}, Number {request.QuestNumber}, Player {player}");
             }
             else
             {

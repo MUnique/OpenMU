@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Repository which is able to load <see cref="LetterBody"/>s for a specific letter header.
@@ -16,8 +17,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Initializes a new instance of the <see cref="LetterBodyRepository" /> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
-        public LetterBodyRepository(RepositoryManager repositoryManager)
-            : base(repositoryManager)
+        /// <param name="logger">The logger.</param>
+        public LetterBodyRepository(RepositoryManager repositoryManager, ILogger<LetterBodyRepository> logger)
+            : base(repositoryManager, logger)
         {
         }
 

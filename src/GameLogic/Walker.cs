@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
-    using log4net;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Pathfinding;
 
@@ -17,8 +17,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class Walker : IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(Walker));
-
         private readonly ISupportWalk walkSupporter;
         private readonly Func<TimeSpan> stepDelay;
         private readonly Stack<WalkingStep> nextSteps = new Stack<WalkingStep>(5);
@@ -162,7 +160,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 if (this.walkLock == null)
                 {
-                    Log.Debug("walker already disposed");
+                    Debug.WriteLine("walker already disposed");
                     return;
                 }
 
@@ -196,7 +194,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             catch (Exception e)
             {
-                Log.Error(e.Message, e);
+                Debug.Fail(e.Message, e.StackTrace);
             }
         }
 

@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
     using System;
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
@@ -18,8 +18,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     /// </summary>
     public class LetterSendAction
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(LetterSendAction));
-
         /// <summary>
         /// Sends the letter.
         /// </summary>
@@ -32,6 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="letterId">The client side letter id.</param>
         public void SendLetter(Player player, string receiver, string message, string title, byte rotation, byte animation, uint letterId)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             var sendPrice = player.GameContext.Configuration.LetterSendPrice;
             if (player.Money < sendPrice)
             {
@@ -60,7 +59,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             }
             catch (Exception ex)
             {
-                Log.Error("Unexpected error when trying to send a letter", ex);
+                player.Logger.LogError(ex, "Unexpected error when trying to send a letter");
                 player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Oops, some error happened during sending the Letter.", MessageType.BlueNormal);
             }

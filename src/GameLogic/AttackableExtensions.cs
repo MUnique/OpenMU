@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -20,11 +20,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public static class AttackableExtensions
     {
-        /// <summary>
-        /// The logger of this class.
-        /// </summary>
-        private static readonly ILog Log = LogManager.GetLogger(typeof(AttackableExtensions));
-
         private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
             new Dictionary<AttributeDefinition, AttributeDefinition>
             {
@@ -181,7 +176,7 @@ namespace MUnique.OpenMU.GameLogic
             }
             else
             {
-                Log.Warn(
+                player.Logger.LogWarning(
                     $"Regeneration skill {skill.Name} is configured to regenerate a non-regeneration-able target attribute {skill.MagicEffectDef.PowerUpDefinition.TargetAttribute}.");
             }
         }
@@ -252,17 +247,17 @@ namespace MUnique.OpenMU.GameLogic
             var result = true;
             if (skill.TargetRestriction == SkillTargetRestriction.Self && target != player)
             {
-                Log.Warn($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to himself.");
+                player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to himself.");
                 result = false;
             }
             else if (skill.TargetRestriction == SkillTargetRestriction.Party && target != player && (player.Party == null || !player.Party.PartyList.Contains(target as IPartyMember)))
             {
-                Log.Warn($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to his party.");
+                player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to his party.");
                 result = false;
             }
             else if (skill.TargetRestriction == SkillTargetRestriction.Player && !(target is Player))
             {
-                Log.Warn($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to players.");
+                player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to players.");
                 result = false;
             }
             else

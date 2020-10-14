@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests
 {
     using System;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
@@ -31,13 +32,13 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectVersionWhenExactVersionIsAvailable()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason9>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
             clientVersionProvider.Setup(p => p.ClientVersion).Returns(Season6E3English);
-            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager);
+            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             var handler = containerForSeason6[HandlerKey];
             Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
@@ -49,12 +50,12 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectVersionWhenLowerVersionsAreAvailable()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
             clientVersionProvider.Setup(p => p.ClientVersion).Returns(Season9E2English);
-            var containerForSeason9 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager);
+            var containerForSeason9 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason9.Initialize();
             var handler = containerForSeason9[HandlerKey];
             Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
@@ -66,12 +67,12 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectLanguage()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6Chinese>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
             clientVersionProvider.Setup(p => p.ClientVersion).Returns(Season6E3English);
-            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager);
+            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             var handler = containerForSeason6[HandlerKey];
             Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
@@ -83,11 +84,11 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectInvariantPlugIn()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerInvariant>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
             clientVersionProvider.Setup(p => p.ClientVersion).Returns(Season6E3English);
-            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager);
+            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             var handler = containerForSeason6[HandlerKey];
             Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerInvariant)));
@@ -99,12 +100,12 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInAfterDeactivation()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
             clientVersionProvider.Setup(p => p.ClientVersion).Returns(Season6E3English);
-            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager);
+            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             manager.DeactivatePlugIn(typeof(PacketHandlerSeason6));
             var handler = containerForSeason6[HandlerKey];
@@ -117,13 +118,13 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectLanguageSpecificOverInvariant()
         {
-            var manager = new PlugInManager();
+            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6Chinese>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6English>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
             clientVersionProvider.Setup(p => p.ClientVersion).Returns(Season6E3English);
-            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager);
+            var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             var handler = containerForSeason6[HandlerKey];
             Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6English)));

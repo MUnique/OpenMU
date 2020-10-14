@@ -5,8 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
-    using log4net;
-
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Pathfinding;
 
@@ -15,33 +14,34 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class GameMapTerrain
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(GameMapTerrain));
+        /// <summary>
+        /// The default terrain where all coordinates are walkable and not a safezone.
+        /// </summary>
+        private static readonly byte[] DefaultTerrain = Enumerable.Repeat<byte>(0, short.MaxValue).ToArray();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameMapTerrain"/> class.
         /// </summary>
         /// <param name="definition">The game map definition.</param>
         public GameMapTerrain(GameMapDefinition definition)
-            : this(definition.Name, definition.TerrainData)
+            : this(definition.TerrainData)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameMapTerrain"/> class.
         /// </summary>
-        /// <param name="mapName">Name of the map.</param>
         /// <param name="terrainData">The terrain data.</param>
-        public GameMapTerrain(string mapName, byte[] terrainData)
+        public GameMapTerrain(byte[] terrainData)
         {
-            if (terrainData == null)
+            if (terrainData is { })
             {
-                Log.Warn($"Terrain data for {mapName} not defined.");
-                return;
+                this.ReadTerrainData(terrainData.AsSpan(3));
             }
-
-            Log.Debug($"Start reading terrain data for {mapName}.");
-            this.ReadTerrainData(terrainData.AsSpan(3));
-            Log.Debug($"Finished reading terrain data for {mapName}.");
+            else
+            {
+                this.ReadTerrainData(DefaultTerrain);
+            }
         }
 
         /// <summary>

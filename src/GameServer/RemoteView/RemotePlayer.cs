@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
     using System.Buffers;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameServer.MessageHandler;
@@ -19,8 +19,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// </summary>
     public class RemotePlayer : Player, IClientVersionProvider
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RemotePlayer));
-
         private readonly byte[] packetBuffer = new byte[0xFF];
 
         private ClientVersion clientVersion;
@@ -36,7 +34,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             this.Connection = connection;
             this.clientVersion = clientVersion;
-            this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager);
+            this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager, gameContext.LoggerFactory);
             this.MainPacketHandler.Initialize();
             this.Connection.PacketReceived += (sender, packet) => this.PacketReceived(packet);
             this.Connection.Disconnected += (sender, packet) => this.Disconnect();
@@ -114,55 +112,45 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <param name="sequence">The packet.</param>
         private void PacketReceived(ReadOnlySequence<byte> sequence)
         {
-            using (this.PushServerLogContext())
-            using (log4net.ThreadContext.Stacks["connection"].Push(this.Connection.ToString()))
-            using (log4net.ThreadContext.Stacks["account"].Push(this.GetAccountName()))
-            using (log4net.ThreadContext.Stacks["character"].Push(this.GetSelectedCharacterName()))
+            using var loggingScope = this.Logger.BeginScope(
+                ("GameServer", this.GameServerContext.Id),
+                ("Connection", this.Connection),
+                ("Account", this.GetAccountName()),
+                ("Character", this.GetSelectedCharacterName()));
+
+            try
             {
+                Span<byte> buffer;
+                IMemoryOwner<byte> owner = null;
+                if (sequence.Length <= this.packetBuffer.Length)
+                {
+                    sequence.CopyTo(this.packetBuffer);
+                    buffer = this.packetBuffer.AsSpan(0, this.packetBuffer.GetPacketSize());
+                }
+                else
+                {
+                    owner = MemoryPool<byte>.Shared.Rent((int)sequence.Length);
+                    buffer = owner.Memory.Slice(0, (int)sequence.Length).Span;
+                }
+
                 try
                 {
-                    Span<byte> buffer;
-                    IMemoryOwner<byte> owner = null;
-                    if (sequence.Length <= this.packetBuffer.Length)
+                    if (this.Logger.IsEnabled(LogLevel.Debug))
                     {
-                        sequence.CopyTo(this.packetBuffer);
-                        buffer = this.packetBuffer.AsSpan(0, this.packetBuffer.GetPacketSize());
-                    }
-                    else
-                    {
-                        owner = MemoryPool<byte>.Shared.Rent((int)sequence.Length);
-                        buffer = owner.Memory.Slice(0, (int)sequence.Length).Span;
+                        this.Logger.LogDebug("[C->S] {0}", buffer.ToArray().AsString());
                     }
 
-                    try
-                    {
-                        if (Logger.IsDebugEnabled)
-                        {
-                            Logger.DebugFormat("[C->S] {0}", buffer.ToArray().AsString());
-                        }
-
-                        this.MainPacketHandler.HandlePacket(this, buffer);
-                    }
-                    finally
-                    {
-                        owner?.Dispose();
-                    }
+                    this.MainPacketHandler.HandlePacket(this, buffer);
                 }
-                catch (Exception ex)
+                finally
                 {
-                    Logger.Error(ex);
+                    owner?.Dispose();
                 }
             }
-        }
-
-        private IDisposable PushServerLogContext()
-        {
-            if (log4net.ThreadContext.Stacks["gameserver"].Count > 0)
+            catch (Exception ex)
             {
-                return null;
+                this.Logger.LogError(ex, "Error while processing a message");
             }
-
-            return log4net.ThreadContext.Stacks["gameserver"].Push(this.GameServerContext.Id.ToString());
         }
 
         private string GetAccountName()

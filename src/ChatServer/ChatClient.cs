@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.ChatServer
     using System.Buffers;
     using System.Collections.Generic;
     using System.Text;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.Xor;
@@ -24,7 +24,6 @@ namespace MUnique.OpenMU.ChatServer
     {
         private const int TokenOffset = 6;
         private const int MessageOffset = 5;
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ChatClient));
         private static readonly ISpanDecryptor TokenDecryptor = new Xor3Decryptor(TokenOffset);
 
         /// <summary>
@@ -38,18 +37,21 @@ namespace MUnique.OpenMU.ChatServer
         private static readonly ISpanEncryptor MessageEncryptor = new Xor3Encryptor(MessageOffset);
 
         private readonly ChatRoomManager manager;
+        private readonly ILogger<ChatClient> logger;
         private readonly byte[] packetBuffer = new byte[0xFF];
         private IConnection connection;
         private ChatRoom room;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatClient"/> class.
+        /// Initializes a new instance of the <see cref="ChatClient" /> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="manager">The manager.</param>
-        public ChatClient(IConnection connection, ChatRoomManager manager)
+        /// <param name="logger">The logger.</param>
+        public ChatClient(IConnection connection, ChatRoomManager manager, ILogger<ChatClient> logger)
         {
             this.manager = manager;
+            this.logger = logger;
             this.connection = connection;
             this.connection.PacketReceived += this.ReadPacket;
             this.connection.Disconnected += (sender, e) => this.LogOff();
@@ -87,16 +89,14 @@ namespace MUnique.OpenMU.ChatServer
         public void SendMessage(byte senderId, string message)
         {
             var messageByteLength = Encoding.UTF8.GetByteCount(message);
-            using (var writer = this.connection.StartSafeWrite(0xC1, 5 + messageByteLength))
-            {
-                var packet = writer.Span;
-                packet[2] = 0x04;
-                packet[3] = senderId;
-                packet[4] = (byte)messageByteLength;
-                packet.Slice(5).WriteString(message, Encoding.UTF8);
-                MessageEncryptor.Encrypt(packet);
-                writer.Commit();
-            }
+            using var writer = this.connection.StartSafeWrite(0xC1, 5 + messageByteLength);
+            var packet = writer.Span;
+            packet[2] = 0x04;
+            packet[3] = senderId;
+            packet[4] = (byte)messageByteLength;
+            packet.Slice(5).WriteString(message, Encoding.UTF8);
+            MessageEncryptor.Encrypt(packet);
+            writer.Commit();
         }
 
         /// <inheritdoc/>
@@ -124,16 +124,14 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public void SendChatRoomClientUpdate(byte updatedClientId, string updatedClientName, ChatRoomClientUpdateType updateType)
         {
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x0F))
-            {
-                var packet = writer.Span;
-                packet[2] = 0x01;
-                packet[3] = (byte)updateType;
-                packet[4] = updatedClientId;
-                packet.Slice(5).WriteString(updatedClientName, Encoding.UTF8);
+            using var writer = this.connection.StartSafeWrite(0xC1, 0x0F);
+            var packet = writer.Span;
+            packet[2] = 0x01;
+            packet[3] = (byte)updateType;
+            packet[4] = updatedClientId;
+            packet.Slice(5).WriteString(updatedClientName, Encoding.UTF8);
 
-                writer.Commit();
-            }
+            writer.Commit();
         }
 
         /// <inheritdoc/>
@@ -141,11 +139,11 @@ namespace MUnique.OpenMU.ChatServer
         {
             if (this.connection == null)
             {
-                Log.Debug($"Client {this.Nickname} is already disconnected.");
+                this.logger.LogDebug($"Client {this.Nickname} is already disconnected.");
                 return;
             }
 
-            Log.Debug($"Client {this.connection} is going to be disconnected.");
+            this.logger.LogDebug($"Client {this.connection} is going to be disconnected.");
             if (this.room != null)
             {
                 this.room.Leave(this);
@@ -202,9 +200,9 @@ namespace MUnique.OpenMU.ChatServer
                     {
                         MessageDecryptor.Decrypt(packet);
                         var message = packet.ExtractString(5, int.MaxValue, Encoding.UTF8);
-                        if (Log.IsDebugEnabled)
+                        if (this.logger.IsEnabled(LogLevel.Debug))
                         {
-                            Log.Debug($"Message received from {this.Index}: \"{message}\"");
+                            this.logger.LogDebug($"Message received from {this.Index}: \"{message}\"");
                         }
 
                         this.room.SendMessage(this.Index, message);
@@ -215,11 +213,11 @@ namespace MUnique.OpenMU.ChatServer
                 case 5:
                     // This is something like a keep-connection-alive packet.
                     // Last activity is always set, so we have to do nothing here.
-                    Log.Debug("Keep-alive received");
+                    this.logger.LogDebug("Keep-alive received");
                     break;
 
                 default:
-                    Log.Error($"Received unknown packet of type {packet[2]}: {packet.AsString()}");
+                    this.logger.LogError($"Received unknown packet of type {packet[2]}: {packet.AsString()}");
                     this.LogOff();
                     break;
             }
@@ -236,7 +234,7 @@ namespace MUnique.OpenMU.ChatServer
             var requestedRoom = this.manager.GetChatRoom(roomId);
             if (requestedRoom == null)
             {
-                Log.Error($"Requested room {roomId} has not been registered before.");
+                this.logger.LogError($"Requested room {roomId} has not been registered before.");
                 this.LogOff();
                 return;
             }
@@ -245,7 +243,7 @@ namespace MUnique.OpenMU.ChatServer
             var tokenAsString = packet.ExtractString(TokenOffset, 10, Encoding.UTF8);
             if (!uint.TryParse(tokenAsString, out uint _))
             {
-                Log.Error($"Token '{tokenAsString}' is not a parseable integer.");
+                this.logger.LogError($"Token '{tokenAsString}' is not a parseable integer.");
                 this.LogOff();
                 return;
             }

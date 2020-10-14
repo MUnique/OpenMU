@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
 {
     using System;
     using System.Runtime.InteropServices;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
@@ -20,8 +20,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
     [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
     internal class PlayerShopSetItemPricePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(StoreHandlerGroupPlugIn));
-
         private readonly SetItemPriceAction setPriceAction = new SetItemPriceAction();
 
         /// <inheritdoc/>
@@ -34,7 +32,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         public void HandlePacket(Player player, Span<byte> packet)
         {
             PlayerShopSetItemPrice message = packet;
-            Logger.DebugFormat("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter.Name, message.ItemSlot, message.Price);
+            player.Logger.LogDebug("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter.Name, message.ItemSlot, message.Price);
             this.setPriceAction.SetPrice(player, message.ItemSlot, (int)message.Price);
         }
     }

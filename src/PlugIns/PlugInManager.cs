@@ -7,41 +7,45 @@ namespace MUnique.OpenMU.PlugIns
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.ComponentModel.Design;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.InteropServices;
-    using log4net;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The manager for plugins.
     /// </summary>
     public class PlugInManager
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILogger<PlugInManager> logger;
+        private readonly ServiceContainer serviceContainer;
         private readonly IDictionary<Type, object> plugInPoints = new Dictionary<Type, object>();
         private readonly IDictionary<Guid, Type> knownPlugIns = new ConcurrentDictionary<Guid, Type>();
         private readonly ConcurrentDictionary<Type, ISet<Type>> knownPlugInsPerInterfaceType = new ConcurrentDictionary<Type, ISet<Type>>();
         private readonly ConcurrentDictionary<Guid, Type> activePlugIns = new ConcurrentDictionary<Guid, Type>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlugInManager"/> class.
-        /// </summary>
-        public PlugInManager()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PlugInManager" /> class.
         /// </summary>
         /// <param name="configurations">The configurations.</param>
-        public PlugInManager(ICollection<PlugInConfiguration> configurations)
+        /// <param name="logger">The logger.</param>
+        /// <param name="serviceProvider">The service provider.</param>
+        public PlugInManager(ICollection<PlugInConfiguration> configurations, ILogger<PlugInManager> logger, IServiceProvider serviceProvider)
         {
-            this.DiscoverAndRegisterPlugIns();
-            var loadedAssemblies = new HashSet<string>();
-            foreach (var configuration in configurations)
+            this.logger = logger;
+            this.serviceContainer = new ServiceContainer(serviceProvider);
+            this.serviceContainer.AddService(typeof(PlugInManager), this);
+            if (configurations?.Any() ?? false)
             {
-                this.ReadConfiguration(configuration, loadedAssemblies);
+                this.DiscoverAndRegisterPlugIns();
+                var loadedAssemblies = new HashSet<string>();
+                foreach (var configuration in configurations)
+                {
+                    this.ReadConfiguration(configuration, loadedAssemblies);
+                }
             }
         }
 
@@ -244,7 +248,7 @@ namespace MUnique.OpenMU.PlugIns
             this.RegisterPlugInType(typeof(TPlugInClass));
             if (typeof(TPlugInInterface).GetCustomAttribute(typeof(PlugInPointAttribute)) != null)
             {
-                this.RegisterPlugInAtPlugInPoint<TPlugInInterface>(Activator.CreateInstance<TPlugInClass>());
+                this.RegisterPlugInAtPlugInPoint<TPlugInInterface>(this.CreatePlugInInstance<TPlugInClass>());
             }
             else if (this.GetCustomPlugInPointType(typeof(TPlugInInterface)) is { } customPlugInPointType)
             {
@@ -259,7 +263,7 @@ namespace MUnique.OpenMU.PlugIns
             }
             else
             {
-                Log.Warn($"Plugin {typeof(TPlugInClass)} wasn't registered, because it's not an implementation of an interface which is marked with {nameof(PlugInPointAttribute)} or {nameof(CustomPlugInContainerAttribute)}.");
+                this.logger.LogWarning($"Plugin {typeof(TPlugInClass)} wasn't registered, because it's not an implementation of an interface which is marked with {nameof(PlugInPointAttribute)} or {nameof(CustomPlugInContainerAttribute)}.");
             }
         }
 
@@ -312,7 +316,7 @@ namespace MUnique.OpenMU.PlugIns
             {
                 this.knownPlugIns.Add(plugInTypeId, plugInType);
                 this.activePlugIns.TryAdd(plugInTypeId, plugInType); // registered plugins are by default active
-                Log.DebugFormat("Added known plugin {0}, {1}", plugInTypeId, plugInType);
+                this.logger.LogDebug("Added known plugin {0}, {1}", plugInTypeId, plugInType);
             }
         }
 
@@ -325,7 +329,7 @@ namespace MUnique.OpenMU.PlugIns
             {
                 var keyType = strategyPlugInInterface.GetGenericArguments()[0];
                 var providerType = typeof(StrategyPlugInProvider<,>).MakeGenericType(keyType, typeof(TPlugInInterface));
-                proxy = Activator.CreateInstance(providerType, this) as IPlugInContainer<TPlugInInterface>;
+                proxy = ActivatorUtilities.CreateInstance(this.serviceContainer, providerType) as IPlugInContainer<TPlugInInterface>;
             }
             else
             {
@@ -334,6 +338,11 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             return proxy;
+        }
+
+        private TPlugInClass CreatePlugInInstance<TPlugInClass>()
+        {
+            return ActivatorUtilities.CreateInstance<TPlugInClass>(this.serviceContainer);
         }
 
         private void ReadConfiguration(PlugInConfiguration configuration, HashSet<string> loadedAssemblies)
@@ -352,7 +361,7 @@ namespace MUnique.OpenMU.PlugIns
                     }
                     catch (Exception e)
                     {
-                        Log.Error($"Error while loading external plugin assembly {configuration.ExternalAssemblyName} for plugin {configuration.TypeId}.", e);
+                        this.logger.LogError($"Error while loading external plugin assembly {configuration.ExternalAssemblyName} for plugin {configuration.TypeId}.", e);
                         return;
                     }
                 }
@@ -382,7 +391,7 @@ namespace MUnique.OpenMU.PlugIns
             }
             else
             {
-                Log.Warn($"Unknown plugin type for id {configuration.TypeId}");
+                this.logger.LogWarning($"Unknown plugin type for id {configuration.TypeId}");
             }
         }
 
@@ -459,7 +468,8 @@ namespace MUnique.OpenMU.PlugIns
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Couldn't register plugin type {plugIn}", e);
+                    this.logger.LogError(e, $"Couldn't register plugin type {plugIn}");
+                    this.logger.LogError("TODO: Use ServiceContainer");
                 }
             }
         }

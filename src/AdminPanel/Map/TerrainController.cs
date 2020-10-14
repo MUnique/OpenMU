@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.AdminPanel.Map
 
         private Stream RenderMap(IGameMapInfo map)
         {
-            var terrain = new GameMapTerrain(map.MapName, map.TerrainData);
+            var terrain = new GameMapTerrain(map.TerrainData);
             using var bitmap = terrain.ToImage();
             var memoryStream = new MemoryStream();
             bitmap.SaveAsPng(memoryStream);

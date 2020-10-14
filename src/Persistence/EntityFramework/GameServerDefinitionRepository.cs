@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Repository for the <see cref="GameServerDefinition"/>.
@@ -14,11 +15,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     internal class GameServerDefinitionRepository : CachingGenericRepository<GameServerDefinition>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameServerDefinitionRepository"/> class.
+        /// Initializes a new instance of the <see cref="GameServerDefinitionRepository" /> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
-        public GameServerDefinitionRepository(RepositoryManager repositoryManager)
-            : base(repositoryManager)
+        /// <param name="logger">The logger.</param>
+        public GameServerDefinitionRepository(RepositoryManager repositoryManager, ILogger<GameServerDefinitionRepository> logger)
+            : base(repositoryManager, logger)
         {
         }
 

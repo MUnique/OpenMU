@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 {
     using System.Reflection;
     using System.Runtime.InteropServices;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.GameLogic;
@@ -25,8 +25,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
     [Guid("53BEDA2A-9FE6-406D-AE6D-8E4DDDA3D73D")]
     public class LegacyQuestRewardPlugIn : ILegacyQuestRewardPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly RemotePlayer player;
 
         /// <summary>
@@ -68,7 +66,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 
                     break;
                 default:
-                    Log.DebugFormat("Unknown quest reward: {0}", reward);
+                    this.player.Logger.LogDebug("Unknown quest reward: {0}", reward);
                     break;
             }
         }

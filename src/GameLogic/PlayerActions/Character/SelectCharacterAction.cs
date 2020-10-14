@@ -5,15 +5,13 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
     using System.Linq;
-    using log4net;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Action to select a character and enter the world with it.
     /// </summary>
     public class SelectCharacterAction
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(SelectCharacterAction));
-
         /// <summary>
         /// Selects the character and enters the world.
         /// </summary>
@@ -21,9 +19,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// <param name="characterName">Name of the character.</param>
         public void SelectCharacter(Player player, string characterName)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
             {
-                Logger.ErrorFormat("Could not select character because of wrong current player state: {0}", player.PlayerState.CurrentState);
+                player.Logger.LogError("Could not select character because of wrong current player state: {0}", player.PlayerState.CurrentState);
                 player.Disconnect();
                 return;
             }
@@ -31,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             player.SelectedCharacter = player.Account.Characters.FirstOrDefault(c => c.Name.Equals(characterName));
             if (player.SelectedCharacter == null)
             {
-                Logger.ErrorFormat("Could not select character because character not found: [{0}]", characterName);
+                player.Logger.LogError("Could not select character because character not found: [{0}]", characterName);
                 player.Disconnect();
             }
         }

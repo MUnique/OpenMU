@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Linq;
     using BCrypt.Net;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
 
     /// <summary>
@@ -19,8 +20,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Initializes a new instance of the <see cref="AccountRepository" /> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
-        public AccountRepository(CachingRepositoryManager repositoryManager)
-            : base(repositoryManager)
+        /// <param name="logger">The logger.</param>
+        public AccountRepository(CachingRepositoryManager repositoryManager, ILogger<AccountRepository> logger)
+            : base(repositoryManager, logger)
         {
         }
 

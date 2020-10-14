@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ChatServer.Tests
 {
+    using Microsoft.Extensions.Logging.Abstractions;
     using NUnit.Framework;
 
     /// <summary>
@@ -18,7 +19,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         [Test]
         public void RoomCreation()
         {
-            var manager = new ChatRoomManager();
+            var manager = new ChatRoomManager(new NullLoggerFactory());
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
             Assert.That(room, Is.Not.Null);
@@ -30,7 +31,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         [Test]
         public void RoomCreationUniqueIds()
         {
-            var manager = new ChatRoomManager();
+            var manager = new ChatRoomManager(new NullLoggerFactory());
             var roomId1 = manager.CreateChatRoom();
             var roomId2 = manager.CreateChatRoom();
 
@@ -43,7 +44,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
         [Test]
         public void GetChatRoomNull()
         {
-            var manager = new ChatRoomManager();
+            var manager = new ChatRoomManager(new NullLoggerFactory());
             var room = manager.GetChatRoom(9999);
             Assert.That(room, Is.Null);
         }

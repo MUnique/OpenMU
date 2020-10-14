@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
 {
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Views.Trade;
 
     /// <summary>
@@ -12,14 +12,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
     /// </summary>
     public class TradeCancelAction : BaseTradeAction
     {
-        private static ILog Log { get; } = LogManager.GetLogger(typeof(TradeCancelAction));
-
         /// <summary>
         /// Cancels the trade.
         /// </summary>
         /// <param name="trader">The trader.</param>
         public new void CancelTrade(ITrader trader)
         {
+            using var loggerScope = (trader as Player)?.Logger.BeginScope(this.GetType());
             var tradingPartner = trader?.TradingPartner;
             if (tradingPartner != null)
             {
@@ -30,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             }
             else
             {
-                Log.Warn($"Trader {trader?.Name} invoked CancelTrade, but it probably wasn't in a trade (TradingPartner = null).");
+                (trader as Player)?.Logger.LogWarning($"Trader {trader?.Name} invoked CancelTrade, but it probably wasn't in a trade (TradingPartner = null).");
             }
         }
     }

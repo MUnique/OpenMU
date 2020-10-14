@@ -2,11 +2,14 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.PlugIns;
+
 namespace MUnique.OpenMU.Tests
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -143,7 +146,9 @@ namespace MUnique.OpenMU.Tests
                 new Mock<ILoginServer>().Object,
                 new Mock<IFriendServer>().Object,
                 new InMemoryPersistenceContextProvider(),
-                new MapInitializer(gameConfiguration));
+                new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>()),
+                new NullLoggerFactory(),
+                new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLogger<PlugInManager>(), null));
             return gameServer;
         }
     }

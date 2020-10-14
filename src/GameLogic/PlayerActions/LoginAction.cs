@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Login;
 
@@ -13,8 +14,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// </summary>
     public class LoginAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(LoginAction));
-
         /// <summary>
         /// Logins the specified player.
         /// </summary>
@@ -23,21 +22,22 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="password">The password.</param>
         public void Login(Player player, string username, string password)
         {
-            Account account = null;
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
+            Account account;
             try
             {
                 account = player.PersistenceContext.GetAccountByLoginName(username, password);
             }
             catch (Exception ex)
             {
-                Log.Error("Login Failed.", ex);
+                player.Logger.LogError("Login Failed.", ex);
                 player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.ConnectionError);
                 return;
             }
 
             if (account == null)
             {
-                Log.InfoFormat($"Account not found or invalid password, username: [{username}]");
+                player.Logger.LogInformation($"Account not found or invalid password, username: [{username}]");
                 player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.InvalidPassword);
             }
             else if (account.State == AccountState.Banned)
@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     gameServerContext.LoginServer.TryLogin(username, gameServerContext.Id))
                 {
                     player.Account = account;
-                    Log.DebugFormat("Login successful, username: [{0}]", username);
+                    player.Logger.LogDebug("Login successful, username: [{0}]", username);
                     player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.OK);
                 }
                 else

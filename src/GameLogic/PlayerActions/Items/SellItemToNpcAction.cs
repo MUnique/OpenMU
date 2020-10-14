@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlugIns;
@@ -15,11 +15,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class SellItemToNpcAction
     {
-        /// <summary>
-        /// The logger of this class.
-        /// </summary>
-        private static readonly ILog Log = LogManager.GetLogger(typeof(SellItemToNpcAction));
-
         private readonly ItemPriceCalculator itemPriceCalculator;
 
         /// <summary>
@@ -37,17 +32,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="slot">The slot.</param>
         public void SellItem(Player player, byte slot)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             Item item = player.Inventory.GetItem(slot);
             if (item == null)
             {
-                Log.WarnFormat("Player {0} requested to sell item at slot {1}, but item wasn't found.", player, slot);
+                player.Logger.LogWarning("Player {0} requested to sell item at slot {1}, but item wasn't found.", player, slot);
                 player.ViewPlugIns.GetPlugIn<IItemSoldToNpcPlugIn>()?.ItemSoldToNpc(false);
                 return;
             }
 
             if (player.OpenedNpc?.Definition.MerchantStore == null)
             {
-                Log.WarnFormat("Player {0} requested to sell item at slot {1} to an npc, but no npc merchant store is currently opened.", player, slot);
+                player.Logger.LogWarning("Player {0} requested to sell item at slot {1} to an npc, but no npc merchant store is currently opened.", player, slot);
                 player.ViewPlugIns.GetPlugIn<IItemSoldToNpcPlugIn>()?.ItemSoldToNpc(false);
                 return;
             }
@@ -64,10 +60,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         private void SellItem(Player player, Item item)
         {
             var sellingPrice = (int)this.itemPriceCalculator.CalculateSellingPrice(item);
-            Log.DebugFormat("Calculated selling price {0} for item {1}", sellingPrice, item);
+            player.Logger.LogDebug("Calculated selling price {0} for item {1}", sellingPrice, item);
             if (player.TryAddMoney(sellingPrice))
             {
-                Log.DebugFormat("Sold Item {0} for price: {1}", item, sellingPrice);
+                player.Logger.LogDebug("Sold Item {0} for price: {1}", item, sellingPrice);
                 player.Inventory.RemoveItem(item);
                 player.ViewPlugIns.GetPlugIn<IItemSoldToNpcPlugIn>()?.ItemSoldToNpc(true);
 

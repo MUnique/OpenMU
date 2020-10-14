@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
 {
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
 
     /// <summary>
@@ -13,14 +14,22 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
     {
         /// <summary>
         /// Kicks the player.
+        /// Only the party master is allowed to kick other players. However, players can kick themselves out of the party.
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="index">The index.</param>
         public void KickPlayer(Player player, byte index)
         {
-            if (player.Party != null)
+            if (player.Party is { } party)
             {
-                player.Party.KickPlayer(player, index);
+                if (!Equals(player, party.PartyList[0]) &&
+                    !Equals(player, party.PartyList[index]))
+                {
+                    player.Logger.LogWarning("Suspicious party kick request of {0}, could be hack attempt.", player);
+                    return;
+                }
+
+                party.KickPlayer(index);
             }
         }
     }

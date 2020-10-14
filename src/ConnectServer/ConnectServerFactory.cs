@@ -5,14 +5,26 @@
 namespace MUnique.OpenMU.ConnectServer
 {
     using System;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network.PlugIns;
 
     /// <summary>
     /// The connect server factory.
     /// </summary>
-    public static class ConnectServerFactory
+    public class ConnectServerFactory
     {
+        private readonly ILoggerFactory loggerFactory;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectServerFactory"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">The logger factory.</param>
+        public ConnectServerFactory(ILoggerFactory loggerFactory)
+        {
+            this.loggerFactory = loggerFactory;
+        }
+
         /// <summary>
         /// Creates a new connect server instance.
         /// </summary>
@@ -22,9 +34,9 @@ namespace MUnique.OpenMU.ConnectServer
         /// <returns>
         /// The new connect server instance.
         /// </returns>
-        public static OpenMU.Interfaces.IConnectServer CreateConnectServer(IConnectServerSettings settings, ClientVersion clientVersion, Guid configurationId)
+        public OpenMU.Interfaces.IConnectServer CreateConnectServer(IConnectServerSettings settings, ClientVersion clientVersion, Guid configurationId)
         {
-            return new ConnectServer(settings, clientVersion, configurationId);
+            return new ConnectServer(settings, clientVersion, configurationId, this.loggerFactory);
         }
     }
 }

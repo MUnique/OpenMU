@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
 {
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
 
     /// <summary>
@@ -11,8 +12,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
     /// </summary>
     public class LetterReadRequestAction
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(LetterReadRequestAction));
-
         /// <summary>
         /// Requests the letter which should be shown to the player.
         /// </summary>
@@ -20,9 +19,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="letterIndex">Index of the letter.</param>
         public void ReadRequest(Player player, ushort letterIndex)
         {
+            using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (player.SelectedCharacter.Letters.Count < letterIndex)
             {
-                Log.WarnFormat("Player {0} requested non-existing letter, id {1}", player.SelectedCharacter.Name, letterIndex);
+                player.Logger.LogWarning("Player {0} requested non-existing letter, id {1}", player.SelectedCharacter.Name, letterIndex);
                 return;
             }
 
@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             }
             else
             {
-                Log.WarnFormat("Letter not found. Id={0} Player={1}", letterIndex, player.SelectedCharacter.Name);
+                player.Logger.LogWarning("Letter not found. Id={0} Player={1}", letterIndex, player.SelectedCharacter.Name);
             }
         }
     }

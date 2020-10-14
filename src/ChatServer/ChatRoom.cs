@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.ChatServer
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.ChatServer
     /// </summary>
     internal sealed class ChatRoom : IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ChatRoom));
+        private readonly ILogger<ChatRoom> logger;
 
         /// <summary>
         /// Nicknames of the registered Clients.
@@ -35,12 +35,14 @@ namespace MUnique.OpenMU.ChatServer
         private bool isClosing;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoom"/> class.
+        /// Initializes a new instance of the <see cref="ChatRoom" /> class.
         /// </summary>
         /// <param name="roomId">The room identifier.</param>
-        public ChatRoom(ushort roomId)
+        /// <param name="logger">The logger.</param>
+        public ChatRoom(ushort roomId, ILogger<ChatRoom> logger)
         {
-            Log.Debug($"Creating room {roomId}");
+            this.logger = logger;
+            this.logger.LogDebug($"Creating room {roomId}");
             this.connectedClients = new List<IChatClient>(2);
             this.registeredClients = new List<ChatServerAuthenticationInfo>(2);
             this.RoomId = roomId;
@@ -122,7 +124,7 @@ namespace MUnique.OpenMU.ChatServer
 
             this.isClosing = true;
             this.lockSlim = null;
-            Log.Debug($"Disposing room {this.RoomId}...");
+            this.logger.LogDebug($"Disposing room {this.RoomId}...");
             this.registeredClients.Clear();
             localLockSlim.EnterWriteLock();
             try
@@ -142,7 +144,7 @@ namespace MUnique.OpenMU.ChatServer
             }
 
             localLockSlim.Dispose();
-            Log.Debug($"Room {this.RoomId} disposed.");
+            this.logger.LogDebug($"Room {this.RoomId} disposed.");
         }
 
         /// <summary>
@@ -162,7 +164,7 @@ namespace MUnique.OpenMU.ChatServer
                 throw new ObjectDisposedException("Chat room is already disposed.");
             }
 
-            Log.Debug($"Client {chatClient.Index} is trying to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}'");
+            this.logger.LogDebug($"Client {chatClient.Index} is trying to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}'");
 
             this.lockSlim.EnterWriteLock();
             try
@@ -172,7 +174,7 @@ namespace MUnique.OpenMU.ChatServer
                 {
                     if (authenticationInformation.AuthenticationRequiredUntil < DateTime.Now)
                     {
-                        Log.Info($"Client {chatClient.Index} has tried to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}', but was too late. It was valid until {authenticationInformation.AuthenticationRequiredUntil}.");
+                        this.logger.LogInformation($"Client {chatClient.Index} has tried to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}', but was too late. It was valid until {authenticationInformation.AuthenticationRequiredUntil}.");
                     }
                     else
                     {
@@ -187,7 +189,7 @@ namespace MUnique.OpenMU.ChatServer
                 }
                 else
                 {
-                    Log.Info($"Client {chatClient.Index} has tried to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}', but was not registered.");
+                    this.logger.LogInformation($"Client {chatClient.Index} has tried to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}', but was not registered.");
                 }
             }
             finally
@@ -210,7 +212,7 @@ namespace MUnique.OpenMU.ChatServer
                 return;
             }
 
-            Log.Debug($"Chat client ({chatClient}) is leaving.");
+            this.logger.LogDebug($"Chat client ({chatClient}) is leaving.");
             this.lockSlim.EnterWriteLock();
             try
             {

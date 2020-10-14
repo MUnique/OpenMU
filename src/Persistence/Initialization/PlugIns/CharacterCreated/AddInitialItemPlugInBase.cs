@@ -5,8 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
 {
     using System.Linq;
-    using System.Reflection;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlugIns;
@@ -17,14 +16,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
     /// </summary>
     public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly byte characterClassNumber;
         private readonly byte itemGroup;
         private readonly byte itemNumber;
         private readonly byte itemSlot;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddInitialItemPlugInBase"/> class.
+        /// Initializes a new instance of the <see cref="AddInitialItemPlugInBase" /> class.
         /// </summary>
         /// <param name="characterClassNumber">The character class number.</param>
         /// <param name="itemGroup">The item group.</param>
@@ -41,9 +39,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
         /// <inheritdoc/>
         public void CharacterCreated(Player player, Character createdCharacter)
         {
+            using var logScope = player.Logger.BeginScope(this.GetType());
             if (this.characterClassNumber != createdCharacter.CharacterClass.Number)
             {
-                Log.DebugFormat("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass.Number, this.characterClassNumber);
+                player.Logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass.Number, this.characterClassNumber);
                 return;
             }
 
@@ -74,7 +73,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
                 return item;
             }
 
-            Log.Error($"Unknown item, group {this.itemGroup}, number {this.itemNumber}.");
+            player.Logger.LogWarning($"Unknown item, group {this.itemGroup}, number {this.itemNumber}.");
             return null;
         }
     }

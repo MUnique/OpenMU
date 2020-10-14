@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System;
     using System.Linq;
     using System.Runtime.InteropServices;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
@@ -22,8 +22,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [Guid("d8f56da4-774b-42af-96ac-12a10ea0187b")]
     internal class WarpGateHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(WarpGateHandlerPlugIn));
-
         private readonly WarpGateAction warpAction = new WarpGateAction();
 
         /// <inheritdoc/>
@@ -45,7 +43,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             EnterGate gate = player.SelectedCharacter.CurrentMap.EnterGates.FirstOrDefault(g => g.Number == gateNumber);
             if (gate == null)
             {
-                Logger.WarnFormat("Gate {0} not found in current map {1}", gateNumber,  player.SelectedCharacter.CurrentMap);
+                player.Logger.LogWarning("Gate {0} not found in current map {1}", gateNumber,  player.SelectedCharacter.CurrentMap);
                 return;
             }
 

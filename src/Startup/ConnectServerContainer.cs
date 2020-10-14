@@ -23,20 +23,23 @@ namespace MUnique.OpenMU.Startup
     {
         private readonly IList<IManageableServer> servers;
         private readonly IPersistenceContextProvider persistenceContextProvider;
+        private readonly ConnectServerFactory connectServerFactory;
         private readonly ILogger<ConnectServerContainer> logger;
         private readonly IList<IConnectServer> connectServers = new List<IConnectServer>();
         private readonly IDictionary<GameClientDefinition, IGameServerStateObserver> observers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectServerContainer"/> class.
+        /// Initializes a new instance of the <see cref="ConnectServerContainer" /> class.
         /// </summary>
         /// <param name="servers">The servers.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="logger">The logger.</param>
-        public ConnectServerContainer(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, ILogger<ConnectServerContainer> logger)
+        /// <param name="connectServerFactory">The connect server factory.</param>
+        public ConnectServerContainer(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, ILogger<ConnectServerContainer> logger, ConnectServerFactory connectServerFactory)
         {
             this.servers = servers;
             this.persistenceContextProvider = persistenceContextProvider;
+            this.connectServerFactory = connectServerFactory;
             this.logger = logger;
         }
 
@@ -47,7 +50,7 @@ namespace MUnique.OpenMU.Startup
             foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
             {
                 var clientVersion = new ClientVersion(connectServerDefinition.Client.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
-                var connectServer = ConnectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
+                var connectServer = this.connectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
                 this.servers.Add(connectServer);
                 this.connectServers.Add(connectServer);
 

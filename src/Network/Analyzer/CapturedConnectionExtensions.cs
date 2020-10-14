@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.Network.Analyzer
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.IO;
-    using log4net;
 
     /// <summary>
     /// Extensions for <see cref="ICapturedConnection"/>.
@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                     }
                     else
                     {
-                        LogManager.GetLogger(typeof(SavedConnection)).Warn($"Invalid line: {currentLine}");
+                        Debug.Fail($"Invalid line: {currentLine}");
                     }
                 }
             }

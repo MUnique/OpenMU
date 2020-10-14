@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.GameServer
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using log4net;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
@@ -21,13 +21,14 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The game server to which game clients can connect.
     /// </summary>
     public sealed class GameServer : IGameServer, IDisposable
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(GameServer));
+        private readonly ILogger<GameServer> logger;
 
         private readonly GameServerContext gameContext;
 
@@ -43,28 +44,32 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="loginServer">The login server.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         /// <param name="friendServer">The friend server.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="plugInManager">The plug in manager.</param>
         public GameServer(
             GameServerDefinition gameServerDefinition,
             IGuildServer guildServer,
             ILoginServer loginServer,
             IPersistenceContextProvider persistenceContextProvider,
-            IFriendServer friendServer)
+            IFriendServer friendServer,
+            ILoggerFactory loggerFactory,
+            PlugInManager plugInManager)
         {
             this.Id = gameServerDefinition.ServerID;
             this.Description = gameServerDefinition.Description;
             this.ConfigurationId = gameServerDefinition.GetId();
-
+            this.logger = loggerFactory.CreateLogger<GameServer>();
             try
             {
-                var mapInitializer = new GameServerMapInitializer(gameServerDefinition);
-                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, mapInitializer);
+                var mapInitializer = new GameServerMapInitializer(gameServerDefinition, loggerFactory.CreateLogger<GameServerMapInitializer>());
+                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager);
                 this.gameContext.GameMapCreated += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
                 this.gameContext.GameMapRemoved += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
                 mapInitializer.PlugInManager = this.gameContext.PlugInManager;
             }
             catch (Exception ex)
             {
-                Logger.Fatal(ex);
+                this.logger.LogCritical(ex, "Error during map initialization");
                 throw;
             }
 
@@ -146,52 +151,48 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void Start()
         {
-            using (this.PushServerLogContext())
+            using var logScope = this.logger.BeginScope(("GameServer", this.Id));
+            this.ServerState = ServerState.Starting;
+            try
             {
-                this.ServerState = ServerState.Starting;
-                try
+                foreach (var listener in this.listeners)
                 {
-                    foreach (var listener in this.listeners)
-                    {
-                        listener.Start();
-                    }
-
-                    this.ServerState = ServerState.Started;
+                    listener.Start();
                 }
-                catch (Exception e)
+
+                this.ServerState = ServerState.Started;
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, $"Could not start the server listeners: {e.Message}");
+                foreach (var listener in this.listeners)
                 {
-                    log4net.LogManager.GetLogger(this.GetType()).Error($"Could not start the server listeners: {e.Message}", e);
-                    foreach (var listener in this.listeners)
-                    {
-                        listener.Stop();
-                    }
-
-                    this.ServerState = ServerState.Stopped;
+                    listener.Stop();
                 }
+
+                this.ServerState = ServerState.Stopped;
             }
         }
 
         /// <inheritdoc/>
         public void Shutdown()
         {
-            using (this.PushServerLogContext())
+            using var logScope = this.logger.BeginScope(("GameServer", this.Id));
+            this.ServerState = ServerState.Stopping;
+            this.logger.LogInformation("Server is shutting down. Stopping listener...");
+            foreach (var listener in this.listeners)
             {
-                this.ServerState = ServerState.Stopping;
-                Logger.Info("Server is shutting down. Stopping listener...");
-                foreach (var listener in this.listeners)
-                {
-                    listener.Stop();
-                }
-
-                Logger.Info("Saving all open sessions...");
-                for (int i = this.gameContext.PlayerList.Count - 1; i >= 0; i--)
-                {
-                    this.gameContext.PlayerList[i].Disconnect();
-                }
-
-                this.ServerState = ServerState.Stopped;
-                Logger.Info("Server shutted down.");
+                listener.Stop();
             }
+
+            this.logger.LogInformation("Saving all open sessions...");
+            for (int i = this.gameContext.PlayerList.Count - 1; i >= 0; i--)
+            {
+                this.gameContext.PlayerList[i].Disconnect();
+            }
+
+            this.ServerState = ServerState.Stopped;
+            this.logger.LogInformation("Server shutted down.");
         }
 
         /// <inheritdoc/>
@@ -419,7 +420,7 @@ namespace MUnique.OpenMU.GameServer
             }
             catch (Exception ex)
             {
-                Logger.Error($"Couldn't set offline state at login server. Player: {this}", ex);
+                this.logger.LogError($"Couldn't set offline state at login server. Player: {this}", ex);
             }
         }
 
@@ -434,7 +435,7 @@ namespace MUnique.OpenMU.GameServer
             }
             catch (Exception ex)
             {
-                Logger.Error($"Couldn't set offline state at friend server. Player: {this}", ex);
+                this.logger.LogError($"Couldn't set offline state at friend server. Player: {this}", ex);
             }
         }
 
@@ -444,25 +445,15 @@ namespace MUnique.OpenMU.GameServer
             {
                 if (!player.PersistenceContext.SaveChanges())
                 {
-                    Logger.Warn($"Could not save session of player {player}");
+                    this.logger.LogWarning($"Could not save session of player {player}");
                 }
             }
             catch (Exception ex)
             {
-                Logger.Error($"Couldn't Save at Disconnect. Player: {this}", ex);
+                this.logger.LogError($"Couldn't Save at Disconnect. Player: {this}", ex);
 
                 // TODO: Log Character/Account values, to be able to restore players data if necessary.
             }
-        }
-
-        private IDisposable PushServerLogContext()
-        {
-            if (log4net.ThreadContext.Stacks["gameserver"].Count > 0)
-            {
-                return null;
-            }
-
-            return log4net.ThreadContext.Stacks["gameserver"].Push(this.Id.ToString());
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
