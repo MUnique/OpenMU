@@ -193,7 +193,7 @@ namespace MUnique.OpenMU.GameLogic
                 var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
                 if (level > 0)
                 {
-                    var optionOfLevel = option.LevelDependentOptions.FirstOrDefault(l => l.Level == level);
+                    var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
                     if (optionOfLevel == null)
                     {
                         this.logger.LogWarning($"Item has {nameof(IncreasableItemOption)} with level > 0, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");

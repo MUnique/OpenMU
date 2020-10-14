@@ -426,6 +426,7 @@ namespace MUnique.OpenMU.Tests
                     {
                         OptionType = ItemOptionTypes.Option,
                     },
+                    Level = 1,
                 };
                 item.ItemOptions.Add(optionLink);
             }

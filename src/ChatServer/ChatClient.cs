@@ -178,7 +178,7 @@ namespace MUnique.OpenMU.ChatServer
             }
 
             sequence.CopyTo(this.packetBuffer);
-            var packet = this.packetBuffer;
+            var packet = this.packetBuffer.AsSpan(0, (int)sequence.Length);
             if (packet[0] != 0xC1)
             {
                 return;
@@ -198,7 +198,7 @@ namespace MUnique.OpenMU.ChatServer
                 case 4:
                     if (this.room != null && this.CheckMessage(packet))
                     {
-                        MessageDecryptor.Decrypt(packet.AsSpan());
+                        MessageDecryptor.Decrypt(packet);
                         var message = packet.ExtractString(5, int.MaxValue, Encoding.UTF8);
                         if (this.logger.IsEnabled(LogLevel.Debug))
                         {
@@ -223,18 +223,18 @@ namespace MUnique.OpenMU.ChatServer
             }
         }
 
-        private bool CheckMessage(byte[] packet)
+        private bool CheckMessage(Span<byte> packet)
         {
-            return packet[1] == packet.Length && (packet[4] + 5) == packet.Length;
+            return packet.Length > 4 && (packet[4] + 5) == packet.Length;
         }
 
-        private void Authenticate(byte[] packet)
+        private void Authenticate(Span<byte> packet)
         {
-            var roomid = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
-            var requestedRoom = this.manager.GetChatRoom(roomid);
+            var roomId = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
+            var requestedRoom = this.manager.GetChatRoom(roomId);
             if (requestedRoom == null)
             {
-                this.logger.LogError($"Requested room {roomid} has not been registered before.");
+                this.logger.LogError($"Requested room {roomId} has not been registered before.");
                 this.LogOff();
                 return;
             }

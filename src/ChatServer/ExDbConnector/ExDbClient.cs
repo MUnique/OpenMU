@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             try
             {
                 sequence.CopyTo(this.packetBuffer);
-                var packet = this.packetBuffer;
+                var packet = this.packetBuffer.AsSpan(0, (int)sequence.Length);
                 if (packet[0] != 0xC1)
                 {
                     this.logger.LogWarning($"Unknown packet received from ExDB-Server, type: {packet[0]}");
@@ -149,7 +149,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// The chat server answers this with the same packets as above(ticket 96862210):
         /// C1 2C A0 01 00 00 61 62 63 64 65 66 67 68 69 6F CC CC CC CC CC CC CC CC CC CC 53 54 55 56 CC CC 02 00 C6 05 CC CC CC CC 57 CC CC CC.
         /// </remarks>
-        private void ReadChatRoomInvitation(byte[] packet)
+        private void ReadChatRoomInvitation(Span<byte> packet)
         {
             var roomId = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
             var clientName = packet.ExtractString(6, 10, Encoding.UTF8);
@@ -174,7 +174,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// C1 2C A0 01 00 00 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59 00 00 00 00 CC CC 00 00 11 04 CC CC CC CC 00 CC CC CC
         /// C1 2C A0 01 00 00 50 51 52 53 54 55 56 57 58 59 41 42 43 44 45 46 47 48 49 4A 00 00 00 00 CC CC 01 00 BB 05 CC CC CC CC 01 CC CC CC.
         /// </remarks>
-        private void ReadChatRoomCreation(byte[] packet)
+        private void ReadChatRoomCreation(Span<byte> packet)
         {
             string clientName = packet.ExtractString(3, 10, Encoding.UTF8);
             string friendName = packet.ExtractString(13, 10, Encoding.UTF8);
