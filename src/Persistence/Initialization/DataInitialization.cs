@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                     // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
                 }
 
-                var plugInManager = new PlugInManager(null, this.loggerFactory.CreateLogger<PlugInManager>(), null);
+                var plugInManager = new PlugInManager(null, this.loggerFactory, null);
                 plugInManager.DiscoverAndRegisterPlugIns();
                 plugInManager.KnownPlugInTypes.ForEach(plugInType =>
                 {
