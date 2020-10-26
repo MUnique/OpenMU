@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.InitializeComponent();
             var serviceContainer = new ServiceContainer();
             serviceContainer.AddService(typeof(ILoggerFactory), new NullLoggerFactory());
-            this.plugInManager = new PlugInManager(null, new NullLogger<PlugInManager>(), serviceContainer);
+            this.plugInManager = new PlugInManager(null, new NullLoggerFactory(), serviceContainer);
             this.plugInManager.DiscoverAndRegisterPlugIns();
             this.clientBindingSource.DataSource = this.proxiedConnections;
             this.connectedClientsListBox.DisplayMember = nameof(ICapturedConnection.Name);

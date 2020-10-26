@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void ProxyIsCreated()
         {
             var generator = new PlugInProxyTypeGenerator();
-            var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, new NullLogger<PlugInManager>(), null));
+            var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, new NullLoggerFactory(), null));
 
             Assert.That(proxy, Is.Not.Null);
         }
@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void ErrorForClasses()
         {
             var generator = new PlugInProxyTypeGenerator();
-            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ExamplePlugIn>(new PlugInManager(null, new NullLogger<PlugInManager>(), null)));
+            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ExamplePlugIn>(new PlugInManager(null, new NullLoggerFactory(), null)));
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void ErrorForInterfaceWithoutAttribute()
         {
             var generator = new PlugInProxyTypeGenerator();
-            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ICloneable>(new PlugInManager(null, new NullLogger<PlugInManager>(), null)));
+            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ICloneable>(new PlugInManager(null, new NullLoggerFactory(), null)));
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void ErrorForInterfaceWithUnsupportedMethodSignature()
         {
             var generator = new PlugInProxyTypeGenerator();
-            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<IUnsupportedPlugIn>(new PlugInManager(null, new NullLogger<PlugInManager>(), null)));
+            Assert.Throws<ArgumentException>(() => generator.GenerateProxy<IUnsupportedPlugIn>(new PlugInManager(null, new NullLoggerFactory(), null)));
         }
     }
 }

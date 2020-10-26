@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectVersionWhenExactVersionIsAvailable()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season9PlugIn>();
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectVersionWhenLowerVersionsAreAvailable()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectLanguage()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInOfSomeOtherLanguage>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectInvariantPlugIn()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
             Assert.That(containerForSeason6English.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(InvariantSeasonPlugIn)));
@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInAfterDeactivation()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectLanguageSpecificOverInvariant()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInInvariant>();
             var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);

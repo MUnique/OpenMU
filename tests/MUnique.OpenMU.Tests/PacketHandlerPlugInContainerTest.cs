@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectVersionWhenExactVersionIsAvailable()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason9>();
@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectVersionWhenLowerVersionsAreAvailable()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInOfCorrectLanguage()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6Chinese>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectInvariantPlugIn()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerInvariant>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
             clientVersionProvider.Setup(p => p.ClientVersion).Returns(Season6E3English);
@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectPlugInAfterDeactivation()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             var clientVersionProvider = new Mock<IClientVersionProvider>();
@@ -118,7 +118,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void SelectLanguageSpecificOverInvariant()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), null);
+            var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6Chinese>();
             manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6English>();

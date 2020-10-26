@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.Tests
             gameConfig.Object.Maps.Add(map.Object);
 
             var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>());
-            var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLogger<PlugInManager>(), null));
+            var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null));
             return GetPlayer(gameContext);
         }
 

@@ -148,7 +148,7 @@ namespace MUnique.OpenMU.Tests
                 new InMemoryPersistenceContextProvider(),
                 new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>()),
                 new NullLoggerFactory(),
-                new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLogger<PlugInManager>(), null));
+                new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLoggerFactory(), null));
             return gameServer;
         }
     }

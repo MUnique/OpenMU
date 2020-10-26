@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void RegisteringPlugInCreatesProxy()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.RegisterPlugIn<IExamplePlugIn, ExamplePlugIn>();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void RegisteredPlugInsActiveByDefault()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             var plugIn = new ExamplePlugIn();
             manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
 
@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void DeactivatingPlugIns()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             var plugIn = new ExamplePlugIn();
             manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.DeactivatePlugIn<ExamplePlugIn>();
@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void DeactivatingDeactivatedPlugIn()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             var plugIn = new ExamplePlugIn();
             manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.DeactivatePlugIn<ExamplePlugIn>();
@@ -98,7 +98,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void ActivatingActivatedPlugIn()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             var plugIn = new ExamplePlugIn();
             manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.ActivatePlugIn<ExamplePlugIn>();
@@ -119,7 +119,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void DeactivatingOnePlugInDoesntAffectOthers()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             var plugIn = new ExamplePlugIn();
             manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.RegisterPlugIn<IExamplePlugIn, ExamplePlugIn.NestedPlugIn>();
@@ -149,7 +149,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                 TypeId = typeof(ExamplePlugIn).GUID,
                 IsActive = active,
             };
-            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
             var player = TestHelper.GetPlayer();
             var command = "test";
             var args = new MyEventArgs();
@@ -194,7 +194,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                         }
                     }",
             };
-            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
             var player = TestHelper.GetPlayer();
             var command = "test";
             var args = new MyEventArgs();
@@ -216,7 +216,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                 IsActive = true,
                 ExternalAssemblyName = "DoesNotExist.dll",
             };
-            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                 TypeId = new Guid("A9BDA3E2-4EB6-45C3-B234-37C1819C0CB6"),
                 IsActive = true,
             };
-            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void ActivatingUnknownPlugInDoesNotThrowError()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.ActivatePlugIn(new Guid("4C38A813-F9BF-428A-8EA1-A6C90A87E583"));
         }
 
@@ -249,7 +249,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void DeactivatingUnknownPlugInDoesNotThrowError()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.ActivatePlugIn(new Guid("4C38A813-F9BF-428A-8EA1-A6C90A87E583"));
         }
 
@@ -259,7 +259,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void ActivatingPlugIns()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             var plugIn = new ExamplePlugIn();
             manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.DeactivatePlugIn<ExamplePlugIn>();
@@ -280,7 +280,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void AutoDiscovery()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.DiscoverAndRegisterPlugIns();
             var examplePlugInPoint = manager.GetPlugInPoint<IExamplePlugIn>();
             Assert.That(examplePlugInPoint, Is.InstanceOf<IExamplePlugIn>());
@@ -292,7 +292,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void RegisteringPlugInWithoutGuidThrowsError()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             Assert.Throws<ArgumentException>(() => manager.RegisterPlugIn<IExamplePlugIn, ExamplePlugIn.NestedWithoutGuid>());
         }
 
@@ -302,7 +302,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void StrategyProviderCreatedForRegisteredStrategyPlugIn()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
 
             var strategyProvider = manager.GetStrategyProvider<string, IExampleStrategyPlugIn>();
@@ -315,7 +315,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void StrategyProviderNotCreatedWithoutRegisteredStrategyPlugIn()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
 
             var strategyProvider = manager.GetStrategyProvider<string, IExampleStrategyPlugIn>();
             Assert.That(strategyProvider, Is.Null);
@@ -327,7 +327,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void RegisteredStrategyPlugInAvailable()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
 
             var strategy = manager.GetStrategy<IExampleStrategyPlugIn>(ExampleStrategyPlugIn.CommandKey);
@@ -341,7 +341,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void DeactivatedStrategyPlugInNotAvailable()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
             manager.DeactivatePlugIn<ExampleStrategyPlugIn>();
             var strategy = manager.GetStrategy<IExampleStrategyPlugIn>(ExampleStrategyPlugIn.CommandKey);
@@ -354,7 +354,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void RegisteringRegisteredStrategyPlugInDoesntThrowError()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
         }
@@ -365,7 +365,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         [Test]
         public void NoPlugInPointForStrategyPlugIn()
         {
-            var manager = new PlugInManager(null, new NullLogger<PlugInManager>(), this.CreateServiceProvider());
+            var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
             manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
             Assert.That(manager.GetPlugInPoint<IExampleStrategyPlugIn>(), Is.Null);
         }

@@ -207,7 +207,7 @@ namespace MUnique.OpenMU.Tests
             gameConfig.Maps.Add(contextProvider.CreateNewContext().CreateNew<GameMapDefinition>());
 
             var mapInitializer = new MapInitializer(gameConfig, new NullLogger<MapInitializer>());
-            var gameServer = new GameContext(gameConfig, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(new List<PlugInConfiguration>(), new NullLogger<PlugInManager>(), null));
+            var gameServer = new GameContext(gameConfig, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(new List<PlugInConfiguration>(), new NullLoggerFactory(), null));
             gameServer.Configuration.MaximumPartySize = 5;
 
             return gameServer;

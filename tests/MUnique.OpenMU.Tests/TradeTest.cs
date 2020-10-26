@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.Tests
             trader2.TradingPartner = trader1;
 
             var gameContext = new Mock<IGameContext>();
-            gameContext.Setup(c => c.PlugInManager).Returns(new PlugInManager(null, new NullLogger<PlugInManager>(), null));
+            gameContext.Setup(c => c.PlugInManager).Returns(new PlugInManager(null, new NullLoggerFactory(), null));
             gameContext.Setup(c => c.PersistenceContextProvider).Returns(new InMemoryPersistenceContextProvider());
 
             Mock.Get(trader1).Setup(m => m.GameContext).Returns(gameContext.Object);
