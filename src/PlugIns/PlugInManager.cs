@@ -31,13 +31,14 @@ namespace MUnique.OpenMU.PlugIns
         /// Initializes a new instance of the <see cref="PlugInManager" /> class.
         /// </summary>
         /// <param name="configurations">The configurations.</param>
-        /// <param name="logger">The logger.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="serviceProvider">The service provider.</param>
-        public PlugInManager(ICollection<PlugInConfiguration> configurations, ILogger<PlugInManager> logger, IServiceProvider serviceProvider)
+        public PlugInManager(ICollection<PlugInConfiguration> configurations, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
-            this.logger = logger;
+            this.logger = loggerFactory.CreateLogger<PlugInManager>();
             this.serviceContainer = new ServiceContainer(serviceProvider);
             this.serviceContainer.AddService(typeof(PlugInManager), this);
+            this.serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
             if (configurations?.Any() ?? false)
             {
                 this.DiscoverAndRegisterPlugIns();
