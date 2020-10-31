@@ -9,5 +9,9 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// </summary>
     public class GameServerEndpoint : ServerEndpoint
     {
+        /// <summary>
+        /// Gets or sets the network proxied port for network analysis.
+        /// </summary>
+        public int ProxiedPort { get; set; }
     }
 }
