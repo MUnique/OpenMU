@@ -5250,6 +5250,38 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>51</SubCode>
+      <Name>MuHelperStatusToggleResponse</Name>
+      <Length>11</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server validate (and toggle status) if user can use the helper</SentWhen>
+      <CausedReaction>The client toggle the mu helper status</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Time</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TimeMultiplier</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Money</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>Status</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

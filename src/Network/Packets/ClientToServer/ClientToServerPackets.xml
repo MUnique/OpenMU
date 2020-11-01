@@ -1953,6 +1953,23 @@
       <CausedReaction>The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.</CausedReaction>
       <Fields />
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>51</SubCode>
+      <Name>MuHelperStatusToggle</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client clicked on mu bt (helper) play/pause</SentWhen>
+      <CausedReaction>The server should validate if user can use the helper and send the status back</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Status</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

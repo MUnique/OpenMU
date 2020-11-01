@@ -7578,6 +7578,92 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(NpcBuffRequest packet) => packet.data; 
     }
+
+
+    /// <summary>
+    /// Is sent by the client when: The client clicked on mu bt (helper) play/pause
+    /// Causes reaction on server side: The server should validate if user can use the helper and send the status back
+    /// </summary>
+    public readonly ref struct MuHelperStatusToggle
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuHelperStatusToggle"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MuHelperStatusToggle(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuHelperStatusToggle"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MuHelperStatusToggle(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xBF;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x51;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        public byte Status
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MuHelperStatusToggle"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MuHelperStatusToggle(Span<byte> packet) => new MuHelperStatusToggle(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MuHelperStatusToggle"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MuHelperStatusToggle packet) => packet.data; 
+    }
         /// <summary>
         /// The state of the trade button.
         /// </summary>

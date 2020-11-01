@@ -1182,6 +1182,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="MuHelperStatusToggleResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The server validate (and toggle status) if user can use the helper
+        /// Causes reaction on client side: The client toggle the mu helper status
+        /// </remarks>
+        public static MuHelperStatusToggleResponseThreadSafeWriter StartWriteMuHelperStatusToggleResponse(this IConnection connection)
+        {
+          return new MuHelperStatusToggleResponseThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Sends a <see cref="GameServerEntered" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -3233,6 +3246,29 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             using var writer = connection.StartWriteOpenNpcDialog();
             var packet = writer.Packet;
             packet.NpcNumber = @npcNumber;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="MuHelperStatusToggleResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="time">The time.</param>
+        /// <param name="timeMultiplier">The time multiplier.</param>
+        /// <param name="money">The money.</param>
+        /// <param name="status">The status.</param>
+        /// <remarks>
+        /// Is sent by the server when: The server validate (and toggle status) if user can use the helper
+        /// Causes reaction on client side: The client toggle the mu helper status
+        /// </remarks>
+        public static void SendMuHelperStatusToggleResponse(this IConnection connection, byte @time, byte @timeMultiplier, uint @money, byte @status)
+        {
+            using var writer = connection.StartWriteMuHelperStatusToggleResponse();
+            var packet = writer.Packet;
+            packet.Time = @time;
+            packet.TimeMultiplier = @timeMultiplier;
+            packet.Money = @money;
+            packet.Status = @status;
             writer.Commit();
         }    }
     /// <summary>
@@ -7940,6 +7976,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(OpenNpcDialog.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="MuHelperStatusToggleResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct MuHelperStatusToggleResponseThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuHelperStatusToggleResponseThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public MuHelperStatusToggleResponseThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new MuHelperStatusToggleResponse(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(MuHelperStatusToggleResponse.Length).Slice(0, MuHelperStatusToggleResponse.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public MuHelperStatusToggleResponse Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="MuHelperStatusToggleResponse" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(MuHelperStatusToggleResponse.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
