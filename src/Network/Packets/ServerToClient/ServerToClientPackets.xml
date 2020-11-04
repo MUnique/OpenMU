@@ -5254,11 +5254,11 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>BF</Code>
       <SubCode>51</SubCode>
-      <Name>MuHelperStatusToggleResponse</Name>
+      <Name>MuBotUseResponse</Name>
       <Length>11</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>The server validate (and toggle status) if user can use the helper</SentWhen>
-      <CausedReaction>The client toggle the mu helper status</CausedReaction>
+      <SentWhen>The server validate (and toggle status) if user can use the bot</SentWhen>
+      <CausedReaction>The client toggle the mu bot status</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -5279,6 +5279,23 @@
           <Index>10</Index>
           <Type>Byte</Type>
           <Name>Status</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>AE</Code>
+      <Name>MuBotSaveDataResponse</Name>
+      <Length>261</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server saved the user mu bot data</SentWhen>
+      <CausedReaction>The user wants to save the mu bot data</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>BotData</Name>
+          <Length>257</Length>
         </Field>
       </Fields>
     </Packet>

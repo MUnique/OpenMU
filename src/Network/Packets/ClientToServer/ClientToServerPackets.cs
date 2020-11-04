@@ -7581,28 +7581,28 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: The client clicked on mu bt (helper) play/pause
-    /// Causes reaction on server side: The server should validate if user can use the helper and send the status back
+    /// Is sent by the client when: The client clicked on mu bot play/pause
+    /// Causes reaction on server side: The server should validate if user can use the bot and send the status back
     /// </summary>
-    public readonly ref struct MuHelperStatusToggle
+    public readonly ref struct MuBotUseRequest
     {
         private readonly Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MuHelperStatusToggle"/> struct.
+        /// Initializes a new instance of the <see cref="MuBotUseRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public MuHelperStatusToggle(Span<byte> data)
+        public MuBotUseRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MuHelperStatusToggle"/> struct.
+        /// Initializes a new instance of the <see cref="MuBotUseRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private MuHelperStatusToggle(Span<byte> data, bool initialize)
+        private MuBotUseRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -7651,18 +7651,96 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="MuHelperStatusToggle"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MuBotUseRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator MuHelperStatusToggle(Span<byte> packet) => new MuHelperStatusToggle(packet, false);
+        public static implicit operator MuBotUseRequest(Span<byte> packet) => new MuBotUseRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="MuHelperStatusToggle"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="MuBotUseRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(MuHelperStatusToggle packet) => packet.data; 
+        public static implicit operator Span<byte>(MuBotUseRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The client want to save current mu bot data
+    /// Causes reaction on server side: The server should save supplied mu bot data
+    /// </summary>
+    public readonly ref struct MuBotSaveDataRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuBotSaveDataRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MuBotSaveDataRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuBotSaveDataRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MuBotSaveDataRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xAE;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 261;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the bot data.
+        /// </summary>
+        public Span<byte> BotData
+        {
+            get => this.data.Slice(4, 257);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MuBotSaveDataRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MuBotSaveDataRequest(Span<byte> packet) => new MuBotSaveDataRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MuBotSaveDataRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MuBotSaveDataRequest packet) => packet.data; 
     }
         /// <summary>
         /// The state of the trade button.

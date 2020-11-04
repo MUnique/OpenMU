@@ -1039,16 +1039,29 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Starts a safe write of a <see cref="MuHelperStatusToggle" /> to this connection.
+        /// Starts a safe write of a <see cref="MuBotUseRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the client when: The client clicked on mu bt (helper) play/pause
-        /// Causes reaction on server side: The server should validate if user can use the helper and send the status back
+        /// Is sent by the client when: The client clicked on mu bot play/pause
+        /// Causes reaction on server side: The server should validate if user can use the bot and send the status back
         /// </remarks>
-        public static MuHelperStatusToggleThreadSafeWriter StartWriteMuHelperStatusToggle(this IConnection connection)
+        public static MuBotUseRequestThreadSafeWriter StartWriteMuBotUseRequest(this IConnection connection)
         {
-          return new MuHelperStatusToggleThreadSafeWriter(connection);
+          return new MuBotUseRequestThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="MuBotSaveDataRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The client want to save current mu bot data
+        /// Causes reaction on server side: The server should save supplied mu bot data
+        /// </remarks>
+        public static MuBotSaveDataRequestThreadSafeWriter StartWriteMuBotSaveDataRequest(this IConnection connection)
+        {
+          return new MuBotSaveDataRequestThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -2580,19 +2593,36 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Sends a <see cref="MuHelperStatusToggle" /> to this connection.
+        /// Sends a <see cref="MuBotUseRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="status">The status.</param>
         /// <remarks>
-        /// Is sent by the client when: The client clicked on mu bt (helper) play/pause
-        /// Causes reaction on server side: The server should validate if user can use the helper and send the status back
+        /// Is sent by the client when: The client clicked on mu bot play/pause
+        /// Causes reaction on server side: The server should validate if user can use the bot and send the status back
         /// </remarks>
-        public static void SendMuHelperStatusToggle(this IConnection connection, byte @status)
+        public static void SendMuBotUseRequest(this IConnection connection, byte @status)
         {
-            using var writer = connection.StartWriteMuHelperStatusToggle();
+            using var writer = connection.StartWriteMuBotUseRequest();
             var packet = writer.Packet;
             packet.Status = @status;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="MuBotSaveDataRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="botData">The bot data.</param>
+        /// <remarks>
+        /// Is sent by the client when: The client want to save current mu bot data
+        /// Causes reaction on server side: The server should save supplied mu bot data
+        /// </remarks>
+        public static void SendMuBotSaveDataRequest(this IConnection connection, Span<byte> @botData)
+        {
+            using var writer = connection.StartWriteMuBotSaveDataRequest();
+            var packet = writer.Packet;
+            @botData.CopyTo(packet.BotData);
             writer.Commit();
         }    }
     /// <summary>
@@ -6730,17 +6760,17 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     }
       
     /// <summary>
-    /// A helper struct to write a <see cref="MuHelperStatusToggle"/> safely to a <see cref="IConnection.Output" />.
+    /// A helper struct to write a <see cref="MuBotUseRequest"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
-    public readonly ref struct MuHelperStatusToggleThreadSafeWriter
+    public readonly ref struct MuBotUseRequestThreadSafeWriter
     {
         private readonly IConnection connection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MuHelperStatusToggleThreadSafeWriter" /> struct.
+        /// Initializes a new instance of the <see cref="MuBotUseRequestThreadSafeWriter" /> struct.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        public MuHelperStatusToggleThreadSafeWriter(IConnection connection)
+        public MuBotUseRequestThreadSafeWriter(IConnection connection)
         {
             this.connection = connection;
             Monitor.Enter(this.connection);
@@ -6749,7 +6779,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 // Initialize header and default values
                 var span = this.Span;
                 span.Clear();
-                _ = new MuHelperStatusToggle(span);
+                _ = new MuBotUseRequest(span);
             }
             catch (InvalidOperationException)
             {
@@ -6759,17 +6789,70 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MuHelperStatusToggle.Length).Slice(0, MuHelperStatusToggle.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MuBotUseRequest.Length).Slice(0, MuBotUseRequest.Length);
 
         /// <summary>Gets the packet to write at.</summary>
-        public MuHelperStatusToggle Packet => this.Span;
+        public MuBotUseRequest Packet => this.Span;
 
         /// <summary>
-        /// Commits the data of the <see cref="MuHelperStatusToggle" />.
+        /// Commits the data of the <see cref="MuBotUseRequest" />.
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(MuHelperStatusToggle.Length);
+            this.connection.Output.Advance(MuBotUseRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="MuBotSaveDataRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct MuBotSaveDataRequestThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuBotSaveDataRequestThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public MuBotSaveDataRequestThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new MuBotSaveDataRequest(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(MuBotSaveDataRequest.Length).Slice(0, MuBotSaveDataRequest.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public MuBotSaveDataRequest Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="MuBotSaveDataRequest" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(MuBotSaveDataRequest.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

@@ -131,6 +131,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 {
                     owner = MemoryPool<byte>.Shared.Rent((int)sequence.Length);
                     buffer = owner.Memory.Slice(0, (int)sequence.Length).Span;
+                    sequence.CopyTo(buffer);
                 }
 
                 try
