@@ -32,8 +32,6 @@
             {
                 Status = status,
                 Money = 10000,
-                Time = 2,
-                TimeMultiplier = 10,
             };
             writer.Commit();
         }

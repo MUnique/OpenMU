@@ -5255,7 +5255,7 @@
       <Code>BF</Code>
       <SubCode>51</SubCode>
       <Name>MuBotUseResponse</Name>
-      <Length>11</Length>
+      <Length>16</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The server validate (and toggle status) if user can use the bot</SentWhen>
       <CausedReaction>The client toggle the mu bot status</CausedReaction>
@@ -5263,22 +5263,42 @@
         <Field>
           <Index>4</Index>
           <Type>Byte</Type>
-          <Name>Time</Name>
+          <Name>IsZen</Name>
         </Field>
         <Field>
           <Index>5</Index>
           <Type>Byte</Type>
-          <Name>TimeMultiplier</Name>
+          <Name>Unknown1</Name>
         </Field>
         <Field>
           <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Unknown2</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Unknown3</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>Money</Name>
         </Field>
         <Field>
-          <Index>10</Index>
+          <Index>13</Index>
           <Type>Byte</Type>
           <Name>Status</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Unknown4</Name>
+        </Field>
+        <Field>
+          <Index>15</Index>
+          <Type>Byte</Type>
+          <Name>Unknown5</Name>
         </Field>
       </Fields>
     </Packet>

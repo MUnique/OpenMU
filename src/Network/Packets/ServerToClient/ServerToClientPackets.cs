@@ -15103,7 +15103,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 11;
+        public static int Length => 16;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -15111,21 +15111,39 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
 
         /// <summary>
-        /// Gets or sets the time.
+        /// Gets or sets the is zen.
         /// </summary>
-        public byte Time
+        public byte IsZen
         {
             get => this.data[4];
             set => this.data[4] = value;
         }
 
         /// <summary>
-        /// Gets or sets the time multiplier.
+        /// Gets or sets the unknown 1.
         /// </summary>
-        public byte TimeMultiplier
+        public byte Unknown1
         {
             get => this.data[5];
             set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the unknown 2.
+        /// </summary>
+        public byte Unknown2
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the unknown 3.
+        /// </summary>
+        public byte Unknown3
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
         }
 
         /// <summary>
@@ -15133,8 +15151,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public uint Money
         {
-            get => ReadUInt32LittleEndian(this.data.Slice(6));
-            set => WriteUInt32LittleEndian(this.data.Slice(6), value);
+            get => ReadUInt32LittleEndian(this.data.Slice(8));
+            set => WriteUInt32LittleEndian(this.data.Slice(8), value);
         }
 
         /// <summary>
@@ -15142,8 +15160,26 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public byte Status
         {
-            get => this.data[10];
-            set => this.data[10] = value;
+            get => this.data[13];
+            set => this.data[13] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the unknown 4.
+        /// </summary>
+        public uint Unknown4
+        {
+            get => ReadUInt32LittleEndian(this.data.Slice(14));
+            set => WriteUInt32LittleEndian(this.data.Slice(14), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the unknown 5.
+        /// </summary>
+        public byte Unknown5
+        {
+            get => this.data[15];
+            set => this.data[15] = value;
         }
 
         /// <summary>
