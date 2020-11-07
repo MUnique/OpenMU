@@ -1,10 +1,6 @@
 ﻿namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
 {
-    using System;
     using MUnique.OpenMU.GameLogic.MuBot;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.GameLogic.Views.MuBot;
-    using MUnique.OpenMU.Interfaces;
 
     /// <summary>
     /// Action to send back to the client the mu bot data
@@ -20,8 +16,6 @@
         public MuBotUseAction(Player player)
         {
             this.player = player;
-            //this event is triggering always
-            player.MuBot.MoneyCollected += this.SendCollectedMoney;
         }
 
         /// <summary>
@@ -32,7 +26,7 @@
         {
             if (!MuBotConfiguration.IsEnabled)
             {
-                this.ShowMessage("Mu Bot is disabled");
+                this.player.ShowMessage("Mu Bot is disabled");
                 return;
             }
 
@@ -42,10 +36,10 @@
                     this.TurnOn();
                     break;
                 case 1:
-                    this.TurnOff();
+                    this.player.MuBot.Stop();
                     break;
                 default: // unknown
-                    this.ShowMessage($"Mu Bot Cannot Handle status: {status}");
+                    this.player.ShowMessage($"Mu Bot Cannot Handle status: {status}");
                     break;
             }
         }
@@ -54,52 +48,22 @@
         {
             if (this.player.Level < MuBotConfiguration.MinLevel)
             {
-                this.ShowMessage($"Mu Bot can be used after level {MuBotConfiguration.MinLevel}");
+                this.player.ShowMessage($"Mu Bot can be used after level {MuBotConfiguration.MinLevel}");
             }
 
             if (this.player.Level >= MuBotConfiguration.MaxLevel)
             {
-                this.ShowMessage($"Mu Bot cannot be used after level {MuBotConfiguration.MaxLevel}");
+                this.player.ShowMessage($"Mu Bot cannot be used after level {MuBotConfiguration.MaxLevel}");
                 return;
             }
 
             if (!this.player.MuBot.CanAfford())
             {
-                this.ShowMessage($"Mu Bot requires {this.player.MuBot.GetRequiredMoney()} zen");
+                this.player.ShowMessage($"Mu Bot requires {this.player.MuBot.GetRequiredMoney()} zen");
                 return;
             }
 
             this.player.MuBot.Start();
-            this.ToggleMuBot(0);
-        }
-
-        private void TurnOff()
-        {
-            this.player.MuBot.Stop();
-            this.ToggleMuBot(1);
-        }
-
-        /// <summary>
-        /// Send collected money to the client.
-        /// </summary>
-        /// <param name="sender">mu bot instance.</param>
-        /// <param name="e">collected money arguments.</param>
-        private void SendCollectedMoney(object sender, MoneyCollectedEventArgs e)
-        {
-            this.ToggleMuBot(0, e.Amount);
-        }
-
-        private void ShowMessage(string message)
-        {
-            this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
-        }
-
-        private void ToggleMuBot(byte status, int money = 0)
-        {
-            this.player.ViewPlugIns.GetPlugIn<IMuBotUseResponse>()?.SendMuBotUseResponse(
-                status,
-                (uint) money,
-                Convert.ToByte(money != 0));
         }
     }
 }

@@ -6,6 +6,22 @@
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
+    /// MuBot Status Map
+    /// </summary>
+    public enum MuBotStatus
+    {
+        /// <summary>
+        /// enabled
+        /// </summary>
+        Enabled = 0,
+
+        /// <summary>
+        /// disabled
+        /// </summary>
+        Disabled = 1,
+    }
+
+    /// <summary>
     /// Mu Bot Class
     /// </summary>
     public class MuBot
@@ -40,11 +56,6 @@
         }
 
         /// <summary>
-        /// Trigger when money is collected
-        /// </summary>
-        public event EventHandler<MoneyCollectedEventArgs> MoneyCollected;
-
-        /// <summary>
         /// Start Mu Bot Timer
         /// </summary>
         public void Start()
@@ -56,6 +67,7 @@
             };
             this.timer.Elapsed += (sender, e) => this.Collect();
             this.lastCollect = DateTime.Now;
+            this.player.ToggleMuBot(MuBotStatus.Enabled);
         }
 
         /// <summary>
@@ -69,6 +81,7 @@
                 this.timer.Stop();
                 this.timer.Dispose();
                 this.timer = null;
+                this.player.ToggleMuBot(MuBotStatus.Disabled);
             }
             catch (Exception e)
             {
@@ -94,7 +107,7 @@
         /// <returns>the required money.</returns>
         public int GetRequiredMoney()
         {
-            return (int) Math.Round(
+            return (int)Math.Round(
                 (this.player.Level + this.player.Attributes[Stats.MasterLevel]) *
                 MuBotConfiguration.Cost *
                 this.GetSpentTime() / 100);
@@ -106,13 +119,12 @@
         private void Collect()
         {
             var amount = this.GetRequiredMoney();
-            this.lastCollect = DateTime.Now;
-            if (!this.player.TryRemoveMoney(amount))
+            if (amount > 0 && this.player.TryRemoveMoney(amount))
             {
-                return;
+                this.player.SendMuBotMoneyUsed(amount);
             }
 
-            this.MoneyCollected?.Invoke(this, new MoneyCollectedEventArgs(amount));
+            this.lastCollect = DateTime.Now;
         }
 
         /// <summary>
@@ -126,7 +138,7 @@
                 return 1;
             }
 
-            return (int) (DateTime.Now - this.lastCollect).TotalSeconds;
+            return (int)(DateTime.Now - this.lastCollect).TotalSeconds;
         }
     }
 }
