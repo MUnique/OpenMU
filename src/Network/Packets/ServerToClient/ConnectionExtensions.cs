@@ -3266,7 +3266,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Sends a <see cref="MuBotUseResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        /// <param name="isZen">The is zen.</param>
+        /// <param name="consumeMoney">The consume money.</param>
         /// <param name="unknown1">The unknown 1.</param>
         /// <param name="unknown2">The unknown 2.</param>
         /// <param name="unknown3">The unknown 3.</param>
@@ -3278,11 +3278,11 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Is sent by the server when: The server validate (and toggle status) if user can use the bot
         /// Causes reaction on client side: The client toggle the mu bot status
         /// </remarks>
-        public static void SendMuBotUseResponse(this IConnection connection, byte @isZen, byte @unknown1, byte @unknown2, byte @unknown3, uint @money, byte @status, uint @unknown4, byte @unknown5)
+        public static void SendMuBotUseResponse(this IConnection connection, byte @consumeMoney, byte @unknown1, byte @unknown2, byte @unknown3, uint @money, byte @status, ushort @unknown4, byte @unknown5)
         {
             using var writer = connection.StartWriteMuBotUseResponse();
             var packet = writer.Packet;
-            packet.IsZen = @isZen;
+            packet.ConsumeMoney = @consumeMoney;
             packet.Unknown1 = @unknown1;
             packet.Unknown2 = @unknown2;
             packet.Unknown3 = @unknown3;

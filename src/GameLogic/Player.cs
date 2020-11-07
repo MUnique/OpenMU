@@ -72,6 +72,7 @@ namespace MUnique.OpenMU.GameLogic
             this.PlayerState.StateChanged += (sender, args) => this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChanged(this);
             this.PlayerState.StateChanges += (sender, args) => this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChanging(this, args);
             this.observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
+            this.MuBot = new MuBot.MuBot(this);
         }
 
         /// <summary>
@@ -352,6 +353,11 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <inheritdoc/>
         public Bucket<ILocateable> OldBucket { get; set; }
+
+        /// <summary>
+        ///  Gets the MuBot instance
+        /// </summary>
+        public MuBot.MuBot MuBot { get; }
 
         /// <inheritdoc/>
         public void AttackBy(IAttacker attacker, SkillEntry skill)

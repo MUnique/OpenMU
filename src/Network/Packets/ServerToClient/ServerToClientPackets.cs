@@ -15111,9 +15111,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
 
         /// <summary>
-        /// Gets or sets the is zen.
+        /// Gets or sets the consume money.
         /// </summary>
-        public byte IsZen
+        public byte ConsumeMoney
         {
             get => this.data[4];
             set => this.data[4] = value;
@@ -15160,17 +15160,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public byte Status
         {
-            get => this.data[13];
-            set => this.data[13] = value;
+            get => this.data[12];
+            set => this.data[12] = value;
         }
 
         /// <summary>
         /// Gets or sets the unknown 4.
         /// </summary>
-        public uint Unknown4
+        public ushort Unknown4
         {
-            get => ReadUInt32LittleEndian(this.data.Slice(14));
-            set => WriteUInt32LittleEndian(this.data.Slice(14), value);
+            get => ReadUInt16LittleEndian(this.data.Slice(13));
+            set => WriteUInt16LittleEndian(this.data.Slice(13), value);
         }
 
         /// <summary>

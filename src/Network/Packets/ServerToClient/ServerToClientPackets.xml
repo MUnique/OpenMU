@@ -5263,7 +5263,7 @@
         <Field>
           <Index>4</Index>
           <Type>Byte</Type>
-          <Name>IsZen</Name>
+          <Name>ConsumeMoney</Name>
         </Field>
         <Field>
           <Index>5</Index>
@@ -5286,13 +5286,13 @@
           <Name>Money</Name>
         </Field>
         <Field>
-          <Index>13</Index>
+          <Index>12</Index>
           <Type>Byte</Type>
           <Name>Status</Name>
         </Field>
         <Field>
-          <Index>14</Index>
-          <Type>IntegerLittleEndian</Type>
+          <Index>13</Index>
+          <Type>ShortLittleEndian</Type>
           <Name>Unknown4</Name>
         </Field>
         <Field>

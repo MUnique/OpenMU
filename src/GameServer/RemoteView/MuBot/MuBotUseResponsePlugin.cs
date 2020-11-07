@@ -22,7 +22,7 @@
         public MuBotUseResponsePlugin(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void SendMuBotUseResponse(byte status)
+        public void SendMuBotUseResponse(byte status, uint money = 0, byte consumeMoney = 0)
         {
             using var writer =
                 this.player.Connection.StartSafeWrite(
@@ -31,7 +31,8 @@
             _ = new MuBotUseResponse(writer.Span)
             {
                 Status = status,
-                Money = 10000,
+                Money = money,
+                ConsumeMoney = consumeMoney,
             };
             writer.Commit();
         }

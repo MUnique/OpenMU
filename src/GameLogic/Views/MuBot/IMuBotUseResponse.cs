@@ -9,6 +9,8 @@
         /// Toggle mu bot Status
         /// </summary>
         /// <param name="status">The desired status.</param>
-        void SendMuBotUseResponse(byte status);
+        /// <param name="money">cost of mu bot.</param>
+        /// <param name="consumeMoney">should consume money?.</param>
+        void SendMuBotUseResponse(byte status, uint money = 0, byte consumeMoney = 0);
     }
 }

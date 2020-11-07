@@ -15,8 +15,6 @@
     [BelongsToGroup(MuBotGroupHandler.GroupKey)]
     public class MuBotUseRequestHandlerPlugin : ISubPacketHandlerPlugIn
     {
-        private readonly MuBotUseAction muBotUseAction = new MuBotUseAction();
-
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;
 
@@ -27,7 +25,8 @@
         public void HandlePacket(Player player, Span<byte> packet)
         {
             MuBotUseRequest message = packet;
-            this.muBotUseAction.UseMuBot(player, message.Status);
+            var muBotUseAction = new MuBotUseAction(player);
+            muBotUseAction.UseMuBot(message.Status);
         }
     }
 }
