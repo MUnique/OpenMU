@@ -29,7 +29,7 @@
         /// <summary>
         /// Internal Timer interval for money collect
         /// </summary>
-        private const int Interval = 1000 * 10; //5 * 60 * 1000;
+        private const int Interval = 5 * 60 * 1000;
 
         /// <summary>
         /// Associated player.
