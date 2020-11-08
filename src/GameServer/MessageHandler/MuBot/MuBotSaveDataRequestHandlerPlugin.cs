@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameServer.MessageHandler.MuBot
+﻿// <copyright file="MuBotSaveDataRequestHandlerPlugin.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.MessageHandler.MuBot
 {
     using System;
     using System.Runtime.InteropServices;
@@ -26,7 +30,7 @@
         public void HandlePacket(Player player, Span<byte> packet)
         {
             MuBotSaveDataRequest message = packet;
-            this.muBotSaveDataAction.MuBotSaveData(player, message.BotData);
+            this.muBotSaveDataAction.SaveData(player, message.BotData);
         }
     }
 }

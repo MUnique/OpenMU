@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameLogic.MuBot
+﻿// <copyright file="MuBot.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.MuBot
 {
     using System;
     using System.Timers;
@@ -6,9 +10,9 @@
     using MUnique.OpenMU.GameLogic.Attributes;
 
     /// <summary>
-    /// MuBot Status Map
+    /// MuBot Status Map.
     /// </summary>
-    public enum MuBotStatus
+    public enum MuBotStatus : byte
     {
         /// <summary>
         /// enabled
@@ -22,12 +26,12 @@
     }
 
     /// <summary>
-    /// Mu Bot Class
+    /// Mu Bot Class.
     /// </summary>
     public class MuBot
     {
         /// <summary>
-        /// Internal Timer interval for money collect
+        /// Internal Timer interval for money collect.
         /// </summary>
         private const int Interval = 5 * 60 * 1000;
 
@@ -37,7 +41,7 @@
         private readonly Player player;
 
         /// <summary>
-        /// Last time that money was collected
+        /// Last time that money was collected.
         /// </summary>
         private DateTime lastCollect;
 
@@ -56,7 +60,7 @@
         }
 
         /// <summary>
-        /// Start Mu Bot Timer
+        /// Start Mu Bot Timer.
         /// </summary>
         public void Start()
         {
@@ -71,7 +75,7 @@
         }
 
         /// <summary>
-        /// Stop Mu Bot Timer
+        /// Stop Mu Bot Timer.
         /// </summary>
         public void Stop()
         {
@@ -93,7 +97,7 @@
         }
 
         /// <summary>
-        /// Check if player has enough money
+        /// Check if player has enough money.
         /// </summary>
         /// <returns>if player can pay the bot.</returns>
         public bool CanAfford()
@@ -102,7 +106,7 @@
         }
 
         /// <summary>
-        /// Level + MLevel * BotCost * spentTime / 100
+        /// Level + MLevel * BotCost * spentTime / 100.
         /// </summary>
         /// <returns>the required money.</returns>
         public int GetRequiredMoney()
@@ -114,7 +118,7 @@
         }
 
         /// <summary>
-        /// Performs the money collection
+        /// Performs the money collection.
         /// </summary>
         private void Collect()
         {
@@ -128,7 +132,7 @@
         }
 
         /// <summary>
-        /// Get spent time in mu bot
+        /// Get spent time in mu bot.
         /// </summary>
         /// <returns>seconds since last money collection.</returns>
         private int GetSpentTime()

@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameLogic.MuBot
+﻿// <copyright file="MuBotPlayerExtensions.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.MuBot
 {
     using System;
     using MUnique.OpenMU.GameLogic.Views;
@@ -6,12 +10,12 @@
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
-    /// Toggle player Mu Bot
+    /// Toggle player Mu Bot.
     /// </summary>
     public static class MuBotPlayerExtensions
     {
         /// <summary>
-        /// Toggle mu bot of player
+        /// Toggle mu bot of player.
         /// </summary>
         /// <param name="player">the current player object.</param>
         /// <param name="status">status to set.</param>
@@ -33,7 +37,7 @@
         }
 
         /// <summary>
-        /// Show message to player
+        /// Show message to player.
         /// </summary>
         /// <param name="player">the current player object.</param>
         /// <param name="message">message to show.</param>

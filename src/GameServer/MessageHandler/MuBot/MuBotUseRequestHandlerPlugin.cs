@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameServer.MessageHandler.MuBot
+﻿// <copyright file="MuBotUseRequestHandlerPlugin.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.MessageHandler.MuBot
 {
     using System;
     using System.Runtime.InteropServices;
@@ -8,7 +12,7 @@
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
-    /// Handler for Mu Bot Use Request Handler
+    /// Handler for Mu Bot Use Request Handler.
     /// </summary>
     [PlugIn("MuBotUseRequestHandlerPlugin", "Handler for mu bot use request.")]
     [Guid("26d0fef9-8171-4098-87ea-030054163511")]

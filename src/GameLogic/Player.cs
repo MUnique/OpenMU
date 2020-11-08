@@ -355,7 +355,7 @@ namespace MUnique.OpenMU.GameLogic
         public Bucket<ILocateable> OldBucket { get; set; }
 
         /// <summary>
-        ///  Gets the MuBot instance
+        ///  Gets the MuBot instance.
         /// </summary>
         public MuBot.MuBot MuBot { get; }
 

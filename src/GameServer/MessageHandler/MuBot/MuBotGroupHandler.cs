@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameServer.MessageHandler.MuBot
+﻿// <copyright file="MuBotGroupHandler.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.MessageHandler.MuBot
 {
     using System.Runtime.InteropServices;
     using Microsoft.Extensions.Logging;

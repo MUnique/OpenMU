@@ -3434,6 +3434,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("GateId");
                 });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MuBotData", b =>
+            {
+                b.Property<Guid>("CharacterId").HasColumnType("uuid");
+                b.Property<byte[]>("Data").HasColumnType("bytea");
+                b.HasKey("CharacterId");
+            });
 #pragma warning restore 612, 618
         }
     }

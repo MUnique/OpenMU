@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameLogic.MuBot
+﻿// <copyright file="MuBotConfiguration.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.MuBot
 {
     /// <summary>
     /// Static MuBotConfiguration.
@@ -6,7 +10,7 @@
     public static class MuBotConfiguration
     {
         /// <summary>
-        /// is mu bot available?
+        /// is mu bot available?.
         /// </summary>
         public const bool IsEnabled = true;
 

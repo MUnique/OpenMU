@@ -1,9 +1,13 @@
-﻿namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
+﻿// <copyright file="MuBotUseAction.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
 {
     using MUnique.OpenMU.GameLogic.MuBot;
 
     /// <summary>
-    /// Action to send back to the client the mu bot data
+    /// Action to send back to the client the mu bot data.
     /// </summary>
     public class MuBotUseAction
     {
@@ -19,7 +23,7 @@
         }
 
         /// <summary>
-        /// send mu bot data back to the client
+        /// send mu bot data back to the client.
         /// </summary>
         /// <param name="status">status to be set.</param>
         public void UseMuBot(byte status)
