@@ -5,12 +5,10 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
-    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Information about mu data.
     /// </summary>
-    [AggregateRoot]
     public class MuBotData
     {
         /// <summary>
@@ -22,5 +20,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the current data of mu bot.
         /// </summary>
         public byte[] Data { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{this.CharacterId} with data {this.Data}";
+        }
     }
 }
