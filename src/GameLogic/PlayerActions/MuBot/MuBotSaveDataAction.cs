@@ -6,8 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
 {
     using System;
     using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views.MuBot;
+    using MUnique.OpenMU.GameLogic.MuBot;
 
     /// <summary>
     /// Action to update mu bot status.
@@ -25,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
             {
                 player.SelectedCharacter.MuBotData = data.ToArray();
                 player.PersistenceContext.SaveChanges();
-                player.ViewPlugIns.GetPlugIn<IMuBotSaveDataResponse>()?.SendMuBotSavedDataResponse(data);
+                player.SendCurrentMuBotData();
             }
             catch (Exception e)
             {
