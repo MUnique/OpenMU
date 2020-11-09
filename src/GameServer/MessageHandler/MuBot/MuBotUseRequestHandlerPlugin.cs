@@ -29,8 +29,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.MuBot
         public void HandlePacket(Player player, Span<byte> packet)
         {
             MuBotUseRequest message = packet;
-            var muBotUseAction = new MuBotUseAction(player);
-            muBotUseAction.UseMuBot(message.Status);
+            new MuBotUseAction(player).UseMuBot(message.Status);
         }
     }
 }
