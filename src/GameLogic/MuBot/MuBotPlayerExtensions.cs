@@ -37,6 +37,16 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         }
 
         /// <summary>
+        /// Send Current Mu Bot Data To Client
+        /// </summary>
+        /// <param name="player">the current player object.</param>
+        public static void SendCurrentMuBotData(this Player player)
+        {
+            player.ViewPlugIns.GetPlugIn<IMuBotSaveDataResponse>()
+                ?.SendMuBotSavedDataResponse(player.SelectedCharacter.MuBotData);
+        }
+
+        /// <summary>
         /// Show message to player.
         /// </summary>
         /// <param name="player">the current player object.</param>

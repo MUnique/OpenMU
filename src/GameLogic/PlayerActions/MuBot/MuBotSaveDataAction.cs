@@ -23,9 +23,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
         {
             try
             {
-                var muBotData = player.PersistenceContext.CreateNew<MuBotData>();
-                muBotData.Data = data.ToArray();
-                muBotData.CharacterId = player.SelectedCharacter.Id;
+                player.SelectedCharacter.MuBotData = data.ToArray();
                 player.PersistenceContext.SaveChanges();
                 player.ViewPlugIns.GetPlugIn<IMuBotSaveDataResponse>()?.SendMuBotSavedDataResponse(data);
             }
