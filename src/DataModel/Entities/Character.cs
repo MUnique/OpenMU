@@ -218,6 +218,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         public byte[] KeyConfiguration { get; set; }
 
         /// <summary>
+        /// Gets or sets the current data of mu bot.
+        /// </summary>
+        public byte[] MuBotData { get; set; }
+
+        /// <summary>
         /// Gets or sets the stat attributes.
         /// </summary>
         [MemberOfAggregate]

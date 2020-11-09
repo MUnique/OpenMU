@@ -1063,6 +1063,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     UsedNegFruitPoints = table.Column<int>(nullable: false),
                     InventoryExtensions = table.Column<int>(nullable: false),
                     KeyConfiguration = table.Column<byte[]>(nullable: true),
+                    MuBotData = table.Column<byte[]>(nullable: true),
                     CharacterClassId = table.Column<Guid>(nullable: false),
                     CurrentMapId = table.Column<Guid>(nullable: true),
                     InventoryId = table.Column<Guid>(nullable: true),
@@ -2503,26 +2504,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "MuBotData",
-                schema: "data",
-                columns: table => new
-                {
-                    CharacterId = table.Column<Guid>(nullable: false),
-                    Data = table.Column<byte[]>(nullable: false),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MuBotData", x => x.CharacterId);
-                    table.ForeignKey(
-                        name: "FK_MuBotData_Character_CharacterId",
-                        column: x => x.CharacterId,
-                        principalSchema: "data",
-                        principalTable: "Character",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AttributeDefinition_GameConfigurationId",
                 schema: "config",
@@ -3817,10 +3798,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.DropTable(
                 name: "MasterSkillRoot",
                 schema: "config");
-
-            migrationBuilder.DropTable(
-                "MuBotData",
-                "data");
         }
     }
 }
