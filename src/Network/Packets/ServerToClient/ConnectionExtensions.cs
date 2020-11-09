@@ -3267,29 +3267,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="consumeMoney">The consume money.</param>
-        /// <param name="unknown1">The unknown 1.</param>
-        /// <param name="unknown2">The unknown 2.</param>
-        /// <param name="unknown3">The unknown 3.</param>
         /// <param name="money">The money.</param>
         /// <param name="status">The status.</param>
-        /// <param name="unknown4">The unknown 4.</param>
-        /// <param name="unknown5">The unknown 5.</param>
         /// <remarks>
         /// Is sent by the server when: The server validate (and toggle status) if user can use the bot
         /// Causes reaction on client side: The client toggle the mu bot status
         /// </remarks>
-        public static void SendMuBotUseResponse(this IConnection connection, byte @consumeMoney, byte @unknown1, byte @unknown2, byte @unknown3, uint @money, byte @status, ushort @unknown4, byte @unknown5)
+        public static void SendMuBotUseResponse(this IConnection connection, byte @consumeMoney, uint @money, byte @status)
         {
             using var writer = connection.StartWriteMuBotUseResponse();
             var packet = writer.Packet;
             packet.ConsumeMoney = @consumeMoney;
-            packet.Unknown1 = @unknown1;
-            packet.Unknown2 = @unknown2;
-            packet.Unknown3 = @unknown3;
             packet.Money = @money;
             packet.Status = @status;
-            packet.Unknown4 = @unknown4;
-            packet.Unknown5 = @unknown5;
             writer.Commit();
         }
 

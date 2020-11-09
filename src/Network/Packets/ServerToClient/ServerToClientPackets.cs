@@ -15120,33 +15120,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Gets or sets the unknown 1.
-        /// </summary>
-        public byte Unknown1
-        {
-            get => this.data[5];
-            set => this.data[5] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the unknown 2.
-        /// </summary>
-        public byte Unknown2
-        {
-            get => this.data[6];
-            set => this.data[6] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the unknown 3.
-        /// </summary>
-        public byte Unknown3
-        {
-            get => this.data[7];
-            set => this.data[7] = value;
-        }
-
-        /// <summary>
         /// Gets or sets the money.
         /// </summary>
         public uint Money
@@ -15162,24 +15135,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         {
             get => this.data[12];
             set => this.data[12] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the unknown 4.
-        /// </summary>
-        public ushort Unknown4
-        {
-            get => ReadUInt16LittleEndian(this.data.Slice(13));
-            set => WriteUInt16LittleEndian(this.data.Slice(13), value);
-        }
-
-        /// <summary>
-        /// Gets or sets the unknown 5.
-        /// </summary>
-        public byte Unknown5
-        {
-            get => this.data[15];
-            set => this.data[15] = value;
         }
 
         /// <summary>

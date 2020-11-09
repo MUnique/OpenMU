@@ -5266,21 +5266,6 @@
           <Name>ConsumeMoney</Name>
         </Field>
         <Field>
-          <Index>5</Index>
-          <Type>Byte</Type>
-          <Name>Unknown1</Name>
-        </Field>
-        <Field>
-          <Index>6</Index>
-          <Type>Byte</Type>
-          <Name>Unknown2</Name>
-        </Field>
-        <Field>
-          <Index>7</Index>
-          <Type>Byte</Type>
-          <Name>Unknown3</Name>
-        </Field>
-        <Field>
           <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>Money</Name>
@@ -5289,16 +5274,6 @@
           <Index>12</Index>
           <Type>Byte</Type>
           <Name>Status</Name>
-        </Field>
-        <Field>
-          <Index>13</Index>
-          <Type>ShortLittleEndian</Type>
-          <Name>Unknown4</Name>
-        </Field>
-        <Field>
-          <Index>15</Index>
-          <Type>Byte</Type>
-          <Name>Unknown5</Name>
         </Field>
       </Fields>
     </Packet>
