@@ -920,7 +920,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("NetworkPort")
                         .HasColumnType("integer");
                     
-                    b.Property<int>("ProxiedPort")
+                    b.Property<int>("AlternativePublishedPort")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
