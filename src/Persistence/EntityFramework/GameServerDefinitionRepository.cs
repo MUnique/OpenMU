@@ -4,9 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
-    using System.Linq;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata;
     using Microsoft.Extensions.Logging;
+    using System.Linq;
 
     /// <summary>
     /// Repository for the <see cref="GameServerDefinition"/>.
@@ -32,7 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 var entityEntry = currentContext.Entry(obj);
                 foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded))
                 {
-                    this.LoadCollection(entityEntry, collection.Metadata, currentContext);
+                    this.LoadCollection(entityEntry, collection.Metadata as IConventionNavigation, currentContext);
                     collection.IsLoaded = true;
                 }
 

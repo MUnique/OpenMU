@@ -2,6 +2,7 @@
 @using System.IO
 @using MUnique.OpenMU.Network
 @using MUnique.OpenMU.Persistence
+
 @inherits NotifyableInputBase<byte[]>
 
 @inject IModalService ModalService
@@ -13,7 +14,7 @@
             @if (this.Value.Length > 32)
             {
                 <p>Current size: @(this.Value.Length) bytes (<a href="download/@this.EditContext.Model.GetType()/@this.EditContext.Model.GetId()/@this.FieldIdentifier.FieldName">Download</a>)</p>
-                <p>Load file: <InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
+                <p>Load file: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
             }
             else
             {

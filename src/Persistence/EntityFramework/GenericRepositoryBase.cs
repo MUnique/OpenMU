@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        public IEnumerable LoadByProperty(IProperty property, object propertyValue)
+        public IEnumerable LoadByProperty(IConventionProperty property, object propertyValue)
         {
             using var context = this.GetContext();
             var result = this.LoadByPropertyInternal(property, propertyValue, context.Context).OfType<T>().ToList();
@@ -108,7 +108,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         /// <param name="entityEntry">The entity entry.</param>
         /// <returns>The navigations which should be considered when loading the data.</returns>
-        protected virtual IEnumerable<INavigation> GetNavigations(EntityEntry entityEntry)
+        protected virtual IEnumerable<INavigationBase> GetNavigations(EntityEntry entityEntry)
         {
             return entityEntry.Navigations.Select(n => n.Metadata);
         }
@@ -122,9 +122,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             var entityEntry = currentContext.Entry(obj);
 
-            foreach (var navigation in this.GetNavigations(entityEntry))
+            foreach (var navigation in this.GetNavigations(entityEntry).OfType<IConventionNavigation>())
             {
-                if (!navigation.IsCollection())
+                if (!navigation.IsCollection)
                 {
                     if (this.FullEntityType.FindPrimaryKey().Properties[0] == navigation.ForeignKey.Properties[0])
                     {
@@ -140,7 +140,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded))
             {
-                this.LoadCollection(entityEntry, collection.Metadata, currentContext);
+                this.LoadCollection(entityEntry, collection.Metadata as IConventionNavigation, currentContext);
                 collection.IsLoaded = true;
             }
         }
@@ -151,7 +151,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="entityEntry">The entity entry.</param>
         /// <param name="navigation">The navigation.</param>
         /// <param name="context">The context.</param>
-        protected virtual void LoadCollection(EntityEntry entityEntry, INavigation navigation, DbContext context)
+        protected virtual void LoadCollection(EntityEntry entityEntry, IConventionNavigation navigation, DbContext context)
         {
             var foreignKeyProperty = navigation.ForeignKey.Properties.First();
             var loadStatusAware = navigation.GetGetter().GetClrValue(entityEntry.Entity) as ILoadingStatusAwareList;
@@ -200,7 +200,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         /// <param name="entityEntry">The entity entry from the context.</param>
         /// <param name="navigation">The navigation property.</param>
-        protected virtual void LoadNavigationProperty(EntityEntry entityEntry, INavigation navigation)
+        protected virtual void LoadNavigationProperty(EntityEntry entityEntry, IConventionNavigation navigation)
         {
             if (navigation.ForeignKey.DeclaringEntityType != navigation.DeclaringEntityType)
             {
@@ -225,7 +225,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 IRepository repository = null;
                 try
                 {
-                    repository = this.RepositoryManager.GetRepository(navigation.GetTargetType().ClrType);
+                    repository = this.RepositoryManager.GetRepository(navigation.TargetEntityType.ClrType);
                 }
                 catch (RepositoryNotFoundException ex)
                 {
@@ -248,7 +248,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 }
                 else
                 {
-                    this.logger.LogError($"Repository not found for navigation target type {navigation.GetTargetType()}.");
+                    this.logger.LogError($"Repository not found for navigation target type {navigation.TargetEntityType}.");
                 }
             }
         }
@@ -272,7 +272,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>The context.</returns>
         protected abstract EntityFrameworkContextBase GetContext();
 
-        private IEnumerable LoadByPropertyInternal(IProperty property, object propertyValue, DbContext context)
+        private IEnumerable LoadByPropertyInternal(IConventionProperty property, object propertyValue, DbContext context)
         {
             if (property.ClrType == typeof(Guid))
             {

@@ -18,6 +18,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="property">The property of the object which should be compared.</param>
         /// <param name="propertyValue">The value of the property.</param>
         /// <returns>The enumeration of the loaded objects.</returns>
-        IEnumerable LoadByProperty(IProperty property, object propertyValue);
+        IEnumerable LoadByProperty(IConventionProperty property, object propertyValue);
     }
 }
