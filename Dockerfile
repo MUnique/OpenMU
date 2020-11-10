@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:5.0 AS build
 
 # Requirements for the typescript compiler
 RUN apt-get update && \
@@ -14,7 +14,7 @@ RUN dotnet build src/Startup/MUnique.OpenMU.Startup.csproj -c Release -p:ci=true
 RUN dotnet publish src/AdminPanel/MUnique.OpenMU.AdminPanel.csproj -o out -c Release --no-build
 RUN dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj -o out -c Release --no-build
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:5.0 AS runtime
 
 EXPOSE 1234
 EXPOSE 55901
