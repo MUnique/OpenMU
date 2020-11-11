@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
     /// A generic edit page, which shows an <see cref="AutoForm{T}"/> for the given <see cref="TypeString"/> and <see cref="Id"/>.
     /// </summary>
     [Route("/edit/{typeString}/{id:guid}")]
-    public sealed class Edit : ComponentBase, IDisposable
+    public sealed class Edit : ComponentBase, IAsyncDisposable
     {
         private static readonly IDictionary<Type, IList<(string Caption, string Path)>> EditorPages =
             new Dictionary<Type, IList<(string, string)>>
@@ -37,6 +37,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         private Type type;
         private IContext persistenceContext;
         private CancellationTokenSource disposeCts;
+        private Task loadTask;
 
         /// <summary>
         /// Gets or sets the identifier of the object which should be edited.
@@ -71,11 +72,12 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         public IModalService ModalService { get; set; }
 
         /// <inheritdoc />
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
             this.disposeCts?.Cancel();
             this.disposeCts?.Dispose();
             this.disposeCts = null;
+            await this.loadTask;
             if (this.persistenceContext is IDisposable disposable)
             {
                 disposable.Dispose();
@@ -114,7 +116,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             var cts = new CancellationTokenSource();
             this.disposeCts = cts;
             this.model = null;
-            Task.Run(() => this.LoadData(cts.Token), cts.Token);
+            this.loadTask = Task.Run(() => this.LoadData(cts.Token), cts.Token);
             return base.OnParametersSetAsync();
         }
 
