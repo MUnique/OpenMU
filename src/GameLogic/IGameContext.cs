@@ -87,5 +87,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="message">The message.</param>
         /// <param name="messageType">Type of the message.</param>
         void SendGlobalMessage(string message, MessageType messageType);
+
+        /// <summary>
+        /// Sends a golden global notification to all players of the game.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        void SendGlobalNotification(string message);
     }
 }
