@@ -60,9 +60,15 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         {
             var item = new TemporaryItem();
             var itemDefinition = player.GameContext.Configuration.Items.FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number);
+
             if (itemDefinition == null)
             {
                 throw new ArgumentException($"[GM][/item] {arguments.Group} {arguments.Number} does not exists");
+            }
+
+            if (arguments.Level > itemDefinition.MaximumItemLevel)
+            {
+                throw new ArgumentException($"[GM][/item] Level cannot be greater than {itemDefinition.MaximumItemLevel}");
             }
 
             item.Definition = itemDefinition;
