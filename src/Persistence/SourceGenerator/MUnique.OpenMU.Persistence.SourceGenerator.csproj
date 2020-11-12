@@ -21,10 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
-    <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
-    <ProjectReference Include="..\..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
-    <ProjectReference Include="..\..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
+    <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" PrivateAssets="all" GeneratePathProperty="true" />
+    <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" PrivateAssets="all" GeneratePathProperty="true" />
+    <ProjectReference Include="..\..\Interfaces\MUnique.OpenMU.Interfaces.csproj" PrivateAssets="all" GeneratePathProperty="true" />
+    <ProjectReference Include="..\..\PlugIns\MUnique.OpenMU.PlugIns.csproj" PrivateAssets="all" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
