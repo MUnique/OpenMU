@@ -5,28 +5,28 @@
 namespace MUnique.OpenMU.GameLogic.MuBot
 {
     /// <summary>
-    /// Static MuBotConfiguration.
+    /// Configuration for MuBot.
     /// </summary>
-    public static class MuBotConfiguration
+    public class MuBotConfiguration
     {
         /// <summary>
-        /// is mu bot available?.
+        /// Gets or sets a value indicating whether mu bot is available.
         /// </summary>
-        public const bool IsEnabled = true;
+        public bool IsEnabled { get; set; } = true;
 
         /// <summary>
-        /// the base cost of the system, later will be multiplied by player level + mlevel.
+        /// Gets or Sets the base cost of the system.
         /// </summary>
-        public const uint Cost = 10000;
+        public uint Cost { get; set; } = 10000;
 
         /// <summary>
-        /// the min level.
+        /// Gets or Sets the min level.
         /// </summary>
-        public const uint MinLevel = 1;
+        public int MinLevel { get; set; } = 1;
 
         /// <summary>
-        /// the max level.
+        /// Gets or Sets the max level.
         /// </summary>
-        public const uint MaxLevel = 400;
+        public int MaxLevel { get; set; } = 400;
     }
 }

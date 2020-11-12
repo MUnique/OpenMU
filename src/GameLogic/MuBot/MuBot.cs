@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.MuBot
     {
         /// <summary>
         /// Internal Timer interval for money collect.
-        /// (5 minutes as original server)
+        /// (5 minutes as original server).
         /// </summary>
         private const int Interval = 5 * 60 * 1000;
 
@@ -40,6 +40,11 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         /// Associated player.
         /// </summary>
         private readonly Player player;
+
+        /// <summary>
+        /// The current configuration.
+        /// </summary>
+        private readonly MuBotConfiguration configuration;
 
         /// <summary>
         /// Last time that money was collected.
@@ -58,6 +63,12 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         public MuBot(Player player)
         {
             this.player = player;
+            this.configuration = this.player.GetMuBotConfiguration();
+            if (this.configuration is null)
+            {
+                return;
+            }
+
             this.player.PlayerEnteredWorld += this.OnPlayerEnteredWorld;
         }
 
@@ -69,7 +80,6 @@ namespace MUnique.OpenMU.GameLogic.MuBot
             this.timer = new Timer(Interval)
             {
                 Enabled = true,
-                AutoReset = true,
             };
             this.timer.Elapsed += (sender, e) => this.Collect();
             this.lastCollect = DateTime.Now;
@@ -115,7 +125,7 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         {
             return (int)Math.Round(
                 (this.player.Level + this.player.Attributes[Stats.MasterLevel]) *
-                MuBotConfiguration.Cost *
+                this.configuration.Cost *
                 this.GetSpentTime() / 1000);
         }
 
@@ -148,7 +158,7 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         }
 
         /// <summary>
-        /// Send Mu Bot Data After Enter
+        /// Send Mu Bot Data After Enter.
         /// </summary>
         private void OnPlayerEnteredWorld(object sender, EventArgs e)
         {

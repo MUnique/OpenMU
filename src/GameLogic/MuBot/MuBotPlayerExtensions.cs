@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.MuBot
 {
-    using System;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.MuBot;
     using MUnique.OpenMU.Interfaces;
@@ -22,7 +21,7 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         public static void ToggleMuBot(this Player player, MuBotStatus status)
         {
             player.ViewPlugIns.GetPlugIn<IMuBotUseResponse>()
-                ?.SendMuBotUseResponse((byte)status, 0, 0);
+                ?.SendMuBotUseResponse((byte)status);
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         }
 
         /// <summary>
-        /// Send Current Mu Bot Data To Client
+        /// Send Current Mu Bot Data To Client.
         /// </summary>
         /// <param name="player">the current player object.</param>
         public static void SendCurrentMuBotData(this Player player)
@@ -54,6 +53,16 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         public static void ShowMessage(this Player player, string message)
         {
             player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
+        }
+
+        /// <summary>
+        /// Return current Mu Bot Configuration.
+        /// </summary>
+        /// <param name="player">the current player object.</param>
+        /// <returns>the current configuration for mu bot.</returns>
+        public static MuBotConfiguration GetMuBotConfiguration(this Player player)
+        {
+            return player.GameContext.FeaturePlugIns.GetPlugIn<MuBotFeaturePlugin>()?.Configuration;
         }
     }
 }

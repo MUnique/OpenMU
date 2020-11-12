@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
     public class MuBotUseAction
     {
         private readonly Player player;
+        private readonly MuBotConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MuBotUseAction"/> class.
@@ -20,15 +21,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
         public MuBotUseAction(Player player)
         {
             this.player = player;
+            this.configuration = player.GetMuBotConfiguration();
         }
 
         /// <summary>
-        /// send mu bot data back to the client.
+        /// Toggle Mu Bot Status.
         /// </summary>
         /// <param name="status">status to be set.</param>
         public void UseMuBot(byte status)
         {
-            if (!MuBotConfiguration.IsEnabled)
+            if (this.configuration is null || !this.configuration.IsEnabled)
             {
                 this.player.ShowMessage("Mu Bot is disabled");
                 return;
@@ -50,14 +52,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MuBot
 
         private void TurnOn()
         {
-            if (this.player.Level < MuBotConfiguration.MinLevel)
+            if (this.player.Level < this.configuration.MinLevel)
             {
-                this.player.ShowMessage($"Mu Bot can be used after level {MuBotConfiguration.MinLevel}");
+                this.player.ShowMessage($"Mu Bot can be used after level {this.configuration.MinLevel}");
             }
 
-            if (this.player.Level >= MuBotConfiguration.MaxLevel)
+            if (this.player.Level >= this.configuration.MaxLevel)
             {
-                this.player.ShowMessage($"Mu Bot cannot be used after level {MuBotConfiguration.MaxLevel}");
+                this.player.ShowMessage($"Mu Bot cannot be used after level {this.configuration.MaxLevel}");
                 return;
             }
 

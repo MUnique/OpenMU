@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.MuBot
     /// Packet handler for mu bot data save packets (0xAE identifier).
     /// </summary>
     [PlugIn("MuBotSaveDataRequestHandlerPlugin", "Handler for mu bot data save request.")]
-    [Guid("3715c03e-9c77-4e43-9f6b-c1db3a2c3233")]
+    [Guid("3715c03e-9c77-4e43-9f6b-c1db3a2c3235")]
     public class MuBotSaveDataRequestHandlerPlugin : IPacketHandlerPlugIn
     {
         private readonly MuBotSaveDataAction muBotSaveDataAction = new MuBotSaveDataAction();
