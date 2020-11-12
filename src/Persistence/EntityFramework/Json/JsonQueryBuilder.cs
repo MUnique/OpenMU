@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 
             foreach (var navigation in navigations)
             {
-                if (navigation.IsCollection())
+                if (navigation.IsCollection)
                 {
                     this.AddCollection(navigation, entityType, stringBuilder, parentAlias);
                 }
@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             }
 
             var navigationAlias = this.GetNextAlias(parentAlias);
-            var targetType = navigation.GetTargetType();
+            var targetType = navigation.TargetEntityType;
             var foreignKey = navigation.ForeignKey.Properties.First();
             if (foreignKey.IsShadowProperty())
             {
@@ -119,7 +119,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 return;
             }
 
-            var isBackReference = navigation.ForeignKey.PrincipalToDependent?.IsCollection() ?? false;
+            var isBackReference = navigation.ForeignKey.PrincipalToDependent?.IsCollection ?? false;
             if (isBackReference)
             {
                 // It's a back reference of a collection - we just have to create a reference json object
