@@ -103,6 +103,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AdminPanel",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.PublicApi", "PublicApi\MUnique.OpenMU.PublicApi.csproj", "{956BE8E9-2889-472B-9567-8577A34ECE63}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Persistence.SourceGenerator", "Persistence\SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj", "{3CFAFD8C-E881-45BA-98CE-653D33C95419}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -241,6 +243,10 @@ Global
 		{956BE8E9-2889-472B-9567-8577A34ECE63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{956BE8E9-2889-472B-9567-8577A34ECE63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{956BE8E9-2889-472B-9567-8577A34ECE63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CFAFD8C-E881-45BA-98CE-653D33C95419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CFAFD8C-E881-45BA-98CE-653D33C95419}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CFAFD8C-E881-45BA-98CE-653D33C95419}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CFAFD8C-E881-45BA-98CE-653D33C95419}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -278,6 +284,7 @@ Global
 		{482217F9-BBA8-4DA9-BEE0-03E278E0684B} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 		{401B1520-00B9-468D-9107-EEEF33C0084F} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
 		{956BE8E9-2889-472B-9567-8577A34ECE63} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
+		{3CFAFD8C-E881-45BA-98CE-653D33C95419} = {1F7FA853-AEBA-40DB-A9CF-011DA54EE9FE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28C13837-B616-4790-84D6-4BDCB4A8166D}

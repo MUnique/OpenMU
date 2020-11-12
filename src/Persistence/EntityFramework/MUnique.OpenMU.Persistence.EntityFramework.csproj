@@ -46,37 +46,17 @@
     <ProjectReference Include="..\..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
     <ProjectReference Include="..\MUnique.OpenMU.Persistence.csproj" />
+    <ProjectReference Include="..\SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="ConnectionSettings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="ExtendedJoinEntities.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ExtendedJoinEntities.cs</LastGenOutput>
-    </None>
-    <None Update="ExtendedTypes.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ExtendedTypes.cs</LastGenOutput>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="ExtendedJoinEntities.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ExtendedJoinEntities.tt</DependentUpon>
-    </Compile>
-    <Compile Update="ExtendedTypes.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ExtendedTypes.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
 
 </Project>

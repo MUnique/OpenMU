@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -18,12 +18,15 @@
     <Compile Remove="EntityFramework\**" />
     <Compile Remove="Initialization\**" />
     <Compile Remove="InMemory\**" />
+    <Compile Remove="SourceGenerator\**" />
     <EmbeddedResource Remove="EntityFramework\**" />
     <EmbeddedResource Remove="Initialization\**" />
     <EmbeddedResource Remove="InMemory\**" />
+    <EmbeddedResource Remove="SourceGenerator\**" />
     <None Remove="EntityFramework\**" />
     <None Remove="Initialization\**" />
     <None Remove="InMemory\**" />
+    <None Remove="SourceGenerator\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,21 +50,7 @@
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="BasicModel\ExtendedTypes.cs">
-      <DependentUpon>ExtendedTypes.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="BasicModel\ExtendedTypes.tt">
-      <LastGenOutput>ExtendedTypes.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
+    <ProjectReference Include="SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>

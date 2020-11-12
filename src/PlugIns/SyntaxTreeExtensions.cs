@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.PlugIns
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -32,7 +33,7 @@ namespace MUnique.OpenMU.PlugIns
                 var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
                     .Where(a => !a.IsDynamic)
                     .Select(a => a.Location)
-                    .ToHashSet();
+                    .ToImmutableHashSet();
                 var separator = (Environment.OSVersion.Platform == PlatformID.MacOSX ||
                                  Environment.OSVersion.Platform == PlatformID.Unix)
                     ? ':'

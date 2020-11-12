@@ -98,7 +98,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         public ConstValueAttribute()
         {
-            this.InitJoinCollections();
         }
 
         /// <summary>
