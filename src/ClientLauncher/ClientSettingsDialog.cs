@@ -6,11 +6,13 @@ namespace MUnique.OpenMU.ClientLauncher
 {
     using System;
     using System.Drawing;
+    using System.Runtime.Versioning;
     using System.Windows.Forms;
 
     /// <summary>
     /// <see cref="ClientSettingsDialog"/>.
     /// </summary>
+    [SupportedOSPlatform("windows")]
     internal partial class ClientSettingsDialog : Form
     {
         /// <summary>

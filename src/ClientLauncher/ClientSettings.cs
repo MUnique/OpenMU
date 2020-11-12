@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ClientLauncher
 {
+    using System.Runtime.Versioning;
     using Microsoft.Win32;
 
     /// <summary>
@@ -58,6 +59,7 @@ namespace MUnique.OpenMU.ClientLauncher
         /// <summary>
         /// Loads the settings from the windows registry.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public void Load()
         {
             using (var currentUserKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32))
@@ -76,6 +78,7 @@ namespace MUnique.OpenMU.ClientLauncher
         /// <summary>
         /// Saves the settings at the windows registry.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public void Save()
         {
             using (var currentUserKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32))
