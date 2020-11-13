@@ -103,7 +103,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.AdminPanel",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.PublicApi", "PublicApi\MUnique.OpenMU.PublicApi.csproj", "{956BE8E9-2889-472B-9567-8577A34ECE63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Persistence.SourceGenerator", "Persistence\SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj", "{3CFAFD8C-E881-45BA-98CE-653D33C95419}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence.SourceGenerator", "Persistence\SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj", "{3CFAFD8C-E881-45BA-98CE-653D33C95419}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5282F509-D758-4A42-994C-F71A4C631FDA} = {5282F509-D758-4A42-994C-F71A4C631FDA}
+		{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD} = {CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}
+		{5AB17B80-021D-4898-9750-0C26B2AF1A39} = {5AB17B80-021D-4898-9750-0C26B2AF1A39}
+		{F4AFDE9B-6690-4D2B-83C6-DA7426479293} = {F4AFDE9B-6690-4D2B-83C6-DA7426479293}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

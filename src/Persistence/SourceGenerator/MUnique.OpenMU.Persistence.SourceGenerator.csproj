@@ -5,10 +5,7 @@
     <LangVersion>9.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>warnings</Nullable>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\MUnique.OpenMU.Persistence.SourceGenerator.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\MUnique.OpenMU.Persistence.SourceGenerator.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,13 +18,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" PrivateAssets="all" GeneratePathProperty="true" />
-    <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" PrivateAssets="all" GeneratePathProperty="true" />
-    <ProjectReference Include="..\..\Interfaces\MUnique.OpenMU.Interfaces.csproj" PrivateAssets="all" GeneratePathProperty="true" />
-    <ProjectReference Include="..\..\PlugIns\MUnique.OpenMU.PlugIns.csproj" PrivateAssets="all" GeneratePathProperty="true" />
+    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+    <Reference Include="MUnique.OpenMU.DataModel">
+      <HintPath>..\..\..\bin\$(Configuration)\MUnique.OpenMU.DataModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MUnique.OpenMU.AttributeSystem">
+      <HintPath>..\..\..\bin\$(Configuration)\MUnique.OpenMU.AttributeSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="MUnique.OpenMU.Interfaces">
+      <HintPath>..\..\..\bin\$(Configuration)\MUnique.OpenMU.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="MUnique.OpenMU.PlugIns">
+      <HintPath>..\..\..\bin\$(Configuration)\MUnique.OpenMU.PlugIns.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
