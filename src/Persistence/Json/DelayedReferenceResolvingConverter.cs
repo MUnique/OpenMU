@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.Persistence.Json
             }
 
             var jsonObject = JObject.Load(reader);
-            if (jsonObject == null)
+            if (jsonObject is null)
             {
                 return null;
             }
@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.Persistence.Json
             }
 
             var resolvedObject = serializer.ReferenceResolver.ResolveReference(serializer.Context, id);
-            if (resolvedObject == null)
+            if (resolvedObject is null)
             {
                 var property = this.currentlyPopulating.GetType().GetProperty(reader.Path);
                 if (property != null)

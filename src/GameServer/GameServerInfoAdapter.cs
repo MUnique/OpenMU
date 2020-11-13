@@ -78,7 +78,7 @@ namespace MUnique.OpenMU.GameServer
 
         private bool UpdateMaps()
         {
-            if (this.gameMapInfos == null)
+            if (this.gameMapInfos is null)
             {
                 return false;
             }

@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         public void HandleConsumeRequest(Player player, byte inventorySlot, byte inventoryTargetSlot, FruitUsage fruitUsage)
         {
             Item item = player.Inventory.GetItem(inventorySlot);
-            if (item == null)
+            if (item is null)
             {
                 player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
                 return;
@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         private IItemConsumeHandler CreateConsumeHandler(IGameContext gameContext, string handlerTypeName)
         {
             var handlerType = Type.GetType(handlerTypeName);
-            if (handlerType == null)
+            if (handlerType is null)
             {
                 throw new ArgumentException($"The consume handler {handlerTypeName} wasn't found.", nameof(handlerTypeName));
             }
@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 var parameters = ctor.GetParameters();
                 if (!parameters.Any())
                 {
-                    return ctor.Invoke(new object[] { }) as IItemConsumeHandler
+                    return ctor.Invoke(Array.Empty<object>()) as IItemConsumeHandler
                            ?? throw new ArgumentException($"The consume handler {handlerTypeName} isn't implementing {nameof(IItemConsumeHandler)}.", nameof(handlerTypeName));
                 }
 

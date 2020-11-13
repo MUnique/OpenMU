@@ -145,7 +145,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     continue;
                 }
 
-                if (craftingResultItem.ItemDefinition == null)
+                if (craftingResultItem.ItemDefinition is null)
                 {
                     // Should never happen
                     player.Logger.LogWarning($"CraftingResultItem has no {nameof(ItemCraftingResultItem.Reference)} and no {nameof(ItemCraftingResultItem.ItemDefinition)}. It's ignored.");

@@ -218,7 +218,7 @@ namespace MUnique.OpenMU.GameLogic
         private void HealthUpdate_Elapsed(object state)
         {
             var partyMaster = this.PartyList.FirstOrDefault();
-            if (partyMaster == null)
+            if (partyMaster is null)
             {
                 return;
             }

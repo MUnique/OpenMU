@@ -24,27 +24,25 @@ namespace MUnique.OpenMU.Network.Tests
         {
             var malformedData = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
             var duplexPipe = new DuplexPipe();
-            using (var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>()))
+            using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
+            var disconnected = false;
+            connection.Disconnected += (sender, args) => disconnected = true;
+            _ = connection.BeginReceive();
+            try
             {
-                var disconnected = false;
-                connection.Disconnected += (sender, args) => disconnected = true;
-                _ = connection.BeginReceive();
-                try
-                {
-                    await duplexPipe.ReceivePipe.Writer.WriteAsync(malformedData);
-                }
-                catch
-                {
-                    // we need to swallow the exception for this test, so we can check the connected flag afterwards.
-                }
-
-                for (int i = 0; i < 10 && !disconnected; i++)
-                {
-                    await Task.Delay(10).ConfigureAwait(false);
-                }
-
-                Assert.That(connection.Connected, Is.False);
+                await duplexPipe.ReceivePipe.Writer.WriteAsync(malformedData);
             }
+            catch
+            {
+                // we need to swallow the exception for this test, so we can check the connected flag afterwards.
+            }
+
+            for (int i = 0; i < 10 && !disconnected; i++)
+            {
+                await Task.Delay(10).ConfigureAwait(false);
+            }
+
+            Assert.That(connection.Connected, Is.False);
         }
 
         /// <summary>

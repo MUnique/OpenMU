@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
 
             // no target?
-            if (this.currentTarget == null)
+            if (this.currentTarget is null)
             {
                 return;
             }

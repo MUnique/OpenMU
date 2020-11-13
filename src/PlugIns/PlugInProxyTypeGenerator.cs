@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             var attribute = type.GetCustomAttribute<PlugInPointAttribute>();
-            if (attribute == null)
+            if (attribute is null)
             {
                 throw new ArgumentException($"Generic type argument {typeof(TPlugIn)} is not marked with {typeof(PlugInPointAttribute)}.");
             }
@@ -138,7 +138,7 @@ namespace MUnique.OpenMU.PlugIns
                 }
 
                 methodCallStatement += parameter.Name;
-                cancelEventArgs = cancelEventArgs ?? (parameter.ParameterType == typeof(CancelEventArgs) || parameter.ParameterType.IsSubclassOf(typeof(CancelEventArgs)) ? parameter : null);
+                cancelEventArgs ??= parameter.ParameterType == typeof(CancelEventArgs) || parameter.ParameterType.IsSubclassOf(typeof(CancelEventArgs)) ? parameter : null;
 
                 first = false;
             }

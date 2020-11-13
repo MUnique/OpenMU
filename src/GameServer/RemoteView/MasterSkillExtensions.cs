@@ -370,7 +370,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// </remarks>
         public static byte GetMasterSkillIndex(this Skill skill, CharacterClass characterClass)
         {
-            if (skill.MasterDefinition == null)
+            if (skill.MasterDefinition is null)
             {
                 return 0;
             }

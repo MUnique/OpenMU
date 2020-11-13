@@ -106,7 +106,7 @@ namespace MUnique.OpenMU.Persistence
 
         private void ReadValuesFromString(string rawString)
         {
-            if (rawString == null)
+            if (rawString is null)
             {
                 return;
             }

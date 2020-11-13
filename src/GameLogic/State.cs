@@ -89,7 +89,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc />
         public bool Equals(State other)
         {
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }

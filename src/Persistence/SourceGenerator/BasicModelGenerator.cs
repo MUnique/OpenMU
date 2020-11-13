@@ -198,7 +198,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         /// <returns>The created code.</returns>
         private string CreateIdPropertyIfRequired(Type type)
         {
-            if (type.GetProperty("Id") == null)
+            if (type.GetProperty("Id") is null)
             {
                 return @"/// <summary>
         /// Gets or sets the identifier of this instance.

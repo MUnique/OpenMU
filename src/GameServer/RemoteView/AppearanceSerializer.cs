@@ -148,7 +148,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SetHand(Span<byte> preview, ItemAppearance item, int indexIndex, int groupIndex)
         {
-            if (item == null)
+            if (item is null)
             {
                 preview[indexIndex] = 0xFF;
                 preview[groupIndex] |= 0xF0;
@@ -200,7 +200,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SetArmorPiece(Span<byte> preview, ItemAppearance item, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
         {
-            if (item == null)
+            if (item is null)
             {
                 this.SetEmptyArmor(preview, firstIndex, firstIndexHigh, secondIndexMask, thirdIndex, thirdIndexHigh);
             }
@@ -241,7 +241,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void AddWing(Span<byte> preview, ItemAppearance wing)
         {
-            if (wing == null)
+            if (wing is null)
             {
                 return;
             }
@@ -343,7 +343,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void AddPet(Span<byte> preview, ItemAppearance pet)
         {
-            if (pet == null)
+            if (pet is null)
             {
                 preview[5] |= 0b0000_0011;
                 return;

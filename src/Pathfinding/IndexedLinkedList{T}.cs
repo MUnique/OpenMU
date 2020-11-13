@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.Pathfinding
         public void Push(T item)
         {
             int indexValue = this.indexer.GetIndexValue(item);
-            if (this.innerList.First == null)
+            if (this.innerList.First is null)
             {
                 var addedNode = this.innerList.AddFirst(item);
                 this.index.Add(indexValue, addedNode);

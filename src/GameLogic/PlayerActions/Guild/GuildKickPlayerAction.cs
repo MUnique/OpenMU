@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
-            if (guildServer == null)
+            if (guildServer is null)
             {
                 player.Logger.LogWarning("No guild server available");
                 return;

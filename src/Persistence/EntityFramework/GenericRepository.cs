@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             var context = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContext;
 
-            return new EntityFrameworkContext(context?.Context ?? new TypedContext<T>(), this.RepositoryManager, context == null);
+            return new EntityFrameworkContext(context?.Context ?? new TypedContext<T>(), this.RepositoryManager, context is null);
         }
     }
 }

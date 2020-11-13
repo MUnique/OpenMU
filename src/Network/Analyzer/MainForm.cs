@@ -116,8 +116,16 @@ namespace MUnique.OpenMU.Network.Analyzer
                 return;
             }
 
-            this.clientListener = new LiveConnectionListener((int)this.listenerPortNumericUpDown.Value, this.targetHostTextBox.Text, (int)this.targetPortNumericUpDown.Value, this.plugInManager, new NullLoggerFactory(), this.InvokeByProxy);
-            this.clientListener.ClientVersion = this.SelectedClientVersion;
+            this.clientListener = new LiveConnectionListener(
+                (int)this.listenerPortNumericUpDown.Value,
+                this.targetHostTextBox.Text,
+                (int)this.targetPortNumericUpDown.Value,
+                this.plugInManager,
+                new NullLoggerFactory(),
+                this.InvokeByProxy)
+            {
+                ClientVersion = this.SelectedClientVersion,
+            };
             this.clientListener.ClientConnected += this.ClientListenerOnClientConnected;
             this.clientListener.Start();
             this.btnStartProxy.Text = "Stop Proxy";
@@ -210,22 +218,19 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private void LoadFromFile(object sender, EventArgs e)
         {
-            using (var loadFileDialog = new OpenFileDialog())
+            using var loadFileDialog = new OpenFileDialog { Filter = "Analyzer files (*.mucap)|*.mucap" };
+            if (loadFileDialog.ShowDialog(this) == DialogResult.OK)
             {
-                loadFileDialog.Filter = "Analyzer files (*.mucap)|*.mucap";
-                if (loadFileDialog.ShowDialog(this) == DialogResult.OK)
+                var loadedConnection = new SavedConnection(loadFileDialog.FileName);
+                if (loadedConnection.PacketList.Count == 0)
                 {
-                    var loadedConnection = new SavedConnection(loadFileDialog.FileName);
-                    if (loadedConnection.PacketList.Count == 0)
-                    {
-                        MessageBox.Show("The file couldn't be loaded. It was either empty or in a wrong format.", this.loadToolStripMenuItem.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        this.proxiedConnections.Add(loadedConnection);
-                        this.connectedClientsListBox.SelectedItem = loadedConnection;
-                        this.ConnectionSelected(this, EventArgs.Empty);
-                    }
+                    MessageBox.Show("The file couldn't be loaded. It was either empty or in a wrong format.", this.loadToolStripMenuItem.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    this.proxiedConnections.Add(loadedConnection);
+                    this.connectedClientsListBox.SelectedItem = loadedConnection;
+                    this.ConnectionSelected(this, EventArgs.Empty);
                 }
             }
         }
@@ -233,20 +238,20 @@ namespace MUnique.OpenMU.Network.Analyzer
         private void SaveToFile(object sender, EventArgs e)
         {
             var index = this.connectedClientsListBox.SelectedIndex;
-            if (index < 0 || !(this.proxiedConnections[index] is ICapturedConnection capturedConnection))
+            if (index < 0 || this.proxiedConnections[index] is not ICapturedConnection capturedConnection)
             {
                 return;
             }
 
-            using (var saveFileDialog = new SaveFileDialog())
+            using var saveFileDialog = new SaveFileDialog
             {
-                saveFileDialog.DefaultExt = "mucap";
-                saveFileDialog.Filter = "Analyzer files (*.mucap)|*.mucap";
-                saveFileDialog.AddExtension = true;
-                if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
-                {
-                    capturedConnection.SaveToFile(saveFileDialog.FileName);
-                }
+                DefaultExt = "mucap",
+                Filter = "Analyzer files (*.mucap)|*.mucap",
+                AddExtension = true,
+            };
+            if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                capturedConnection.SaveToFile(saveFileDialog.FileName);
             }
         }
 
@@ -254,7 +259,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             var index = this.connectedClientsListBox.SelectedIndex;
             if (index < 0
-                || !(this.proxiedConnections[index] is LiveConnection liveConnection)
+                || this.proxiedConnections[index] is not LiveConnection liveConnection
                 || !liveConnection.IsConnected)
             {
                 return;

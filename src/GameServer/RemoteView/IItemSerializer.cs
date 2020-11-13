@@ -216,7 +216,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            if (item.Definition.Skill == null)
+            if (item.Definition.Skill is null)
             {
                 throw new ArgumentException($"The skill flag was set, but a skill is not defined for the specified item ({item.Definition.Number}, {item.Definition.Group})");
             }

@@ -22,18 +22,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
-            if (guildServer == null)
+            if (guildServer is null)
             {
                 return;
             }
 
             var lastGuildRequester = player.LastGuildRequester;
-            if (lastGuildRequester == null)
+            if (lastGuildRequester is null)
             {
                 return;
             }
 
-            if (lastGuildRequester.GuildStatus != null)
+            if (lastGuildRequester.GuildStatus is not null)
             {
                 lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
                 return;

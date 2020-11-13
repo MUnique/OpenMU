@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
 
                 createdMap = this.mapInitializer.CreateGameMap(mapId);
-                if (createdMap == null)
+                if (createdMap is null)
                 {
                     return null;
                 }
@@ -162,7 +162,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="player">The player.</param>
         public virtual void RemovePlayer(Player player)
         {
-            if (player == null)
+            if (player is null)
             {
                 return;
             }
@@ -206,6 +206,7 @@ namespace MUnique.OpenMU.GameLogic
         public void Dispose()
         {
             this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -220,8 +221,6 @@ namespace MUnique.OpenMU.GameLogic
                 this.recoverTimer.Dispose();
                 this.tasksTimer.Dispose();
             }
-
-            GC.SuppressFinalize(this);
         }
 
         private void ExecutePeriodicTasks(object state)
@@ -248,8 +247,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void PlayerDisconnected(object sender, EventArgs e)
         {
-            var player = sender as Player;
-            if (player == null)
+            if (sender is not Player player)
             {
                 return;
             }
@@ -259,8 +257,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void PlayerEnteredWorld(object sender, EventArgs e)
         {
-            var player = sender as Player;
-            if (player == null)
+            if (sender is not Player player)
             {
                 return;
             }
@@ -270,8 +267,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void PlayerLeftWorld(object sender, EventArgs e)
         {
-            var player = sender as Player;
-            if (player == null)
+            if (sender is not Player player)
             {
                 return;
             }

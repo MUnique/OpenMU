@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             using var context = this.GetContext();
             var result = context.Context.Set<T>().Find(id);
-            if (result == null)
+            if (result is null)
             {
                 this.logger.LogDebug($"Object with id {id} could not be found.");
             }
@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="context">The context.</param>
         protected virtual void LoadCollection(EntityEntry entityEntry, IConventionNavigation navigation, DbContext context)
         {
-            var foreignKeyProperty = navigation.ForeignKey.Properties.First();
+            var foreignKeyProperty = navigation.ForeignKey.Properties[0];
             var loadStatusAware = navigation.GetGetter().GetClrValue(entityEntry.Entity) as ILoadingStatusAwareList;
             if (loadStatusAware?.LoadingStatus == LoadingStatus.Loaded || loadStatusAware?.LoadingStatus == LoadingStatus.Loading)
             {
@@ -161,13 +161,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 return;
             }
 
-            if (loadStatusAware == null && navigation.GetGetter().GetClrValue(entityEntry.Entity) != null)
+            if (loadStatusAware is null && navigation.GetGetter().GetClrValue(entityEntry.Entity) != null)
             {
                 // already loaded or loading
                 return;
             }
 
-            if (loadStatusAware == null)
+            if (loadStatusAware is null)
             {
                 throw new InvalidOperationException($"The collection is not implementing {nameof(ILoadingStatusAware)}");
             }
@@ -176,7 +176,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             if (this.RepositoryManager.GetRepository(foreignKeyProperty.DeclaringEntityType.ClrType) is ILoadByProperty repository)
             {
-                var foreignKeyValue = entityEntry.Property(navigation.ForeignKey.PrincipalKey.Properties.First().Name).CurrentValue;
+                var foreignKeyValue = entityEntry.Property(navigation.ForeignKey.PrincipalKey.Properties[0].Name).CurrentValue;
                 var items = repository.LoadByProperty(foreignKeyProperty, foreignKeyValue);
                 foreach (var obj in items)
                 {
@@ -208,7 +208,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 return;
             }
 
-            var keyProperty = navigation.ForeignKey.Properties.First();
+            var keyProperty = navigation.ForeignKey.Properties[0];
             var idValue = entityEntry.Property(keyProperty.Name).CurrentValue;
 
             Guid id = (idValue as Guid?) ?? Guid.Empty;
@@ -216,7 +216,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             {
                 var getter = navigation.GetGetter();
                 var currentValue = getter.GetClrValue(entityEntry.Entity);
-                if ((currentValue is IIdentifiable) && (currentValue as IIdentifiable).Id == id)
+                if (currentValue is IIdentifiable identifiable && identifiable.Id == id)
                 {
                     // loaded already
                     return;

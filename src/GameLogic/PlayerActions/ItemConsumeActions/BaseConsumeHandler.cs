@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <inheritdoc/>
         public virtual bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
-            if (!this.CheckPreconditions(player, item, targetItem))
+            if (!this.CheckPreconditions(player, item))
             {
                 return false;
             }
@@ -50,12 +50,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="item">The item.</param>
-        /// <param name="targetItem">The target item.</param>
         /// <returns><c>True</c>, if preconditions are met.</returns>
-        protected bool CheckPreconditions(Player player, Item item, Item targetItem)
+        protected bool CheckPreconditions(Player player, Item item)
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
-                || item == null
+                || item is null
                 || item.Durability == 0)
             {
                 return false;

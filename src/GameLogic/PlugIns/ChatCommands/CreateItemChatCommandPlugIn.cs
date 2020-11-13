@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         {
             var item = new TemporaryItem();
             var itemDefinition = player.GameContext.Configuration.Items.FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number);
-            if (itemDefinition == null)
+            if (itemDefinition is null)
             {
                 throw new ArgumentException($"[GM][/item] {arguments.Group} {arguments.Number} does not exists");
             }

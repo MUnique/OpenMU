@@ -39,21 +39,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             var animation = request.AnimationNumber;
             player.Rotation = rotation;
 
-            switch (animation)
+            player.Pose = animation switch
             {
-                case 0x80:
-                    player.Pose = CharacterPose.Sitting;
-                    break;
-                case 0x81:
-                    player.Pose = CharacterPose.Leaning;
-                    break;
-                case 0x82:
-                    player.Pose = CharacterPose.Hanging;
-                    break;
-                default:
-                    player.Pose = default;
-                    break;
-            }
+                0x80 => CharacterPose.Sitting,
+                0x81 => CharacterPose.Leaning,
+                0x82 => CharacterPose.Hanging,
+                _ => default
+            };
 
             player.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(player, animation, null, rotation), false);
         }

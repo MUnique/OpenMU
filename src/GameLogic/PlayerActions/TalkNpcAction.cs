@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         public void TalkToNpc(Player player, NonPlayerCharacter npc)
         {
             var npcStats = npc.Definition;
-            if (npcStats == null)
+            if (npcStats is null)
             {
                 return;
             }

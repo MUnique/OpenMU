@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
         {
-            if (newObjects == null || !newObjects.Any())
+            if (newObjects is null || !newObjects.Any())
             {
                 return;
             }

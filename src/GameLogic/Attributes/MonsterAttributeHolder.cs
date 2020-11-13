@@ -160,11 +160,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()
         {
-            if (this.attributes == null)
+            if (this.attributes is null)
             {
                 lock (this.attributesLock)
                 {
-                    if (this.attributes == null)
+                    if (this.attributes is null)
                     {
                         this.attributes = new Dictionary<AttributeDefinition, IComposableAttribute>();
                     }

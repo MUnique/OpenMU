@@ -61,17 +61,15 @@ namespace MUnique.OpenMU.Network.Packets
         public static PacketDefinitions Load(string filePath)
         {
             var fileInfo = new FileInfo(filePath);
-            using (var fileStream = fileInfo.OpenRead())
-            using (var xmlReader = XmlReader.Create(fileStream))
+            using var fileStream = fileInfo.OpenRead();
+            using var xmlReader = XmlReader.Create(fileStream);
+            var serializer = new XmlSerializer(typeof(PacketDefinitions));
+            if (!serializer.CanDeserialize(xmlReader))
             {
-                var serializer = new XmlSerializer(typeof(PacketDefinitions));
-                if (!serializer.CanDeserialize(xmlReader))
-                {
-                    throw new ArgumentException($"File is not expected xml format: {filePath}");
-                }
-
-                return (PacketDefinitions)serializer.Deserialize(xmlReader);
+                throw new ArgumentException($"File is not expected xml format: {filePath}");
             }
+
+            return (PacketDefinitions)serializer.Deserialize(xmlReader);
         }
 
         /// <summary>
@@ -82,12 +80,10 @@ namespace MUnique.OpenMU.Network.Packets
         {
             var fileInfo = new FileInfo(filePath);
             var settings = new XmlWriterSettings { Indent = true };
-            using (var fileStream = fileInfo.OpenWrite())
-            using (var xmlWriter = XmlWriter.Create(fileStream, settings))
-            {
-                var serializer = new XmlSerializer(typeof(PacketDefinitions));
-                serializer.Serialize(xmlWriter, this);
-            }
+            using var fileStream = fileInfo.OpenWrite();
+            using var xmlWriter = XmlWriter.Create(fileStream, settings);
+            var serializer = new XmlSerializer(typeof(PacketDefinitions));
+            serializer.Serialize(xmlWriter, this);
         }
     }
 }

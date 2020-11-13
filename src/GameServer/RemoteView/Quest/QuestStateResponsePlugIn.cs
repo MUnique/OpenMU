@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// <inheritdoc />
         public void ShowQuestState(CharacterQuestState questState)
         {
-            if (questState == null || questState.Group == QuestConstants.LegacyQuestGroup)
+            if (questState is null || questState.Group == QuestConstants.LegacyQuestGroup)
             {
                 questState.SendLegacyQuestState(this.player);
                 return;

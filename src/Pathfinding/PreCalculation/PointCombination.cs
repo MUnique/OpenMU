@@ -34,6 +34,23 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
         /// </summary>
         public Point End { get; }
 
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            if (obj is PointCombination other)
+            {
+                return this.Equals(other);
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Start, this.End);
+        }
+
         /// <inheritdoc/>
         public bool Equals(PointCombination other)
         {

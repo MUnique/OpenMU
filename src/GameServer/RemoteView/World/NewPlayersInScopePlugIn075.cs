@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void NewPlayersInScope(IEnumerable<Player> newPlayers)
         {
-            if (newPlayers == null || !newPlayers.Any())
+            if (newPlayers is null || !newPlayers.Any())
             {
                 return;
             }

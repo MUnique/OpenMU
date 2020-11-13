@@ -33,8 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public override GameConfiguration GetById(Guid id)
         {
-            var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-            if (currentContext == null)
+            if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
             {
                 throw new InvalidOperationException("There is no current context set.");
             }
@@ -57,8 +56,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public override IEnumerable<GameConfiguration> GetAll()
         {
-            var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-            if (currentContext == null)
+            if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
             {
                 throw new InvalidOperationException("There is no current context set.");
             }

@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             var mix = this.GetJewelMix(stackId, player);
-            if (mix == null)
+            if (mix is null)
             {
                 return;
             }
@@ -73,13 +73,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             var mix = this.GetJewelMix(stackId, player);
-            if (mix == null)
+            if (mix is null)
             {
                 return;
             }
 
             var stacked = player.Inventory.GetItem(slot);
-            if (stacked == null)
+            if (stacked is null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Stacked Jewel not found.", MessageType.BlueNormal);
                 return;
@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private bool IsCorrectNpcOpened(Player player)
         {
-            if (player.OpenedNpc == null || player.OpenedNpc.Definition.NpcWindow != NpcWindow.Lahap)
+            if (player.OpenedNpc is null || player.OpenedNpc.Definition.NpcWindow != NpcWindow.Lahap)
             {
                 player.Logger.LogWarning("Probably Hacker tried to Mix/Unmix Jewels without talking to Lahap. Dupe Method. Acc: [{0}] Character: [{1}]", player.Account.LoginName, player.SelectedCharacter.Name);
                 player.Disconnect();
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         private JewelMix GetJewelMix(byte mixId, Player player)
         {
             JewelMix mix = player.GameContext.Configuration.JewelMixes.FirstOrDefault(m => m.Number == mixId);
-            if (mix == null)
+            if (mix is null)
             {
                 player.Logger.LogWarning($"Unkown mix type [{mixId}], Player Name: [{player.SelectedCharacter?.Name}], Account Name: [{player.Account?.LoginName}]");
             }

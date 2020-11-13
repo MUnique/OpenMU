@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             }
 
             var item = requestedPlayer.ShopStorage.GetItem(slot);
-            if (item?.StorePrice == null)
+            if (item?.StorePrice is null)
             {
                 player.Logger.LogDebug("Item unavailable, Slot {0}", slot);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Item unavailable.", MessageType.BlueNormal); // Code 5?
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                 }
 
                 item = requestedPlayer.ShopStorage.GetItem(slot);
-                if (item == null)
+                if (item is null)
                 {
                     player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Sorry, Item was sold in the meantime.", MessageType.BlueNormal);
                     return;

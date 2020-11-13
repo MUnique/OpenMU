@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (item == null)
+            if (item is null)
             {
                 return false;
             }
@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
             var skill = this.GetLearnableSkill(item, player.GameContext.Configuration);
 
-            if (skill == null || player.SkillList.ContainsSkill(skill.Number.ToUnsigned()))
+            if (skill is null || player.SkillList.ContainsSkill(skill.Number.ToUnsigned()))
             {
                 return false;
             }

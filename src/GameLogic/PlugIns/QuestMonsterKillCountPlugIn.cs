@@ -38,8 +38,8 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
 
                 foreach (var killRequirement in questState.ActiveQuest.RequiredMonsterKills.Where(r => r.Monster == monster.Definition))
                 {
-                    if (!(questState.RequirementStates.FirstOrDefault(s => s.Requirement == killRequirement) is { }
-                        requirementState))
+                    if (questState.RequirementStates.FirstOrDefault(s => s.Requirement == killRequirement)
+                        is not { } requirementState)
                     {
                         requirementState = player.PersistenceContext.CreateNew<QuestMonsterKillRequirementState>();
                         requirementState.Requirement = killRequirement;

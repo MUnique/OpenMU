@@ -178,7 +178,7 @@ namespace MUnique.OpenMU.AttributeSystem
         public IElement GetOrCreateAttribute(AttributeDefinition attributeDefinition)
         {
             IElement element = this.GetAttribute(attributeDefinition);
-            if (element == null)
+            if (element is null)
             {
                 var composableAttribute = new ComposableAttribute(attributeDefinition);
                 element = composableAttribute;
@@ -199,7 +199,7 @@ namespace MUnique.OpenMU.AttributeSystem
 
         private IElement GetAttribute(AttributeDefinition attributeDefinition)
         {
-            if (attributeDefinition == null)
+            if (attributeDefinition is null)
             {
                 return null;
             }

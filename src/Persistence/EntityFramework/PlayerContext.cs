@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public bool CanSaveLetter(Interfaces.LetterHeader letterHeader)
         {
-            if (!(letterHeader is LetterHeader persistentHeader))
+            if (letterHeader is not LetterHeader persistentHeader)
             {
                 return false;
             }

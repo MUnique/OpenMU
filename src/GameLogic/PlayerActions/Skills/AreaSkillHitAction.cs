@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         public void AttackTarget(Player player, IAttackable target, SkillEntry skill)
         {
             if (skill.Skill.SkillType != SkillType.AreaSkillExplicitHits
-                || target == null
+                || target is null
                 || !target.Alive)
             {
                 return;

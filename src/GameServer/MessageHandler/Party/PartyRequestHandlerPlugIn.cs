@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Party
         {
             PartyInviteRequest message = packet;
             var toRequest = player.GetObservingPlayerWithId(message.TargetPlayerId);
-            if (toRequest == null)
+            if (toRequest is null)
             {
                 return;
             }

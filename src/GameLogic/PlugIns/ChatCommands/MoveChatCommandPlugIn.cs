@@ -33,13 +33,13 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         public void HandleCommand(Player player, string command)
         {
             var map = command.Split(' ').Skip(1).FirstOrDefault();
-            if (map == null)
+            if (map is null)
             {
                 return;
             }
 
             var warpInfo = GetWarpInfo(map, player);
-            if (warpInfo == null)
+            if (warpInfo is null)
             {
                 return;
             }

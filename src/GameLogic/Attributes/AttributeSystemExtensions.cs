@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
                 result = new AttributeRelationshipElement(elements.ToList(), 1.0F, InputOperator.Multiply);
             }
 
-            if (result == null)
+            if (result is null)
             {
                 throw new ArgumentException($"The passed {nameof(PowerUpDefinitionValue)} doesn't have a constant value or related values.", nameof(value));
             }

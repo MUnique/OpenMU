@@ -34,6 +34,23 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
         /// </summary>
         public Point NextStep { get; }
 
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            if (obj is PathInfo other)
+            {
+                return this.Equals(other);
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Combination, this.NextStep);
+        }
+
         /// <inheritdoc/>
         public bool Equals(PathInfo other)
         {

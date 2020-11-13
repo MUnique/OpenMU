@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void UpdateLevel()
         {
             var selectedCharacter = this.player.SelectedCharacter;
-            if (selectedCharacter == null)
+            if (selectedCharacter is null)
             {
                 return;
             }

@@ -154,7 +154,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             var showModalTask = this.InvokeAsync(() => modal = this.ModalService.ShowLoadingIndicator());
             this.type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.StartsWith(nameof(MUnique)))
                 .Select(assembly => assembly.GetType(this.TypeString)).FirstOrDefault(t => t != null);
-            if (this.type == null)
+            if (this.type is null)
             {
                 throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
             }

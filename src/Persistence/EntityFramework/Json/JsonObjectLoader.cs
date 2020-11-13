@@ -46,18 +46,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             var result = new List<T>();
             var type = context.Model.FindEntityType(typeof(T));
             var queryString = this.queryBuilder.BuildJsonQueryForEntity(type);
-            using (var command = context.Database.GetDbConnection().CreateCommand())
+            using var command = context.Database.GetDbConnection().CreateCommand();
+            command.CommandText = queryString;
+            using var reader = command.ExecuteReader();
+            if (reader.HasRows)
             {
-                command.CommandText = queryString;
-                using (var reader = command.ExecuteReader())
+                while (reader.Read())
                 {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            result.Add(this.deserializer.Deserialize<T>(reader.GetTextReader(2), this.referenceResolver));
-                        }
-                    }
+                    result.Add(this.deserializer.Deserialize<T>(reader.GetTextReader(2), this.referenceResolver));
                 }
             }
 
@@ -83,24 +79,20 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 
             var queryString = this.queryBuilder.BuildJsonQueryForEntity(type);
             queryString += " where result.\"Id\" = @id;";
-            using (var command = context.Database.GetDbConnection().CreateCommand())
+            using var command = context.Database.GetDbConnection().CreateCommand();
+            command.CommandText = queryString;
+            var idParameter = command.CreateParameter();
+            idParameter.ParameterName = "id";
+            idParameter.Value = id;
+
+            command.Parameters.Add(idParameter);
+            using var reader = command.ExecuteReader();
+            if (reader.HasRows && reader.Read())
             {
-                command.CommandText = queryString;
-                var idParameter = command.CreateParameter();
-                idParameter.ParameterName = "id";
-                idParameter.Value = id;
-
-                command.Parameters.Add(idParameter);
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.HasRows && reader.Read())
-                    {
-                        return this.deserializer.Deserialize<T>(reader.GetTextReader(2), this.referenceResolver);
-                    }
-
-                    return default(T);
-                }
+                return this.deserializer.Deserialize<T>(reader.GetTextReader(2), this.referenceResolver);
             }
+
+            return default;
         }
     }
 }

@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence
                 IdProperties.TryAdd(item.GetType(), idProperty);
             }
 
-            if (idProperty == null)
+            if (idProperty is null)
             {
                 return Guid.Empty;
             }
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.Persistence
                 NameProperties.TryAdd(item.GetType(), nameProperty);
             }
 
-            if (nameProperty == null)
+            if (nameProperty is null)
             {
                 return item.ToString();
             }

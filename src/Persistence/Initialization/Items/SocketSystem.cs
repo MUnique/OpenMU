@@ -222,7 +222,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private void AddArmorSockets(byte group, short number)
         {
             var item = this.GameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number);
-            if (item == null)
+            if (item is null)
             {
                 // item not yet implemented
                 return;
@@ -238,7 +238,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private void AddWeaponSockets(byte group, short number, int socketCount)
         {
             var item = this.GameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number);
-            if (item == null)
+            if (item is null)
             {
                 // item not yet implemented
                 return;

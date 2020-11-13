@@ -216,7 +216,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                 IsActive = true,
                 ExternalAssemblyName = "DoesNotExist.dll",
             };
-            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
+            _ = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                 TypeId = new Guid("A9BDA3E2-4EB6-45C3-B234-37C1819C0CB6"),
                 IsActive = true,
             };
-            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
+            _ = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
         }
 
         /// <summary>

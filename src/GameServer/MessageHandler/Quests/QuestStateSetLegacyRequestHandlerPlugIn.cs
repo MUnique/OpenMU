@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
             {
                 case LegacyQuestState.Active:
                     var state = player.GetQuestState(QuestConstants.LegacyQuestGroup, request.QuestNumber);
-                    if (state == null)
+                    if (state is null)
                     {
                         this.questStartAction.StartQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
                     }

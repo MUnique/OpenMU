@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         private Character CreateCharacter(Player player, string name, CharacterClass charclass)
         {
             var account = player.Account;
-            if (account == null)
+            if (account is null)
             {
                 player.Logger.LogWarning("Account Object is null.");
                 throw new ArgumentNullException(nameof(player), "Account Object is null.");
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             }
 
             var freeSlot = this.GetFreeSlot(player);
-            if (freeSlot == null)
+            if (freeSlot is null)
             {
                 return null;
             }

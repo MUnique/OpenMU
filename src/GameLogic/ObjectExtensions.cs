@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic
         public static IEnumerable<T> GetAsEnumerable<T>(this T obj)
             where T : class
         {
-            if (obj == null)
+            if (obj is null)
             {
                 yield break;
             }

@@ -107,20 +107,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
         private static Type GetContextTypeOfRole(DatabaseRole role)
         {
-            switch (role)
+            return role switch
             {
-                case DatabaseRole.Account:
-                    return typeof(AccountContext);
-                case DatabaseRole.Admin:
-                    return typeof(EntityDataContext);
-                case DatabaseRole.Configuration:
-                    return typeof(ConfigurationContext);
-                case DatabaseRole.Guild:
-                    return typeof(GuildContext);
-                case DatabaseRole.Friend:
-                    return typeof(FriendContext);
-                default: throw new ArgumentException($"Role {role} unknown.");
-            }
+                DatabaseRole.Account => typeof(AccountContext),
+                DatabaseRole.Admin => typeof(EntityDataContext),
+                DatabaseRole.Configuration => typeof(ConfigurationContext),
+                DatabaseRole.Guild => typeof(GuildContext),
+                DatabaseRole.Friend => typeof(FriendContext),
+                _ => throw new ArgumentException($"Role {role} unknown.")
+            };
         }
 
         private static IDictionary<Type, ConnectionSetting> LoadSettings()

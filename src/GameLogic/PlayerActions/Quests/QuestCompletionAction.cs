@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             var questState = player.GetQuestState(group, number);
             var activeQuest = questState?.ActiveQuest;
-            if (activeQuest == null)
+            if (activeQuest is null)
             {
                 player.Logger.LogDebug("Failed, no active quest");
                 return;
@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                 case QuestRewardType.Attribute:
                     var attribute =
                         player.SelectedCharacter.Attributes.FirstOrDefault(a => a.Definition == reward.AttributeReward);
-                    if (attribute == null)
+                    if (attribute is null)
                     {
                         attribute = player.PersistenceContext.CreateNew<StatAttribute>(reward.AttributeReward, 0);
                         player.SelectedCharacter.Attributes.Add(attribute);

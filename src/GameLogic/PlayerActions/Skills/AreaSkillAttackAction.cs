@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             var attackablesInRange = player.CurrentMap.GetAttackablesInRange(targetAreaCenter, skill.Range);
             if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
             {
-                attackablesInRange = attackablesInRange.Where(a => !(a is Player));
+                attackablesInRange = attackablesInRange.Where(a => a is not Player);
                 isExtraTargetDefined = false;
             }
 

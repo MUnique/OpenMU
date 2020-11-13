@@ -34,14 +34,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             Item item = player.Inventory.GetItem(slot);
-            if (item == null)
+            if (item is null)
             {
                 player.Logger.LogWarning("Player {0} requested to sell item at slot {1}, but item wasn't found.", player, slot);
                 player.ViewPlugIns.GetPlugIn<IItemSoldToNpcPlugIn>()?.ItemSoldToNpc(false);
                 return;
             }
 
-            if (player.OpenedNpc?.Definition.MerchantStore == null)
+            if (player.OpenedNpc?.Definition.MerchantStore is null)
             {
                 player.Logger.LogWarning("Player {0} requested to sell item at slot {1} to an npc, but no npc merchant store is currently opened.", player, slot);
                 player.ViewPlugIns.GetPlugIn<IItemSoldToNpcPlugIn>()?.ItemSoldToNpc(false);

@@ -64,11 +64,12 @@ namespace MUnique.OpenMU.FriendServer
         /// <inheritdoc/>
         public bool FriendRequest(string playerName, string friendName)
         {
+            var saveSuccess = true;
+            bool friendIsNew;
             using (var context = this.persistenceContextProvider.CreateNewFriendServerContext())
             {
                 var friend = context.GetFriendByNames(playerName, friendName);
-                var friendIsNew = friend == null;
-                var saveSuccess = true;
+                friendIsNew = friend is null;
                 if (friendIsNew)
                 {
                     friend = context.CreateNewFriend(playerName, friendName);
@@ -76,15 +77,15 @@ namespace MUnique.OpenMU.FriendServer
                     friend.RequestOpen = true;
                     saveSuccess = context.SaveChanges();
                 }
-
-                if (saveSuccess && this.OnlineFriends.TryGetValue(friendName, out var onlineFriend))
-                {
-                    // Friend is online, so we directly send him a request.
-                    onlineFriend.GameServer.FriendRequest(playerName, friendName);
-                }
-
-                return friendIsNew && saveSuccess;
             }
+
+            if (saveSuccess && this.OnlineFriends.TryGetValue(friendName, out var onlineFriend))
+            {
+                // Friend is online, so we directly send him a request.
+                onlineFriend.GameServer.FriendRequest(playerName, friendName);
+            }
+
+            return friendIsNew && saveSuccess;
         }
 
         /// <inheritdoc/>
@@ -95,41 +96,37 @@ namespace MUnique.OpenMU.FriendServer
                 player.RemoveSubscriber(friend);
             }
 
-            using (var context = this.persistenceContextProvider.CreateNewFriendServerContext())
-            {
-                context.Delete(playerName, friendName);
-                context.SaveChanges();
-            }
+            using var context = this.persistenceContextProvider.CreateNewFriendServerContext();
+            context.Delete(playerName, friendName);
+            context.SaveChanges();
         }
 
         /// <inheritdoc/>
         public void FriendResponse(string characterName, string friendName, bool accepted)
         {
-            using (var context = this.persistenceContextProvider.CreateNewFriendServerContext())
+            using var context = this.persistenceContextProvider.CreateNewFriendServerContext();
+#pragma warning disable S2234 // The parameters are passed correctly
+            var requester = context.GetFriendByNames(friendName, characterName);
+#pragma warning restore S2234
+            if (requester is null)
             {
-                #pragma warning disable S2234 // The parameters are passed correctly
-                var requester = context.GetFriendByNames(friendName, characterName);
-                #pragma warning restore S2234
-                if (requester == null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                requester.RequestOpen = false;
-                requester.Accepted = accepted;
+            requester.RequestOpen = false;
+            requester.Accepted = accepted;
 
-                if (accepted)
-                {
-                    var responder = context.GetFriendByNames(characterName, friendName) ?? context.CreateNewFriend(characterName, friendName);
-                    responder.RequestOpen = false;
-                    responder.Accepted = true;
-                    context.SaveChanges();
-                    this.AddSubscriptions(friendName, characterName);
-                }
-                else
-                {
-                    context.SaveChanges();
-                }
+            if (accepted)
+            {
+                var responder = context.GetFriendByNames(characterName, friendName) ?? context.CreateNewFriend(characterName, friendName);
+                responder.RequestOpen = false;
+                responder.Accepted = true;
+                context.SaveChanges();
+                this.AddSubscriptions(friendName, characterName);
+            }
+            else
+            {
+                context.SaveChanges();
             }
         }
 
@@ -201,10 +198,8 @@ namespace MUnique.OpenMU.FriendServer
         /// <remarks>Note, that the ServerId is not filled by this implementation. The player will receive it separately when the subscription is created.</remarks>
         public IEnumerable<string> GetFriendList(Guid characterId)
         {
-            using (var context = this.persistenceContextProvider.CreateNewFriendServerContext())
-            {
-                return context.GetFriendNames(characterId);
-            }
+            using var context = this.persistenceContextProvider.CreateNewFriendServerContext();
+            return context.GetFriendNames(characterId);
         }
 
         /// <inheritdoc/>
@@ -224,23 +219,21 @@ namespace MUnique.OpenMU.FriendServer
                 };
                 this.OnlineFriends.Add(characterName, observer);
 
-                using (var context = this.persistenceContextProvider.CreateNewFriendServerContext())
+                using var context = this.persistenceContextProvider.CreateNewFriendServerContext();
+                var friends = context.GetFriends(characterId);
+                foreach (var friend in friends)
                 {
-                    var friendlist = context.GetFriends(characterId);
-                    foreach (var friend in friendlist)
+                    if (!friend.Accepted || friend.RequestOpen)
                     {
-                        if (!friend.Accepted || friend.RequestOpen)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        if (this.OnlineFriends.TryGetValue(friend.FriendName, out var onlineFriend))
-                        {
-                            observer.AddSubscription(onlineFriend.Subscribe(observer));
-                            onlineFriend.AddSubscription(observer.Subscribe(onlineFriend));
+                    if (this.OnlineFriends.TryGetValue(friend.FriendName, out var onlineFriend))
+                    {
+                        observer.AddSubscription(onlineFriend.Subscribe(observer));
+                        onlineFriend.AddSubscription(observer.Subscribe(onlineFriend));
 
-                            observer.OnNext(onlineFriend);
-                        }
+                        observer.OnNext(onlineFriend);
                     }
                 }
             }
@@ -263,10 +256,8 @@ namespace MUnique.OpenMU.FriendServer
         /// <inheritdoc/>
         public IEnumerable<string> GetOpenFriendRequests(Guid characterId)
         {
-            using (var context = this.persistenceContextProvider.CreateNewFriendServerContext())
-            {
-                return context.GetOpenFriendRequesterNames(characterId);
-            }
+            using var context = this.persistenceContextProvider.CreateNewFriendServerContext();
+            return context.GetOpenFriendRequesterNames(characterId);
         }
 
         private void AddSubscriptions(string requester, string responder)

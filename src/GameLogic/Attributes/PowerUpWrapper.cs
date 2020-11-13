@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public PowerUpWrapper(IElement element, AttributeDefinition targetAttribute, AttributeSystem attributeHolder)
         {
             this.parentAttribute = attributeHolder.GetComposableAttribute(targetAttribute);
-            if (this.parentAttribute == null)
+            if (this.parentAttribute is null)
             {
                 throw new ArgumentException($"targetAttribute [{targetAttribute}] is not composable");
             }

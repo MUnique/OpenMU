@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public void RegisterHit(IAttacker attacker)
         {
-            if (this.currentTarget == null && attacker is IAttackable attackable)
+            if (this.currentTarget is null && attacker is IAttackable attackable)
             {
                 this.currentTarget = attackable;
             }
@@ -143,7 +143,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
 
             // no target?
-            if (this.currentTarget == null)
+            if (this.currentTarget is null)
             {
                 return;
             }

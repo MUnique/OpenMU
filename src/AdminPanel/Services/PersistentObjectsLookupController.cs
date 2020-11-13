@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
                 return Task.FromResult(Enumerable.Empty<T>());
             }
 
-            using var context = persistenceContext == null ? this.contextProvider.CreateNewTypedContext<T>() : null;
+            using var context = persistenceContext is null ? this.contextProvider.CreateNewTypedContext<T>() : null;
             var values = (persistenceContext ?? context).Get<T>();
             if (string.IsNullOrEmpty(text))
             {

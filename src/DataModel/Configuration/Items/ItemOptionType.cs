@@ -88,8 +88,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// </returns>
         public override bool Equals(object obj)
         {
-            var other = obj as ItemOptionType;
-            if (other == null)
+            if (obj is not ItemOptionType other)
             {
                 return false;
             }

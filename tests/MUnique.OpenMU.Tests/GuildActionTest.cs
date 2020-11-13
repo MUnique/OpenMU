@@ -106,7 +106,7 @@ namespace MUnique.OpenMU.Tests
         public void GuildCreate()
         {
             var action = new GuildCreateAction();
-            action.CreateGuild(this.player, "Foobar2", new byte[0]);
+            action.CreateGuild(this.player, "Foobar2", Array.Empty<byte>());
             Assert.That(this.player.GuildStatus, Is.Not.Null);
             Assert.That(this.player.GuildStatus.Position, Is.EqualTo(GuildPosition.GuildMaster));
             var context = this.PersistenceContextProvider.CreateNewGuildContext();

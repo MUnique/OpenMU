@@ -38,11 +38,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             }
 
             // guildInfo is the cached, serialized result of the GuildInformation-Class.
-            using (var writer = this.Player.Connection.StartSafeWrite(data.Span[0], data.Length))
-            {
-                data.Span.CopyTo(writer.Span);
-                writer.Commit();
-            }
+            using var writer = this.Player.Connection.StartSafeWrite(data.Span[0], data.Length);
+            data.Span.CopyTo(writer.Span);
+            writer.Commit();
         }
 
         /// <inheritdoc/>

@@ -16,13 +16,13 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>The textual representation of the input operator.</returns>
         public static string AsString(this InputOperator inputOperator)
         {
-            switch (inputOperator)
+            return inputOperator switch
             {
-                case InputOperator.Add: return "+";
-                case InputOperator.Multiply: return "*";
-                case InputOperator.Exponentiate: return "^";
-                default: return string.Empty;
-            }
+                InputOperator.Add => "+",
+                InputOperator.Multiply => "*",
+                InputOperator.Exponentiate => "^",
+                _ => string.Empty
+            };
         }
     }
 }

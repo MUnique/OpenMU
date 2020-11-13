@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 case ChatMessageType.Command:
                     var commandKey = message.Split(' ').First();
                     var commandHandler = sender.GameContext.PlugInManager.GetStrategy<IChatCommandPlugIn>(commandKey);
-                    if (commandHandler == null)
+                    if (commandHandler is null)
                     {
                         break;
                     }
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 }
 
                 default:
-                    sender.Logger.LogWarning("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
+                    sender.Logger.LogDebug("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
                     sender.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true);
                     break;
             }

@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// <inheritdoc />
         public void ShowAvailableQuests()
         {
-            if (this.player.OpenedNpc == null)
+            if (this.player.OpenedNpc is null)
             {
                 return;
             }

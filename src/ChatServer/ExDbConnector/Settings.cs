@@ -46,13 +46,12 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         {
             get
             {
-                if (this["ChatServerListenerPort"] != null)
+                if (this["ChatServerListenerPort"] != null && int.TryParse(this["ChatServerListenerPort"], out var result))
                 {
-                    int.TryParse(this["ChatServerListenerPort"], out int result);
                     return result;
                 }
 
-                return null;
+                return default;
             }
         }
 
@@ -65,8 +64,12 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             {
                 if (this["ExDbPort"] != null)
                 {
-                    int.TryParse(this["ExDbPort"], out int result);
-                    return result;
+                    if (int.TryParse(this["ExDbPort"], out int result))
+                    {
+                        return result;
+                    }
+
+                    return default;
                 }
 
                 return null;

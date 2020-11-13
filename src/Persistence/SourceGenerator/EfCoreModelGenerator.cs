@@ -438,7 +438,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
         private string CreateIdPropertyIfRequired(Type type)
         {
-            if (type.GetProperty("Id") == null)
+            if (type.GetProperty("Id") is null)
             {
                 return @"
         /// <summary>

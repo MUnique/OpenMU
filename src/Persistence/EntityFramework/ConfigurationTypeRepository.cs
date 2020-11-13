@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         private GameConfiguration GetCurrentGameConfiguration()
         {
             var context = (this.repositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext)?.Context as EntityDataContext;
-            if (context == null)
+            if (context is null)
             {
                 throw new InvalidOperationException("This repository can only be used within an account context.");
             }

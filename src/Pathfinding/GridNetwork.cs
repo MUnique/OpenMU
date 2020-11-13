@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.Pathfinding
         {
             var nodeIndex = this.GetIndexOfPoint(position);
             var node = this.calculationGrid[nodeIndex];
-            if (node == null)
+            if (node is null)
             {
                 node = new Node { Position = position };
                 this.calculationGrid[nodeIndex] = node;

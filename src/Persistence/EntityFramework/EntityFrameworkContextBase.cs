@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public bool Detach(object item)
         {
             var entry = this.Context.Entry(item);
-            if (entry == null)
+            if (entry is null)
             {
                 return false;
             }
@@ -136,6 +136,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             }
 
             this.isDisposed = true;
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

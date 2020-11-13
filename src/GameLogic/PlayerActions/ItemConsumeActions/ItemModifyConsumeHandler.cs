@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (targetItem == null)
+            if (targetItem is null)
             {
                 return false;
             }
@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (!this.CheckPreconditions(player, item, targetItem))
+            if (!this.CheckPreconditions(player, item))
             {
                 return false;
             }

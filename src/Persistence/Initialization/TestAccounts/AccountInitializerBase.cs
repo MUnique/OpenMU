@@ -500,7 +500,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         {
             var fenrir = this.CreatePet(itemSlot, 37);
 
-            if (color == null)
+            if (color is null)
             {
                 return fenrir;
             }

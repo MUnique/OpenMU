@@ -172,7 +172,7 @@ namespace MUnique.OpenMU.GameLogic
 
             oldItems.ForEach(item => item.RemoveObserver(this.adaptee));
 
-            if (this.adaptee is IHasBucketInformation bucketInformation && bucketInformation.NewBucket == null)
+            if (this.adaptee is IHasBucketInformation bucketInformation && bucketInformation.NewBucket is null)
             {
                 // adaptee (player) left the map or disconnected; it's not required to update the view
             }
@@ -278,25 +278,25 @@ namespace MUnique.OpenMU.GameLogic
         private bool ObjectWillBeOutOfScope(IObservable observable)
         {
             var myBucketInformations = this.adaptee as IHasBucketInformation;
-            if (myBucketInformations == null)
+            if (myBucketInformations is null)
             {
                 return true;
             }
 
-            if (myBucketInformations.NewBucket == null)
+            if (myBucketInformations.NewBucket is null)
             {
                 // I'll leave, so will be out of scope
                 return true;
             }
 
             var locateableBucketInformations = observable as IHasBucketInformation;
-            if (locateableBucketInformations == null)
+            if (locateableBucketInformations is null)
             {
                 // We have to assume that this observable will be out of scope since it can't tell us where it goes
                 return true;
             }
 
-            if (locateableBucketInformations.NewBucket == null)
+            if (locateableBucketInformations.NewBucket is null)
             {
                 // It's leaving the map, so will be out of scope
                 return true;

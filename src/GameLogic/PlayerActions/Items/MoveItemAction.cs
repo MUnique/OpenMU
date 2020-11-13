@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var fromItemStorage = fromStorageInfo.Storage;
             Item item = fromItemStorage.GetItem(fromSlot);
 
-            if (item == null)
+            if (item is null)
             {
                 // Item not found
                 player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(null);
@@ -254,7 +254,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 }
 
                 var blockingItem = toStorage.Storage.GetItem(toStorage.StartIndex);
-                if (blockingItem == null)
+                if (blockingItem is null)
                 {
                     continue; // no item is blocking the slot
                 }
@@ -348,7 +348,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
             public bool Equals(StorageInfo other)
             {
-                if (ReferenceEquals(null, other))
+                if (other is null)
                 {
                     return false;
                 }

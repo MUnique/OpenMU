@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameLogic
             base.BeforeActivatePlugInType(plugInType);
 
             var knownPlugIn = this.FindKnownPlugin(plugInType);
-            if (knownPlugIn == null)
+            if (knownPlugIn is null)
             {
                 this.AddPlugIn((IFeaturePlugIn)Activator.CreateInstance(plugInType), true);
             }

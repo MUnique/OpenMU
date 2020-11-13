@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var array = value as byte[];
-            if (array == null)
+            if (array is null)
             {
                 writer.WriteNull();
                 return;

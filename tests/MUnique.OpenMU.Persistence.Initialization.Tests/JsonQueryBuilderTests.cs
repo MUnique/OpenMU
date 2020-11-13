@@ -28,25 +28,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
         [Test]
         public void JsonQueryBuilderGameConfiguration()
         {
-            using (var installationContext = new ConfigurationContext())
+            using var installationContext = new ConfigurationContext();
+            var type = installationContext.Model.GetEntityTypes().FirstOrDefault(t => t.ClrType == typeof(GameConfiguration));
+            string result;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            try
             {
-                var type = installationContext.Model.GetEntityTypes().FirstOrDefault(t => t.ClrType == typeof(GameConfiguration));
-                string result;
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                try
-                {
-                    var builder = new GameConfigurationJsonQueryBuilder();
-                    result = builder.BuildJsonQueryForEntity(type);
-                }
-                finally
-                {
-                    stopwatch.Stop();
-                }
-
-                result = $"-- Json query created in {stopwatch.ElapsedMilliseconds} ms:{Environment.NewLine}" + result;
-                File.WriteAllText(@"C:\temp\json_GameConfiguration.txt", result);
+                var builder = new GameConfigurationJsonQueryBuilder();
+                result = builder.BuildJsonQueryForEntity(type);
             }
+            finally
+            {
+                stopwatch.Stop();
+            }
+
+            result = $"-- Json query created in {stopwatch.ElapsedMilliseconds} ms:{Environment.NewLine}" + result;
+            File.WriteAllText(@"C:\temp\json_GameConfiguration.txt", result);
         }
 
         /// <summary>
@@ -55,25 +53,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
         [Test]
         public void JsonQueryBuilderAccount()
         {
-            using (var installationContext = new ConfigurationContext())
+            using var installationContext = new ConfigurationContext();
+            var type = installationContext.Model.GetEntityTypes().FirstOrDefault(t => t.ClrType == typeof(Account));
+            string result;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            try
             {
-                var type = installationContext.Model.GetEntityTypes().FirstOrDefault(t => t.ClrType == typeof(Account));
-                string result;
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                try
-                {
-                    var builder = new JsonQueryBuilder();
-                    result = builder.BuildJsonQueryForEntity(type);
-                }
-                finally
-                {
-                    stopwatch.Stop();
-                }
-
-                result = $"-- Json query created in {stopwatch.ElapsedMilliseconds} ms:{Environment.NewLine}" + result;
-                File.WriteAllText(@"C:\temp\json_Account.txt", result);
+                var builder = new JsonQueryBuilder();
+                result = builder.BuildJsonQueryForEntity(type);
             }
+            finally
+            {
+                stopwatch.Stop();
+            }
+
+            result = $"-- Json query created in {stopwatch.ElapsedMilliseconds} ms:{Environment.NewLine}" + result;
+            File.WriteAllText(@"C:\temp\json_Account.txt", result);
         }
 
         /// <summary>
@@ -84,26 +80,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
         [Ignore("It hits the database.")]
         public void LoadConfigByJson()
         {
-            using (var installationContext = new ConfigurationContext())
+            using var installationContext = new ConfigurationContext();
+            installationContext.Database.OpenConnection();
+            var builder = new GameConfigurationJsonObjectLoader();
+            IEnumerable<GameConfiguration> result;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            try
             {
-                installationContext.Database.OpenConnection();
-                var builder = new GameConfigurationJsonObjectLoader();
-                IEnumerable<GameConfiguration> result;
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                try
-                {
-                    result = builder.LoadAllObjects<EntityFramework.GameConfiguration>(installationContext).ToList();
-                }
-                finally
-                {
-                    stopwatch.Stop();
-                }
-
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result.Count, Is.Not.EqualTo(0));
-                Assert.That(stopwatch.ElapsedMilliseconds, Is.EqualTo(0));
+                result = builder.LoadAllObjects<EntityFramework.GameConfiguration>(installationContext).ToList();
             }
+            finally
+            {
+                stopwatch.Stop();
+            }
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.Not.EqualTo(0));
+            Assert.That(stopwatch.ElapsedMilliseconds, Is.EqualTo(0));
         }
     }
 }

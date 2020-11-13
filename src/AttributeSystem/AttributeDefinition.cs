@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.AttributeSystem
         public override bool Equals(object obj)
         {
             AttributeDefinition other = obj as AttributeDefinition;
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }

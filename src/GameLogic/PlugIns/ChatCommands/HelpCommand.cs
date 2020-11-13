@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 var commandName = arguments.CommandName;
                 var commandPluginAttribute = player.GetAvailableChatCommands()
                     .FirstOrDefault(x => x.Command.Equals("/" + commandName, StringComparison.InvariantCultureIgnoreCase));
-                if (commandPluginAttribute == null)
+                if (commandPluginAttribute is null)
                 {
                     player.ShowMessage($"The command '{commandName}' does not exists.");
                     return;

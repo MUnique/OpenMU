@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </returns>
         public static bool IsActive(this ILocateable locateable)
         {
-            return !(locateable is IAttackable attackable) || attackable.Alive;
+            return locateable is not IAttackable attackable || attackable.Alive;
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.GameLogic
         public static bool IsAtSafezone(this ILocateable obj)
         {
             var map = obj.CurrentMap;
-            if (map?.Terrain?.SafezoneMap == null)
+            if (map?.Terrain?.SafezoneMap is null)
             {
                 return true;
             }

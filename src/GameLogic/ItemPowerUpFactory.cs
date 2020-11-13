@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeHolder)
         {
-            if (item.Definition == null)
+            if (item.Definition is null)
             {
                 throw new ArgumentException($"Item of slot {item.ItemSlot} got no Definition.", nameof(item));
             }
@@ -181,7 +181,7 @@ namespace MUnique.OpenMU.GameLogic
         private IEnumerable<PowerUpWrapper> GetPowerUpsOfItemOptions(Item item, AttributeSystem attributeHolder)
         {
             var options = item.ItemOptions;
-            if (options == null)
+            if (options is null)
             {
                 yield break;
             }
@@ -194,7 +194,7 @@ namespace MUnique.OpenMU.GameLogic
                 if (level > 0)
                 {
                     var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
-                    if (optionOfLevel == null)
+                    if (optionOfLevel is null)
                     {
                         this.logger.LogWarning($"Item has {nameof(IncreasableItemOption)} with level > 0, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");
                         continue;
@@ -203,7 +203,7 @@ namespace MUnique.OpenMU.GameLogic
                     powerUp = optionOfLevel.PowerUpDefinition;
                 }
 
-                if (powerUp?.Boost == null)
+                if (powerUp?.Boost is null)
                 {
                     // Some options are level dependent. If they are at level 0, they might not have any boost yet.
                     continue;

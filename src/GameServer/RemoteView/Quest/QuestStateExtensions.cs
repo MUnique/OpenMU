@@ -29,14 +29,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             var legacyQuestState = player.GetQuestState(QuestConstants.LegacyQuestGroup);
 
             // The first case is the easiest:
-            if (legacyQuestState == null)
+            if (legacyQuestState is null)
             {
                 // In this case, all Quests are inactive, including the starting one
                 return 0xFF;
             }
 
             // The next one is obvious, too:
-            if (legacyQuestState.LastFinishedQuest == null)
+            if (legacyQuestState.LastFinishedQuest is null)
             {
                 // In this case, it depends if we have an active quest
                 return (byte)(0b1111_1100 | (legacyQuestState.ActiveQuest is { }

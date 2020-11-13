@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.PlugIns
         protected CustomPlugInContainerBase(PlugInManager manager)
             : base(manager)
         {
-            if (typeof(TPlugIn).GetCustomAttribute<CustomPlugInContainerAttribute>() == null)
+            if (typeof(TPlugIn).GetCustomAttribute<CustomPlugInContainerAttribute>() is null)
             {
                 throw new ArgumentException($"The specified type argument {typeof(TPlugIn)} isn't marked with the {typeof(CustomPlugInContainerAttribute)}.");
             }
@@ -130,7 +130,7 @@ namespace MUnique.OpenMU.PlugIns
             base.BeforeActivatePlugInType(plugInType);
 
             var knownPlugIn = this.FindKnownPlugin(plugInType);
-            if (knownPlugIn == null)
+            if (knownPlugIn is null)
             {
                 this.CreatePlugInIfSuitable(plugInType);
             }

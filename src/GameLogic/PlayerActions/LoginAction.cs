@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            if (account == null)
+            if (account is null)
             {
                 player.Logger.LogInformation($"Account not found or invalid password, username: [{username}]");
                 player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.InvalidPassword);
