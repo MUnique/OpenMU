@@ -15047,6 +15047,188 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(OpenNpcDialog packet) => packet.data; 
     }
+
+
+    /// <summary>
+    /// Is sent by the server when: The server validate (and toggle status) if user can use the bot
+    /// Causes reaction on client side: The client toggle the mu bot status
+    /// </summary>
+    public readonly ref struct MuBotUseResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuBotUseResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MuBotUseResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuBotUseResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MuBotUseResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xBF;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x51;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 16;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the consume money.
+        /// </summary>
+        public byte ConsumeMoney
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the money.
+        /// </summary>
+        public uint Money
+        {
+            get => ReadUInt32LittleEndian(this.data.Slice(8));
+            set => WriteUInt32LittleEndian(this.data.Slice(8), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        public byte Status
+        {
+            get => this.data[12];
+            set => this.data[12] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MuBotUseResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MuBotUseResponse(Span<byte> packet) => new MuBotUseResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MuBotUseResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MuBotUseResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The server saved the user mu bot data
+    /// Causes reaction on client side: The user wants to save the mu bot data
+    /// </summary>
+    public readonly ref struct MuBotSaveDataResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuBotSaveDataResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MuBotSaveDataResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MuBotSaveDataResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MuBotSaveDataResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xAE;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 261;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the bot data.
+        /// </summary>
+        public Span<byte> BotData
+        {
+            get => this.data.Slice(4, 257);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MuBotSaveDataResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MuBotSaveDataResponse(Span<byte> packet) => new MuBotSaveDataResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MuBotSaveDataResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MuBotSaveDataResponse packet) => packet.data; 
+    }
         /// <summary>
         /// Defines the role of a guild member.
         /// </summary>

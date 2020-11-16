@@ -1,0 +1,68 @@
+﻿// <copyright file="MuBotPlayerExtensions.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.MuBot
+{
+    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.GameLogic.Views.MuBot;
+    using MUnique.OpenMU.Interfaces;
+
+    /// <summary>
+    /// Toggle player Mu Bot.
+    /// </summary>
+    public static class MuBotPlayerExtensions
+    {
+        /// <summary>
+        /// Toggle mu bot of player.
+        /// </summary>
+        /// <param name="player">the current player object.</param>
+        /// <param name="status">status to set.</param>
+        public static void ToggleMuBot(this Player player, MuBotStatus status)
+        {
+            player.ViewPlugIns.GetPlugIn<IMuBotUseResponse>()
+                ?.SendMuBotUseResponse((byte)status);
+        }
+
+        /// <summary>
+        /// Send message of money collect.
+        /// </summary>
+        /// <param name="player">the current player object.</param>
+        /// <param name="money">amount of money.</param>
+        public static void SendMuBotMoneyUsed(this Player player, int money)
+        {
+            player.ViewPlugIns.GetPlugIn<IMuBotUseResponse>()
+                ?.SendMuBotUseResponse((byte)MuBotStatus.Enabled, (uint)money, 1);
+        }
+
+        /// <summary>
+        /// Send Current Mu Bot Data To Client.
+        /// </summary>
+        /// <param name="player">the current player object.</param>
+        public static void SendCurrentMuBotData(this Player player)
+        {
+            player.ViewPlugIns.GetPlugIn<IMuBotSaveDataResponse>()
+                ?.SendMuBotSavedDataResponse(player.SelectedCharacter.MuBotData);
+        }
+
+        /// <summary>
+        /// Show message to player.
+        /// </summary>
+        /// <param name="player">the current player object.</param>
+        /// <param name="message">message to show.</param>
+        public static void ShowMessage(this Player player, string message)
+        {
+            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
+        }
+
+        /// <summary>
+        /// Return current Mu Bot Configuration.
+        /// </summary>
+        /// <param name="player">the current player object.</param>
+        /// <returns>the current configuration for mu bot.</returns>
+        public static MuBotConfiguration GetMuBotConfiguration(this Player player)
+        {
+            return player.GameContext.FeaturePlugIns.GetPlugIn<MuBotFeaturePlugin>()?.Configuration;
+        }
+    }
+}

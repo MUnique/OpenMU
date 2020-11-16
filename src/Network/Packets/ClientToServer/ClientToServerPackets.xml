@@ -1953,6 +1953,40 @@
       <CausedReaction>The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.</CausedReaction>
       <Fields />
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>51</SubCode>
+      <Name>MuBotUseRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client clicked on mu bot play/pause</SentWhen>
+      <CausedReaction>The server should validate if user can use the bot and send the status back</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Status</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>AE</Code>
+      <Name>MuBotSaveDataRequest</Name>
+      <Length>261</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client want to save current mu bot data</SentWhen>
+      <CausedReaction>The server should save supplied mu bot data</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>BotData</Name>
+          <Length>257</Length>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

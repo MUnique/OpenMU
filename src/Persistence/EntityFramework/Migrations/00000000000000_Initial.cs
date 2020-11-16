@@ -1063,6 +1063,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     UsedNegFruitPoints = table.Column<int>(nullable: false),
                     InventoryExtensions = table.Column<int>(nullable: false),
                     KeyConfiguration = table.Column<byte[]>(nullable: true),
+                    MuBotData = table.Column<byte[]>(nullable: true),
                     CharacterClassId = table.Column<Guid>(nullable: false),
                     CurrentMapId = table.Column<Guid>(nullable: true),
                     InventoryId = table.Column<Guid>(nullable: true),
