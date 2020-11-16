@@ -10,8 +10,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
     public class GameServerEndpoint : ServerEndpoint
     {
         /// <summary>
-        /// Gets or sets the network proxied port for network analysis.
+        /// Gets or sets the alternative published network port. It's reported to the connect server instead of the <see cref="ServerEndpoint.NetworkPort"/>, if not <c>0</c>.
+        /// This allows to run a network analyzer program as a proxy, which listens to this <see cref="AlternativePublishedPort"/> and forwards to <see cref="ServerEndpoint.NetworkPort"/>
+        /// without changing the connection address of the game client.
+        /// This may also be useful if you use port forwarding over NAT.
         /// </summary>
-        public int ProxiedPort { get; set; }
+        public int AlternativePublishedPort { get; set; }
     }
 }

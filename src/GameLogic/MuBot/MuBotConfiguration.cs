@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.MuBot
         /// <summary>
         /// Gets or Sets the base cost of the system.
         /// </summary>
-        public uint Cost { get; set; } = 10000;
+        public int Cost { get; set; } = 10000;
 
         /// <summary>
         /// Gets or Sets the min level.

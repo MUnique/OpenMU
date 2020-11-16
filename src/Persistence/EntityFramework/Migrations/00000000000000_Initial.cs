@@ -721,8 +721,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
+                    AlternativePublishedPort = table.Column<int>(nullable: true),
                     NetworkPort = table.Column<int>(nullable: false),
-                    ProxiedPort = table.Column<int>(nullable: true),
                     ClientId = table.Column<Guid>(nullable: true),
                     GameServerDefinitionId = table.Column<Guid>(nullable: true)
                 },

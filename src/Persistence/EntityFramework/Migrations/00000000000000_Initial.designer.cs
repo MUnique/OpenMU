@@ -244,9 +244,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte[]>("KeyConfiguration")
                         .HasColumnType("bytea");
-                    
-                    b.Property<byte[]>("MuBotData")
-                        .HasColumnType("bytea");
 
                     b.Property<int>("LevelUpPoints")
                         .HasColumnType("integer");
@@ -923,7 +920,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("NetworkPort")
                         .HasColumnType("integer");
                     
-                    b.Property<int>("ProxiedPort")
+                    b.Property<int>("AlternativePublishedPort")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

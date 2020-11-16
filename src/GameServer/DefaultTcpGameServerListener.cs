@@ -73,10 +73,10 @@ namespace MUnique.OpenMU.GameServer
             this.logger.LogInformation("Starting Server Listener, port {port}", port);
             this.listener = new TcpListener(IPAddress.Any, port);
             this.listener.Start();
-            if (this.endPoint.ProxiedPort > 0)
+            if (this.endPoint.AlternativePublishedPort > 0)
             {
-                port = this.endPoint.ProxiedPort;
-                this.logger.LogWarning("This GameServer {0} should be proxied to {1}", this.endPoint.NetworkPort, port);
+                port = this.endPoint.AlternativePublishedPort;
+                this.logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", this.endPoint.NetworkPort, port);
             }
 
             this.stateObserver.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), port));
