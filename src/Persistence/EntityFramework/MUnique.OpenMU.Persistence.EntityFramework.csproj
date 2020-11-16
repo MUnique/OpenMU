@@ -11,8 +11,8 @@
     <DocumentationFile>..\..\..\bin\Debug\MUnique.OpenMU.Persistence.EntityFramework.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Persistence.EntityFramework.xml</DocumentationFile>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
+    <DocumentationFile>..\..\..\bin\Release\MUnique.OpenMU.Persistence.EntityFramework.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
