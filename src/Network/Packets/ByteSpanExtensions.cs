@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// <remarks>This is not optimal yet, since it creates a new byte array. We might wait until encoding works on spans.</remarks>
         public static string ExtractString(this Span<byte> span, int startIndex, int maximumBytes, Encoding encoding)
         {
-            var content = span.Slice(startIndex, maximumBytes).ToArray();
+            var content = span.Slice(startIndex, Math.Min(span.Length - startIndex, maximumBytes)).ToArray();
             int count = content.TakeWhile(b => b != 0).Count();
             return encoding.GetString(content, 0, count);
         }
