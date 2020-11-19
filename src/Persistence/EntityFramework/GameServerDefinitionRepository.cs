@@ -4,10 +4,11 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
+    using System.Linq;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata;
     using Microsoft.Extensions.Logging;
-    using System.Linq;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// Repository for the <see cref="GameServerDefinition"/>.

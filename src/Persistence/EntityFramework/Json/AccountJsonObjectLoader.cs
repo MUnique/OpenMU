@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 {
     using MUnique.OpenMU.Persistence.Json;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// A json object loader for <see cref="Account"/>s.

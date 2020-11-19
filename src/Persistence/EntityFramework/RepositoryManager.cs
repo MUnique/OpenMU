@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="repository">The repository.</param>
         protected override void RegisterRepository(Type type, IRepository repository)
         {
-            if (type.Namespace == this.GetType().Namespace && type.BaseType != typeof(object))
+            if (type.Assembly.Equals(this.GetType().Assembly) && type.BaseType != typeof(object))
             {
                 base.RegisterRepository(type.BaseType, repository);
             }

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// Context for all types of the data model.
@@ -32,7 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             base.OnModelCreating(modelBuilder);
             modelBuilder.Ignore<ConstantElement>();
             modelBuilder.Ignore<SimpleElement>();
-            modelBuilder.Entity<AttributeDefinition>();
+            modelBuilder.Entity<Model.AttributeDefinition>();
             modelBuilder.Entity<ConnectServerDefinition>();
             modelBuilder.Entity<ChatServerDefinition>();
             modelBuilder.Entity<PowerUpDefinitionWithDuration>()
@@ -52,7 +53,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 .HasOne(d => d.RawTargetAttribute);
 
             modelBuilder.Entity<PowerUpDefinitionValue>().Ignore(p => p.ConstantValue);
-            modelBuilder.Entity<ConstValueAttribute>().Ignore(c => c.AggregateType);
+            modelBuilder.Entity<Model.ConstValueAttribute>().Ignore(c => c.AggregateType);
 
             modelBuilder.Entity<Account>(entity =>
             {
@@ -88,11 +89,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<MonsterSpawnArea>().HasOne(spawn => spawn.RawGameMap);
 
             modelBuilder.Entity<SkillEntry>().Ignore(s => s.BuffPowerUp).Ignore(s => s.PowerUpDuration);
-            modelBuilder.Entity<ConstValueAttribute>().Ignore(c => c.AggregateType);
+            modelBuilder.Entity<Model.ConstValueAttribute>().Ignore(c => c.AggregateType);
             modelBuilder.Entity<CharacterClass>()
                 .HasMany(c => c.RawBaseAttributeValues)
                 .WithOne(c => c.CharacterClass);
-            modelBuilder.Entity<StatAttribute>().Ignore("ValueGetter");
+            modelBuilder.Entity<Model.StatAttribute>().Ignore("ValueGetter");
 
             modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawRoot);
             modelBuilder.Entity<LetterBody>().HasOne(body => body.RawHeader);

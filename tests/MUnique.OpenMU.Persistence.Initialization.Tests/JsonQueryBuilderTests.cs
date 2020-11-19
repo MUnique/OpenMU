@@ -13,8 +13,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
     using NUnit.Framework;
-    using Account = MUnique.OpenMU.Persistence.EntityFramework.Account;
-    using GameConfiguration = MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration;
+    using Account = MUnique.OpenMU.Persistence.EntityFramework.Model.Account;
+    using GameConfiguration = MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration;
 
     /// <summary>
     /// Tests for the <see cref="JsonQueryBuilder"/>.
@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             stopwatch.Start();
             try
             {
-                result = builder.LoadAllObjects<EntityFramework.GameConfiguration>(installationContext).ToList();
+                result = builder.LoadAllObjects<EntityFramework.Model.GameConfiguration>(installationContext).ToList();
             }
             finally
             {

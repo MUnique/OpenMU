@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
     using System;
     using System.Collections.Generic;
     using Newtonsoft.Json.Serialization;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// A reference resolver which resolves them by looking at the objects occuring in the <see cref="GameConfiguration" />.

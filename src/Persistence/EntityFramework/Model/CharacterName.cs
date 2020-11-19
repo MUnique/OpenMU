@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-// ReSharper disable UnusedAutoPropertyAccessor.Local They're used by the entity framework core (reflection).
-namespace MUnique.OpenMU.Persistence.EntityFramework
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model
 {
+    // ReSharper disable UnusedAutoPropertyAccessor.Local They're used by the entity framework core (reflection).
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 

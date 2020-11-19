@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using Npgsql.Logging;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// The persistence context provider for the persistence implemented with entity framework core.
@@ -121,7 +121,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public IContext CreateNewTypedContext<T>()
         {
-            return new EntityFrameworkContext(new TypedContext<T>(), loggerFactory);
+            return new EntityFrameworkContext(new TypedContext<T>(), this.loggerFactory);
         }
     }
 }

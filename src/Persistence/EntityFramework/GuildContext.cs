@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using Microsoft.EntityFrameworkCore;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// Context for the guild server which just uses <see cref="Guild"/>, <see cref="GuildMember"/> and <see cref="Character"/>.

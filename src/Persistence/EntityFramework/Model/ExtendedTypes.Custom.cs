@@ -10,7 +10,7 @@ using System.ComponentModel;
 using Mapster;
 using MUnique.OpenMU.Persistence.Json;
 
-namespace MUnique.OpenMU.Persistence.EntityFramework
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model
 {
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
