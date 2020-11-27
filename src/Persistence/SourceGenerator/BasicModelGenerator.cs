@@ -235,31 +235,10 @@ namespace MUnique.OpenMU.Persistence.BasicModel
                 var parameters = constructor.GetParameters();
                 stringBuilder.AppendLine(@$"
         /// <inheritdoc />
-        public {className}(");
-                foreach (var p in parameters)
-                {
-                    stringBuilder.Append(p.ParameterType.GetCSharpFullName()).Append(" ").Append(p.Name);
-                    if (parameters.Length > p.Position + 1)
-                    {
-                        stringBuilder.Append(", ");
-                    }
-                }
-
-                stringBuilder.AppendLine(")")
-                    .Append("            : base(");
-
-                foreach (var p in parameters)
-                {
-                    stringBuilder.Append(p.Name);
-                    if (parameters.Length > p.Position + 1)
-                    {
-                        stringBuilder.Append(", ");
-                    }
-                }
-
-                stringBuilder.AppendLine(@")
-        {
-        }");
+        public {className}({GetParameterDefinitions(parameters)})
+            : base({GetParameters(parameters)})
+        {{
+        }}");
             }
 
             return stringBuilder.ToString();

@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
+    using System.Text;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -92,6 +94,46 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Gets the parameter definitions for a method or constructor.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>The string of the parameter definitions.</returns>
+        protected static string GetParameterDefinitions(ICollection<ParameterInfo> parameters)
+        {
+            var result = new StringBuilder();
+            foreach (var p in parameters)
+            {
+                result.Append(p.ParameterType.GetCSharpFullName()).Append(" ").Append(p.Name);
+                if (parameters.Count > p.Position + 1)
+                {
+                    result.Append(", ");
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Gets the parameters used to call a method.
+        /// </summary>
+        /// <param name="parameters">The parameter infos.</param>
+        /// <returns>The parameters used to call a method.</returns>
+        protected static string GetParameters(ICollection<ParameterInfo> parameters)
+        {
+            var result = new StringBuilder();
+            foreach (var p in parameters)
+            {
+                result.Append(p.Name);
+                if (parameters.Count > p.Position + 1)
+                {
+                    result.Append(", ");
+                }
+            }
+
+            return result.ToString();
         }
 
         /// <summary>

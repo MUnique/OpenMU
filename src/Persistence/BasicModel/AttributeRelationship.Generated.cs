@@ -27,15 +27,13 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <inheritdoc />
-        public AttributeRelationship(
-MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute)
+        public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute)
             : base(targetAttribute, inputOperand, inputAttribute)
         {
         }
 
         /// <inheritdoc />
-        public AttributeRelationship(
-MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator)
+        public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator)
             : base(targetAttribute, inputOperand, inputAttribute, inputOperator)
         {
         }

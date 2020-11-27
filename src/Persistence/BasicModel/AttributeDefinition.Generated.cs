@@ -27,8 +27,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <inheritdoc />
-        public AttributeDefinition(
-System.Guid id, System.String designation, System.String description)
+        public AttributeDefinition(System.Guid id, System.String designation, System.String description)
             : base(id, designation, description)
         {
         }

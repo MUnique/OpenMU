@@ -27,8 +27,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <inheritdoc />
-        public StatAttributeDefinition(
-MUnique.OpenMU.AttributeSystem.AttributeDefinition attribute, System.Single baseValue, System.Boolean increasableByPlayer)
+        public StatAttributeDefinition(MUnique.OpenMU.AttributeSystem.AttributeDefinition attribute, System.Single baseValue, System.Boolean increasableByPlayer)
             : base(attribute, baseValue, increasableByPlayer)
         {
         }

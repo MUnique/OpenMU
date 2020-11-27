@@ -27,8 +27,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <inheritdoc />
-        public LevelBonus(
-System.Int32 level, System.Single constantValue)
+        public LevelBonus(System.Int32 level, System.Single constantValue)
             : base(level, constantValue)
         {
         }

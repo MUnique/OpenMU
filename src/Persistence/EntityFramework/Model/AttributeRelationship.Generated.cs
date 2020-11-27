@@ -36,14 +36,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
 
         }
 
-
         /// <inheritdoc />
         public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator)
             : base(targetAttribute, inputOperand, inputAttribute, inputOperator)
         {
 
         }
-
 
         
         /// <summary>

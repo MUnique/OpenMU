@@ -23,8 +23,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
     {
         
         /// <inheritdoc />
-        public ConstValueAttribute(
-System.Single value, MUnique.OpenMU.AttributeSystem.AttributeDefinition definition)
+        public ConstValueAttribute(System.Single value, MUnique.OpenMU.AttributeSystem.AttributeDefinition definition)
             : base(value, definition)
         {
         }

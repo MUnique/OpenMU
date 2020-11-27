@@ -36,7 +36,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
 
         }
 
-
         
         /// <summary>
         /// Gets or sets the identifier of this instance.

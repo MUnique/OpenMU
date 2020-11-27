@@ -36,7 +36,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
 
         }
 
-
         
         
 

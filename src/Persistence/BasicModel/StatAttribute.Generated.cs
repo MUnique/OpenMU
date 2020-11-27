@@ -27,8 +27,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <inheritdoc />
-        public StatAttribute(
-MUnique.OpenMU.AttributeSystem.AttributeDefinition definition, System.Single baseValue)
+        public StatAttribute(MUnique.OpenMU.AttributeSystem.AttributeDefinition definition, System.Single baseValue)
             : base(definition, baseValue)
         {
         }

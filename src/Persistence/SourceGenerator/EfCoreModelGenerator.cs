@@ -4,13 +4,13 @@
 
 namespace MUnique.OpenMU.Persistence.SourceGenerator
 {
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Text;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Text;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.Text;
 
     /// <summary>
     /// Source Generator which creates classes of the our entities specifically for the entity framework core.
@@ -453,29 +453,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
                 var parameters = constructor.GetParameters();
                 stringBuilder.Append(@$"
         /// <inheritdoc />
-        public {className}(");
-                foreach (var p in parameters)
-                {
-                    stringBuilder.Append(p.ParameterType.GetCSharpFullName()).Append(" ").Append(p.Name);
-                    if (parameters.Length > p.Position + 1)
-                    {
-                        stringBuilder.Append(", ");
-                    }
-                }
-
-                stringBuilder.AppendLine(")")
-                    .Append("            : base(");
-
-                foreach (var p in parameters)
-                {
-                    stringBuilder.Append(p.Name);
-                    if (parameters.Length > p.Position + 1)
-                    {
-                        stringBuilder.Append(", ");
-                    }
-                }
-
-                stringBuilder.AppendLine(@$")
+        public {className}({GetParameterDefinitions(parameters)})
+            : base({GetParameters(parameters)})
         {{
 {(requiresJoinCollections ? "            this.InitJoinCollections();" : null)}
         }}

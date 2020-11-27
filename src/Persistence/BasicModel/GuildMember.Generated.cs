@@ -27,8 +27,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <inheritdoc />
-        public GuildMember(
-System.Guid id)
+        public GuildMember(System.Guid id)
             : base(id)
         {
         }
