@@ -45,11 +45,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
     <PackageReference Include="Blazored.Modal" Version="5.1.0" />
     <PackageReference Include="Blazored.Typeahead" Version="4.4.1" />
     <PackageReference Include="BlazorInputFile" Version="0.2.0" />
-    <PackageReference Include="Mapster" Version="6.5.1" />
+    <PackageReference Include="Mapster" Version="7.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.0" />
     <PackageReference Include="munique.log4net.coresignalr" Version="1.0.0-beta6" />
@@ -66,7 +66,7 @@
         The CI environment is identified by the parameter 'ci'. It's set in the azure pipelines and Dockerfile.
         If you run into errors here under Linux/Mac OS, it might help to add this parameter, too. -->
     <PackageReference Include="BuildWebCompiler" Version="1.12.405" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.0.3">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
