@@ -373,7 +373,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private void AddGuardianOptionForArmor(int setNumber, ItemGroups itemGroup)
         {
             var armor = this.GameConfiguration.Items.FirstOrDefault(item => item.Number == setNumber && item.Group == (int)itemGroup);
-            if (armor == null)
+            if (armor is null)
             {
                 return;
             }

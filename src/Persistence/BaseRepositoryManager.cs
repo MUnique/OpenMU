@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.Persistence
         public virtual IRepository GetRepository(Type objectType)
         {
             var repository = this.InternalGetRepository(objectType);
-            if (repository == null)
+            if (repository is null)
             {
                 throw new RepositoryNotFoundException(objectType);
             }
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.Persistence
             Type currentSearchType = objectType;
             do
             {
-                if (currentSearchType == null)
+                if (currentSearchType is null)
                 {
                     break;
                 }

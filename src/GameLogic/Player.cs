@@ -146,7 +146,7 @@ namespace MUnique.OpenMU.GameLogic
                     return;
                 }
 
-                if (value == null)
+                if (value is null)
                 {
                     this.appearanceData.RaiseAppearanceChanged();
                     this.PlayerLeftWorld?.Invoke(this, null);
@@ -174,7 +174,7 @@ namespace MUnique.OpenMU.GameLogic
             set
             {
                 var character = this.selectedCharacter;
-                if (character == null || character.Pose == this.Pose)
+                if (character is null || character.Pose == this.Pose)
                 {
                     return;
                 }
@@ -545,7 +545,7 @@ namespace MUnique.OpenMU.GameLogic
         public void WarpTo(ExitGate gate)
         {
             var currentMap = this.CurrentMap;
-            if (currentMap == null)
+            if (currentMap is null)
             {
                 return;
             }

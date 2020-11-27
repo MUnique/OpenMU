@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         private bool PlugInBelongsToThisGroup(Type plugInType)
         {
             var belongsToAttribute = plugInType.GetCustomAttribute<BelongsToGroupAttribute>();
-            if (belongsToAttribute == null)
+            if (belongsToAttribute is null)
             {
                 return false;
             }

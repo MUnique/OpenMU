@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         /// <param name="player">The player.</param>
         public void RequestBuff(Player player)
         {
-            if (player.OpenedNpc == null
+            if (player.OpenedNpc is null
                 || player.OpenedNpc.Definition.NpcWindow != NpcWindow.NpcDialog
                 || player.OpenedNpc.Definition.Number != ElfSoldierNumber)
             {

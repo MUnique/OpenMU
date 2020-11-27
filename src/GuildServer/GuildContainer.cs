@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.GuildServer
             var memberNames = this.DatabaseContext.GetMemberNames(this.Guild.Id);
             if (memberNames != null)
             {
-                foreach (var member in this.Members.Where(m => m.Value.PlayerName == null))
+                foreach (var member in this.Members.Where(m => m.Value.PlayerName is null))
                 {
                     if (memberNames.TryGetValue(member.Key, out string name))
                     {

@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         public override string ToString()
         {
             string itemName;
-            if (this.ItemDefinition == null)
+            if (this.ItemDefinition is null)
             {
                 itemName = $"Referenced item {this.Reference} will be modified.";
             }

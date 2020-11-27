@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             var context = this.RepositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext;
 
-            return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryManager, context == null);
+            return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryManager, context is null);
         }
 
         /// <inheritdoc/>

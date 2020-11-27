@@ -231,7 +231,7 @@ namespace MUnique.OpenMU.GameLogic
 
             if (slot < this.boxOffset)
             {
-                if (this.ItemArray[slot] == null)
+                if (this.ItemArray[slot] is null)
                 {
                     this.ItemArray[slot] = item;
                     return true;

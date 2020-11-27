@@ -277,7 +277,7 @@ namespace MUnique.OpenMU.PlugIns
         public void RegisterPlugInAtPlugInPoint<TPlugInInterface>(TPlugInInterface instance)
             where TPlugInInterface : class
         {
-            if (instance.GetType().GetCustomAttribute<GuidAttribute>() == null)
+            if (instance.GetType().GetCustomAttribute<GuidAttribute>() is null)
             {
                 throw new ArgumentException($"Plugin Type {instance.GetType()} is missing a {typeof(GuidAttribute)}. It's required to identify the plugin in the configuration. Otherwise, the plugin would get a different Guid every time it gets compiled.", nameof(instance));
             }

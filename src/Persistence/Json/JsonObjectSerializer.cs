@@ -20,11 +20,13 @@ namespace MUnique.OpenMU.Persistence.Json
         /// <param name="textWriter">The text writer.</param>
         public void Serialize<T>(T obj, TextWriter textWriter)
         {
-            var serializer = new JsonSerializer();
-            serializer.ReferenceResolver = new IdReferenceResolver();
-            serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            serializer.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
-            serializer.Formatting = Formatting.Indented;
+            var serializer = new JsonSerializer
+            {
+                ReferenceResolver = new IdReferenceResolver(),
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented,
+            };
             serializer.Serialize(textWriter, obj);
         }
 
@@ -36,11 +38,9 @@ namespace MUnique.OpenMU.Persistence.Json
         /// <returns>The serialized object as string.</returns>
         public string Serialize<T>(T obj)
         {
-            using (var textWriter = new StringWriter())
-            {
-                this.Serialize(obj, textWriter);
-                return textWriter.ToString();
-            }
+            using var textWriter = new StringWriter();
+            this.Serialize(obj, textWriter);
+            return textWriter.ToString();
         }
     }
 }

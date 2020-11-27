@@ -22,14 +22,16 @@ namespace MUnique.OpenMU.Startup
         /// <returns>The settings.</returns>
         public static ChatServerSettings ConvertToSettings(this ChatServerDefinition definition)
         {
-            var result = new ChatServerSettings();
-            result.Id = definition.GetId();
-            result.MaximumConnections = definition.MaximumConnections;
-            result.ClientTimeout = definition.ClientTimeout;
-            result.ClientCleanUpInterval = definition.ClientCleanUpInterval;
-            result.RoomCleanUpInterval = definition.RoomCleanUpInterval;
-            result.Description = definition.Description;
-            result.ServerId = definition.ServerId + SpecialServerIds.ChatServer;
+            var result = new ChatServerSettings
+            {
+                Id = definition.GetId(),
+                MaximumConnections = definition.MaximumConnections,
+                ClientTimeout = definition.ClientTimeout,
+                ClientCleanUpInterval = definition.ClientCleanUpInterval,
+                RoomCleanUpInterval = definition.RoomCleanUpInterval,
+                Description = definition.Description,
+                ServerId = definition.ServerId + SpecialServerIds.ChatServer,
+            };
             foreach (var endpoint in definition.Endpoints)
             {
                 result.Endpoints.Add(new OpenMU.ChatServer.ChatServerEndpoint

@@ -103,22 +103,20 @@ namespace MUnique.OpenMU.ChatServer
         public void SendChatRoomClientList(IReadOnlyCollection<IChatClient> clients)
         {
             const int sizePerClient = 11;
-            using (var writer = this.connection.StartSafeWrite(0xC2, 8 + (sizePerClient * clients.Count)))
+            using var writer = this.connection.StartSafeWrite(0xC2, 8 + (sizePerClient * clients.Count));
+            var packet = writer.Span;
+            packet[3] = 2; // packet type
+            packet[6] = (byte)clients.Count;
+            int i = 0;
+            foreach (var client in clients)
             {
-                var packet = writer.Span;
-                packet[3] = 2; // packet type
-                packet[6] = (byte)clients.Count;
-                int i = 0;
-                foreach (var client in clients)
-                {
-                    var clientBlock = packet.Slice(8 + (i * sizePerClient), sizePerClient);
-                    clientBlock[0] = client.Index;
-                    clientBlock.Slice(1).WriteString(client.Nickname, Encoding.UTF8);
-                    i++;
-                }
-
-                writer.Commit();
+                var clientBlock = packet.Slice(8 + (i * sizePerClient), sizePerClient);
+                clientBlock[0] = client.Index;
+                clientBlock.Slice(1).WriteString(client.Nickname, Encoding.UTF8);
+                i++;
             }
+
+            writer.Commit();
         }
 
         /// <inheritdoc/>
@@ -137,7 +135,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public void LogOff()
         {
-            if (this.connection == null)
+            if (this.connection is null)
             {
                 this.logger.LogDebug($"Client {this.Nickname} is already disconnected.");
                 return;
@@ -232,7 +230,7 @@ namespace MUnique.OpenMU.ChatServer
         {
             var roomId = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
             var requestedRoom = this.manager.GetChatRoom(roomId);
-            if (requestedRoom == null)
+            if (requestedRoom is null)
             {
                 this.logger.LogError($"Requested room {roomId} has not been registered before.");
                 this.LogOff();

@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <inheritdoc />
         public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
         {
-            if (!this.CheckPreconditions(player, item, targetItem))
+            if (!this.CheckPreconditions(player, item))
             {
                 return false;
             }

@@ -59,11 +59,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             var navigations = parentType.GetNavigations().Where(nav => nav.PropertyInfo is { });
             foreach (var navigation in navigations)
             {
-                yield return navigation.GetTargetType();
+                yield return navigation.TargetEntityType;
 
                 if (navigation.IsMemberOfAggregate() || navigation.PropertyInfo.Name.StartsWith("Joined"))
                 {
-                    foreach (var navEditType in this.DetermineNavigationTypes(navigation.GetTargetType()))
+                    foreach (var navEditType in this.DetermineNavigationTypes(navigation.TargetEntityType))
                     {
                         yield return navEditType;
                     }

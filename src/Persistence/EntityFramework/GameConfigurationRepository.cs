@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// The game configuration repository, which loads the configuration by using the
@@ -34,7 +35,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public override GameConfiguration GetById(Guid id)
         {
             var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-            if (currentContext == null)
+            if (currentContext is null)
             {
                 throw new InvalidOperationException("There is no current context set.");
             }
@@ -57,7 +58,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public override IEnumerable<GameConfiguration> GetAll()
         {
             var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-            if (currentContext == null)
+            if (currentContext is null)
             {
                 throw new InvalidOperationException("There is no current context set.");
             }

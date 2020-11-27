@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         public static QuestDefinition GetQuest(this Player player, short group, short number)
         {
             return player.OpenedNpc?.Definition.Quests
-                .FirstOrDefault(q => q.Group == group && (q.StartingNumber == number || q.Number == number) && (q.QualifiedCharacter == null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass));
+                .FirstOrDefault(q => q.Group == group && (q.StartingNumber == number || q.Number == number) && (q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass));
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         public static IEnumerable<QuestDefinition> GetAvailableQuestsOfOpenedNpc(this Player player)
         {
             return player.OpenedNpc?.Definition.Quests
-                .Where(q => q.QualifiedCharacter == null
+                .Where(q => q.QualifiedCharacter is null
                             || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass)
                 .Where(q => q.MinimumCharacterLevel <= player.Level
                             && (q.MaximumCharacterLevel == default || q.MaximumCharacterLevel >= player.Level));

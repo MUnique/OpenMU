@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void ApplyKeyConfiguration()
         {
             var keyConfiguration = this.player.SelectedCharacter.KeyConfiguration;
-            if (keyConfiguration == null || keyConfiguration.Length == 0)
+            if (keyConfiguration is null || keyConfiguration.Length == 0)
             {
                 return;
             }

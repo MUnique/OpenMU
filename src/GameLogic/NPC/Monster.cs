@@ -144,7 +144,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.isCalculatingPath = true;
             try
             {
-                if (this.pathFinder == null)
+                if (this.pathFinder is null)
                 {
                     this.pathFinder = new PathFinder(new GridNetwork(this.CurrentMap.Terrain.AIgrid, true));
                 }
@@ -154,7 +154,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
 
                 calculatedPath = this.pathFinder.FindPath(this.Position, target);
-                if (calculatedPath == null)
+                if (calculatedPath is null)
                 {
                     return;
                 }
@@ -286,7 +286,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             if (!killer.GameContext.Configuration.ShouldDropMoney)
             {
                 var party = killer.Party;
-                if (party == null)
+                if (party is null)
                 {
                     killer.TryAddMoney((int)amount);
                 }
@@ -312,7 +312,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 this.HandleMoneyDrop(droppedMoney.Value, killer);
             }
 
-            if (generatedItems == null)
+            if (generatedItems is null)
             {
                 return;
             }

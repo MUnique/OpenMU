@@ -138,7 +138,7 @@ namespace MUnique.OpenMU.GameLogic
             try
             {
                 var type = Type.GetType(monsterDefinition.IntelligenceTypeName);
-                if (type == null)
+                if (type is null)
                 {
                     this.logger.LogError($"Could not find type {monsterDefinition.IntelligenceTypeName}");
                     return null;

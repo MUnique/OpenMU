@@ -17,13 +17,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
         /// <param name="player">The player.</param>
         public void RequestGuildList(Player player)
         {
-            if (player.GuildStatus == null)
+            if (player.GuildStatus is null)
             {
                 return;
             }
 
-            var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
-            if (guildServer != null)
+            if ((player.GameContext as IGameServerContext)?.GuildServer is { } guildServer)
             {
                 var players = guildServer.GetGuildList(player.GuildStatus.GuildId);
                 player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()?.ShowGuildList(players);

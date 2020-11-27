@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.GameLogic
             for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
             {
                 var group = this.SelectRandomGroup(dropGroups);
-                if (group == null)
+                if (group is null)
                 {
                     continue;
                 }
@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.GameLogic
         protected Item GetRandomItem(int monsterLvl, bool socketItems)
         {
             var possible = this.GetPossibleList(monsterLvl);
-            if (possible == null || !possible.Any())
+            if (possible is null || !possible.Any())
             {
                 return null;
             }
@@ -167,7 +167,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var possible = this.GetPossibleList(monsterLvl - 25);
-            if (possible == null || !possible.Any())
+            if (possible is null || !possible.Any())
             {
                 return null;
             }
@@ -269,7 +269,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             var possibleItemOptions = item.Definition.PossibleItemOptions;
             var excellentOptions = possibleItemOptions.FirstOrDefault(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent));
-            if (excellentOptions == null)
+            if (excellentOptions is null)
             {
                 return;
             }

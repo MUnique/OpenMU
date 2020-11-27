@@ -28,15 +28,12 @@ namespace MUnique.OpenMU.GameLogic
         public static ushort GetMaximumFruitPoints(this Character character)
         {
             var index = (int)character.Attributes.First(a => a.Definition == Stats.Level).Value - 1;
-            switch (character.CharacterClass.FruitCalculation)
+            return character.CharacterClass.FruitCalculation switch
             {
-                case FruitCalculationStrategy.DarkLord:
-                    return FruitPointsPerLevelDarkLord[index];
-                case FruitCalculationStrategy.MagicGladiator:
-                    return FruitPointsPerLevelMagicGladiator[index];
-                default:
-                    return FruitPointsPerLevel[index];
-            }
+                FruitCalculationStrategy.DarkLord => FruitPointsPerLevelDarkLord[index],
+                FruitCalculationStrategy.MagicGladiator => FruitPointsPerLevelMagicGladiator[index],
+                _ => FruitPointsPerLevel[index]
+            };
         }
 
         /// <summary>
@@ -48,7 +45,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </returns>
         public static bool HasFullAncientSetEquipped(this Character character)
         {
-            if (character?.Inventory == null)
+            if (character?.Inventory is null)
             {
                 return false;
             }

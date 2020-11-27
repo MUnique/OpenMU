@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.ChatServer
         public ChatServerAuthenticationInfo RegisterClient(ushort roomId, string clientName)
         {
             var room = this.manager.GetChatRoom(roomId);
-            if (room == null)
+            if (room is null)
             {
                 var errorMessage = $"RegisterClient: Could not find chat room with id {roomId} for '{clientName}'.";
                 this.logger.LogError(errorMessage);
@@ -214,7 +214,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <returns>The ip address of the server.</returns>
         public string GetIpAddress()
         {
-            return this.publicIp ?? (this.publicIp = this.addressResolver.GetIPv4().ToString());
+            return this.publicIp ??= this.addressResolver.GetIPv4().ToString();
         }
 
         /// <summary>

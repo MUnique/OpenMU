@@ -37,12 +37,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private bool IsWarpLegit(Player player, EnterGate enterGate)
         {
-            if (enterGate == null)
+            if (enterGate is null)
             {
                 return false;
             }
 
-            if (player.SelectedCharacter == null)
+            if (player.SelectedCharacter is null)
             {
                 return false;
             }

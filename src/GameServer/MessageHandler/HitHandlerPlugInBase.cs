@@ -34,14 +34,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             HitRequest message = packet;
             var currentMap = player.CurrentMap;
-            if (currentMap == null)
+            if (currentMap is null)
             {
                 player.Logger.LogWarning($"Current player map not set. Possible hacker action. Character name: {player.Name}");
                 return;
             }
 
-            var target = currentMap.GetObject(message.TargetId) as IAttackable;
-            if (target == null)
+            if (currentMap.GetObject(message.TargetId) is not IAttackable target)
             {
                 player.Logger.LogWarning($"Object {message.TargetId} of current player map not found alive. Possible hacker action. Character name: {player.Name}");
             }

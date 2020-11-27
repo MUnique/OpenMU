@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.Startup
         public void ConnectionServerChanged(ConnectServerDefinition configuration)
         {
             var server = this.servers.FirstOrDefault(s => s.Id == configuration.ServerId);
-            if (server == null)
+            if (server is null)
             {
                 return;
             }

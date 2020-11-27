@@ -33,7 +33,7 @@ You can try the current state by using the available docker image, also mentione
 This project is released under the MIT license (see LICENSE file).
 
 ## Used technologies ##
-The project is mainly written in C# and targets .NET Standard 2.1 and .NET Core 3.1.
+The project is mainly written in C# and targets .NET 5.0.
 
 The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel) and implemented as Blazor Server App.
 

@@ -62,24 +62,20 @@ namespace MUnique.OpenMU.ClientLauncher
             }
 
             var reader = new XmlSerializer(typeof(Launcher));
-            using (var file = new StreamReader(ConfigFileName))
-            {
-                var launcher = (Launcher)reader.Deserialize(file);
-                this.ServerAddressTextBox.Text = launcher.HostAddress;
-                this.ServerPortControl.Value = launcher.HostPort;
-                this.MainExePathTextBox.Text = launcher.MainExePath;
-                file.Close();
-            }
+            using var file = new StreamReader(ConfigFileName);
+            var launcher = (Launcher)reader.Deserialize(file);
+            this.ServerAddressTextBox.Text = launcher.HostAddress;
+            this.ServerPortControl.Value = launcher.HostPort;
+            this.MainExePathTextBox.Text = launcher.MainExePath;
+            file.Close();
         }
 
         private void SaveOptions(Launcher launcher)
         {
             var writer = new XmlSerializer(typeof(Launcher));
-            using (var file = File.Create(ConfigFileName))
-            {
-                writer.Serialize(file, launcher);
-                file.Close();
-            }
+            using var file = File.Create(ConfigFileName);
+            writer.Serialize(file, launcher);
+            file.Close();
         }
 
         private void SearchMainExeButtonClick(object sender, EventArgs e)
@@ -93,9 +89,14 @@ namespace MUnique.OpenMU.ClientLauncher
 
         private void ConfigurationDialogButtonClick(object sender, EventArgs e)
         {
-            using (var configDialog = new ClientSettingsDialog())
+            if (OperatingSystem.IsWindows())
             {
+                using var configDialog = new ClientSettingsDialog();
                 configDialog.ShowDialog(this);
+            }
+            else
+            {
+                MessageBox.Show("Changing the configuration of the MU game client is only supported on windows.");
             }
         }
     }

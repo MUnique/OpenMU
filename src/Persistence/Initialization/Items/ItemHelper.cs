@@ -221,7 +221,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private IncreasableItemOption GetExcellentOption(AttributeDefinition targetExcellentOption, Item item)
         {
-            if (targetExcellentOption == null)
+            if (targetExcellentOption is null)
             {
                 return null;
             }

@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.GameServer
             var port = this.endPoint.NetworkPort;
             this.stateObserver.UnregisterGameServer(this.gameServerInfo);
             this.logger.LogInformation($"Stopping listener on port {port}.");
-            if (this.listener == null || !this.listener.Server.IsBound)
+            if (this.listener is null || !this.listener.Server.IsBound)
             {
                 this.logger.LogDebug("listener not running, nothing to shut down.");
                 return;
@@ -131,7 +131,7 @@ namespace MUnique.OpenMU.GameServer
 
         private void HandleNewSocket(Socket socket)
         {
-            if (socket == null)
+            if (socket is null)
             {
                 return;
             }
@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.GameServer
                 var encryptionFactoryPlugIn = this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(clientVersion)
                                                 ?? this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
                 IConnection connection;
-                if (encryptionFactoryPlugIn == null)
+                if (encryptionFactoryPlugIn is null)
                 {
                     this.Log(l => l.LogWarning("No network encryption plugin for version {clientVersion} available. It falls back to default encryption.", clientVersion));
                     connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output), this.loggerFactory.CreateLogger<Connection>());

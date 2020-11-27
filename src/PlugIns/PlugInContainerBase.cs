@@ -179,7 +179,7 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             var plugIn = this.FindActivePlugin(e.PlugInType);
-            if (plugIn == null)
+            if (plugIn is null)
             {
                 return;
             }
@@ -211,7 +211,7 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             plugIn = this.FindKnownPlugin(e.PlugInType);
-            if (plugIn == null)
+            if (plugIn is null)
             {
                 return;
             }
@@ -235,7 +235,7 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             var plugIn = this.FindActivePlugin(e.PlugInType) ?? this.FindKnownPlugin(e.PlugInType);
-            if (plugIn == null)
+            if (plugIn is null)
             {
                 return;
             }

@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             var quest = player.GetQuest(group, number);
-            if (quest == null)
+            if (quest is null)
             {
                 player.Logger.LogDebug("Failed, quest not found");
                 return;

@@ -263,7 +263,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
             else if (customPlugInContainer != null)
             {
                 var customPlugInInterface = plugInType.GetInterfaces().FirstOrDefault(intf => intf.GetInterfaces().Any(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null));
-                viewItem.PlugInPointName = customPlugInInterface == null ? customPlugInContainer.Name : $"{customPlugInContainer.Name} - {customPlugInInterface.Name}";
+                viewItem.PlugInPointName = customPlugInInterface is null ? customPlugInContainer.Name : $"{customPlugInContainer.Name} - {customPlugInInterface.Name}";
                 viewItem.PlugInPointDescription = customPlugInContainer.Description;
             }
             else

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System;
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// Repository which is able to load <see cref="LetterBody"/>s for a specific letter header.

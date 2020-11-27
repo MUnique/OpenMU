@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// Persistence context which is used by in-game players.
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public bool CanSaveLetter(Interfaces.LetterHeader letterHeader)
         {
-            if (!(letterHeader is LetterHeader persistentHeader))
+            if (letterHeader is not Model.LetterHeader persistentHeader)
             {
                 return false;
             }

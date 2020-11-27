@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             var quest = player.GetQuest(group, number);
-            if (quest == null)
+            if (quest is null)
             {
                 player.Logger.LogWarning("Failed, quest not found");
                 return;
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             }
 
             var questState = player.SelectedCharacter.QuestStates.FirstOrDefault(q => q.Group == group);
-            if (questState == null)
+            if (questState is null)
             {
                 questState = player.PersistenceContext.CreateNew<CharacterQuestState>();
                 questState.Group = group;

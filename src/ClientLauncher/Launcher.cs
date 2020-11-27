@@ -8,7 +8,7 @@ namespace MUnique.OpenMU.ClientLauncher
     using System.Diagnostics;
     using System.IO;
     using System.Text;
-
+    using System.Windows.Forms;
     using Microsoft.Win32;
 
     /// <summary>
@@ -36,12 +36,23 @@ namespace MUnique.OpenMU.ClientLauncher
         /// </summary>
         public void LaunchClient()
         {
-            using (var localMachineKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
-            using (var key = localMachineKey.CreateSubKey(@"SOFTWARE\WebZen\Mu\Connection"))
+            if (OperatingSystem.IsWindows())
             {
+                using var localMachineKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+                using var key = localMachineKey.CreateSubKey(@"SOFTWARE\WebZen\Mu\Connection");
                 key.SetValue("Key", Environment.TickCount, RegistryValueKind.DWord);
                 key.SetValue("ParameterA", this.HostEncode(), RegistryValueKind.String);
                 key.SetValue("ParameterB", this.PortEncode(), RegistryValueKind.DWord);
+            }
+            else
+            {
+                if (MessageBox.Show(
+                        "IP and Port couldn't be set, because the operating system is not windows. Try to launch the game client anyway?",
+                        string.Empty,
+                        MessageBoxButtons.YesNo) != DialogResult.Yes)
+                {
+                    return;
+                }
             }
 
             var info = new DirectoryInfo(this.MainExePath);
@@ -49,9 +60,13 @@ namespace MUnique.OpenMU.ClientLauncher
             {
                 WorkingDirectory = info.Parent.FullName,
                 UseShellExecute = true,
-                LoadUserProfile = true,
                 Verb = "open",
             };
+            if (OperatingSystem.IsWindows())
+            {
+                startInfo.LoadUserProfile = true;
+            }
+
             Process.Start(startInfo);
         }
 

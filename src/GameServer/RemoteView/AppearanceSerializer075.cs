@@ -97,7 +97,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SetHand(Span<byte> preview, ItemAppearance item, int index)
         {
-            if (item == null)
+            if (item is null)
             {
                 preview[index] = 0xFF;
             }
@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SetArmorPiece(Span<byte> preview, ItemAppearance item, int index, bool highNibble)
         {
-            if (item == null)
+            if (item is null)
             {
                 // if the item is not equipped every index bit is set to 1
                 preview[index] |= highNibble ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);

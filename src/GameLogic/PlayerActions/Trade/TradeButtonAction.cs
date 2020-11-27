@@ -121,7 +121,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         private void CallPlugIn(IEnumerable<Item> items, ITrader source, ITrader target)
         {
             var point = target.GameContext.PlugInManager.GetPlugInPoint<IItemTradedToOtherPlayerPlugIn>();
-            if (point == null)
+            if (point is null)
             {
                 return;
             }

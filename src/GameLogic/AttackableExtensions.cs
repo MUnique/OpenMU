@@ -89,7 +89,7 @@ namespace MUnique.OpenMU.GameLogic
 
             if (skill != null)
             {
-                dmg = dmg + (int)attacker.Attributes[Stats.SkillDamageBonus];
+                dmg += (int)attacker.Attributes[Stats.SkillDamageBonus];
                 dmg = (int)(dmg * attacker.Attributes[Stats.SkillMultiplier]);
             }
 
@@ -146,7 +146,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="skillEntry">The skill entry.</param>
         public static void ApplyMagicEffect(this IAttackable target, Player player, SkillEntry skillEntry)
         {
-            if (skillEntry.BuffPowerUp == null)
+            if (skillEntry.BuffPowerUp is null)
             {
                 player.CreateMagicEffectPowerUp(skillEntry);
             }
@@ -190,7 +190,7 @@ namespace MUnique.OpenMU.GameLogic
         public static void ApplyElementalEffects(this IAttackable target, Player player, SkillEntry skillEntry)
         {
             var modifier = skillEntry.Skill.ElementalModifierTarget;
-            if (modifier == null)
+            if (modifier is null)
             {
                 return;
             }
@@ -250,12 +250,12 @@ namespace MUnique.OpenMU.GameLogic
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to himself.");
                 result = false;
             }
-            else if (skill.TargetRestriction == SkillTargetRestriction.Party && target != player && (player.Party == null || !player.Party.PartyList.Contains(target as IPartyMember)))
+            else if (skill.TargetRestriction == SkillTargetRestriction.Party && target != player && (player.Party is null || !player.Party.PartyList.Contains(target as IPartyMember)))
             {
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to his party.");
                 result = false;
             }
-            else if (skill.TargetRestriction == SkillTargetRestriction.Player && !(target is Player))
+            else if (skill.TargetRestriction == SkillTargetRestriction.Player && target is not Player)
             {
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to players.");
                 result = false;

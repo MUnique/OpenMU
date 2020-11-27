@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
 
             var socketOption = socketItem.ItemOptions
                 .FirstOrDefault(optionLink => optionLink.ItemOption.OptionType == ItemOptionTypes.SocketOption && optionLink.Index == socketSlot);
-            if (socketOption == null)
+            if (socketOption is null)
             {
                 throw new ArgumentException($"No seed sphere is mounted on the socket slot {socketSlot}.");
             }

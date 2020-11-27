@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Linq;
 
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// A repository which gets its data from the <see cref="EntityDataContext.CurrentGameConfiguration"/>, without additionally touching the database.
@@ -120,7 +121,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         private GameConfiguration GetCurrentGameConfiguration()
         {
             var context = (this.repositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext)?.Context as EntityDataContext;
-            if (context == null)
+            if (context is null)
             {
                 throw new InvalidOperationException("This repository can only be used within an account context.");
             }

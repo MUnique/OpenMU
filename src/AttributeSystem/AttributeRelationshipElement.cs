@@ -67,17 +67,15 @@ namespace MUnique.OpenMU.AttributeSystem
 
         private float CalculateValue()
         {
-            switch (this.InputOperator)
+            return this.InputOperator switch
             {
-                case InputOperator.Multiply:
-                    return this.InputElements.Sum(a => a.Value) * this.InputOperand;
-                case InputOperator.Add:
-                    return this.InputElements.Sum(a => a.Value) + this.InputOperand;
-                case InputOperator.Exponentiate:
-                    return (float)System.Math.Pow(this.InputElements.Sum(a => a.Value), this.InputOperand);
-                default:
-                    throw new System.InvalidOperationException($"Input operator {this.InputOperator} unknown");
-            }
+                InputOperator.Multiply => this.InputElements.Sum(a => a.Value) * this.InputOperand,
+                InputOperator.Add => this.InputElements.Sum(a => a.Value) + this.InputOperand,
+                InputOperator.Exponentiate => (float)Math.Pow(
+                    this.InputElements.Sum(a => a.Value),
+                    this.InputOperand),
+                _ => throw new InvalidOperationException($"Input operator {this.InputOperator} unknown")
+            };
         }
     }
 }

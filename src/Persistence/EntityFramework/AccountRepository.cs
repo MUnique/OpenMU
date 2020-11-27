@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// Repository for accounts.

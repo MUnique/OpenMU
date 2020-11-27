@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Persistence.EntityFramework.Json;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// The game configuration repository, which loads the configuration by using the
@@ -24,6 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Initializes a new instance of the <see cref="CachingGameConfigurationRepository" /> class.
         /// </summary>
         /// <param name="repositoryManager">The repository manager.</param>
+        /// <param name="logger">The logger for this class.</param>
         public CachingGameConfigurationRepository(RepositoryManager repositoryManager, ILogger<CachingGameConfigurationRepository> logger)
             : base(repositoryManager, logger)
         {
@@ -33,8 +35,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public override GameConfiguration GetById(Guid id)
         {
-            var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-            if (currentContext == null)
+            if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
             {
                 throw new InvalidOperationException("There is no current context set.");
             }
@@ -57,8 +58,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public override IEnumerable<GameConfiguration> GetAll()
         {
-            var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-            if (currentContext == null)
+            if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
             {
                 throw new InvalidOperationException("There is no current context set.");
             }

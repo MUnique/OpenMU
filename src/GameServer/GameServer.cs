@@ -331,7 +331,7 @@ namespace MUnique.OpenMU.GameServer
         public void GuildPlayerKicked(string playerName)
         {
             Player player = this.gameContext.GetPlayerByCharacterName(playerName);
-            if (player == null)
+            if (player is null)
             {
                 return;
             }
@@ -342,8 +342,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void RegisterMapObserver(ushort mapId, object worldObserver)
         {
-            var locateableObserver = worldObserver as ILocateable;
-            if (locateableObserver == null)
+            if ((worldObserver is not ILocateable locateableObserver))
             {
                 throw new ArgumentException("worldObserver needs to implement ILocateable", nameof(worldObserver));
             }

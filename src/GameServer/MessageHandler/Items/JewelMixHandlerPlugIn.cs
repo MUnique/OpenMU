@@ -51,13 +51,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
 
         private static byte GetStackSize(LahapJewelMixRequest.StackSize stackSize)
         {
-            switch (stackSize)
+            return stackSize switch
             {
-                case LahapJewelMixRequest.StackSize.Ten: return 10;
-                case LahapJewelMixRequest.StackSize.Twenty: return 20;
-                case LahapJewelMixRequest.StackSize.Thirty: return 30;
-                default: throw new InvalidEnumArgumentException(nameof(stackSize), (int)stackSize, typeof(LahapJewelMixRequest.StackSize));
-            }
+                LahapJewelMixRequest.StackSize.Ten => 10,
+                LahapJewelMixRequest.StackSize.Twenty => 20,
+                LahapJewelMixRequest.StackSize.Thirty => 30,
+                _ => throw new InvalidEnumArgumentException(nameof(stackSize), (int) stackSize, typeof(LahapJewelMixRequest.StackSize))
+            };
         }
     }
 }

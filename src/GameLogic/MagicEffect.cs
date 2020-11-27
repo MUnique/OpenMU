@@ -104,7 +104,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void ResetTimer()
         {
-            if (this.finishTimer == null)
+            if (this.finishTimer is null)
             {
                 throw new ObjectDisposedException(nameof(MagicEffect));
             }

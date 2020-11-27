@@ -33,8 +33,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         public void HandlePacket(Player player, Span<byte> packet)
         {
             PlayerShopItemListRequest message = packet;
-            var requestedPlayer = player.CurrentMap.GetObject(message.PlayerId) as Player;
-            if (requestedPlayer == null)
+            if (player.CurrentMap.GetObject(message.PlayerId) is not Player requestedPlayer)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
                 return;

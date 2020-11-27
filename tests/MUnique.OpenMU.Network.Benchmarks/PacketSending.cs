@@ -57,12 +57,10 @@ namespace MUnique.OpenMU.Network.Benchmarks
             var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
             for (int i = 0; i < this.PacketCount; i++)
             {
-                using (var output = connection.StartSafeWrite(0xC1, this.c1Packet.Length))
-                {
-                    var span = output.Span;
-                    this.c1Packet.CopyTo(span);
-                    output.Commit();
-                }
+                using var output = connection.StartSafeWrite(0xC1, this.c1Packet.Length);
+                var span = output.Span;
+                this.c1Packet.CopyTo(span);
+                output.Commit();
             }
         }
     }

@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         public void AddMasterPoint(Player player, ushort skillId)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
-            if (player.SelectedCharacter == null)
+            if (player.SelectedCharacter is null)
             {
                 player.Logger.LogWarning("No character selected, player {0}", player);
                 return;
@@ -37,21 +37,21 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return;
             }
 
-            Skill skill = player.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == skillId);
-            if (skill == null)
+            var skill = player.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == skillId);
+            if (skill is null)
             {
                 player.Logger.LogWarning("Skill {0} does not exist, player {1}", skillId, player);
                 return;
             }
 
-            if (skill.MasterDefinition == null)
+            if (skill.MasterDefinition is null)
             {
                 player.Logger.LogWarning("Not a master skill, skillId: {0}, player {1}", skill.Number, player);
                 return;
             }
 
-            SkillEntry learnedSkill = player.SelectedCharacter.LearnedSkills.FirstOrDefault(ls => ls.Skill.Number == skillId);
-            if (learnedSkill == null)
+            var learnedSkill = player.SelectedCharacter.LearnedSkills.FirstOrDefault(ls => ls.Skill.Number == skillId);
+            if (learnedSkill is null)
             {
                 player.Logger.LogDebug("Trying to add master skill, skillId: {0}, player {1}", skill.Number, player);
                 if (this.CheckRequisitions(player, skill))
@@ -130,11 +130,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         private bool CheckRequiredSkill(MasterSkillDefinition definition, Player player)
         {
             var result = true;
-            if (definition.RequiredMasterSkills != null && definition.RequiredMasterSkills.Any())
+            if (definition.RequiredMasterSkills is not null && definition.RequiredMasterSkills.Any())
             {
                 result = definition.RequiredMasterSkills.All(s =>
                     player.SelectedCharacter.LearnedSkills.Any(learned => learned.Skill == s && learned.Level >= MinimumSkillLevelOfRequiredSkill)
-                    || (s.MasterDefinition == null && player.SkillList.ContainsSkill((ushort)s.Number)));
+                    || (s.MasterDefinition is null && player.SkillList.ContainsSkill((ushort)s.Number)));
             }
 
             return result;

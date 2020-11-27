@@ -23,20 +23,18 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <param name="path">The path.</param>
         public static void SaveToFile(this ICapturedConnection connection, string path)
         {
-            using (var file = File.OpenWrite(path))
-            using (var writer = new StreamWriter(file))
+            using var file = File.OpenWrite(path);
+            using var writer = new StreamWriter(file);
+            for (var i = 0; i < connection.PacketList.Count; i++)
             {
-                for (var i = 0; i < connection.PacketList.Count; i++)
-                {
-                    var packet = connection.PacketList[i];
-                    writer.Write(packet.Timestamp.Ticks);
-                    writer.Write(fieldSeparator);
-                    writer.Write(packet.ToServer);
-                    writer.Write(fieldSeparator);
-                    writer.Write(packet.Size);
-                    writer.Write(fieldSeparator);
-                    writer.WriteLine(packet.PacketData);
-                }
+                var packet = connection.PacketList[i];
+                writer.Write(packet.Timestamp.Ticks);
+                writer.Write(fieldSeparator);
+                writer.Write(packet.ToServer);
+                writer.Write(fieldSeparator);
+                writer.Write(packet.Size);
+                writer.Write(fieldSeparator);
+                writer.WriteLine(packet.PacketData);
             }
         }
 
@@ -47,26 +45,24 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <param name="path">The path.</param>
         public static void LoadFromFile(this BindingList<Packet> packetList, string path)
         {
-            using (var stream = File.OpenRead(path))
-            using (var reader = new StreamReader(stream))
+            using var stream = File.OpenRead(path);
+            using var reader = new StreamReader(stream);
+            while (!reader.EndOfStream)
             {
-                while (!reader.EndOfStream)
+                var currentLine = reader.ReadLine();
+                var splittedLine = currentLine?.Split(fieldSeparator);
+                if (splittedLine != null
+                    && splittedLine.Length > 3
+                    && long.TryParse(splittedLine[0], out var ticks)
+                    && bool.TryParse(splittedLine[1], out var toServer)
+                    && int.TryParse(splittedLine[2], out var size)
+                    && TryParseArray(splittedLine[3], size, out var data))
                 {
-                    var currentLine = reader.ReadLine();
-                    var splittedLine = currentLine?.Split(fieldSeparator);
-                    if (splittedLine != null
-                        && splittedLine.Length > 3
-                        && long.TryParse(splittedLine[0], out var ticks)
-                        && bool.TryParse(splittedLine[1], out var toServer)
-                        && int.TryParse(splittedLine[2], out var size)
-                        && TryParseArray(splittedLine[3], size, out var data))
-                    {
-                        packetList.Add(new Packet(new DateTime(ticks), data, toServer));
-                    }
-                    else
-                    {
-                        Debug.Fail($"Invalid line: {currentLine}");
-                    }
+                    packetList.Add(new Packet(new DateTime(ticks), data, toServer));
+                }
+                else
+                {
+                    Debug.Fail($"Invalid line: {currentLine}");
                 }
             }
         }

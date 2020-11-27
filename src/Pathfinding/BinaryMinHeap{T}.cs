@@ -96,7 +96,7 @@ namespace MUnique.OpenMU.Pathfinding
         {
             var result = this.innerList[0];
             this.i = 0;
-            this.innerList[0] = this.innerList[this.innerList.Count - 1];
+            this.innerList[0] = this.innerList[^1];
             this.innerList.RemoveAt(this.innerList.Count - 1);
             do
             {
@@ -136,7 +136,7 @@ namespace MUnique.OpenMU.Pathfinding
                 return this.innerList[0];
             }
 
-            return default(T);
+            return default;
         }
 
         /// <inheritdoc/>

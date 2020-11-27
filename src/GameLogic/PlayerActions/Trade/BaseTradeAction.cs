@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         protected void SendMessage(ITrader trader, string message)
         {
             var player = trader as Player;
-            if (player == null)
+            if (player is null)
             {
                 return;
             }

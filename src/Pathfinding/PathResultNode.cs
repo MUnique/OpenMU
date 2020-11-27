@@ -39,6 +39,23 @@ namespace MUnique.OpenMU.Pathfinding
 
         private Point ThisPoint { get; }
 
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            if (obj is PathResultNode other)
+            {
+                return this.Equals(other);
+            }
+
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.PreviousPoint, this.ThisPoint);
+        }
+
         /// <inheritdoc/>
         public bool Equals(PathResultNode other)
         {

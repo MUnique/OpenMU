@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         internal static void AssignActiveQuestData(this QuestState message, CharacterQuestState questState, RemotePlayer player)
         {
             var activeQuest = questState.ActiveQuest;
-            if (activeQuest == null)
+            if (activeQuest is null)
             {
                 return;
             }
@@ -113,8 +113,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
             condition.CurrentCount = (uint)player.Inventory.Items.Count(item => item.Definition == itemRequirement.Item);
             condition.RequirementId = itemRequirement.Item.GetItemType();
-            var temporaryItem = new TemporaryItem();
-            temporaryItem.Definition = itemRequirement.Item;
+            var temporaryItem = new TemporaryItem { Definition = itemRequirement.Item };
             temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();
             player.ItemSerializer.SerializeItem(condition.RequiredItemData, temporaryItem);
         }

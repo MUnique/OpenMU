@@ -39,13 +39,13 @@ namespace MUnique.OpenMU.AdminPanel.Services
         {
             var type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.StartsWith(nameof(MUnique)))
                 .Select(assembly => assembly.GetType(typeString)).FirstOrDefault(t => t != null);
-            if (type == null)
+            if (type is null)
             {
                 throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
             }
 
             var property = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            if (property == null)
+            if (property is null)
             {
                 throw new ArgumentException($"Property {propertyName} not found in type {type}.", nameof(propertyName));
             }

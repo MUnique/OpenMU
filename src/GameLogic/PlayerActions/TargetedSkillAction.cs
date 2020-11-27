@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }

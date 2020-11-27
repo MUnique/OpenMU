@@ -82,12 +82,12 @@ namespace MUnique.OpenMU.Pathfinding
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            if (!(obj is Point))
+            if (obj is Point point)
             {
-                return false;
+                return this.Equals(point);
             }
 
-            return this.Equals((Point)obj);
+            return false;
         }
 
         /// <inheritdoc/>

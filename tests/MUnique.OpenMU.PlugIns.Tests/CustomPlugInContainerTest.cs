@@ -80,8 +80,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void DontGetPlugInFromCustomContainerIfItDoesntSuit()
         {
             var manager = new PlugInManager(null, new NullLoggerFactory(), null);
-            var container = new CustomTestPlugInContainer(manager);
-            container.CreateNewPlugIns = false;
+            var container = new CustomTestPlugInContainer(manager) { CreateNewPlugIns = false };
             manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
             var plugIn = container.GetPlugIn<ITestCustomPlugIn>();
             Assert.That(plugIn, Is.Null);

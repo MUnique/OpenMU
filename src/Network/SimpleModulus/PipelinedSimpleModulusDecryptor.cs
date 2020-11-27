@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         {
             var maximumDecryptedSize = this.GetMaximumDecryptedSize(this.HeaderBuffer);
             var headerSize = this.HeaderBuffer.GetPacketHeaderSize();
-            var counterSize = this.Counter == null ? 0 : 1;
+            var counterSize = this.Counter is null ? 0 : 1;
 
             var span = this.Pipe.Writer.GetSpan(maximumDecryptedSize);
 

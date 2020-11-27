@@ -72,6 +72,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <summary>
         /// Gets the usage text for the chat command.
         /// </summary>
-        public string Usage => this.argumentsType == null ? this.Command : CommandExtensions.CreateUsage(this.argumentsType, this.Command);
+        public string Usage => this.argumentsType is null ? this.Command : CommandExtensions.CreateUsage(this.argumentsType, this.Command);
     }
 }

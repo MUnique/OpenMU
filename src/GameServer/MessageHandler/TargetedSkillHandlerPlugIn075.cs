@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         {
             TargetedSkill075 message = packet;
             var skill = player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.GetSkillByIndex(message.SkillId);
-            if (skill == null)
+            if (skill is null)
             {
                 return;
             }

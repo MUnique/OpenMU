@@ -30,11 +30,13 @@ namespace MUnique.OpenMU.Persistence.Json
         /// </returns>
         public T Deserialize<T>(TextReader textReader, IReferenceResolver referenceResolver)
         {
-            var serializer = new JsonSerializer();
-            serializer.ReferenceResolver = referenceResolver;
-            serializer.ContractResolver = new IgnoringTypesContractResolver(typeof(ConstantElement));
-            serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            serializer.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+            var serializer = new JsonSerializer
+            {
+                ReferenceResolver = referenceResolver,
+                ContractResolver = new IgnoringTypesContractResolver(typeof(ConstantElement)),
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            };
 
             this.BeforeDeserialize(serializer);
             DelayedReferenceResolvingConverter deferredConverter = null;
@@ -45,12 +47,10 @@ namespace MUnique.OpenMU.Persistence.Json
                 serializer.Converters.Add(deferredConverter);
             }
 
-            using (var jsonReader = new JsonTextReader(textReader))
-            {
-                var result = serializer.Deserialize<T>(jsonReader);
-                deferredConverter?.ResolveDelayedReferences();
-                return result;
-            }
+            using var jsonReader = new JsonTextReader(textReader);
+            var result = serializer.Deserialize<T>(jsonReader);
+            deferredConverter?.ResolveDelayedReferences();
+            return result;
         }
 
         /// <summary>

@@ -63,13 +63,13 @@ namespace MUnique.OpenMU.Persistence
         /// <inheritdoc />
         public void Add(TClass item)
         {
-            if (!(item is TEfCore))
+            if (item is not TEfCore efCoreItem)
             {
                 throw new ArgumentException($"The item needs to be of type {typeof(TEfCore)}.", nameof(item));
             }
 
-            this.rawCollection.Add((TEfCore)item);
-            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<TEfCore> { (TEfCore)item }));
+            this.rawCollection.Add(efCoreItem);
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<TEfCore> { efCoreItem }));
         }
 
         /// <inheritdoc />
@@ -83,12 +83,12 @@ namespace MUnique.OpenMU.Persistence
         /// <inheritdoc />
         public bool Contains(TClass item)
         {
-            if (!(item is TEfCore))
+            if (item is not TEfCore efCoreItem)
             {
                 return false;
             }
 
-            return this.rawCollection.Contains((TEfCore)item);
+            return this.rawCollection.Contains(efCoreItem);
         }
 
         /// <inheritdoc />
@@ -105,14 +105,14 @@ namespace MUnique.OpenMU.Persistence
         /// <inheritdoc />
         public bool Remove(TClass item)
         {
-            if (!(item is TEfCore))
+            if (item is not TEfCore efCoreItem)
             {
                 return false;
             }
 
-            if (this.rawCollection.Remove((TEfCore)item))
+            if (this.rawCollection.Remove(efCoreItem))
             {
-                this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new List<TEfCore> { (TEfCore)item }));
+                this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new List<TEfCore> { efCoreItem }));
                 return true;
             }
 

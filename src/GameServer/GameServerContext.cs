@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public override void RemovePlayer(Player player)
         {
-            if (player == null)
+            if (player is null)
             {
                 return;
             }

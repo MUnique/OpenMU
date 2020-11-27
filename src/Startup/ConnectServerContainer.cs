@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Startup
                 if (this.observers.TryGetValue(connectServerDefinition.Client, out var observer))
                 {
                     this.logger.LogWarning($"Multiple connect servers for game client '{connectServerDefinition.Client.Description}' configured. Only one per client makes sense.");
-                    if (!(observer is MulticastConnectionServerStateObserver))
+                    if (observer is not MulticastConnectionServerStateObserver)
                     {
                         var multicastObserver = new MulticastConnectionServerStateObserver();
                         multicastObserver.AddObserver(observer);

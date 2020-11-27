@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameLogic
         public bool RemoveItemSkill(ushort skillId)
         {
             this.availableSkills.TryGetValue(skillId, out SkillEntry skillEntry);
-            if (skillEntry == null)
+            if (skillEntry is null)
             {
                 return false;
             }
@@ -130,12 +130,12 @@ namespace MUnique.OpenMU.GameLogic
         private void CreatePowerUpWrappers(SkillEntry skillEntry)
         {
             var masterDefinition = skillEntry.Skill.MasterDefinition;
-            if (masterDefinition == null)
+            if (masterDefinition is null)
             {
                 return;
             }
 
-            if (masterDefinition.TargetAttribute == null)
+            if (masterDefinition.TargetAttribute is null)
             {
                 // log?
                 return;
@@ -148,7 +148,7 @@ namespace MUnique.OpenMU.GameLogic
         private void Inventory_WearingItemsChanged(object sender, ItemEventArgs eventArgs)
         {
             var item = eventArgs.Item;
-            if (!item.HasSkill || item.Definition.Skill == null)
+            if (!item.HasSkill || item.Definition.Skill is null)
             {
                 return;
             }

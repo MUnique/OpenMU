@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         internal static CharacterClass GetBaseClass(this CharacterClass characterClass, GameConfiguration gameConfiguration)
         {
             var previousClass = gameConfiguration.CharacterClasses.FirstOrDefault(c => c.NextGenerationClass == characterClass);
-            if (previousClass == null)
+            if (previousClass is null)
             {
                 return characterClass;
             }

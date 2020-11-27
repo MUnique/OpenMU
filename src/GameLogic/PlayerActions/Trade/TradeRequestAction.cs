@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         /// <returns>The success of sending the request to the <paramref name="partner"/>.</returns>
         public bool RequestTrade(ITrader player, ITrader partner)
         {
-            if (player.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>() == null || partner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>() == null)
+            if (player.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>() is null || partner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>() is null)
             {
                 return false;
             }

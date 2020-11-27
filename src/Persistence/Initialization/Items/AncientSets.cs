@@ -653,7 +653,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
         private IncreasableItemOption CreateAncientBonusOption(AttributeDefinition attribute)
         {
-            if (attribute == null)
+            if (attribute is null)
             {
                 return null;
             }

@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
         {
             QuestStateRequest request = packet;
             var questState = player.GetQuestState((short)request.QuestGroup, (short)request.QuestNumber);
-            if (questState == null)
+            if (questState is null)
             {
                 player.Logger.LogError($"Quest state not found. Group {request.QuestGroup}, Number {request.QuestNumber}, Player {player}");
             }

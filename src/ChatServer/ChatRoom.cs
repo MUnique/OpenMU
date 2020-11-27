@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.ChatServer
         public void Dispose()
         {
             var localLockSlim = this.lockSlim;
-            if (this.isClosing || localLockSlim == null)
+            if (this.isClosing || localLockSlim is null)
             {
                 return;
             }
@@ -154,7 +154,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <returns>True, if the <paramref name="chatClient"/> provides the correct registered id with it's token.</returns>
         internal bool TryJoin(IChatClient chatClient)
         {
-            if (chatClient == null)
+            if (chatClient is null)
             {
                 throw new ArgumentNullException(nameof(chatClient));
             }

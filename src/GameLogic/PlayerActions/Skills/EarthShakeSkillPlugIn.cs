@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
         /// <inheritdoc />
         public void AfterTargetGotAttacked(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
         {
-            if (!target.Alive || !(target is IMovable movableTarget))
+            if (!target.Alive || target is not IMovable movableTarget)
             {
                 return;
             }

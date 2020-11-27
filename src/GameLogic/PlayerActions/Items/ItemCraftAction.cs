@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var npcStats = player.OpenedNpc.Definition;
 
             var crafting = npcStats?.ItemCraftings.FirstOrDefault(c => c.Number == mixTypeId);
-            if (crafting == null)
+            if (crafting is null)
             {
                 return;
             }

@@ -143,7 +143,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         {
             for (byte i = 0; i < this.SkillList.Count; i++)
             {
-                if (this.SkillList[i] == null)
+                if (this.SkillList[i] is null)
                 {
                     this.SkillList[i] = skill;
                     return i;

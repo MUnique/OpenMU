@@ -206,39 +206,37 @@ namespace MUnique.OpenMU.Tests
 
         private Tuple<Item, Item> SerializeAndDeserializeBlade(bool hasSkill = true)
         {
-            using (var context = this.contextProvider.CreateNewContext(this.gameConfiguration))
-            {
-                var item = context.CreateNew<Item>();
-                item.Definition = this.gameConfiguration.Items.First(i => i.Name == "Blade");
-                item.Level = 15;
-                item.Durability = 23;
-                item.HasSkill = hasSkill;
-                var option = context.CreateNew<ItemOptionLink>();
-                option.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
-                    def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Option)).First();
-                option.Level = 2;
-                item.ItemOptions.Add(option);
+            using var context = this.contextProvider.CreateNewContext(this.gameConfiguration);
+            var item = context.CreateNew<Item>();
+            item.Definition = this.gameConfiguration.Items.First(i => i.Name == "Blade");
+            item.Level = 15;
+            item.Durability = 23;
+            item.HasSkill = hasSkill;
+            var option = context.CreateNew<ItemOptionLink>();
+            option.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
+                def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Option)).First();
+            option.Level = 2;
+            item.ItemOptions.Add(option);
 
-                var luck = context.CreateNew<ItemOptionLink>();
-                luck.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
-                    def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Luck)).First();
-                item.ItemOptions.Add(luck);
+            var luck = context.CreateNew<ItemOptionLink>();
+            luck.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
+                def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Luck)).First();
+            item.ItemOptions.Add(luck);
 
-                var excellent1 = context.CreateNew<ItemOptionLink>();
-                excellent1.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
-                    def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition.TargetAttribute == Stats.ExcellentDamageChance)).First();
-                item.ItemOptions.Add(excellent1);
-                var excellent2 = context.CreateNew<ItemOptionLink>();
-                excellent2.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
-                    def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition.TargetAttribute == Stats.AttackSpeed)).First();
-                item.ItemOptions.Add(excellent2);
+            var excellent1 = context.CreateNew<ItemOptionLink>();
+            excellent1.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
+                def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition.TargetAttribute == Stats.ExcellentDamageChance)).First();
+            item.ItemOptions.Add(excellent1);
+            var excellent2 = context.CreateNew<ItemOptionLink>();
+            excellent2.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
+                def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition.TargetAttribute == Stats.AttackSpeed)).First();
+            item.ItemOptions.Add(excellent2);
 
-                var array = new byte[this.itemSerializer.NeededSpace];
-                this.itemSerializer.SerializeItem(array, item);
+            var array = new byte[this.itemSerializer.NeededSpace];
+            this.itemSerializer.SerializeItem(array, item);
 
-                var deserializedItem = this.itemSerializer.DeserializeItem(array, this.gameConfiguration, context);
-                return new Tuple<Item, Item>(item, deserializedItem);
-            }
+            var deserializedItem = this.itemSerializer.DeserializeItem(array, this.gameConfiguration, context);
+            return new Tuple<Item, Item>(item, deserializedItem);
         }
     }
 }

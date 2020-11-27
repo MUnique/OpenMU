@@ -77,10 +77,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             {
                 if (stream != null)
                 {
-                    using (var reader = new BinaryReader(stream))
-                    {
-                        this.mapDefinition.TerrainData = reader.ReadBytes((int)stream.Length);
-                    }
+                    using var reader = new BinaryReader(stream);
+                    this.mapDefinition.TerrainData = reader.ReadBytes((int)stream.Length);
                 }
             }
 

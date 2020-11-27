@@ -23,14 +23,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         public void RepairItem(Player player, byte slot)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
-            if (slot == InventoryConstants.PetSlot && player.OpenedNpc == null)
+            if (slot == InventoryConstants.PetSlot && player.OpenedNpc is null)
             {
                 player.Logger.LogWarning("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
                 return;
             }
 
             Item item = player.Inventory.GetItem(slot);
-            if (item == null)
+            if (item is null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("No Item there to repair.", MessageType.BlueNormal);
                 player.Logger.LogWarning("RepairItem: Player {0}, Itemslot {1} not filled", player.SelectedCharacter.Name, slot);
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// </remarks>
         public void RepairAllItems(Player player)
         {
-            if (player.OpenedNpc == null)
+            if (player.OpenedNpc is null)
             {
                 // probably cheater
                 player.Logger.LogWarning("Cheater Warning: Player tried to repair all items, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 }
 
                 Item item = player.Inventory.GetItem(i);
-                if (item == null)
+                if (item is null)
                 {
                     continue;
                 }

@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         private void ObjectWalked(ILocateable obj)
         {
             var objectId = obj.GetId(this.player);
-            Span<Direction> steps = this.SendWalkDirections ? stackalloc Direction[16] : null;
+            Span<Direction> steps = this.SendWalkDirections ? stackalloc Direction[16] : default;
             var stepsLength = 0;
             Point targetPoint;
             var rotation = Direction.Undefined;
@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 }
             }
 
-            var stepsSize = steps == null ? 1 : (steps.Length / 2) + 2;
+            var stepsSize = steps == default ? 1 : (steps.Length / 2) + 2;
             using var writer = this.player.Connection.StartSafeWrite(
                 Network.Packets.ServerToClient.ObjectWalked.HeaderType,
                 Network.Packets.ServerToClient.ObjectWalked.GetRequiredSize(stepsSize));

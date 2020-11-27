@@ -122,8 +122,7 @@ namespace MUnique.OpenMU.Tests
                 character.Attributes.Add(new StatAttribute(attributeDef.Attribute, attributeDef.BaseValue));
             }
 
-            var player = new TestPlayer(gameContext);
-            player.Account = new Account();
+            var player = new TestPlayer(gameContext) { Account = new Account() };
             player.PlayerState.TryAdvanceTo(PlayerState.LoginScreen);
             player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
             player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection);

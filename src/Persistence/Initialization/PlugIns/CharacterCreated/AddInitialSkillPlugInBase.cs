@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
 
             var skillDefinition =
                 player.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == this.skillNumber);
-            if (skillDefinition == null)
+            if (skillDefinition is null)
             {
                 player.Logger.LogError($"Skill not found: {this.skillNumber}");
                 return;

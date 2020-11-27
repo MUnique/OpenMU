@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             EnterGateRequest request = packet;
             var gateNumber = request.GateNumber;
             EnterGate gate = player.SelectedCharacter.CurrentMap.EnterGates.FirstOrDefault(g => g.Number == gateNumber);
-            if (gate == null)
+            if (gate is null)
             {
                 player.Logger.LogWarning("Gate {0} not found in current map {1}", gateNumber,  player.SelectedCharacter.CurrentMap);
                 return;

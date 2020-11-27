@@ -222,13 +222,13 @@ namespace MUnique.OpenMU.ConnectServer
                 return;
             }
 
-            if (!(sender is IGameServerInfo server))
+            if (sender is not IGameServerInfo server)
             {
                 return;
             }
 
             var serverListItem = this.ServerList.Servers.FirstOrDefault(s => s.ServerId == server.Id);
-            if (serverListItem == null)
+            if (serverListItem is null)
             {
                 return;
             }

@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
             {
                 this.SendMessageToPlayer(player, $"{player.Name} is already in a party.", MessageType.BlueNormal);
             }
-            else if (player.Party == null || (player.Party != null && Equals(player.Party.PartyMaster, player)))
+            else if (player.Party is null || (player.Party != null && Equals(player.Party.PartyMaster, player)))
             {
                 if (toRequest.PlayerState.TryAdvanceTo(PlayerState.PartyRequest))
                 {

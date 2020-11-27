@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             }
 
             var guildServer = (creator.GameContext as IGameServerContext)?.GuildServer;
-            if (guildServer == null)
+            if (guildServer is null)
             {
                 creator.Logger.LogError($"No guild server available");
                 return;
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             }
 
             creator.GuildStatus = guildServer.CreateGuild(guildName, creator.SelectedCharacter.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id);
-            if (creator.GuildStatus == null)
+            if (creator.GuildStatus is null)
             {
                 creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
                 return;

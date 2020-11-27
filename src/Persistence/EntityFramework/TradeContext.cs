@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework
 {
     using Microsoft.EntityFrameworkCore;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// A context which is used for trades.

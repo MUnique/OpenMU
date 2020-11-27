@@ -33,21 +33,21 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="slot">The slot of the item.</param>
         public void BuyItem(Player player, byte slot)
         {
-            if (player.OpenedNpc == null)
+            if (player.OpenedNpc is null)
             {
                 player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return;
             }
 
             var npcDefinition = player.OpenedNpc.Definition;
-            if (npcDefinition.MerchantStore == null || npcDefinition.MerchantStore.Items.Count == 0)
+            if (npcDefinition.MerchantStore is null || npcDefinition.MerchantStore.Items.Count == 0)
             {
                 player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return;
             }
 
             Item storeItem = npcDefinition.MerchantStore.Items.FirstOrDefault(i => i.ItemSlot == slot);
-            if (storeItem == null)
+            if (storeItem is null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Item Unknown", MessageType.BlueNormal);
                 player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();

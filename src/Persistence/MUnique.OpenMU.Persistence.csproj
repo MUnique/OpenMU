@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
@@ -18,12 +18,15 @@
     <Compile Remove="EntityFramework\**" />
     <Compile Remove="Initialization\**" />
     <Compile Remove="InMemory\**" />
+    <Compile Remove="SourceGenerator\**" />
     <EmbeddedResource Remove="EntityFramework\**" />
     <EmbeddedResource Remove="Initialization\**" />
     <EmbeddedResource Remove="InMemory\**" />
+    <EmbeddedResource Remove="SourceGenerator\**" />
     <None Remove="EntityFramework\**" />
     <None Remove="Initialization\**" />
     <None Remove="InMemory\**" />
+    <None Remove="SourceGenerator\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +43,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="4.7.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,22 +53,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="BasicModel\ExtendedTypes.cs">
-      <DependentUpon>ExtendedTypes.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="BasicModel\ExtendedTypes.tt">
-      <LastGenOutput>ExtendedTypes.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="dotnet run -p SourceGenerator/MUnique.OpenMU.Persistence.SourceGenerator.csproj -c:$(ConfigurationName) MUnique.OpenMU.Persistence &quot;$(ProjectDir)BasicModel&quot;" />
+  </Target>
 
 </Project>

@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <param name="handler">The handler.</param>
         protected void HandlePacket(Player player, in Span<byte> packet, THandler handler)
         {
-            if (handler == null)
+            if (handler is null)
             {
                 // unknown packet
                 return;
@@ -130,7 +130,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             base.BeforeActivatePlugInType(plugInType);
 
             var knownPlugIn = this.FindKnownPlugin(plugInType);
-            if (knownPlugIn == null && this.clientVersionProvider.ClientVersion.IsPlugInSuitable(plugInType))
+            if (knownPlugIn is null && this.clientVersionProvider.ClientVersion.IsPlugInSuitable(plugInType))
             {
                 var plugIn = this.CreatePlugIn(plugInType);
                 this.AddPlugIn(plugIn, true);

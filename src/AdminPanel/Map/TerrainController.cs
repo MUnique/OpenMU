@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.AdminPanel.Map
             var gameServer = this.servers.OfType<IGameServer>().FirstOrDefault(s => s.Id == serverId);
 
             var map = gameServer?.ServerInfo.Maps.FirstOrDefault(m => m.MapNumber == mapId);
-            if (map == null)
+            if (map is null)
             {
                 Log.Warn($"requested map not available. map number: {mapId}; server id: {serverId}");
                 return this.NotFound();

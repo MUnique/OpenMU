@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using Microsoft.EntityFrameworkCore.Metadata;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// <see cref="JsonQueryBuilder"/> for <see cref="GameConfiguration"/>.

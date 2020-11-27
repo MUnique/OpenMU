@@ -119,7 +119,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 var attribute = property.GetCustomAttributes<ArgumentAttribute>().First();
                 var argument = arguments.FirstOrDefault(x => x.Split('=').First().Trim() == attribute.ShortName);
 
-                if (argument == null)
+                if (argument is null)
                 {
                     continue;
                 }

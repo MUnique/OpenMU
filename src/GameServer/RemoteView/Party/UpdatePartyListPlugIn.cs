@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
         public void UpdatePartyList()
         {
             var party = this.player.Party;
-            if (party == null)
+            if (party is null)
             {
                 return;
             }

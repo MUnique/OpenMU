@@ -36,8 +36,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             PlayerShopItemBuyRequest message = packet;
 
-            var requestedPlayer = player.CurrentMap.GetObject(message.PlayerId) as Player;
-            if (requestedPlayer == null)
+            if (player.CurrentMap.GetObject(message.PlayerId) is not Player requestedPlayer)
             {
                 player.Logger.LogDebug("Player not found: {0}", message.PlayerId);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);

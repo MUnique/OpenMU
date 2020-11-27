@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
             var character = player.Account.Characters.FirstOrDefault(c => c.Name == characterName);
 
-            if (character == null)
+            if (character is null)
             {
                 player.Logger.LogError("Character not found. Hacker maybe tried to delete other players character!" +
                                        Environment.NewLine + "\tAccName: " + player.Account.LoginName +

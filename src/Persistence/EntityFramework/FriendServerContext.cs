@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
     /// <summary>
     /// A context which is used by the <see cref="IFriendServer"/>.
@@ -27,7 +28,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public Interfaces.Friend CreateNewFriend(string characterName, string friendName)
         {
-            var item = this.CreateNew<Friend>();
+            var item = this.CreateNew<Model.Friend>();
             item.CharacterId = this.GetCharacterIdByName(characterName);
             item.FriendId = this.GetCharacterIdByName(friendName);
 
@@ -49,7 +50,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public IEnumerable<FriendViewItem> GetFriends(Guid characterId)
         {
-            return from friend in this.Context.Set<Friend>()
+            return from friend in this.Context.Set<Model.Friend>()
                 join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
                 join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
                 select new FriendViewItem
@@ -67,7 +68,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc />
         public IEnumerable<string> GetFriendNames(Guid characterId)
         {
-            return (from friend in this.Context.Set<Friend>()
+            return (from friend in this.Context.Set<Model.Friend>()
                 where friend.CharacterId == characterId
                 join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
                 select friendCharacter.Name).ToList();
@@ -76,15 +77,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public IEnumerable<string> GetOpenFriendRequesterNames(Guid characterId)
         {
-            return (from friend in this.Context.Set<Friend>()
+            return (from friend in this.Context.Set<Model.Friend>()
                 where friend.RequestOpen == true && friend.FriendId == characterId
                 join requester in this.Context.Set<CharacterName>() on friend.CharacterId equals requester.Id
                 select requester.Name).ToList();
         }
 
-        private IQueryable<Friend> FindItems(string characterName, string friendName)
+        private IQueryable<Model.Friend> FindItems(string characterName, string friendName)
         {
-            return from friend in this.Context.Set<Friend>()
+            return from friend in this.Context.Set<Model.Friend>()
                 join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
                 join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
                 where friendCharacter.Name == friendName && character.Name == characterName

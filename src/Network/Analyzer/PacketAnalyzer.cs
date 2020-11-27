@@ -156,33 +156,23 @@ namespace MUnique.OpenMU.Network.Analyzer
                 return string.Empty;
             }
 
-            switch (field.Type)
+            return field.Type switch
             {
-                case FieldType.Byte:
-                    return data.Slice(field.Index).GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted).ToString();
-                case FieldType.Boolean:
-                    return data.Slice(field.Index).GetBoolean(field.LeftShifted).ToString();
-                case FieldType.IntegerLittleEndian:
-                    return ReadUInt32LittleEndian(data.Slice(field.Index)).ToString();
-                case FieldType.IntegerBigEndian:
-                    return ReadUInt32BigEndian(data.Slice(field.Index)).ToString();
-                case FieldType.ShortLittleEndian:
-                    return ReadUInt16LittleEndian(data.Slice(field.Index)).ToString();
-                case FieldType.ShortBigEndian:
-                    return ReadUInt16BigEndian(data.Slice(field.Index)).ToString();
-                case FieldType.LongLittleEndian:
-                    return ReadUInt64LittleEndian(data.Slice(field.Index)).ToString();
-                case FieldType.LongBigEndian:
-                    return ReadUInt64BigEndian(data.Slice(field.Index)).ToString();
-                case FieldType.Enum:
-                    return this.ExtractEnumValue(data, field, packet, definitions);
-                case FieldType.StructureArray:
-                    return this.ExtractStructureArrayValues(data, field, packet, definitions);
-                case FieldType.Float:
-                    return BitConverter.ToSingle(data.Slice(field.Index)).ToString(CultureInfo.InvariantCulture);
-                default:
-                    return string.Empty;
-            }
+                FieldType.Byte => data.Slice(field.Index)
+                    .GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted)
+                    .ToString(),
+                FieldType.Boolean => data.Slice(field.Index).GetBoolean(field.LeftShifted).ToString(),
+                FieldType.IntegerLittleEndian => ReadUInt32LittleEndian(data.Slice(field.Index)).ToString(),
+                FieldType.IntegerBigEndian => ReadUInt32BigEndian(data.Slice(field.Index)).ToString(),
+                FieldType.ShortLittleEndian => ReadUInt16LittleEndian(data.Slice(field.Index)).ToString(),
+                FieldType.ShortBigEndian => ReadUInt16BigEndian(data.Slice(field.Index)).ToString(),
+                FieldType.LongLittleEndian => ReadUInt64LittleEndian(data.Slice(field.Index)).ToString(),
+                FieldType.LongBigEndian => ReadUInt64BigEndian(data.Slice(field.Index)).ToString(),
+                FieldType.Enum => this.ExtractEnumValue(data, field, packet, definitions),
+                FieldType.StructureArray => this.ExtractStructureArrayValues(data, field, packet, definitions),
+                FieldType.Float => BitConverter.ToSingle(data.Slice(field.Index)).ToString(CultureInfo.InvariantCulture),
+                _ => string.Empty
+            };
         }
 
         private string ExtractStructureArrayValues(Span<byte> data, Field field, PacketDefinition packet, PacketDefinitions definitions)
@@ -190,7 +180,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             var type = packet.Structures?.FirstOrDefault(s => s.Name == field.TypeName)
                        ?? definitions.Structures?.FirstOrDefault(s => s.Name == field.TypeName)
                        ?? this.commonDefinitions.Structures?.FirstOrDefault(s => s.Name == field.TypeName);
-            if (type == null)
+            if (type is null)
             {
                 return data.Slice(field.Index).AsString();
             }

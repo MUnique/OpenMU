@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             get
             {
-                return this.CurrentState == null || this.CurrentState.PossibleTransitions == null || this.CurrentState.PossibleTransitions.Count == 0;
+                return this.CurrentState is null || this.CurrentState.PossibleTransitions is null || this.CurrentState.PossibleTransitions.Count == 0;
             }
         }
 
@@ -72,12 +72,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The success.</returns>
         public bool TryAdvanceTo(State nextState)
         {
-            if (this.CurrentState == null)
+            if (this.CurrentState is null)
             {
                 return false;
             }
 
-            if (this.CurrentState.PossibleTransitions == null)
+            if (this.CurrentState.PossibleTransitions is null)
             {
                 return false;
             }

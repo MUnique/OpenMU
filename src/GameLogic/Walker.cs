@@ -158,7 +158,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             try
             {
-                if (this.walkLock == null)
+                if (this.walkLock is null)
                 {
                     Debug.WriteLine("walker already disposed");
                     return;

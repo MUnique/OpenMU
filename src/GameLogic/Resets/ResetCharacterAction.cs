@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.GameLogic.Resets
                 return;
             }
 
-            if (this.player.PlayerState.CurrentState != PlayerState.EnteredWorld && this.npc == null)
+            if (this.player.PlayerState.CurrentState != PlayerState.EnteredWorld && this.npc is null)
             {
                 this.ShowMessage("Cannot do reset with any windows opened.");
                 return;
