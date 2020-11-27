@@ -24,8 +24,8 @@
         await base.OnParametersSetAsync();
         if (this.CancellationToken.IsCancellationRequested)
         {
-            // await this.InvokeAsync(this.Modal.Close);
-            // await this.InvokeAsync(this.StateHasChanged);
+            await this.InvokeAsync(this.Modal.Close);
+            await this.InvokeAsync(this.StateHasChanged);
             return;
         }
 

@@ -37,7 +37,24 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         private Type type;
         private IContext persistenceContext;
         private CancellationTokenSource disposeCts;
+        private DataLoadingState loadingState;
         private Task loadTask;
+        private IDisposable modalDisposable;
+
+        private enum DataLoadingState
+        {
+            NotLoadedYet,
+
+            LoadingStarted,
+
+            Loading,
+
+            Loaded,
+
+            NotFound,
+
+            Error,
+        }
 
         /// <summary>
         /// Gets or sets the identifier of the object which should be edited.
@@ -77,7 +94,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             this.disposeCts?.Cancel();
             this.disposeCts?.Dispose();
             this.disposeCts = null;
-            await this.loadTask;
+            await (this.loadTask ?? Task.CompletedTask);
             if (this.persistenceContext is IDisposable disposable)
             {
                 disposable.Dispose();
@@ -113,11 +130,40 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         {
             this.disposeCts?.Cancel();
             this.disposeCts?.Dispose();
+
+            this.model = null;
+            this.loadingState = DataLoadingState.LoadingStarted;
             var cts = new CancellationTokenSource();
             this.disposeCts = cts;
-            this.model = null;
-            this.loadTask = Task.Run(() => this.LoadData(cts.Token), cts.Token);
+            this.loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
+
             return base.OnParametersSetAsync();
+        }
+
+        /// <inheritdoc />
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (this.loadingState == DataLoadingState.Loaded && this.modalDisposable is { } modal)
+            {
+                modal.Dispose();
+                this.modalDisposable = null;
+            }
+
+            if (this.loadingState == DataLoadingState.LoadingStarted)
+            {
+                this.loadingState = DataLoadingState.Loading;
+
+                await this.InvokeAsync(() =>
+                {
+                    if (this.loadingState != DataLoadingState.Loaded)
+                    {
+                        this.modalDisposable = this.ModalService.ShowLoadingIndicator();
+                        this.StateHasChanged();
+                    }
+                });
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
 
         private string GetDownloadMarkup()
@@ -148,10 +194,8 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             return stringBuilder?.ToString();
         }
 
-        private async Task LoadData(CancellationToken cancellationToken)
+        private async Task LoadDataAsync(CancellationToken cancellationToken)
         {
-            IDisposable modal = null;
-            var showModalTask = this.InvokeAsync(() => modal = this.ModalService.ShowLoadingIndicator());
             this.type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.StartsWith(nameof(MUnique)))
                 .Select(assembly => assembly.GetType(this.TypeString)).FirstOrDefault(t => t != null);
             if (this.type is null)
@@ -170,15 +214,17 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                     try
                     {
                         this.model = method.Invoke(this.persistenceContext, new object[] { this.Id });
+                        this.loadingState = this.model is not null
+                            ? DataLoadingState.Loaded
+                            : DataLoadingState.NotFound;
                     }
                     catch (Exception ex)
                     {
+                        this.loadingState = DataLoadingState.Error;
                         Log.Error($"Could not load {this.type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
-                        await this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details.");
+                        await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details."));
                     }
 
-                    await showModalTask;
-                    modal.Dispose();
                     await this.InvokeAsync(this.StateHasChanged);
                 }
             }
