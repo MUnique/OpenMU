@@ -44,6 +44,7 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
         /// <inheritdoc />
         public void Initialize(GeneratorInitializationContext context)
         {
+            // Override in deriving classes, if required.
         }
 
         /// <inheritdoc />
@@ -60,8 +61,6 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
                 throw;
             }
         }
-
-        protected abstract void InnerExecute(in GeneratorExecutionContext context);
 
         /// <summary>
         /// Determines whether the given type is a is configuration type.
@@ -96,6 +95,12 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
         }
 
         /// <summary>
+        /// Implementation for the generator logic.
+        /// </summary>
+        /// <param name="context">The generator execution context.</param>
+        protected abstract void InnerExecute(in GeneratorExecutionContext context);
+
+        /// <summary>
         /// Determines the types which require customization.
         /// </summary>
         /// <returns>The types which require customization.</returns>
@@ -103,9 +108,9 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
         {
             var result = new List<Type>();
 
-            var loadedTypes = typeof(DataModel.Attributes.PowerUpDefinition).Assembly.GetTypes().Where(type =>
-                type.IsClass && type.IsPublic && !type.IsSealed && !type.IsAbstract &&
-                type.GetConstructor(System.Array.Empty<System.Type>()) != null).ToList();
+            var loadedTypes = typeof(DataModel.Attributes.PowerUpDefinition).Assembly.GetTypes()
+                .Where(type => type.IsClass && type.IsPublic)
+                .Where(type => !type.IsSealed && !type.IsAbstract && type.GetConstructor(Array.Empty<Type>()) != null).ToList();
             result.AddRange(loadedTypes);
             result.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeDefinition));
             result.Add(typeof(MUnique.OpenMU.AttributeSystem.StatAttribute));

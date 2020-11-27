@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             this.disposeCts?.Cancel();
             this.disposeCts?.Dispose();
             this.disposeCts = null;
-            await (this.loadTask ?? Task.CompletedTask);
+            await (this.loadTask ?? Task.CompletedTask).ConfigureAwait(false);
             if (this.persistenceContext is IDisposable disposable)
             {
                 disposable.Dispose();
