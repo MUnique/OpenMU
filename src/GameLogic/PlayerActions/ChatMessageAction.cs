@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using System.ComponentModel;
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
     using MUnique.OpenMU.GameLogic.Views;
@@ -31,6 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 { "@", ChatMessageType.Guild },
                 { "@@", ChatMessageType.Alliance },
                 { "$", ChatMessageType.Gens },
+                { "!", ChatMessageType.GlobalNotification },
                 { "/", ChatMessageType.Command },
             };
         }
@@ -122,6 +124,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                     {
                         var guildServer = (sender.GameContext as IGameServerContext)?.GuildServer;
                         guildServer?.GuildMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    }
+
+                    break;
+                }
+
+                case ChatMessageType.GlobalNotification:
+                {
+                    if (sender.SelectedCharacter.CharacterStatus >= CharacterStatus.GameMaster)
+                    {
+                        sender.GameContext?.SendGlobalNotification(message);
                     }
 
                     break;

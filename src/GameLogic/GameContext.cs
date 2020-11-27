@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -200,6 +201,14 @@ namespace MUnique.OpenMU.GameLogic
                 var player = this.PlayerList[i];
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType);
             }
+        }
+
+        /// <inheritdoc/>
+        public void SendGlobalNotification(string message)
+        {
+            var regex = new Regex(Regex.Escape("!"));
+            var sendingMessage = regex.Replace(message, string.Empty, 1);
+            this.SendGlobalMessage(sendingMessage, MessageType.GoldenCenter);
         }
 
         /// <inheritdoc/>

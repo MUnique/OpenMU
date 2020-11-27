@@ -232,7 +232,7 @@ namespace MUnique.OpenMU.GameServer
             // TODO: determine alliance
             foreach (var player in guildplayers)
             {
-                player.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(messageSend, sender, 0);
+                player.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(messageSend, sender, ChatMessageType.Alliance);
             }
         }
 

@@ -40,6 +40,11 @@ namespace MUnique.OpenMU.GameLogic.Views
         Gens,
 
         /// <summary>
+        /// A golden message which is sent to all observing players.
+        /// </summary>
+        GlobalNotification,
+
+        /// <summary>
         /// A command message.
         /// </summary>
         Command,
