@@ -12,16 +12,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
     [Migration("00000000000000_Initial")]
     partial class Initial
     {
-        /// <inheritdoc/>
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.3")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .UseIdentityByDefaultColumns()
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.0");
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Account", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,8 +34,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("LoginName")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
@@ -68,10 +67,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("VaultId");
 
-                    b.ToTable("Account","data");
+                    b.ToTable("Account", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AccountCharacterClass", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountCharacterClass", b =>
                 {
                     b.Property<Guid>("AccountId")
                         .HasColumnType("uuid");
@@ -83,10 +82,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("CharacterClassId");
 
-                    b.ToTable("AccountCharacterClass","data");
+                    b.ToTable("AccountCharacterClass", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,10 +104,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("CharacterClassId");
 
-                    b.ToTable("AppearanceData","data");
+                    b.ToTable("AppearanceData", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,10 +126,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("AttributeDefinition","config");
+                    b.ToTable("AttributeDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRelationship", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRelationship", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -164,10 +163,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("AttributeRelationship","config");
+                    b.ToTable("AttributeRelationship", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRequirement", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -203,10 +202,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SkillId1");
 
-                    b.ToTable("AttributeRequirement","config");
+                    b.ToTable("AttributeRequirement", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Character", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -256,8 +255,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<int>("PlayerKillCount")
                         .HasColumnType("integer");
@@ -299,10 +298,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Character","data");
+                    b.ToTable("Character", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -349,10 +348,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("NextGenerationClassId");
 
-                    b.ToTable("CharacterClass","config");
+                    b.ToTable("CharacterClass", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterDropItemGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterDropItemGroup", b =>
                 {
                     b.Property<Guid>("CharacterId")
                         .HasColumnType("uuid");
@@ -364,10 +363,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("DropItemGroupId");
 
-                    b.ToTable("CharacterDropItemGroup","data");
+                    b.ToTable("CharacterDropItemGroup", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterQuestState", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterQuestState", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -396,10 +395,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("LastFinishedQuestId");
 
-                    b.ToTable("CharacterQuestState","data");
+                    b.ToTable("CharacterQuestState", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ChatServerDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -425,10 +424,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ChatServerDefinition","config");
+                    b.ToTable("ChatServerDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerEndpoint", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ChatServerEndpoint", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -449,10 +448,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("ChatServerEndpoint","config");
+                    b.ToTable("ChatServerEndpoint", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CombinationBonusRequirement", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CombinationBonusRequirement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -476,10 +475,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("OptionTypeId");
 
-                    b.ToTable("CombinationBonusRequirement","config");
+                    b.ToTable("CombinationBonusRequirement", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ConnectServerDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -537,10 +536,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("ConnectServerDefinition","config");
+                    b.ToTable("ConnectServerDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConstValueAttribute", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ConstValueAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -561,10 +560,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("DefinitionId");
 
-                    b.ToTable("ConstValueAttribute","config");
+                    b.ToTable("ConstValueAttribute", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -600,10 +599,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("MonsterId");
 
-                    b.ToTable("DropItemGroup","config");
+                    b.ToTable("DropItemGroup", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroupItemDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroupItemDefinition", b =>
                 {
                     b.Property<Guid>("DropItemGroupId")
                         .HasColumnType("uuid");
@@ -615,10 +614,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemDefinitionId");
 
-                    b.ToTable("DropItemGroupItemDefinition","config");
+                    b.ToTable("DropItemGroupItemDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.EnterGate", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.EnterGate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -654,10 +653,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("TargetGateId");
 
-                    b.ToTable("EnterGate","config");
+                    b.ToTable("EnterGate", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ExitGate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -688,10 +687,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("MapId");
 
-                    b.ToTable("ExitGate","config");
+                    b.ToTable("ExitGate", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Friend", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Friend", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -713,10 +712,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasAlternateKey("CharacterId", "FriendId");
 
-                    b.ToTable("Friend","friend");
+                    b.ToTable("Friend", "friend");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameClientDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -742,10 +741,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GameClientDefinition","config");
+                    b.ToTable("GameClientDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -795,10 +794,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GameConfiguration","config");
+                    b.ToTable("GameConfiguration", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -828,10 +827,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SafezoneMapId");
 
-                    b.ToTable("GameMapDefinition","config");
+                    b.ToTable("GameMapDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinitionDropItemGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinitionDropItemGroup", b =>
                 {
                     b.Property<Guid>("GameMapDefinitionId")
                         .HasColumnType("uuid");
@@ -843,10 +842,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("DropItemGroupId");
 
-                    b.ToTable("GameMapDefinitionDropItemGroup","config");
+                    b.ToTable("GameMapDefinitionDropItemGroup", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -857,10 +856,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GameServerConfiguration","config");
+                    b.ToTable("GameServerConfiguration", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfigurationGameMapDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfigurationGameMapDefinition", b =>
                 {
                     b.Property<Guid>("GameServerConfigurationId")
                         .HasColumnType("uuid");
@@ -872,10 +871,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameMapDefinitionId");
 
-                    b.ToTable("GameServerConfigurationGameMapDefinition","config");
+                    b.ToTable("GameServerConfigurationGameMapDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -902,14 +901,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ServerConfigurationId");
 
-                    b.ToTable("GameServerDefinition","config");
+                    b.ToTable("GameServerDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerEndpoint", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerEndpoint", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("AlternativePublishedPort")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("ClientId")
                         .HasColumnType("uuid");
@@ -919,9 +921,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("NetworkPort")
                         .HasColumnType("integer");
-                    
-                    b.Property<int>("AlternativePublishedPort")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -929,10 +928,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameServerDefinitionId");
 
-                    b.ToTable("GameServerEndpoint","config");
+                    b.ToTable("GameServerEndpoint", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Guild", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -949,8 +948,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("character varying(8)")
-                        .HasMaxLength(8);
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("Notice")
                         .HasColumnType("text");
@@ -967,10 +966,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Guild","guild");
+                    b.ToTable("Guild", "guild");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GuildMember", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildMember", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -985,10 +984,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("GuildMember","guild");
+                    b.ToTable("GuildMember", "guild");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.IncreasableItemOption", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1025,10 +1024,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("PowerUpDefinitionId");
 
-                    b.ToTable("IncreasableItemOption","config");
+                    b.ToTable("IncreasableItemOption", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Item", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1064,10 +1063,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemStorageId");
 
-                    b.ToTable("Item","data");
+                    b.ToTable("Item", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearance", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemAppearance", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1091,10 +1090,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("DefinitionId");
 
-                    b.ToTable("ItemAppearance","data");
+                    b.ToTable("ItemAppearance", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearanceItemOptionType", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemAppearanceItemOptionType", b =>
                 {
                     b.Property<Guid>("ItemAppearanceId")
                         .HasColumnType("uuid");
@@ -1106,10 +1105,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemOptionTypeId");
 
-                    b.ToTable("ItemAppearanceItemOptionType","data");
+                    b.ToTable("ItemAppearanceItemOptionType", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemBasePowerUpDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1130,10 +1129,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("ItemBasePowerUpDefinition","config");
+                    b.ToTable("ItemBasePowerUpDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCrafting", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCrafting", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1160,10 +1159,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SimpleCraftingSettingsId");
 
-                    b.ToTable("ItemCrafting","config");
+                    b.ToTable("ItemCrafting", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1203,10 +1202,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SimpleCraftingSettingsId");
 
-                    b.ToTable("ItemCraftingRequiredItem","config");
+                    b.ToTable("ItemCraftingRequiredItem", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItemItemDefinition", b =>
                 {
                     b.Property<Guid>("ItemCraftingRequiredItemId")
                         .HasColumnType("uuid");
@@ -1218,10 +1217,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemDefinitionId");
 
-                    b.ToTable("ItemCraftingRequiredItemItemDefinition","config");
+                    b.ToTable("ItemCraftingRequiredItemItemDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemOptionType", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItemItemOptionType", b =>
                 {
                     b.Property<Guid>("ItemCraftingRequiredItemId")
                         .HasColumnType("uuid");
@@ -1233,10 +1232,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemOptionTypeId");
 
-                    b.ToTable("ItemCraftingRequiredItemItemOptionType","config");
+                    b.ToTable("ItemCraftingRequiredItemItemOptionType", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingResultItem", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingResultItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1269,10 +1268,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SimpleCraftingSettingsId");
 
-                    b.ToTable("ItemCraftingResultItem","config");
+                    b.ToTable("ItemCraftingResultItem", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1337,10 +1336,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("ItemDefinition","config");
+                    b.ToTable("ItemDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionCharacterClass", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinitionCharacterClass", b =>
                 {
                     b.Property<Guid>("ItemDefinitionId")
                         .HasColumnType("uuid");
@@ -1352,10 +1351,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("CharacterClassId");
 
-                    b.ToTable("ItemDefinitionCharacterClass","config");
+                    b.ToTable("ItemDefinitionCharacterClass", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemOptionDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinitionItemOptionDefinition", b =>
                 {
                     b.Property<Guid>("ItemDefinitionId")
                         .HasColumnType("uuid");
@@ -1367,10 +1366,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemOptionDefinitionId");
 
-                    b.ToTable("ItemDefinitionItemOptionDefinition","config");
+                    b.ToTable("ItemDefinitionItemOptionDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemSetGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinitionItemSetGroup", b =>
                 {
                     b.Property<Guid>("ItemDefinitionId")
                         .HasColumnType("uuid");
@@ -1382,10 +1381,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemSetGroupId");
 
-                    b.ToTable("ItemDefinitionItemSetGroup","config");
+                    b.ToTable("ItemDefinitionItemSetGroup", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemItemSetGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemItemSetGroup", b =>
                 {
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
@@ -1397,10 +1396,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemSetGroupId");
 
-                    b.ToTable("ItemItemSetGroup","data");
+                    b.ToTable("ItemItemSetGroup", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOfItemSet", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1423,10 +1422,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemSetGroupId");
 
-                    b.ToTable("ItemOfItemSet","config");
+                    b.ToTable("ItemOfItemSet", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionCombinationBonus", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionCombinationBonus", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1453,10 +1452,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemOptionCombinationBonus","config");
+                    b.ToTable("ItemOptionCombinationBonus", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1481,10 +1480,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemOptionDefinition","config");
+                    b.ToTable("ItemOptionDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionLink", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionLink", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1508,10 +1507,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemOptionId");
 
-                    b.ToTable("ItemOptionLink","data");
+                    b.ToTable("ItemOptionLink", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionOfLevel", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionOfLevel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1535,10 +1534,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("PowerUpDefinitionId");
 
-                    b.ToTable("ItemOptionOfLevel","config");
+                    b.ToTable("ItemOptionOfLevel", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1560,10 +1559,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemOptionType","config");
+                    b.ToTable("ItemOptionType", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1594,10 +1593,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemSetGroup","config");
+                    b.ToTable("ItemSetGroup", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemSlotType", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1610,17 +1609,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("RawItemSlots")
-                        .HasColumnName("ItemSlots")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("ItemSlots");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("ItemSlotType","config");
+                    b.ToTable("ItemSlotType", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1631,10 +1630,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ItemStorage","data");
+                    b.ToTable("ItemStorage", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.JewelMix", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.JewelMix", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1660,10 +1659,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SingleJewelId");
 
-                    b.ToTable("JewelMix","config");
+                    b.ToTable("JewelMix", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterBody", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LetterBody", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1690,10 +1689,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SenderAppearanceId");
 
-                    b.ToTable("LetterBody","data");
+                    b.ToTable("LetterBody", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterHeader", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LetterHeader", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1718,10 +1717,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ReceiverId");
 
-                    b.ToTable("LetterHeader","data");
+                    b.ToTable("LetterHeader", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LevelBonus", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LevelBonus", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1740,10 +1739,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("ItemBasePowerUpDefinitionId");
 
-                    b.ToTable("LevelBonus","config");
+                    b.ToTable("LevelBonus", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1779,10 +1778,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("PowerUpDefinitionId");
 
-                    b.ToTable("MagicEffectDefinition","config");
+                    b.ToTable("MagicEffectDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1823,10 +1822,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("MasterSkillDefinition","config");
+                    b.ToTable("MasterSkillDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinitionSkill", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinitionSkill", b =>
                 {
                     b.Property<Guid>("MasterSkillDefinitionId")
                         .HasColumnType("uuid");
@@ -1838,10 +1837,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("MasterSkillDefinitionSkill","config");
+                    b.ToTable("MasterSkillDefinitionSkill", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillRoot", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillRoot", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1857,10 +1856,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("MasterSkillRoot","config");
+                    b.ToTable("MasterSkillRoot", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterAttribute", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1881,10 +1880,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("MonsterDefinitionId");
 
-                    b.ToTable("MonsterAttribute","config");
+                    b.ToTable("MonsterAttribute", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1946,10 +1945,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("MerchantStoreId");
 
-                    b.ToTable("MonsterDefinition","config");
+                    b.ToTable("MonsterDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinitionDropItemGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinitionDropItemGroup", b =>
                 {
                     b.Property<Guid>("MonsterDefinitionId")
                         .HasColumnType("uuid");
@@ -1961,10 +1960,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("DropItemGroupId");
 
-                    b.ToTable("MonsterDefinitionDropItemGroup","config");
+                    b.ToTable("MonsterDefinitionDropItemGroup", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterSpawnArea", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterSpawnArea", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2003,10 +2002,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("MonsterDefinitionId");
 
-                    b.ToTable("MonsterSpawnArea","config");
+                    b.ToTable("MonsterSpawnArea", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PlugInConfiguration", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PlugInConfiguration", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2034,10 +2033,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GameConfigurationId");
 
-                    b.ToTable("PlugInConfiguration","config");
+                    b.ToTable("PlugInConfiguration", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2055,10 +2054,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("PowerUpDefinition","config");
+                    b.ToTable("PowerUpDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2078,10 +2077,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PowerUpDefinitionValue","config");
+                    b.ToTable("PowerUpDefinitionValue", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2106,10 +2105,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("TargetAttributeId");
 
-                    b.ToTable("PowerUpDefinitionWithDuration","config");
+                    b.ToTable("PowerUpDefinitionWithDuration", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2139,6 +2138,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("QuestGiverId")
                         .HasColumnType("uuid");
 
+                    b.Property<short>("RefuseNumber")
+                        .HasColumnType("smallint");
+
                     b.Property<bool>("Repeatable")
                         .HasColumnType("boolean");
 
@@ -2147,9 +2149,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<bool>("RequiresClientAction")
                         .HasColumnType("boolean");
-
-                    b.Property<short>("RefuseNumber")
-                        .HasColumnType("smallint");
 
                     b.Property<short>("StartingNumber")
                         .HasColumnType("smallint");
@@ -2162,10 +2161,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("QuestGiverId");
 
-                    b.ToTable("QuestDefinition","config");
+                    b.ToTable("QuestDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestItemRequirement", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestItemRequirement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2191,10 +2190,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("QuestDefinitionId");
 
-                    b.ToTable("QuestItemRequirement","config");
+                    b.ToTable("QuestItemRequirement", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirement", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestMonsterKillRequirement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2215,10 +2214,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("QuestDefinitionId");
 
-                    b.ToTable("QuestMonsterKillRequirement","config");
+                    b.ToTable("QuestMonsterKillRequirement", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirementState", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestMonsterKillRequirementState", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2239,10 +2238,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("RequirementId");
 
-                    b.ToTable("QuestMonsterKillRequirementState","data");
+                    b.ToTable("QuestMonsterKillRequirementState", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestReward", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestReward", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2271,10 +2270,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("QuestDefinitionId");
 
-                    b.ToTable("QuestReward","config");
+                    b.ToTable("QuestReward", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2324,10 +2323,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SimpleCraftingSettings","config");
+                    b.ToTable("SimpleCraftingSettings", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Skill", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2388,10 +2387,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("MasterDefinitionId");
 
-                    b.ToTable("Skill","config");
+                    b.ToTable("Skill", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillCharacterClass", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SkillCharacterClass", b =>
                 {
                     b.Property<Guid>("SkillId")
                         .HasColumnType("uuid");
@@ -2403,10 +2402,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("CharacterClassId");
 
-                    b.ToTable("SkillCharacterClass","config");
+                    b.ToTable("SkillCharacterClass", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillEntry", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SkillEntry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2427,10 +2426,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("SkillEntry","data");
+                    b.ToTable("SkillEntry", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttribute", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.StatAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2451,10 +2450,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("DefinitionId");
 
-                    b.ToTable("StatAttribute","data");
+                    b.ToTable("StatAttribute", "data");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttributeDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.StatAttributeDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2478,10 +2477,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("CharacterClassId");
 
-                    b.ToTable("StatAttributeDefinition","config");
+                    b.ToTable("StatAttributeDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.WarpInfo", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2511,928 +2510,1368 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("GateId");
 
-                    b.ToTable("WarpInfo","config");
+                    b.ToTable("WarpInfo", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Account", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawVault")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawVault")
                         .WithMany()
                         .HasForeignKey("VaultId");
+
+                    b.Navigation("RawVault");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AccountCharacterClass", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountCharacterClass", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Account", "Account")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", "Account")
                         .WithMany("JoinedUnlockedCharacterClasses")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "CharacterClass")
                         .WithMany()
                         .HasForeignKey("CharacterClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("CharacterClass");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawCharacterClass")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "RawCharacterClass")
                         .WithMany()
                         .HasForeignKey("CharacterClassId");
+
+                    b.Navigation("RawCharacterClass");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawAttributes")
                         .HasForeignKey("GameConfigurationId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRelationship", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRelationship", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", null)
                         .WithMany("RawAttributeCombinations")
                         .HasForeignKey("CharacterClassId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawInputAttribute")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawInputAttribute")
                         .WithMany()
                         .HasForeignKey("InputAttributeId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", null)
                         .WithMany("RawRelatedValues")
                         .HasForeignKey("PowerUpDefinitionValueId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
+
+                    b.Navigation("RawInputAttribute");
+
+                    b.Navigation("RawTargetAttribute");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.AttributeRequirement", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttribute")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttribute")
                         .WithMany()
                         .HasForeignKey("AttributeId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", null)
                         .WithMany("RawMapRequirements")
                         .HasForeignKey("GameMapDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", null)
                         .WithMany("RawRequirements")
                         .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", null)
                         .WithMany("RawConsumeRequirements")
                         .HasForeignKey("SkillId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", null)
                         .WithMany("RawRequirements")
                         .HasForeignKey("SkillId1");
+
+                    b.Navigation("RawAttribute");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Character", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Account", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
                         .WithMany("RawCharacters")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawCharacterClass")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "RawCharacterClass")
                         .WithMany()
                         .HasForeignKey("CharacterClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawCurrentMap")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "RawCurrentMap")
                         .WithMany()
                         .HasForeignKey("CurrentMapId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawInventory")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawInventory")
                         .WithMany()
                         .HasForeignKey("InventoryId");
+
+                    b.Navigation("RawCharacterClass");
+
+                    b.Navigation("RawCurrentMap");
+
+                    b.Navigation("RawInventory");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawCharacterClasses")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawHomeMap")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "RawHomeMap")
                         .WithMany()
                         .HasForeignKey("HomeMapId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawNextGenerationClass")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "RawNextGenerationClass")
                         .WithMany()
                         .HasForeignKey("NextGenerationClassId");
+
+                    b.Navigation("RawHomeMap");
+
+                    b.Navigation("RawNextGenerationClass");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterDropItemGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterDropItemGroup", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Character")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "Character")
                         .WithMany("JoinedDropItemGroups")
                         .HasForeignKey("CharacterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", "DropItemGroup")
                         .WithMany()
                         .HasForeignKey("DropItemGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Character");
+
+                    b.Navigation("DropItemGroup");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CharacterQuestState", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterQuestState", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", "RawActiveQuest")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", "RawActiveQuest")
                         .WithMany()
                         .HasForeignKey("ActiveQuestId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
                         .WithMany("RawQuestStates")
                         .HasForeignKey("CharacterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", "RawLastFinishedQuest")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", "RawLastFinishedQuest")
                         .WithMany()
                         .HasForeignKey("LastFinishedQuestId");
+
+                    b.Navigation("RawActiveQuest");
+
+                    b.Navigation("RawLastFinishedQuest");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ChatServerEndpoint", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ChatServerEndpoint", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ChatServerDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ChatServerDefinition", null)
                         .WithMany("RawEndpoints")
                         .HasForeignKey("ChatServerDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameClientDefinition", "RawClient")
                         .WithMany()
                         .HasForeignKey("ClientId");
+
+                    b.Navigation("RawClient");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.CombinationBonusRequirement", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CombinationBonusRequirement", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionCombinationBonus", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionCombinationBonus", null)
                         .WithMany("RawRequirements")
                         .HasForeignKey("ItemOptionCombinationBonusId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "RawOptionType")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType", "RawOptionType")
                         .WithMany()
                         .HasForeignKey("OptionTypeId");
+
+                    b.Navigation("RawOptionType");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConnectServerDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ConnectServerDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameClientDefinition", "RawClient")
                         .WithMany()
                         .HasForeignKey("ClientId");
+
+                    b.Navigation("RawClient");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ConstValueAttribute", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ConstValueAttribute", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "CharacterClass")
                         .WithMany("RawBaseAttributeValues")
                         .HasForeignKey("CharacterClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawDefinition")
                         .WithMany()
                         .HasForeignKey("DefinitionId");
+
+                    b.Navigation("CharacterClass");
+
+                    b.Navigation("RawDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawDropItemGroups")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonster")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawMonster")
                         .WithMany()
                         .HasForeignKey("MonsterId");
+
+                    b.Navigation("RawMonster");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroupItemDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroupItemDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", "DropItemGroup")
                         .WithMany("JoinedPossibleItems")
                         .HasForeignKey("DropItemGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "ItemDefinition")
                         .WithMany()
                         .HasForeignKey("ItemDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DropItemGroup");
+
+                    b.Navigation("ItemDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.EnterGate", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.EnterGate", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", null)
                         .WithMany("RawEnterGates")
                         .HasForeignKey("GameMapDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawTargetGate")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ExitGate", "RawTargetGate")
                         .WithMany()
                         .HasForeignKey("TargetGateId");
+
+                    b.Navigation("RawTargetGate");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ExitGate", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawMap")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "RawMap")
                         .WithMany("RawExitGates")
                         .HasForeignKey("MapId");
+
+                    b.Navigation("RawMap");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawMaps")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawSafezoneMap")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "RawSafezoneMap")
                         .WithMany()
                         .HasForeignKey("SafezoneMapId");
+
+                    b.Navigation("RawSafezoneMap");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinitionDropItemGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinitionDropItemGroup", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", "DropItemGroup")
                         .WithMany()
                         .HasForeignKey("DropItemGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "GameMapDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "GameMapDefinition")
                         .WithMany("JoinedDropItemGroups")
                         .HasForeignKey("GameMapDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DropItemGroup");
+
+                    b.Navigation("GameMapDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfigurationGameMapDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfigurationGameMapDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "GameMapDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "GameMapDefinition")
                         .WithMany()
                         .HasForeignKey("GameMapDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "GameServerConfiguration")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", "GameServerConfiguration")
                         .WithMany("JoinedMaps")
                         .HasForeignKey("GameServerConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("GameMapDefinition");
+
+                    b.Navigation("GameServerConfiguration");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", "RawGameConfiguration")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "RawGameConfiguration")
                         .WithMany()
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerConfiguration", "RawServerConfiguration")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", "RawServerConfiguration")
                         .WithMany()
                         .HasForeignKey("ServerConfigurationId");
+
+                    b.Navigation("RawGameConfiguration");
+
+                    b.Navigation("RawServerConfiguration");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GameServerEndpoint", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerEndpoint", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameClientDefinition", "RawClient")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameClientDefinition", "RawClient")
                         .WithMany()
                         .HasForeignKey("ClientId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameServerDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition", null)
                         .WithMany("RawEndpoints")
                         .HasForeignKey("GameServerDefinitionId");
+
+                    b.Navigation("RawClient");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Guild", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", "RawAllianceGuild")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", "RawAllianceGuild")
                         .WithMany()
                         .HasForeignKey("AllianceGuildId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", "RawHostility")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", "RawHostility")
                         .WithMany()
                         .HasForeignKey("HostilityId");
+
+                    b.Navigation("RawAllianceGuild");
+
+                    b.Navigation("RawHostility");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.GuildMember", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildMember", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Guild", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", null)
                         .WithMany("RawMembers")
                         .HasForeignKey("GuildId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Character")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "Character")
                         .WithMany()
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Character");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.IncreasableItemOption", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionDefinition", null)
                         .WithMany("RawPossibleOptions")
                         .HasForeignKey("ItemOptionDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", null)
                         .WithMany("RawOptions")
                         .HasForeignKey("ItemSetGroupId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "RawOptionType")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType", "RawOptionType")
                         .WithMany()
                         .HasForeignKey("OptionTypeId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "RawPowerUpDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinition", "RawPowerUpDefinition")
                         .WithMany()
                         .HasForeignKey("PowerUpDefinitionId");
+
+                    b.Navigation("RawOptionType");
+
+                    b.Navigation("RawPowerUpDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Item", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawDefinition")
                         .WithMany()
                         .HasForeignKey("DefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawItemStorage")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawItemStorage")
                         .WithMany("RawItems")
                         .HasForeignKey("ItemStorageId");
+
+                    b.Navigation("RawDefinition");
+
+                    b.Navigation("RawItemStorage");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearance", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemAppearance", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", null)
                         .WithMany("RawEquippedItems")
                         .HasForeignKey("AppearanceDataId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawDefinition")
                         .WithMany()
                         .HasForeignKey("DefinitionId");
+
+                    b.Navigation("RawDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearanceItemOptionType", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemAppearanceItemOptionType", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemAppearance", "ItemAppearance")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemAppearance", "ItemAppearance")
                         .WithMany("JoinedVisibleOptions")
                         .HasForeignKey("ItemAppearanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "ItemOptionType")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType", "ItemOptionType")
                         .WithMany()
                         .HasForeignKey("ItemOptionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ItemAppearance");
+
+                    b.Navigation("ItemOptionType");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemBasePowerUpDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", null)
                         .WithMany("RawBasePowerUpAttributes")
                         .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
+
+                    b.Navigation("RawTargetAttribute");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCrafting", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCrafting", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", null)
                         .WithMany("RawItemCraftings")
                         .HasForeignKey("MonsterDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", "RawSimpleCraftingSettings")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings", "RawSimpleCraftingSettings")
                         .WithMany()
                         .HasForeignKey("SimpleCraftingSettingsId");
+
+                    b.Navigation("RawSimpleCraftingSettings");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItem", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings", null)
                         .WithMany("RawRequiredItems")
                         .HasForeignKey("SimpleCraftingSettingsId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItemItemDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", "ItemCraftingRequiredItem")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItem", "ItemCraftingRequiredItem")
                         .WithMany("JoinedPossibleItems")
                         .HasForeignKey("ItemCraftingRequiredItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "ItemDefinition")
                         .WithMany()
                         .HasForeignKey("ItemDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ItemCraftingRequiredItem");
+
+                    b.Navigation("ItemDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItemItemOptionType", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItemItemOptionType", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingRequiredItem", "ItemCraftingRequiredItem")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItem", "ItemCraftingRequiredItem")
                         .WithMany("JoinedRequiredItemOptions")
                         .HasForeignKey("ItemCraftingRequiredItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", "ItemOptionType")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType", "ItemOptionType")
                         .WithMany()
                         .HasForeignKey("ItemOptionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ItemCraftingRequiredItem");
+
+                    b.Navigation("ItemOptionType");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemCraftingResultItem", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingResultItem", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawItemDefinition")
                         .WithMany()
                         .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.SimpleCraftingSettings", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings", null)
                         .WithMany("RawResultItems")
                         .HasForeignKey("SimpleCraftingSettingsId");
+
+                    b.Navigation("RawItemDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawItems")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSlotType", "RawItemSlot")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType", "RawItemSlot")
                         .WithMany()
                         .HasForeignKey("ItemSlotId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawSkill")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "RawSkill")
                         .WithMany()
                         .HasForeignKey("SkillId");
+
+                    b.Navigation("RawItemSlot");
+
+                    b.Navigation("RawSkill");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionCharacterClass", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinitionCharacterClass", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "CharacterClass")
                         .WithMany()
                         .HasForeignKey("CharacterClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "ItemDefinition")
                         .WithMany("JoinedQualifiedCharacters")
                         .HasForeignKey("ItemDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CharacterClass");
+
+                    b.Navigation("ItemDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemOptionDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinitionItemOptionDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "ItemDefinition")
                         .WithMany("JoinedPossibleItemOptions")
                         .HasForeignKey("ItemDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", "ItemOptionDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionDefinition", "ItemOptionDefinition")
                         .WithMany()
                         .HasForeignKey("ItemOptionDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ItemDefinition");
+
+                    b.Navigation("ItemOptionDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinitionItemSetGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinitionItemSetGroup", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "ItemDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "ItemDefinition")
                         .WithMany("JoinedPossibleItemSetGroups")
                         .HasForeignKey("ItemDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", "ItemSetGroup")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", "ItemSetGroup")
                         .WithMany()
                         .HasForeignKey("ItemSetGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ItemDefinition");
+
+                    b.Navigation("ItemSetGroup");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemItemSetGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemItemSetGroup", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", "Item")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", "Item")
                         .WithMany("JoinedItemSetGroups")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", "ItemSetGroup")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", "ItemSetGroup")
                         .WithMany()
                         .HasForeignKey("ItemSetGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("ItemSetGroup");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOfItemSet", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", "RawBonusOption")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.IncreasableItemOption", "RawBonusOption")
                         .WithMany()
                         .HasForeignKey("BonusOptionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItemDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawItemDefinition")
                         .WithMany()
                         .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", null)
                         .WithMany("RawItems")
                         .HasForeignKey("ItemSetGroupId");
+
+                    b.Navigation("RawBonusOption");
+
+                    b.Navigation("RawItemDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionCombinationBonus", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionCombinationBonus", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "RawBonus")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinition", "RawBonus")
                         .WithMany()
                         .HasForeignKey("BonusId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawItemOptionCombinationBonuses")
                         .HasForeignKey("GameConfigurationId");
+
+                    b.Navigation("RawBonus");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawItemOptions")
                         .HasForeignKey("GameConfigurationId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionLink", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionLink", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", null)
                         .WithMany("RawItemOptions")
                         .HasForeignKey("ItemId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", "RawItemOption")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.IncreasableItemOption", "RawItemOption")
                         .WithMany()
                         .HasForeignKey("ItemOptionId");
+
+                    b.Navigation("RawItemOption");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionOfLevel", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionOfLevel", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.IncreasableItemOption", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.IncreasableItemOption", null)
                         .WithMany("RawLevelDependentOptions")
                         .HasForeignKey("IncreasableItemOptionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", "RawPowerUpDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinition", "RawPowerUpDefinition")
                         .WithMany()
                         .HasForeignKey("PowerUpDefinitionId");
+
+                    b.Navigation("RawPowerUpDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemOptionType", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawItemOptionTypes")
                         .HasForeignKey("GameConfigurationId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemSetGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawItemSetGroups")
                         .HasForeignKey("GameConfigurationId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.ItemSlotType", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawItemSlotTypes")
                         .HasForeignKey("GameConfigurationId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.JewelMix", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.JewelMix", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawJewelMixes")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawMixedJewel")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawMixedJewel")
                         .WithMany()
                         .HasForeignKey("MixedJewelId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawSingleJewel")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawSingleJewel")
                         .WithMany()
                         .HasForeignKey("SingleJewelId");
+
+                    b.Navigation("RawMixedJewel");
+
+                    b.Navigation("RawSingleJewel");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterBody", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LetterBody", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.LetterHeader", "RawHeader")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.LetterHeader", "RawHeader")
                         .WithMany()
                         .HasForeignKey("HeaderId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AppearanceData", "RawSenderAppearance")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", "RawSenderAppearance")
                         .WithMany()
                         .HasForeignKey("SenderAppearanceId");
+
+                    b.Navigation("RawHeader");
+
+                    b.Navigation("RawSenderAppearance");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LetterHeader", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LetterHeader", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", "Receiver")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "Receiver")
                         .WithMany("RawLetters")
                         .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Receiver");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.LevelBonus", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LevelBonus", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemBasePowerUpDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition", null)
                         .WithMany("RawBonusPerLevel")
                         .HasForeignKey("ItemBasePowerUpDefinitionId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawMagicEffects")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "RawPowerUpDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", "RawPowerUpDefinition")
                         .WithMany()
                         .HasForeignKey("PowerUpDefinitionId");
+
+                    b.Navigation("RawPowerUpDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawReplacedSkill")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "RawReplacedSkill")
                         .WithMany()
                         .HasForeignKey("ReplacedSkillId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillRoot", "RawRoot")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillRoot", "RawRoot")
                         .WithMany()
                         .HasForeignKey("RootId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
+
+                    b.Navigation("RawReplacedSkill");
+
+                    b.Navigation("RawRoot");
+
+                    b.Navigation("RawTargetAttribute");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinitionSkill", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinitionSkill", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "MasterSkillDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", "MasterSkillDefinition")
                         .WithMany("JoinedRequiredMasterSkills")
                         .HasForeignKey("MasterSkillDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "Skill")
                         .WithMany()
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("MasterSkillDefinition");
+
+                    b.Navigation("Skill");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillRoot", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillRoot", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawMasterSkillRoots")
                         .HasForeignKey("GameConfigurationId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterAttribute", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterAttribute", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttributeDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttributeDefinition")
                         .WithMany()
                         .HasForeignKey("AttributeDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", null)
                         .WithMany("RawAttributes")
                         .HasForeignKey("MonsterDefinitionId");
+
+                    b.Navigation("RawAttributeDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawAttackSkill")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "RawAttackSkill")
                         .WithMany()
                         .HasForeignKey("AttackSkillId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawMonsters")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemStorage", "RawMerchantStore")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawMerchantStore")
                         .WithMany()
                         .HasForeignKey("MerchantStoreId");
+
+                    b.Navigation("RawAttackSkill");
+
+                    b.Navigation("RawMerchantStore");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinitionDropItemGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinitionDropItemGroup", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "DropItemGroup")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", "DropItemGroup")
                         .WithMany()
                         .HasForeignKey("DropItemGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "MonsterDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "MonsterDefinition")
                         .WithMany("JoinedDropItemGroups")
                         .HasForeignKey("MonsterDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DropItemGroup");
+
+                    b.Navigation("MonsterDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.MonsterSpawnArea", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterSpawnArea", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameMapDefinition", "RawGameMap")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "RawGameMap")
                         .WithMany("RawMonsterSpawns")
                         .HasForeignKey("GameMapId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonsterDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawMonsterDefinition")
                         .WithMany()
                         .HasForeignKey("MonsterDefinitionId");
+
+                    b.Navigation("RawGameMap");
+
+                    b.Navigation("RawMonsterDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PlugInConfiguration", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PlugInConfiguration", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawPlugInConfigurations")
                         .HasForeignKey("GameConfigurationId");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawBoost")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawBoost")
                         .WithMany()
                         .HasForeignKey("BoostId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
+
+                    b.Navigation("RawBoost");
+
+                    b.Navigation("RawTargetAttribute");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawBoost")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawBoost")
                         .WithOne("ParentAsBoost")
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "BoostId")
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", "BoostId")
                         .HasConstraintName("PowerUpDefinitionWithDuration_Boost")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionValue", "RawDuration")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawDuration")
                         .WithOne("ParentAsDuration")
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.PowerUpDefinitionWithDuration", "DurationId")
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", "DurationId")
                         .HasConstraintName("PowerUpDefinitionWithDuration_Duration")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawTargetAttribute")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
+
+                    b.Navigation("RawBoost");
+
+                    b.Navigation("RawDuration");
+
+                    b.Navigation("RawTargetAttribute");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", null)
                         .WithMany("RawQuests")
                         .HasForeignKey("MonsterDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "RawQualifiedCharacter")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "RawQualifiedCharacter")
                         .WithMany()
                         .HasForeignKey("QualifiedCharacterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawQuestGiver")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawQuestGiver")
                         .WithMany()
                         .HasForeignKey("QuestGiverId");
+
+                    b.Navigation("RawQualifiedCharacter");
+
+                    b.Navigation("RawQuestGiver");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestItemRequirement", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestItemRequirement", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.DropItemGroup", "RawDropItemGroup")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", "RawDropItemGroup")
                         .WithMany()
                         .HasForeignKey("DropItemGroupId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ItemDefinition", "RawItem")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawItem")
                         .WithMany()
                         .HasForeignKey("ItemId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", null)
                         .WithMany("RawRequiredItems")
                         .HasForeignKey("QuestDefinitionId");
+
+                    b.Navigation("RawDropItemGroup");
+
+                    b.Navigation("RawItem");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirement", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestMonsterKillRequirement", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MonsterDefinition", "RawMonster")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawMonster")
                         .WithMany()
                         .HasForeignKey("MonsterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", null)
                         .WithMany("RawRequiredMonsterKills")
                         .HasForeignKey("QuestDefinitionId");
+
+                    b.Navigation("RawMonster");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirementState", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestMonsterKillRequirementState", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterQuestState", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterQuestState", null)
                         .WithMany("RawRequirementStates")
                         .HasForeignKey("CharacterQuestStateId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestMonsterKillRequirement", "RawRequirement")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestMonsterKillRequirement", "RawRequirement")
                         .WithMany()
                         .HasForeignKey("RequirementId");
+
+                    b.Navigation("RawRequirement");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.QuestReward", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestReward", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttributeReward")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttributeReward")
                         .WithMany()
                         .HasForeignKey("AttributeRewardId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Item", "RawItemReward")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", "RawItemReward")
                         .WithMany()
                         .HasForeignKey("ItemRewardId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.QuestDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", null)
                         .WithMany("RawRewards")
                         .HasForeignKey("QuestDefinitionId");
+
+                    b.Navigation("RawAttributeReward");
+
+                    b.Navigation("RawItemReward");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Skill", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawElementalModifierTarget")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawElementalModifierTarget")
                         .WithMany()
                         .HasForeignKey("ElementalModifierTargetId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawSkills")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MagicEffectDefinition", "RawMagicEffectDef")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", "RawMagicEffectDef")
                         .WithMany()
                         .HasForeignKey("MagicEffectDefId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.MasterSkillDefinition", "RawMasterDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", "RawMasterDefinition")
                         .WithMany()
                         .HasForeignKey("MasterDefinitionId");
+
+                    b.Navigation("RawElementalModifierTarget");
+
+                    b.Navigation("RawMagicEffectDef");
+
+                    b.Navigation("RawMasterDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillCharacterClass", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SkillCharacterClass", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", "CharacterClass")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "CharacterClass")
                         .WithMany()
                         .HasForeignKey("CharacterClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "Skill")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "Skill")
                         .WithMany("JoinedQualifiedCharacters")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CharacterClass");
+
+                    b.Navigation("Skill");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.SkillEntry", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SkillEntry", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
                         .WithMany("RawLearnedSkills")
                         .HasForeignKey("CharacterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Skill", "RawSkill")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "RawSkill")
                         .WithMany()
                         .HasForeignKey("SkillId");
+
+                    b.Navigation("RawSkill");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttribute", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.StatAttribute", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Character", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
                         .WithMany("RawAttributes")
                         .HasForeignKey("CharacterId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawDefinition")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawDefinition")
                         .WithMany()
                         .HasForeignKey("DefinitionId");
+
+                    b.Navigation("RawDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.StatAttributeDefinition", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.StatAttributeDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.AttributeDefinition", "RawAttribute")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttribute")
                         .WithMany()
                         .HasForeignKey("AttributeId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.CharacterClass", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", null)
                         .WithMany("RawStatAttributes")
                         .HasForeignKey("CharacterClassId");
+
+                    b.Navigation("RawAttribute");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.WarpInfo", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.GameConfiguration", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawWarpList")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.ExitGate", "RawGate")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ExitGate", "RawGate")
                         .WithMany()
                         .HasForeignKey("GateId");
+
+                    b.Navigation("RawGate");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", b =>
+                {
+                    b.Navigation("JoinedUnlockedCharacterClasses");
+
+                    b.Navigation("RawCharacters");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", b =>
+                {
+                    b.Navigation("RawEquippedItems");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
+                {
+                    b.Navigation("JoinedDropItemGroups");
+
+                    b.Navigation("RawAttributes");
+
+                    b.Navigation("RawLearnedSkills");
+
+                    b.Navigation("RawLetters");
+
+                    b.Navigation("RawQuestStates");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", b =>
+                {
+                    b.Navigation("RawAttributeCombinations");
+
+                    b.Navigation("RawBaseAttributeValues");
+
+                    b.Navigation("RawStatAttributes");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterQuestState", b =>
+                {
+                    b.Navigation("RawRequirementStates");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ChatServerDefinition", b =>
+                {
+                    b.Navigation("RawEndpoints");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", b =>
+                {
+                    b.Navigation("JoinedPossibleItems");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", b =>
+                {
+                    b.Navigation("RawAttributes");
+
+                    b.Navigation("RawCharacterClasses");
+
+                    b.Navigation("RawDropItemGroups");
+
+                    b.Navigation("RawItemOptionCombinationBonuses");
+
+                    b.Navigation("RawItemOptions");
+
+                    b.Navigation("RawItemOptionTypes");
+
+                    b.Navigation("RawItems");
+
+                    b.Navigation("RawItemSetGroups");
+
+                    b.Navigation("RawItemSlotTypes");
+
+                    b.Navigation("RawJewelMixes");
+
+                    b.Navigation("RawMagicEffects");
+
+                    b.Navigation("RawMaps");
+
+                    b.Navigation("RawMasterSkillRoots");
+
+                    b.Navigation("RawMonsters");
+
+                    b.Navigation("RawPlugInConfigurations");
+
+                    b.Navigation("RawSkills");
+
+                    b.Navigation("RawWarpList");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", b =>
+                {
+                    b.Navigation("JoinedDropItemGroups");
+
+                    b.Navigation("RawEnterGates");
+
+                    b.Navigation("RawExitGates");
+
+                    b.Navigation("RawMapRequirements");
+
+                    b.Navigation("RawMonsterSpawns");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", b =>
+                {
+                    b.Navigation("JoinedMaps");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition", b =>
+                {
+                    b.Navigation("RawEndpoints");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>
+                {
+                    b.Navigation("RawMembers");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.IncreasableItemOption", b =>
+                {
+                    b.Navigation("RawLevelDependentOptions");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", b =>
+                {
+                    b.Navigation("JoinedItemSetGroups");
+
+                    b.Navigation("RawItemOptions");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemAppearance", b =>
+                {
+                    b.Navigation("JoinedVisibleOptions");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition", b =>
+                {
+                    b.Navigation("RawBonusPerLevel");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItem", b =>
+                {
+                    b.Navigation("JoinedPossibleItems");
+
+                    b.Navigation("JoinedRequiredItemOptions");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", b =>
+                {
+                    b.Navigation("JoinedPossibleItemOptions");
+
+                    b.Navigation("JoinedPossibleItemSetGroups");
+
+                    b.Navigation("JoinedQualifiedCharacters");
+
+                    b.Navigation("RawBasePowerUpAttributes");
+
+                    b.Navigation("RawRequirements");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionCombinationBonus", b =>
+                {
+                    b.Navigation("RawRequirements");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionDefinition", b =>
+                {
+                    b.Navigation("RawPossibleOptions");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>
+                {
+                    b.Navigation("RawItems");
+
+                    b.Navigation("RawOptions");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", b =>
+                {
+                    b.Navigation("RawItems");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
+                {
+                    b.Navigation("JoinedRequiredMasterSkills");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", b =>
+                {
+                    b.Navigation("JoinedDropItemGroups");
+
+                    b.Navigation("RawAttributes");
+
+                    b.Navigation("RawItemCraftings");
+
+                    b.Navigation("RawQuests");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", b =>
+                {
+                    b.Navigation("ParentAsBoost");
+
+                    b.Navigation("ParentAsDuration");
+
+                    b.Navigation("RawRelatedValues");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", b =>
+                {
+                    b.Navigation("RawRequiredItems");
+
+                    b.Navigation("RawRequiredMonsterKills");
+
+                    b.Navigation("RawRewards");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings", b =>
+                {
+                    b.Navigation("RawRequiredItems");
+
+                    b.Navigation("RawResultItems");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", b =>
+                {
+                    b.Navigation("JoinedQualifiedCharacters");
+
+                    b.Navigation("RawConsumeRequirements");
+
+                    b.Navigation("RawRequirements");
                 });
 #pragma warning restore 612, 618
         }
