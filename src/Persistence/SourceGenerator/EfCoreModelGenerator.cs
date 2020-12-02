@@ -136,6 +136,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.Persistence.EntityFramework;
 
     [Table(nameof({joinTypeName}), Schema = ""{(IsConfigurationType(propertyInfo.DeclaringType) ? "config" : "data")}"")]
     internal partial class {joinTypeName}
@@ -149,7 +150,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
 
     internal partial class {propertyInfo.DeclaringType.Name}
     {{
-        public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new List<{joinTypeName}>();
+        public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new EntityFramework.List<{joinTypeName}>();
     }}
 }}";
                 yield return (joinTypeName, source);
@@ -370,7 +371,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
         /// <summary>
         /// Gets the raw collection of <see cref=""{property.Name}"" />.
         /// </summary>
-        public {propertyTypeName} Raw{property.Name} {{ get; }} = new List<{persistentClassName}>();
+        public {propertyTypeName} Raw{property.Name} {{ get; }} = new EntityFramework.List<{persistentClassName}>();
         
         /// <inheritdoc/>
         [NotMapped]
