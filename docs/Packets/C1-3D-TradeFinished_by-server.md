@@ -15,7 +15,7 @@ The trade dialog is closed. Depending on the result, a message is shown.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   4   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x3D  | Packet header - packet type identifier |
-| 4 | 1 | TradeResult |  | Result |
+| 3 | 1 | TradeResult |  | Result |
 
 ### TradeResult Enum
 

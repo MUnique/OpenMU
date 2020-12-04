@@ -13,5 +13,5 @@ If the player is in a party, the server sends back a list with information about
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   3   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x42  | Packet header - packet type identifier |

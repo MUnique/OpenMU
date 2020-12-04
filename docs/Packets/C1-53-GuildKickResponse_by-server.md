@@ -23,6 +23,9 @@ The result of the guild kick request.
 
 | Value | Name | Description |
 |-------|------|-------------|
-| 0 | Failed | The kick request failed. |
+| 0 | FailedPasswordIncorrect | The kick request failed because of an incorrect password. |
 | 1 | KickSucceeded | The kick request was successful. |
-| 2 | GuildDisband | The guild has been disbanded. |
+| 2 | KickFailedBecausePlayerIsNotGuildMaster | The kick failed because player is not guild master. |
+| 3 | Failed | The kick request failed. |
+| 4 | GuildDisband | The guild has been disbanded. |
+| 5 | GuildMemberWithdrawn | The guild member has been withdrawn. |

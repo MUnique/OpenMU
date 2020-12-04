@@ -13,6 +13,6 @@ Depending on the state, the player is shown as offline or online in all friend l
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   4   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xC4  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | OnlineState |

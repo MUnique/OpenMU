@@ -13,6 +13,6 @@ It either cancels the guild creation or proceeds with the guild creation dialog 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   4   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x54  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | ShowCreationDialog; A value whether the guild creation dialog should be shown. Otherwise, the guild creation is cancelled and the dialog was closed. |

@@ -13,5 +13,5 @@ The server updates the state of the player accordingly.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   3   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x31  | Packet header - packet type identifier |

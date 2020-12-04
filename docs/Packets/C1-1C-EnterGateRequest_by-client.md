@@ -13,6 +13,6 @@ If the player is allowed to enter the "gate", it's moved to the corresponding ex
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x1C  | Packet header - packet type identifier |
-| 3 | 2 | ShortBigEndian |  | GateNumber |
+| 4 | 2 | ShortLittleEndian |  | GateNumber |

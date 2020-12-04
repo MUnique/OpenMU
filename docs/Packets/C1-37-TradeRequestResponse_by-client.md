@@ -13,6 +13,6 @@ When the trade request was accepted, the server tries to open a new trade and se
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   4   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x37  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | TradeAccepted |

@@ -13,9 +13,10 @@ Based on the type of mix and it's corresponding success rate, the mix succeeds o
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   5   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x86  | Packet header - packet type identifier |
-| 2 | 1 | ChaosMachineMixType |  | MixType; The identifier which tells the server which kind of mix should be executed. |
+| 3 | 1 | ChaosMachineMixType |  | MixType; The identifier which tells the server which kind of mix should be executed. |
+| 4 | 1 | Byte |  | SocketSlot; The 0-based slot index of the socket at which a seed sphere should be mounted or removed. May only be available for the corresponding mixes, so access with care. |
 
 ### ChaosMachineMixType Enum
 

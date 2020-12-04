@@ -13,5 +13,5 @@ The quest state is sent back as response.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   3   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xA0  | Packet header - packet type identifier |

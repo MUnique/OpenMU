@@ -13,6 +13,6 @@ If both players are online, a chat room is created on the chat server. Authentic
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   13   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xCA  | Packet header - packet type identifier |
 | 3 | 10 | String |  | FriendName |

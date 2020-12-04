@@ -13,7 +13,7 @@ The server is calculating the damage and applying it to the target. The attacker
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC3  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   12   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xDB  | Packet header - packet type identifier |
 | 3 | 2 | ShortBigEndian |  | SkillId |
 | 5 | 1 | Byte |  | TargetX |

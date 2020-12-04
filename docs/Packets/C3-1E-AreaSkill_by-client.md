@@ -13,7 +13,7 @@ It's forwarded to all surrounding players, so that the animation is visible. In 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC3  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   13   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x1E  | Packet header - packet type identifier |
 | 3 | 2 | ShortBigEndian |  | SkillId |
 | 5 | 1 | Byte |  | TargetX |

@@ -15,7 +15,7 @@ The game client updates the trade button state accordingly.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   4   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xC3  | Packet header - packet type identifier |
-| 4 | 1 | TradeButtonState |  | State |
+| 3 | 1 | TradeButtonState |  | State |
 
 ### TradeButtonState Enum
 

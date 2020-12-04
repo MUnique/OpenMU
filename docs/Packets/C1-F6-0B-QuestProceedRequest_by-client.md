@@ -13,9 +13,19 @@ The quest state is set accordingly on the server. The next response seems to dep
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   9   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF6  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x0B  | Packet header - sub packet type identifier |
 | 4 | 2 | ShortLittleEndian |  | QuestNumber |
 | 6 | 2 | ShortLittleEndian |  | QuestGroup |
-| 8 | 1 | Byte |  | NextState |
+| 8 | 1 | QuestProceedAction |  | ProceedAction |
+
+### QuestProceedAction Enum
+
+Describes how to proceed with the specified quest.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | Undefined | Undefined action. |
+| 1 | AcceptQuest | The quest is accepted and started. |
+| 2 | RefuseQuest | The quest is refused and not started. |

@@ -13,6 +13,6 @@ The entry in the friend list is removed. The player is shown as offline in the o
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   13   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xC3  | Packet header - packet type identifier |
 | 3 | 10 | String |  | FriendName |
