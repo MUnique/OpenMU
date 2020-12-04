@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
-    using MUnique.OpenMU.GameLogic.Views.Inventory;
+    using MUnique.OpenMU.GameLogic.Views.Vault;
     using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.Interfaces;

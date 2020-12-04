@@ -581,6 +581,66 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>82</Code>
+      <SubCode>00</SubCode>
+      <Name>UnlockVault</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to unlock the protected vault with a pin.</SentWhen>
+      <CausedReaction>The vault lock state on the server is updated. VaultProtectionInformation is sent as response.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Pin</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>82</Code>
+      <SubCode>01</SubCode>
+      <Name>SetVaultPin</Name>
+      <Length>27</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to set a new pin for the vault when it's in unlocked state.</SentWhen>
+      <CausedReaction>The vault pin is set. VaultProtectionInformation is sent as response.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Pin</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>Password</Name>
+          <Description>The password of the account, which is required to set a new vault pin.</Description>
+          <Length>20</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>82</Code>
+      <SubCode>02</SubCode>
+      <Name>RemoveVaultPin</Name>
+      <Length>27</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to remove the pin for the vault when it's in unlocked state.</SentWhen>
+      <CausedReaction>The vault pin is removed. VaultProtectionInformation is sent as response.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>Password</Name>
+          <Description>The password of the account, which is required to remove the vault pin.</Description>
+          <Length>20</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>82</Code>
       <Name>VaultClosed</Name>

@@ -197,6 +197,7 @@ namespace MUnique.OpenMU.GameLogic
                     this.account = value;
                     this.accountLoggingScope?.Dispose();
                     this.accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this.account.LoginName);
+                    this.IsVaultLocked = !string.IsNullOrWhiteSpace(this.account.VaultPassword);
                 }
             }
         }
@@ -306,6 +307,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets or sets the vault.
         /// </summary>
         public IStorage Vault { get; set; }
+
+        /// <summary>
+        /// Gets or sets a flag, indicating if the vault of the player is currently locked by a pin.
+        /// </summary>
+        public bool IsVaultLocked { get; set; }
 
         /// <summary>
         /// Gets the shop storage.

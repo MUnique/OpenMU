@@ -180,6 +180,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private Movement CanMove(Player player, Item item, byte toSlot, byte fromSlot, StorageInfo toStorage, StorageInfo fromStorage)
         {
+            if (fromStorage.Storage == player.Vault
+                && toStorage.Storage == player.Inventory
+                && player.IsVaultLocked)
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("The vault is locked.", MessageType.BlueNormal);
+                return Movement.None;
+            }
+
             var storage = toStorage.Storage;
             if (toStorage.Storage == player.Inventory && toSlot <= LastEquippableItemSlotIndex)
             {

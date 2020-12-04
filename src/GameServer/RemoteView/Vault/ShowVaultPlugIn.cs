@@ -2,14 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
+namespace MUnique.OpenMU.GameServer.RemoteView.Vault
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.NPC;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets.ServerToClient;
+    using MUnique.OpenMU.GameLogic.Views.Vault;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -33,14 +31,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
             this.player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(NpcWindow.VaultStorage);
             this.player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(this.player.Vault.ItemStorage.Items, StoreKind.Normal);
             this.player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney(true);
-
-            // Currently, we don't support vault locking yet. The following message probably needs to be moved into a separate plugin when we implement it.
-            using var writer = this.player.Connection.StartSafeWrite(VaultProtectionInformation.HeaderType, VaultProtectionInformation.Length);
-            _ = new VaultProtectionInformation(writer.Span)
-            {
-                ProtectionState = VaultProtectionInformation.VaultProtectionState.Unprotected,
-            };
-            writer.Commit();
+            this.player.ViewPlugIns.GetPlugIn<IUpdateVaultStatePlugIn>()?.UpdateState();
         }
     }
 }

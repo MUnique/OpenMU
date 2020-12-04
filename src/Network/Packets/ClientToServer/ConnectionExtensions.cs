@@ -311,6 +311,45 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="UnlockVault" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
+        /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
+        /// </remarks>
+        public static UnlockVaultThreadSafeWriter StartWriteUnlockVault(this IConnection connection)
+        {
+          return new UnlockVaultThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="SetVaultPin" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
+        /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
+        /// </remarks>
+        public static SetVaultPinThreadSafeWriter StartWriteSetVaultPin(this IConnection connection)
+        {
+          return new SetVaultPinThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="RemoveVaultPin" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
+        /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
+        /// </remarks>
+        public static RemoveVaultPinThreadSafeWriter StartWriteRemoveVaultPin(this IConnection connection)
+        {
+          return new RemoveVaultPinThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="VaultClosed" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1491,6 +1530,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             using var writer = connection.StartWriteEnterGateRequest();
             var packet = writer.Packet;
             packet.GateNumber = @gateNumber;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="UnlockVault" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="pin">The pin.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
+        /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
+        /// </remarks>
+        public static void SendUnlockVault(this IConnection connection, ushort @pin)
+        {
+            using var writer = connection.StartWriteUnlockVault();
+            var packet = writer.Packet;
+            packet.Pin = @pin;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="SetVaultPin" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="pin">The pin.</param>
+        /// <param name="password">The password of the account, which is required to set a new vault pin.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
+        /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
+        /// </remarks>
+        public static void SendSetVaultPin(this IConnection connection, ushort @pin, string @password)
+        {
+            using var writer = connection.StartWriteSetVaultPin();
+            var packet = writer.Packet;
+            packet.Pin = @pin;
+            packet.Password = @password;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="RemoveVaultPin" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="password">The password of the account, which is required to remove the vault pin.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
+        /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
+        /// </remarks>
+        public static void SendRemoveVaultPin(this IConnection connection, string @password)
+        {
+            using var writer = connection.StartWriteRemoveVaultPin();
+            var packet = writer.Packet;
+            packet.Password = @password;
             writer.Commit();
         }
 
@@ -3719,6 +3811,165 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(EnterGateRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="UnlockVault"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct UnlockVaultThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnlockVaultThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public UnlockVaultThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new UnlockVault(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(UnlockVault.Length).Slice(0, UnlockVault.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public UnlockVault Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="UnlockVault" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(UnlockVault.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="SetVaultPin"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct SetVaultPinThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetVaultPinThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public SetVaultPinThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new SetVaultPin(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(SetVaultPin.Length).Slice(0, SetVaultPin.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public SetVaultPin Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="SetVaultPin" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(SetVaultPin.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="RemoveVaultPin"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct RemoveVaultPinThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveVaultPinThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public RemoveVaultPinThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new RemoveVaultPin(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(RemoveVaultPin.Length).Slice(0, RemoveVaultPin.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public RemoveVaultPin Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="RemoveVaultPin" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(RemoveVaultPin.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

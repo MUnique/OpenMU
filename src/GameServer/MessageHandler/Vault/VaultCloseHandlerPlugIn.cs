@@ -1,8 +1,8 @@
-﻿// <copyright file="WarehouseCloseHandlerPlugIn.cs" company="MUnique">
+﻿// <copyright file="VaultCloseHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.MessageHandler
+namespace MUnique.OpenMU.GameServer.MessageHandler.Vault
 {
     using System;
     using System.Runtime.InteropServices;
@@ -14,9 +14,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// <summary>
     /// Handler for warehouse close packets.
     /// </summary>
-    [PlugIn("WarehouseCloseHandlerPlugIn", "Handler for warehouse close packets.")]
+    [PlugIn(nameof(VaultCloseHandlerPlugIn), "Handler for warehouse close packets.")]
     [Guid("7859931f-3341-4bd7-91ad-1b0b03f11198")]
-    internal class WarehouseCloseHandlerPlugIn : IPacketHandlerPlugIn
+    internal class VaultCloseHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly CloseNpcDialogAction closeDialogAction = new CloseNpcDialogAction();
 

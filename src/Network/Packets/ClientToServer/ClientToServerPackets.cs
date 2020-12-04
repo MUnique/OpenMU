@@ -2222,6 +2222,273 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
+    /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
+    /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
+    /// </summary>
+    public readonly ref struct UnlockVault
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnlockVault"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public UnlockVault(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnlockVault"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private UnlockVault(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x82;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x00;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the pin.
+        /// </summary>
+        public ushort Pin
+        {
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="UnlockVault"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator UnlockVault(Span<byte> packet) => new UnlockVault(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="UnlockVault"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(UnlockVault packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
+    /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
+    /// </summary>
+    public readonly ref struct SetVaultPin
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetVaultPin"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SetVaultPin(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetVaultPin"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SetVaultPin(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x82;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 27;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the pin.
+        /// </summary>
+        public ushort Pin
+        {
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the password of the account, which is required to set a new vault pin.
+        /// </summary>
+        public string Password
+        {
+            get => this.data.ExtractString(6, 20, System.Text.Encoding.UTF8);
+            set => this.data.Slice(6, 20).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SetVaultPin"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SetVaultPin(Span<byte> packet) => new SetVaultPin(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SetVaultPin"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SetVaultPin packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
+    /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
+    /// </summary>
+    public readonly ref struct RemoveVaultPin
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveVaultPin"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public RemoveVaultPin(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveVaultPin"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private RemoveVaultPin(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x82;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x02;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 27;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the password of the account, which is required to remove the vault pin.
+        /// </summary>
+        public string Password
+        {
+            get => this.data.ExtractString(6, 20, System.Text.Encoding.UTF8);
+            set => this.data.Slice(6, 20).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="RemoveVaultPin"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator RemoveVaultPin(Span<byte> packet) => new RemoveVaultPin(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="RemoveVaultPin"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(RemoveVaultPin packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the client when: The player closed an opened vault dialog.
     /// Causes reaction on server side: The state on the server is updated.
     /// </summary>
