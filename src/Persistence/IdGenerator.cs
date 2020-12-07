@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence
     public class IdGenerator
     {
         private readonly int maxValue;
-        private readonly ConcurrentBag<int> givenBack = new ConcurrentBag<int>();
+        private readonly ConcurrentQueue<int> givenBack = new ConcurrentQueue<int>();
         private int currentValue;
 
         /// <summary>
@@ -34,19 +34,46 @@ namespace MUnique.OpenMU.Persistence
         }
 
         /// <summary>
+        /// Defines how ids are reused, which were given back with <see cref="IdGenerator.GiveBack"/>.
+        /// </summary>
+        public enum ReUsePolicy
+        {
+            /// <summary>
+            /// The given back id is reused on the next call of <see cref="IdGenerator.GetId"/>.
+            /// </summary>
+            ReUseOnNextRetrieve,
+
+            /// <summary>
+            /// The given back id is reused when all of the available ids were exceeded.
+            /// </summary>
+            ReUseWhenExceeded,
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="ReUsePolicy"/> which defines how ids are reused, which were given back with <see cref="IdGenerator.GiveBack"/>.
+        /// </summary>
+        public ReUsePolicy ReUseSetting { get; set; }
+
+        /// <summary>
         /// Gets an identifier which is unique within this generator instance.
         /// </summary>
         /// <returns>An identifier which is unique within this generator instance.</returns>
         /// <exception cref="InvalidOperationException">Maximum object id exceeded.</exception>
         public int GetId()
         {
-            if (this.givenBack.TryTake(out int next))
+            if (this.ReUseSetting == ReUsePolicy.ReUseOnNextRetrieve
+                && this.givenBack.TryDequeue(out int next))
             {
                 return next;
             }
 
             if (this.currentValue == this.maxValue)
             {
+                if (this.givenBack.TryDequeue(out next))
+                {
+                    return next;
+                }
+
                 throw new InvalidOperationException("Maximum object id exceeded");
             }
 
@@ -61,7 +88,7 @@ namespace MUnique.OpenMU.Persistence
         {
             if (id <= this.maxValue)
             {
-                this.givenBack.Add(id);
+                this.givenBack.Enqueue(id);
             }
         }
     }

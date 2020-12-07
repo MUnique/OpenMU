@@ -46,7 +46,10 @@ namespace MUnique.OpenMU.GuildServer
             this.persistenceContextProvider = persistenceContextProvider;
             this.logger = logger;
             this.guildDictionary = new ConcurrentDictionary<uint, GuildContainer>();
-            this.idGenerator = new IdGenerator(1, int.MaxValue);
+            this.idGenerator = new IdGenerator(1, int.MaxValue)
+            {
+                ReUseSetting = IdGenerator.ReUsePolicy.ReUseWhenExceeded,
+            };
             this.guildIdMapping = new ConcurrentDictionary<Guid, uint>();
         }
 
