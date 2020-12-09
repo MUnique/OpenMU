@@ -1534,7 +1534,8 @@
         <Field>
           <Index>4</Index>
           <Type>Boolean</Type>
-          <Name>Success</Name>
+          <Name>IsMapChange</Name>
+          <Description>If false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.</Description>
           <DefaultValue>true</DefaultValue>
         </Field>
         <Field>

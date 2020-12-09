@@ -8,7 +8,7 @@
   * [C1 18 - AnimationRequest (by client)](C1-18-AnimationRequest_by-client.md)
   * [C3 19 - TargetedSkill (by client)](C3-19-TargetedSkill_by-client.md)
   * [C3 19 - TargetedSkill075 (by client)](C3-19-TargetedSkill075_by-client.md)
-  * [C1 1C - EnterGateRequest (by client)](C1-1C-EnterGateRequest_by-client.md)
+  * [C3 1C - EnterGateRequest (by client)](C3-1C-EnterGateRequest_by-client.md)
   * [C3 1E - AreaSkill (by client)](C3-1E-AreaSkill_by-client.md)
   * [C3 22 - PickupItemRequest (by client)](C3-22-PickupItemRequest_by-client.md)
   * [C1 22 - PickupItemRequest075 (by client)](C1-22-PickupItemRequest075_by-client.md)

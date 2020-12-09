@@ -2143,7 +2143,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
-    /// Is sent by the client when: When the player enters an area on the game map which is configured as gate at the client data files.
+    /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
     /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
     /// </summary>
     public readonly ref struct EnterGateRequest
@@ -2179,7 +2179,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header type of this data packet.
         /// </summary>
-        public static byte HeaderType => 0xC1;
+        public static byte HeaderType => 0xC3;
 
         /// <summary>
         /// Gets the operation code of this data packet.
@@ -2194,7 +2194,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C3Header Header => new C3Header(this.data);
 
         /// <summary>
         /// Gets or sets the gate number.
@@ -2203,6 +2203,24 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         {
             get => ReadUInt16LittleEndian(this.data.Slice(4));
             set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the teleport target x.
+        /// </summary>
+        public byte TeleportTargetX
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the teleport target y.
+        /// </summary>
+        public byte TeleportTargetY
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
         }
 
         /// <summary>
