@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         }
 
         /// <inheritdoc />
-        public async void NewPlayersInScope(IEnumerable<Player> newObjects)
+        public async void NewPlayersInScope(IEnumerable<Player> newObjects, bool isSpawned = true)
         {
             try
             {

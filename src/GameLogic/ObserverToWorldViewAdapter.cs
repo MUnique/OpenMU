@@ -215,13 +215,13 @@ namespace MUnique.OpenMU.GameLogic
             var players = newItems.OfType<Player>().WhereActive();
             if (players.Any())
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<INewPlayersInScopePlugIn>()?.NewPlayersInScope(players);
+                this.adaptee.ViewPlugIns.GetPlugIn<INewPlayersInScopePlugIn>()?.NewPlayersInScope(players, false);
             }
 
             var npcs = newItems.OfType<NonPlayerCharacter>().WhereActive();
             if (npcs.Any())
             {
-                this.adaptee.ViewPlugIns.GetPlugIn<INewNpcsInScopePlugIn>()?.NewNpcsInScope(npcs);
+                this.adaptee.ViewPlugIns.GetPlugIn<INewNpcsInScopePlugIn>()?.NewNpcsInScope(npcs, false);
             }
 
             var droppedItems = newObjects.OfType<DroppedItem>();

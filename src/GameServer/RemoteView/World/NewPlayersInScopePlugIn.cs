@@ -35,14 +35,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public NewPlayersInScopePlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void NewPlayersInScope(IEnumerable<Player> newPlayers)
+        public void NewPlayersInScope(IEnumerable<Player> newPlayers, bool isSpawned = true)
         {
             if (newPlayers is null || !newPlayers.Any())
             {
                 return;
             }
 
-            this.SendCharacters(newPlayers, out var shopPlayers, out var guildPlayers);
+            this.SendCharacters(newPlayers, out var shopPlayers, out var guildPlayers, isSpawned);
 
             if (shopPlayers != null)
             {
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
         }
 
-        private void SendCharacters(IEnumerable<Player> newPlayers, out IList<Player> shopPlayers, out IList<Player> guildPlayers)
+        private void SendCharacters(IEnumerable<Player> newPlayers, out IList<Player> shopPlayers, out IList<Player> guildPlayers, bool isSpawned)
         {
             var appearanceSerializer = this.player.AppearanceSerializer;
             shopPlayers = null;
@@ -75,6 +75,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 var playerBlock = packet[i];
                 playerBlock.Id = newPlayer.GetId(this.player);
+                if (isSpawned)
+                {
+                    playerBlock.Id |= 0x8000;
+                }
+
                 playerBlock.CurrentPositionX = newPlayer.Position.X;
                 playerBlock.CurrentPositionY = newPlayer.Position.Y;
 

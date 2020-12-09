@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public NewNpcsInScopePlugIn075(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects)
+        public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true)
         {
             if (newObjects is null || !newObjects.Any())
             {
@@ -52,6 +52,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 var npcBlock = packet[i];
                 npcBlock.Id = npc.Id;
+                if (isSpawned)
+                {
+                    npcBlock.Id |= 0x8000;
+                }
+
                 npcBlock.TypeNumber = (byte)npc.Definition.Number;
                 npcBlock.CurrentPositionX = npc.Position.X;
                 npcBlock.CurrentPositionY = npc.Position.Y;
