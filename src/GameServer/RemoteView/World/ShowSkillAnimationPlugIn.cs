@@ -34,16 +34,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             var playerId = attacker.GetId(this.player);
             var targetId = target.GetId(this.player);
             var skillId = NumberConversionExtensions.ToUnsigned(skill.Number);
-            using var writer = this.player.Connection.StartSafeWrite(
-                SkillAnimation.HeaderType,
-                SkillAnimation.Length);
-            _ = new SkillAnimation(writer.Span)
-            {
-                SkillId = skillId,
-                PlayerId = playerId,
-                TargetId = targetId,
-            };
-            writer.Commit();
+            player.Connection.SendSkillAnimation(skillId, playerId, targetId);
         }
     }
 }
