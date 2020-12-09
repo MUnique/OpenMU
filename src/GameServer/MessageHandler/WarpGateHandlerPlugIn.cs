@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
+    using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -23,6 +24,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     internal class WarpGateHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly WarpGateAction warpAction = new WarpGateAction();
+
+        private readonly WizardTeleportAction teleportAction = new WizardTeleportAction();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;
@@ -40,6 +43,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
 
             EnterGateRequest request = packet;
             var gateNumber = request.GateNumber;
+
+            if (gateNumber == 0)
+            {
+                this.teleportAction.TryTeleportWithSkill(player, new Point(request.TeleportTargetX, request.TeleportTargetY));
+                return;
+            }
+
             EnterGate gate = player.SelectedCharacter.CurrentMap.EnterGates.FirstOrDefault(g => g.Number == gateNumber);
             if (gate is null)
             {

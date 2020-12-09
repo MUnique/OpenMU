@@ -408,6 +408,51 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Teleports this player to the specified target with the specified skill animation.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="teleportSkill">The teleport skill.</param>
+        public async Task TeleportAsync(Point target, Skill teleportSkill)
+        {
+            if (!this.IsAlive)
+            {
+                return;
+            }
+
+            this.IsTeleporting = true;
+            try
+            {
+                this.walker.Stop();
+
+                var previous = this.Position;
+                this.Position = target;
+
+                this.ForEachWorldObserver(o => o.ViewPlugIns?.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, this, teleportSkill), true);
+
+                await Task.Delay(300).ConfigureAwait(false);
+
+                this.ForEachWorldObserver(o => o.ViewPlugIns?.GetPlugIn<IObjectsOutOfScopePlugIn>()?.ObjectsOutOfScope(this.GetAsEnumerable()), false);
+
+                await Task.Delay(1500).ConfigureAwait(false);
+
+                if (this.IsAlive)
+                {
+                    this.ViewPlugIns.GetPlugIn<ITeleportPlugIn>()?.ShowTeleported();
+
+                    // We need to restore the previous position to make the Moving on the map data structure work correctly.
+                    this.Position = previous;
+                    this.CurrentMap.Move(this, target, this.moveLock, MoveType.Teleport);
+                }
+            }
+            catch (Exception e)
+            {
+                this.Logger.LogWarning(e, "Error during teleport");
+            }
+
+            this.IsTeleporting = false;
+        }
+
+        /// <summary>
         /// Is called after the player killed a <see cref="Player"/>.
         /// Increment PK Level.
         /// </summary>
