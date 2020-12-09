@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             if (skill.Skill.SkillType != SkillType.AreaSkillExplicitHits
                 || target is null
-                || !target.Alive)
+                || !target.IsAlive)
             {
                 return;
             }

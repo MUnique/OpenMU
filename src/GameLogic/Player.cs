@@ -262,7 +262,10 @@ namespace MUnique.OpenMU.GameLogic
         public Party Party { get; set; }
 
         /// <inheritdoc/>
-        public bool Alive { get; set; }
+        public bool IsAlive { get; set; }
+
+        /// <inheritdoc/>
+        public bool IsTeleporting { get; private set; }
 
         /// <inheritdoc />
         public uint LastReceivedDamage { get; private set; }
@@ -557,7 +560,8 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             currentMap.Remove(this);
-            this.Alive = false;
+            this.IsAlive = false;
+            this.IsTeleporting = false;
             this.walker.Stop();
             this.observerToWorldViewAdapter.ClearObservingObjectsList();
             this.SelectedCharacter.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
@@ -583,7 +587,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter.CurrentMap.Number.ToUnsigned());
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
-            this.Alive = true;
+            this.IsAlive = true;
             this.CurrentMap.Add(this);
         }
 
@@ -1001,7 +1005,7 @@ namespace MUnique.OpenMU.GameLogic
 
                 Task.Delay(500).ContinueWith(task =>
                 {
-                    if (attackableAttacker.Alive)
+                    if (attackableAttacker.IsAlive)
                     {
                         attackableAttacker.ReflectDamage(this, (uint)reflectedDamage);
                     }
@@ -1017,7 +1021,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             this.walker.Stop();
-            this.Alive = false;
+            this.IsAlive = false;
             this.respawnAfterDeathToken = default;
             this.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IObjectGotKilledPlugIn>()?.ObjectGotKilled(this, killer), true);
 

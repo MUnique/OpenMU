@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             if (this.currentTarget != null)
             {
                 // Old Target out of Range?
-                if (!this.currentTarget.Alive
+                if (!this.currentTarget.IsActive()
                     || this.currentTarget.IsAtSafezone()
                     || !this.IsTargetInObservers())
                 {

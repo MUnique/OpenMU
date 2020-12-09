@@ -212,6 +212,6 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private bool ShouldWalkerStop() => !((this.walkSupporter as IAttackable)?.Alive ?? false) || this.nextSteps.Count <= 0;
+        private bool ShouldWalkerStop() => !((this.walkSupporter as IAttackable)?.IsActive() ?? false) || this.nextSteps.Count <= 0;
     }
 }

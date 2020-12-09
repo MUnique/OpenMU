@@ -28,7 +28,16 @@ namespace MUnique.OpenMU.GameLogic
         /// <value>
         ///   <c>true</c> if alive; otherwise, <c>false</c>.
         /// </value>
-        bool Alive { get; }
+        bool IsAlive { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="IAttackable"/> is currently teleporting and can't be directly targeted.
+        /// It can still receive damage, if the teleport target coordinates are within an target skill area for area attacks.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if teleporting; otherwise, <c>false</c>.
+        /// </value>
+        bool IsTeleporting { get; }
 
         /// <summary>
         /// Gets the last received damage.
