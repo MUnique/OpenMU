@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.Tests
             nonPlayer.OldBucket = nonPlayer.NewBucket; // oldbucket would be set, if it got moved on the map
 
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
-            view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer))), Times.Once);
+            view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer)), true), Times.Once);
         }
 
         /// <summary>
@@ -82,8 +82,8 @@ namespace MUnique.OpenMU.Tests
 
             map.Move(nonPlayer1, nonPlayer2.Position, nonPlayer1, MoveType.Instant);
 
-            view1.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1))), Times.Once);
-            view1.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2))), Times.Once);
+            view1.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1)), true), Times.Once);
+            view1.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2)), true), Times.Once);
             view2.Verify(v => v.ObjectsOutOfScope(It.IsAny<IEnumerable<IIdentifiable>>()), Times.Never);
             view3.Verify(v => v.ObjectMoved(It.Is<ILocateable>(arg => arg == nonPlayer1), MoveType.Instant), Times.Once);
         }
