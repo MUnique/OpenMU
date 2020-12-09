@@ -263,12 +263,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc />
         protected override void Move(Point target, MoveType type)
         {
-            this.CurrentMap.Move(this, target, this.moveLock, type);
-            if (type == MoveType.Instant)
+            if (type == MoveType.Instant || type == MoveType.Teleport)
             {
                 this.walker.Stop();
-                this.Position = target;
             }
+
+            this.CurrentMap.Move(this, target, this.moveLock, type);
         }
 
         private static WalkingStep GetStep(PathResultNode node)
