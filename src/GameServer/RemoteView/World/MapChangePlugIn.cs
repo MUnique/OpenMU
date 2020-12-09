@@ -28,18 +28,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void MapChange()
         {
+            this.SendMessage(true);
+        }
+
+        /// <inheritdoc/>
+        public void MapChangeFailed()
+        {
+            this.SendMessage(false);
+        }
+
+        private void SendMessage(bool success)
+        {
             var mapNumber = this.player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
             var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
-            using var writer = this.player.Connection.StartSafeWrite(MapChanged.HeaderType, MapChanged.Length);
-            _ = new MapChanged(writer.Span)
-            {
-                MapNumber = mapNumber,
-                PositionX = position.X,
-                PositionY = position.Y,
-                Rotation = this.player.Rotation.ToPacketByte(),
-            };
-
-            writer.Commit();
+            this.player.Connection.SendMapChanged(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte(), success);
         }
     }
 }

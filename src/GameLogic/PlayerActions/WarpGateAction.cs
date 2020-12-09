@@ -28,10 +28,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             }
             else
             {
-                // TODO: We need to send the correct response.
-                // Currently, we just send the regular map change message, but this causes that the
-                // player doesn't see objects in its range anymore.
-                player.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
+                player.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChangeFailed();
             }
         }
 
