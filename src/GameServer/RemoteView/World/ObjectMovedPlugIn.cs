@@ -25,6 +25,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     [Guid("29ee689f-636c-47e7-a930-b60ce8e8993c")]
     public class ObjectMovedPlugIn : IObjectMovedPlugIn
     {
+        private const short TeleportTargetNumber = 0x0F;
+
         private readonly RemotePlayer player;
 
         /// <summary>
@@ -51,10 +53,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
                 case MoveType.Teleport when obj is Player movedPlayer && movedPlayer != this.player:
                     this.player.ViewPlugIns.GetPlugIn<INewPlayersInScopePlugIn>()?.NewPlayersInScope(movedPlayer.GetAsEnumerable(), false);
+                    this.player.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(movedPlayer, movedPlayer, TeleportTargetNumber);
                     break;
 
                 case MoveType.Teleport when obj is NonPlayerCharacter movedNpc:
                     this.player.ViewPlugIns.GetPlugIn<INewNpcsInScopePlugIn>()?.NewNpcsInScope(movedNpc.GetAsEnumerable(), false);
+                    if (movedNpc is Monster monster)
+                    {
+                        this.player.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(monster, monster, TeleportTargetNumber);
+                    }
+
                     break;
 
                 case MoveType.Teleport:

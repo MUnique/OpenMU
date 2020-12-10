@@ -17,7 +17,7 @@ Some general notes:
 | 3      | Lightning                   | works                                                            |
 | 4      | Fire Ball                   | works                                                            |
 | 5      | Flame                       | works                                                            |
-| 6      | Teleport                    | not implemented yet                                              |
+| 6      | Teleport                    | works                                                            |
 | 7      | Ice                         | Damage works, icing not yet                                      |
 | 8      | Twister                     | works                                                            |
 | 9      | Evil Spirit                 | works                                                            |
