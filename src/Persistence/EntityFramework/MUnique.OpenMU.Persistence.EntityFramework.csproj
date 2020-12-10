@@ -59,7 +59,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet run -p ../SourceGenerator/MUnique.OpenMU.Persistence.SourceGenerator.csproj -c:$(ConfigurationName) MUnique.OpenMU.Persistence.EntityFramework &quot;$(ProjectDir)Model&quot;" />
+    <Exec Command="dotnet run -p ../SourceGenerator/MUnique.OpenMU.Persistence.SourceGenerator.csproj -c:$(ConfigurationName) MUnique.OpenMU.Persistence.EntityFramework &quot;$(ProjectDir)Model&quot; --no-build"/>
   </Target>
 
 </Project>

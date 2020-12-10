@@ -28,6 +28,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Network.Tests", "..\tests\MUnique.OpenMU.Network.Tests\MUnique.OpenMU.Network.Tests.csproj", "{8675AE62-9B7C-410C-A956-148904035F67}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence", "Persistence\MUnique.OpenMU.Persistence.csproj", "{6E809FA9-888C-474F-8A84-70EECBC7E42D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3CFAFD8C-E881-45BA-98CE-653D33C95419} = {3CFAFD8C-E881-45BA-98CE-653D33C95419}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Startup", "Startup\MUnique.OpenMU.Startup.csproj", "{6C3C3CA7-B9A8-4016-88FF-31D0510D4A88}"
 	ProjectSection(ProjectDependencies) = postProject
