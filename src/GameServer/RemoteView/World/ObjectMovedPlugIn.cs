@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.GameLogic.NPC;
+
 namespace MUnique.OpenMU.GameServer.RemoteView.World
 {
     using System;
@@ -23,6 +25,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     [Guid("29ee689f-636c-47e7-a930-b60ce8e8993c")]
     public class ObjectMovedPlugIn : IObjectMovedPlugIn
     {
+        private const short TeleportTargetNumber = 0x0F;
+
         private readonly RemotePlayer player;
 
         /// <summary>
@@ -41,24 +45,33 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public void ObjectMoved(ILocateable obj, MoveType type)
         {
             var objectId = obj.GetId(this.player);
-            if (type == MoveType.Instant)
+            switch (type)
             {
-                using var writer = this.player.Connection.StartSafeWrite(
-                    Network.Packets.ServerToClient.ObjectMoved.HeaderType,
-                    Network.Packets.ServerToClient.ObjectMoved.Length);
-                _ = new ObjectMoved(writer.Span)
-                {
-                    HeaderCode = this.GetInstantMoveCode(),
-                    ObjectId = objectId,
-                    PositionX = obj.Position.X,
-                    PositionY = obj.Position.Y,
-                };
+                case MoveType.Instant:
+                    this.player.Connection.SendObjectMoved(this.GetInstantMoveCode(), objectId, obj.Position.X, obj.Position.Y);
+                    break;
 
-                writer.Commit();
-            }
-            else
-            {
-                this.ObjectWalked(obj);
+                case MoveType.Teleport when obj is Player movedPlayer && movedPlayer != this.player:
+                    this.player.ViewPlugIns.GetPlugIn<INewPlayersInScopePlugIn>()?.NewPlayersInScope(movedPlayer.GetAsEnumerable(), false);
+                    this.player.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(movedPlayer, movedPlayer, TeleportTargetNumber);
+                    break;
+
+                case MoveType.Teleport when obj is NonPlayerCharacter movedNpc:
+                    this.player.ViewPlugIns.GetPlugIn<INewNpcsInScopePlugIn>()?.NewNpcsInScope(movedNpc.GetAsEnumerable(), false);
+                    if (movedNpc is Monster monster)
+                    {
+                        this.player.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(monster, monster, TeleportTargetNumber);
+                    }
+
+                    break;
+
+                case MoveType.Teleport:
+                    // no other types available
+                    break;
+
+                case MoveType.Walk:
+                    this.ObjectWalked(obj);
+                    break;
             }
         }
 

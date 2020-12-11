@@ -69,6 +69,16 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// </value>
         public bool IsWalking => this.WalkTarget != default;
 
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="IAttackable" /> is currently teleporting and can't be directly targeted.
+        /// It can still receive damage, if the teleport target coordinates are within an target skill area for area attacks.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if teleporting; otherwise, <c>false</c>.
+        /// </value>
+        /// <remarks>Teleporting for monsters oor npcs is not implemented yet.</remarks>
+        public bool IsTeleporting => false;
+
         /// <inheritdoc/>
         public override Point Position
         {
@@ -93,7 +103,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc/>
-        public bool Alive { get; set; }
+        public bool IsAlive { get; set; }
 
         /// <inheritdoc/>
         public DeathInformation LastDeath { get; private set; }
@@ -113,7 +123,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             base.Initialize();
             this.respawnTimer?.Dispose();
             this.Health = (int)this.Attributes[Stats.MaximumHealth];
-            this.Alive = true;
+            this.IsAlive = true;
         }
 
         /// <summary>
@@ -264,12 +274,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc />
         protected override void Move(Point target, MoveType type)
         {
-            this.CurrentMap.Move(this, target, this.moveLock, type);
-            if (type == MoveType.Instant)
+            if (type == MoveType.Instant || type == MoveType.Teleport)
             {
                 this.walker.Stop();
-                this.Position = target;
             }
+
+            this.CurrentMap.Move(this, target, this.moveLock, type);
         }
 
         private static WalkingStep GetStep(PathResultNode node)
@@ -385,7 +395,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void Hit(HitInfo hitInfo, IAttacker attacker, Skill skill)
         {
-            if (!this.Alive)
+            if (!this.IsAlive)
             {
                 return;
             }
@@ -413,7 +423,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             if (damage >= this.Health)
             {
-                this.Alive = false;
+                this.IsAlive = false;
                 this.Health = 0;
                 return true;
             }

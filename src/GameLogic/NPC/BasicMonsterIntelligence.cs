@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             double closestdistance = 100;
             IAttackable closest = null;
 
-            foreach (var attackable in tempObservers.OfType<IAttackable>())
+            foreach (var attackable in tempObservers.OfType<IAttackable>().Where(a => !a.IsTeleporting))
             {
                 if (this.map.Terrain.SafezoneMap[attackable.Position.X, attackable.Position.Y])
                 {
@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void Tick()
         {
-            if (!this.Monster.Alive)
+            if (!this.Monster.IsAlive)
             {
                 return;
             }
@@ -130,7 +130,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
             if (this.currentTarget != null)
             {
                 // Old Target out of Range?
-                if (!this.currentTarget.Alive
+                if (!this.currentTarget.IsAlive
+                    || this.currentTarget.IsTeleporting
                     || this.currentTarget.IsAtSafezone()
                     || !this.IsTargetInObservers())
                 {

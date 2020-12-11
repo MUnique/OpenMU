@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
-            if (!target.Alive)
+            if (!target.IsActive())
             {
                 return;
             }

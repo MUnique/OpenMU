@@ -31,19 +31,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void ShowSkillAnimation(IAttacker attacker, IAttackable target, Skill skill)
         {
+            this.ShowSkillAnimation(attacker, target, skill.Number);
+        }
+
+        /// <inheritdoc/>
+        public void ShowSkillAnimation(IAttacker attacker, IAttackable target, short skillNumber)
+        {
             var playerId = attacker.GetId(this.player);
             var targetId = target.GetId(this.player);
-            var skillId = NumberConversionExtensions.ToUnsigned(skill.Number);
-            using var writer = this.player.Connection.StartSafeWrite(
-                SkillAnimation.HeaderType,
-                SkillAnimation.Length);
-            _ = new SkillAnimation(writer.Span)
-            {
-                SkillId = skillId,
-                PlayerId = playerId,
-                TargetId = targetId,
-            };
-            writer.Commit();
+            var skillId = NumberConversionExtensions.ToUnsigned(skillNumber);
+            player.Connection.SendSkillAnimation(skillId, playerId, targetId);
         }
     }
 }

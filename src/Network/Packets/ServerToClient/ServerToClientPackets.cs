@@ -4301,7 +4301,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
                 header.SubCode = SubCode;
-                this.Success = true;
+                this.IsMapChange = true;
             }
         }
 
@@ -4332,9 +4332,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
 
         /// <summary>
-        /// Gets or sets the success.
+        /// Gets or sets if false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.
         /// </summary>
-        public bool Success
+        public bool IsMapChange
         {
             get => this.data.Slice(4).GetBoolean();
             set => this.data.Slice(4).SetBoolean(value);

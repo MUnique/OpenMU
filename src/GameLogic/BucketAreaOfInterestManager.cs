@@ -171,6 +171,11 @@ namespace MUnique.OpenMU.GameLogic
 
             if (!differentBucket)
             {
+                if (moveType != MoveType.Walk)
+                {
+                    obj.Position = target;
+                }
+
                 return false;
             }
 

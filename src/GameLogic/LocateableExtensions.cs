@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </returns>
         public static bool IsActive(this ILocateable locateable)
         {
-            return locateable is not IAttackable attackable || attackable.Alive;
+            return locateable is not IAttackable attackable || (attackable.IsAlive && !attackable.IsTeleporting);
         }
 
         /// <summary>

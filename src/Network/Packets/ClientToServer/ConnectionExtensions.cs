@@ -302,7 +302,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the client when: When the player enters an area on the game map which is configured as gate at the client data files.
+        /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
         /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
         /// </remarks>
         public static EnterGateRequestThreadSafeWriter StartWriteEnterGateRequest(this IConnection connection)
@@ -1521,15 +1521,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="gateNumber">The gate number.</param>
+        /// <param name="teleportTargetX">The teleport target x.</param>
+        /// <param name="teleportTargetY">The teleport target y.</param>
         /// <remarks>
-        /// Is sent by the client when: When the player enters an area on the game map which is configured as gate at the client data files.
+        /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
         /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
         /// </remarks>
-        public static void SendEnterGateRequest(this IConnection connection, ushort @gateNumber)
+        public static void SendEnterGateRequest(this IConnection connection, ushort @gateNumber, byte @teleportTargetX, byte @teleportTargetY)
         {
             using var writer = connection.StartWriteEnterGateRequest();
             var packet = writer.Packet;
             packet.GateNumber = @gateNumber;
+            packet.TeleportTargetX = @teleportTargetX;
+            packet.TeleportTargetY = @teleportTargetY;
             writer.Commit();
         }
 

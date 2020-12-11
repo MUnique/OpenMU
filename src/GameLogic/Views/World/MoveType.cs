@@ -18,5 +18,10 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// Moving by instantly moving the object on the map, without animations.
         /// </summary>
         Instant,
+
+        /// <summary>
+        /// Moving by teleporting the object on the map.
+        /// </summary>
+        Teleport,
     }
 }

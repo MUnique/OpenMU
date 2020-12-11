@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private bool CanPickup(Player player, ILocateable droppedLocateable)
         {
-            if (!player.Alive)
+            if (!player.IsAlive)
             {
                 return false;
             }

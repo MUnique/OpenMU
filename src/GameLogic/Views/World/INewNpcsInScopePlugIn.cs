@@ -16,6 +16,7 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// Shows the new npcs in scope.
         /// </summary>
         /// <param name="newObjects">The new objects.</param>
-        void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects);
+        /// <param name="isSpawned">If set to <c>true</c>, the players spawned on the map.</param>
+        void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true);
     }
 }
