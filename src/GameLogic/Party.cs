@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Party;
@@ -17,6 +18,8 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class Party : IDisposable
     {
+        private readonly ILogger<Party> logger;
+
         private readonly Timer healthUpdate;
 
         private readonly byte maxPartySize;
@@ -27,9 +30,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Initializes a new instance of the <see cref="Party"/> class.
         /// </summary>
         /// <param name="maxPartySize">Maximum size of the party.</param>
-        public Party(byte maxPartySize)
+        /// <param name="logger">Logger of this party.</param>
+        public Party(byte maxPartySize, ILogger<Party> logger)
         {
             this.maxPartySize = maxPartySize;
+            this.logger = logger;
 
             this.PartyList = new List<IPartyMember>(maxPartySize);
             this.experienceDistributionList = new List<Player>(this.MaxPartySize);
@@ -118,7 +123,14 @@ namespace MUnique.OpenMU.GameLogic
         {
             for (int i = 0; i < this.PartyList.Count; i++)
             {
-                this.PartyList[i].ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, senderCharacterName, ChatMessageType.Party);
+                try
+                {
+                    this.PartyList[i].ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, senderCharacterName, ChatMessageType.Party);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogDebug("Error sending the chat message", ex);
+                }
             }
         }
 
@@ -152,8 +164,15 @@ namespace MUnique.OpenMU.GameLogic
             {
                 for (byte i = 0; i < this.PartyList.Count; i++)
                 {
-                    this.PartyList[i].ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()?.PartyMemberRemoved(i);
-                    this.PartyList[i].Party = null;
+                    try
+                    {
+                        this.PartyList[i].ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()?.PartyMemberRemoved(i);
+                        this.PartyList[i].Party = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.LogDebug("error at dispose", ex);
+                    }
                 }
 
                 this.PartyList.Clear();
@@ -211,31 +230,46 @@ namespace MUnique.OpenMU.GameLogic
 
             this.PartyList.Remove(player);
             player.Party = null;
-            player.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()?.PartyMemberRemoved(index);
+            try
+            {
+                player.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()?.PartyMemberRemoved(index);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogDebug("Error when calling PartyMemberRemoved. Already disconnected?", ex);
+            }
+
             this.SendPartyList();
         }
 
         private void HealthUpdate_Elapsed(object state)
         {
-            var partyMaster = this.PartyList.FirstOrDefault();
-            if (partyMaster is null)
+            try
             {
-                return;
-            }
-
-            bool updateNeeded = partyMaster.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>()?.IsHealthUpdateNeeded() ?? false;
-            if (updateNeeded)
-            {
-                partyMaster.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>()?.UpdatePartyHealth();
-                for (var i = this.PartyList.Count - 1; i >= 1; i--)
+                var partyMaster = this.PartyList.FirstOrDefault();
+                if (partyMaster is null)
                 {
-                    var member = this.PartyList[i];
-                    var plugIn = member.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>();
-                    if (plugIn?.IsHealthUpdateNeeded() ?? false)
+                    return;
+                }
+
+                bool updateNeeded = partyMaster.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>()?.IsHealthUpdateNeeded() ?? false;
+                if (updateNeeded)
+                {
+                    partyMaster.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>()?.UpdatePartyHealth();
+                    for (var i = this.PartyList.Count - 1; i >= 1; i--)
                     {
-                        plugIn.UpdatePartyHealth();
+                        var member = this.PartyList[i];
+                        var plugIn = member.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>();
+                        if (plugIn?.IsHealthUpdateNeeded() ?? false)
+                        {
+                            plugIn.UpdatePartyHealth();
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogDebug("Unexpected error during health update", ex);
             }
         }
 
@@ -248,7 +282,14 @@ namespace MUnique.OpenMU.GameLogic
 
             for (byte i = 0; i < this.PartyList.Count; i++)
             {
-                this.PartyList[i].ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()?.UpdatePartyList();
+                try
+                {
+                    this.PartyList[i].ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()?.UpdatePartyList();
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogDebug("Error sending party list update", ex);
+                }
             }
         }
     }

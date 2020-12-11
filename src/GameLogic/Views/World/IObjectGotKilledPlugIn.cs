@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.Views.World
 {
+    using MUnique.OpenMU.DataModel.Configuration;
+
     /// <summary>
     /// Interface of a view whose implementation informs about killed objects.
     /// </summary>
@@ -14,6 +16,7 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// </summary>
         /// <param name="killedObject">The killed object.</param>
         /// <param name="killerObject">The object which killed the object.</param>
-        void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject);
+        /// /// <param name="skill">The skill with which was used.</param>
+        void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject, Skill skill = null);
     }
 }

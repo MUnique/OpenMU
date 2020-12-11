@@ -267,8 +267,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public bool IsTeleporting { get; private set; }
 
-        /// <inheritdoc />
-        public uint LastReceivedDamage { get; private set; }
+        public DeathInformation LastDeath { get; private set; }
 
         /// <inheritdoc/>
         public Point Position
@@ -388,7 +387,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
             }
 
-            this.Hit(hitInfo, attacker);
+            this.Hit(hitInfo, attacker, skill?.Skill);
 
             (attacker as Player)?.AfterHitTarget();
         }
@@ -404,7 +403,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public void ReflectDamage(IAttacker reflector, uint damage)
         {
-            this.Hit(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector);
+            this.Hit(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector, null);
         }
 
         /// <summary>
@@ -659,7 +658,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="experience">The experience which should be added.</param>
         /// <param name="killedObject">The killed object which caused the experience gain.</param>
-        public void AddExperience(int experience, IIdentifiable killedObject)
+        public void AddExperience(int experience, IAttackable killedObject)
         {
             if (this.Attributes[Stats.Level] < this.GameContext.Configuration.MaximumLevel)
             {
@@ -929,11 +928,8 @@ namespace MUnique.OpenMU.GameLogic
             if (managed)
             {
                 this.PersistenceContext.Dispose();
-                if (this.CurrentMap != null)
-                {
-                    this.CurrentMap.Remove(this);
-                    this.CurrentMap = null;
-                }
+                this.RemoveFromCurrentMap();
+                this.Party?.KickMySelf(this);
 
                 this.observerToWorldViewAdapter.ClearObservingObjectsList();
                 this.observerToWorldViewAdapter.Dispose();
@@ -952,6 +948,9 @@ namespace MUnique.OpenMU.GameLogic
                 this.respawnAfterDeathToken.ThrowIfCancellationRequested();
                 this.WarpTo(this.GetSpawnGateOfCurrentMap());
             }
+
+            this.RemoveFromCurrentMap();
+            this.Party?.KickMySelf(this);
         }
 
         /// <summary>
@@ -961,6 +960,15 @@ namespace MUnique.OpenMU.GameLogic
         protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
         {
             return null;
+        }
+
+        private void RemoveFromCurrentMap()
+        {
+            if (this.CurrentMap != null)
+            {
+                this.CurrentMap.Remove(this);
+                this.CurrentMap = null;
+            }
         }
 
         private void RegenerateHeroState()
@@ -1015,7 +1023,7 @@ namespace MUnique.OpenMU.GameLogic
             return safeSpawn;
         }
 
-        private void Hit(HitInfo hitInfo, IAttacker attacker)
+        private void Hit(HitInfo hitInfo, IAttacker attacker, Skill skill)
         {
             int oversd = (int)(this.Attributes[Stats.CurrentShield] - hitInfo.ShieldDamage);
             if (oversd < 0)
@@ -1029,7 +1037,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             this.Attributes[Stats.CurrentHealth] -= hitInfo.HealthDamage;
-            this.LastReceivedDamage = hitInfo.HealthDamage;
+            this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
             this.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
             (attacker as Player)?.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
             this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);

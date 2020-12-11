@@ -1249,16 +1249,18 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="killedId">The killed id.</param>
+        /// <param name="skillId">The skill id.</param>
         /// <param name="killerId">The killer id.</param>
         /// <remarks>
         /// Is sent by the server when: An observed object was killed.
         /// Causes reaction on client side: The object is shown as dead.
         /// </remarks>
-        public static void SendObjectGotKilled(this IConnection connection, ushort @killedId, ushort @killerId)
+        public static void SendObjectGotKilled(this IConnection connection, ushort @killedId, ushort @skillId, ushort @killerId)
         {
             using var writer = connection.StartWriteObjectGotKilled();
             var packet = writer.Packet;
             packet.KilledId = @killedId;
+            packet.SkillId = @skillId;
             packet.KillerId = @killerId;
             writer.Commit();
         }

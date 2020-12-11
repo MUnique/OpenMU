@@ -46,15 +46,15 @@ namespace MUnique.OpenMU.Persistence
         }
 
         /// <summary>
-        /// Gets the name of an object, which has the name "Id".
+        /// Gets the name of an object.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <returns>The guid identifier of an object, which has the name "Id".</returns>
+        /// <returns>The name of an object.</returns>
         public static string GetName(this object item)
         {
             if (!NameProperties.TryGetValue(item.GetType(), out var nameProperty))
             {
-                var properties = item.GetType().GetProperties().Where(p => p.PropertyType == typeof(string));
+                var properties = item.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)).ToList();
                 nameProperty = properties.FirstOrDefault(p => p.Name.Equals("Name"))
                     ?? properties.FirstOrDefault(p => p.Name.Equals("Caption"))
                     ?? properties.FirstOrDefault(p => p.Name.Equals("Designation"))
