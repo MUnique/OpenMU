@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
 {
     using System.Threading;
     using Microsoft.JSInterop;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.World;
 
@@ -26,7 +27,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         }
 
         /// <inheritdoc />
-        public async void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject)
+        public async void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject, Skill skill = null)
         {
             await this.InvokeAsync(killedObject.Id, killerObject.Id);
         }

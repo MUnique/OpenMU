@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
+    using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -95,7 +96,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public bool Alive { get; set; }
 
         /// <inheritdoc/>
-        public uint LastReceivedDamage { get; private set; }
+        public DeathInformation LastDeath { get; private set; }
 
         /// <inheritdoc cref="IAttackable" />
         public IAttributeSystem Attributes { get; }
@@ -206,7 +207,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public void AttackBy(IAttacker attacker, SkillEntry skill)
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
-            this.Hit(hitInfo, attacker);
+            this.Hit(hitInfo, attacker, skill?.Skill);
             if (hitInfo.HealthDamage > 0)
             {
                 attacker.ApplyAmmunitionConsumption(hitInfo);
@@ -217,7 +218,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc />
         public void ReflectDamage(IAttacker reflector, uint damage)
         {
-            this.Hit(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector);
+            this.Hit(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector, null);
         }
 
         /// <inheritdoc/>
@@ -382,7 +383,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.CurrentMap.Respawn(this);
         }
 
-        private void Hit(HitInfo hitInfo, IAttacker attacker)
+        private void Hit(HitInfo hitInfo, IAttacker attacker, Skill skill)
         {
             if (!this.Alive)
             {
@@ -398,6 +399,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             if (killed)
             {
+                this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
                 this.OnDeath(attacker);
             }
         }
@@ -419,7 +421,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
             try
             {
                 Interlocked.Add(ref this.health, -(int)damage);
-                this.LastReceivedDamage = damage;
                 return false;
             }
             catch

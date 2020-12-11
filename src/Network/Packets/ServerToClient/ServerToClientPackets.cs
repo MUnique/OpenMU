@@ -1592,6 +1592,15 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Gets or sets the skill id.
+        /// </summary>
+        public ushort SkillId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(5));
+            set => WriteUInt16BigEndian(this.data.Slice(5), value);
+        }
+
+        /// <summary>
         /// Gets or sets the killer id.
         /// </summary>
         public ushort KillerId

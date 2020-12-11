@@ -5,11 +5,11 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.World
 {
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,11 +29,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public ObjectGotKilledPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void ObjectGotKilled(IAttackable killed, IAttacker killer)
+        public void ObjectGotKilled(IAttackable killed, IAttacker killer, Skill skill = null)
         {
             var killedId = killed.GetId(this.player);
             var killerId = killer.GetId(this.player);
-            this.player.Connection.SendObjectGotKilled(killedId, killerId);
+            this.player.Connection.SendObjectGotKilled(killedId, skill?.Number.ToUnsigned() ?? 0, killerId);
             if (this.player == killed && killer is Player killerPlayer)
             {
                 this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal);

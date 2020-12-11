@@ -14,6 +14,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Character
         /// </summary>
         /// <param name="gainedExperience">The experience gain.</param>
         /// <param name="killedObject">The killed object.</param>
-        void AddExperience(int gainedExperience, IIdentifiable killedObject);
+        void AddExperience(int gainedExperience, IAttackable killedObject);
     }
 }
