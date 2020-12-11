@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
     using System;
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.PlugIns;
 
@@ -46,9 +47,18 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
                 foreach (var player in gameContext.PlayerList)
                 {
                     if (player.CurrentMap is { } map
+                        && player.PlayerState.CurrentState != PlayerState.Disconnected
+                        && player.PlayerState.CurrentState != PlayerState.Finished
                         && this.weatherStates.TryGetValue(map, out var weather))
                     {
-                        player.ViewPlugIns.GetPlugIn<IWeatherStatusUpdatePlugIn>()?.ShowWeather(weather.Item1, weather.Item2);
+                        try
+                        {
+                            player.ViewPlugIns.GetPlugIn<IWeatherStatusUpdatePlugIn>()?.ShowWeather(weather.Item1, weather.Item2);
+                        }
+                        catch (Exception ex)
+                        {
+                            player.Logger.LogDebug(ex, "Unexpected error sending weather update.");
+                        }
                     }
                 }
             }
