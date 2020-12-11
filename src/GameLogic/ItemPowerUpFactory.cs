@@ -194,13 +194,13 @@ namespace MUnique.OpenMU.GameLogic
                 if (level > 0)
                 {
                     var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
-                    if (optionOfLevel is null)
+                    if (optionOfLevel is null && level > 1)
                     {
-                        this.logger.LogWarning($"Item has {nameof(IncreasableItemOption)} with level > 0, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");
+                        this.logger.LogWarning($"Item has {nameof(IncreasableItemOption)} with level > 1, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");
                         continue;
                     }
 
-                    powerUp = optionOfLevel.PowerUpDefinition;
+                    powerUp = optionOfLevel?.PowerUpDefinition ?? powerUp;
                 }
 
                 if (powerUp?.Boost is null)
