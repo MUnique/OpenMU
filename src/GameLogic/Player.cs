@@ -879,11 +879,8 @@ namespace MUnique.OpenMU.GameLogic
             if (managed)
             {
                 this.PersistenceContext.Dispose();
-                if (this.CurrentMap != null)
-                {
-                    this.CurrentMap.Remove(this);
-                    this.CurrentMap = null;
-                }
+                this.RemoveFromCurrentMap();
+                this.Party?.KickMySelf(this);
 
                 this.observerToWorldViewAdapter.ClearObservingObjectsList();
                 this.observerToWorldViewAdapter.Dispose();
@@ -902,6 +899,9 @@ namespace MUnique.OpenMU.GameLogic
                 this.respawnAfterDeathToken.ThrowIfCancellationRequested();
                 this.WarpTo(this.GetSpawnGateOfCurrentMap());
             }
+
+            this.RemoveFromCurrentMap();
+            this.Party?.KickMySelf(this);
         }
 
         /// <summary>
@@ -911,6 +911,15 @@ namespace MUnique.OpenMU.GameLogic
         protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
         {
             return null;
+        }
+
+        private void RemoveFromCurrentMap()
+        {
+            if (this.CurrentMap != null)
+            {
+                this.CurrentMap.Remove(this);
+                this.CurrentMap = null;
+            }
         }
 
         private void RegenerateHeroState()

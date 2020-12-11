@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
 {
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic;
 
     /// <summary>
@@ -45,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
             }
             else
             {
-                player.LastPartyRequester.Party = new Party(player.GameContext.Configuration.MaximumPartySize);
+                player.LastPartyRequester.Party = new Party(player.GameContext.Configuration.MaximumPartySize, player.GameContext.LoggerFactory.CreateLogger<Party>());
                 player.LastPartyRequester.Party.Add(player.LastPartyRequester); // Party Master first
                 player.LastPartyRequester.Party.Add(player);
             }
