@@ -8,6 +8,7 @@
     <RootNamespace>MUnique.OpenMU.Network.Analyzer</RootNamespace>
     <AssemblyName>MUnique.OpenMU.Network.Analyzer</AssemblyName>
     <StartupObject>MUnique.OpenMU.Network.Analyzer.Program</StartupObject>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>

@@ -32,6 +32,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.packetGridView = new System.Windows.Forms.DataGridView();
             this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PacketSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -54,14 +55,14 @@
             this.targetHostTextBox = new System.Windows.Forms.TextBox();
             this.listenerPortNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.btnStartProxy = new System.Windows.Forms.Button();
+            this.clientVersionComboBox = new System.Windows.Forms.ComboBox();
             this.connectedClientsGroup = new System.Windows.Forms.GroupBox();
             this.connectedClientsListBox = new System.Windows.Forms.ListBox();
             this.connectionContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openPacketSenderStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clientVersionComboBox = new System.Windows.Forms.ComboBox();
             this.clientBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.trafficGroup = new System.Windows.Forms.GroupBox();
             this.leftPanel = new System.Windows.Forms.Panel();
@@ -95,13 +96,14 @@
             this.Direction,
             this.PacketData});
             this.packetGridView.DataSource = this.packetBindingSource;
-            this.packetGridView.Location = new System.Drawing.Point(3, 16);
+            this.packetGridView.Location = new System.Drawing.Point(4, 18);
+            this.packetGridView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.packetGridView.MultiSelect = false;
             this.packetGridView.Name = "packetGridView";
             this.packetGridView.ReadOnly = true;
             this.packetGridView.RowHeadersWidth = 20;
             this.packetGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.packetGridView.Size = new System.Drawing.Size(509, 597);
+            this.packetGridView.Size = new System.Drawing.Size(595, 689);
             this.packetGridView.TabIndex = 27;
             this.packetGridView.SelectionChanged += new System.EventHandler(this.PacketSelected);
             // 
@@ -165,12 +167,15 @@
             // 
             // rawDataTextBox
             // 
-            this.rawDataTextBox.Location = new System.Drawing.Point(6, 277);
+            this.rawDataTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.rawDataTextBox.Location = new System.Drawing.Point(7, 320);
+            this.rawDataTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rawDataTextBox.Multiline = true;
             this.rawDataTextBox.Name = "rawDataTextBox";
             this.rawDataTextBox.ReadOnly = true;
             this.rawDataTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.rawDataTextBox.Size = new System.Drawing.Size(354, 216);
+            this.rawDataTextBox.Size = new System.Drawing.Size(412, 363);
             this.rawDataTextBox.TabIndex = 29;
             // 
             // packetInfoGroup
@@ -181,38 +186,43 @@
             this.packetInfoGroup.Controls.Add(this.label3);
             this.packetInfoGroup.Controls.Add(this.label1);
             this.packetInfoGroup.Controls.Add(this.rawDataTextBox);
-            this.packetInfoGroup.Location = new System.Drawing.Point(518, 16);
+            this.packetInfoGroup.Location = new System.Drawing.Point(605, 18);
+            this.packetInfoGroup.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.packetInfoGroup.Name = "packetInfoGroup";
-            this.packetInfoGroup.Size = new System.Drawing.Size(366, 597);
+            this.packetInfoGroup.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.packetInfoGroup.Size = new System.Drawing.Size(427, 689);
             this.packetInfoGroup.TabIndex = 30;
             this.packetInfoGroup.TabStop = false;
             this.packetInfoGroup.Text = "Packet Info";
             // 
             // extractedInfoTextBox
             // 
-            this.extractedInfoTextBox.Location = new System.Drawing.Point(6, 32);
+            this.extractedInfoTextBox.Location = new System.Drawing.Point(7, 37);
+            this.extractedInfoTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.extractedInfoTextBox.Multiline = true;
             this.extractedInfoTextBox.Name = "extractedInfoTextBox";
             this.extractedInfoTextBox.ReadOnly = true;
             this.extractedInfoTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.extractedInfoTextBox.Size = new System.Drawing.Size(354, 200);
+            this.extractedInfoTextBox.Size = new System.Drawing.Size(412, 230);
             this.extractedInfoTextBox.TabIndex = 33;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 16);
+            this.label3.Location = new System.Drawing.Point(7, 18);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(110, 13);
+            this.label3.Size = new System.Drawing.Size(125, 15);
             this.label3.TabIndex = 32;
             this.label3.Text = "Extracted Information:";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 261);
+            this.label1.Location = new System.Drawing.Point(4, 301);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 13);
+            this.label1.Size = new System.Drawing.Size(59, 15);
             this.label1.TabIndex = 30;
             this.label1.Text = "Raw Data:";
             // 
@@ -229,15 +239,18 @@
             this.settingsGroup.Controls.Add(this.clientVersionComboBox);
             this.settingsGroup.Dock = System.Windows.Forms.DockStyle.Top;
             this.settingsGroup.Location = new System.Drawing.Point(0, 0);
+            this.settingsGroup.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.settingsGroup.Name = "settingsGroup";
-            this.settingsGroup.Size = new System.Drawing.Size(200, 160);
+            this.settingsGroup.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.settingsGroup.Size = new System.Drawing.Size(233, 185);
             this.settingsGroup.TabIndex = 32;
             this.settingsGroup.TabStop = false;
             this.settingsGroup.Text = "Settings";
             // 
             // targetPortNumericUpDown
             // 
-            this.targetPortNumericUpDown.Location = new System.Drawing.Point(73, 45);
+            this.targetPortNumericUpDown.Location = new System.Drawing.Point(85, 52);
+            this.targetPortNumericUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.targetPortNumericUpDown.Maximum = new decimal(new int[] {
             65536,
             0,
@@ -249,7 +262,7 @@
             0,
             0});
             this.targetPortNumericUpDown.Name = "targetPortNumericUpDown";
-            this.targetPortNumericUpDown.Size = new System.Drawing.Size(79, 20);
+            this.targetPortNumericUpDown.Size = new System.Drawing.Size(92, 23);
             this.targetPortNumericUpDown.TabIndex = 3;
             this.targetPortNumericUpDown.Value = new decimal(new int[] {
             55901,
@@ -261,9 +274,10 @@
             // 
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label6.Location = new System.Drawing.Point(6, 22);
+            this.label6.Location = new System.Drawing.Point(7, 25);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(54, 13);
+            this.label6.Size = new System.Drawing.Size(55, 15);
             this.label6.TabIndex = 0;
             this.label6.Text = "Target IP:";
             // 
@@ -271,9 +285,10 @@
             // 
             this.label7.AutoSize = true;
             this.label7.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label7.Location = new System.Drawing.Point(6, 47);
+            this.label7.Location = new System.Drawing.Point(7, 54);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(63, 13);
+            this.label7.Size = new System.Drawing.Size(67, 15);
             this.label7.TabIndex = 2;
             this.label7.Text = "Target Port:";
             // 
@@ -281,9 +296,10 @@
             // 
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label4.Location = new System.Drawing.Point(6, 73);
+            this.label4.Location = new System.Drawing.Point(7, 84);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(58, 13);
+            this.label4.Size = new System.Drawing.Size(63, 15);
             this.label4.TabIndex = 2;
             this.label4.Text = "Local Port:";
             // 
@@ -291,24 +307,27 @@
             // 
             this.label8.AutoSize = true;
             this.label8.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label8.Location = new System.Drawing.Point(6, 99);
+            this.label8.Location = new System.Drawing.Point(7, 114);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(58, 13);
+            this.label8.Size = new System.Drawing.Size(70, 15);
             this.label8.TabIndex = 2;
             this.label8.Text = "MU Version:";
             // 
             // targetHostTextBox
             // 
-            this.targetHostTextBox.Location = new System.Drawing.Point(73, 19);
+            this.targetHostTextBox.Location = new System.Drawing.Point(85, 22);
+            this.targetHostTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.targetHostTextBox.MaxLength = 15;
             this.targetHostTextBox.Name = "targetHostTextBox";
-            this.targetHostTextBox.Size = new System.Drawing.Size(95, 20);
+            this.targetHostTextBox.Size = new System.Drawing.Size(110, 23);
             this.targetHostTextBox.TabIndex = 1;
             this.targetHostTextBox.Text = "127.127.127.127";
             // 
             // listenerPortNumericUpDown
             // 
-            this.listenerPortNumericUpDown.Location = new System.Drawing.Point(73, 71);
+            this.listenerPortNumericUpDown.Location = new System.Drawing.Point(85, 82);
+            this.listenerPortNumericUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listenerPortNumericUpDown.Maximum = new decimal(new int[] {
             65536,
             0,
@@ -320,7 +339,7 @@
             0,
             0});
             this.listenerPortNumericUpDown.Name = "listenerPortNumericUpDown";
-            this.listenerPortNumericUpDown.Size = new System.Drawing.Size(79, 20);
+            this.listenerPortNumericUpDown.Size = new System.Drawing.Size(92, 23);
             this.listenerPortNumericUpDown.TabIndex = 3;
             this.listenerPortNumericUpDown.Value = new decimal(new int[] {
             55900,
@@ -328,32 +347,36 @@
             0,
             0});
             // 
-            // clientVersionComboBox
-            //
-            this.clientVersionComboBox.Location = new System.Drawing.Point(73, 97);
-            this.clientVersionComboBox.Name = "clientVersionComboBox";
-            this.clientVersionComboBox.Size = new System.Drawing.Size(100, 20);
-            this.clientVersionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.clientVersionComboBox.TabIndex = 4;
-            // 
             // btnStartProxy
             // 
             this.btnStartProxy.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnStartProxy.Location = new System.Drawing.Point(73, 123);
+            this.btnStartProxy.Location = new System.Drawing.Point(85, 142);
+            this.btnStartProxy.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnStartProxy.Name = "btnStartProxy";
-            this.btnStartProxy.Size = new System.Drawing.Size(79, 23);
+            this.btnStartProxy.Size = new System.Drawing.Size(92, 27);
             this.btnStartProxy.TabIndex = 5;
             this.btnStartProxy.Text = "Start Proxy";
             this.btnStartProxy.UseVisualStyleBackColor = true;
             this.btnStartProxy.Click += new System.EventHandler(this.StartProxy);
             // 
+            // clientVersionComboBox
+            // 
+            this.clientVersionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.clientVersionComboBox.Location = new System.Drawing.Point(85, 112);
+            this.clientVersionComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.clientVersionComboBox.Name = "clientVersionComboBox";
+            this.clientVersionComboBox.Size = new System.Drawing.Size(116, 23);
+            this.clientVersionComboBox.TabIndex = 4;
+            // 
             // connectedClientsGroup
             // 
             this.connectedClientsGroup.Controls.Add(this.connectedClientsListBox);
             this.connectedClientsGroup.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.connectedClientsGroup.Location = new System.Drawing.Point(0, 135);
+            this.connectedClientsGroup.Location = new System.Drawing.Point(0, 185);
+            this.connectedClientsGroup.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.connectedClientsGroup.Name = "connectedClientsGroup";
-            this.connectedClientsGroup.Size = new System.Drawing.Size(200, 484);
+            this.connectedClientsGroup.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.connectedClientsGroup.Size = new System.Drawing.Size(233, 529);
             this.connectedClientsGroup.TabIndex = 33;
             this.connectedClientsGroup.TabStop = false;
             this.connectedClientsGroup.Text = "Connected Clients";
@@ -365,45 +388,50 @@
             this.connectedClientsListBox.ContextMenuStrip = this.connectionContextMenu;
             this.connectedClientsListBox.DataSource = this.clientBindingSource;
             this.connectedClientsListBox.FormattingEnabled = true;
-            this.connectedClientsListBox.Location = new System.Drawing.Point(3, 16);
+            this.connectedClientsListBox.ItemHeight = 15;
+            this.connectedClientsListBox.Location = new System.Drawing.Point(4, 18);
+            this.connectedClientsListBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.connectedClientsListBox.Name = "connectedClientsListBox";
-            this.connectedClientsListBox.Size = new System.Drawing.Size(197, 459);
+            this.connectedClientsListBox.Size = new System.Drawing.Size(229, 499);
             this.connectedClientsListBox.TabIndex = 0;
             this.connectedClientsListBox.SelectedIndexChanged += new System.EventHandler(this.ConnectionSelected);
             // 
             // connectionContextMenu
             // 
             this.connectionContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.disconnectToolStripMenuItem, this.loadToolStripMenuItem, this.saveToolStripMenuItem, this.openPacketSenderStripMenuItem});
+            this.disconnectToolStripMenuItem,
+            this.loadToolStripMenuItem,
+            this.saveToolStripMenuItem,
+            this.openPacketSenderStripMenuItem});
             this.connectionContextMenu.Name = "connectionContextMenu";
-            this.connectionContextMenu.Size = new System.Drawing.Size(153, 48);
+            this.connectionContextMenu.Size = new System.Drawing.Size(149, 92);
             this.connectionContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.BeforeContextMenuOpens);
             // 
             // disconnectToolStripMenuItem
             // 
             this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
-            this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.disconnectToolStripMenuItem.Text = "Disconnect";
             this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.DisconnectClient);
             // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.loadToolStripMenuItem.Text = "Load from file";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.LoadFromFile);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.saveToolStripMenuItem.Text = "Save to file";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToFile);
             // 
             // openPacketSenderStripMenuItem
             // 
             this.openPacketSenderStripMenuItem.Name = "openPacketSenderStripMenuItem";
-            this.openPacketSenderStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openPacketSenderStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.openPacketSenderStripMenuItem.Text = "Packet Sender";
             this.openPacketSenderStripMenuItem.Click += new System.EventHandler(this.SendPacket);
             // 
@@ -413,9 +441,11 @@
             this.trafficGroup.Controls.Add(this.packetGridView);
             this.trafficGroup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.trafficGroup.Enabled = false;
-            this.trafficGroup.Location = new System.Drawing.Point(200, 0);
+            this.trafficGroup.Location = new System.Drawing.Point(233, 0);
+            this.trafficGroup.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.trafficGroup.Name = "trafficGroup";
-            this.trafficGroup.Size = new System.Drawing.Size(890, 619);
+            this.trafficGroup.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.trafficGroup.Size = new System.Drawing.Size(1039, 714);
             this.trafficGroup.TabIndex = 34;
             this.trafficGroup.TabStop = false;
             this.trafficGroup.Text = "Traffic";
@@ -426,17 +456,20 @@
             this.leftPanel.Controls.Add(this.settingsGroup);
             this.leftPanel.Dock = System.Windows.Forms.DockStyle.Left;
             this.leftPanel.Location = new System.Drawing.Point(0, 0);
+            this.leftPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.leftPanel.Name = "leftPanel";
-            this.leftPanel.Size = new System.Drawing.Size(200, 619);
+            this.leftPanel.Size = new System.Drawing.Size(233, 714);
             this.leftPanel.TabIndex = 35;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1090, 619);
+            this.ClientSize = new System.Drawing.Size(1272, 714);
             this.Controls.Add(this.trafficGroup);
             this.Controls.Add(this.leftPanel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.Text = "MUnique OpenMU Network Analyzer";
             ((System.ComponentModel.ISupportInitialize)(this.packetGridView)).EndInit();
