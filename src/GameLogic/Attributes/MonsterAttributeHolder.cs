@@ -21,6 +21,8 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             new Dictionary<AttributeDefinition, Func<Monster, float>>
             {
                 { Stats.CurrentHealth, m => m.Health },
+                { Stats.DefensePvm, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) },
+                { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) },
                 { Stats.DamageReceiveDecrement, m => 1.0f },
                 { Stats.AttackDamageIncrease, m => 1.0f },
                 { Stats.ShieldBypassChance, m => 1.0f },
