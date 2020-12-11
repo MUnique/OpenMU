@@ -82,6 +82,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             baseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.TwoHandedWeaponDamageIncrease));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
             if (isMaster)

@@ -99,6 +99,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
 
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(30, Stats.MaximumHealth));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
             result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
             this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
