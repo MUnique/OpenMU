@@ -39,8 +39,8 @@ namespace MUnique.OpenMU.ChatServer
         private readonly ChatRoomManager manager;
         private readonly ILogger<ChatClient> logger;
         private readonly byte[] packetBuffer = new byte[0xFF];
-        private IConnection connection;
-        private ChatRoom room;
+        private IConnection? connection;
+        private ChatRoom? room;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatClient" /> class.
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <summary>
         /// Occurs when the client has been disconnected.
         /// </summary>
-        public event EventHandler Disconnected;
+        public event EventHandler? Disconnected;
 
         /// <inheritdoc/>
         public byte Index
@@ -73,14 +73,10 @@ namespace MUnique.OpenMU.ChatServer
         }
 
         /// <inheritdoc />
-        public string AuthenticationToken { get; private set; }
+        public string? AuthenticationToken { get; private set; }
 
         /// <inheritdoc/>
-        public string Nickname
-        {
-            get;
-            set;
-        }
+        public string? Nickname { get; set; }
 
         /// <inheritdoc/>
         public DateTime LastActivity { get; private set; }
@@ -112,7 +108,7 @@ namespace MUnique.OpenMU.ChatServer
             {
                 var clientBlock = packet.Slice(8 + (i * sizePerClient), sizePerClient);
                 clientBlock[0] = client.Index;
-                clientBlock.Slice(1).WriteString(client.Nickname, Encoding.UTF8);
+                clientBlock.Slice(1).WriteString(client.Nickname ?? string.Empty, Encoding.UTF8);
                 i++;
             }
 
@@ -150,11 +146,8 @@ namespace MUnique.OpenMU.ChatServer
 
             this.connection?.Disconnect();
             this.connection = null;
-            if (this.Disconnected != null)
-            {
-                this.Disconnected(this, EventArgs.Empty);
-                this.Disconnected = null;
-            }
+            this.Disconnected?.Invoke(this, EventArgs.Empty);
+            this.Disconnected = null;
         }
 
         /// <summary>

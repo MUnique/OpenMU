@@ -64,13 +64,13 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         /// <param name="roomId">Room-ID.</param>
         /// <returns>ChatRoom or null.</returns>
-        internal ChatRoom GetChatRoom(ushort roomId)
+        internal ChatRoom? GetChatRoom(ushort roomId)
         {
-            this.rooms.TryGetValue(roomId, out ChatRoom room);
+            this.rooms.TryGetValue(roomId, out var room);
             return room;
         }
 
-        private void OnChatRoomClosed(object sender, ChatRoomClosedEventArgs eventArgs)
+        private void OnChatRoomClosed(object? sender, ChatRoomClosedEventArgs eventArgs)
         {
             var room = eventArgs.ChatRoom;
             this.rooms.Remove(room.RoomId);

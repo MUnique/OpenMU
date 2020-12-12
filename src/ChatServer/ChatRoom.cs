@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         private readonly List<IChatClient> connectedClients;
 
-        private ReaderWriterLockSlim lockSlim = new ReaderWriterLockSlim();
+        private ReaderWriterLockSlim? lockSlim = new ReaderWriterLockSlim();
 
         private int lastUsedClientIndex = -1;
 
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <summary>
         /// Gets or sets the room closed event handler.
         /// </summary>
-        public EventHandler<ChatRoomClosedEventArgs> RoomClosed { get; set; }
+        public EventHandler<ChatRoomClosedEventArgs>? RoomClosed { get; set; }
 
         /// <summary>
         /// Registers a chat client to the chatroom. this is only called
@@ -166,10 +166,10 @@ namespace MUnique.OpenMU.ChatServer
 
             this.logger.LogDebug($"Client {chatClient.Index} is trying to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}'");
 
-            this.lockSlim.EnterWriteLock();
+            this.lockSlim?.EnterWriteLock();
             try
             {
-                ChatServerAuthenticationInfo authenticationInformation = this.registeredClients.FirstOrDefault(info => string.Equals(info.AuthenticationToken, chatClient.AuthenticationToken));
+                var authenticationInformation = this.registeredClients.FirstOrDefault(info => string.Equals(info.AuthenticationToken, chatClient.AuthenticationToken));
                 if (authenticationInformation != null)
                 {
                     if (authenticationInformation.AuthenticationRequiredUntil < DateTime.Now)
@@ -194,7 +194,7 @@ namespace MUnique.OpenMU.ChatServer
             }
             finally
             {
-                this.lockSlim.ExitWriteLock();
+                this.lockSlim?.ExitWriteLock();
             }
 
             return false;
@@ -213,18 +213,18 @@ namespace MUnique.OpenMU.ChatServer
             }
 
             this.logger.LogDebug($"Chat client ({chatClient}) is leaving.");
-            this.lockSlim.EnterWriteLock();
+            this.lockSlim?.EnterWriteLock();
             try
             {
                 this.connectedClients.Remove(chatClient);
             }
             finally
             {
-                this.lockSlim.ExitWriteLock();
+                this.lockSlim?.ExitWriteLock();
             }
 
             bool roomIsEmpty;
-            this.lockSlim.EnterReadLock();
+            this.lockSlim?.EnterReadLock();
             try
             {
                 roomIsEmpty = this.connectedClients.Count < 1;
@@ -235,7 +235,7 @@ namespace MUnique.OpenMU.ChatServer
             }
             finally
             {
-                this.lockSlim.ExitReadLock();
+                this.lockSlim?.ExitReadLock();
             }
 
             if (roomIsEmpty)
@@ -256,14 +256,14 @@ namespace MUnique.OpenMU.ChatServer
                 return;
             }
 
-            this.lockSlim.EnterReadLock();
+            this.lockSlim?.EnterReadLock();
             try
             {
                 this.connectedClients.ForEach(c => c.SendMessage(senderId, message));
             }
             finally
             {
-                this.lockSlim.ExitReadLock();
+                this.lockSlim?.ExitReadLock();
             }
         }
 
@@ -271,7 +271,7 @@ namespace MUnique.OpenMU.ChatServer
         {
             foreach (var client in this.connectedClients)
             {
-                client.SendChatRoomClientUpdate(updatedClient.Index, updatedClient.Nickname, updateType);
+                client.SendChatRoomClientUpdate(updatedClient.Index, updatedClient.Nickname ?? string.Empty, updateType);
             }
         }
     }

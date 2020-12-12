@@ -36,12 +36,12 @@ namespace MUnique.OpenMU.ChatServer
         /// <summary>
         /// Gets the authentication token which was sent by the client.
         /// </summary>
-        string AuthenticationToken { get; }
+        string? AuthenticationToken { get; }
 
         /// <summary>
         /// Gets or sets the nickname.
         /// </summary>
-        string Nickname { get; set; }
+        string? Nickname { get; set; }
 
         /// <summary>
         /// Gets the last activity.
