@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        public DataModel.Entities.LetterBody GetLetterBodyByHeaderId(Guid headerId)
+        public DataModel.Entities.LetterBody? GetLetterBodyByHeaderId(Guid headerId)
         {
             using (this.RepositoryManager.ContextStack.UseContext(this))
             {
@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc />
-        public DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
+        public DataModel.Entities.Account? GetAccountByLoginName(string loginName, string password)
         {
             using (this.RepositoryManager.ContextStack.UseContext(this))
             {

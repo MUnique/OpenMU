@@ -20,9 +20,9 @@ namespace MUnique.OpenMU.Startup
         /// <param name="reader">The reader.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The read line or <c>null</c>.</returns>
-        public static async Task<string> ReadLineAsync(this TextReader reader, CancellationToken cancellationToken)
+        public static async Task<string?> ReadLineAsync(this TextReader reader, CancellationToken cancellationToken)
         {
-            using var taskSource = new CancellationTokenTaskSource<string>(cancellationToken);
+            using var taskSource = new CancellationTokenTaskSource<string?>(cancellationToken);
             var result = await await Task.WhenAny(taskSource.Task, reader.ReadLineAsync());
             return result;
         }

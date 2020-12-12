@@ -50,7 +50,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <inheritdoc/>
         public bool Delete(Guid id)
         {
-            return this.Delete(this.GetById(id));
+            if (this.GetById(id) is { } item)
+            {
+                return this.Delete(item);
+            }
+
+            return false;
         }
 
         /// <inheritdoc/>
@@ -71,7 +76,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        public virtual T GetById(Guid id)
+        public virtual T? GetById(Guid id)
         {
             using var context = this.GetContext();
             var result = context.Context.Set<T>().Find(id);
@@ -88,7 +93,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        object IRepository.GetById(Guid id)
+        object? IRepository.GetById(Guid id)
         {
             return this.GetById(id);
         }
@@ -140,8 +145,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded))
             {
-                this.LoadCollection(entityEntry, collection.Metadata as IConventionNavigation, currentContext);
-                collection.IsLoaded = true;
+                if (collection.Metadata is IConventionNavigation metadata)
+                {
+                    this.LoadCollection(entityEntry, metadata, currentContext);
+                    collection.IsLoaded = true;
+                }
             }
         }
 
@@ -222,7 +230,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                     return;
                 }
 
-                IRepository repository = null;
+                IRepository? repository = null;
                 try
                 {
                     repository = this.RepositoryManager.GetRepository(navigation.TargetEntityType.ClrType);

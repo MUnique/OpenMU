@@ -42,12 +42,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <summary>
         /// Gets or sets the name of the type of the <see cref="DbContext"/>.
         /// </summary>
-        public string ContextTypeName { get; set; }
+        public string? ContextTypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the connection string which should be used for the DbContext.
         /// </summary>
-        public string ConnectionString { get; set; }
+        public string? ConnectionString { get; set; }
 
         /// <summary>
         /// Gets or sets the database engine.

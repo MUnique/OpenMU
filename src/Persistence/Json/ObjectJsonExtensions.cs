@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Json
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
 
     /// <summary>
@@ -19,6 +20,7 @@ namespace MUnique.OpenMU.Persistence.Json
         /// <returns>
         /// The resulting <typeparamref name="T" />.
         /// </returns>
+        [return: MaybeNull]
         public static T FromJson<T>(this string jsonContent)
         {
             using var stringReader = new StringReader(jsonContent);
@@ -33,6 +35,7 @@ namespace MUnique.OpenMU.Persistence.Json
         /// <returns>
         /// The resulting <typeparamref name="T" />.
         /// </returns>
+        [return: MaybeNull]
         public static T FromJson<T>(this TextReader textReader)
         {
             var deserializer = new JsonObjectDeserializer { AreCircularReferencesExpected = true };

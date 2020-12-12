@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Friend GetFriendByNames(string characterName, string friendName)
+        public Friend? GetFriendByNames(string characterName, string friendName)
         {
             var friendId = this.Manager.GetRepository<Character>().GetAll().FirstOrDefault(character => character.Name == friendName)?.Id;
             var characterId = this.Manager.GetRepository<Character>().GetAll().FirstOrDefault(character => character.Name == characterName)?.Id;
@@ -48,15 +48,15 @@ namespace MUnique.OpenMU.Persistence.InMemory
         {
             var characters = this.Manager.GetRepository<Character>().GetAll();
             return this.Manager.GetRepository<Friend>().GetAll().Where(f => f.CharacterId == characterId)
-                .Select(f => new FriendViewItem
+                .Select(f => (Friend: f, CharacterName: characters.FirstOrDefault(c => c.Id == f.CharacterId)?.Name, FriendName: characters.FirstOrDefault(c => c.Id == f.FriendId)?.Name))
+                .Where(f => f.CharacterName is not null && f.FriendName is not null)
+                .Select(f => new FriendViewItem(f.FriendName!, f.CharacterName!)
                     {
-                        Accepted = f.Accepted,
-                        CharacterId = f.CharacterId,
-                        CharacterName = characters.FirstOrDefault(c => c.Id == f.CharacterId)?.Name,
-                        FriendId = f.FriendId,
-                        FriendName = characters.FirstOrDefault(c => c.Id == f.FriendId)?.Name,
-                        Id = f.Id,
-                        RequestOpen = f.RequestOpen,
+                        Accepted = f!.Friend.Accepted,
+                        CharacterId = f.Friend.CharacterId,
+                        FriendId = f.Friend.FriendId,
+                        Id = f.Friend.Id,
+                        RequestOpen = f.Friend.RequestOpen,
                     });
         }
 
@@ -65,14 +65,17 @@ namespace MUnique.OpenMU.Persistence.InMemory
         {
             var characters = this.Manager.GetRepository<Character>().GetAll();
             return this.Manager.GetRepository<Friend>().GetAll().Where(f => f.CharacterId == characterId)
-                .Select(f => characters.FirstOrDefault(c => c.Id == f.FriendId)?.Name);
+                .Select(f => characters.FirstOrDefault(c => c.Id == f.FriendId)?.Name!)
+                .Where(name => name is not null);
         }
 
         /// <inheritdoc/>
         public void Delete(string characterName, string friendName)
         {
-            var item = this.GetFriendByNames(characterName, friendName);
-            this.Delete(item);
+            if (this.GetFriendByNames(characterName, friendName) is { } item)
+            {
+                this.Delete(item);
+            }
         }
 
         /// <inheritdoc/>
@@ -80,7 +83,8 @@ namespace MUnique.OpenMU.Persistence.InMemory
         {
             var characters = this.Manager.GetRepository<Character>().GetAll();
             return this.Manager.GetRepository<Friend>().GetAll().Where(f => f.FriendId == characterId && f.RequestOpen)
-                .Select(f => characters.FirstOrDefault(c => c.Id == f.CharacterId)?.Name);
+                .Select(f => characters.FirstOrDefault(c => c.Id == f.CharacterId)?.Name!)
+                .Where(name => name is not null);
         }
     }
 }

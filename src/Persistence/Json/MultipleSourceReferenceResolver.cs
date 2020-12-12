@@ -35,13 +35,13 @@ namespace MUnique.OpenMU.Persistence.Json
             foreach (var resolver in this.resolvers)
             {
                 var resolved = resolver.ResolveReference(context, reference);
-                if (resolved != null)
+                if (resolved != null!)
                 {
                     return resolved;
                 }
             }
 
-            return null;
+            return null!; // we're handling null returns
         }
 
         /// <inheritdoc />

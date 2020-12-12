@@ -76,7 +76,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             byte itemLevel = 1;
-            DropItemGroup previousGroup = null;
+            DropItemGroup? previousGroup = null;
             foreach (var dropLevel in dropLevels)
             {
                 if (previousGroup is { })

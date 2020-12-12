@@ -29,8 +29,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public Interfaces.Friend CreateNewFriend(string characterName, string friendName)
         {
             var item = this.CreateNew<Model.Friend>();
-            item.CharacterId = this.GetCharacterIdByName(characterName);
-            item.FriendId = this.GetCharacterIdByName(friendName);
+            item.CharacterId = this.GetCharacterIdByName(characterName) ?? Guid.Empty;
+            item.FriendId = this.GetCharacterIdByName(friendName) ?? Guid.Empty;
 
             return item;
         }
@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        public Interfaces.Friend GetFriendByNames(string characterName, string friendName)
+        public Interfaces.Friend? GetFriendByNames(string characterName, string friendName)
         {
             return this.FindItems(characterName, friendName).FirstOrDefault();
         }
@@ -53,15 +53,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             return from friend in this.Context.Set<Model.Friend>()
                 join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
                 join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
-                select new FriendViewItem
+                select new FriendViewItem(character.Name, friendCharacter.Name)
                 {
                     Id = friend.Id,
                     CharacterId = friend.CharacterId,
                     FriendId = friend.FriendId,
                     Accepted = friend.Accepted,
                     RequestOpen = friend.RequestOpen,
-                    CharacterName = character.Name,
-                    FriendName = friendCharacter.Name,
                 };
         }
 
@@ -92,6 +90,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 select friend;
         }
 
-        private Guid GetCharacterIdByName(string name) => this.Context.Set<CharacterName>().Where(character => character.Name == name).Select(character => character.Id).FirstOrDefault();
+        private Guid? GetCharacterIdByName(string name) => this.Context.Set<CharacterName>().Where(character => character.Name == name).Select(character => character.Id).FirstOrDefault();
     }
 }

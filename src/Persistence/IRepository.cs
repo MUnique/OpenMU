@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.Persistence
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>The object.</returns>
-        object GetById(Guid id);
+        object? GetById(Guid id);
     }
 
     /// <summary>
@@ -25,6 +25,7 @@ namespace MUnique.OpenMU.Persistence
     /// </summary>
     /// <typeparam name="T">The type which this repository handles.</typeparam>
     public interface IRepository<out T> : IRepository
+        where T : class
     {
         /// <summary>
         /// Gets all objects.
@@ -37,7 +38,7 @@ namespace MUnique.OpenMU.Persistence
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>The object with the identifier.</returns>
-        new T GetById(Guid id);
+        new T? GetById(Guid id);
 
         /// <summary>
         /// Deletes the specified object when the unit of work is saved.

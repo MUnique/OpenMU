@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.PlugIns
         /// </summary>
         /// <typeparam name="T">The requested plug in type.</typeparam>
         /// <returns>The plug in, if available; Otherwise, <c>null</c>.</returns>
-        T GetPlugIn<T>()
+        T? GetPlugIn<T>()
             where T : class, TPlugIn;
     }
 }

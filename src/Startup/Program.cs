@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Startup
         private readonly IDictionary<int, IGameServer> gameServers = new Dictionary<int, IGameServer>();
         private readonly IList<IManageableServer> servers = new List<IManageableServer>();
 
-        private IHost serverHost;
+        private IHost? serverHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Program"/> class.
@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.Startup
             var exitToken = exitCts.Token;
             var isDaemonMode = args.Contains("-daemon");
 
-            void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+            void OnCancelKeyPress(object? sender, ConsoleCancelEventArgs e)
             {
                 if (confirmExit)
                 {
@@ -134,8 +134,8 @@ namespace MUnique.OpenMU.Startup
         /// <inheritdoc/>
         public void Dispose()
         {
-            this.serverHost.StopAsync().WaitAndUnwrapException();
-            this.serverHost.Dispose();
+            this.serverHost?.StopAsync().WaitAndUnwrapException();
+            this.serverHost?.Dispose();
         }
 
         private static async Task HandleConsoleInputAsync(CancellationTokenSource exitCts, CancellationToken exitToken)
@@ -190,7 +190,6 @@ namespace MUnique.OpenMU.Startup
 
         private async Task<IHost> CreateHost(string[] args)
         {
-            
             // Ensure GameLogic and GameServer Assemblies are loaded
             _ = GameLogic.Rand.NextInt(1, 2);
             _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
@@ -204,12 +203,12 @@ namespace MUnique.OpenMU.Startup
                 })
                 .ConfigureServices(c =>
                     c.AddSingleton(this.servers)
-                    .AddSingleton(s => s.GetService<IPersistenceContextProvider>().CreateNewConfigurationContext().Get<ChatServerDefinition>().First())
-                    .AddSingleton(s => s.GetService<ChatServerDefinition>().ConvertToSettings())
+                    .AddSingleton(s => s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<ChatServerDefinition>().First() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
+                    .AddSingleton(s => s.GetService<ChatServerDefinition>()?.ConvertToSettings() ?? throw new Exception($"{nameof(ChatServerSettings)} not registered."))
                     .AddIpResolver(args)
                     .AddSingleton(this.gameServers)
                     .AddSingleton(this.gameServers.Values)
-                    .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>()))
+                    .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered.")))
                     .AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
                     .AddSingleton<ILoginServer, LoginServer>()
                     .AddSingleton<IGuildServer, GuildServer>()
@@ -217,10 +216,10 @@ namespace MUnique.OpenMU.Startup
                     .AddSingleton<IChatServer, ChatServer>()
                     .AddSingleton<ConnectServerFactory>()
                     .AddSingleton<ConnectServerContainer>()
-                    .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>())
+                    .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
                     .AddSingleton<GameServerContainer>()
                     .AddSingleton<PlugInManager>()
-                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>().CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList())
+                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
                     .AddHostedService(provider => provider.GetService<IChatServer>())
                     .AddHostedService(provider => provider.GetService<ConnectServerContainer>())
                     .AddHostedService(provider => provider.GetService<GameServerContainer>())
@@ -230,12 +229,12 @@ namespace MUnique.OpenMU.Startup
                 .Build();
             Log.Info("Host created");
             NpgsqlLoggingProvider.Initialize(host.Services.GetService<ILoggerFactory>());
-            this.servers.Add(host.Services.GetService<IChatServer>());
-            this.LoadGameClientDefinitions(host.Services.GetService<IPersistenceContextProvider>().CreateNewConfigurationContext());
+            this.servers.Add(host.Services.GetService<IChatServer>() ?? throw new Exception($"{nameof(IChatServer)} not registered."));
+            this.LoadGameClientDefinitions(host.Services.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."));
             Log.Info("Starting host...");
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            await host.StartAsync(default);
+            await host.StartAsync();
             stopwatch.Stop();
             Log.Info($"Host started, elapsed time: {stopwatch.Elapsed}");
             return host;
@@ -303,7 +302,7 @@ namespace MUnique.OpenMU.Startup
                     else
                     {
                         Console.WriteLine("Cancelled the update process, can't start the server.");
-                        return null;
+                        return null!;
                     }
                 }
             }

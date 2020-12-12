@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Diagnostics.SymbolStore;
+
 namespace MUnique.OpenMU.Persistence.Json
 {
     using System;
@@ -31,7 +33,7 @@ namespace MUnique.OpenMU.Persistence.Json
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
             var properties = base.CreateProperties(type, memberSerialization)
-                .Where(p => !this.typesToIgnore.Contains(p.PropertyType)).ToList();
+                .Where(p => p.PropertyType is not null && !this.typesToIgnore.Contains(p.PropertyType)).ToList();
 
             return properties;
         }

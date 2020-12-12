@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.Persistence
         }
 
         /// <inheritdoc/>
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
         /// <inheritdoc />
         public int Count => this.rawCollection.Count;

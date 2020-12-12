@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public T GetById<T>(Guid id)
+        public T? GetById<T>(Guid id)
             where T : class
         {
             return this.Manager.GetRepository<T>().GetById(id);

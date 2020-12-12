@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Maps
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -20,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
     {
         private static readonly IList<DropItemGroup> DefaultDropItemGroups = new List<DropItemGroup>();
 
-        private GameMapDefinition mapDefinition;
+        private GameMapDefinition? mapDefinition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseMapInitializer"/> class.
@@ -31,6 +32,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         {
             this.Context = context;
             this.GameConfiguration = gameConfiguration;
+            this.mapDefinition = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == this.MapNumber);
         }
 
         /// <summary>
@@ -52,7 +54,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <summary>
         /// Gets the map definition.
         /// </summary>
-        protected GameMapDefinition MapDefinition => this.mapDefinition;
+        protected GameMapDefinition? MapDefinition => this.mapDefinition;
 
         /// <summary>
         /// Gets the map number which will be set as <see cref="GameMapDefinition.Number"/>.
@@ -97,6 +99,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <inheritdoc/>
         public virtual void SetSafezoneMap()
         {
+            if (this.mapDefinition is null)
+            {
+                throw new InvalidOperationException("Map is not initialized yet.");
+            }
+
             if (this.mapDefinition.ExitGates.Any(g => g.IsSpawnGate))
             {
                 this.mapDefinition.SafezoneMap = this.mapDefinition;
@@ -128,6 +135,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// </summary>
         protected virtual void InitializeDropItemGroups()
         {
+            if (this.mapDefinition is null)
+            {
+                throw new InvalidOperationException("MapDefiniton not set yet.");
+            }
+
             DefaultDropItemGroups.ForEach(this.mapDefinition.DropItemGroups.Add);
         }
 
@@ -209,6 +221,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
         /// <param name="minimumValue">The minimum value.</param>
         protected void CreateRequirement(AttributeDefinition attribute, int minimumValue)
         {
+            if (this.mapDefinition is null)
+            {
+                throw new InvalidOperationException("MapDefiniton not set yet.");
+            }
+
             var requirement = this.Context.CreateNew<AttributeRequirement>();
             requirement.Attribute = attribute.GetPersistent(this.GameConfiguration);
             requirement.MinimumValue = minimumValue;

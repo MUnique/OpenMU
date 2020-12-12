@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <param name="context">The context.</param>
         /// <returns>All objects of <typeparamref name="T"/>.</returns>
         public IEnumerable<T> LoadAllObjects<T>(DbContext context)
-            where T : IIdentifiable
+            where T : class, IIdentifiable
         {
             var result = new List<T>();
             var type = context.Model.FindEntityType(typeof(T));
@@ -53,7 +53,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             {
                 while (reader.Read())
                 {
-                    result.Add(this.deserializer.Deserialize<T>(reader.GetTextReader(2), this.referenceResolver));
+                    if (this.deserializer.Deserialize<T>(reader.GetTextReader(2), this.referenceResolver) is { } item)
+                    {
+                        result.Add(item);
+                    }
                 }
             }
 
@@ -68,8 +71,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <param name="id">The identifier of the object which should be loaded.</param>
         /// <param name="context">The context.</param>
         /// <returns>The loaded object, if available; Otherwise, null.</returns>
-        public T LoadObject<T>(Guid id, DbContext context)
-            where T : IIdentifiable
+        public T? LoadObject<T>(Guid id, DbContext context)
+            where T : class, IIdentifiable
         {
             IEntityType type;
             using (var completeContext = new EntityDataContext())

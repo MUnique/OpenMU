@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
         /// <param name="player">The player.</param>
         /// <param name="createdCharacter">The created character.</param>
         /// <returns>The created item.</returns>
-        protected virtual Item CreateItem(Player player, Character createdCharacter)
+        protected virtual Item? CreateItem(Player player, Character createdCharacter)
         {
             if (player.GameContext.Configuration.Items
                     .FirstOrDefault(def => def.Group == this.itemGroup && def.Number == this.itemNumber)

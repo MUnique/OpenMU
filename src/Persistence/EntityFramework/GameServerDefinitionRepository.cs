@@ -32,9 +32,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             if (obj is GameServerDefinition definition)
             {
                 var entityEntry = currentContext.Entry(obj);
-                foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded))
+                foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded && c.Metadata is IConventionNavigation))
                 {
-                    this.LoadCollection(entityEntry, collection.Metadata as IConventionNavigation, currentContext);
+                    this.LoadCollection(entityEntry, (IConventionNavigation)collection.Metadata, currentContext);
                     collection.IsLoaded = true;
                 }
 

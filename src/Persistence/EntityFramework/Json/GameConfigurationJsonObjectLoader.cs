@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 {
-    using MUnique.OpenMU.Persistence.Json;
     using MUnique.OpenMU.Persistence.EntityFramework.Model;
+    using MUnique.OpenMU.Persistence.Json;
 
     /// <summary>
     /// Object loader for <see cref="GameConfiguration"/> objects.

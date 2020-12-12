@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             return result;
         }
 
-        private CharacterClass CreateMagicGladiator(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
+        private CharacterClass CreateMagicGladiator(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
         {
             var result = this.Context.CreateNew<CharacterClass>();
             this.GameConfiguration.CharacterClasses.Add(result);

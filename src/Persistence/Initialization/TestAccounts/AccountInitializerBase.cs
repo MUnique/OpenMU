@@ -93,25 +93,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         /// Creates the dark lord.
         /// </summary>
         /// <returns>The dark lord, or null.</returns>
-        protected abstract Character CreateDarkLord();
+        protected abstract Character? CreateDarkLord();
 
         /// <summary>
         /// Creates the knight.
         /// </summary>
         /// <returns>The dark knight, or null.</returns>
-        protected abstract Character CreateKnight();
+        protected abstract Character? CreateKnight();
 
         /// <summary>
         /// Creates the elf.
         /// </summary>
         /// <returns>The elf, or null.</returns>
-        protected abstract Character CreateElf();
+        protected abstract Character? CreateElf();
 
         /// <summary>
         /// Creates the wizard.
         /// </summary>
         /// <returns>The wizard, or null.</returns>
-        protected abstract Character CreateWizard();
+        protected abstract Character? CreateWizard();
 
         /// <summary>
         /// Creates the knight.
@@ -182,7 +182,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
             character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
             character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
-            character.Experience = DataInitialization.CalculateNeededExperience(level);
+            character.Experience = GameConfigurationInitializer.CalculateNeededExperience(level);
             character.LevelUpPoints = (int)((character.Attributes.First(a => a.Definition == Stats.Level).Value - 1)
                                             * character.CharacterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
             character.Inventory = this.Context.CreateNew<ItemStorage>();
@@ -201,7 +201,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         /// <param name="optionLevel">The option level.</param>
         /// <param name="luck">If set to <c>true</c>, the item should have luck.</param>
         /// <returns>The created item.</returns>
-        protected Item CreateArmorItem(byte itemSlot, byte setNumber, byte group, AttributeDefinition targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
+        protected Item CreateArmorItem(byte itemSlot, byte setNumber, byte group, AttributeDefinition? targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
         {
             var item = this.Context.CreateNew<Item>();
             item.Definition = this.GameConfiguration.Items.First(def => def.Group == group && def.Number == setNumber);
@@ -424,7 +424,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         /// <param name="skill">If set to <c>true</c>, the item should have skill.</param>
         /// <param name="targetExcellentOption">The target excellent option.</param>
         /// <returns>The created weapon.</returns>
-        protected Item CreateWeapon(byte itemSlot, byte group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition targetExcellentOption = null)
+        protected Item CreateWeapon(byte itemSlot, byte group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition? targetExcellentOption = null)
         {
             var weapon = this.Context.CreateNew<Item>();
             weapon.Definition = this.GameConfiguration.Items.First(def => def.Group == group && def.Number == number);
@@ -496,7 +496,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         /// <param name="itemSlot">The item slot.</param>
         /// <param name="color">The color.</param>
         /// <returns>The created fenrir.</returns>
-        protected Item CreateFenrir(byte itemSlot, ItemOptionType color = null)
+        protected Item CreateFenrir(byte itemSlot, ItemOptionType? color = null)
         {
             var fenrir = this.CreatePet(itemSlot, 37);
 

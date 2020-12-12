@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public static string GetRoleName(DatabaseRole role)
         {
             var settings = Settings[GetContextTypeOfRole(role)];
-            return Regex.Match(settings.ConnectionString, "User Id=([^;]+?);").Groups[1].Value;
+            return Regex.Match(settings.ConnectionString!, "User Id=([^;]+?);").Groups[1].Value;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public static string GetRolePassword(DatabaseRole role)
         {
             var settings = Settings[GetContextTypeOfRole(role)];
-            return Regex.Match(settings.ConnectionString, "Password=([^;]+?);").Groups[1].Value;
+            return Regex.Match(settings.ConnectionString!, "Password=([^;]+?);").Groups[1].Value;
         }
 
         /// <summary>
@@ -90,12 +90,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 type = type.GetGenericTypeDefinition();
             }
 
-            if (Settings.TryGetValue(type, out ConnectionSetting setting))
+            if (Settings.TryGetValue(type, out var setting))
             {
                 switch (setting.DatabaseEngine)
                 {
                     case DatabaseEngine.Npgsql:
-                        optionsBuilder.UseNpgsql(setting.ConnectionString);
+                        optionsBuilder.UseNpgsql(setting.ConnectionString!);
                         return;
                     default:
                         throw new NotImplementedException("At the moment only Npgsql engine (PostgreSQL) is implemented.");
@@ -131,7 +131,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             };
             var result = new Dictionary<Type, ConnectionSetting>();
 
-            var configurationFilePath = Path.Combine(Path.GetDirectoryName(new Uri(typeof(ConnectionConfigurator).Assembly.CodeBase).LocalPath), "ConnectionSettings.xml");
+            var configurationFilePath = Path.Combine(Path.GetDirectoryName(new Uri(typeof(ConnectionConfigurator).Assembly.Location!).LocalPath)!, "ConnectionSettings.xml");
             using var xmlReader = XmlReader.Create(File.OpenRead(configurationFilePath), settings);
             var serializer = new XmlSerializer(typeof(ConnectionSettings));
             if (serializer.CanDeserialize(xmlReader))
@@ -140,6 +140,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 {
                     foreach (var setting in xmlSettings.Connections)
                     {
+                        if (setting.ContextTypeName is null)
+                        {
+                            throw new InvalidDataException("ContextTypeName is null.");
+                        }
+
+                        if (setting.ConnectionString is null)
+                        {
+                            throw new InvalidDataException("ConnectionString is null.");
+                        }
+
                         if (Type.GetType(setting.ContextTypeName, false, true) is { } contextType)
                         {
                             ApplyEnvironmentVariables(setting);
@@ -163,21 +173,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
         private static void ApplyEnvironmentVariables(ConnectionSetting setting)
         {
-            if (Environment.GetEnvironmentVariable(DbHostVariableName) is string dbHost
-                                            && !string.IsNullOrEmpty(dbHost))
+            if (Environment.GetEnvironmentVariable(DbHostVariableName) is { } dbHost
+                && !string.IsNullOrEmpty(dbHost))
             {
-                setting.ConnectionString = setting.ConnectionString.Replace("Server=localhost;", $"Server={dbHost};");
+                setting.ConnectionString = setting.ConnectionString!.Replace("Server=localhost;", $"Server={dbHost};");
             }
 
-            if (setting.ConnectionString.Contains("User Id=postgres;"))
+            if (setting.ConnectionString!.Contains("User Id=postgres;"))
             {
-                if (Environment.GetEnvironmentVariable(DbAdminUserVariableName) is string dbAdminUser
+                if (Environment.GetEnvironmentVariable(DbAdminUserVariableName) is { } dbAdminUser
                     && !string.IsNullOrEmpty(dbAdminUser))
                 {
                     setting.ConnectionString = setting.ConnectionString.Replace("User Id=postgres;", $"User Id={dbAdminUser};");
                 }
 
-                if (Environment.GetEnvironmentVariable(DbAdminPasswordVariableName) is string dbAdminPassword
+                if (Environment.GetEnvironmentVariable(DbAdminPasswordVariableName) is { } dbAdminPassword
                     && !string.IsNullOrEmpty(dbAdminPassword))
                 {
                     setting.ConnectionString = setting.ConnectionString.Replace("Password=admin;", $"Password={dbAdminPassword};");

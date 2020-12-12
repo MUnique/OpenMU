@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     /// <summary>
@@ -48,8 +49,12 @@ namespace MUnique.OpenMU.Persistence
         {
             get
             {
-                this.TryGetValue(key, out TClass value);
-                return value;
+                if (this.TryGetValue(key, out var value))
+                {
+                    return value;
+                }
+
+                throw new KeyNotFoundException($"No value found for key {key}.");
             }
 
             set => this.Add(key, value);
@@ -127,7 +132,7 @@ namespace MUnique.OpenMU.Persistence
         }
 
         /// <inheritdoc/>
-        public bool TryGetValue(TKey key, out TClass value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TClass value)
         {
             if (this.innerDictionary.TryGetValue(key, out var persistentValue))
             {

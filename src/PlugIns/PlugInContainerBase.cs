@@ -28,13 +28,10 @@ namespace MUnique.OpenMU.PlugIns
         /// <param name="manager">The plugin manager which manages this instance.</param>
         protected PlugInContainerBase(PlugInManager manager)
         {
-            this.Manager = manager;
-            if (this.Manager != null)
-            {
-                this.Manager.PlugInActivated += this.OnPlugInActivated;
-                this.Manager.PlugInDeactivated += this.OnPlugInDeactivated;
-                this.Manager.PlugInConfigurationChanged += this.OnPlugInConfigurationChanged;
-            }
+            this.Manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            this.Manager.PlugInActivated += this.OnPlugInActivated;
+            this.Manager.PlugInDeactivated += this.OnPlugInDeactivated;
+            this.Manager.PlugInConfigurationChanged += this.OnPlugInConfigurationChanged;
         }
 
         /// <summary>
@@ -143,7 +140,7 @@ namespace MUnique.OpenMU.PlugIns
         /// </summary>
         /// <param name="plugInType">Type of the plug in.</param>
         /// <returns>The known plugin, if found. Otherwise, null.</returns>
-        protected TPlugIn FindKnownPlugin(Type plugInType)
+        protected TPlugIn? FindKnownPlugin(Type plugInType)
         {
             this.LockSlim.EnterReadLock();
             try
@@ -156,7 +153,7 @@ namespace MUnique.OpenMU.PlugIns
             }
         }
 
-        private TPlugIn FindActivePlugin(Type plugInType)
+        private TPlugIn? FindActivePlugin(Type plugInType)
         {
             this.LockSlim.EnterReadLock();
             try
@@ -171,7 +168,7 @@ namespace MUnique.OpenMU.PlugIns
 
         private bool IsEventRelevant(PlugInEventArgs e) => typeof(TPlugIn).IsAssignableFrom(e.PlugInType);
 
-        private void OnPlugInDeactivated(object sender, PlugInEventArgs e)
+        private void OnPlugInDeactivated(object? sender, PlugInEventArgs e)
         {
             if (!this.IsEventRelevant(e))
             {
@@ -195,7 +192,7 @@ namespace MUnique.OpenMU.PlugIns
             }
         }
 
-        private void OnPlugInActivated(object sender, PlugInEventArgs e)
+        private void OnPlugInActivated(object? sender, PlugInEventArgs e)
         {
             if (!this.IsEventRelevant(e))
             {
@@ -227,7 +224,7 @@ namespace MUnique.OpenMU.PlugIns
             }
         }
 
-        private void OnPlugInConfigurationChanged(object sender, PlugInConfigurationChangedEventArgs e)
+        private void OnPlugInConfigurationChanged(object? sender, PlugInConfigurationChangedEventArgs e)
         {
             if (!this.IsEventRelevant(e))
             {

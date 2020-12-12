@@ -23,8 +23,9 @@ namespace MUnique.OpenMU.Persistence
         /// <typeparam name="T">The generic type.</typeparam>
         /// <returns>The repository of the specified generic type.</returns>
         public virtual IRepository<T> GetRepository<T>()
+            where T : class
         {
-            return this.GetRepository(typeof(T)) as IRepository<T>;
+            return (IRepository<T>)this.GetRepository(typeof(T));
         }
 
         /// <summary>
@@ -48,9 +49,9 @@ namespace MUnique.OpenMU.Persistence
         /// </summary>
         /// <param name="objectType">Type of the object.</param>
         /// <returns>The repository of the specified type.</returns>
-        protected IRepository InternalGetRepository(Type objectType)
+        protected IRepository? InternalGetRepository(Type objectType)
         {
-            Type currentSearchType = objectType;
+            Type? currentSearchType = objectType;
             do
             {
                 if (currentSearchType is null)
@@ -58,7 +59,7 @@ namespace MUnique.OpenMU.Persistence
                     break;
                 }
 
-                if (this.Repositories.TryGetValue(currentSearchType, out object repository))
+                if (this.Repositories.TryGetValue(currentSearchType, out var repository))
                 {
                     return repository as IRepository;
                 }
@@ -76,6 +77,7 @@ namespace MUnique.OpenMU.Persistence
         /// <typeparam name="T">The generic type which the repository handles.</typeparam>
         /// <param name="repository">The repository.</param>
         protected void RegisterRepository<T>(IRepository<T> repository)
+            where T : class
         {
             this.RegisterRepository(typeof(T), repository);
         }

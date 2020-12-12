@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
         /// <summary>
         /// Gets the name.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; private set; } = string.Empty;
     }
 }

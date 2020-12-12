@@ -17,9 +17,9 @@ namespace MUnique.OpenMU.Persistence.Json
         /// <summary>
         /// The object which is currently getting populated by the JsonSerializer.
         /// </summary>
-        private object currentlyPopulating;
+        private object? currentlyPopulating;
 
-        private Action delayedReferenceResolveActions;
+        private Action? delayedReferenceResolveActions;
 
         /// <inheritdoc />
         public override bool CanWrite => false;
@@ -36,13 +36,13 @@ namespace MUnique.OpenMU.Persistence.Json
         public void ResolveDelayedReferences() => this.delayedReferenceResolveActions?.Invoke();
 
         /// <inheritdoc/>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new InvalidOperationException("Use default serialization.");
         }
 
         /// <inheritdoc/>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -50,37 +50,32 @@ namespace MUnique.OpenMU.Persistence.Json
             }
 
             var jsonObject = JObject.Load(reader);
-            if (jsonObject is null)
-            {
-                return null;
-            }
 
-            if (jsonObject["$ref"] != null)
+            if (jsonObject["$ref"]?.Value<string>() is { } id)
             {
-                return this.ResolveObjectReference(reader, serializer, jsonObject);
+                return this.ResolveObjectReference(reader, serializer, id);
             }
 
             return this.CreateObject(objectType, serializer, jsonObject);
         }
 
-        private object ResolveObjectReference(JsonReader reader, JsonSerializer serializer, JObject jsonObject)
+        private object? ResolveObjectReference(JsonReader reader, JsonSerializer serializer, string id)
         {
-            var id = jsonObject["$ref"].Value<string>();
             if (string.IsNullOrEmpty(id))
             {
                 return null;
             }
 
-            var resolvedObject = serializer.ReferenceResolver.ResolveReference(serializer.Context, id);
+            var resolvedObject = serializer.ReferenceResolver?.ResolveReference(serializer.Context, id);
             if (resolvedObject is null)
             {
-                var property = this.currentlyPopulating.GetType().GetProperty(reader.Path);
+                var property = this.currentlyPopulating?.GetType().GetProperty(reader.Path);
                 if (property != null)
                 {
                     var currentParent = this.currentlyPopulating;
                     this.delayedReferenceResolveActions += () =>
                     {
-                        var resolved = serializer.ReferenceResolver.ResolveReference(serializer.Context, id);
+                        var resolved = serializer.ReferenceResolver?.ResolveReference(serializer.Context, id);
                         property.SetValue(currentParent, resolved);
                     };
                 }
@@ -91,7 +86,7 @@ namespace MUnique.OpenMU.Persistence.Json
 
         private object CreateObject(Type objectType, JsonSerializer serializer, JObject jsonObject)
         {
-            var createdObject = Activator.CreateInstance(objectType);
+            var createdObject = Activator.CreateInstance(objectType)!;
 
             // We need to remember the currently populating object for the next properties on the same hierarchy.
             // We could use a Stack<object> here, as well - ofc, parentPopulating lives on the "stack" too ;)

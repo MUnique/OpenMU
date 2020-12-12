@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     /// <seealso cref="MUnique.OpenMU.Persistence.Initialization.InitializerBase" />
     internal class Jewellery : InitializerBase
     {
-        private ItemOptionDefinition healthRecoverOptionDefinition;
+        private ItemOptionDefinition? healthRecoverOptionDefinition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Jewellery"/> class.
@@ -159,7 +159,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <remarks>
         /// Rings always have defensive excellent options.
         /// </remarks>
-        private void CreateRing(byte number, string name, byte level, byte durability, AttributeDefinition optionTargetAttribute, AttributeDefinition resistanceAttribute)
+        private void CreateRing(byte number, string name, byte level, byte durability, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
         {
             this.CreateJewelery(number, 10, true, name, level, durability, this.GameConfiguration.ExcellentDefenseOptions(), optionTargetAttribute, resistanceAttribute);
         }
@@ -177,7 +177,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <remarks>
         /// Pendants always have offensive excellent options. If it's wizardry or physical depends on the specific item. I didn't find a pattern yet.
         /// </remarks>
-        private void CreatePendant(byte number, string name, byte level, byte durability, DamageType excellentOptionDamageType, AttributeDefinition optionTargetAttribute, AttributeDefinition resistanceAttribute)
+        private void CreatePendant(byte number, string name, byte level, byte durability, DamageType excellentOptionDamageType, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
         {
             var excellentOption = excellentOptionDamageType == DamageType.Physical
                 ? this.GameConfiguration.ExcellentPhysicalAttackOptions()
@@ -185,7 +185,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateJewelery(number, 9, true, name, level, durability, excellentOption, optionTargetAttribute, resistanceAttribute);
         }
 
-        private ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, string name, byte level, byte durability, ItemOptionDefinition excellentOptionDefinition, AttributeDefinition optionTargetAttribute, AttributeDefinition resistanceAttribute)
+        private ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, string name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
         {
             var item = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(item);

@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence
         /// </summary>
         /// <param name="headerId">The id of its header.</param>
         /// <returns>The body of the header.</returns>
-        LetterBody GetLetterBodyByHeaderId(Guid headerId);
+        LetterBody? GetLetterBodyByHeaderId(Guid headerId);
 
         /// <summary>
         /// Determines if the letter can be saved.
@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="loginName">The login name.</param>
         /// <param name="password">The password.</param>
         /// <returns>The account, if the password is correct. Otherwise, null.</returns>
-        Account GetAccountByLoginName(string loginName, string password);
+        Account? GetAccountByLoginName(string loginName, string password);
 
         /// <summary>
         /// Gets the accounts ordered by login name.

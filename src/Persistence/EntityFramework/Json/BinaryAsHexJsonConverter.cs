@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         }
 
         /// <inheritdoc />
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             var array = value as byte[];
             if (array is null)
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -73,17 +73,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             if (reader.TokenType == JsonToken.String)
             {
                 var prefixSize = ByteArrayPrefix.Length;
-                var value = (string)reader.Value;
-                var data = new byte[(value.Length - prefixSize) / 2];
-                for (var i = 0; i < data.Length; i++)
+                if (reader.Value is string value)
                 {
-                    var index = prefixSize + (i * 2);
-                    int highNibble = this.ParseCharacter(value[index]);
-                    int lowNibble = this.ParseCharacter(value[index + 1]);
-                    data[i] = (byte)((highNibble << 4) | lowNibble);
+                    var data = new byte[(value.Length - prefixSize) / 2];
+                    for (var i = 0; i < data.Length; i++)
+                    {
+                        var index = prefixSize + (i * 2);
+                        int highNibble = this.ParseCharacter(value[index]);
+                        int lowNibble = this.ParseCharacter(value[index + 1]);
+                        data[i] = (byte)((highNibble << 4) | lowNibble);
+                    }
+
+                    return data;
                 }
 
-                return data;
+                return default(byte[]);
             }
 
             throw new JsonSerializationException($"Unexpected token parsing binary. Expected String, got {reader.TokenType}.");

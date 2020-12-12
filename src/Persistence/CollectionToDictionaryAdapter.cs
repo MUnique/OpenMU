@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     /// <summary>
@@ -49,8 +50,12 @@ namespace MUnique.OpenMU.Persistence
         {
             get
             {
-                this.TryGetValue(key, out TClass value);
-                return value;
+                if (this.TryGetValue(key, out var value))
+                {
+                    return value;
+                }
+
+                throw new KeyNotFoundException($"No value found for key {key}.");
             }
 
             set => this.Add(key, value);
@@ -117,15 +122,19 @@ namespace MUnique.OpenMU.Persistence
         /// <inheritdoc/>
         public bool Remove(TKey key)
         {
-            var joinItem = this.rawCollection.FirstOrDefault(join => object.Equals(join.Key, key));
-            return this.rawCollection.Remove(joinItem);
+            if (this.rawCollection.FirstOrDefault(join => object.Equals(join.Key, key)) is { } joinItem)
+            {
+                return this.rawCollection.Remove(joinItem);
+            }
+
+            return false;
         }
 
         /// <inheritdoc/>
-        public bool TryGetValue(TKey key, out TClass value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TClass value)
         {
             value = this.rawCollection.FirstOrDefault(join => object.Equals(join.Key, key))?.Value;
-            return value != null;
+            return value is { };
         }
     }
 }

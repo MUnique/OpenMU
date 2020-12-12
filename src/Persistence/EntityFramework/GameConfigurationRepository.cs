@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc />
-        public override GameConfiguration GetById(Guid id)
+        public override GameConfiguration? GetById(Guid id)
         {
             var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
             if (currentContext is null)
@@ -44,9 +44,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             database.OpenConnection();
             try
             {
-                var config = this.objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context);
-                currentContext.Attach(config);
-                return config;
+                if (this.objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context) is { } config)
+                {
+                    currentContext.Attach(config);
+                    return config;
+                }
+
+                return null;
             }
             finally
             {

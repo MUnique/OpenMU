@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         }
 
         /// <inheritdoc/>
-        protected override Character CreateWizard()
+        protected override Character? CreateWizard()
         {
             return null;
         }

@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.PlugIns
         /// </summary>
         /// <param name="plugInType">Type of the plug in.</param>
         /// <returns>The implemented interface of <see cref="ISupportCustomConfiguration{T}"/>.</returns>
-        public static Type GetCustomConfigurationSupportInterfaceType(this Type plugInType)
+        public static Type? GetCustomConfigurationSupportInterfaceType(this Type plugInType)
         {
             return plugInType.GetInterfaces()
                 .Where(i => i.IsGenericType)
@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.PlugIns
         /// </summary>
         /// <param name="plugInType">Type of the plug in.</param>
         /// <returns>The generic type parameter of <see cref="ISupportCustomConfiguration{T}"/>.</returns>
-        public static Type GetCustomConfigurationType(this Type plugInType)
+        public static Type? GetCustomConfigurationType(this Type plugInType)
         {
             if (plugInType.GetCustomConfigurationSupportInterfaceType() is { } configSupportInterface)
             {

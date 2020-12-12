@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence
                 return baseType;
             }
 
-            if (!BaseToPersistentTypes.TryGetValue(baseType, out Type persistentType))
+            if (!BaseToPersistentTypes.TryGetValue(baseType, out var persistentType))
             {
                 persistentType = origin.GetTypes().First(t => t.BaseType == baseType);
                 BaseToPersistentTypes.Add(baseType, persistentType);
@@ -61,10 +61,10 @@ namespace MUnique.OpenMU.Persistence
             var persistentType = origin.GetPersistentTypeOf<TBase>();
             if (args.Length == 0)
             {
-                return Activator.CreateInstance(persistentType) as TBase;
+                return (TBase)Activator.CreateInstance(persistentType)!;
             }
 
-            return Activator.CreateInstance(persistentType, args) as TBase;
+            return (TBase)Activator.CreateInstance(persistentType, args)!;
         }
 
         /// <summary>

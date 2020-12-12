@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             return this.CreateDarkKnight(CharacterClassNumber.BladeKnight, "Blade Knight", false, bladeMaster, false);
         }
 
-        private CharacterClass CreateDarkKnight(CharacterClassNumber number, string name, bool isMaster, CharacterClass nextGenerationClass, bool canGetCreated)
+        private CharacterClass CreateDarkKnight(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
         {
             var result = this.Context.CreateNew<CharacterClass>();
             this.GameConfiguration.CharacterClasses.Add(result);

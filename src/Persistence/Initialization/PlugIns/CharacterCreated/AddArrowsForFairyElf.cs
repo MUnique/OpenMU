@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
         }
 
         /// <inheritdoc />
-        protected override Item CreateItem(Player player, Character createdCharacter)
+        protected override Item? CreateItem(Player player, Character createdCharacter)
         {
             if (base.CreateItem(player, createdCharacter) is { } item)
             {

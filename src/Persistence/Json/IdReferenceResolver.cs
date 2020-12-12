@@ -19,13 +19,13 @@ namespace MUnique.OpenMU.Persistence.Json
         public object ResolveReference(object context, string reference)
         {
             var identity = new Guid(reference);
-            var success = this.objects.TryGetValue(identity, out IIdentifiable obj);
+            var success = this.objects.TryGetValue(identity, out var obj);
             if (!success)
             {
-                return null;
+                return null!; // we're handling null returns
             }
 
-            return obj;
+            return obj!;
         }
 
         /// <inheritdoc/>
@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence.Json
                 return identifiable.Id.ToString();
             }
 
-            return null;
+            return null!; // we're handling null returns
         }
 
         /// <inheritdoc/>

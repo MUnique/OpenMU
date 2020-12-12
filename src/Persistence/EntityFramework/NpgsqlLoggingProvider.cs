@@ -78,7 +78,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 };
             }
 
-            public override void Log(NpgsqlLogLevel level, int connectorId, string msg, Exception exception = null)
+            public override void Log(NpgsqlLogLevel level, int connectorId, string msg, Exception? exception = null)
             {
                 switch (level)
                 {

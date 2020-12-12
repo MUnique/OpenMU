@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Json
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using MUnique.OpenMU.AttributeSystem;
     using Newtonsoft.Json;
@@ -28,6 +29,7 @@ namespace MUnique.OpenMU.Persistence.Json
         /// <returns>
         /// The resulting object which has been deserialized from the <paramref name="textReader" />.
         /// </returns>
+        [return: MaybeNull]
         public T Deserialize<T>(TextReader textReader, IReferenceResolver referenceResolver)
         {
             var serializer = new JsonSerializer
@@ -39,7 +41,7 @@ namespace MUnique.OpenMU.Persistence.Json
             };
 
             this.BeforeDeserialize(serializer);
-            DelayedReferenceResolvingConverter deferredConverter = null;
+            DelayedReferenceResolvingConverter? deferredConverter = null;
             if (this.AreCircularReferencesExpected)
             {
                 // For circular references, we add a converter which collects actions to resolve unresolved references, so they can be resolved after deserializing.

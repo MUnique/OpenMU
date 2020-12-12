@@ -16,10 +16,10 @@ namespace MUnique.OpenMU.PlugIns
     public class PlugInConfiguration : INotifyPropertyChanged
     {
         private bool isActive;
-        private string customConfiguration;
+        private string? customConfiguration;
 
         /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets or sets the type identifier of the plugin.
@@ -47,17 +47,17 @@ namespace MUnique.OpenMU.PlugIns
         /// <summary>
         /// Gets or sets the custom plug in source which will be compiled at run-time.
         /// </summary>
-        public string CustomPlugInSource { get; set; }
+        public string? CustomPlugInSource { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the external assembly which will be loaded at run-time.
         /// </summary>
-        public string ExternalAssemblyName { get; set; }
+        public string? ExternalAssemblyName { get; set; }
 
         /// <summary>
         /// Gets or sets a custom configuration.
         /// </summary>
-        public string CustomConfiguration
+        public string? CustomConfiguration
         {
             get => this.customConfiguration;
             set
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.PlugIns
         /// Triggers the <see cref="PropertyChanged"/> event.
         /// </summary>
         /// <param name="propertyName">The name of the changed property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

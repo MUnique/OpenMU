@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 {
     using System;
     using System.Collections.Generic;
-    using Newtonsoft.Json.Serialization;
     using MUnique.OpenMU.Persistence.EntityFramework.Model;
+    using Newtonsoft.Json.Serialization;
 
     /// <summary>
     /// A reference resolver which resolves them by looking at the objects occuring in the <see cref="GameConfiguration" />.
@@ -38,15 +38,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <inheritdoc />
         public object ResolveReference(object context, string reference)
         {
-            Guid id = new Guid(reference);
+            var id = new Guid(reference);
 
-            var success = this.cache.TryGetValue(id, out IIdentifiable obj);
+            var success = this.cache.TryGetValue(id, out var obj);
             if (!success)
             {
-                return null;
+                return null!;
             }
 
-            return obj;
+            return obj!;
         }
 
         /// <inheritdoc/>

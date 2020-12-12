@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Maps
             feather.Description = "Loch's Feather";
             feather.MinimumMonsterLevel = 82;
             feather.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 13 && item.Number == 14));
-            this.MapDefinition.DropItemGroups.Add(feather);
+            this.MapDefinition!.DropItemGroups.Add(feather);
             this.GameConfiguration.DropItemGroups.Add(feather);
         }
 

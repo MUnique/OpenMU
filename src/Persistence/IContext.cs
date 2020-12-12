@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.Persistence
         /// <typeparam name="T">The type of the requested object.</typeparam>
         /// <param name="id">The identifier.</param>
         /// <returns>The object of the specified type by its identifier.</returns>
-        T GetById<T>(Guid id)
+        T? GetById<T>(Guid id)
             where T : class;
 
         /// <summary>

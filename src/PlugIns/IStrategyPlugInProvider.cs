@@ -20,6 +20,6 @@ namespace MUnique.OpenMU.PlugIns
         /// </value>
         /// <param name="key">The key.</param>
         /// <returns>The <typeparamref name="TStrategy"/> with the specified key, if available; Otherwise, <c>null</c>.</returns>
-        TStrategy this[TKey key] { get; }
+        TStrategy? this[TKey key] { get; }
     }
 }

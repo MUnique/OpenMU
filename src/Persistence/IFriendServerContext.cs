@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.Persistence
         /// <param name="characterName">Name of the character holding the friend view item in its friendlist.</param>
         /// <param name="friendName">Name of the friend.</param>
         /// <returns>The friend view item of the friend.</returns>
-        Friend GetFriendByNames(string characterName, string friendName);
+        Friend? GetFriendByNames(string characterName, string friendName);
 
         /// <summary>
         /// Gets the friends of a character.

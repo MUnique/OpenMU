@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.PlugIns
     /// </summary>
     public static class SyntaxTreeExtensions
     {
-        private static IList<PortableExecutableReference> assemblyReferences;
+        private static IList<PortableExecutableReference>? assemblyReferences;
 
         private static IList<PortableExecutableReference> AssemblyReferences
         {
@@ -42,8 +42,8 @@ namespace MUnique.OpenMU.PlugIns
                 assemblyReferences = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)
                     ?.Split(separator)
                     .Select(path => MetadataReference.CreateFromFile(path))
-                    .Where(metaData => loadedAssemblies.Contains(metaData.FilePath))
-                    .ToList();
+                    .Where(metaData => metaData.FilePath is not null && loadedAssemblies.Contains(metaData.FilePath))
+                    .ToList() ?? new List<PortableExecutableReference>();
                 return assemblyReferences;
             }
         }

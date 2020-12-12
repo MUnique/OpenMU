@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             this.EnsureCacheForCurrentConfiguration();
             var dictionary = this.cache[this.GetCurrentGameConfiguration()];
-            if (dictionary.TryGetValue(id, out T result))
+            if (dictionary.TryGetValue(id, out var result))
             {
                 return result;
             }
@@ -95,6 +95,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         public void EnsureCacheForCurrentConfiguration()
         {
             var configuration = this.GetCurrentGameConfiguration();
+
             if (this.cache.ContainsKey(configuration))
             {
                 return;
@@ -126,7 +127,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 throw new InvalidOperationException("This repository can only be used within an account context.");
             }
 
-            return context.CurrentGameConfiguration;
+            return context.CurrentGameConfiguration ?? throw new InvalidOperationException("There is no current configuration.");
         }
     }
 }

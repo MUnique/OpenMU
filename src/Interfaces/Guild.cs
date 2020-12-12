@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the logo.
@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <remarks>
         /// It's like a 16 color 8x8 pixel bitmap, therefore has a size of 32 bytes.
         /// </remarks>
-        public byte[] Logo { get; set; }
+        public byte[]? Logo { get; set; }
 
         /// <summary>
         /// Gets or sets the score.
@@ -38,12 +38,12 @@ namespace MUnique.OpenMU.Interfaces
         /// Gets or sets the guild notice which can be set by the guild master.
         /// </summary>
         /// <remarks>Visible in green color after a character entered the game.</remarks>
-        public string Notice { get; set; }
+        public string? Notice { get; set; }
 
         /// <summary>
         /// Gets or sets the hostile guild. Members of a hostile guild can be killed without consequences.
         /// </summary>
-        public virtual Guild Hostility { get; set; }
+        public virtual Guild? Hostility { get; set; }
 
         /// <summary>
         /// Gets or sets the parent alliance guild.
@@ -51,6 +51,6 @@ namespace MUnique.OpenMU.Interfaces
         /// <value>
         /// The alliance guild.
         /// </value>
-        public virtual Guild AllianceGuild { get; set; }
+        public virtual Guild? AllianceGuild { get; set; }
     }
 }

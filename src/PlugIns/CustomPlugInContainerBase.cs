@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.PlugIns
         }
 
         /// <inheritdoc />
-        public T GetPlugIn<T>()
+        public T? GetPlugIn<T>()
             where T : class, TPlugIn
         {
             if (this.currentlyEffectivePlugIns.TryGetValue(typeof(T), out var plugIn) && plugIn is T t)

@@ -61,15 +61,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        public T GetById(Guid id)
+        public T? GetById(Guid id)
         {
             this.GetAll();
-            this.cache.TryGetValue(id, out T result);
+            this.cache.TryGetValue(id, out var result);
             return result;
         }
 
         /// <inheritdoc/>
-        object IRepository.GetById(Guid id)
+        object? IRepository.GetById(Guid id)
         {
             return this.GetById(id);
         }
@@ -124,18 +124,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         protected virtual void RemoveFromCache(Guid id)
         {
             this.cache.Remove(id);
-        }
-
-        /// <summary>
-        /// Gets the object from cache.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns>The object from cache.</returns>
-        protected T GetFromCache(Guid id)
-        {
-            this.cache.TryGetValue(id, out T obj);
-
-            return obj;
         }
     }
 }

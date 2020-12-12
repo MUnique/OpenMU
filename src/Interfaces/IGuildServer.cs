@@ -124,7 +124,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <summary>
         /// Gets or sets the name of the player.
         /// </summary>
-        public string PlayerName { get; set; }
+        public string? PlayerName { get; set; }
 
         /// <summary>
         /// Gets or sets the server identifier on which the player is playing.

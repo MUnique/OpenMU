@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         /// <param name="headerId">The id of its header.</param>
         /// <returns>The body of the header.</returns>
-        public LetterBody GetBodyByHeaderId(Guid headerId)
+        public LetterBody? GetBodyByHeaderId(Guid headerId)
         {
             using var context = this.GetContext();
             var letterBody = context.Context.Set<LetterBody>().FirstOrDefault(body => body.HeaderId == headerId);

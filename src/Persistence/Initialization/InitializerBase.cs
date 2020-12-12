@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// </summary>
         /// <param name="classNumber">The class number.</param>
         /// <returns>The character class of the specified number.</returns>
-        protected CharacterClass GetCharacterClass(CharacterClassNumber classNumber)
+        protected CharacterClass? GetCharacterClass(CharacterClassNumber classNumber)
         {
             return this.GameConfiguration.CharacterClasses.FirstOrDefault(c => c.Number == (byte)classNumber);
         }
