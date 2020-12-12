@@ -18,12 +18,12 @@ namespace MUnique.OpenMU.Network
     /// <seealso cref="MUnique.OpenMU.Network.PacketPipeReaderBase" />
     public sealed class Connection : PacketPipeReaderBase, IConnection
     {
-        private readonly IPipelinedEncryptor encryptionPipe;
+        private readonly IPipelinedEncryptor? encryptionPipe;
         private readonly ILogger<Connection> logger;
-        private readonly EndPoint remoteEndPoint;
-        private IDuplexPipe duplexPipe;
+        private readonly EndPoint? remoteEndPoint;
+        private IDuplexPipe? duplexPipe;
         private bool disconnected;
-        private PipeWriter outputWriter;
+        private PipeWriter? outputWriter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Connection" /> class.
@@ -32,31 +32,31 @@ namespace MUnique.OpenMU.Network
         /// <param name="decryptionPipe">The decryption pipe.</param>
         /// <param name="encryptionPipe">The encryption pipe.</param>
         /// <param name="logger">The logger.</param>
-        public Connection(IDuplexPipe duplexPipe, IPipelinedDecryptor decryptionPipe, IPipelinedEncryptor encryptionPipe, ILogger<Connection> logger)
+        public Connection(IDuplexPipe duplexPipe, IPipelinedDecryptor? decryptionPipe, IPipelinedEncryptor? encryptionPipe, ILogger<Connection> logger)
         {
             this.duplexPipe = duplexPipe;
             this.encryptionPipe = encryptionPipe;
             this.logger = logger;
-            this.Source = decryptionPipe?.Reader ?? this.duplexPipe.Input;
+            this.Source = decryptionPipe?.Reader ?? this.duplexPipe!.Input;
             this.remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
         }
 
         /// <inheritdoc />
-        public event PipedPacketReceivedHandler PacketReceived;
+        public event PipedPacketReceivedHandler? PacketReceived;
 
         /// <inheritdoc />
-        public event DisconnectedHandler Disconnected;
+        public event DisconnectedHandler? Disconnected;
 
         /// <inheritdoc />
         public bool Connected => this.SocketConnection != null ? this.SocketConnection.ShutdownKind == PipeShutdownKind.None && !this.disconnected : !this.disconnected;
 
         /// <inheritdoc />
-        public PipeWriter Output => this.outputWriter ??= this.encryptionPipe?.Writer ?? this.duplexPipe.Output;
+        public PipeWriter Output => this.outputWriter ??= this.encryptionPipe?.Writer ?? this.duplexPipe!.Output;
 
         /// <summary>
         /// Gets the socket connection, if the <see cref="duplexPipe"/> is an instance of <see cref="SocketConnection"/>. Otherwise, it returns null.
         /// </summary>
-        private SocketConnection SocketConnection => this.duplexPipe as SocketConnection;
+        private SocketConnection? SocketConnection => this.duplexPipe as SocketConnection;
 
         /// <inheritdoc/>
         public override string ToString() => this.remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.Network
             }
 
             this.logger.LogDebug("Disconnecting...");
-            if (this.duplexPipe != null)
+            if (this.duplexPipe is not null)
             {
                 this.Source.Complete();
                 this.Output.Complete();
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.Network
             this.logger.LogDebug("Disconnected");
             this.disconnected = true;
 
-            this.Disconnected?.Invoke(this, System.EventArgs.Empty);
+            this.Disconnected?.Invoke(this, EventArgs.Empty);
         }
 
         /// <inheritdoc/>
@@ -111,7 +111,7 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <inheritdoc />
-        protected override void OnComplete(Exception exception)
+        protected override void OnComplete(Exception? exception)
         {
             using var scope = this.logger.BeginScope(this.remoteEndPoint);
             if (exception != null)

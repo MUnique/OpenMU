@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Network
         /// <summary>
         /// The message, if built yet.
         /// </summary>
-        private string message;
+        private string? message;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InvalidPacketHeaderException"/> class.
@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.Network
         /// <summary>
         /// Gets a message that describes the current exception.
         /// </summary>
-        public override string Message => this.message ?? (this.message = this.BuildMessage());
+        public override string Message => this.message ??= this.BuildMessage();
 
         private string BuildMessage()
         {

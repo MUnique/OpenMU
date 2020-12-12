@@ -19,10 +19,10 @@ namespace MUnique.OpenMU.Network
     {
         private readonly ILogger logger;
         private readonly int port;
-        private readonly Func<PipeReader, IPipelinedDecryptor> decryptorCreator;
-        private readonly Func<PipeWriter, IPipelinedEncryptor> encryptorCreator;
+        private readonly Func<PipeReader, IPipelinedDecryptor>? decryptorCreator;
+        private readonly Func<PipeWriter, IPipelinedEncryptor>? encryptorCreator;
         private readonly ILoggerFactory loggerFactory;
-        private TcpListener clientListener;
+        private TcpListener? clientListener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Listener" /> class.
@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="decryptorCreator">The decryptor creator function.</param>
         /// <param name="encryptorCreator">The encryptor creator function.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        public Listener(int port, Func<PipeReader, IPipelinedDecryptor> decryptorCreator, Func<PipeWriter, IPipelinedEncryptor> encryptorCreator, ILoggerFactory loggerFactory)
+        public Listener(int port, Func<PipeReader, IPipelinedDecryptor>? decryptorCreator, Func<PipeWriter, IPipelinedEncryptor>? encryptorCreator, ILoggerFactory loggerFactory)
         {
             this.port = port;
             this.decryptorCreator = decryptorCreator;
@@ -44,12 +44,12 @@ namespace MUnique.OpenMU.Network
         /// <summary>
         /// Occurs when a client has been accepted by the tcp listener.
         /// </summary>
-        public event EventHandler<ClientAcceptEventArgs> ClientAccepted;
+        public event EventHandler<ClientAcceptEventArgs>? ClientAccepted;
 
         /// <summary>
         /// Occurs when a client has been accepted by the tcp listener, but before a <see cref="Connection"/> is created.
         /// </summary>
-        public event CancelEventHandler ClientAccepting;
+        public event CancelEventHandler? ClientAccepting;
 
         /// <summary>
         /// Starts the tcp listener and begins to accept connections.
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <returns>The created decryptor.</returns>
-        protected virtual IPipelinedDecryptor CreateDecryptor(PipeReader reader)
+        protected virtual IPipelinedDecryptor? CreateDecryptor(PipeReader reader)
         {
             return this.decryptorCreator?.Invoke(reader);
         }
@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <returns>The created encryptor.</returns>
-        protected virtual IPipelinedEncryptor CreateEncryptor(PipeWriter writer)
+        protected virtual IPipelinedEncryptor? CreateEncryptor(PipeWriter writer)
         {
             return this.encryptorCreator?.Invoke(writer);
         }
@@ -100,6 +100,11 @@ namespace MUnique.OpenMU.Network
             Socket socket;
             try
             {
+                if (this.clientListener is null)
+                {
+                    return;
+                }
+
                 socket = this.clientListener.EndAcceptSocket(result);
             }
             catch (ObjectDisposedException)
@@ -114,7 +119,7 @@ namespace MUnique.OpenMU.Network
             }
 
             // Accept the next client:
-            if (this.clientListener.Server.IsBound)
+            if (this.clientListener?.Server.IsBound ?? false)
             {
                 this.clientListener.BeginAcceptSocket(this.OnAccept, null);
             }

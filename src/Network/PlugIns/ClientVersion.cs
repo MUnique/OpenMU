@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.Network.PlugIns
         }
 
         /// <inheritdoc/>
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             if (obj is ClientVersion other)
             {
@@ -148,7 +148,7 @@ namespace MUnique.OpenMU.Network.PlugIns
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is ClientVersion other && this.Equals(other);
         }

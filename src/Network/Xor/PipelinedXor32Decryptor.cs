@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Network.Xor
         public PipeReader Reader => this.pipe.Reader;
 
         /// <inheritdoc />
-        protected override void OnComplete(Exception exception)
+        protected override void OnComplete(Exception? exception)
         {
             this.pipe.Writer.Complete(exception);
         }

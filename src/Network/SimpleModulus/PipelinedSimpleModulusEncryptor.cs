@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         public PipeWriter Writer => this.Pipe.Writer;
 
         /// <inheritdoc />
-        protected override void OnComplete(Exception exception)
+        protected override void OnComplete(Exception? exception)
         {
             this.target.Complete(exception);
         }
@@ -204,8 +204,8 @@ namespace MUnique.OpenMU.Network.SimpleModulus
             }
 
             size ^= checksum;
-            outputBuffer[outputBuffer.Length - 2] = size;
-            outputBuffer[outputBuffer.Length - 1] = checksum;
+            outputBuffer[^2] = size;
+            outputBuffer[^1] = checksum;
         }
 
         private void EncryptContent()

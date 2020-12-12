@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Network
         /// <summary>
         /// Gets or sets the <see cref="PipeReader"/> from which the packets can be read from at <see cref="ReadSource"/>.
         /// </summary>
-        protected PipeReader Source { get; set; }
+        protected PipeReader Source { get; set; } = null!; // will be set in derived classes
 
         /// <summary>
         /// Reads the mu online packet.
@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Network
         /// Called when the <see cref="Source"/> completed.
         /// </summary>
         /// <param name="exception">The exception, if any occured; Otherwise, <c>null</c>.</param>
-        protected abstract void OnComplete(Exception exception);
+        protected abstract void OnComplete(Exception? exception);
 
         /// <summary>
         /// Reads from the <see cref="Source"/> until it's completed or cancelled.
@@ -40,6 +40,11 @@ namespace MUnique.OpenMU.Network
         /// <returns>The task.</returns>
         protected async Task ReadSource()
         {
+            if (this.Source is null)
+            {
+                throw new InvalidOperationException("Source must be set before.");
+            }
+
             try
             {
                 while (true)

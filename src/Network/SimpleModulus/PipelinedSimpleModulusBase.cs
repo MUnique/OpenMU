@@ -83,7 +83,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <summary>
         /// Gets the counter.
         /// </summary>
-        protected Counter Counter { get; }
+        protected Counter? Counter { get; }
 
         /// <summary>
         /// Gets the ring buffer.
