@@ -9,14 +9,14 @@ namespace MUnique.OpenMU.Pathfinding
     /// <summary>
     /// A path finder node.
     /// </summary>
-    public struct PathResultNode : IEquatable<PathResultNode>
+    public readonly struct PathResultNode : IEquatable<PathResultNode>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PathResultNode" /> struct.
         /// </summary>
         /// <param name="point">The point.</param>
         /// <param name="previousPoint">The previous point.</param>
-        public PathResultNode(Point point, Point? previousPoint)
+        public PathResultNode(Point point, Point previousPoint)
         {
             this.ThisPoint = point;
             this.PreviousPoint = previousPoint;
@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Pathfinding
         /// <summary>
         /// Gets the previous point.
         /// </summary>
-        public Point? PreviousPoint { get; }
+        public Point PreviousPoint { get; }
 
         /// <summary>
         /// Gets the x coordinate.

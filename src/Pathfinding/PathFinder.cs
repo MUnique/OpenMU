@@ -165,7 +165,7 @@ namespace MUnique.OpenMU.Pathfinding
             var node = this.network.GetNodeAt(end);
             while (node!.PreviousNode != node)
             {
-                yield return new PathResultNode(node.Position, node.PreviousNode?.Position);
+                yield return new PathResultNode(node.Position, node.PreviousNode!.Position);
                 node = node.PreviousNode;
             }
         }

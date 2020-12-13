@@ -71,18 +71,18 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <summary>
         /// Gets or sets the target attribute which will be affected.
         /// </summary>
-        public virtual AttributeDefinition TargetAttribute
+        public virtual AttributeDefinition? TargetAttribute
         {
-            get => this.targetAttribute ?? throw new InvalidOperationException("TargetAttribute not initialized");
+            get => this.targetAttribute;
             set => this.targetAttribute = value;
         }
 
         /// <summary>
         /// Gets or sets the input attribute which provides the input value.
         /// </summary>
-        public virtual AttributeDefinition InputAttribute
+        public virtual AttributeDefinition? InputAttribute
         {
-            get => this.inputAttribute ?? throw new InvalidOperationException("InputAttribute not initialized");
+            get => this.inputAttribute;
             set => this.inputAttribute = value;
         }
 

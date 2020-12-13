@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <inheritdoc/>
         public void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
         {
-            if (this.GetOrCreateAttribute(relationship.TargetAttribute) is IComposableAttribute targetAttribute)
+            if (this.GetOrCreateAttribute(relationship.GetTargetAttribute()) is IComposableAttribute targetAttribute)
             {
                 var relatedElement = this.CreateRelatedAttribute(relationship, sourceAttributeHolder);
                 targetAttribute.AddElement(relatedElement);
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>The newly created relationship element.</returns>
         public IElement CreateRelatedAttribute(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
         {
-            var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.InputAttribute) };
+            var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.GetInputAttribute()) };
             return new AttributeRelationshipElement(inputElements, relationship.InputOperand, relationship.InputOperator);
         }
 
