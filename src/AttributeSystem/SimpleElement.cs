@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.AttributeSystem
         }
 
         /// <inheritdoc/>
-        public event EventHandler ValueChanged;
+        public event EventHandler? ValueChanged;
 
         /// <inheritdoc/>
         public virtual float Value

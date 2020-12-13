@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.AttributeSystem
             return this.cachedValue.Value;
         }
 
-        private void ElementChanged(object sender, EventArgs eventArgs)
+        private void ElementChanged(object? sender, EventArgs eventArgs)
         {
             this.cachedValue = null;
             this.RaiseValueChanged();

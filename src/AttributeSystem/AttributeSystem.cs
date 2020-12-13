@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>The success.</returns>
         public bool SetStatAttribute(AttributeDefinition attributeDefinition, float newValue)
         {
-            if (this.attributes.TryGetValue(attributeDefinition, out IAttribute attribute)
+            if (this.attributes.TryGetValue(attributeDefinition, out var attribute)
                 && attribute is StatAttribute statAttribute)
             {
                 statAttribute.Value = newValue;
@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// </summary>
         /// <param name="attributeDefinition">The attribute definition.</param>
         /// <returns>The composable attribute.</returns>
-        public ComposableAttribute GetComposableAttribute(AttributeDefinition attributeDefinition)
+        public ComposableAttribute? GetComposableAttribute(AttributeDefinition attributeDefinition)
         {
             return this.GetOrCreateAttribute(attributeDefinition) as ComposableAttribute;
         }
@@ -103,7 +103,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <inheritdoc/>
         public float GetValueOfAttribute(AttributeDefinition attributeDefinition)
         {
-            IElement element = this.GetAttribute(attributeDefinition);
+            var element = this.GetAttribute(attributeDefinition);
             if (element != null)
             {
                 return element.Value;
@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <inheritdoc/>
         public void AddElement(IElement element, AttributeDefinition targetAttribute)
         {
-            if (!this.attributes.TryGetValue(targetAttribute, out IAttribute attribute))
+            if (!this.attributes.TryGetValue(targetAttribute, out var attribute))
             {
                 attribute = new ComposableAttribute(targetAttribute);
                 this.attributes.Add(targetAttribute, attribute);
@@ -134,7 +134,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <inheritdoc/>
         public void RemoveElement(IElement element, AttributeDefinition targetAttribute)
         {
-            if (this.attributes.TryGetValue(targetAttribute, out IAttribute attribute))
+            if (this.attributes.TryGetValue(targetAttribute, out var attribute))
             {
                 if (attribute is IComposableAttribute composableAttribute)
                 {
@@ -177,7 +177,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>The element of the attribute.</returns>
         public IElement GetOrCreateAttribute(AttributeDefinition attributeDefinition)
         {
-            IElement element = this.GetAttribute(attributeDefinition);
+            var element = this.GetAttribute(attributeDefinition);
             if (element is null)
             {
                 var composableAttribute = new ComposableAttribute(attributeDefinition);
@@ -197,14 +197,14 @@ namespace MUnique.OpenMU.AttributeSystem
             this.AddAttributeRelationship(combination, this);
         }
 
-        private IElement GetAttribute(AttributeDefinition attributeDefinition)
+        private IElement? GetAttribute(AttributeDefinition attributeDefinition)
         {
             if (attributeDefinition is null)
             {
                 return null;
             }
 
-            if (this.attributes.TryGetValue(attributeDefinition, out IAttribute attribute))
+            if (this.attributes.TryGetValue(attributeDefinition, out var attribute))
             {
                 return attribute;
             }

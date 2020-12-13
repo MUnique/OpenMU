@@ -19,9 +19,9 @@ namespace MUnique.OpenMU.AttributeSystem.Tests
         private readonly AttributeDefinition attributeAplusB = new AttributeDefinition(Guid.NewGuid(), "A+B", "The A+B attribute");
         private readonly AttributeDefinition attributeAchained = new AttributeDefinition(Guid.NewGuid(), "A'", "The chained A attribute");
 
-        private List<IAttribute> statAttributes;
-        private List<IAttribute> baseAttributes;
-        private List<AttributeRelationship> relationShips;
+        private List<IAttribute> statAttributes = null!;
+        private List<IAttribute> baseAttributes = null!;
+        private List<AttributeRelationship> relationShips = null!;
 
         /// <summary>
         /// Setups each test case.

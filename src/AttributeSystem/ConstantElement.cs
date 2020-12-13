@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <summary>
         /// Never occurs, so the implementation is empty.
         /// </summary>
-        public event EventHandler ValueChanged
+        public event EventHandler? ValueChanged
         {
             add
             {

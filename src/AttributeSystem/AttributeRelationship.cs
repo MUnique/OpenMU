@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.AttributeSystem
 {
+    using System;
+
     /// <summary>
     /// The operator which is applied between the input attribute and the input operand.
     /// </summary>
@@ -30,8 +32,8 @@ namespace MUnique.OpenMU.AttributeSystem
     /// </summary>
     public class AttributeRelationship
     {
-        private AttributeDefinition targetAttribute;
-        private AttributeDefinition inputAttribute;
+        private AttributeDefinition? targetAttribute;
+        private AttributeDefinition? inputAttribute;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AttributeRelationship"/> class.
@@ -71,7 +73,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// </summary>
         public virtual AttributeDefinition TargetAttribute
         {
-            get => this.targetAttribute;
+            get => this.targetAttribute ?? throw new InvalidOperationException("TargetAttribute not initialized");
             set => this.targetAttribute = value;
         }
 
@@ -80,7 +82,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// </summary>
         public virtual AttributeDefinition InputAttribute
         {
-            get => this.inputAttribute;
+            get => this.inputAttribute ?? throw new InvalidOperationException("InputAttribute not initialized");
             set => this.inputAttribute = value;
         }
 

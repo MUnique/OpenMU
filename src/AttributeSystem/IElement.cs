@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <summary>
         /// Occurs when the value has been changed.
         /// </summary>
-        event EventHandler ValueChanged;
+        event EventHandler? ValueChanged;
 
         /// <summary>
         /// Gets the value.

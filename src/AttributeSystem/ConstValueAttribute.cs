@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.AttributeSystem
     /// </summary>
     public class ConstValueAttribute : IAttribute
     {
-        private AttributeDefinition definition;
+        private AttributeDefinition definition = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConstValueAttribute" /> class.
@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.AttributeSystem
 
         /// <inheritdoc/>
         /// <remarks>Empty implementation, because the value can't change.</remarks>
-        public event EventHandler ValueChanged
+        public event EventHandler? ValueChanged
         {
             #pragma warning disable S3237 //Empty implementation, because the value can't change.
             add

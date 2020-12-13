@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.AttributeSystem.Tests
     [TestFixture]
     public class ComposableAttributeTests
     {
-        private ComposableAttribute composableAttribute;
+        private ComposableAttribute composableAttribute = null!;
 
         /// <summary>
         /// Sets up each test case.
