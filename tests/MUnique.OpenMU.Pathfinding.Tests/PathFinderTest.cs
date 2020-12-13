@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.Pathfinding.Tests
     [TestFixture]
     public class PathFinderTest
     {
-        private IPathFinder pathFinder;
+        private IPathFinder pathFinder = null!;
 
         /// <summary>
         /// Sets up the path finder with a basic, unrestricted grid.
@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.Pathfinding.Tests
             var end = new Point(115, 100);
             var result = this.pathFinder.FindPath(start, end);
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Last().X, Is.EqualTo(end.X));
+            Assert.That(result!.Last().X, Is.EqualTo(end.X));
             Assert.That(result.Last().Y, Is.EqualTo(end.Y));
         }
 
@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.Pathfinding.Tests
             var end = new Point(110, 110);
             var result = this.pathFinder.FindPath(start, end);
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Count, Is.EqualTo(10));
+            Assert.That(result!.Count, Is.EqualTo(10));
             for (int i = 1; i <= 10; i++)
             {
                 Assert.That(result[i - 1].X, Is.EqualTo(start.X + i));

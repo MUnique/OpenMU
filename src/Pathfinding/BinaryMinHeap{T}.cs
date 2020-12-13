@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Pathfinding
 {
+    using System;
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
 
@@ -94,6 +95,11 @@ namespace MUnique.OpenMU.Pathfinding
         /// <inheritdoc/>
         public T Pop()
         {
+            if (this.Count == 0)
+            {
+                throw new InvalidOperationException("Heap is empty");
+            }
+
             var result = this.innerList[0];
             this.i = 0;
             this.innerList[0] = this.innerList[^1];
@@ -136,7 +142,7 @@ namespace MUnique.OpenMU.Pathfinding
                 return this.innerList[0];
             }
 
-            return default;
+            throw new InvalidOperationException("Heap is empty");
         }
 
         /// <inheritdoc/>

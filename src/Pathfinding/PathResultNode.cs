@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Pathfinding
         /// </summary>
         /// <param name="point">The point.</param>
         /// <param name="previousPoint">The previous point.</param>
-        public PathResultNode(Point point, Point previousPoint)
+        public PathResultNode(Point point, Point? previousPoint)
         {
             this.ThisPoint = point;
             this.PreviousPoint = previousPoint;
@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Pathfinding
         /// <summary>
         /// Gets the previous point.
         /// </summary>
-        public Point PreviousPoint { get; }
+        public Point? PreviousPoint { get; }
 
         /// <summary>
         /// Gets the x coordinate.

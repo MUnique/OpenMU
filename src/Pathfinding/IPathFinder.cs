@@ -17,6 +17,6 @@ namespace MUnique.OpenMU.Pathfinding
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
         /// <returns>The path between start and end, including <paramref name="end"/>, but excluding <paramref name="start"/>.</returns>
-        IList<PathResultNode> FindPath(Point start, Point end);
+        IList<PathResultNode>? FindPath(Point start, Point end);
     }
 }

@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.Pathfinding
         public IHeuristic Heuristic { get; set; } = new NoHeuristic();
 
         /// <inheritdoc/>
-        public IList<PathResultNode> FindPath(Point start, Point end)
+        public IList<PathResultNode>? FindPath(Point start, Point end)
         {
             if (this.MaximumDistanceExceeded(start, end))
             {
@@ -162,10 +162,10 @@ namespace MUnique.OpenMU.Pathfinding
 
         private IEnumerable<PathResultNode> GetCalculatedPath(Point end)
         {
-            Node node = this.network.GetNodeAt(end);
-            while (node.PreviousNode != node)
+            var node = this.network.GetNodeAt(end);
+            while (node!.PreviousNode != node)
             {
-                yield return new PathResultNode(node.Position, node.PreviousNode.Position);
+                yield return new PathResultNode(node.Position, node.PreviousNode?.Position);
                 node = node.PreviousNode;
             }
         }
